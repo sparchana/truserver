@@ -1,0 +1,358 @@
+::-webkit-scrollbar
+{
+  width: 8px;  /* for vertical scrollbars */
+  height: 8px; /* for horizontal scrollbars */
+}
+
+::-webkit-scrollbar-track
+{
+  background: rgba(41, 128, 185, 1);
+}
+
+::-webkit-scrollbar-thumb
+{
+  background: rgba(255, 255, 255, 1);
+}
+
+body {
+	background: #ffffff;
+}
+
+#preloader { 
+    position: fixed;
+    left: 0;
+    top: 0; 
+    z-index: 999; 
+    width: 100%; 
+    height: 100%; 
+    overflow: visible; 
+    background: #333 url('http://files.mimoymima.com/images/loading.gif') no-repeat center center; 
+}
+
+.navbar-default {
+    border-color: #ffffff;
+    color: #2980b9;
+}
+
+.nav.navbar-nav.navbar-right li a {
+    color: #2980b9;
+}
+
+.navLine {
+	margin-top: 56px;
+	border: 1px solid #2980b9;
+}
+
+.sectionOne {
+	background: #2980b9;
+	color: #ffffff;
+	font-weight: bold;
+	color: #2980b9;
+	padding-right: 8%;
+	padding-left: 8%;
+	padding-top: 8%;
+	padding-bottom: 8%;
+	font-weight: bold;
+	text-align: center;
+}
+
+.subLogin {
+    padding-top: 4%;
+}
+
+.sectionStats {
+    background: #2980b9;
+    color: #ffffff;
+    font-weight: bold;
+    padding-right: 8%;
+    padding-left: 8%;
+    padding-top: 5%;
+    padding-bottom: 5%;
+    font-weight: bold;
+    text-align: center;
+}
+.modal .modal-dialog { 
+    width: 50%;
+    margin: 80 auto;
+}
+
+.modal-content {
+    padding: 5%;
+    color: #000000;
+}
+
+.btn-primary {
+    padding-top: 1%;
+    padding-bottom: 1%;
+    padding-right: 4%;
+    padding-left: 4%;
+    color: #fff;
+    background-color: #0B4063;
+    border-color: #0B4063;
+}
+
+.floating {
+    color: #fff;
+    background-color: #0B4063;
+    border-color: #0B4063;   
+}
+
+.floating:hover {
+    color: #fff;
+    background-color: #022D4A;
+    border-color: #022D4A;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary.focus, .btn-primary:active, .btn-primary.active, .open>.dropdown-toggle.btn-primary {
+    color: #fff;
+    background-color: #0B4063;
+    border-color: #0B4063;
+}
+
+.btn-primary:hover {
+    color: #fff;
+    background-color: #022D4A;
+    border-color: #022D4A;
+}
+
+.sectionTwo {
+	background: #ffffff;
+	padding-right: 8%;
+	padding-left: 8%;
+	padding-top: 4%;
+	padding-bottom: 4%;
+	text-align: center;
+}
+
+.sectionThree {
+	background: #ffffff;
+	padding-right: 8%;
+	padding-left: 8%;
+	padding-top: 4%;
+	padding-bottom: 4%;
+	text-align: center;
+}
+
+.c_form {
+    margin-left: 38%;
+    margin-right: 38%;
+}
+
+@media screen and (max-width: 800px) {
+    .c_form {
+        margin-left: 10%;
+        margin-right: 10%;
+    }
+
+    #stats {
+    margin-top: 50px; 
+    }
+}
+
+@media screen and (max-width: 540px) {
+    h3 {
+        font-size: 16px;
+    }
+    h1 {
+        font-size: 24px;
+    }
+    h4 {
+        font-size: 14px;
+    }
+    .footer{
+        font-size: 12px;
+    }
+    .modal .modal-dialog { 
+    width: 80%;}
+}
+
+.sectionFive {
+	background: #2980b9;
+	padding-right: 8%;
+	padding-left: 8%;
+	padding-top: 4%;
+	padding-bottom: 4%;
+	text-align: center;
+	color: #ffffff;
+}
+
+.hov:hover{
+    position: relative; 
+    top: -3px;
+}
+
+.dropShadow:hover {
+    border-radius: 50%;
+    box-shadow: 0px 0px 20px #888888;
+}
+
+.footer {
+	background-color: #0B4063;
+    color: #ffffff;
+	padding-right: 8%;
+	padding-left: 8%;
+	padding-top: 2%;
+	padding-bottom: 2%;
+	text-align: center;
+}
+a {
+	color: #ffffff;
+}
+a:visited { 
+    color: #ffffff;
+}
+
+.leftColumn {
+
+}
+
+.rightColumn {
+}
+
+.leftColumnData {
+	margin-left: 12%;
+	text-align: center;
+}
+
+.rightColumnData {
+	margin-left: 12%;
+	text-align: center;
+}
+
+.numberCircle {
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    padding: 2px;
+    color: #ffffff;
+    vertical-align:middle;
+    background: #ccced4;
+    text-align: center;
+    
+    /* for slow hove effect*/
+    -webkit-transition: background 0.5s;
+    -moz-transition:    background 0.5s;
+    -ms-transition:     background 0.5s;
+    -o-transition:      background 0.5s;
+    transition:         background 0.5s;
+
+    -webkit-transition: color 0.2s;
+    -moz-transition:    color 0.2s;
+    -ms-transition:     color 0.2s;
+    -o-transition:      color 0.2s;
+    transition:         color 0.2s;
+}
+
+.numberCircle:hover {
+	font-weight: bold;
+	background: #2980b9;
+	color: #ffffff;
+}
+
+.categoryBox {
+    border-radius: 10px;
+    background: #ccced4;
+    border: 2px solid #ccced4;
+    width: auto;
+    color: #2980b9;
+    font-weight: bold;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    height: auto; 
+/* for slow hove effect*/
+    -webkit-transition: background 0.5s;
+    -moz-transition:    background 0.5s;
+    -ms-transition:     background 0.5s;
+    -o-transition:      background 0.5s;
+    transition:         background 0.5s;
+
+    -webkit-transition: color 0.2s;
+    -moz-transition:    color 0.2s;
+    -ms-transition:     color 0.2s;
+    -o-transition:      color 0.2s;
+    transition:         color 0.2s;
+}
+
+.categoryBox:hover {
+    cursor: pointer;
+	font-weight: bold;
+	background: #2980b9;
+	border: 2px solid #2980b9;
+	color: #ffffff;
+}
+.categoryRow {
+	margin-top: 8px;
+}
+
+#fixed-menu
+{
+    position: fixed;
+    width: 100%;
+    height: 48px;
+    color: #ffffff;
+    display: none;
+    background-color: #2980b9;
+    padding: 10px;
+    z-index: 999;
+}
+
+hr {
+    border: 0;
+    height: 6px;
+    position:relative;
+
+    background: -moz-linear-gradient(left, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 10%, rgba(88, 130, 250, 1) 50%, rgba(0,0,0,0) 90%, rgba(0,0,0,0) 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(0,0,0,0)), color-stop(10%,rgba(0,0,0,0)), color-stop(50%,rgba(88, 130, 250, 1)), color-stop(90%,rgba(0,0,0,0)), color-stop(100%,rgba(0,0,0,0))); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(left, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 10%,rgba(88, 130, 250, 1) 50%,rgba(0,0,0,0) 90%,rgba(0,0,0,0) 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(left, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 10%,rgba(88, 130, 250, 1) 50%,rgba(0,0,0,0) 90%,rgba(0,0,0,0) 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(left, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 10%,rgba(88, 130, 250, 1) 50%,rgba(0,0,0,0) 90%,rgba(0,0,0,0) 100%); /* IE10+ */
+    background: linear-gradient(left, rgba(0,0,0,0) 0%,rgba(0,0,0,0) 10%,rgba(88, 130, 250, 1) 50%,rgba(0,0,0,0) 90%,rgba(0,0,0,0) 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00000000', endColorstr='#00000000',GradientType=1 ); /* IE6-9 */
+}
+
+hr:before {
+    content: "";
+    display: block;
+    width: 100%;
+    height: 6px;
+    position: absolute;
+    top: 50%;
+    z-index: 1;
+}
+
+/* custom bootstrap code for 5 columns in single row */
+.col-xs-15,
+.col-sm-15,
+.col-md-15,
+.col-lg-15 {
+	text-align: center;
+    position: relative;
+    min-height: 1px;
+    padding-top: 8px;
+    padding-right: 24px;
+    padding-left: 24px;
+}
+.col-xs-15 {
+    width: 20%;
+    float: left;
+}
+@media (min-width: 768px) {
+.col-sm-15 {
+        width: 20%;
+        float: left;
+    }
+}
+@media (min-width: 992px) {
+    .col-md-15 {
+        width: 20%;
+        float: left;
+    }
+}
+@media (min-width: 1200px) {
+    .col-lg-15 {
+        width: 20%;
+        float: left;
+    }
+}
+
+/* custom bootstrap ends */

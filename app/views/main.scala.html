@@ -1,28 +1,387 @@
 @(title: String)(content: Html)
-
-<!DOCTYPE html>
 <html>
-<head>
-    <title>@title</title>
-    <link rel='shortcut icon' type='image/png' href='@routes.Assets.at("images/favicon.png")'>
-    <link rel='stylesheet' href='@routes.WebJarAssets.at(WebJarAssets.locate("bootstrap.min.css"))'>
-    <script type='text/javascript' src='@routes.WebJarAssets.at(WebJarAssets.locate("jquery.min.js"))'></script>
-    <style>
-    body {
-        margin-top: 50px;
-    }
-    </style>
-</head>
-<body>
-    <div class="navbar navbar-fixed-top">
-        <div class="navbar-inner">
-            <div class="container-fluid">
-                <a id="titleLink" class="brand" href="/">@title</a>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Trujobs - Trusted Employers - Verified Candidates</title>
+        <meta name="keywords" content="freshers jobs, driver jobs, delivery boy jobs, field sales agent,call center jobs, BPO jobs, data entry jobs, back office jobs, receptionist jobs, beautician jobs, waiter jobs, cook jobs, restaurant jobs, cashier jobs">
+
+            <!-- Bootstrap Core CSS -->
+        <link href="http://sbootstrap.startbootstrapc.netdna-cdn.com/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+
+            <!-- Start Bootstrap Custom CSS -->
+        <link href="http://sbootstrap.startbootstrapc.netdna-cdn.com/assets/css/startbootstrap.css" rel="stylesheet" type="text/css">
+        <link rel="icon" type="image/png" href="/assets/img/icon.png">
+        <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
+        <link href='https://fonts.googleapis.com/css?family=Titillium+Web' rel='stylesheet' type='text/css'>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+        <script type="text/javascript" src="/assets/js/google-form.js"></script>
+
+            <!-- Smooth Scroll -->
+        <script>
+                $(document).ready(function(){
+                    $("a").on('click', function(event) {
+
+                        event.preventDefault();
+                        var hash = this.hash;
+                        $('html, body').animate({
+                            scrollTop: $(hash).offset().top
+                        }, 800, function(){
+                            window.location.hash = hash;
+                        });
+                    });
+                });
+
+                $(document).scroll(function() {
+                    var y = $(this).scrollTop();
+                    if (y > 320) {
+                        $('#fixed-menu').fadeIn();
+                    } else {
+                        $('#fixed-menu').fadeOut();
+                    }
+                });
+        </script>
+
+            <!-- Hide radio button on job category box -->
+        <script>
+                function openModal(str) {
+                    $('.form-horizontal').show();
+                    $('#thanksMsg').hide();
+                    $('#interested').show();
+                    $('#name_gen').val('')
+                    $('#mobile_gen').val('')
+                    document.getElementById("interested").innerHTML = "Jobs for " + str;
+                    $('#c_interested').val(str)
+                    $('.radio-inline').hide();
+                }
+                function resetModal() {
+                    $('#interested').hide();
+                    $('#c_interested').val('General Registration')
+                    $('#name_gen').val('')
+                    $('#mobile_gen').val('')
+                    $('.form-horizontal').show();
+                    $('#thanksMsg').hide();
+                    $('#c_interested').hide();
+                    $('.radio-inline').show();
+                }
+                function resetForms() {
+                    var mob = $('#mobile_gen').val();
+                    var len = mob.length;
+                    if((mob[0]=='7' || mob[0]=='8' || mob[0]=='9') && len==10 )
+                    {
+                        $('.form-horizontal').hide();
+                        $('#thanksMsg').show();
+                    }
+                    else{
+                    }
+                }
+                function selectLead(type) {
+                    $('#c_lead').val(type)
+                }
+                function resetFormsForCandidate() {
+                    var mob = $('#mobile_c').val();
+                    var len = mob.length;
+                    if((mob[0]=='7' || mob[0]=='8' || mob[0]=='9') && len==10 )
+                    {
+                        $('.form-candidate').hide();
+                        $('#thanksMsgCandidate').show();
+                    }
+                    else{
+                    }
+                }
+                function resetFormsForRecruiter() {
+                    var mob = $('#mobile_r').val();
+                    var len = mob.length;
+                    if((mob[0]=='7' || mob[0]=='8' || mob[0]=='9') && len==10 )
+                    {
+                        $('.form-recruiter').hide();
+                        $('#thanksMsgRecruiter').show();
+                    }
+                    else{
+                    }
+                }
+        </script>
+    </head>
+    <body>
+        <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigationbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+
+                    </button> <a class="navbar-brand" href="#"><img src="/assets/img/logo.png" height="40px" style="margin-top: -8px;"></a>
+                </div>
+
+                <div class="collapse navbar-collapse" id="navigationbar">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li> <a href="#jobs"><font color="black">JOBS</font></a></li>
+                        <li> <a href="#candidate"><font color="black">FOR CANDIDATES</font></a></li>
+                        <li> <a href="#employer"><font color="black">FOR EMPLOYERS</font></a></li>
+                        <li> <a href="#contact"><font color="black">CONTACT US</font></a></li>
+                        <li> <a href="#contact"><font color="black">JOB HOTLINE 8880007799</font></a></li>
+                    </ul>
+                </div>
+                    <!-- /.navbar-collapse -->
+            </div>
+                <!-- /.container -->
+        </nav>
+
+        <div id="fixed-menu" align="center">
+            <strong>Register</strong> for FREE! Get a Job and Earn upto 40,000!&nbsp;
+            <button type="button" class="btn floating" data-toggle="modal" onclick="resetModal()" data-target="#myModal">Register Here!</button>
+        </div>
+
+        <div class="sectionOne">
+            <font color="white">
+                <h1>Trusted Jobs. Verified Candidates. Spot Job Offers.</h1>
+                <h3>Give a missed call at 8880007799 for best jobs</h3>
+                <br><h5>- OR -</h5>
+                <br>
+
+                <button type="button" class="btn btn-primary" data-toggle="modal" onclick="resetModal()" data-target="#myModal">Register for FREE</button>
+
+                    <!-- Lead Form Block -->
+                <div class="modal fade bs-example-modal-sm" id="myModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
+                    <div class="modal-dialog modal-sm">
+                        <div class="modal-content">
+                            <img src="/assets/img/logo.png" height="40px" style="margin-top: -8px;">
+                            <form class="form-horizontal" role="form" name="myForm" method="POST" action="https://docs.google.com/forms/d/1hwglvCP8yZSVEjI39DfyCw8YJ_oG-P1qJl0o5uleToo" onsubmit="return window.submitGoogleForm(this);">
+                                <fieldset>
+                                    <br>
+                                    <div id="interested"></div>
+
+                                    <label class="radio-inline"><input type="radio" name="mainLead" checked="checked" value="Candidate" onclick="selectLead('Candidate')">Candidate</label>
+
+                                    <label class="radio-inline" value="Recruiter"><input type="radio" name="mainLead" onclick="selectLead('Recruiter')">Recruiter</label>
+                                    <br><br>
+
+                                        <!-- Text input-->
+                                    <div class="form-group">
+                                        <label class="col-md-4 control-label" for="name_gen">Name</label>
+                                        <div class="col-md-4">
+                                            <input id="name_gen" name="entry_789634649" name="name_gen" type="text" placeholder="(eg: Manjunath)" class="form-control input-md">
+
+                                        </div>
+                                    </div>
+
+                                        <!-- Text input-->
+                                    <div class="form-group">
+                                        <label class="col-md-4 control-label" for="mobile_gen">Mobile</label>
+                                        <div class="col-md-4">
+                                            <input id="mobile_gen" name="entry.708642816" pattern="[7-9]{1}[0-9]{9}"  name="mobile_gen" type="text" maxlength="10" placeholder="(eg: 8880007799)" class="form-control input-md">
+
+                                        </div>
+                                    </div>
+
+                                        <!-- hidden-->
+                                    <div class="form-group" style="display: none;">
+                                        <input id="c_interested" name="entry_1745431173" name="c_interested" type="text" placeholder="" class="form-control input-md" >
+                                    </div>
+
+                                    <div class="form-group" style="display: none;">
+                                        <input id="c_lead" name="entry_142025609" name="c_lead" type="text" placeholder="" class="form-control input-md" value="Candidate">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="col-md-4 control-label" for="c_submit"></label>
+                                        <div class="col-md-4">
+                                            <button type="submit" id="c_submit" name="c_submit" class="btn btn-primary" onclick="resetForms()" style="padding-top: 5%; padding-bottom: 5%; padding-right: 20%; padding-left: 20%;">Apply</button>
+                                        </div>
+                                    </div>
+
+                                        <!-- Text input-->
+
+                                </fieldset>
+                            </form>
+                            <div id="thanksMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                                <h4>Thanks for applying. We will contact you soon!</h4>
+                            </div>
+                        </div>
+                    </div>
+                        <!-- Lead form block ends -->
+                </div>
+            </font>
+        </div>
+            <!-- End of sectionOne -->
+
+        <div class="sectionTwo" id="jobs">
+            <h3>100+ JOB VACANCIES FOR FRESHERS AND EXPERIENCED CANDIDATES IN: BENGALURU</h3>
+            <br>
+            <div class="categoryRow">
+                <div class="row">
+                    <div class="col-md-15 col-sm-3"><div class="categoryBox" data-toggle="modal" data-target="#myModal" onclick="openModal('Delivery Boy')">DELIVERY BOY</div></div>
+                    <div class="col-md-15 col-sm-3"><div class="categoryBox" data-toggle="modal" data-target="#myModal" onclick="openModal('Cashier')">CASHIER</div></div>
+                    <div class="col-md-15 col-sm-3"><div class="categoryBox" data-toggle="modal" data-target="#myModal" onclick="openModal('BPO')">BPO</div></div>
+                    <div class="col-md-15 col-sm-3"><div class="categoryBox" data-toggle="modal" data-target="#myModal" onclick="openModal('Cook')">COOK</div></div>
+                    <div class="col-md-15 col-sm-3"><div class="categoryBox" data-toggle="modal" data-target="#myModal" onclick="openModal('Beautician')">BEAUTICIAN</div></div>
+                </div>
+            </div>
+            <div class="categoryRow">
+                <div class="row">
+                    <div class="col-md-15 col-sm-3"><div class="categoryBox" data-toggle="modal" data-target="#myModal" onclick="openModal('Driver')">DRIVER</div></div>
+                    <div class="col-md-15 col-sm-3"><div class="categoryBox" data-toggle="modal" data-target="#myModal" onclick="openModal('Field Sales')">FIELD SALES</div></div>
+                    <div class="col-md-15 col-sm-3"><div class="categoryBox" data-toggle="modal" data-target="#myModal" onclick="openModal('Data Entry')">DATA ENTRY</div></div>
+                    <div class="col-md-15 col-sm-3"><div class="categoryBox" data-toggle="modal" data-target="#myModal" onclick="openModal('Steward')">STEWARD</div></div>
+                    <div class="col-md-15 col-sm-3"><div class="categoryBox" data-toggle="modal" data-target="#myModal" onclick="openModal('Hair Dresser')">HAIR DRESSER</div></div>
+                </div>
+            </div>
+            <div class="categoryRow">
+                <div class="row">
+                    <div class="col-md-15 col-sm-3"></div>
+                    <div class="col-md-15 col-sm-3"><div class="categoryBox" data-toggle="modal" data-target="#myModal" onclick="openModal('Receptionist')">RECEPTIONIST</div></div>
+                    <div class="col-md-15 col-sm-3"></div>
+                    <div class="col-md-15 col-sm-3"><div class="categoryBox" data-toggle="modal" data-target="#myModal" onclick="openModal('Waiter')">WAITER</div></div>
+                    <div class="col-md-15 col-sm-3"><div class="categoryBox" data-toggle="modal" data-target="#myModal" onclick="openModal('Massage Therapist')">MASSAGE THERAPIST</div></div>
+                </div>
+            </div>
+
+            <div class="categoryRow">
+                <div class="row">
+                    <div class="col-md-15 col-sm-3"></div>
+                    <div class="col-md-15 col-sm-3"><div class="categoryBox" data-toggle="modal" data-target="#myModal" onclick="openModal('Store Manager')">STORE MANAGER</div></div>
+                    <div class="col-md-15 col-sm-3"></div>
+                    <div class="col-md-15 col-sm-3"></div>
+                    <div class="col-md-15 col-sm-3"></div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="container">
-        @content
-    </div>
-</body>
+
+        <div class="sectionStats">
+            <div class="row">
+                <div class="col-sm-4">
+                    <p><img class="hov" src="/assets/img/jobseeker.png" width="80px"></p>
+                    <h3><b>3000+</b> Job Seekers</h3>
+                </div>
+                <div id="stats" class="col-sm-4">
+                    <p><img class="hov" src="/assets/img/recruiter.png" width="80px"></p>
+                    <h3><b>50+</b> Employers</h3>
+                </div>
+                <div id="stats" class="col-sm-4">
+                    <p><img class="hov" src="/assets/img/rupee.png" width="80px"></p>
+                    <h3>Get a job and earn upto <b>40k</b>!</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="sectionThree" id="candidate">
+            <div class="row" style="text-align: center">
+                <h3>Looking for a Job?</h3>
+                <br><br>
+                <div class="col-sm-4">
+                    <p><img class="dropShadow" src="/assets/img/call.png" width="100px"></p>
+                    <br>
+                    GIVE A MISSED CALL TO 8880007799
+                    <h6>We will call you back and register you for FREE</h6>
+                </div>
+                <div class="col-sm-4">
+                    <p><img id="stats" class="dropShadow" src="/assets/img/schedule.png" width="100px"></p>
+                    <br>
+                    SCHEDULE VERIFICATION WALK-IN
+                </div>
+                <div class="col-sm-4">
+                    <p><img id="stats" class="dropShadow" src="/assets/img/getjob.png" width="100px"></p>
+                    <br>
+                    ATTEND INTERVIEWS AND GET JOB OFFERS!
+                </div>
+            </div>
+            <br><br>
+                <!-- form -->
+            <form class="form-candidate" role="form" method="POST" action="https://docs.google.com/forms/d/1hwglvCP8yZSVEjI39DfyCw8YJ_oG-P1qJl0o5uleToo" onsubmit="return window.submitGoogleForm(this);">
+                <h4>FREE Registration for Jobs</h4>
+                <div class="c_form" align="center">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="name_c" name="entry_789634649" placeholder="Enter your Name (eg: Manjunath)">
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" class="form-control" pattern="[7-9]{1}[0-9]{9}" id="mobile_c" name="entry.708642816" placeholder="Enter your Mobile no. (eg:8880007799)" maxlength="10">
+                    </div>
+
+                    <div class="form-group" style="display: none;">
+                        <input id="lead_c" name="entry_142025609" name="c_lead" type="text" placeholder="" class="form-control input-md" value="Candidate">
+                    </div>
+
+                    <div class="form-group" style="display: none;">
+                        <input id="interested_c" name="entry_1745431173" name="c_interested" type="text" placeholder="" class="form-control input-md" value="Candidate Registration">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" onclick="resetFormsForCandidate()">Contact as Candidate</button>
+                </div>
+            </form>
+            <div id="thanksMsgCandidate" style="margin-top: 2%;display: none; color: #2980b9">
+                <h4>Thanks for applying. We will contact you soon!</h4>
+            </div>
+                <!-- end form -->
+
+        </div>
+        <hr>
+        <div class="sectionThree" id="employer">
+            <div class="row" style="text-align: center">
+                <h3>Are you a Recruiter?</h3>
+                <br><br>
+                <div class="col-sm-4">
+                    <p><img class="dropShadow" src="/assets/img/call.png" width="100px"></p>
+                    <br>
+                    CALL 8880007799 (Option 1) TO SPECIFY REQUIREMENT
+                </div>
+                <div class="col-sm-4">
+                    <p><img id="stats" class="dropShadow" src="/assets/img/users.png" width="100px"></p>
+                    <br>
+                    RECEIVE MATCHING AND VERIFIED CANDIDATE PROFILES
+                </div>
+                <div class="col-sm-4">
+                    <p><img id="stats" class="dropShadow" src="/assets/img/schedule_r.png" width="100px"></p>
+                    <br>
+                    SCHEDULE INTERVIEWS AMD MAKE OFFERS
+                </div>
+            </div>
+            <br><br>
+                <!-- form -->
+            <form class="form-recruiter" role="form" method="POST" action="https://docs.google.com/forms/d/1hwglvCP8yZSVEjI39DfyCw8YJ_oG-P1qJl0o5uleToo" onsubmit="return window.submitGoogleForm(this);">
+                <h4>Get in Touch</h4>
+                <div class="c_form" align="center">
+
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="name_r" name="entry_789634649" placeholder="Enter your Name (eg: Manjunath)">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" pattern="[7-9]{1}[0-9]{9}" id="mobile_r" name="entry.708642816" placeholder="Enter your Mobile no. (eg:8880007799)" maxlength="10">
+                    </div>
+                    <div class="form-group" style="display: none;">
+                        <input id="lead_c" name="entry_142025609" name="c_lead" type="text" placeholder="" class="form-control input-md" value="Recruiter">
+                    </div>
+
+                    <div class="form-group" style="display: none;">
+                        <input id="interested_r" name="entry_1745431173" name="r_interested" type="text" placeholder="" class="form-control input-md" value="Recruiter Registration">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" onclick="resetFormsForRecruiter()">Contact as Recruiter</button>
+                </div>
+            </form>
+            <div id="thanksMsgRecruiter" style="margin-top: 2%;display: none;color: #2980b9">
+                <h4>Thanks for applying. We will contact you soon!</h4>
+            </div>
+                <!-- end form -->
+
+        </div>
+
+
+        <div class="sectionFive" id="contact">
+            <h4>Write us at <a href="mailto:hi@@trujobs.in">hi@@trujobs.in</a></h4>
+            <h4>Have queries? Talk to us at 8880007799 (Option 2)</h4>
+        </div>
+
+        <div class="footer">
+            © 2016 Trujobs.in | Bellandur, Bengaluru, India. All Right Reserved.
+        </div>
+            <!-- Including Bootstrap -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/assets/js/scroll.js"></script>
+    </body>
 </html>
