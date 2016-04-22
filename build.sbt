@@ -1,11 +1,19 @@
-import play.Project._
-
-name := "hello-play-java"
+name := "trujobs"
 
 version := "1.0-SNAPSHOT"
 
-libraryDependencies ++= Seq(
-  "org.webjars" %% "webjars-play" % "2.2.2", 
-  "org.webjars" % "bootstrap" % "2.3.1")
+scalaVersion := "2.11.7"
 
-playJavaSettings
+routesGenerator := StaticRoutesGenerator
+
+lazy val root = (project in file(".")).enablePlugins(PlayJava, PlayEbean)
+
+libraryDependencies ++= Seq(
+  javaJdbc,
+  cache,
+  javaWs,
+  "mysql" % "mysql-connector-java" % "5.1.27",
+  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.0" % "test"
+  )
+
+libraryDependencies += evolutions
