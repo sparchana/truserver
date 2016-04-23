@@ -1,0 +1,47 @@
+<html>
+    <head></head>
+    <body>
+        <form id="addLeadForm" class="form-horizontal" role="form" name="addLeadForm" >
+            <fieldset>
+                <br>
+                <div id="interested"></div>
+
+                <label class="radio-inline"><input type="radio" name="mainLead" checked="checked" value="Candidate" onclick="selectLead('Candidate')">Candidate</label>
+
+                <label class="radio-inline" value="Recruiter"><input type="radio" name="mainLead" onclick="selectLead('Recruiter')">Recruiter</label>
+                <br><br>
+
+                    <!-- Text input-->
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="name_gen">Name</label>
+                    <div class="col-md-4">
+                        <input id="leadName" name="leadName" type="text" placeholder="(eg: Manjunath)" class="form-control input-md">
+
+                    </div>
+                </div>
+
+                    <!-- Text input-->
+                <div class="form-group">
+                    <label class="col-md-4 control-label" for="mobile_gen">Mobile</label>
+                    <div class="col-md-4">
+                        <input id="leadMobile" name="leadMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" placeholder="(eg: 8880007799)" class="form-control input-md">
+
+                    </div>
+                </div>
+
+
+                <div class="form-group">
+                    <label class="col-md-4 control-label" ></label>
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary" style="padding-top: 5%; padding-bottom: 5%; padding-right: 20%; padding-left: 20%;">Apply</button>
+                    </div>
+                </div>
+
+            </fieldset>
+        </form>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/assets/js/add_lead.js"></script>
+    </body>
+</html>
+

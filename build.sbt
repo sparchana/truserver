@@ -16,4 +16,9 @@ libraryDependencies ++= Seq(
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.0" % "test"
   )
 
+
+libraryDependencies += "com.google.api-client" % "google-api-client" % "1.20.0"
+
+libraryDependencies += "com.google.protobuf" % "protobuf-java" % "3.0.0-beta-2"
+
 libraryDependencies += evolutions

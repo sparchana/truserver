@@ -1,0 +1,24 @@
+--------------------------------------------------------------------------------------------------------
+
+	http://www.confusedcoders.com/random/how-to-install-protocol-buffer-2-5-0-on-ubuntu-13-04
+
+--------------------------------------------------------------------------------------------------------
+
+
+Partial - steps:
+=================
+
+1. Inside the extracted directory hit the below commands to install protocol buffer. These may take a while, kindly be patient.
+
+$ sudo ./configure
+$ sudo make
+$ sudo make check
+$ sudo make install
+$ protoc --version
+
+2. Thats it. Protocol buffer version 2.5.0 is installed on your box.
+
+3. Note: Sometimes the latest version of protocol version does not load up. So we can do it manually by this command
+
+$ sudo ldconfig
+$ protoc --version
