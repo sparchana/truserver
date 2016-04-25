@@ -193,6 +193,8 @@ body {
 	padding-left: 8%;
 	padding-top: 2%;
 	padding-bottom: 2%;
+    bottom:0;
+    width:100%;
 	text-align: center;
 }
 a {

@@ -3,15 +3,16 @@
 
 # --- !Ups
 
-create table candidateleads (
-  candidateleadid               int signed not null auto_increment not null,
-  candidateleadname             varchar(50) not null default 0,
-  candidateleadmobile           int signed not null default 0,
-  candidateleadtype             int signed not null default 0,
-  candidateleadchannel          int signed not null default 0,
-  candidateleadcreatetimestamp  timestamp default current_timestamp not null,
-  candidateleadupdatetimestamp  timestamp not null,
-  constraint pk_candidateleads primary key (candidateleadid)
+create table candidate (
+  candidateid                   int signed not null auto_increment not null,
+  candidatestatusid             int signed not null default 0,
+  candidatename                 varchar(50) not null default 0,
+  candidatemobile               varchar(10) not null default 0,
+  candidateage                  int signed not null default 0,
+  candidatecreatetimestamp      timestamp default current_timestamp not null,
+  candidateupdatetimestamp      timestamp not null default 0,
+  candidateotpid                int signed not null default 1234,
+  constraint pk_candidate primary key (candidateid)
 );
 
 create table channels (
@@ -24,6 +25,10 @@ create table leads (
   leadid                        int signed not null auto_increment not null,
   leadname                      varchar(50) not null,
   leadmobile                    varchar(10) not null ,
+  leadchannel                   int signed not null,
+  leadtype                      int signed not null,
+  leadinterest                  varchar(30) not null ,
+  leadcreatetimestamp           timestamp default current_timestamp not null,
   constraint pk_leads primary key (leadid)
 );
 
@@ -36,7 +41,7 @@ create table leadtype (
 
 # --- !Downs
 
-drop table if exists candidateleads;
+drop table if exists candidate;
 
 drop table if exists channels;
 

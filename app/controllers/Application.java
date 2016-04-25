@@ -1,6 +1,8 @@
 package controllers;
 
 import api.AddLeadRequest;
+import api.CandidateSignUpRequest;
+import models.entity.Candidate;
 import models.entity.Leads;
 import play.data.Form;
 import play.mvc.Controller;
@@ -22,10 +24,18 @@ public class Application extends Controller {
     public static Result addLead() {
         Form<AddLeadRequest> userForm = Form.form(AddLeadRequest.class);
         AddLeadRequest addLeadRequest = userForm.bindFromRequest().get();
+
         return ok(toJson(Leads.addLead(addLeadRequest)));
     }
 
-    public static Result leadFrom() {
-        return ok(views.html.addLead.render());
+    public static Result signUpSubmit() {
+        Form<CandidateSignUpRequest> candidateForm = Form.form(CandidateSignUpRequest.class);
+        CandidateSignUpRequest candidateSignUpRequest = candidateForm.bindFromRequest().get();
+
+        return ok(toJson(Candidate.candidateSignUp(candidateSignUpRequest)));
+    }
+
+    public static Result signUp() {
+        return ok(views.html.signup.render());
     }
 }

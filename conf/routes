@@ -8,7 +8,9 @@ GET      /support                    controllers.Application.support()
 
 POST     /addLead                    controllers.Application.addLead()
 
-GET      /leadForm                    controllers.Application.leadFrom()
+GET      /signUp                    controllers.Application.signUp()
+
+POST     /signUpSubmit                    controllers.Application.signUpSubmit()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

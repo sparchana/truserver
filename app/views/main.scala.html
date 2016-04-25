@@ -49,21 +49,27 @@
                 function openModal(str) {
                     $('.form-horizontal').show();
                     $('#thanksMsg').hide();
+                    $('#alreadyMsg').hide();
+                    $('#errorMsg').hide();
                     $('#interested').show();
-                    $('#name_gen').val('')
-                    $('#mobile_gen').val('')
+                    $('#leadName').val('')
+                    $('#leadMobile').val('')
                     document.getElementById("interested").innerHTML = "Jobs for " + str;
-                    $('#c_interested').val(str)
+                    $('#leadInterest').val(str)
                     $('.radio-inline').hide();
                 }
                 function resetModal() {
+                    document.getElementById('recruiterRadio').checked = false;
+                    document.getElementById('candidateRadio').checked = true;
                     $('#interested').hide();
-                    $('#c_interested').val('General Registration')
-                    $('#name_gen').val('')
-                    $('#mobile_gen').val('')
+                    $('#leadInterest').val('General Registration')
+                    $('#leadName').val('')
+                    $('#leadMobile').val('')
                     $('.form-horizontal').show();
                     $('#thanksMsg').hide();
-                    $('#c_interested').hide();
+                    $('#alreadyMsg').hide();
+                    $('#errorMsg').hide();
+                    $('#leadInterest').hide();
                     $('.radio-inline').show();
                 }
                 function resetForms() {
@@ -78,18 +84,11 @@
                     }
                 }
                 function selectLead(type) {
-                    $('#c_lead').val(type)
+                    $('#leadType').val(type)
                 }
                 function resetFormsForCandidate() {
-                    var mob = $('#mobile_c').val();
-                    var len = mob.length;
-                    if((mob[0]=='7' || mob[0]=='8' || mob[0]=='9') && len==10 )
-                    {
-                        $('.form-candidate').hide();
-                        $('#thanksMsgCandidate').show();
-                    }
-                    else{
-                    }
+                    $('.form-candidate').hide();
+
                 }
                 function resetFormsForRecruiter() {
                     var mob = $('#mobile_r').val();
@@ -124,6 +123,9 @@
                         <li> <a href="#employer"><font color="black">FOR EMPLOYERS</font></a></li>
                         <li> <a href="#contact"><font color="black">CONTACT US</font></a></li>
                         <li> <a href="#contact"><font color="black">JOB HOTLINE 8880007799</font></a></li>
+                        @*<li> <a href="#contact"><font color="black">Log In</font></a></li>*@
+                        <li> <a href="#contact"><font color="black">Sign Up</font></a></li>
+                        </a></li>
                     </ul>
                 </div>
                     <!-- /.navbar-collapse -->
@@ -150,21 +152,21 @@
                     <div class="modal-dialog modal-sm">
                         <div class="modal-content">
                             <img src="/assets/img/logo.png" height="40px" style="margin-top: -8px;">
-                            <form class="form-horizontal" role="form" name="myForm" method="POST" action="https://docs.google.com/forms/d/1hwglvCP8yZSVEjI39DfyCw8YJ_oG-P1qJl0o5uleToo" onsubmit="return window.submitGoogleForm(this);">
+                            <form id="addLeadForm" class="form-horizontal" role="form" name="addLeadForm" >
                                 <fieldset>
                                     <br>
                                     <div id="interested"></div>
 
-                                    <label class="radio-inline"><input type="radio" name="mainLead" checked="checked" value="Candidate" onclick="selectLead('Candidate')">Candidate</label>
+                                    <label class="radio-inline"><input id="candidateRadio" type="radio" name="mainLead" checked="checked" value="1" onclick="selectLead(1)">Candidate</label>
 
-                                    <label class="radio-inline" value="Recruiter"><input type="radio" name="mainLead" onclick="selectLead('Recruiter')">Recruiter</label>
+                                    <label class="radio-inline"><input id="recruiterRadio" type="radio" name="mainLead" onclick="selectLead(2)">Recruiter</label>
                                     <br><br>
 
                                         <!-- Text input-->
                                     <div class="form-group">
                                         <label class="col-md-4 control-label" for="name_gen">Name</label>
                                         <div class="col-md-4">
-                                            <input id="name_gen" name="entry_789634649" name="name_gen" type="text" placeholder="(eg: Manjunath)" class="form-control input-md">
+                                            <input id="leadName" name="leadName" type="text" placeholder="(eg: Manjunath)" class="form-control input-md" required>
 
                                         </div>
                                     </div>
@@ -173,33 +175,41 @@
                                     <div class="form-group">
                                         <label class="col-md-4 control-label" for="mobile_gen">Mobile</label>
                                         <div class="col-md-4">
-                                            <input id="mobile_gen" name="entry.708642816" pattern="[7-9]{1}[0-9]{9}"  name="mobile_gen" type="text" maxlength="10" placeholder="(eg: 8880007799)" class="form-control input-md">
+                                            <input id="leadMobile" name="leadMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" placeholder="(eg: 8880007799)" class="form-control input-md">
 
                                         </div>
                                     </div>
 
                                         <!-- hidden-->
                                     <div class="form-group" style="display: none;">
-                                        <input id="c_interested" name="entry_1745431173" name="c_interested" type="text" placeholder="" class="form-control input-md" >
+                                        <input id="leadChannel" name="leadChannel" type="number" value="1" class="form-control input-md" >
                                     </div>
 
                                     <div class="form-group" style="display: none;">
-                                        <input id="c_lead" name="entry_142025609" name="c_lead" type="text" placeholder="" class="form-control input-md" value="Candidate">
+                                        <input id="leadType" name="leadType" type="number" class="form-control input-md" value="1">
+                                    </div>
+
+                                    <div class="form-group" style="display: none;">
+                                        <input id="leadInterest" name="leadInterest" type="text" class="form-control input-md" value="General Registration">
                                     </div>
 
                                     <div class="form-group">
-                                        <label class="col-md-4 control-label" for="c_submit"></label>
+                                        <label class="col-md-4 control-label" ></label>
                                         <div class="col-md-4">
-                                            <button type="submit" id="c_submit" name="c_submit" class="btn btn-primary" onclick="resetForms()" style="padding-top: 5%; padding-bottom: 5%; padding-right: 20%; padding-left: 20%;">Apply</button>
+                                            <button type="submit" class="btn btn-primary" style="padding-top: 5%; padding-bottom: 5%; padding-right: 20%; padding-left: 20%;">Apply</button>
                                         </div>
                                     </div>
-
-                                        <!-- Text input-->
 
                                 </fieldset>
                             </form>
                             <div id="thanksMsg" style="margin-top: 2%;display: none; color: #2980b9">
                                 <h4>Thanks for applying. We will contact you soon!</h4>
+                            </div>
+                            <div id="errorMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                                <h4>Looks like something went wrong. Please try again later!</h4>
+                            </div>
+                            <div id="alreadyMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                                <h5>User with the above mobile no. already exists!</h5>
                             </div>
                         </div>
                     </div>
@@ -291,23 +301,30 @@
             </div>
             <br><br>
                 <!-- form -->
-            <form class="form-candidate" role="form" method="POST" action="https://docs.google.com/forms/d/1hwglvCP8yZSVEjI39DfyCw8YJ_oG-P1qJl0o5uleToo" onsubmit="return window.submitGoogleForm(this);">
+            <form id="form_candidate" class="form-horizontal" role="form" name="form_candidate" >
                 <h4>FREE Registration for Jobs</h4>
                 <div class="c_form" align="center">
+                        <!-- Text input-->
                     <div class="form-group">
-                        <input type="text" class="form-control" id="name_c" name="entry_789634649" placeholder="Enter your Name (eg: Manjunath)">
+                        <input id="leadName" name="leadName" type="text" placeholder="(eg: Manjunath)" class="form-control input-md" required>
                     </div>
 
+                        <!-- Text input-->
                     <div class="form-group">
-                        <input type="text" class="form-control" pattern="[7-9]{1}[0-9]{9}" id="mobile_c" name="entry.708642816" placeholder="Enter your Mobile no. (eg:8880007799)" maxlength="10">
+                        <input id="leadMobile" name="leadMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" placeholder="(eg: 8880007799)" class="form-control input-md">
+                    </div>
+
+                        <!-- hidden-->
+                    <div class="form-group" style="display: none;">
+                        <input id="leadChannel" name="leadChannel" type="number" value="1" class="form-control input-md" >
                     </div>
 
                     <div class="form-group" style="display: none;">
-                        <input id="lead_c" name="entry_142025609" name="c_lead" type="text" placeholder="" class="form-control input-md" value="Candidate">
+                        <input id="leadType" name="leadType" type="number" class="form-control input-md" value="1">
                     </div>
 
                     <div class="form-group" style="display: none;">
-                        <input id="interested_c" name="entry_1745431173" name="c_interested" type="text" placeholder="" class="form-control input-md" value="Candidate Registration">
+                        <input id="leadInterest" name="leadInterest" type="text" class="form-control input-md" value="Candidate Registration">
                     </div>
 
                     <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" onclick="resetFormsForCandidate()">Contact as Candidate</button>
@@ -315,6 +332,12 @@
             </form>
             <div id="thanksMsgCandidate" style="margin-top: 2%;display: none; color: #2980b9">
                 <h4>Thanks for applying. We will contact you soon!</h4>
+            </div>
+            <div id="errorMsgCandidate" style="margin-top: 2%;display: none; color: #2980b9">
+                <h4>Looks like something went wrong. Please try again later!</h4>
+            </div>
+            <div id="alreadyMsgCandidate" style="margin-top: 2%;display: none; color: #2980b9">
+                <h5>User with the above mobile no. already exists!</h5>
             </div>
                 <!-- end form -->
 
@@ -342,29 +365,43 @@
             </div>
             <br><br>
                 <!-- form -->
-            <form class="form-recruiter" role="form" method="POST" action="https://docs.google.com/forms/d/1hwglvCP8yZSVEjI39DfyCw8YJ_oG-P1qJl0o5uleToo" onsubmit="return window.submitGoogleForm(this);">
-                <h4>Get in Touch</h4>
+            <form id="form_recruiter" class="form-horizontal" role="form" name="form_candidate" >
+                <h4>FREE Registration for Jobs</h4>
                 <div class="c_form" align="center">
-
+                        <!-- Text input-->
                     <div class="form-group">
-                        <input type="text" class="form-control" id="name_r" name="entry_789634649" placeholder="Enter your Name (eg: Manjunath)">
+                        <input id="leadName" name="leadName" type="text" placeholder="(eg: Manjunath)" class="form-control input-md" required>
                     </div>
+
+                        <!-- Text input-->
                     <div class="form-group">
-                        <input type="text" class="form-control" pattern="[7-9]{1}[0-9]{9}" id="mobile_r" name="entry.708642816" placeholder="Enter your Mobile no. (eg:8880007799)" maxlength="10">
+                        <input id="leadMobile" name="leadMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" placeholder="(eg: 8880007799)" class="form-control input-md">
                     </div>
+
+                        <!-- hidden-->
                     <div class="form-group" style="display: none;">
-                        <input id="lead_c" name="entry_142025609" name="c_lead" type="text" placeholder="" class="form-control input-md" value="Recruiter">
+                        <input id="leadChannel" name="leadChannel" type="number" value="1" class="form-control input-md" >
                     </div>
 
                     <div class="form-group" style="display: none;">
-                        <input id="interested_r" name="entry_1745431173" name="r_interested" type="text" placeholder="" class="form-control input-md" value="Recruiter Registration">
+                        <input id="leadType" name="leadType" type="number" class="form-control input-md" value="2">
                     </div>
 
-                    <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" onclick="resetFormsForRecruiter()">Contact as Recruiter</button>
+                    <div class="form-group" style="display: none;">
+                        <input id="leadInterest" name="leadInterest" type="text" class="form-control input-md" value="Recruiter Registration">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" onclick="resetFormsForCandidate()">Contact as Candidate</button>
                 </div>
             </form>
-            <div id="thanksMsgRecruiter" style="margin-top: 2%;display: none;color: #2980b9">
+            <div id="thanksMsgRecruiter" style="margin-top: 2%;display: none; color: #2980b9">
                 <h4>Thanks for applying. We will contact you soon!</h4>
+            </div>
+            <div id="errorMsgRecruiter" style="margin-top: 2%;display: none; color: #2980b9">
+                <h4>Looks like something went wrong. Please try again later!</h4>
+            </div>
+            <div id="alreadyMsgRecruiter" style="margin-top: 2%;display: none; color: #2980b9">
+                <h5>User with the above mobile no. already exists!</h5>
             </div>
                 <!-- end form -->
 
@@ -380,8 +417,10 @@
             © 2016 Trujobs.in | Bellandur, Bengaluru, India. All Right Reserved.
         </div>
             <!-- Including Bootstrap -->
+        <script type="text/javascript" src="/assets/js/add_lead.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="/assets/js/scroll.js"></script>
+
     </body>
 </html>
