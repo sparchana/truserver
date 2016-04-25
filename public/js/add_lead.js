@@ -5,7 +5,7 @@
 function processData(returnedData) {
     console.log("returedData :" + returnedData.status);
     if(returnedData.status == '1') {
-        window.location="/signUp";
+
         $('#addLeadForm').hide();
         $('#thanksMsg').show();
         $('#alreadyMsg').hide();
