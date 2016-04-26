@@ -11,7 +11,7 @@ create table candidate (
   candidateage                  int signed not null default 0,
   candidatecreatetimestamp      timestamp default current_timestamp not null,
   candidateupdatetimestamp      timestamp not null default 0,
-  candidateotpid                int signed not null default 1234,
+  candidateotp                  int signed not null default 1234,
   constraint pk_candidate primary key (candidateid)
 );
 

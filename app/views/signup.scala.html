@@ -46,8 +46,39 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Register</button>
+
+                    <!-- Text input-->
+
                 </div>
             </form>
+
+            <form id="form_otp" class="form-horizontal" role="form" name="form_signup_candidate" style="display: none">
+                <div class="c_form" align="center">
+
+                    <div class="form-group">
+                        <input id="candidateOtp" name="candidateOtp" type="number" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
+                    </div>
+
+                        <!-- hidden-->
+                    <div class="form-group" style="display: none;">
+                        <input id="autoCandidateMobile" name="autoCandidateMobile" type="text"class="form-control input-md" >
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Verify OTP</button>
+
+                </div>
+            </form>
+            <div id="thanksMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                <h4>Account Created Successfully!</h4>
+            </div>
+            <div id="incorrectMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                <h4>Incorrect OTP Code. Please Enter Again</h4>
+            </div>
+
+            <div id="errorMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                <h4>Looks like something went wrong. Please try again later!</h4>
+            </div>
+
+
         </div>
 
         <div class="sectionFive" id="contact">

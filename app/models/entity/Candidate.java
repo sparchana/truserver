@@ -2,6 +2,7 @@ package models.entity;
 
 import api.CandidateSignUpRequest;
 import api.CandidateSignUpResponse;
+import api.Util.SmsUtil;
 import com.avaje.ebean.Model;
 import play.Logger;
 
@@ -40,8 +41,8 @@ public class Candidate extends Model {
     @Column(name = "CandidateUpdateTimestamp", columnDefinition = "timestamp not null default 0")
     public Timestamp candidateUpdateTimestamp;
 
-    @Column(name = "CandidateotpID", columnDefinition = "int signed not null default 1234", length = 4)
-    public String candidateOtpID = "";
+    @Column(name = "CandidateOtp", columnDefinition = "int signed not null default 1234", length = 4)
+    public int candidateOtp = 1234;
 
     public static Model.Finder<String, Candidate> find = new Model.Finder(Candidate.class);
 
@@ -56,20 +57,47 @@ public class Candidate extends Model {
             candidate.candidateId = (int)(Math.random()*9000)+100000;
             candidate.candidateName = candidateSignUpRequest.getCandidateName();
             candidate.candidateMobile = candidateSignUpRequest.getCandidateMobile();
-            candidate.candidateAge = 23;
-            candidate.candidateStatusId = 1;
-
+            candidate.candidateAge = 0;
+            candidate.candidateStatusId = 0;
             int randomPIN = (int)(Math.random()*9000)+1000;
             String otpCode = String.valueOf(randomPIN);
-            candidate.candidateOtpID = otpCode;
+            candidate.candidateOtp = randomPIN;
 
-            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
             candidate.save();
 
-            Logger.info("saved candidate " + candidate);
+            SmsUtil.sendSms(candidate.candidateMobile,otpCode);
+
+            Logger.info("Candidate successfully registered " + candidate);
+            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
         } else {
             Logger.info("Candidate already exists");
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
+        }
+        return candidateSignUpResponse;
+    }
+
+    public static CandidateSignUpResponse verifyOtp(CandidateSignUpRequest candidateSignUpRequest) {
+        int candidateOtp = candidateSignUpRequest.getCandidateOtp();
+        String candidateMobile = candidateSignUpRequest.getAutoCandidateMobile();
+        CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
+
+        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", candidateMobile).findUnique();
+        if(existingCandidate != null){
+            if(existingCandidate.candidateOtp == candidateOtp){
+                existingCandidate.candidateStatusId = 1;
+                existingCandidate.update();
+                candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+                Logger.info("OTP CORRECT!");
+            }
+            else{
+                candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_INCORRECT_OTP);
+                Logger.info("OTP INCORRECT!");
+            }
+        }
+
+        else{
+            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
+            Logger.info("Wrong otp!");
         }
         return candidateSignUpResponse;
     }

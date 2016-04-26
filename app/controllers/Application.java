@@ -38,4 +38,10 @@ public class Application extends Controller {
     public static Result signUp() {
         return ok(views.html.signup.render());
     }
+
+    public static Result verifyOtp() {
+        Form<CandidateSignUpRequest> candidateForm = Form.form(CandidateSignUpRequest.class);
+        CandidateSignUpRequest candidateSignUpRequest = candidateForm.bindFromRequest().get();
+        return ok(toJson(Candidate.verifyOtp(candidateSignUpRequest)));
+    }
 }
