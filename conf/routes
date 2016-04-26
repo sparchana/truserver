@@ -14,6 +14,14 @@ POST     /signUpSubmit               controllers.Application.signUpSubmit()
 
 POST     /verifyOtp                  controllers.Application.verifyOtp()
 
+POST     /addPassword                controllers.Application.addPassword()
+
+GET      /assessment                 controllers.Application.assessment()
+
+GET      /logIn                      controllers.Application.logIn()
+
+POST     /loginSubmit                controllers.Application.loginSubmit()
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
 #GET     /webjars/*file              controllers.WebJarAssets.at(file)

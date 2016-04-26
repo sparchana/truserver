@@ -7,10 +7,10 @@ package api;
 public class CandidateSignUpRequest {
     protected String candidateName;
     protected String candidateMobile;
-    protected int candidateAge;
     protected int candidateOtp;
-
     protected String autoCandidateMobile;
+    protected String candidatePassword;
+    protected String candidateAuthMobile;
 
     public void setCandidateName(String candidateName) {
         this.candidateName = candidateName;
@@ -24,9 +24,7 @@ public class CandidateSignUpRequest {
         this.candidateMobile = candidateMobile;
     }
 
-    public String getAutoCandidateMobile() {
-        return autoCandidateMobile;
-    }
+    public String getAutoCandidateMobile() { return autoCandidateMobile; }
 
     public void setAutoCandidateMobile(String autoCandidateMobile) {
         this.autoCandidateMobile = autoCandidateMobile;
@@ -43,4 +41,18 @@ public class CandidateSignUpRequest {
     public int getCandidateOtp() {
         return candidateOtp;
     }
+
+    public void setCandidatePassword(String candidatePassword) {
+        this.candidatePassword = candidatePassword;
+    }
+
+    public String getCandidatePassword() {
+        return candidatePassword;
+    }
+
+    public void setCandidateAuthMobile(String candidateAuthMobile) {
+        this.candidateAuthMobile = candidateAuthMobile;
+    }
+
+    public String getCandidateAuthMobile() { return candidateAuthMobile; }
 }

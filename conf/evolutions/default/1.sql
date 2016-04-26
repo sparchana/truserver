@@ -3,6 +3,16 @@
 
 # --- !Ups
 
+create table auth (
+  authid                        int signed not null auto_increment not null,
+  candidateid                   int signed not null,
+  passwordmd5                   char(60) not null,
+  passwordsalt                  bigint signed not null,
+  authcreatetimestamp           timestamp default current_timestamp not null,
+  authupdatetimestamp           timestamp not null default 0,
+  constraint pk_auth primary key (authid)
+);
+
 create table candidate (
   candidateid                   int signed not null auto_increment not null,
   candidatestatusid             int signed not null default 0,
@@ -40,6 +50,8 @@ create table leadtype (
 
 
 # --- !Downs
+
+drop table if exists auth;
 
 drop table if exists candidate;
 

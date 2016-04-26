@@ -5,7 +5,6 @@
 function processData(returnedData) {
     console.log("returedData :" + returnedData.status);
     if(returnedData.status == 1) {
-        var userMobile = document.getElementById("candidateMobile").value;
         $('#autoCandidateMobile').val($('#candidateMobile').val());
         $('#candidateName').val('');
         $('#candidateMobile').val('');
@@ -30,8 +29,9 @@ function processData(returnedData) {
 function processDataVerifyOtp(returnedData) {
     console.log("returedData :" + returnedData.status);
     if(returnedData.status == 1) {
+        $('#candidateAuthMobile').val($('#autoCandidateMobile').val());
         $('#form_otp').hide();
-        $('#thanksMsg').show();
+        $('#form_auth').show();
         $('#errorMsg').hide();
         $('#incorrectMsg').hide();
         
@@ -48,6 +48,17 @@ function processDataVerifyOtp(returnedData) {
     }
 }
 
+function processDataAddAuth(returnedData) {
+    console.log("returedData :" + returnedData.status);
+    if(returnedData.status == 1) {
+        window.location = "/assessment";
+    }
+
+    else {
+        $('#errorMsg').show();
+    }
+}
+
 // form_candidate ajax script
 $(function() {
     $("#form_signup_candidate").submit(function(eventObj) {
@@ -55,7 +66,6 @@ $(function() {
         try {
             var name  = $('#candidateName').val();
             var phone = $('#candidateMobile').val();
-            var email = $('#candidateEmail').val();
             console.log("phone: " + phone);
             $.ajax({
                 type: "POST",
@@ -85,6 +95,28 @@ $(function() {
                 data: $("#form_otp").serialize(),
                 dataType: "json",
                 success: processDataVerifyOtp
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+
+    }); // end of submit
+}); // end of function
+
+// form_auth ajax script
+$(function() {
+    $("#form_auth").submit(function(eventObj) {
+        eventObj.preventDefault();
+        try {
+            var authPassword = $('#password').val();
+            var authMobile = $('#authMobile').val();
+            console.log("userMobile: " + authMobile);
+            $.ajax({
+                type: "POST",
+                url: "/addPassword",
+                data: $("#form_auth").serialize(),
+                dataType: "json",
+                success: processDataAddAuth
             });
         } catch (exception) {
             console.log("exception occured!!" + exception);

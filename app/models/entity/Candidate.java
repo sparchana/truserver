@@ -2,7 +2,10 @@ package models.entity;
 
 import api.CandidateSignUpRequest;
 import api.CandidateSignUpResponse;
+import api.LoginRequest;
+import api.LoginResponse;
 import api.Util.SmsUtil;
+import api.Util.Util;
 import com.avaje.ebean.Model;
 import play.Logger;
 
@@ -53,7 +56,7 @@ public class Candidate extends Model {
         Candidate candidate = new Candidate();
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
         Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", mobile).findUnique();
-        if(existingCandidate == null) {
+        if(existingCandidate == null ) {
             candidate.candidateId = (int)(Math.random()*9000)+100000;
             candidate.candidateName = candidateSignUpRequest.getCandidateName();
             candidate.candidateMobile = candidateSignUpRequest.getCandidateMobile();
@@ -62,14 +65,22 @@ public class Candidate extends Model {
             int randomPIN = (int)(Math.random()*9000)+1000;
             String otpCode = String.valueOf(randomPIN);
             candidate.candidateOtp = randomPIN;
-
             candidate.save();
 
             SmsUtil.sendSms(candidate.candidateMobile,otpCode);
-
             Logger.info("Candidate successfully registered " + candidate);
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-        } else {
+        }
+        else if(existingCandidate != null && existingCandidate.candidateStatusId == 0) {
+            int randomPIN = (int)(Math.random()*9000)+1000;
+            String otpCode = String.valueOf(randomPIN);
+            existingCandidate.candidateOtp = randomPIN;
+            existingCandidate.update();
+            SmsUtil.sendSms(existingCandidate.candidateMobile,otpCode);
+            Logger.info("Candidate successfully registered " + candidate);
+            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+        }
+        else {
             Logger.info("Candidate already exists");
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
         }
@@ -82,23 +93,47 @@ public class Candidate extends Model {
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
 
         Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", candidateMobile).findUnique();
+        Logger.info("--> " + existingCandidate.candidateName + " " + existingCandidate.candidateOtp + " " + candidateOtp + "<--");
         if(existingCandidate != null){
             if(existingCandidate.candidateOtp == candidateOtp){
-                existingCandidate.candidateStatusId = 1;
-                existingCandidate.update();
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-                Logger.info("OTP CORRECT!");
+                Logger.info("OTP correct!");
             }
             else{
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_INCORRECT_OTP);
-                Logger.info("OTP INCORRECT!");
+                Logger.info("OTP incorrect!");
             }
         }
-
         else{
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
-            Logger.info("Wrong otp!");
+            Logger.info("Verification failed");
         }
         return candidateSignUpResponse;
+    }
+
+    public static LoginResponse login(LoginRequest loginRequest) {
+        String candidateMobile = loginRequest.getCandidateLoginMobile();
+        String candidatePassword = loginRequest.getCandidateLoginPassword();
+        LoginResponse loginResponse = new LoginResponse();
+
+        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", candidateMobile).findUnique();
+        if(existingCandidate == null){
+            loginResponse.setStatus(loginResponse.STATUS_NO_USER);
+            Logger.info("User Does not Exists");
+        }
+        else {
+            long candidateId = existingCandidate.candidateId;
+            Auth existingAuth = Auth.find.where().eq("candidateId",candidateId).findUnique();
+            if (((existingAuth.passwordMd5.equals(Util.md5(candidatePassword + existingAuth.passwordSalt))) &&
+                    (existingCandidate.candidateStatusId == 1))) {
+                loginResponse.setStatus(loginResponse.STATUS_SUCCESS);
+                Logger.info("Login Successful");
+            }
+            else {
+                loginResponse.setStatus(loginResponse.STATUS_FAILURE);
+                Logger.info("User Does not Exists");
+            }
+        }
+        return loginResponse;
     }
 }

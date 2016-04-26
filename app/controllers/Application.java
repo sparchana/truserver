@@ -2,6 +2,8 @@ package controllers;
 
 import api.AddLeadRequest;
 import api.CandidateSignUpRequest;
+import api.LoginRequest;
+import models.entity.Auth;
 import models.entity.Candidate;
 import models.entity.Leads;
 import play.data.Form;
@@ -43,5 +45,25 @@ public class Application extends Controller {
         Form<CandidateSignUpRequest> candidateForm = Form.form(CandidateSignUpRequest.class);
         CandidateSignUpRequest candidateSignUpRequest = candidateForm.bindFromRequest().get();
         return ok(toJson(Candidate.verifyOtp(candidateSignUpRequest)));
+    }
+
+    public static Result addPassword() {
+        Form<CandidateSignUpRequest> candidateForm = Form.form(CandidateSignUpRequest.class);
+        CandidateSignUpRequest candidateSignUpRequest = candidateForm.bindFromRequest().get();
+        return ok(toJson(Auth.addAuth(candidateSignUpRequest)));
+    }
+
+    public static Result assessment() {
+        return ok("Assessment");
+    }
+
+    public static Result logIn() {
+        return ok(views.html.login.render());
+    }
+
+    public static Result loginSubmit() {
+        Form<LoginRequest> loginForm = Form.form(LoginRequest.class);
+        LoginRequest loginRequest = loginForm.bindFromRequest().get();
+        return ok(toJson(Candidate.login(loginRequest)));
     }
 }
