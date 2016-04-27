@@ -53,7 +53,7 @@ function processDataAddAuth(returnedData) {
     if(returnedData.status == 1) {
         // Store
         localStorage.setItem("mobile", $('#candidateAuthMobile').val());
-        window.location = "/assessment";
+        window.location = "/dashboard";
     }
 
     else {

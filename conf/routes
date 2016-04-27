@@ -18,6 +18,8 @@ POST     /addPassword                controllers.Application.addPassword()
 
 GET      /assessment                 controllers.Application.assessment()
 
+GET      /dashboard                 controllers.Application.dashboard()
+
 GET      /logIn                      controllers.Application.logIn()
 
 POST     /loginSubmit                controllers.Application.loginSubmit()

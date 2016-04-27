@@ -66,4 +66,8 @@ public class Application extends Controller {
         LoginRequest loginRequest = loginForm.bindFromRequest().get();
         return ok(toJson(Candidate.login(loginRequest)));
     }
+
+    public static Result dashboard() {
+        return ok(views.html.dashboard.render());
+    }
 }

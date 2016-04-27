@@ -298,44 +298,72 @@
                 </div>
             </div>
             <br><br>
+            <h4>New Candidate Registration</h4>
                 <!-- form -->
-            <form id="form_candidate" class="form-horizontal" role="form" name="form_candidate" >
-                <h4>FREE Registration for Jobs</h4>
+            <form id="form_signup_candidate" class="form-horizontal" role="form" name="form_signup_candidate" >
                 <div class="c_form" align="center">
                         <!-- Text input-->
                     <div class="form-group">
-                        <input id="leadName" name="leadName" type="text" placeholder="(eg: Manjunath)" class="form-control input-md" required>
+                        <input id="candidateName" name="candidateName" type="text" placeholder="Name: (eg: Manjunath)" class="form-control input-md" required>
                     </div>
 
                         <!-- Text input-->
                     <div class="form-group">
-                        <input id="leadMobile" name="leadMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" placeholder="(eg: 8880007799)" class="form-control input-md">
+                        <input id="candidateMobile" name="candidateMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" placeholder="Mobile: (eg: 8880007799)" class="form-control input-md">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Register</button>
+
+                        <!-- Text input-->
+
+                </div>
+            </form>
+@*            <h5>Already a Candidate? <a style="color: #2980b9" href="/logIn">Log In </a></h5>*@
+
+            <form id="form_otp" class="form-horizontal" role="form" name="form_otp" style="display: none">
+                <div class="c_form" align="center">
+
+                    <div class="form-group">
+                        <input id="candidateOtp" name="candidateOtp" type="number" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
                     </div>
 
                         <!-- hidden-->
                     <div class="form-group" style="display: none;">
-                        <input id="leadChannel" name="leadChannel" type="number" value="1" class="form-control input-md" >
+                        <input id="autoCandidateMobile" name="autoCandidateMobile" type="text"class="form-control input-md" >
                     </div>
+                    <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Verify OTP</button>
 
-                    <div class="form-group" style="display: none;">
-                        <input id="leadType" name="leadType" type="number" class="form-control input-md" value="1">
-                    </div>
-
-                    <div class="form-group" style="display: none;">
-                        <input id="leadInterest" name="leadInterest" type="text" class="form-control input-md" value="Candidate Registration">
-                    </div>
-
-                    <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" onclick="resetFormsForCandidate()">Contact as Candidate</button>
                 </div>
             </form>
-            <div id="thanksMsgCandidate" style="margin-top: 2%;display: none; color: #2980b9">
-                <h4>Thanks for applying. We will contact you soon!</h4>
+
+            <form id="form_auth" class="form-horizontal" role="form" name="form_auth" style="display: none">
+                <div class="c_form" align="center">
+
+                    <div class="form-group">
+                        <input id="candidatePassword" name="candidatePassword" type="password" placeholder="Enter password (Min. 6 characters)" class="form-control input-md" required>
+                    </div>
+
+                    <div class="form-group">
+                        <input id="rePassword" name="rePassword" type="password" placeholder="Re-enter password" class="form-control input-md" required>
+                    </div>
+
+                        <!-- hidden-->
+                    <div class="form-group" style="display: none;">
+                        <input id="candidateAuthMobile" name="candidateAuthMobile" type="text"class="form-control input-md" >
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Save Password</button>
+
+                </div>
+            </form>
+            <div id="thanksMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                <h4>Account Created Successfully!</h4>
             </div>
-            <div id="errorMsgCandidate" style="margin-top: 2%;display: none; color: #2980b9">
+            <div id="incorrectMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                <h4>Incorrect OTP Code. Please Enter Again</h4>
+            </div>
+
+            <div id="errorMsg" style="margin-top: 2%;display: none; color: #2980b9">
                 <h4>Looks like something went wrong. Please try again later!</h4>
-            </div>
-            <div id="alreadyMsgCandidate" style="margin-top: 2%;display: none; color: #2980b9">
-                <h5>User with the above mobile no. already exists!</h5>
             </div>
                 <!-- end form -->
 
@@ -416,6 +444,7 @@
         </div>
             <!-- Including Bootstrap -->
         <script type="text/javascript" src="/assets/js/add_lead.js"></script>
+        <script type="text/javascript" src="/assets/js/signup_candidate.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="/assets/js/scroll.js"></script>
