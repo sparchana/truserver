@@ -1,0 +1,66 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Trujobs - Trusted Employers - Verified Candidates</title>
+    <meta name="keywords" content="freshers jobs, driver jobs, delivery boy jobs, field sales agent,call center jobs, BPO jobs, data entry jobs, back office jobs, receptionist jobs, beautician jobs, waiter jobs, cook jobs, restaurant jobs, cashier jobs">
+
+      <!-- Bootstrap Core CSS -->
+    <link href="http://sbootstrap.startbootstrapc.netdna-cdn.com/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+
+      <!-- Start Bootstrap Custom CSS -->
+    <link href="http://sbootstrap.startbootstrapc.netdna-cdn.com/assets/css/startbootstrap.css" rel="stylesheet" type="text/css">
+    <link rel="icon" type="image/png" href="/assets/img/icon.png">
+    <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
+    <link href='https://fonts.googleapis.com/css?family=Titillium+Web' rel='stylesheet' type='text/css'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            var userMobile = localStorage.getItem("mobile");
+            if(userMobile == null){
+                $('#noUser').show();
+                $('#userExist').hide();
+            }
+            else{
+                $('#noUser').hide();
+                $('#userExist').show();
+            }
+
+        });
+        function logout() {
+            localStorage.clear();
+        }
+    </script>
+  </head>
+  <body>
+      <div class="sectionThree" id="noUser">
+          <div class="row" style="text-align: center">
+              <div class="noUser">
+                  <h5>User not logged in!</h5>
+              </div>
+          </div>
+      </div>
+
+      <div class="sectionThree" id="userExist">
+        <div class="row" style="text-align: center">
+            <img src="/assets/img/logo.png" height="80px" style="margin-top: -8px;">
+            <h3>Skill Assessment Form</h3>
+            <h5 onclick="logout()"><a  style="color: #2980b9" href="/logIn">Logout</a></h5>
+        </div>
+        <br>
+        <iframe src="https://docs.google.com/forms/d/1BmjmKBmTh1KcOmOJ0Le_d9Y1o75hEI-waRNPRXnX8MI/viewform?embedded=true" width="100%" height="1000" frameborder="0" marginheight="0" marginwidth="0">Loading...</iframe>
+    </div>
+
+    <div class="footer">
+            © 2016 Trujobs.in | Bellandur, Bengaluru, India. All Right Reserved.
+    </div>
+      <!-- Including Bootstrap -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/scroll.js"></script>
+    <script type="text/javascript" src="/assets/js/login.js"></script>
+
+  </body>
+</html>

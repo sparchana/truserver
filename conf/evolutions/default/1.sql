@@ -31,15 +31,15 @@ create table channels (
   constraint pk_channels primary key (channelid)
 );
 
-create table leads (
-  leadid                        int signed not null auto_increment not null,
+create table lead (
+  leadid                        bigint signed not null auto_increment not null,
   leadname                      varchar(50) not null,
   leadmobile                    varchar(10) not null ,
   leadchannel                   int signed not null,
   leadtype                      int signed not null,
-  leadinterest                  varchar(30) not null ,
+  leadinterest                  varchar(30),
   leadcreatetimestamp           timestamp default current_timestamp not null,
-  constraint pk_leads primary key (leadid)
+  constraint pk_lead primary key (leadid)
 );
 
 create table leadtype (
@@ -57,7 +57,7 @@ drop table if exists candidate;
 
 drop table if exists channels;
 
-drop table if exists leads;
+drop table if exists lead;
 
 drop table if exists leadtype;
 

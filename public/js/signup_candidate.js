@@ -51,6 +51,8 @@ function processDataVerifyOtp(returnedData) {
 function processDataAddAuth(returnedData) {
     console.log("returedData :" + returnedData.status);
     if(returnedData.status == 1) {
+        // Store
+        localStorage.setItem("mobile", $('#candidateAuthMobile').val());
         window.location = "/assessment";
     }
 

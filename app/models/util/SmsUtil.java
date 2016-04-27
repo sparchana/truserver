@@ -1,4 +1,4 @@
-package api.Util;
+package models.util;
 
 import play.Play;
 

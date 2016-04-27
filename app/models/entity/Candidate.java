@@ -4,9 +4,9 @@ import api.CandidateSignUpRequest;
 import api.CandidateSignUpResponse;
 import api.LoginRequest;
 import api.LoginResponse;
-import api.Util.SmsUtil;
-import api.Util.Util;
 import com.avaje.ebean.Model;
+import models.util.SmsUtil;
+import models.util.Util;
 import play.Logger;
 
 import javax.persistence.Column;

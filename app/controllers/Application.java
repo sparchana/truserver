@@ -5,7 +5,7 @@ import api.CandidateSignUpRequest;
 import api.LoginRequest;
 import models.entity.Auth;
 import models.entity.Candidate;
-import models.entity.Leads;
+import models.entity.Lead;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -27,7 +27,7 @@ public class Application extends Controller {
         Form<AddLeadRequest> userForm = Form.form(AddLeadRequest.class);
         AddLeadRequest addLeadRequest = userForm.bindFromRequest().get();
 
-        return ok(toJson(Leads.addLead(addLeadRequest)));
+        return ok(toJson(Lead.addLead(addLeadRequest)));
     }
 
     public static Result signUpSubmit() {
@@ -54,7 +54,7 @@ public class Application extends Controller {
     }
 
     public static Result assessment() {
-        return ok("Assessment");
+        return ok(views.html.assessment.render());
     }
 
     public static Result logIn() {

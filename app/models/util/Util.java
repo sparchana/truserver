@@ -1,10 +1,11 @@
-package api.Util;
+package models.util;
 
 import play.Logger;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Random;
 
 /**
  * Created by batcoder1 on 25/4/16.
@@ -26,5 +27,17 @@ public class Util {
             Logger.info(e.toString());
         }
         return md5;
+    }
+    public static long randomLong() {
+        long random = new Random().nextLong();
+        if(random < 0){
+            random = -(random);
+        }
+        random = random % 100000000;
+        return random;
+    }
+
+    public static int randomInt() {
+        return new Random().nextInt();
     }
 }

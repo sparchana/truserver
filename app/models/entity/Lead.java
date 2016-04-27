@@ -3,6 +3,7 @@ package models.entity;
 import api.AddLeadRequest;
 import api.AddLeadResponse;
 import com.avaje.ebean.Model;
+import models.util.Util;
 import play.Logger;
 
 import javax.persistence.Column;
@@ -15,11 +16,11 @@ import java.sql.Timestamp;
  * Created by zero on 23/4/16.
  */
 
-@Entity(name = "leads")
-@Table(name = "leads")
-public class Leads extends Model {
+@Entity(name = "lead")
+@Table(name = "lead")
+public class Lead extends Model {
     @Id
-    @Column(name = "LeadId", columnDefinition = "int signed not null", unique = true)
+    @Column(name = "LeadId", columnDefinition = "bigint signed not null", unique = true)
     public long leadId = 0;
 
     @Column(name = "LeadName", columnDefinition = "varchar(50) not null")
@@ -34,23 +35,23 @@ public class Leads extends Model {
     @Column(name = "LeadType", columnDefinition = "int signed not null")
     public long leadType = 0;
 
-    @Column(name = "LeadInterest", columnDefinition = "varchar(30) not null ")
+    @Column(name = "LeadInterest", columnDefinition = "varchar(30)")
     public String leadInterest = "";
 
     @Column(name = "LeadCreateTimestamp", columnDefinition = "timestamp default current_timestamp not null")
-    public Timestamp LeadCreateTimestamp;
+    public Timestamp leadCreateTimestamp;
 
-    public static Finder<String, Leads> find = new Finder(Leads.class);
+    public static Finder<String, Lead> find = new Finder(Lead.class);
 
     public static AddLeadResponse addLead(AddLeadRequest addLeadRequest) {
         String mobile = addLeadRequest.getLeadMobile();
         Logger.info("inside signup method");
 
-        Leads lead = new Leads();
-        Leads existingLead = Leads.find.where().eq("leadMobile", mobile).findUnique();
+        Lead lead = new Lead();
+        Lead existingLead = Lead.find.where().eq("leadMobile", mobile).findUnique();
         AddLeadResponse addLeadResponse = new AddLeadResponse();
         if(existingLead == null) {
-            lead.leadId = (int)(Math.random()*9000)+1000;
+            lead.leadId = Util.randomLong();
             lead.leadName = addLeadRequest.getLeadName();
             lead.leadMobile = addLeadRequest.getLeadMobile();
             lead.leadChannel = addLeadRequest.getLeadChannel();
