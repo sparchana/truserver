@@ -3,39 +3,23 @@
  */
 // function to process the returned message from the server.
 function processData(returnedData) {
-    console.log("returedData :" + returnedData.status);
-    if(returnedData.status == '1') {
 
+    if(returnedData.status == '1') {
+        console.log("returedData :" + returnedData.status);
         $('#addLeadForm').hide();
         $('#thanksMsg').show();
         $('#alreadyMsg').hide();
     }
 
     else if(returnedData.status == '3'){
+        console.log("returedData :" + returnedData.status);
         $('#alreadyMsg').show();
     }
     else {
+        console.log("returedData :" + returnedData.status);
         $('#alreadyMsg').hide();
         $('#addLeadForm').hide();
         $('#errorMsg').show();
-    }
-}
-
-function processDataCandidate(returnedData) {
-    console.log("returedData :" + returnedData.status);
-    if(returnedData.status == '1') {
-        $('#form_candidate').hide();
-        $('#thanksMsgCandidate').show();
-        $('#alreadyMsgCandidate').hide();
-    }
-
-    else if(returnedData.status == '3'){
-        $('#alreadyMsgCandidate').show();
-    }
-    else {
-        $('#alreadyMsgCandidate').hide();
-        $('#form_candidate').hide();
-        $('#errorMsgCandidate').show();
     }
 }
 
@@ -83,31 +67,6 @@ $(function() {
     }); // end of submit
 }); // end of function
 
-// form_candidate ajax script
-$(function() {
-    $("#form_candidate").submit(function(eventObj) {
-        eventObj.preventDefault();
-        try {
-            var name  = $('#leadName').val();
-            var phone = $('#leadMobile').val();
-            var channel = $('#leadChannel').val();
-            var type = $('#leadType').val();
-            var interested = $('#leadInterest').val();
-            console.log("phone: " + phone);
-            $.ajax({
-                type: "POST",
-                url: "/addLead",
-                data: $("#form_candidate").serialize(),
-                dataType: "json",
-                success: processDataCandidate
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
-        }
-
-    }); // end of submit
-}); // end of function
-
 // form_recruiter ajax script
 $(function() {
     $("#form_recruiter").submit(function(eventObj) {
@@ -129,6 +88,5 @@ $(function() {
         } catch (exception) {
             console.log("exception occured!!" + exception);
         }
-
     }); // end of submit
 }); // end of function

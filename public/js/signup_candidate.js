@@ -2,7 +2,7 @@
  * Created by batcoder1 on 25/4/16.
  */
 
-function processData(returnedData) {
+function processDataSignUpSubmit(returnedData) {
     console.log("returedData :" + returnedData.status);
     if(returnedData.status == 1) {
         $('#autoCandidateMobile').val($('#candidateMobile').val());
@@ -74,7 +74,7 @@ $(function() {
                 url: "/signUpSubmit",
                 data: $("#form_signup_candidate").serialize(),
                 dataType: "json",
-                success: processData
+                success: processDataSignUpSubmit
             });
         } catch (exception) {
             console.log("exception occured!!" + exception);
