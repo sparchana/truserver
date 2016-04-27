@@ -17,11 +17,13 @@
         <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
         <link href='https://fonts.googleapis.com/css?family=Titillium+Web' rel='stylesheet' type='text/css'>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-        <script type="text/javascript" src="/assets/js/google-form.js"></script>
 
             <!-- Smooth Scroll -->
         <script>
                 $(document).ready(function(){
+                    $("#form_otp").hide();
+                    $("#form_auth").hide();
+
                     $("a").on('click', function(event) {
 
                         event.preventDefault();
@@ -300,7 +302,7 @@
             <br><br>
             <h4>New Candidate Registration</h4>
                 <!-- form -->
-            <form id="form_signup_candidate" class="form-horizontal" role="form" name="form_signup_candidate" >
+            <form id="form_signup_candidate" role="form" name="form_signup_candidate" >
                 <div class="c_form" align="center">
                         <!-- Text input-->
                     <div class="form-group">
@@ -313,14 +315,11 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Register</button>
-
                         <!-- Text input-->
-
                 </div>
             </form>
-@*            <h5>Already a Candidate? <a style="color: #2980b9" href="/logIn">Log In </a></h5>*@
 
-            <form id="form_otp" class="form-horizontal" role="form" name="form_otp" style="display: none">
+            <form id="form_otp" role="form" name="form_otp" style="display: none">
                 <div class="c_form" align="center">
 
                     <div class="form-group">
@@ -336,15 +335,11 @@
                 </div>
             </form>
 
-            <form id="form_auth" class="form-horizontal" role="form" name="form_auth" style="display: none">
+            <form id="form_auth" role="form" name="form_auth" style="display: none">
                 <div class="c_form" align="center">
 
                     <div class="form-group">
-                        <input id="candidatePassword" name="candidatePassword" type="password" placeholder="Enter password (Min. 6 characters)" class="form-control input-md" required>
-                    </div>
-
-                    <div class="form-group">
-                        <input id="rePassword" name="rePassword" type="password" placeholder="Re-enter password" class="form-control input-md" required>
+                        <input id="candidatePassword" minlength="6" name="candidatePassword" type="password" placeholder="Enter password (Min. 6 characters)" class="form-control input-md" required>
                     </div>
 
                         <!-- hidden-->

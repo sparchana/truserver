@@ -110,7 +110,7 @@ $(function() {
     $("#form_auth").submit(function(eventObj) {
         eventObj.preventDefault();
         try {
-            var authPassword = $('#password').val();
+            var authPassword = $('#candidatePassword').val();
             var authMobile = $('#authMobile').val();
             console.log("userMobile: " + authMobile);
             $.ajax({
