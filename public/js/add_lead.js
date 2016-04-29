@@ -18,6 +18,7 @@ $(function() {
             $.ajax({
                 type: "POST",
                 url: "/addLead",
+                contentType: "application/text, utf-8",
                 data: $("#addLeadForm").serialize(),
                 dataType: "json",
                 success: processData

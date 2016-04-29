@@ -2,13 +2,23 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET      /                           controllers.Application.index()
+GET      /                                                       controllers.Application.index()
 
-GET      /support                    controllers.Application.support()
+GET      /support                                                controllers.Application.support()
 
-POST     /addLead                    controllers.Application.addLead()
+POST     /addLead                                                controllers.Application.addLead()
 
-GET      /leadForm                    controllers.Application.leadFrom()
+POST     /addCandidate                                           controllers.Application.addCandidate()
+
+GET      /leadForm                                               controllers.Application.leadFrom()
+
+POST     /processCsv                                             controllers.Application.processcsv()
+
+GET      /getAll                                                controllers.Application.getAll()
+
+GET      /getUserInfo/:id                                        controllers.Application.getUserInfo(id : Long)
+
+GET      /getCandidateInfo/:id                                   controllers.Application.getCandidateInfo(id : Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
