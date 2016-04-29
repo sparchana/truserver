@@ -7,6 +7,8 @@ package api;
 public class CandidateSignUpRequest {
     protected String candidateName;
     protected String candidateMobile;
+    protected String candidateLocality;
+    protected String candidateJobPref;
     protected int candidateOtp;
     protected String autoCandidateMobile;
     protected String candidatePassword;
@@ -18,6 +20,22 @@ public class CandidateSignUpRequest {
 
     public String getCandidateName() {
         return candidateName;
+    }
+
+    public void setCandidateLocality(String candidateLocality) {
+        this.candidateLocality = candidateLocality;
+    }
+
+    public String getCandidateLocality() {
+        return candidateLocality;
+    }
+
+    public void setCandidateJobPref(String candidateJobPref) {
+        this.candidateJobPref = candidateJobPref;
+    }
+
+    public String getCandidateJobPref() {
+        return candidateJobPref;
     }
 
     public void setCandidateMobile(String candidateMobile) {

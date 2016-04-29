@@ -10,16 +10,19 @@ function processDataSignUpSubmit(returnedData) {
         $('#candidateMobile').val('');
         $('#candidateEmail').val('');
         $('#form_signup_candidate').hide();
+        document.getElementById("helpText").innerHTML = "Enter OTP sent on " + $('#autoCandidateMobile').val();
         $('#form_otp').show();
 
     }
 
     else if(returnedData.status == 3){
+        $('#alreadyMsgCandidate').show();
         $('#candidateName').val('');
         $('#candidateMobile').val('');
         $('#candidateEmail').val('');
     }
     else {
+        $('#errorMsg').show();
         $('#candidateName').val('');
         $('#candidateMobile').val('');
         $('#candidateEmail').val('');
@@ -53,6 +56,7 @@ function processDataAddAuth(returnedData) {
     if(returnedData.status == 1) {
         // Store
         localStorage.setItem("mobile", $('#candidateAuthMobile').val());
+        localStorage.setItem("name", returnedData.candidateName);
         window.location = "/dashboard";
     }
 
@@ -69,11 +73,17 @@ $(function() {
             var name  = $('#candidateName').val();
             var phone = $('#candidateMobile').val();
             console.log("phone: " + phone);
+            var d = {
+                candidateName : name,
+                candidateMobile : phone,
+                candidateLocality : $('#candidateLocality').val(),
+                candidateJobPref : $('#candidateJobPref').val()
+            };
+
             $.ajax({
                 type: "POST",
                 url: "/signUpSubmit",
-                data: $("#form_signup_candidate").serialize(),
-                dataType: "json",
+                data: d,
                 success: processDataSignUpSubmit
             });
         } catch (exception) {

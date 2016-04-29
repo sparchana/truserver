@@ -18,6 +18,9 @@ create table candidate (
   candidatestatusid             int signed not null default 0,
   candidatename                 varchar(50) not null default 0,
   candidatemobile               varchar(10) not null default 0,
+  candidateemail                varchar(50) not null default 0,
+  candidatelocality             varchar(150) not null default 0,
+  candidatejobpref              varchar(50) not null default 0,
   candidateage                  int signed not null default 0,
   candidatecreatetimestamp      timestamp default current_timestamp not null,
   candidateupdatetimestamp      timestamp not null default 0,
@@ -48,6 +51,12 @@ create table leadtype (
   constraint pk_leadtype primary key (leadtypeid)
 );
 
+create table locality (
+  localityid                    int signed not null auto_increment not null,
+  localityname                  varchar(50) not null default 0,
+  constraint pk_locality primary key (localityid)
+);
+
 
 # --- !Downs
 
@@ -60,4 +69,6 @@ drop table if exists channels;
 drop table if exists lead;
 
 drop table if exists leadtype;
+
+drop table if exists locality;
 

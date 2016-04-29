@@ -2,11 +2,12 @@
  * Created by batcoder1 on 26/4/16.
  */
 
-function processData(returnedData) {
-    console.log("returedData :" + returnedData.status);
+function processDataLogin(returnedData) {
+    console.log("returedData :" + returnedData.status + returnedData.candidateName + returnedData.accountStatus);
     if(returnedData.status == 1) {
         // Store
         localStorage.setItem("mobile", $('#candidateLoginMobile').val());
+        localStorage.setItem("name", returnedData.candidateName);
         window.location = "/dashboard";
     }
 
@@ -16,8 +17,9 @@ function processData(returnedData) {
     }
 
     else {
+        $('#noUserMsg').show();
         $('#incorrectMsg').hide();
-        $('#errorMsg').show();
+        $('#errorMsg').hide();
     }
 }
 
@@ -26,15 +28,18 @@ $(function() {
     $("#form_login_candidate").submit(function(eventObj) {
         eventObj.preventDefault();
         try {
-            var name  = $('#candidateLoginMobile').val();
-            var phone = $('#candidateLoginPassword').val();
+            var phone  = $('#candidateLoginMobile').val();
+            var password = $('#candidateLoginPassword').val();
             console.log("phone: " + phone);
+            var s = {
+                candidateLoginMobile: phone,
+                candidateLoginPassword : password 
+            };
             $.ajax({
                 type: "POST",
                 url: "/loginSubmit",
-                data: $("#form_login_candidate").serialize(),
-                dataType: "json",
-                success: processData
+                data: s,
+                success: processDataLogin
             });
         } catch (exception) {
             console.log("exception occured!!" + exception);
@@ -42,3 +47,4 @@ $(function() {
 
     }); // end of submit
 }); // end of function
+

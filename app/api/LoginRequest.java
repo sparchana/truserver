@@ -7,9 +7,7 @@ public class LoginRequest {
     protected String candidateLoginMobile;
     protected String candidateLoginPassword;
 
-    public void setCandidateLoginMobile(String candidateLoginMobile) {
-        this.candidateLoginMobile = candidateLoginMobile;
-    }
+    public void setCandidateLoginMobile(String candidateLoginMobile) { this.candidateLoginMobile = candidateLoginMobile; }
 
     public String getCandidateLoginMobile() {
         return candidateLoginMobile;
@@ -22,4 +20,5 @@ public class LoginRequest {
     public String getCandidateLoginPassword() {
         return candidateLoginPassword;
     }
+
 }

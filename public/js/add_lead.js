@@ -7,8 +7,8 @@ function processData(returnedData) {
     if(returnedData.status == '1') {
         console.log("returedData :" + returnedData.status);
         $('#addLeadForm').hide();
-        $('#thanksMsg').show();
-        $('#alreadyMsg').hide();
+        $('#thanksMsgMain').show();
+        $('#alreadyMsgMain').hide();
     }
 
     else if(returnedData.status == '3'){
@@ -51,13 +51,12 @@ $(function() {
             var channel = $('#leadChannel').val();
             var type = $('#leadType').val();
             var interested = $('#leadInterest').val();
-            console.log("phone : " + phone + " || Base64+Serial: " + btoa($("#addLeadForm").serialize()));
-            console.log("phone: " + phone);
+            console.log("phone : " + phone );
+            
             $.ajax({
                 type: "POST",
                 url: "/addLead",
                 data: $("#addLeadForm").serialize(),
-                dataType: "json",
                 success: processData
             });
         } catch (exception) {

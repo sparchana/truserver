@@ -3,6 +3,7 @@ package controllers;
 import api.AddLeadRequest;
 import api.CandidateSignUpRequest;
 import api.LoginRequest;
+import api.ResetPasswordResquest;
 import models.entity.Auth;
 import models.entity.Candidate;
 import models.entity.Lead;
@@ -53,6 +54,12 @@ public class Application extends Controller {
         return ok(toJson(Auth.addAuth(candidateSignUpRequest)));
     }
 
+    public static Result savePassword() {
+        Form<ResetPasswordResquest> resetPassword = Form.form(ResetPasswordResquest.class);
+        ResetPasswordResquest resetPasswordResquest = resetPassword.bindFromRequest().get();
+        return ok(toJson(Auth.savePassword(resetPasswordResquest)));
+    }
+
     public static Result assessment() {
         return ok(views.html.assessment.render());
     }
@@ -69,5 +76,17 @@ public class Application extends Controller {
 
     public static Result dashboard() {
         return ok(views.html.dashboard.render());
+    }
+
+    public static Result checkCandidate() {
+        Form<ResetPasswordResquest> checkCandidate = Form.form(ResetPasswordResquest.class);
+        ResetPasswordResquest resetPasswordResquest = checkCandidate.bindFromRequest().get();
+        return ok(toJson(Candidate.checkCandidate(resetPasswordResquest)));
+    }
+
+    public static Result checkResetOtp() {
+        Form<ResetPasswordResquest> checkResetOtp = Form.form(ResetPasswordResquest.class);
+        ResetPasswordResquest resetPasswordResquest = checkResetOtp.bindFromRequest().get();
+        return ok(toJson(Candidate.checkResetOtp(resetPasswordResquest)));
     }
 }

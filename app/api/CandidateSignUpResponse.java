@@ -10,8 +10,20 @@ public class CandidateSignUpResponse {
     public static final int STATUS_INCORRECT_OTP = 4;
 
     public int status;
+    public long accountStatus;
+    public String candidateName;
+    public String candidateEmail;
 
     public void setStatus(int status) {
         this.status = status;
+    }
+    public void setAccountStatus(long accountStatus) {
+        this.status = status;
+    }
+    public void setCandidateName(String candidateName) {
+        this.candidateName = candidateName;
+    }
+    public void setCandidateEmail(String candidateEmail) {
+        this.candidateEmail = candidateEmail;
     }
 }

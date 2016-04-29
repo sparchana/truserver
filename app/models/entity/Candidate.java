@@ -1,9 +1,6 @@
 package models.entity;
 
-import api.CandidateSignUpRequest;
-import api.CandidateSignUpResponse;
-import api.LoginRequest;
-import api.LoginResponse;
+import api.*;
 import com.avaje.ebean.Model;
 import models.util.SmsUtil;
 import models.util.Util;
@@ -35,6 +32,15 @@ public class Candidate extends Model {
     @Column(name = "CandidateMobile", columnDefinition = "varchar(10) not null default 0")
     public String candidateMobile = "";
 
+    @Column(name = "CandidateEmail", columnDefinition = "varchar(50) not null default 0")
+    public String candidateEmail = "";
+
+    @Column(name = "CandidateLocality", columnDefinition = "varchar(150) not null default 0")
+    public String candidateLocality = "";
+
+    @Column(name = "CandidateJobPref", columnDefinition = "varchar(50) not null default 0")
+    public String candidateJobPref = "";
+
     @Column(name = "CandidateAge", columnDefinition = "int signed not null default 0")
     public int candidateAge = 0;
 
@@ -51,7 +57,7 @@ public class Candidate extends Model {
 
     public static CandidateSignUpResponse candidateSignUp(CandidateSignUpRequest candidateSignUpRequest) {
         String mobile = candidateSignUpRequest.getCandidateMobile();
-        Logger.info("inside signup method");
+        Logger.info("inside signup method" + candidateSignUpRequest.getCandidateLocality());
 
         Candidate candidate = new Candidate();
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
@@ -62,6 +68,8 @@ public class Candidate extends Model {
             candidate.candidateMobile = candidateSignUpRequest.getCandidateMobile();
             candidate.candidateAge = 0;
             candidate.candidateStatusId = 0;
+            candidate.candidateJobPref = candidateSignUpRequest.getCandidateJobPref();
+            candidate.candidateLocality = candidateSignUpRequest.getCandidateLocality();
             int randomPIN = (int)(Math.random()*9000)+1000;
             String otpCode = String.valueOf(randomPIN);
             candidate.candidateOtp = randomPIN;
@@ -75,6 +83,12 @@ public class Candidate extends Model {
             int randomPIN = (int)(Math.random()*9000)+1000;
             String otpCode = String.valueOf(randomPIN);
             existingCandidate.candidateOtp = randomPIN;
+            existingCandidate.candidateName = candidateSignUpRequest.getCandidateName();
+            existingCandidate.candidateMobile = candidateSignUpRequest.getCandidateMobile();
+            existingCandidate.candidateAge = 0;
+            existingCandidate.candidateStatusId = 0;
+            existingCandidate.candidateJobPref = candidateSignUpRequest.getCandidateJobPref();
+            existingCandidate.candidateLocality = candidateSignUpRequest.getCandidateLocality();
             existingCandidate.update();
             SmsUtil.sendSms(existingCandidate.candidateMobile,otpCode);
             Logger.info("Candidate successfully registered " + candidate);
@@ -118,14 +132,20 @@ public class Candidate extends Model {
 
         Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", candidateMobile).findUnique();
         if(existingCandidate == null){
+
             loginResponse.setStatus(loginResponse.STATUS_NO_USER);
             Logger.info("User Does not Exists");
         }
         else {
+            Logger.info(" -> Incomming " + loginRequest.getCandidateLoginMobile());
             long candidateId = existingCandidate.candidateId;
             Auth existingAuth = Auth.find.where().eq("candidateId",candidateId).findUnique();
             if (((existingAuth.passwordMd5.equals(Util.md5(candidatePassword + existingAuth.passwordSalt))) &&
-                    (existingCandidate.candidateStatusId == 1))) {
+                    (existingCandidate.candidateStatusId != 0))) {
+                Logger.info(existingCandidate.candidateName + " " + existingCandidate.candidateStatusId);
+                loginResponse.setCandidateName(existingCandidate.candidateName);
+                loginResponse.setAccountStatus(existingCandidate.candidateStatusId);
+                loginResponse.setCandidateEmail(existingCandidate.candidateEmail);
                 loginResponse.setStatus(loginResponse.STATUS_SUCCESS);
                 Logger.info("Login Successful");
             }
@@ -135,5 +155,52 @@ public class Candidate extends Model {
             }
         }
         return loginResponse;
+    }
+
+    public static ResetPasswordResponse checkCandidate(ResetPasswordResquest resetPasswordResquest) {
+        String candidateResetMobile = resetPasswordResquest.getResetPasswordMobile();
+        ResetPasswordResponse resetPasswordResponse= new ResetPasswordResponse();
+
+        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", candidateResetMobile).findUnique();
+        if(existingCandidate != null){
+            int randomPIN = (int)(Math.random()*9000)+1000;
+            String otpCode = String.valueOf(randomPIN);
+            existingCandidate.candidateOtp = randomPIN;
+            existingCandidate.update();
+            SmsUtil.sendSms(existingCandidate.candidateMobile, otpCode);
+            Logger.info("Reset otp sent");
+
+            resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);
+        }
+        else{
+            resetPasswordResponse.setStatus(LoginResponse.STATUS_FAILURE);
+            Logger.info("Verification failed");
+        }
+        return resetPasswordResponse;
+    }
+    public static ResetPasswordResponse checkResetOtp(ResetPasswordResquest resetPasswordResquest) {
+        String candidateMobile = resetPasswordResquest.getCandidateForgotMobile();
+        int candidateOtp = resetPasswordResquest.getCandidateForgotOtp();
+        ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
+
+        Logger.info(resetPasswordResquest.getCandidateForgotOtp() + " ---");
+        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", candidateMobile).findUnique();
+        if(existingCandidate != null){
+
+            Logger.info(existingCandidate.candidateOtp + " = " + candidateOtp);
+            if(existingCandidate.candidateOtp == candidateOtp){
+                resetPasswordResponse.setStatus(ResetPasswordResponse.STATUS_SUCCESS);
+                Logger.info("Otp Correct");
+            }
+            else{
+                resetPasswordResponse.setStatus(ResetPasswordResponse.STATUS_FAILURE);
+                Logger.info("Otp Incorrect");
+            }
+        }
+        else{
+            resetPasswordResponse.setStatus(ResetPasswordResponse.STATUS_FAILURE);
+            Logger.info("No User");
+        }
+        return resetPasswordResponse;
     }
 }

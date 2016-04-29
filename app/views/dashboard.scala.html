@@ -11,33 +11,104 @@
     <link href="http://sbootstrap.startbootstrapc.netdna-cdn.com/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 
       <!-- Start Bootstrap Custom CSS -->
+
     <link href="http://sbootstrap.startbootstrapc.netdna-cdn.com/assets/css/startbootstrap.css" rel="stylesheet" type="text/css">
     <link rel="icon" type="image/png" href="/assets/img/icon.png">
     <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
     <link href='https://fonts.googleapis.com/css?family=Titillium+Web' rel='stylesheet' type='text/css'>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script type="text/javascript" src="//www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load('visualization', '1', {packages: ['table']});
+    </script>
+
     <script>
         $(document).ready(function(){
           var userMobile = localStorage.getItem("mobile");
+          var userName = localStorage.getItem("name");
           if(userMobile == null){
             $('#noUser').show();
             $('#userExist').hide();
           }
           else{
+            document.getElementById("helloMsg").innerHTML = "Hello " + userName + "!";
+            document.getElementById("userName").innerHTML = userName;
+            document.getElementById("userMobile").innerHTML = userMobile;
             $('#noUser').hide();
             $('#userExist').show();
+            $('#doneAssessment').hide();
+            $('#takeAssessment').hide();
           }
 
         });
         function logout() {
           localStorage.clear();
         }
-        function assessmentTest() {
-          window.location = "/assessment";
+    </script>
+    <script type="text/javascript">
+      var options = {'showRowNumber': true};
+      var data;
+      var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1HwEWPzZD4BFCyeRf5HO_KqNXyaMporxYQfg5lhOoA2g/edit#gid=496359801');
+
+      function sendAndDraw() {
+        // Send the query with a callback function.
+        var val = localStorage.getItem("mobile");
+        query.setQuery('select C where C=' + val);
+        query.send(handleQueryResponse);
+      }
+
+      function handleQueryResponse(response) {
+        if (response.isError()) {
+          alert('Error in query: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+          return;
         }
+        data = response.getDataTable();
+        new google.visualization.Table(document.getElementById('table')).draw(data, options);
+        var data2 = document.getElementsByClassName('google-visualization-table-td google-visualization-table-td-number').length;
+        if(data2>0) {
+          $('#doneAssessment').show();
+          $('#takeAssessment').hide();
+        }
+        else{
+          $('#doneAssessment').hide();
+          $('#takeAssessment').show();
+        }
+      }
+      google.setOnLoadCallback(sendAndDraw);
     </script>
   </head>
   <body>
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigationbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+
+          </button> <a class="navbar-brand" href="#"><img src="/assets/img/logo.png" height="40px" style="margin-top: -8px;"></a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navigationbar">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a><div id="helloMsg"></div></a></li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" href="#">My Account
+                <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li onclick="logout()"><a href="/">Logout</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+          <!-- /.navbar-collapse -->
+      </div>
+        <!-- /.container -->
+    </nav>
+
+    <div id="table" style="display: none;"></div>
+
     <div class="sectionThree" id="noUser" style="display: none;">
       <div class="row" style="text-align: center">
         <div class="noUser">
@@ -46,15 +117,56 @@
       </div>
     </div>
 
-    <div class="sectionThree" id="userExist">
+    <div class="sectionDashboard" style="text-align: left" id="userExist">
       <div class="row" style="text-align: center">
-        <img src="/assets/img/logo.png" height="60px" style="margin-top: -8px;">
-        <h3>Dashboard</h3>
-        <h5 onclick="logout()"><a style="color: #2980b9" href="/logIn">Logout</a></h5>
-        <hr>
+      <h3>Welcome to Trujobs!<br></h3>
+      </div>
+
+      <br>
+      <div class="material_grid">
+        <h3 style="color: #0B4063">PROFILE INFORMATION</h3 >
+        <br>
+        <div class="row" style="padding-left: 5%">
+          <div style="display : inline-block"><img src="/assets/img/user.png" height="30px;"></div>
+          <div style="display: inline-block" id="userName"></div>
+        </div>
+        <br>
+        <div class="row" style="padding-left: 5%">
+          <div style="display : inline-block"><img src="/assets/img/user.png" height="30px;"></div>
+          <div style="display: inline-block" id="userMobile"></div>
+        </div>
+
       </div>
       <br>
-      <button type="button" class="btn floating" onclick="assessmentTest()">Take Assessment Test</button>
+
+      <div class="material_grid">
+        <h3 style="color: #0B4063">SKILL ASSESSMENT</h3 >
+        <div id="takeAssessment" style="padding: 4%; display: none">
+          Take Skill Assessment test to get a good job. Click <a href="https://docs.google.com/forms/d/1BmjmKBmTh1KcOmOJ0Le_d9Y1o75hEI-waRNPRXnX8MI/viewform" target="_blank" style="color: #0B4063" >here</a> to take the test.
+        </div>
+
+        <div id="doneAssessment" style="padding: 4%; display: none">
+          You have already taken your assessment. You will receive matching job details via SMS/email.
+        </div>
+      </div>
+      <br>
+      <div class="material_grid">
+        <h3 style="color: #0B4063">KNOWLEDGE ZONE</h3>
+        <br><br>
+        <div class="row" style="text-align: center">
+          <div class="col-sm-4">
+            <iframe width="80%" src="https://www.youtube.com/watch?v=pxCWiYFkvTg?autoplay=1"></iframe>
+          </div>
+          <div class="col-sm-4">
+            <iframe width="80%" src="https://www.youtube.com/watch?v=pxCWiYFkvTg?autoplay=1"></iframe>
+          </div><div class="col-sm-4">
+          <iframe width="80%" src="https://www.youtube.com/watch?v=pxCWiYFkvTg?autoplay=1"></iframe>
+        </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+            © 2016 Trujobs.in | Bellandur, Bengaluru, India. All Right Reserved.
     </div>
 
       <!-- Including Bootstrap -->

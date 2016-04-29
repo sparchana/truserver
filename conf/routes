@@ -14,15 +14,19 @@ POST     /signUpSubmit               controllers.Application.signUpSubmit()
 
 POST     /verifyOtp                  controllers.Application.verifyOtp()
 
+POST     /checkResetOtp              controllers.Application.checkResetOtp()
+
 POST     /addPassword                controllers.Application.addPassword()
 
-GET      /assessment                 controllers.Application.assessment()
+POST     /savePassword               controllers.Application.savePassword()
 
-GET      /dashboard                 controllers.Application.dashboard()
+GET      /dashboard                  controllers.Application.dashboard()
 
 GET      /logIn                      controllers.Application.logIn()
 
 POST     /loginSubmit                controllers.Application.loginSubmit()
+
+POST     /checkCandidate             controllers.Application.checkCandidate()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
