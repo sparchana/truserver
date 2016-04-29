@@ -4,21 +4,26 @@
 
 GET      /                                                       controllers.Application.index()
 
-GET      /support                                                controllers.Application.support()
+GET      /e6271a3f                                                controllers.Application.support()
 
 POST     /addLead                                                controllers.Application.addLead()
 
 POST     /addCandidate                                           controllers.Application.addCandidate()
 
-GET      /leadForm                                               controllers.Application.leadFrom()
-
 POST     /processCsv                                             controllers.Application.processcsv()
 
-GET      /getAll                                                controllers.Application.getAll()
+GET      /getAll                                                 controllers.Application.getAll()
+
+POST      /uploadCSV                                              controllers.Application.uploadCsv()
 
 GET      /getUserInfo/:id                                        controllers.Application.getUserInfo(id : Long)
 
 GET      /getCandidateInfo/:id                                   controllers.Application.getCandidateInfo(id : Long)
+
+GET      /updateLeadType/:leadId/:newStatus                      controllers.Application.updateLeadType(leadId: Long, newStatus: Long)
+
+GET      /street                                                 controllers.Application.supportAuth()
+
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

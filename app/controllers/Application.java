@@ -1,10 +1,7 @@
 package controllers;
 
 import api.ServerConstants;
-import api.http.AddCandidateRequest;
-import api.http.AddCandidateResponse;
-import api.http.AddLeadRequest;
-import api.http.SupportDashboardElementResponse;
+import api.http.*;
 import au.com.bytecode.opencsv.CSVReader;
 import models.entity.Candidate;
 import models.entity.Interaction;
@@ -33,8 +30,7 @@ public class Application extends Controller {
         return ok(views.html.index.render());
     }
 
-    public static Result support() {
-        return ok(views.html.support.render());
+    public static Result support() {return ok(views.html.support.render());
     }
 
     public static Result addLead() {
@@ -44,9 +40,6 @@ public class Application extends Controller {
         return ok(toJson("status: 0"));
     }
 
-    public static Result leadFrom() {
-        return ok(views.html.addLead.render());
-    }
 
     public static Result processcsv() {
         java.io.File file = (File) request().body().asMultipartFormData().getFile("file").getFile();
@@ -116,14 +109,18 @@ public class Application extends Controller {
         //
         // Picks all kw call inbounds
         List<Lead> allLead = Lead.find.all();
+        List<Interaction> allInteractions = Interaction.find.all();
         List<Lead> allNewLeads = Lead.find.where()
                 .eq("leadType",ServerConstants.TYPE_LEAD)
                 .eq("leadStatus",ServerConstants.LEAD_STATUS_NEW).findList();
         ArrayList<SupportDashboardElementResponse> responses = new ArrayList<>();
-        for(Lead l : allNewLeads){
+
+        SimpleDateFormat sfd = new SimpleDateFormat("yyyy-MM-dd hh:mm:ssXXX");
+
+        for(Lead l : allLead){
             SupportDashboardElementResponse response = new SupportDashboardElementResponse();
 
-            response.setLeadCreationTimestamp(new SimpleDateFormat("yyyy-MM-dd hh:mm:ssXXX").format(l.getLeadCreationTimestamp()));
+            response.setLeadCreationTimestamp(sfd.format(l.getLeadCreationTimestamp()));
             response.setLeadId(l.leadId);
             response.setLeadName(l.leadName);
             response.setLeadMobile(l.leadMobile);
@@ -134,13 +131,26 @@ public class Application extends Controller {
             switch (l.leadType) {
                 case 0: response.setLeadType("Fresh"); break;
                 case 1: response.setLeadType("Lead"); break;
-                case 2: response.setLeadType("Candidate"); break;
-                case 3: response.setLeadType("Recruiter"); break;
+                case 2: response.setLeadType("Potential Candidate"); break;
+                case 3: response.setLeadType("Potential Recruiter"); break;
+                case 4: response.setLeadType("Candidate"); break;
+                case 5: response.setLeadType("Recruiter"); break;
             }
             switch (l.leadChannel) {
                 case 0: response.setLeadChannel("Website"); break;
                 case 1: response.setLeadChannel("Knowlarity"); break;
             }
+            int mTotalInteraction=0;
+            List<Interaction> interactionsOfLead = Interaction.find.where().eq("objectAUUId", l.leadUUId).findList();
+            Timestamp mostRecent = l.leadCreationTimestamp;
+            for(Interaction i: interactionsOfLead){
+                mTotalInteraction++;
+                if(mostRecent.getTime() <= i.creationTimestamp.getTime()){
+                    mostRecent = i.creationTimestamp;
+                }
+            }
+            response.setLastIncomingCallTimestamp(sfd.format(mostRecent));
+            response.setTotalInBounds(mTotalInteraction);
             responses.add(response);
         }
         /*List<Interaction> interactions = Interaction.find.where().eq("InteractionType", ServerConstants.INTERACTION_TYPE_CALL_IN).findList();
@@ -180,7 +190,7 @@ public class Application extends Controller {
             Logger.info("Candidate Info Updated !!");
         } else {
 
-            Candidate candidate = new Candidate();
+           /* Candidate candidate = new Candidate();
             candidate.candidateChannel = ServerConstants.LEAD_CHANNEL_WEBSITE;
             candidate.candidateCreateTimestamp = new Timestamp(System.currentTimeMillis());
             candidate.candidateUUId = UUID.randomUUID().toString();
@@ -190,7 +200,7 @@ public class Application extends Controller {
             candidate.candidateUpdateTimestamp =  new Timestamp(System.currentTimeMillis());
             candidate.candidateState = ServerConstants.CANDIDATE_STATE_NEW;
             candidate.leadId = request.getLeadId();
-            candidate.save();
+            candidate.save();*//*
 
             // change lead type from lead to candidate if min-req info is available
             if(candidate.candidateName != null ||candidate.candidateMobile != null ){
@@ -198,9 +208,11 @@ public class Application extends Controller {
                 updateLead.setLeadType(ServerConstants.TYPE_CANDIDATE);
                 updateLead.update();
             }
+*/
+            Lead updateLead = Lead.find.where().eq("leadId", request.getLeadId()).findUnique();
 
-            interaction.setObjectAUUId(candidate.candidateUUId);
-            interaction.setObjectAType(ServerConstants.TYPE_CANDIDATE);
+            interaction.setObjectAUUId(updateLead.getLeadUUId());
+            interaction.setObjectAType(ServerConstants.TYPE_LEAD);
 
             response.setStatus(AddCandidateResponse.STATUS_SUCCESS);
         }
@@ -209,15 +221,37 @@ public class Application extends Controller {
     }
 
     public static Result getCandidateInfo(long id) {
-            Candidate candidate = Candidate.find.where().eq("leadId", id).findUnique();
-            if(candidate != null) {
-                Interaction currentInteraction = Interaction.find.where().eq("objectAUUId", candidate.candidateUUId).findUnique();
+            Lead lead = Lead.find.where().eq("leadId", id).findUnique();
+            if(lead != null) {
+                Interaction currentInteraction = Interaction.find.where().eq("objectAUUId", lead.leadUUId).findUnique();
                 if(currentInteraction != null) {
-                    return ok(toJson(candidate+""+currentInteraction));
+                    return ok(toJson(lead+""+currentInteraction));
                 }
-                return ok(toJson(candidate));
+                return ok(toJson(lead));
             }
-
         return badRequest("{ status: 0}");
+    }
+
+    public static Result updateLeadType(long leadId, long newType) {
+        Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
+        if(lead != null){
+            lead.setLeadType((int) newType);
+            lead.update();
+            return ok(toJson(newType));
+        }
+        return badRequest();
+    }
+
+    public static Result uploadCsv() {
+        Form<AdminLogin> userForm = Form.form(AdminLogin.class);
+        AdminLogin admin = userForm.bindFromRequest().get();
+        if(admin.adminid.equals(ServerConstants.STREET_LOGIN_ID ) && admin.adminpass.equals(ServerConstants.STREET_LOGIN_PASS)) {
+            return ok(views.html.uploadcsv.render());
+        }
+        return badRequest();
+    }
+
+    public static Result supportAuth() {
+        return ok(views.html.supportAuth.render());
     }
 }

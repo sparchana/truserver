@@ -24,10 +24,20 @@ function fillModal(returnedData) {
     $("#candidateMobile").val(returnedData.candidateMobile);
 
 }
+function processLeadUpdate(returnedData) {
+    if(returnedData.leadType != '0' && returnedData.leadType != '1') {
+        // existing data hence pre fill form
+    } else {
+        clearModal();
+        alert('Unable to show data');
+    }
+    window.location="/e6271a3f";
+
+}
 
 function processCandidateReg(returnedData) {
 
-    if(returnedData.candidateId != null ) {
+    if(returnedData.leadId != null ) {
         // existing data hence pre fill form
         alert('Candidate Already Exists');
     } else if(returnedData.status == 1) {
@@ -51,18 +61,20 @@ function processDataForSupport(returnedData) {
     returnedData.forEach(function (newLead) {
         if(newLead.leadId != null){
             t.row.add( [
-                '<button class="btn btn-default" data-toggle="modal" data-target="#newLeadEntryModal"  onclick="getCandidateInfo('+newLead.leadId+')">'+newLead.leadId+'</button>',
+                newLead.leadId,
                 newLead.leadStatus,
                 newLead.leadCreationTimestamp,
+                newLead.totalInBounds,
+                newLead.lastIncomingCallTimestamp,
                 newLead.leadChannel,
                 newLead.leadMobile,
                 newLead.leadName,
                 newLead.leadType,
                 function(){
                     if(newLead.leadStatus == 'New') {
-                        return '<input type="submit" data-toggle="modal" data-target="#newLeadEntryModal" value="Call" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+')" id="'+newLead.leadMobile+'"class="btn btn-primary">'
+                        return '<input type="submit" data-toggle="modal" data-target="#callResponseModal" value="Call" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+')" id="'+newLead.leadMobile+'"class="btn btn-primary">'
                     } else {
-                        return '<input type="submit" data-toggle="modal" data-target="#newLeadEntryModal" value="Call Back" id="click2call_submitbtn" class="btn btn-default">'
+                        return '<input type="submit" data-toggle="modal" data-target="#callResponseModal" value="Call Back" id="click2call_submitbtn" class="btn btn-default">'
                     }
                 }
             ] ).draw( false );
@@ -123,29 +135,45 @@ function myHandler (mobile, id) {
 
     }
 }
+function refreshDashBoard() {
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/getAll",
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataForSupport
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
 
 $(function(){
 
-    $("#candidateEntryForm").submit(function(eventObj) {
+    $("#callResponseForm").submit(function(eventObj) {
         eventObj.preventDefault();
         try {
 
-            var name  = $('#fullname').val();
-            var phone = $('#mobile').val();
-            console.log(name);
+            var leadId = $("#leadId").val();
+            var answer = document.querySelector('input[name="answer"]:checked').value;
+            console.log(answer);
 
             $.ajax({
-                type: "POST",
-                url: "/addCandidate",
-                data: $(this).serializeArray(),
-                dataType: "json",
-                success: processCandidateReg,
-                error: reportCandidateRegError
+                type: "GET",
+                url: "/updateLeadType/"+leadId+"/"+answer,
+                processData: false,
+                success: processLeadUpdate
+
             });
+
         } catch (exception) {
         }
 
     }); // end of submit
+
     
     try {
         $.ajax({

@@ -2,7 +2,7 @@
 function processData(returnedData) {
     //DoTheDue Here
     console.log(returnedData);
-   if(returnedData != '0') {
+   if(returnedData != '-1') {
        alert("File Successfully rendered " + returnedData + "- new entry");
        window.location="/support";
    } else {

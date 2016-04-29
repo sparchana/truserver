@@ -7,8 +7,10 @@ public class ServerConstants {
     public static final String DEV_API_KEY = "123e4567-e89b-12d3-a456-426655440000";
     // public static final int TYPE_UNKNOW = 0;
     public static final int TYPE_LEAD = 1;
-    public static final int TYPE_CANDIDATE = 2;
-    public static final int TYPE_RECRUITER = 3;
+    public static final int TYPE_POTENTIAL_CANDIDATE = 2;
+    public static final int TYPE_POTENTIAL_RECRUITER = 3;
+    public static final int TYPE_CANDIDATE = 4;
+    public static final int TYPE_RECRUITER = 5;
 
     public static final int LEAD_CHANNEL_WEBSITE= 0;
     public static final int LEAD_CHANNEL_KNOWLARITY= 1;
@@ -30,5 +32,9 @@ public class ServerConstants {
 
 
     public static final String INTERACTION_CREATED_BY_AGENT = "AGENT 1";
+
+    public static final String STREET_LOGIN_ID = "7895123";
+    public static final String STREET_LOGIN_PASS = "9875321";
+
 
 }

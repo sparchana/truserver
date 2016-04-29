@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title></title>
+        <link rel="stylesheet" href="assets/support/css/bootstrap.min.css">
+        <link href="assets/support/css/signin.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="container">
+            <form class="form-signin" method="post" action="@controllers.routes.Application.uploadCsv()">
+                <h2 class="form-signin-heading">Trujobs Login</h2>
+                <label for="adminid" class="sr-only">User Name</label>
+                <input type="text" id="adminid" name="adminid" class="form-control" placeholder="User Name" required autofocus>
+                <label for="adminpass" class="sr-only">Password</label>
+                <input type="password" name="adminpass"  class="form-control" placeholder="Password" required>
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox" value="remember-me"> Remember me
+                    </label>
+                </div>
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+            </form>
+        </div> <!-- /container -->
+    </body>
+</html>

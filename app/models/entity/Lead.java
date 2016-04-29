@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 /**
  * Created by zero on 23/4/16.
@@ -59,6 +60,7 @@ public class Lead extends Model {
         AddLeadResponse addLeadResponse = new AddLeadResponse();
         if(existingLead == null) {
             lead.leadId = Util.randomLong();
+            lead.leadUUId = UUID.randomUUID().toString();
             lead.leadName = addLeadRequest.getleadName();
             lead.leadMobile = addLeadRequest.getleadMobile();
             addLeadResponse.setStatus(AddLeadResponse.STATUS_SUCCESS);
@@ -75,6 +77,10 @@ public class Lead extends Model {
     }
     public String getLeadMobile(){
         return this.leadMobile;
+    }
+
+    public String getLeadUUId() {
+        return leadUUId;
     }
 
     public long getLeadId() {
@@ -102,4 +108,5 @@ public class Lead extends Model {
     public void setLeadType(int leadType) {
         this.leadType = leadType;
     }
+
 }

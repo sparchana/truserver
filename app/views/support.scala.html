@@ -14,54 +14,28 @@
 
         <div class="container">
 
-            <div class="modal fade" id="newLeadEntryModal" tabindex="-1" role="dialog" aria-labelledby="Login" aria-hidden="true">
+            <div class="modal fade" id="callResponseModal" tabindex="-1" role="dialog"  aria-hidden="true">
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
-                            <h5 class="modal-title">Candidate Entry Form</h5>
+                            <h5 class="modal-title">Call Assesment</h5>
                         </div>
 
                         <div class="modal-body">
                                 <!-- The form is placed inside the body of modal -->
-                            <form id="candidateEntryForm" method="post" class="form-horizontal">
+                            <form id="callResponseForm" method="post" class="form-horizontal">
                                 <div class="form-group">
-                                    <label class="col-xs-3 control-label">Full Name</label>
+                                    <label class="col-xs-3 control-label">Is Candidate Profile Complete?</label>
                                     <div class="col-xs-5">
-                                        <input type="text" class="form-control" name="candidateName" id="candidateName" />
+                                        <input type="radio" class="form-control" name="answer" id="yes" value="4"  />Yes
+                                        <input type="radio" class="form-control" name="answer" id="no" value="1"/>No
                                     </div>
                                 </div>
-                                <input type="hidden" class="form-control" name="leadId" id="leadId"/>
+                                <input type="text" class="form-control" name="leadId" id="leadId"/>
 
-                                <div class="form-group">
-                                    <label class="col-xs-3 control-label">Phone Number</label>
-                                    <div class="col-xs-5">
-                                        <input type="text" class="form-control" name="candidateMobile" id="candidateMobile"/>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-xs-3 control-label">Job</label>
-                                    <div class="col-xs-5">
-                                        <input type="text" class="form-control" name="candidateJobInterest" id="candidateJobInterest"/>
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-xs-3 control-label">Locality</label>
-                                    <div class="col-xs-5">
-                                        <input type="text" class="form-control" name="candidateLocality" id="candidateLocality" />
-                                    </div>
-                                </div>
-
-                                <div class="form-group">
-                                    <label class="col-xs-3 control-label">Add Note</label>
-                                    <div class="col-xs-5">
-                                        <textarea type="text" class="form-control" name="candidateNote" id="candidateNote" ></textarea>
-                                    </div>
-                                </div>
 
                                 <div class="form-group">
                                     <div class="col-xs-5 col-xs-offset-3">
@@ -77,22 +51,19 @@
             </div>
 
             <h2> Support Dashboard</h2>
-            <form id="upload_csv" class="form-horizontal" name="upload_csv" enctype="multipart/form-data">
-                <input type="file" name="file" id="csvfile" accept="text/csv">
-                <p>
-                    <input type="submit" value="Upload" id="submit">
-                </p>
-            </form>
+
             <table id="leadTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
                 <thead>
                     <tr>
                         <th>GID</th>
                         <th>Status</th>
                         <th>Date</th>
+                        <th>Total Inbounds </th>
+                        <th>Recent Inbound</th>
                         <th>Channel</th>
                         <th>Lead Mobile</th>
                         <th>Lead Name</th>
-                        <th>Lead Type</th>
+                        <th>Record Type</th>
                         <th>FUA</th>
                     </tr>
                 </thead>
@@ -104,7 +75,6 @@
         <script type="text/javascript" src="assets/support/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="assets/support/js/datatables.min.js"></script>
         <script type="text/javascript" src="assets/support/js/jquery.dataTables.min.js"></script>
-        <script type="text/javascript" src="assets/support/js/uploadController.js"></script>
         <script type="text/javascript" src="assets/support/js/nprogress.js"></script>
         <script type="text/javascript" src="assets/support/js/controller.js"></script>
 
