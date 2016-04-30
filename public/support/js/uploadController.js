@@ -4,7 +4,6 @@ function processData(returnedData) {
     console.log(returnedData);
    if(returnedData != '-1') {
        alert("File Successfully rendered " + returnedData + "- new entry");
-       window.location="/support";
    } else {
        alert('Error Uploading File!! check csv');
    }

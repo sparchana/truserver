@@ -4,7 +4,7 @@
 
 GET      /                                                       controllers.Application.index()
 
-GET      /e6271a3f                                                controllers.Application.support()
+GET      /support                                                controllers.Application.support()
 
 POST     /addLead                                                controllers.Application.addLead()
 
@@ -14,8 +14,6 @@ POST     /processCsv                                             controllers.App
 
 GET      /getAll                                                 controllers.Application.getAll()
 
-POST      /uploadCSV                                              controllers.Application.uploadCsv()
-
 GET      /getUserInfo/:id                                        controllers.Application.getUserInfo(id : Long)
 
 GET      /getCandidateInfo/:id                                   controllers.Application.getCandidateInfo(id : Long)
@@ -24,6 +22,9 @@ GET      /updateLeadType/:leadId/:newStatus                      controllers.App
 
 GET      /street                                                 controllers.Application.supportAuth()
 
+POST      /auth                                                 controllers.Application.auth()
+
+GET      /logout                                                 controllers.Application.logout()
 
 # Map static resources from the /public folder to the /assets URL path
 GET    /robots.txt                                controllers.Assets.at(path="/public", file="robots.txt")

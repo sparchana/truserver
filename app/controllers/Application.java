@@ -4,6 +4,7 @@ import api.ServerConstants;
 import api.http.*;
 import au.com.bytecode.opencsv.CSVReader;
 import models.entity.Candidate;
+import models.entity.Developer;
 import models.entity.Interaction;
 import models.entity.Lead;
 import models.util.Util;
@@ -11,6 +12,7 @@ import play.Logger;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Security;
 
 import java.io.File;
 import java.io.FileReader;
@@ -30,7 +32,14 @@ public class Application extends Controller {
         return ok(views.html.index.render());
     }
 
-    public static Result support() {return ok(views.html.support.render());
+    @Security.Authenticated(Secured.class)
+    public static Result support() {
+        String sessionId = session().get("sessionId");
+        Developer developer = Developer.find.where().eq("developerSessionId", sessionId ).findUnique();
+        if(developer != null && developer.developerAccessLevel == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE) {
+            return ok(views.html.support.render());
+        }
+        return badRequest("Your Access Level : Only Upload");
     }
 
     public static Result addLead() {
@@ -242,16 +251,40 @@ public class Application extends Controller {
         return badRequest();
     }
 
-    public static Result uploadCsv() {
-        Form<AdminLogin> userForm = Form.form(AdminLogin.class);
-        AdminLogin admin = userForm.bindFromRequest().get();
-        if(admin.adminid.equals(ServerConstants.STREET_LOGIN_ID ) && admin.adminpass.equals(ServerConstants.STREET_LOGIN_PASS)) {
-            return ok(views.html.uploadcsv.render());
-        }
-        return badRequest();
-    }
-
     public static Result supportAuth() {
         return ok(views.html.supportAuth.render());
+    }
+    public static Result logout() {
+        session().clear();
+        flash("success", "You've been logged out");
+        return redirect(
+                routes.Application.supportAuth()
+        );
+    }
+
+    public static Result auth() {
+        Form<DevLoginRequest> userForm = Form.form(DevLoginRequest.class);
+        DevLoginRequest request = userForm.bindFromRequest().get();
+        Logger.info("inside support" + request.toString());
+        Developer developer = Developer.find.where().eq("developerId", request.getAdminid()).findUnique();
+        if(developer!=null){
+            Logger.info(Util.md5(request.getAdminpass() + developer.developerPasswordSalt));
+            if(developer.developerPasswordMd5.equals(Util.md5(request.getAdminpass() + developer.developerPasswordSalt))) {
+                developer.setDeveloperSessionId(UUID.randomUUID().toString());
+                developer.setDeveloperSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
+                developer.update();
+                session("sessionId", developer.developerSessionId);
+                session("sessionExpiry", String.valueOf(developer.developerSessionIdExpiryMillis));
+                if(developer.developerAccessLevel == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE){
+                    return redirect(routes.Application.support());
+                }
+                if(developer.developerAccessLevel == ServerConstants.DEV_ACCESS_LEVEL_UPLOADER) {
+                    return ok(views.html.uploadcsv.render());
+                }
+            }
+        } else {
+            return badRequest("Account Doesn't exists!!");
+        }
+        return redirect(routes.Application.supportAuth());
     }
 }

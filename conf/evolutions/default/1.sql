@@ -28,6 +28,11 @@ create table channels (
 create table developer (
   developerid                   bigint signed not null auto_increment not null,
   developername                 varchar(50) not null not null,
+  developeraccesslevel          int not null not null,
+  developerpasswordsalt         bigint signed not null not null,
+  developerpasswordmd5          char(32) not null not null,
+  developersessionid            varchar(50) not null not null,
+  developersessionidexpirymillis bigint signed not null not null,
   developerapikey               varchar(255) not null not null,
   constraint uq_developer_developerapikey unique (developerapikey),
   constraint pk_developer primary key (developerid)

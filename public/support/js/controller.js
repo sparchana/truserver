@@ -31,7 +31,7 @@ function processLeadUpdate(returnedData) {
         clearModal();
         alert('Unable to show data');
     }
-    window.location="/e6271a3f";
+    window.location="/support";
 
 }
 
@@ -62,6 +62,7 @@ function processDataForSupport(returnedData) {
         if(newLead.leadId != null){
             t.row.add( [
                 newLead.leadId,
+                newLead.leadType,
                 newLead.leadStatus,
                 newLead.leadCreationTimestamp,
                 newLead.totalInBounds,
@@ -69,7 +70,6 @@ function processDataForSupport(returnedData) {
                 newLead.leadChannel,
                 newLead.leadMobile,
                 newLead.leadName,
-                newLead.leadType,
                 function(){
                     if(newLead.leadStatus == 'New') {
                         return '<input type="submit" data-toggle="modal" data-target="#callResponseModal" value="Call" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+')" id="'+newLead.leadMobile+'"class="btn btn-primary">'
