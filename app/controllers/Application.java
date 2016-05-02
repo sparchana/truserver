@@ -70,10 +70,6 @@ public class Application extends Controller {
         return ok(toJson(Auth.savePassword(resetPasswordResquest)));
     }
 
-    public static Result assessment() {
-        return ok(views.html.assessment.render());
-    }
-
 
     public static Result loginSubmit() {
         Form<LoginRequest> loginForm = Form.form(LoginRequest.class);
