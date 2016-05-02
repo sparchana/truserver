@@ -11,35 +11,44 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 /**
- * Created by batcoder1 on 25/4/16.
+ * Created by batcoder1 on 19/4/16.
  */
 
 @Entity(name = "candidate")
 @Table(name = "candidate")
 public class Candidate extends Model {
     @Id
-    @Column(name = "CandidateId", columnDefinition = "int signed not null", unique = true)
+    @Column(name = "CandidateId", columnDefinition = "bigint signed not null", unique = true)
     public long candidateId = 0;
+
+    @Column(name = "candidateUUId", columnDefinition = "varchar(255) not null", nullable = false, unique = true)
+    public String candidateUUId = "";
+
+    @Column(name = "LeadId", columnDefinition = "bigint signed not null", unique = true)
+    public long leadId = 0;
+
+    @Column(name = "CandidateName", columnDefinition = "varchar(50) not null")
+    public String candidateName = "";
+
+    @Column(name = "CandidateMobile", columnDefinition = "varchar(13) not null")
+    public String candidateMobile = "";
+
+    @Column(name = "CandidateType", columnDefinition = "int signed not null default 0")
+    public int candidateState = 0;
+
+    @Column(name = "CandidateChannel", columnDefinition = "int signed not null default 0")
+    public int candidateChannel = 0;
 
     @Column(name = "CandidateStatusId", columnDefinition = "int signed not null default 0")
     public long candidateStatusId = 0;
 
-    @Column(name = "CandidateName", columnDefinition = "varchar(50) not null default 0")
-    public String candidateName = "";
-
-    @Column(name = "CandidateMobile", columnDefinition = "varchar(10) not null default 0")
-    public String candidateMobile = "";
-
-    @Column(name = "CandidateEmail", columnDefinition = "varchar(50) not null default 0")
+    @Column(name = "CandidateEmail", columnDefinition = "varchar(50) not null")
     public String candidateEmail = "";
-
-    @Column(name = "CandidateLocality", columnDefinition = "varchar(150) not null default 0")
-    public String candidateLocality = "";
-
-    @Column(name = "CandidateJobPref", columnDefinition = "varchar(50) not null default 0")
-    public String candidateJobPref = "";
 
     @Column(name = "CandidateAge", columnDefinition = "int signed not null default 0")
     public int candidateAge = 0;
@@ -47,35 +56,72 @@ public class Candidate extends Model {
     @Column(name = "CandidateCreateTimestamp", columnDefinition = "timestamp default current_timestamp not null")
     public Timestamp candidateCreateTimestamp;
 
-    @Column(name = "CandidateUpdateTimestamp", columnDefinition = "timestamp not null default 0")
+    @Column(name = "CandidateUpdateTimestamp", columnDefinition = "timestamp not null")
     public Timestamp candidateUpdateTimestamp;
 
     @Column(name = "CandidateOtp", columnDefinition = "int signed not null default 1234", length = 4)
     public int candidateOtp = 1234;
 
-    public static Model.Finder<String, Candidate> find = new Model.Finder(Candidate.class);
+    public static Finder<String, Candidate> find = new Finder(Candidate.class);
+
 
     public static CandidateSignUpResponse candidateSignUp(CandidateSignUpRequest candidateSignUpRequest) {
         String mobile = candidateSignUpRequest.getCandidateMobile();
-        Logger.info("inside signup method" + candidateSignUpRequest.getCandidateLocality());
+        Logger.info("inside signup method" );
 
         Candidate candidate = new Candidate();
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
         Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", mobile).findUnique();
+
         if(existingCandidate == null ) {
-            candidate.candidateId = (int)(Math.random()*9000)+100000;
+            Lead lead = new Lead();
+            lead.leadId = Util.randomLong();
+            lead.leadMobile = candidateSignUpRequest.getAutoCandidateMobile();
+            lead.leadUUId = UUID.randomUUID().toString();
+            lead.leadChannel = ServerConstants.LEAD_CHANNEL_WEBSITE;
+            lead.leadName = candidateSignUpRequest.getCandidateName();
+            lead.leadType = ServerConstants.TYPE_CANDIDATE;
+            lead.save();
+
+            candidate.candidateId = Util.randomLong();
+            candidate.candidateUUId = UUID.randomUUID().toString();
             candidate.candidateName = candidateSignUpRequest.getCandidateName();
             candidate.candidateMobile = candidateSignUpRequest.getCandidateMobile();
             candidate.candidateAge = 0;
+            candidate.leadId = lead.leadId;
             candidate.candidateStatusId = 0;
-            candidate.candidateJobPref = candidateSignUpRequest.getCandidateJobPref();
-            candidate.candidateLocality = candidateSignUpRequest.getCandidateLocality();
             int randomPIN = (int)(Math.random()*9000)+1000;
             String otpCode = String.valueOf(randomPIN);
             candidate.candidateOtp = randomPIN;
             candidate.save();
 
-            SmsUtil.sendSms(candidate.candidateMobile,otpCode);
+            Interaction interaction = new Interaction();
+            interaction.objectAUUId = candidate.candidateUUId;
+            interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
+            interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+            interaction.result = "New Candidate Added";
+            interaction.save();
+
+            List<String> locality = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
+            for(String  s : locality) {
+                CandidateLocality candidateLocality = new CandidateLocality();
+                candidateLocality.candidateLocalityId = Util.randomLong();
+                candidateLocality.candidateLocalityCandidateId = candidate.candidateId;
+                candidateLocality.candidateLocalityLocalityId = s;
+                candidateLocality.save();
+            }
+
+            List<String> jobs = Arrays.asList(candidateSignUpRequest.getCandidateJobPref().split("\\s*,\\s*"));
+            for(String  s : jobs) {
+                CandidateJob candidateJob = new CandidateJob();
+                candidateJob.candidateJobId = Util.randomLong();
+                candidateJob.candidateJobCandidateId = candidate.candidateId;
+                candidateJob.candidateJobJobId = s;
+                candidateJob.save();
+            }
+            String msg = "Welcome to Trujobs! Use OTP " + otpCode + " to register";
+
+            SmsUtil.sendSms(candidate.candidateMobile,msg);
             Logger.info("Candidate successfully registered " + candidate);
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
         }
@@ -87,10 +133,29 @@ public class Candidate extends Model {
             existingCandidate.candidateMobile = candidateSignUpRequest.getCandidateMobile();
             existingCandidate.candidateAge = 0;
             existingCandidate.candidateStatusId = 0;
-            existingCandidate.candidateJobPref = candidateSignUpRequest.getCandidateJobPref();
-            existingCandidate.candidateLocality = candidateSignUpRequest.getCandidateLocality();
             existingCandidate.update();
-            SmsUtil.sendSms(existingCandidate.candidateMobile,otpCode);
+
+            List<String> locality = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
+            for(String  s : locality) {
+                CandidateLocality candidateLocality = new CandidateLocality();
+                candidateLocality.candidateLocalityId = Util.randomLong();
+                candidateLocality.candidateLocalityCandidateId = existingCandidate.candidateId;
+                candidateLocality.candidateLocalityLocalityId = s;
+                candidateLocality.save();
+            }
+
+            List<String> jobs = Arrays.asList(candidateSignUpRequest.getCandidateJobPref().split("\\s*,\\s*"));
+            for(String  s : jobs) {
+
+                CandidateJob candidateJob = new CandidateJob();
+                candidateJob.candidateJobId = Util.randomLong();
+                candidateJob.candidateJobCandidateId = existingCandidate.candidateId;
+                candidateJob.candidateJobJobId = s;
+                candidateJob.save();
+            }
+
+            String msg = "Welcome to Trujobs! Use OTP " + otpCode + " to register";
+            SmsUtil.sendSms(existingCandidate.candidateMobile,msg);
             Logger.info("Candidate successfully registered " + candidate);
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
         }
@@ -132,26 +197,31 @@ public class Candidate extends Model {
 
         Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", candidateMobile).findUnique();
         if(existingCandidate == null){
-
             loginResponse.setStatus(loginResponse.STATUS_NO_USER);
             Logger.info("User Does not Exists");
         }
         else {
-            Logger.info(" -> Incomming " + loginRequest.getCandidateLoginMobile());
             long candidateId = existingCandidate.candidateId;
             Auth existingAuth = Auth.find.where().eq("candidateId",candidateId).findUnique();
-            if (((existingAuth.passwordMd5.equals(Util.md5(candidatePassword + existingAuth.passwordSalt))) &&
-                    (existingCandidate.candidateStatusId != 0))) {
-                Logger.info(existingCandidate.candidateName + " " + existingCandidate.candidateStatusId);
-                loginResponse.setCandidateName(existingCandidate.candidateName);
-                loginResponse.setAccountStatus(existingCandidate.candidateStatusId);
-                loginResponse.setCandidateEmail(existingCandidate.candidateEmail);
-                loginResponse.setStatus(loginResponse.STATUS_SUCCESS);
-                Logger.info("Login Successful");
+            if(existingAuth != null){
+                if (((existingAuth.passwordMd5.equals(Util.md5(candidatePassword + existingAuth.passwordSalt))) &&
+                        (existingCandidate.candidateStatusId != 0))) {
+                    Logger.info(existingCandidate.candidateName + " " + existingCandidate.candidateStatusId);
+                    loginResponse.setCandidateId(existingCandidate.candidateId);
+                    loginResponse.setCandidateName(existingCandidate.candidateName);
+                    loginResponse.setAccountStatus(existingCandidate.candidateStatusId);
+                    loginResponse.setCandidateEmail(existingCandidate.candidateEmail);
+                    loginResponse.setStatus(loginResponse.STATUS_SUCCESS);
+                    Logger.info("Login Successful");
+                }
+                else {
+                    loginResponse.setStatus(loginResponse.STATUS_WRONG_PASSWORD);
+                    Logger.info("Incorrect Password");
+                }
             }
             else {
-                loginResponse.setStatus(loginResponse.STATUS_FAILURE);
-                Logger.info("User Does not Exists");
+                loginResponse.setStatus(loginResponse.STATUS_NO_USER);
+                Logger.info("No User");
             }
         }
         return loginResponse;
@@ -167,6 +237,7 @@ public class Candidate extends Model {
             String otpCode = String.valueOf(randomPIN);
             existingCandidate.candidateOtp = randomPIN;
             existingCandidate.update();
+            String msg = "Welcome to Trujobs! Use OTP " + otpCode + " to reset password";
             SmsUtil.sendSms(existingCandidate.candidateMobile, otpCode);
             Logger.info("Reset otp sent");
 
@@ -204,3 +275,5 @@ public class Candidate extends Model {
         return resetPasswordResponse;
     }
 }
+
+

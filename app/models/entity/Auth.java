@@ -23,10 +23,10 @@ import java.util.Random;
 @Table(name = "auth")
 public class Auth extends Model {
     @Id
-    @Column(name = "AuthId", columnDefinition = "int signed not null", unique = true)
+    @Column(name = "AuthId", columnDefinition = "bigint signed not null")
     public long authId = 0;
 
-    @Column(name = "CandidateId", columnDefinition = "int signed not null")
+    @Column(name = "CandidateId", columnDefinition = "bigint signed not null")
     public long candidateId = 0;
 
     @Column(name = "PasswordMd5", columnDefinition = "char(60) not null")
@@ -61,6 +61,7 @@ public class Auth extends Model {
 
                 existingCandidate.candidateStatusId = 1;
                 existingCandidate.update();
+                candidateSignUpResponse.setCandidateId(existingCandidate.candidateId);
                 candidateSignUpResponse.setCandidateName(existingCandidate.candidateName);
                 candidateSignUpResponse.setAccountStatus(existingCandidate.candidateStatusId);
                 candidateSignUpResponse.setCandidateEmail(existingCandidate.candidateEmail);
@@ -89,6 +90,10 @@ public class Auth extends Model {
                 auth.passwordMd5 = Util.md5(candidatePassword + passwordSalt);
                 auth.passwordSalt = passwordSalt;
                 auth.save();
+
+                resetPasswordResponse.setCandidateId(existingCandidate.candidateId);
+                resetPasswordResponse.setCandidateName(existingCandidate.candidateName);
+                resetPasswordResponse.setCandidateMobile(existingCandidate.candidateMobile);
 
                 existingCandidate.candidateStatusId = 1;
                 existingCandidate.update();

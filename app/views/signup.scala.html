@@ -14,9 +14,23 @@
         <link href="http://sbootstrap.startbootstrapc.netdna-cdn.com/assets/css/startbootstrap.css" rel="stylesheet" type="text/css">
         <link rel="icon" type="image/png" href="/assets/img/icon.png">
         <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
-        <link href='https://fonts.googleapis.com/css?family=Titillium+Web' rel='stylesheet' type='text/css'>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
 
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+        <link href='https://fonts.googleapis.com/css?family=Titillium+Web' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="/assets/css/token-input.css" type="text/css" />
+        <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
+        <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
+        <script type="text/javascript" src="/assets/js/chosen.jquery.js"></script>
+
+        <script>
+          $(function() {
+              $('.chosen-select').chosen();
+              $('.chosen-select-deselect').chosen({ allow_single_deselect: true });
+          });
+    </script>
     </head>
     <body>
 
@@ -26,28 +40,424 @@
                 <h3>New Candidate Registration</h3>
             </div>
             <br>
-                <!-- form -->
-            <form id="form_signup_candidate" class="form-horizontal" role="form" name="form_signup_candidate" >
+            <form id="form_signup_candidate" role="form" name="form_signup_candidate" >
                 <div class="c_form" align="center">
-                    <!-- Text input-->
+                    <h4>Sign Up for Free</h4>
+
+                        <!-- Text input-->
                     <div class="form-group">
-                        <input id="candidateName" name="candidateName" type="text" placeholder="Name: (eg: Manjunath)" class="form-control input-md" required>
+                        <div style="display : inline-block">Name: </div>
+                        <div style="display : inline-block">
+                            <input id="candidateName" name="candidateName" type="text" placeholder="Name: (eg: Manjunath)" class="form-control input-md" required>
+                        </div>
+
                     </div>
 
-                    <!-- Text input-->
+                        <!-- Text input-->
                     <div class="form-group">
-                        <input id="candidateMobile" name="candidateMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" placeholder="Mobile: (eg: 8880007799)" class="form-control input-md">
+                        <div style="display : inline-block">Mobile: </div>
+                        <div style="display : inline-block">
+                            <input id="candidateMobile" name="candidateMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" placeholder="Mobile: (eg: 8880007799)" class="form-control input-md">
+                        </div>
                     </div>
 
+                    <div class=form-group>
+                        <div>
+                            <h6>Where do you live?</h6>
+                            <input type="text" id="candidateLocality"/>
+                            <script type="text/javascript">
+                                $(document).ready(function() {
+                                    $("#candidateLocality").tokenInput([
+                                        {id: 1, name: "80 Ft. Road"},
+                                        {id: 2, name: "Abhay Reddy Layout"},
+                                        {id: 3, name: "Achitnagar"},
+                                        {id: 4, name: "Adugodi"},
+                                        {id: 5, name: "Agaram"},
+                                        {id: 6, name: "Air Force Hospital"},
+                                        {id: 7, name: "Airport"},
+                                        {id: 8, name: "Amruthahalli"},
+                                        {id: 9, name: "Anekal"},
+                                        {id: 10, name: "Anepalya"},
+                                        {id: 11, name: "Anjanapura"},
+                                        {id: 12, name: "Arabic College"},
+                                        {id: 13, name: "Attiguppe"},
+                                        {id: 14, name: "Austin Town"},
+                                        {id: 15, name: "Avenue Road"},
+                                        {id: 16, name: "Ayappa Garden"},
+                                        {id: 17, name: "Ayyappa Nagar"},
+                                        {id: 18, name: "B.P.Wadia Road"},
+                                        {id: 19, name: "Bagalgunte"},
+                                        {id: 20, name: "Bagalur"},
+                                        {id: 21, name: "Banasavadi"},
+                                        {id: 22, name: "Banashankari"},
+                                        {id: 23, name: "Bangalore Bazaar"},
+                                        {id: 24, name: "Bangalore District Office"},
+                                        {id: 25, name: "Bangalore Viswavidyalaya"},
+                                        {id: 26, name: "Bannerghatta Road"},
+                                        {id: 27, name: "Bapagrama"},
+                                        {id: 28, name: "Bapuji Nagar"},
+                                        {id: 29, name: "Basavanagudi"},
+                                        {id: 30, name: "Basaveshwara Nagar"},
+                                        {id: 31, name: "Begur"},
+                                        {id: 32, name: "Bellandur"},
+                                        {id: 33, name: "Benson Town"},
+                                        {id: 34, name: "Bhattarahalli"},
+                                        {id: 35, name: "Bidadi"},
+                                        {id: 36, name: "Bidrahalli"},
+                                        {id: 37, name: "Bilekahalli"},
+                                        {id: 38, name: "Bolare"},
+                                        {id: 39, name: "Bommanahalli"},
+                                        {id: 40, name: "Bommasandra Industrial Estate"},
+                                        {id: 41, name: "Bone Mill"},
+                                        {id: 42, name: "Brigade Road"},
+                                        {id: 43, name: "Brookefield"},
+                                        {id: 44, name: "Bsk 2nd Stage"},
+                                        {id: 45, name: "BTM Layout"},
+                                        {id: 46, name: "Byatarayanapura"},
+                                        {id: 47, name: "Byatha"},
+                                        {id: 48, name: "C V Raman Nagar"},
+                                        {id: 49, name: "Carmelaram Road"},
+                                        {id: 50, name: "Carmelaram Road"},
+                                        {id: 51, name: "Central Bengaluru"},
+                                        {id: 52, name: "Chamrajpet"},
+                                        {id: 53, name: "Chandapura"},
+                                        {id: 54, name: "Channasandra"},
+                                        {id: 55, name: "Chickpet"},
+                                        {id: 56, name: "Chikkabanavara Lake"},
+                                        {id: 57, name: "Chikkabidarkal"},
+                                        {id: 58, name: "Chikkalasandra"},
+                                        {id: 59, name: "Chudenapura"},
+                                        {id: 60, name: "Church Street"},
+                                        {id: 61, name: "City Centre"},
+                                        {id: 62, name: "Cooke Town"},
+                                        {id: 63, name: "Cottonpet"},
+                                        {id: 64, name: "Cox Town"},
+                                        {id: 65, name: "Crescent Road"},
+                                        {id: 66, name: "Crpf Campus Yelahanka"},
+                                        {id: 67, name: "Cubban Road"},
+                                        {id: 68, name: "Cunningham Road"},
+                                        {id: 69, name: "Dasarahalli"},
+                                        {id: 70, name: "Deepanjalinagar"},
+                                        {id: 71, name: "Devanagundi"},
+                                        {id: 72, name: "Devanahalli"},
+                                        {id: 73, name: "Devasandra Lake"},
+                                        {id: 74, name: "Dharmaram College"},
+                                        {id: 75, name: "Diamond District"},
+                                        {id: 76, name: "Dickenson Road"},
+                                        {id: 77, name: "Dlf Township"},
+                                        {id: 78, name: "Doddaballapur Road"},
+                                        {id: 79, name: "Doddaballapura"},
+                                        {id: 80, name: "Doddagubbi"},
+                                        {id: 81, name: "Doddakallasandra"},
+                                        {id: 82, name: "Doddanekkundi"},
+                                        {id: 83, name: "Domlur"},
+                                        {id: 84, name: "Dooravaninagar"},
+                                        {id: 85, name: "Doorvaninagar"},
+                                        {id: 86, name: "Dr. Ambedkar Veedhi"},
+                                        {id: 87, name: "Dr. Shivarama Karanth Nagar"},
+                                        {id: 88, name: "Electronic City"},
+                                        {id: 89, name: "Fraser Town"},
+                                        {id: 90, name: "G.e.f."},
+                                        {id: 91, name: "Gandhi Nagar"},
+                                        {id: 92, name: "Ganga Nagar"},
+                                        {id: 93, name: "Gangamma Circle"},
+                                        {id: 94, name: "Gavipuram Extension"},
+                                        {id: 95, name: "Gayathrinagar"},
+                                        {id: 96, name: "Girinagar"},
+                                        {id: 97, name: "Goraguntepalya"},
+                                        {id: 98, name: "Gottigere"},
+                                        {id: 99, name: "Govindapura"},
+                                        {id: 100, name: "Gunjur"},
+                                        {id: 101, name: "Guttahalli"},
+                                        {id: 102, name: "H K P Road"},
+                                        {id: 103, name: "H.a. Farm"},
+                                        {id: 104, name: "H.B.R. Layout"},
+                                        {id: 105, name: "H.k.p. Road"},
+                                        {id: 106, name: "H.m.t"},
+                                        {id: 107, name: "H.S.R Layout"},
+                                        {id: 108, name: "HAL 2nd Stage"},
+                                        {id: 109, name: "Hampinagar"},
+                                        {id: 110, name: "Hanumanth Nagar"},
+                                        {id: 111, name: "Haragadde"},
+                                        {id: 112, name: "Hebbagodi"},
+                                        {id: 113, name: "Hebbal"},
+                                        {id: 114, name: "Hegde Nagar"},
+                                        {id: 115, name: "Hennagara"},
+                                        {id: 116, name: "Hennur Main Road"},
+                                        {id: 117, name: "Herohalli"},
+                                        {id: 118, name: "Hessarghatta Road"},
+                                        {id: 119, name: "High Court"},
+                                        {id: 120, name: "High Grounds"},
+                                        {id: 121, name: "Hmt"},
+                                        {id: 122, name: "Hongasandra"},
+                                        {id: 123, name: "Hoodi"},
+                                        {id: 124, name: "Horamavu"},
+                                        {id: 125, name: "Hormavu"},
+                                        {id: 126, name: "Hosakerehalli"},
+                                        {id: 127, name: "Hoskote"},
+                                        {id: 128, name: "Hosur Road"},
+                                        {id: 129, name: "Hulimangala"},
+                                        {id: 130, name: "Hulimavu"},
+                                        {id: 131, name: "Hunsur Road"},
+                                        {id: 132, name: "Huskur"},
+                                        {id: 133, name: "Immedihalli"},
+                                        {id: 134, name: "Indian Institute Of Science"},
+                                        {id: 135, name: "Indiranagar"},
+                                        {id: 136, name: "Indlawadi Pura"},
+                                        {id: 137, name: "Infantry Road"},
+                                        {id: 138, name: "Isro Layout"},
+                                        {id: 139, name: "J C Nagar"},
+                                        {id: 140, name: "J.P. Nagar"},
+                                        {id: 141, name: "Jakkur"},
+                                        {id: 142, name: "Jalahalli"},
+                                        {id: 143, name: "Jalahalli West"},
+                                        {id: 144, name: "Jalavayuvihar"},
+                                        {id: 145, name: "Jayamahal Extn"},
+                                        {id: 146, name: "Jayamahal Road"},
+                                        {id: 147, name: "Jayanagar"},
+                                        {id: 148, name: "Jaylakshmi Puram"},
+                                        {id: 149, name: "Jeevanbhimanagar"},
+                                        {id: 150, name: "Jigani"},
+                                        {id: 151, name: "Jogapalya"},
+                                        {id: 152, name: "K H B Colony"},
+                                        {id: 153, name: "K R Puram"},
+                                        {id: 154, name: "K. G. Road"},
+                                        {id: 155, name: "K.d. Road"},
+                                        {id: 156, name: "Kacharakanahalli"},
+                                        {id: 157, name: "Kadugodi"},
+                                        {id: 158, name: "Kagalipura"},
+                                        {id: 159, name: "Kaikondarhalli"},
+                                        {id: 160, name: "Kaikondrahalli"},
+                                        {id: 161, name: "Kakolu"},
+                                        {id: 162, name: "Kalkere"},
+                                        {id: 163, name: "Kalkunte"},
+                                        {id: 164, name: "Kalyan Nagar"},
+                                        {id: 165, name: "Kamakshipalya"},
+                                        {id: 166, name: "Kammanahalli"},
+                                        {id: 167, name: "Kanakanagar"},
+                                        {id: 168, name: "Kanakapura Road"},
+                                        {id: 169, name: "Kannamangala"},
+                                        {id: 170, name: "Kanteeravanagar"},
+                                        {id: 171, name: "Kasavanahalli"},
+                                        {id: 172, name: "Kasturi Nagar"},
+                                        {id: 173, name: "Kathriguppe"},
+                                        {id: 174, name: "Kempapur Agrahara"},
+                                        {id: 175, name: "Kempe Gowda Road"},
+                                        {id: 176, name: "Kenchanahalli"},
+                                        {id: 177, name: "Kenchanapura Village"},
+                                        {id: 178, name: "Kengeri"},
+                                        {id: 179, name: "Kodigehalli"},
+                                        {id: 180, name: "Konanakunte"},
+                                        {id: 181, name: "Koramangala"},
+                                        {id: 182, name: "Kothanur"},
+                                        {id: 183, name: "Krishnarajapuram"},
+                                        {id: 184, name: "Kudlu Gate"},
+                                        {id: 185, name: "Kumaraswamy Layout"},
+                                        {id: 186, name: "Kumbalagodu"},
+                                        {id: 187, name: "Kumbalgodu"},
+                                        {id: 188, name: "Kundalahalli"},
+                                        {id: 189, name: "Laggere"},
+                                        {id: 190, name: "Lakkasandra"},
+                                        {id: 191, name: "Kasavanahalli"},
+                                        {id: 192, name: "Lalbagh Rd."},
+                                        {id: 193, name: "Langford Town"},
+                                        {id: 194, name: "Lavelle Road"},
+                                        {id: 195, name: "LB Shastri Nagar"},
+                                        {id: 196, name: "Lingarajapuram"},
+                                        {id: 197, name: "Lottegollahalli"},
+                                        {id: 198, name: "M. G. Road"},
+                                        {id: 199, name: "Madhavan Park"},
+                                        {id: 200, name: "Madivala"},
+                                        {id: 201, name: "Magadi Road"},
+                                        {id: 202, name: "Magrath Road"},
+                                        {id: 203, name: "Mahadevpura"},
+                                        {id: 204, name: "Mahalakshmipuram"},
+                                        {id: 205, name: "Mahatma Gandhi Road"},
+                                        {id: 206, name: "Majestic"},
+                                        {id: 207, name: "Mallathahalli"},
+                                        {id: 208, name: "Malleswaram"},
+                                        {id: 209, name: "Malleswaram West"},
+                                        {id: 210, name: "Malur"},
+                                        {id: 211, name: "Marathahalli"},
+                                        {id: 212, name: "Maruthi Sevanagar"},
+                                        {id: 213, name: "Mathikere"},
+                                        {id: 214, name: "Mavalli"},
+                                        {id: 215, name: "Medimallasandra"},
+                                        {id: 216, name: "Mico Layout"},
+                                        {id: 217, name: "Milk Colony"},
+                                        {id: 218, name: "Millers Road"},
+                                        {id: 219, name: "Minerva Circle"},
+                                        {id: 220, name: "Msrit"},
+                                        {id: 221, name: "Mundur"},
+                                        {id: 222, name: "Museum Road"},
+                                        {id: 223, name: "Muthanallur"},
+                                        {id: 224, name: "Muthusandra"},
+                                        {id: 225, name: "Mysore Road"},
+                                        {id: 226, name: "Nagarabhavi"},
+                                        {id: 227, name: "Nagarbhavi"},
+                                        {id: 228, name: "Nagasandra"},
+                                        {id: 229, name: "Nagavara"},
+                                        {id: 230, name: "Nagvarpalya Main Road"},
+                                        {id: 231, name: "Nal"},
+                                        {id: 232, name: "Nandhini Layout"},
+                                        {id: 233, name: "Nandi Durg Road"},
+                                        {id: 234, name: "Nayandahalli"},
+                                        {id: 235, name: "Nelakadiranahalli"},
+                                        {id: 236, name: "Nelamangala"},
+                                        {id: 237, name: "New Thippasandra"},
+                                        {id: 238, name: "Niketan"},
+                                        {id: 239, name: "Off Hennur Road"},
+                                        {id: 240, name: "Old Airport Road"},
+                                        {id: 241, name: "Old Madras Road"},
+                                        {id: 242, name: "Outer Ring Road"},
+                                        {id: 243, name: "Padmanabhanagar"},
+                                        {id: 244, name: "Palace Guttahalli"},
+                                        {id: 245, name: "Palace Road"},
+                                        {id: 246, name: "Pampamahakavi Road"},
+                                        {id: 247, name: "Panathur"},
+                                        {id: 248, name: "Peenya"},
+                                        {id: 249, name: "R V Niketan"},
+                                        {id: 250, name: "R.T. Nagar"},
+                                        {id: 251, name: "Race Course Road"},
+                                        {id: 252, name: "Raj Bhavan Road"},
+                                        {id: 253, name: "Raja Rajeshwari Nagar"},
+                                        {id: 254, name: "RajajiNagar"},
+                                        {id: 255, name: "Rajvi Nagar"},
+                                        {id: 256, name: "Ram Krishna Nagar"},
+                                        {id: 257, name: "Ram Murthy Nagar"},
+                                        {id: 258, name: "Ramagondana Halli"},
+                                        {id: 259, name: "Ramagondana Halli"},
+                                        {id: 260, name: "Ramamurthy Nagar"},
+                                        {id: 261, name: "Rameshnagar"},
+                                        {id: 262, name: "Ramohalli"},
+                                        {id: 263, name: "Residency Road"},
+                                        {id: 264, name: "Richmond Road"},
+                                        {id: 265, name: "RMV Extension"},
+                                        {id: 266, name: "S.R. Nagar"},
+                                        {id: 267, name: "Sadahalli"},
+                                        {id: 268, name: "Sadashiv Nagar"},
+                                        {id: 269, name: "Sahakara Nagar"},
+                                        {id: 270, name: "Sakalavara"},
+                                        {id: 271, name: "Samethanahalli"},
+                                        {id: 272, name: "Sampangirama Nagar"},
+                                        {id: 273, name: "Sanjay Nagar"},
+                                        {id: 274, name: "Sankey Road"},
+                                        {id: 275, name: "Sarakki Main Road."},
+                                        {id: 276, name: "Sarjapur"},
+                                        {id: 277, name: "Sarjapur Road"},
+                                        {id: 278, name: "Seshadri Road"},
+                                        {id: 279, name: "Seshadripuram"},
+                                        {id: 280, name: "Shampura"},
+                                        {id: 281, name: "Shanthinagar"},
+                                        {id: 282, name: "Shettigere"},
+                                        {id: 283, name: "Shivaji Nagar"},
+                                        {id: 284, name: "Shivakote"},
+                                        {id: 285, name: "Shrirampuram"},
+                                        {id: 286, name: "Siddapura Rd."},
+                                        {id: 287, name: "Silk Board Junction"},
+                                        {id: 288, name: "Silvepura"},
+                                        {id: 289, name: "Singanayakanahalli"},
+                                        {id: 290, name: "Singasandra"},
+                                        {id: 291, name: "Sivan Chetty Gardens"},
+                                        {id: 292, name: "Somanhalli"},
+                                        {id: 293, name: "Sompura Gate"},
+                                        {id: 294, name: "Sri Chowdeshwari"},
+                                        {id: 295, name: "Sri Ram Puram"},
+                                        {id: 296, name: "Srirampuram"},
+                                        {id: 297, name: "St. Mark's Road"},
+                                        {id: 298, name: "St. Thomas Town"},
+                                        {id: 299, name: "Subramanyapura"},
+                                        {id: 300, name: "Sulikere"},
+                                        {id: 301, name: "Tarabanahalli"},
+                                        {id: 302, name: "Taralu"},
+                                        {id: 303, name: "Tataguni"},
+                                        {id: 304, name: "Thalaghattapura"},
+                                        {id: 305, name: "Thambuchetty Palya"},
+                                        {id: 306, name: "Thanisandra Road"},
+                                        {id: 307, name: "Thattekuppe"},
+                                        {id: 308, name: "Thaverekere Road"},
+                                        {id: 309, name: "Thyagarajanagar"},
+                                        {id: 310, name: "Tilaknagar"},
+                                        {id: 311, name: "Tumkur Road"},
+                                        {id: 312, name: "Udaypura"},
+                                        {id: 313, name: "Ullalu Upanagara"},
+                                        {id: 314, name: "Ulsoor"},
+                                        {id: 315, name: "Uttarahalli Main Road"},
+                                        {id: 316, name: "V.v. Mahal"},
+                                        {id: 317, name: "Varthur"},
+                                        {id: 318, name: "Vasanth Nagar"},
+                                        {id: 319, name: "Venkatarangapura"},
+                                        {id: 320, name: "Venkateshapura"},
+                                        {id: 331, name: "Vidhana Soudha"},
+                                        {id: 322, name: "Vidyaranyapura"},
+                                        {id: 323, name: "Vignan Nagar"},
+                                        {id: 324, name: "Vijayanagar"},
+                                        {id: 325, name: "Vimanapura"},
+                                        {id: 326, name: "Virgonagar"},
+                                        {id: 327, name: "Vishweshwaraiah Layout"},
+                                        {id: 328, name: "Viswaneedam"},
+                                        {id: 329, name: "Vittal Mallya Road"},
+                                        {id: 330, name: "Vivek Nagar"},
+                                        {id: 331, name: "Vyalikaval Extn."},
+                                        {id: 332, name: "West Of Chord Road"},
+                                        {id: 333, name: "Whitefield"},
+                                        {id: 334, name: "Wilson Garden"},
+                                        {id: 335, name: "Wipro Limited"},
+                                        {id: 336, name: "Yelachenahalli"},
+                                        {id: 337, name: "Yelahanaka"},
+                                        {id: 338, name: "Yelahanaka - A. F. Road"},
+                                        {id: 339, name: "Yemalur"},
+                                        {id: 340, name: "Yeshwanthpura"},
+                                        {id: 341, name: "Yeswanthpur"}
+                                    ], {
+                                        theme: "facebook",
+                                        minChars: 3,
+                                        tokenLimit: 5
+                                    });
+                                });
+                                </script>
+                        </div>
+                    </div>
+
+                    <div class=form-group>
+                        <div>
+                            <h6>Jobs Interested in?</h6>
+                            <input type="text" id="candidateJobPref"/>
+                            <script type="text/javascript">
+                                $(document).ready(function() {
+                                    $("#candidateJobPref").tokenInput([
+                                        {id: 1, name: "BPO - Voice"},
+                                        {id: 2, name: "BPO - Non Voice"},
+                                        {id: 3, name: "Beautician"},
+                                        {id: 4, name: "Cashier"},
+                                        {id: 5, name: "Cook"},
+                                        {id: 6, name: "Delivery Boy"},
+                                        {id: 7, name: "Data Entry"},
+                                        {id: 8, name: "Driver"},
+                                        {id: 9, name: "Field Sales"},
+                                        {id: 10, name: "Hair Dresser"},
+                                        {id: 11, name: "Massage Therapist"},
+                                        {id: 12, name: "Receptionist"},
+                                        {id: 13, name: "Steward"},
+                                        {id: 14, name: "Store Manager"},
+                                        {id: 15, name: "Telecaller"},
+                                        {id: 16, name: "Waiter"}
+                                    ], {
+                                        theme: "facebook"
+                                    });
+                                });
+                                </script>
+                        </div>
+                    </div>
                     <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Register</button>
-
-                    <!-- Text input-->
-
+                        <!-- Text input-->
                 </div>
+                <br>
+                Already Registered? <div onclick="openLogin()" id="pointerChange" data-toggle="modal" data-target="#myLoginModal" >Click here</div>
             </form>
-
-            <form id="form_otp" class="form-horizontal" role="form" name="form_otp" style="display: none">
+            <form id="form_otp" role="form" name="form_otp" style="display: none">
                 <div class="c_form" align="center">
+                    <h4 id="helpTextSignup">Enter OTP</h4>
 
                     <div class="form-group">
                         <input id="candidateOtp" name="candidateOtp" type="number" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
@@ -62,15 +472,11 @@
                 </div>
             </form>
 
-            <form id="form_auth" class="form-horizontal" role="form" name="form_auth" style="display: none">
+            <form id="form_auth" role="form" name="form_auth" style="display: none">
                 <div class="c_form" align="center">
-
+                    <h4>Enter a password</h4>
                     <div class="form-group">
-                        <input id="candidatePassword" name="candidatePassword" type="password" placeholder="Enter password (Min. 6 characters)" class="form-control input-md" required>
-                    </div>
-
-                    <div class="form-group">
-                        <input id="rePassword" name="rePassword" type="password" placeholder="Re-enter password" class="form-control input-md" required>
+                        <input id="candidatePassword" minlength="6" name="candidatePassword" type="password" placeholder="Enter password (Min. 6 characters)" class="form-control input-md" required>
                     </div>
 
                         <!-- hidden-->
@@ -81,16 +487,111 @@
 
                 </div>
             </form>
-            <div id="thanksMsg" style="margin-top: 2%;display: none; color: #2980b9">
-                <h4>Account Created Successfully!</h4>
+            <div style="text-align: center">
+
+                <div id="alreadyMsgCandidate" style="margin-top: 2%;display: none; color: #2980b9">
+                    <h5>User with the above mobile no. already exists!</h5>
+                </div>
+                <div id="thanksMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                    <h4>Account Created Successfully!</h4>
+                </div>
+                <div id="incorrectMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                    <h4>Incorrect OTP Code. Please Enter Again</h4>
+                </div>
+
+                <div id="errorMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                    <h4>Looks like something went wrong. Please try again later!</h4>
+                </div>
             </div>
+                <!-- end form -->
+            <form id="form_login_candidate" style="display: none;" class="form-horizontal" role="form" name="form_login_candidate" >
+                <div class="c_form" align="center">
+                        <!-- Text input-->
+                    <br>
+                    <h4>Login</h4>
+                    <div class="form-group">
+                        <input style="width: 120%; margin-left: -10%; margin-right: -10%" id="candidateLoginMobile" name="candidateLoginMobile" type="text" placeholder="Mobile No. (eg: 8880007799)" class="form-control input-md" required>
+                    </div>
+
+                        <!-- Text input-->
+                    <div class="form-group">
+                        <input style="width: 120%; margin-left: -10%; margin-right: -10%" id="candidateLoginPassword" name="candidateLoginPassword" type="password" placeholder="Password" class="form-control input-md" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Log In</button>
+                    <br><br>
+                    <div id="pointerChange" onclick="resetPassword()">Reset Password</div>
+                </div>
+            </form>
+
+            <form id="form_forgot_password" style="display: none" class="form-horizontal" role="form" name="form_forgot_password" >
+                <div class="c_form" align="center">
+                        <!-- Text input-->
+                    <br>
+                    <h5>Enter your mobile no</h5>
+                    <div class="form-group">
+                        <input style="width: 120%; margin-left: -10%; margin-right: -10%" id="resetPasswordMobile" type="text" maxlength="10" placeholder="Mobile No. (eg: 8880007799)" class="form-control input-md" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Proceed</button>
+
+                </div>
+            </form>
+
+            <form id="form_password_reset_otp" style="display: none" class="form-horizontal" role="form">
+                <div class="c_form" align="center">
+                        <!-- Text input-->
+                    <br>
+                    <h5 id="helpText"></h5>
+
+                    <div class="form-group">
+                        <input id="candidateForgotOtp" type="number" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
+                    </div>
+                    <div class="form-group">
+                        <input style="width: 120%; margin-left: -10%; margin-right: -10%; display: none" id="forgotPasswordAutoMobile" type="text" placeholder="Mobile No. (eg: 8880007799)" class="form-control input-md" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Verify OTP</button>
+
+                </div>
+            </form>
+
+            <form id="form_password_reset_new" style="display: none" class="form-horizontal" role="form">
+                <div class="c_form" align="center">
+                        <!-- Text input-->
+                    <br>
+                    <h5>Enter New Password</h5>
+
+                    <div class="form-group">
+                        <input id="candidateNewPassword" type="password" placeholder="Enter new Password" class="form-control input-md" required>
+                    </div>
+                    <div class="form-group">
+                        <input style="width: 120%; margin-left: -10%; margin-right: -10%; display: none" id="forgotPasswordNewMobile" type="text" placeholder="Mobile No. (eg: 8880007799)" class="form-control input-md" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Reset Password</button>
+
+                </div>
+            </form>
+
+
             <div id="incorrectMsg" style="margin-top: 2%;display: none; color: #2980b9">
-                <h4>Incorrect OTP Code. Please Enter Again</h4>
+                <h5>Incorrect Login Credentials</h5>
+            </div>
+            <div id="incorrectMsgLogin" style="margin-top: 2%;display: none; color: #2980b9">
+                <h5>Incorrect Login Credentials</h5>
+            </div>
+            <div id="errorMsgReset" style="margin-top: 2%;display: none; color: #2980b9">
+                <h5>User Does Not Exist!</h5>
+            </div>
+            <div id="noUserLogin" style="margin-top: 2%;display: none; color: #2980b9">
+                <h5>User Does Not Exist!</h5>
             </div>
 
             <div id="errorMsg" style="margin-top: 2%;display: none; color: #2980b9">
-                <h4>Looks like something went wrong. Please try again later!</h4>
+                <h5>Looks like something went wrong. Please try again later!</h5>
             </div>
+
         </div>
 
         <div class="sectionFive" id="contact">
@@ -106,6 +607,7 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="/assets/js/scroll.js"></script>
         <script type="text/javascript" src="/assets/js/signup_candidate.js"></script>
+        <script type="text/javascript" src="/assets/js/reset_password.js"></script>
 
     </body>
 </html>

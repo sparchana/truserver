@@ -6,6 +6,7 @@
 function processDataResetCheckUser(returnedData) {
     console.log("returedData :" + returnedData.status);
     if(returnedData.status == 1) {
+        document.getElementById("helpText").innerHTML = "Enter OTP sent on " + $('#resetPasswordMobile').val();
         $('#forgotPasswordAutoMobile').val($('#resetPasswordMobile').val());
         $('#form_password_reset_otp').show();
         $('#form_forgot_password').hide();
@@ -42,9 +43,10 @@ function processDataCheckResetOtp(returnedData) {
 function processDataPostReset(returnedData) {
     console.log("returedData :" + returnedData.status);
     if(returnedData.status == 1) {
-        $('#form_password_reset_new').hide();
-        $('#form_login_candidate').show();
-        alert("Password Change Successful!");
+        localStorage.setItem("mobile", returnedData.candidateMobile);
+        localStorage.setItem("name", returnedData.candidateName);
+        localStorage.setItem("id", returnedData.candidateId);
+        window.location = "/dashboard";
     }
 
     else if(returnedData.status == 2){

@@ -11,11 +11,15 @@ public class CandidateSignUpResponse {
 
     public int status;
     public long accountStatus;
+    public long candidateId;
     public String candidateName;
     public String candidateEmail;
 
     public void setStatus(int status) {
         this.status = status;
+    }
+    public void setCandidateId(long candidateId) {
+        this.candidateId = candidateId;
     }
     public void setAccountStatus(long accountStatus) {
         this.status = status;

@@ -23,6 +23,27 @@ function processData(returnedData) {
     }
 }
 
+function processDataModal(returnedData) {
+
+    if(returnedData.status == '1') {
+        console.log("returedData :" + returnedData.status);
+        $('#addLeadFormModal').hide();
+        $('#thanksMsg').show();
+        $('#alreadyMsg').hide();
+    }
+
+    else if(returnedData.status == '3'){
+        console.log("returedData :" + returnedData.status);
+        $('#alreadyMsg').show();
+    }
+    else {
+        console.log("returedData :" + returnedData.status);
+        $('#alreadyMsg').hide();
+        $('#addLeadForm').hide();
+        $('#errorMsg').show();
+    }
+}
+
 function processDataRecruiter(returnedData) {
     console.log("returedData :" + returnedData.status);
     if(returnedData.status == '1') {
@@ -46,23 +67,58 @@ $(function() {
     $("#addLeadForm").submit(function(eventObj) {
         eventObj.preventDefault();
         try {
-            var name  = $('#leadName').val();
+            var name  = " ";
             var phone = $('#leadMobile').val();
             var channel = $('#leadChannel').val();
-            var type = $('#leadType').val();
+            var type = 0;
             var interested = $('#leadInterest').val();
-            console.log("phone : " + phone );
-            
+            console.log("phone : " + phone + " " + name + channel + type );
+
+            var s = {
+                leadName : name,
+                leadMobile : phone,
+                leadChannel : channel,
+                leadType : 0,
+                leadInterest : interested
+            };
+
             $.ajax({
                 type: "POST",
                 url: "/addLead",
-                data: $("#addLeadForm").serialize(),
+                data: s,
                 success: processData
             });
         } catch (exception) {
             console.log("exception occured!!" + exception);
         }
+    }); // end of submit
+    $("#addLeadFormModal").submit(function(eventObj) {
+        eventObj.preventDefault();
+        try {
+            var name  = $('#leadNameModal').val();
+            var phone = $('#leadMobileModal').val();
+            var channel = $('#leadChannelModal').val();
+            var type = 1;
+            var interested = $('#leadInterest').val();
+            console.log("phone : " + phone + " " + name + channel + type );
 
+            var s = {
+                leadName : name,
+                leadMobile : phone,
+                leadChannel : channel,
+                leadType : type,
+                leadInterest : interested
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "/addLead",
+                data: s,
+                success: processDataModal
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
     }); // end of submit
 }); // end of function
 

@@ -16,6 +16,6 @@ dist
 /RUNNING_PID
 /.settings
 /project/*-shim.sbt
-/prod
 /tool
 /proto
+/libraries

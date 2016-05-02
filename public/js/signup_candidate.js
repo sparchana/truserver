@@ -10,7 +10,7 @@ function processDataSignUpSubmit(returnedData) {
         $('#candidateMobile').val('');
         $('#candidateEmail').val('');
         $('#form_signup_candidate').hide();
-        document.getElementById("helpText").innerHTML = "Enter OTP sent on " + $('#autoCandidateMobile').val();
+        document.getElementById("helpTextSignup").innerHTML = "Enter OTP sent on " + $('#autoCandidateMobile').val();
         $('#form_otp').show();
 
     }
@@ -57,6 +57,8 @@ function processDataAddAuth(returnedData) {
         // Store
         localStorage.setItem("mobile", $('#candidateAuthMobile').val());
         localStorage.setItem("name", returnedData.candidateName);
+        localStorage.setItem("id", returnedData.candidateId);
+        console.log(returnedData.candidateId);
         window.location = "/dashboard";
     }
 
@@ -73,6 +75,8 @@ $(function() {
             var name  = $('#candidateName').val();
             var phone = $('#candidateMobile').val();
             console.log("phone: " + phone);
+            console.log($('#candidateLocality').val());
+            $('#alreadyMsgCandidate').hide();
             var d = {
                 candidateName : name,
                 candidateMobile : phone,

@@ -1,4 +1,4 @@
-package api;
+package api.http;
 
 /**
  * Created by zero on 23/4/16.

@@ -21,4 +21,6 @@ libraryDependencies += "com.google.api-client" % "google-api-client" % "1.20.0"
 
 libraryDependencies += "com.google.protobuf" % "protobuf-java" % "3.0.0-beta-2"
 
+libraryDependencies += "net.sf.opencsv" % "opencsv" % "2.3"
+
 libraryDependencies += evolutions

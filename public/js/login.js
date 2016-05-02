@@ -8,18 +8,18 @@ function processDataLogin(returnedData) {
         // Store
         localStorage.setItem("mobile", $('#candidateLoginMobile').val());
         localStorage.setItem("name", returnedData.candidateName);
+        localStorage.setItem("id", returnedData.candidateId);
         window.location = "/dashboard";
     }
 
-    else if(returnedData.status == 2){
-        $('#incorrectMsg').show();
+    else if(returnedData.status == 3){
+        $('#noUserLogin').show();
         $('#errorMsg').hide();
     }
 
     else {
-        $('#noUserMsg').show();
-        $('#incorrectMsg').hide();
-        $('#errorMsg').hide();
+        $('#noUserLogin').hide();
+        $('#incorrectMsgLogin').hide();
     }
 }
 

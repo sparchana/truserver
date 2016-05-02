@@ -2,31 +2,42 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET      /                           controllers.Application.index()
+GET      /                                                        controllers.Application.index()
 
-GET      /support                    controllers.Application.support()
+GET      /support                                                 controllers.Application.support()
 
-POST     /addLead                    controllers.Application.addLead()
+POST     /addLead                                                 controllers.Application.addLead()
 
-GET      /signUp                     controllers.Application.signUp()
+POST     /signUpSubmit                                            controllers.Application.signUpSubmit()
 
-POST     /signUpSubmit               controllers.Application.signUpSubmit()
+POST     /verifyOtp                                               controllers.Application.verifyOtp()
 
-POST     /verifyOtp                  controllers.Application.verifyOtp()
+POST     /checkResetOtp                                           controllers.Application.checkResetOtp()
 
-POST     /checkResetOtp              controllers.Application.checkResetOtp()
+POST     /addPassword                                             controllers.Application.addPassword()
 
-POST     /addPassword                controllers.Application.addPassword()
+POST     /savePassword                                            controllers.Application.savePassword()
 
-POST     /savePassword               controllers.Application.savePassword()
+GET      /dashboard                                               controllers.Application.dashboard()
 
-GET      /dashboard                  controllers.Application.dashboard()
+POST     /loginSubmit                                             controllers.Application.loginSubmit()
 
-GET      /logIn                      controllers.Application.logIn()
+POST     /checkCandidate                                          controllers.Application.checkCandidate()
 
-POST     /loginSubmit                controllers.Application.loginSubmit()
+POST     /addCandidate                                            controllers.Application.addCandidate()
 
-POST     /checkCandidate             controllers.Application.checkCandidate()
+POST     /processCsv                                              controllers.Application.processcsv()
+
+GET      /getAll                                                  controllers.Application.getAll()
+
+GET      /getUserInfo/:id                                         controllers.Application.getUserInfo(id : Long)
+
+GET      /getCandidateInfo/:id                                    controllers.Application.getCandidateInfo(id : Long)
+
+GET      /getCandidateLocality/:id                                controllers.Application.getCandidateLocality(id : Long)
+
+GET      /getCandidateJob/:id                                    controllers.Application.getCandidateJob(id : Long)
+
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
