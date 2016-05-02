@@ -11,7 +11,7 @@ create table auth (
   authsessionid                 varchar(50) not null not null,
   authsessionidexpirymillis     bigint signed not null not null,
   authcreatetimestamp           timestamp default current_timestamp not null,
-  authupdatetimestamp           timestamp not null default 0,
+  authupdatetimestamp           timestamp null,
   constraint pk_auth primary key (authid)
 );
 
