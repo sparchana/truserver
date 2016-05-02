@@ -42,9 +42,9 @@ public class Auth extends Model {
     public long authSessionIdExpiryMillis = 0;
 
     @Column(name = "authCreateTimestamp", columnDefinition = "timestamp default current_timestamp not null")
-    public Timestamp authCreateTimestamp;
+    public Timestamp authCreateTimestamp = new Timestamp(System.currentTimeMillis());
 
-    @Column(name = "authUpdateTimestamp", columnDefinition = "timestamp not null default 0")
+    @Column(name = "authUpdateTimestamp", columnDefinition = "timestamp null")
     public Timestamp authUpdateTimestamp;
 
     public static Model.Finder<String, Auth> find = new Model.Finder(Auth.class);
