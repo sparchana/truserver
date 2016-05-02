@@ -13,7 +13,7 @@ public class Secured extends Security.Authenticator {
 
     @Override
     public String getUsername(Context ctx) {
-        Logger.info("dev session id in Secured Class is "+ctx.session().get("sessionId"));
+        Logger.info("User LoggedIn:"+ctx.session().get("sessionId"));
         return ctx.session().get("sessionId");
     }
 

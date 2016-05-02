@@ -111,4 +111,8 @@ public class Lead extends Model {
     public void setLeadStatus(int leadStatus) {
         this.leadStatus = leadStatus;
     }
+
+    public void setLeadCreationTimestamp(Timestamp leadCreationTimestamp) {
+        this.leadCreationTimestamp = leadCreationTimestamp;
+    }
 }

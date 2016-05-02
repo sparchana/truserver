@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -58,7 +59,9 @@ public class Application extends Controller {
         String[] nextLine;
         ArrayList<Lead> leads = new ArrayList<>();
         int count = 0;
+        int overLappingRecordCount = 0;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ssXXX");
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         try {
             CSVReader reader = new CSVReader(new FileReader(file));
             reader.readNext();// skip title row
@@ -69,8 +72,17 @@ public class Application extends Controller {
                 if (nextLine != null && nextLine[0].equals("0")) {
                     lead.leadUUId = UUID.randomUUID().toString();
                     lead.leadId = Util.randomLong();
-                    lead.leadMobile = nextLine[1];
-                    Date parsedDate = sdf.parse(nextLine[4]);
+                    if(!nextLine[1].contains("+")) {
+                        lead.leadMobile = "+"+nextLine[1];
+                    } else {
+                        lead.leadMobile = nextLine[1];
+                    }
+                    Date parsedDate;
+                    try {
+                        parsedDate = sdf.parse(nextLine[4]);
+                    } catch (ParseException e) {
+                        parsedDate = sdf2.parse(nextLine[4]);
+                    }
                     lead.leadCreationTimestamp = new Timestamp(parsedDate.getTime());
                     Lead existingLead = Lead.find.where()
                             .eq("leadMobile", lead.leadMobile)
@@ -86,11 +98,18 @@ public class Application extends Controller {
                         count++;
                         leads.add(lead);
                     } else {
+                        if(existingLead.getLeadCreationTimestamp().getTime() > lead.leadCreationTimestamp.getTime()) {
+                            // recording the first inbound of a lead
+                            existingLead.setLeadCreationTimestamp(lead.leadCreationTimestamp);
+                            existingLead.update();
+                        }
+                        overLappingRecordCount++;
                         kwObject.objectAType = existingLead.leadType;
                         kwObject.objectAUUId= existingLead.leadUUId;
                         Logger.info("compared DateTime: KwVer." + lead.leadCreationTimestamp.getTime() + "  OurDbVer. " + existingLead.leadCreationTimestamp.getTime());
-                        Logger.info("Old Record Encountered !!");
                     }
+                    // gives total no of old leads
+                    Logger.info("Total OverLapping records : " + overLappingRecordCount);
 
                     // save all inbound calls to interaction
                     kwObject.createdBy = "System";
@@ -249,25 +268,34 @@ public class Application extends Controller {
     }
 
     public static Result updateLeadType(long leadId, long newType) {
-        Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
-        if(lead != null){
-            lead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
-            lead.setLeadType((int) newType);
-            lead.update();
-            return ok(toJson(newType));
+        try{
+            Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
+            if(lead != null){
+                lead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
+                lead.setLeadType((int) newType);
+                lead.update();
+                return ok(toJson(newType));
+            }
+        } catch (NullPointerException n) {
+            n.printStackTrace();
         }
         return badRequest();
     }
 
     public static Result updateLeadStatus(long leadId) {
-        Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
+        try {
+            Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
 
-        if(lead != null){
-            if(lead.leadStatus == ServerConstants.LEAD_STATUS_NEW) {
-                lead.setLeadStatus(ServerConstants.LEAD_STATUS_TTC);
-                lead.update();
+            if(lead != null){
+                if(lead.leadStatus == ServerConstants.LEAD_STATUS_NEW) {
+                    lead.setLeadStatus(ServerConstants.LEAD_STATUS_TTC);
+                    lead.update();
+                }
+                return ok(toJson(lead.leadStatus));
             }
-            return ok(toJson(lead.leadStatus));
+
+        } catch (NullPointerException n) {
+            n.printStackTrace();
         }
         return badRequest();
     }
