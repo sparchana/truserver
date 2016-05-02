@@ -120,9 +120,9 @@ public class Application extends Controller {
                     lead.leadUUId = UUID.randomUUID().toString();
                     lead.leadId = Util.randomLong();
                     if(!nextLine[1].contains("+")) {
-                        lead.leadMobile = "+"+nextLine[1];
+                        lead.leadMobile = "+"+nextLine[2];
                     } else {
-                        lead.leadMobile = nextLine[1];
+                        lead.leadMobile = nextLine[2];
                     }
                     Date parsedDate;
                     try {
