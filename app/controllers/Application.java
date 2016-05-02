@@ -316,7 +316,8 @@ public class Application extends Controller {
                 developer.setDeveloperSessionId(UUID.randomUUID().toString());
                 developer.setDeveloperSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
                 developer.update();
-
+                session("sessionId", developer.developerSessionId);
+                session("sessionExpiry", String.valueOf(developer.developerSessionIdExpiryMillis));
                 if(developer.developerAccessLevel == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE){
                     return redirect(routes.Application.support());
                 }
