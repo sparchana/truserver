@@ -3,23 +3,14 @@ package controllers;
 import api.CandidateSignUpRequest;
 import api.LoginRequest;
 import api.ResetPasswordResquest;
-import models.entity.*;
 import api.ServerConstants;
-import api.http.AddCandidateRequest;
-import api.http.AddCandidateResponse;
-import api.http.AddLeadRequest;
-import api.http.SupportDashboardElementResponse;
 import api.http.*;
 import au.com.bytecode.opencsv.CSVReader;
-import models.entity.Candidate;
-import models.entity.Developer;
-import models.entity.Interaction;
-import models.entity.Lead;
+import models.entity.*;
 import models.util.Util;
 import play.Logger;
 import play.data.Form;
 import play.mvc.Controller;
-import au.com.bytecode.opencsv.CSVReader;
 import play.mvc.Result;
 import play.mvc.Security;
 
@@ -82,13 +73,13 @@ public class Application extends Controller {
         return ok(toJson(Auth.savePassword(resetPasswordResquest)));
     }
 
-
     public static Result loginSubmit() {
         Form<LoginRequest> loginForm = Form.form(LoginRequest.class);
         LoginRequest loginRequest = loginForm.bindFromRequest().get();
         return ok(toJson(Candidate.login(loginRequest)));
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result dashboard() {
         return ok(views.html.dashboard.render());
     }
@@ -288,6 +279,13 @@ public class Application extends Controller {
                 routes.Application.supportAuth()
         );
     }
+
+    public static Result logoutUser() {
+        session().clear();
+        return redirect(
+                routes.Application.index()
+        );
+    }
     public static Result auth() {
         Form<DevLoginRequest> userForm = Form.form(DevLoginRequest.class);
         DevLoginRequest request = userForm.bindFromRequest().get();
@@ -299,8 +297,7 @@ public class Application extends Controller {
                 developer.setDeveloperSessionId(UUID.randomUUID().toString());
                 developer.setDeveloperSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
                 developer.update();
-                session("sessionId", developer.developerSessionId);
-                session("sessionExpiry", String.valueOf(developer.developerSessionIdExpiryMillis));
+
                 if(developer.developerAccessLevel == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE){
                     return redirect(routes.Application.support());
                 }

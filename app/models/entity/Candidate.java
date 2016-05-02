@@ -15,6 +15,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static play.mvc.Controller.session;
+
 /**
  * Created by batcoder1 on 19/4/16.
  */
@@ -219,6 +221,12 @@ public class Candidate extends Model {
                     loginResponse.setAccountStatus(existingCandidate.candidateStatusId);
                     loginResponse.setCandidateEmail(existingCandidate.candidateEmail);
                     loginResponse.setStatus(loginResponse.STATUS_SUCCESS);
+
+                    existingAuth.authSessionId = UUID.randomUUID().toString();
+                    existingAuth.authSessionIdExpiryMillis = System.currentTimeMillis() + 24 * 60 * 60 * 1000;
+                    session("sessionId", existingAuth.authSessionId);
+                    session("sessionExpiry", String.valueOf(existingAuth.authSessionIdExpiryMillis));
+                    existingAuth.update();
                     Logger.info("Login Successful");
                 }
                 else {

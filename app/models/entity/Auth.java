@@ -11,6 +11,9 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.sql.Timestamp;
 import java.util.Random;
+import java.util.UUID;
+
+import static play.mvc.Controller.session;
 
 /**
  * Created by batcoder1 on 26/4/16.
@@ -32,6 +35,12 @@ public class Auth extends Model {
     @Column(name = "PasswordSalt", columnDefinition = "bigint signed not null")
     public long passwordSalt = 0;
 
+    @Column(name = "AuthSessionId", columnDefinition = "varchar(50) not null", nullable = false)
+    public String authSessionId = "";
+
+    @Column(name = "AuthSessionIdExpiryMillis", columnDefinition = "bigint signed not null", nullable = false)
+    public long authSessionIdExpiryMillis = 0;
+
     @Column(name = "authCreateTimestamp", columnDefinition = "timestamp default current_timestamp not null")
     public Timestamp authCreateTimestamp;
 
@@ -48,34 +57,38 @@ public class Auth extends Model {
         Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", candidateAuthMobile).findUnique();
         Logger.info("Existing user mobile: " + existingCandidate.candidateMobile);
         if(existingCandidate != null) {
-                Auth auth = new Auth();
-                auth.authId =  (int)(Math.random()*9000)+100000;
-                auth.candidateId = existingCandidate.candidateId;
-                int passwordSalt = (new Random()).nextInt();
-                auth.passwordMd5 = Util.md5(candidatePassword + passwordSalt);
-                auth.passwordSalt = passwordSalt;
-                auth.save();
+            Auth auth = new Auth();
+            auth.authId =  (int)(Math.random()*9000)+100000;
+            auth.candidateId = existingCandidate.candidateId;
+            int passwordSalt = (new Random()).nextInt();
+            auth.passwordMd5 = Util.md5(candidatePassword + passwordSalt);
+            auth.passwordSalt = passwordSalt;
+            auth.authSessionId = UUID.randomUUID().toString();
+            auth.authSessionIdExpiryMillis = System.currentTimeMillis() + 24 * 60 * 60 * 1000;
+            session("sessionId", auth.authSessionId);
+            session("sessionExpiry", String.valueOf(auth.authSessionIdExpiryMillis));
+            auth.save();
 
-                Interaction interaction = new Interaction();
-                interaction.objectAUUId = existingCandidate.candidateUUId;
-                interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
-                interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
-                interaction.result = "New Candidate Added";
-                interaction.save();
+            Interaction interaction = new Interaction();
+            interaction.objectAUUId = existingCandidate.candidateUUId;
+            interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
+            interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+            interaction.result = "New Candidate Added";
+            interaction.save();
 
-                existingCandidate.candidateStatusId = 1;
-                existingCandidate.update();
+            existingCandidate.candidateStatusId = 1;
+            existingCandidate.update();
 
-                Lead existingLead = Lead.find.where().eq("leadMobile", existingCandidate.candidateMobile).findUnique();
-                existingLead.leadStatus = ServerConstants.LEAD_STATUS_WON;
-                existingLead.update();
+            Lead existingLead = Lead.find.where().eq("leadMobile", existingCandidate.candidateMobile).findUnique();
+            existingLead.leadStatus = ServerConstants.LEAD_STATUS_WON;
+            existingLead.update();
 
-                candidateSignUpResponse.setCandidateId(existingCandidate.candidateId);
-                candidateSignUpResponse.setCandidateName(existingCandidate.candidateName);
-                candidateSignUpResponse.setAccountStatus(existingCandidate.candidateStatusId);
-                candidateSignUpResponse.setCandidateEmail(existingCandidate.candidateEmail);
-                candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-                Logger.info("Auth Save Successful");
+            candidateSignUpResponse.setCandidateId(existingCandidate.candidateId);
+            candidateSignUpResponse.setCandidateName(existingCandidate.candidateName);
+            candidateSignUpResponse.setAccountStatus(existingCandidate.candidateStatusId);
+            candidateSignUpResponse.setCandidateEmail(existingCandidate.candidateEmail);
+            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+            Logger.info("Auth Save Successful");
         }
         else {
             Logger.info("User Does not Exist!");

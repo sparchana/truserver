@@ -40,18 +40,19 @@ GET      /getCandidateInfo/:id                                    controllers.Ap
 
 GET      /getCandidateLocality/:id                                controllers.Application.getCandidateLocality(id : Long)
 
-GET      /getCandidateJob/:id                                    controllers.Application.getCandidateJob(id : Long)
+GET      /getCandidateJob/:id                                     controllers.Application.getCandidateJob(id : Long)
 
+GET      /updateLeadType/:leadId/:newStatus                       controllers.Application.updateLeadType(leadId: Long, newStatus: Long)
 
-GET      /updateLeadType/:leadId/:newStatus                      controllers.Application.updateLeadType(leadId: Long, newStatus: Long)
+GET      /updateLeadStatus/:leadId                                controllers.Application.updateLeadStatus(leadId: Long)
 
-GET      /updateLeadStatus/:leadId                               controllers.Application.updateLeadStatus(leadId: Long)
+GET      /street                                                  controllers.Application.supportAuth()
 
-GET      /street                                                 controllers.Application.supportAuth()
+POST     /auth                                                    controllers.Application.auth()
 
-POST     /auth                                                  controllers.Application.auth()
+GET      /logout                                                  controllers.Application.logout()
 
-GET      /logout                                                 controllers.Application.logout()
+GET      /logoutUser                                              controllers.Application.logoutUser()
 
 # Map static resources from the /public folder to the /assets URL path
 GET    /robots.txt                                controllers.Assets.at(path="/public", file="robots.txt")

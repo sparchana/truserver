@@ -8,6 +8,8 @@ create table auth (
   candidateid                   bigint signed not null,
   passwordmd5                   char(60) not null,
   passwordsalt                  bigint signed not null,
+  authsessionid                 varchar(50) not null not null,
+  authsessionidexpirymillis     bigint signed not null not null,
   authcreatetimestamp           timestamp default current_timestamp not null,
   authupdatetimestamp           timestamp not null default 0,
   constraint pk_auth primary key (authid)

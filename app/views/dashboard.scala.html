@@ -477,8 +477,19 @@
           }
 
         });
-        function logout() {
+        function logoutUser() {
           localStorage.clear();
+            try {
+                $.ajax({
+                    type: "GET",
+                    url: "/logoutUser",
+                    data: false,
+                    contentType: false,
+                    processData: false,
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
           window.location = "/";
 
         }
@@ -531,8 +542,7 @@
                   <ul class="nav navbar-nav navbar-right">
                       <li><a href="tel:+918880007799">JOB HOTLINE 8880007799</a></li>
                       <li><a><div id="helloMsg"></div></a></li>
-                      <li style="cursor: hand" onclick="logout()"><a>Logout</a></li>
-
+                      <li style="cursor: hand" onclick="logoutUser()"><a>Logout</a></li>
                   </ul>
               </div>
                   <!-- /.navbar-collapse -->
