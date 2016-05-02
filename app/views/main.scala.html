@@ -359,8 +359,41 @@
                             <div class="col-sm-9"><input id="candidateMobile" name="candidateMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" class="form-control input-md" required></div>
                         </div>
 
+                        <div class="row" style="margin-top: 8px;">
+                            <div class="col-sm-3"><h6>Interested Jobs:</h6></div>
+                            <div class="col-sm-9">
+                                <input type="text" id="candidateJobPref" />
+                                <script type="text/javascript">
+                                $(document).ready(function() {
+                                    $("#candidateJobPref").tokenInput([
+                                        {id: 1, name: "BPO - Voice"},
+                                        {id: 2, name: "BPO - Non Voice"},
+                                        {id: 3, name: "Beautician"},
+                                        {id: 4, name: "Cashier"},
+                                        {id: 5, name: "Cook"},
+                                        {id: 6, name: "Delivery Boy"},
+                                        {id: 7, name: "Data Entry"},
+                                        {id: 8, name: "Driver"},
+                                        {id: 9, name: "Field Sales"},
+                                        {id: 10, name: "Hair Dresser"},
+                                        {id: 11, name: "Massage Therapist"},
+                                        {id: 12, name: "Receptionist"},
+                                        {id: 13, name: "Steward"},
+                                        {id: 14, name: "Store Manager"},
+                                        {id: 15, name: "Telecaller"},
+                                        {id: 16, name: "Waiter"}
+                                    ], {
+                                        theme: "facebook",
+                                        hintText: "Start typing jobs (eg. Cook,Delivery boy..)"
+                                    });
+                                });
+                                </script>
+
+                            </div>
+                        </div>
+
                         <div class="row" style="margin-top: 8px; color: #555">
-                            <div class="col-sm-3" style="color: #0B4063"><h6>Localities:</h6></div>
+                            <div class="col-sm-3" style="color: #0B4063"><h6>Interested Areas:</h6></div>
                             <div class="col-sm-9">
                                 <input type="text" id="candidateLocality" />
                                 <script type="text/javascript">
@@ -715,40 +748,10 @@
                                     });
                                 });
                                 </script>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top: 8px;">
-                            <div class="col-sm-3"><h6>Job Interest:</h6></div>
-                            <div class="col-sm-9">
-                                <input type="text" id="candidateJobPref" />
-                                <script type="text/javascript">
-                                $(document).ready(function() {
-                                    $("#candidateJobPref").tokenInput([
-                                        {id: 1, name: "BPO - Voice"},
-                                        {id: 2, name: "BPO - Non Voice"},
-                                        {id: 3, name: "Beautician"},
-                                        {id: 4, name: "Cashier"},
-                                        {id: 5, name: "Cook"},
-                                        {id: 6, name: "Delivery Boy"},
-                                        {id: 7, name: "Data Entry"},
-                                        {id: 8, name: "Driver"},
-                                        {id: 9, name: "Field Sales"},
-                                        {id: 10, name: "Hair Dresser"},
-                                        {id: 11, name: "Massage Therapist"},
-                                        {id: 12, name: "Receptionist"},
-                                        {id: 13, name: "Steward"},
-                                        {id: 14, name: "Store Manager"},
-                                        {id: 15, name: "Telecaller"},
-                                        {id: 16, name: "Waiter"}
-                                    ], {
-                                        theme: "facebook",
-                                        hintText: "Start typing jobs (eg. Cook,Delivery boy..)"
-                                    });
-                                });
-                                </script>
                                 <button type="submit" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Register</button>
                             </div>
                         </div>
+
                             <!-- Text input-->
                     </form>
                     <form id="form_otp" role="form" name="form_otp" style="display: none">
