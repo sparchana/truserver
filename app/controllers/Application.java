@@ -82,7 +82,7 @@ public class Application extends Controller {
 
     @Security.Authenticated(SecuredUser.class)
     public static Result dashboard() {
-        return ok(views.html.dashboard.render());
+        return ok(views.html.candidate_home.render());
     }
 
     public static Result checkCandidate() {
@@ -363,4 +363,5 @@ public class Application extends Controller {
         }
         return badRequest();
     }
+
 }

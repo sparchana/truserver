@@ -5,11 +5,15 @@
 function processDataSignUpSubmit(returnedData) {
     console.log("returedData :" + returnedData.status);
     if(returnedData.status == 1) {
+        $('#myRegistrationModal').modal('show');
         $('#autoCandidateMobile').val($('#candidateMobile').val());
         $('#candidateName').val('');
         $('#candidateMobile').val('');
         $('#candidateEmail').val('');
-        $('#form_signup_candidate').hide();
+        $('#candidateMobile').val('');
+        $('#candidateName').val('');
+        $('#candidateJobPref').val('');
+        $('#candidateLocality').val('');
         document.getElementById("helpTextSignup").innerHTML = "Enter OTP sent on " + $('#autoCandidateMobile').val();
         $('#form_otp').show();
 
@@ -40,8 +44,8 @@ function processDataVerifyOtp(returnedData) {
         
     }
     else if(returnedData.status == 4){
+        $('#incorrectOtpMsg').show();
         $('#errorMsg').hide();
-        $('#incorrectMsg').show();
         $('#candidateOtp').val('');
     }
 
@@ -123,6 +127,7 @@ $(function() {
 $(function() {
     $("#form_auth").submit(function(eventObj) {
         eventObj.preventDefault();
+        document.getElementById("btnSubmit").disabled = true;
         try {
             var authPassword = $('#candidatePassword').val();
             var authMobile = $('#authMobile').val();

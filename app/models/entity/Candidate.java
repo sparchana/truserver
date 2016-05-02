@@ -61,7 +61,7 @@ public class Candidate extends Model {
     @Column(name = "CandidateUpdateTimestamp", columnDefinition = "timestamp null")
     public Timestamp candidateUpdateTimestamp;
 
-    @Column(name = "CandidateOtp", columnDefinition = "int signed not null default 1234", length = 4)
+    @Column(name = "CandidateOtp", columnDefinition = "int signed not null default 1234")
     public int candidateOtp = 1234;
 
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
@@ -87,17 +87,28 @@ public class Candidate extends Model {
                 lead.leadType = ServerConstants.TYPE_CANDIDATE;
                 lead.save();
 
+                candidate.leadId = lead.leadId;
                 candidate.candidateId = Util.randomLong();
                 candidate.candidateUUId = UUID.randomUUID().toString();
                 candidate.candidateName = candidateSignUpRequest.getCandidateName();
                 candidate.candidateMobile = candidateSignUpRequest.getCandidateMobile();
                 candidate.candidateAge = 0;
-                candidate.leadId = lead.leadId;
                 candidate.candidateStatusId = 0;
+                candidate.save();
+            }
+            else{
+                candidate.leadId = existingLead.leadId;
+                candidate.candidateId = Util.randomLong();
+                candidate.candidateUUId = UUID.randomUUID().toString();
+                candidate.candidateName = candidateSignUpRequest.getCandidateName();
+                candidate.candidateMobile = candidateSignUpRequest.getCandidateMobile();
+                candidate.candidateAge = 0;
+                candidate.candidateStatusId = 0;
+                candidate.save();
+            }
                 int randomPIN = (int)(Math.random()*9000)+1000;
                 String otpCode = String.valueOf(randomPIN);
                 candidate.candidateOtp = randomPIN;
-                candidate.save();
 
                 List<String> locality = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
                 for(String  s : locality) {
@@ -121,7 +132,6 @@ public class Candidate extends Model {
                 SmsUtil.sendSms(candidate.candidateMobile,msg);
                 Logger.info("Candidate successfully registered " + candidate);
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-            }
 
         }
         else if(existingCandidate != null && existingCandidate.candidateStatusId == 0) {
