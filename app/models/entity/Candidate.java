@@ -56,7 +56,7 @@ public class Candidate extends Model {
     public int candidateAge = 0;
 
     @Column(name = "CandidateCreateTimestamp", columnDefinition = "timestamp default current_timestamp not null")
-    public Timestamp candidateCreateTimestamp;
+    public Timestamp candidateCreateTimestamp = new Timestamp(System.currentTimeMillis());
 
     @Column(name = "CandidateUpdateTimestamp", columnDefinition = "timestamp null")
     public Timestamp candidateUpdateTimestamp;

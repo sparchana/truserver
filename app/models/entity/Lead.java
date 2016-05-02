@@ -49,7 +49,7 @@ public class Lead extends Model {
     public String leadInterest = "";
 
     @Column(name = "LeadCreationTimestamp", columnDefinition = "timestamp default current_timestamp not null", nullable = false)
-    public Timestamp leadCreationTimestamp;
+    public Timestamp leadCreationTimestamp = new Timestamp(System.currentTimeMillis());
 
     public static Finder<String, Lead> find = new Finder(Lead.class);
 
