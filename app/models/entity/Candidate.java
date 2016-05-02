@@ -58,7 +58,7 @@ public class Candidate extends Model {
     @Column(name = "CandidateCreateTimestamp", columnDefinition = "timestamp default current_timestamp not null")
     public Timestamp candidateCreateTimestamp;
 
-    @Column(name = "CandidateUpdateTimestamp", columnDefinition = "timestamp not null")
+    @Column(name = "CandidateUpdateTimestamp", columnDefinition = "timestamp null")
     public Timestamp candidateUpdateTimestamp;
 
     @Column(name = "CandidateOtp", columnDefinition = "int signed not null default 1234", length = 4)
