@@ -44,9 +44,8 @@ public class Application extends Controller {
 
     public static Result addLead() {
         Form<AddLeadRequest> userForm = Form.form(AddLeadRequest.class);
-        Logger.info(String.valueOf(request().body().asFormUrlEncoded()));
         AddLeadRequest addLeadRequest = userForm.bindFromRequest().get();
-        return ok(toJson("status: 0"));
+        return ok(toJson(Lead.addLead(addLeadRequest)));
     }
 
 
@@ -110,18 +109,12 @@ public class Application extends Controller {
     }
 
     public static Result getAll(){
-       /* Developer developer = Developer.find.where().eq("developerApikey", api_key).findUnique();
-        if(developer == null) {
-            return badRequest("Permission Denied! Contact: tech@trujobs.in");
-        }*/
-
-        //
-        // Picks all kw call inbounds
-        List<Lead> allLead = Lead.find.all();
+        List<Lead> allLead = Lead.find.where().ne("leadStatus", ServerConstants.LEAD_STATUS_WON).findList();
         List<Interaction> allInteractions = Interaction.find.all();
         List<Lead> allNewLeads = Lead.find.where()
-                .eq("leadType",ServerConstants.TYPE_LEAD)
-                .eq("leadStatus",ServerConstants.LEAD_STATUS_NEW).findList();
+                .eq("leadType", ServerConstants.TYPE_LEAD)
+                .ne("leadStatus", ServerConstants.LEAD_STATUS_WON)
+                .eq("leadStatus", ServerConstants.LEAD_STATUS_NEW).findList();
         ArrayList<SupportDashboardElementResponse> responses = new ArrayList<>();
 
         SimpleDateFormat sfd = new SimpleDateFormat("yyyy-MM-dd hh:mm:ssXXX");
@@ -136,6 +129,8 @@ public class Application extends Controller {
             switch (l.leadStatus) {
                 case 0: response.setLeadStatus("New"); break;
                 case 1: response.setLeadStatus("T.T.C"); break;
+                case 2: response.setLeadStatus("Won"); break;
+                case 3: response.setLeadStatus("Lost"); break;
             }
             switch (l.leadType) {
                 case 0: response.setLeadType("Fresh"); break;
@@ -162,12 +157,6 @@ public class Application extends Controller {
             response.setTotalInBounds(mTotalInteraction);
             responses.add(response);
         }
-        /*List<Interaction> interactions = Interaction.find.where().eq("InteractionType", ServerConstants.INTERACTION_TYPE_CALL_IN).findList();
-
-        ArrayList<Lead> listUnique = new ArrayList<>();
-        for(Lead l: allLead) {
-            // find all new leads
-        }*/
 
         return ok(toJson(responses));
     }
@@ -199,25 +188,6 @@ public class Application extends Controller {
             Logger.info("Candidate Info Updated !!");
         } else {
 
-           /* Candidate candidate = new Candidate();
-            candidate.candidateChannel = ServerConstants.LEAD_CHANNEL_WEBSITE;
-            candidate.candidateCreateTimestamp = new Timestamp(System.currentTimeMillis());
-            candidate.candidateUUId = UUID.randomUUID().toString();
-            candidate.candidateId = Util.randomLong();
-            candidate.candidateName = request.getCandidateName();
-            candidate.candidateMobile = request.getCandidateMobile();
-            candidate.candidateUpdateTimestamp =  new Timestamp(System.currentTimeMillis());
-            candidate.candidateState = ServerConstants.CANDIDATE_STATE_NEW;
-            candidate.leadId = request.getLeadId();
-            candidate.save();*//*
-
-            // change lead type from lead to candidate if min-req info is available
-            if(candidate.candidateName != null ||candidate.candidateMobile != null ){
-                Lead updateLead = Lead.find.where().eq("leadId", request.getLeadId()).findUnique();
-                updateLead.setLeadType(ServerConstants.TYPE_CANDIDATE);
-                updateLead.update();
-            }
-*/
             Lead updateLead = Lead.find.where().eq("leadId", request.getLeadId()).findUnique();
 
             interaction.setObjectAUUId(updateLead.getLeadUUId());
@@ -241,19 +211,10 @@ public class Application extends Controller {
         return badRequest("{ status: 0}");
     }
 
-    public static Result updateLeadType(long leadId, long newType) {
-        Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
-        if(lead != null){
-            lead.setLeadType((int) newType);
-            lead.update();
-            return ok(toJson(newType));
-        }
-        return badRequest();
-    }
-
     public static Result supportAuth() {
         return ok(views.html.supportAuth.render());
     }
+
     public static Result logout() {
         session().clear();
         flash("success", "You've been logged out");
@@ -261,7 +222,6 @@ public class Application extends Controller {
                 routes.Application.supportAuth()
         );
     }
-
     public static Result auth() {
         Form<DevLoginRequest> userForm = Form.form(DevLoginRequest.class);
         DevLoginRequest request = userForm.bindFromRequest().get();
@@ -286,5 +246,29 @@ public class Application extends Controller {
             return badRequest("Account Doesn't exists!!");
         }
         return redirect(routes.Application.supportAuth());
+    }
+
+    public static Result updateLeadType(long leadId, long newType) {
+        Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
+        if(lead != null){
+            lead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
+            lead.setLeadType((int) newType);
+            lead.update();
+            return ok(toJson(newType));
+        }
+        return badRequest();
+    }
+
+    public static Result updateLeadStatus(long leadId) {
+        Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
+
+        if(lead != null){
+            if(lead.leadStatus == ServerConstants.LEAD_STATUS_NEW) {
+                lead.setLeadStatus(ServerConstants.LEAD_STATUS_TTC);
+                lead.update();
+            }
+            return ok(toJson(lead.leadStatus));
+        }
+        return badRequest();
     }
 }

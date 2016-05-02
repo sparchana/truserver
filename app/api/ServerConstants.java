@@ -17,6 +17,8 @@ public class ServerConstants {
 
     public static final int LEAD_STATUS_NEW= 0;
     public static final int LEAD_STATUS_TTC= 1; // TTC: Trying To Convert
+    public static final int LEAD_STATUS_WON= 2; // Converted:
+    public static final int LEAD_STATUS_LOST= 3; // LOST:
 
 
     public static final int OBJECT_TYPE_LEAD= 1;

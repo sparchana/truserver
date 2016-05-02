@@ -72,41 +72,43 @@ public class Lead extends Model {
         }
         return addLeadResponse;
     }
+
+
+
     public String getLeadName(){
         return this.leadName;
     }
     public String getLeadMobile(){
         return this.leadMobile;
     }
-
     public String getLeadUUId() {
         return leadUUId;
     }
-
     public long getLeadId() {
         return leadId;
 
     }
-
     public int getLeadSource() {
         return leadChannel;
+    }
+    public int getLeadType() {
+
+        return leadType;
+    }
+    public Timestamp getLeadCreationTimestamp() {
+        return leadCreationTimestamp;
+    }
+    public int getLeadStatus() {
+        return leadStatus;
     }
 
     public void setLeadId(long leadId) {
         this.leadId = leadId;
     }
-
-    public int getLeadType() {
-
-        return leadType;
-    }
-
-    public Timestamp getLeadCreationTimestamp() {
-        return leadCreationTimestamp;
-    }
-
     public void setLeadType(int leadType) {
         this.leadType = leadType;
     }
-
+    public void setLeadStatus(int leadStatus) {
+        this.leadStatus = leadStatus;
+    }
 }

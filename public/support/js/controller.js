@@ -1,8 +1,3 @@
-/*function processDataForCall(returnedData) {
-    (returnedData);
-
-}*/
-
 function cleaModalBackDrop() {
     $('#newLeadEntryModal').modal('hide');
     $('body').removeClass('modal-open');
@@ -32,8 +27,9 @@ function processLeadUpdate(returnedData) {
         alert('Unable to show data');
     }
     window.location="/support";
-
 }
+
+
 
 function processCandidateReg(returnedData) {
 
@@ -72,9 +68,9 @@ function processDataForSupport(returnedData) {
                 newLead.leadName,
                 function(){
                     if(newLead.leadStatus == 'New') {
-                        return '<input type="submit" data-toggle="modal" data-target="#callResponseModal" value="Call" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+')" id="'+newLead.leadMobile+'"class="btn btn-primary">'
+                        return '<input type="submit" data-toggle="modal" data-target="#callResponseModal" value="Call" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+')" id="'+newLead.leadId+'" class="btn btn-primary">'
                     } else {
-                        return '<input type="submit" data-toggle="modal" data-target="#callResponseModal" value="Call Back" id="click2call_submitbtn" class="btn btn-default">'
+                        return '<input type="submit" data-toggle="modal" data-target="#callResponseModal" value="Call Back" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+')" id="'+newLead.leadId+'"  class="btn btn-default">'
                     }
                 }
             ] ).draw( false );
@@ -104,15 +100,14 @@ function getCandidateInfo(id) {
 
 
 function myHandler (mobile, id) {
-
     console.log(mobile + " " +id);
     // changes modal leadId field value
     $("#leadId").val(id);
     $("#candidateMobile").val("+"+mobile);
     var s = {
         api_key: "dae93473-50a6-11e5-bbe8-067cf20e9301",
-        agent_number: "+919019672209",
-        phone_number: "+919019672209",
+        agent_number: "+919980303169",
+        phone_number: mobile,
         sr_number: "+918880007799"
     };
 
@@ -128,6 +123,19 @@ function myHandler (mobile, id) {
             error: function (e) {
 
                 alert("error ")
+            }
+        });
+        $.ajax({
+            type: "GET",
+            url: "/updateLeadStatus/"+id,
+            processData: false,
+            success: function (e) {
+                if(e == '1'){
+                    var table = $('#leadTable').DataTable();
+                    $("input#"+id).removeClass();
+                    $("input#"+id).addClass("btn btn-default");
+                    $('input#'+id).prop('value', 'Call back');
+                }
             }
         });
 
@@ -159,16 +167,15 @@ $(function(){
 
             var leadId = $("#leadId").val();
             var answer = document.querySelector('input[name="answer"]:checked').value;
-            console.log(answer);
-
-            $.ajax({
-                type: "GET",
-                url: "/updateLeadType/"+leadId+"/"+answer,
-                processData: false,
-                success: processLeadUpdate
-
-            });
-
+            var updateType = document.querySelector('input[name="updateType"]:checked').value;
+            if(answer == 'yes') {
+                $.ajax({
+                    type: "GET",
+                    url: "/updateLeadType/"+leadId+"/"+updateType,
+                    processData: false,
+                    success: processLeadUpdate
+                });
+            }
         } catch (exception) {
         }
 
