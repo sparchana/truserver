@@ -14,12 +14,12 @@ function processDataLogin(returnedData) {
 
     else if(returnedData.status == 3){
         $('#noUserLogin').show();
-        $('#errorMsg').hide();
+        $('#incorrectMsgLogin').hide();
     }
 
     else {
         $('#noUserLogin').hide();
-        $('#incorrectMsgLogin').hide();
+        $('#incorrectMsgLogin').show();
     }
 }
 

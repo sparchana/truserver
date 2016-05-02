@@ -10,14 +10,11 @@ function processDataResetCheckUser(returnedData) {
         $('#forgotPasswordAutoMobile').val($('#resetPasswordMobile').val());
         $('#form_password_reset_otp').show();
         $('#form_forgot_password').hide();
-    }
-
-    else if(returnedData.status == 2){
-        $('#errorMsgReset').show();
+        $('#noUserLogin').hide();
     }
 
     else {
-        $('#errorMsgReset').show();
+        $('#noUserLogin').show();
     }
 }
 
@@ -27,16 +24,11 @@ function processDataCheckResetOtp(returnedData) {
         $('#forgotPasswordNewMobile').val($('#forgotPasswordAutoMobile').val());
         $('#form_password_reset_otp').hide();
         $('#form_password_reset_new').show();
+        $('#wrongOtp').hide();
     }
-
-    else if(returnedData.status == 2){
-        $('#incorrectMsg').show();
-        $('#errorMsg').hide();
-    }
-
+        
     else {
-        $('#incorrectMsg').hide();
-        $('#errorMsg').show();
+        $('#wrongOtp').show();
     }
 }
 

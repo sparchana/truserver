@@ -43,7 +43,4 @@ public class ServerConstants {
     public static final int DEV_ACCESS_LEVEL_SUPPORT_ROLE = 1;
     public static final int DEV_ACCESS_LEVEL_UPLOADER = 2;
 
-
-
-
 }

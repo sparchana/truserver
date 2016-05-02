@@ -9,12 +9,19 @@ import api.http.AddCandidateRequest;
 import api.http.AddCandidateResponse;
 import api.http.AddLeadRequest;
 import api.http.SupportDashboardElementResponse;
+import api.http.*;
+import au.com.bytecode.opencsv.CSVReader;
+import models.entity.Candidate;
+import models.entity.Developer;
+import models.entity.Interaction;
+import models.entity.Lead;
 import models.util.Util;
 import play.Logger;
 import play.data.Form;
 import play.mvc.Controller;
 import au.com.bytecode.opencsv.CSVReader;
 import play.mvc.Result;
+import play.mvc.Security;
 
 import java.io.File;
 import java.io.FileReader;
@@ -34,13 +41,18 @@ public class Application extends Controller {
         return ok(views.html.index.render());
     }
 
+    @Security.Authenticated(Secured.class)
     public static Result support() {
-        return ok(views.html.support.render());
+        String sessionId = session().get("sessionId");
+        Developer developer = Developer.find.where().eq("developerSessionId", sessionId ).findUnique();
+        if(developer != null && developer.developerAccessLevel == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE) {
+            return ok(views.html.support.render());
+        }
+        return badRequest("Your Access Level : Only Upload");
     }
 
     public static Result addLead() {
         Form<AddLeadRequest> userForm = Form.form(AddLeadRequest.class);
-        Logger.info(String.valueOf(request().body().asFormUrlEncoded()));
         AddLeadRequest addLeadRequest = userForm.bindFromRequest().get();
         return ok(toJson(Lead.addLead(addLeadRequest)));
     }
@@ -153,47 +165,54 @@ public class Application extends Controller {
     }
 
     public static Result getAll(){
-       /* Developer developer = Developer.find.where().eq("developerApikey", api_key).findUnique();
-        if(developer == null) {
-            return badRequest("Permission Denied! Contact: tech@trujobs.in");
-        }*/
-
-        //
-        // Picks all kw call inbounds
-        List<Lead> allLead = Lead.find.all();
+        List<Lead> allLead = Lead.find.where().ne("leadStatus", ServerConstants.LEAD_STATUS_WON).findList();
+        List<Interaction> allInteractions = Interaction.find.all();
         List<Lead> allNewLeads = Lead.find.where()
-                .eq("leadType",ServerConstants.TYPE_LEAD)
-                .eq("leadStatus",ServerConstants.LEAD_STATUS_NEW).findList();
+                .eq("leadType", ServerConstants.TYPE_LEAD)
+                .ne("leadStatus", ServerConstants.LEAD_STATUS_WON)
+                .eq("leadStatus", ServerConstants.LEAD_STATUS_NEW).findList();
         ArrayList<SupportDashboardElementResponse> responses = new ArrayList<>();
-        for(Lead l : allNewLeads){
+
+        SimpleDateFormat sfd = new SimpleDateFormat("yyyy-MM-dd hh:mm:ssXXX");
+
+        for(Lead l : allLead){
             SupportDashboardElementResponse response = new SupportDashboardElementResponse();
 
-            response.setLeadCreationTimestamp(new SimpleDateFormat("yyyy-MM-dd hh:mm:ssXXX").format(l.getLeadCreationTimestamp()));
+            response.setLeadCreationTimestamp(sfd.format(l.getLeadCreationTimestamp()));
             response.setLeadId(l.leadId);
             response.setLeadName(l.leadName);
             response.setLeadMobile(l.leadMobile);
             switch (l.leadStatus) {
                 case 0: response.setLeadStatus("New"); break;
                 case 1: response.setLeadStatus("T.T.C"); break;
+                case 2: response.setLeadStatus("Won"); break;
+                case 3: response.setLeadStatus("Lost"); break;
             }
             switch (l.leadType) {
                 case 0: response.setLeadType("Fresh"); break;
                 case 1: response.setLeadType("Lead"); break;
-                case 2: response.setLeadType("Candidate"); break;
-                case 3: response.setLeadType("Recruiter"); break;
+                case 2: response.setLeadType("Potential Candidate"); break;
+                case 3: response.setLeadType("Potential Recruiter"); break;
+                case 4: response.setLeadType("Candidate"); break;
+                case 5: response.setLeadType("Recruiter"); break;
             }
             switch (l.leadChannel) {
                 case 0: response.setLeadChannel("Website"); break;
                 case 1: response.setLeadChannel("Knowlarity"); break;
             }
+            int mTotalInteraction=0;
+            List<Interaction> interactionsOfLead = Interaction.find.where().eq("objectAUUId", l.leadUUId).findList();
+            Timestamp mostRecent = l.leadCreationTimestamp;
+            for(Interaction i: interactionsOfLead){
+                mTotalInteraction++;
+                if(mostRecent.getTime() <= i.creationTimestamp.getTime()){
+                    mostRecent = i.creationTimestamp;
+                }
+            }
+            response.setLastIncomingCallTimestamp(sfd.format(mostRecent));
+            response.setTotalInBounds(mTotalInteraction);
             responses.add(response);
         }
-        /*List<Interaction> interactions = Interaction.find.where().eq("InteractionType", ServerConstants.INTERACTION_TYPE_CALL_IN).findList();
-
-        ArrayList<Lead> listUnique = new ArrayList<>();
-        for(Lead l: allLead) {
-            // find all new leads
-        }*/
 
         return ok(toJson(responses));
     }
@@ -225,27 +244,10 @@ public class Application extends Controller {
             Logger.info("Candidate Info Updated !!");
         } else {
 
-            Candidate candidate = new Candidate();
-            candidate.candidateChannel = ServerConstants.LEAD_CHANNEL_WEBSITE;
-            candidate.candidateCreateTimestamp = new Timestamp(System.currentTimeMillis());
-            candidate.candidateUUId = UUID.randomUUID().toString();
-            candidate.candidateId = Util.randomLong();
-            candidate.candidateName = request.getCandidateName();
-            candidate.candidateMobile = request.getCandidateMobile();
-            candidate.candidateUpdateTimestamp =  new Timestamp(System.currentTimeMillis());
-            candidate.candidateState = ServerConstants.CANDIDATE_STATE_NEW;
-            candidate.leadId = request.getLeadId();
-            candidate.save();
+            Lead updateLead = Lead.find.where().eq("leadId", request.getLeadId()).findUnique();
 
-            // change lead type from lead to candidate if min-req info is available
-            if(candidate.candidateName != null ||candidate.candidateMobile != null ){
-                Lead updateLead = Lead.find.where().eq("leadId", request.getLeadId()).findUnique();
-                updateLead.setLeadType(ServerConstants.TYPE_CANDIDATE);
-                updateLead.update();
-            }
-
-            interaction.setObjectAUUId(candidate.candidateUUId);
-            interaction.setObjectAType(ServerConstants.TYPE_CANDIDATE);
+            interaction.setObjectAUUId(updateLead.getLeadUUId());
+            interaction.setObjectAType(ServerConstants.TYPE_LEAD);
 
             response.setStatus(AddCandidateResponse.STATUS_SUCCESS);
         }
@@ -254,15 +256,14 @@ public class Application extends Controller {
     }
 
     public static Result getCandidateInfo(long id) {
-            Candidate candidate = Candidate.find.where().eq("leadId", id).findUnique();
-            if(candidate != null) {
-                Interaction currentInteraction = Interaction.find.where().eq("objectAUUId", candidate.candidateUUId).findUnique();
+            Lead lead = Lead.find.where().eq("leadId", id).findUnique();
+            if(lead != null) {
+                Interaction currentInteraction = Interaction.find.where().eq("objectAUUId", lead.leadUUId).findUnique();
                 if(currentInteraction != null) {
-                    return ok(toJson(candidate+""+currentInteraction));
+                    return ok(toJson(lead+""+currentInteraction));
                 }
-                return ok(toJson(candidate));
+                return ok(toJson(lead));
             }
-
         return badRequest("{ status: 0}");
     }
 
@@ -274,5 +275,66 @@ public class Application extends Controller {
     public static Result getCandidateJob(long id) {
         List<CandidateJob> candidateJobs = CandidateJob.find.where().eq("CandidateJobCandidateId", id).findList();
         return ok(toJson(candidateJobs));
+    }
+
+    public static Result supportAuth() {
+        return ok(views.html.supportAuth.render());
+    }
+
+    public static Result logout() {
+        session().clear();
+        flash("success", "You've been logged out");
+        return redirect(
+                routes.Application.supportAuth()
+        );
+    }
+    public static Result auth() {
+        Form<DevLoginRequest> userForm = Form.form(DevLoginRequest.class);
+        DevLoginRequest request = userForm.bindFromRequest().get();
+        Logger.info("inside support" + request.toString());
+        Developer developer = Developer.find.where().eq("developerId", request.getAdminid()).findUnique();
+        if(developer!=null){
+            Logger.info(Util.md5(request.getAdminpass() + developer.developerPasswordSalt));
+            if(developer.developerPasswordMd5.equals(Util.md5(request.getAdminpass() + developer.developerPasswordSalt))) {
+                developer.setDeveloperSessionId(UUID.randomUUID().toString());
+                developer.setDeveloperSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
+                developer.update();
+                session("sessionId", developer.developerSessionId);
+                session("sessionExpiry", String.valueOf(developer.developerSessionIdExpiryMillis));
+                if(developer.developerAccessLevel == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE){
+                    return redirect(routes.Application.support());
+                }
+                if(developer.developerAccessLevel == ServerConstants.DEV_ACCESS_LEVEL_UPLOADER) {
+                    return ok(views.html.uploadcsv.render());
+                }
+            }
+        } else {
+            return badRequest("Account Doesn't exists!!");
+        }
+        return redirect(routes.Application.supportAuth());
+    }
+
+    public static Result updateLeadType(long leadId, long newType) {
+        Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
+        if(lead != null){
+            lead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
+            lead.setLeadType((int) newType);
+            lead.update();
+            return ok(toJson(newType));
+        }
+        return badRequest();
+    }
+
+    public static Result updateLeadStatus(long leadId) {
+        Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
+
+        if(lead != null){
+            if(lead.leadStatus == ServerConstants.LEAD_STATUS_NEW) {
+                lead.setLeadStatus(ServerConstants.LEAD_STATUS_TTC);
+                lead.update();
+            }
+            return ok(toJson(lead.leadStatus));
+        }
+        return badRequest();
     }
 }

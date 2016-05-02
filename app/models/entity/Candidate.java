@@ -72,58 +72,55 @@ public class Candidate extends Model {
         Candidate candidate = new Candidate();
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
         Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", mobile).findUnique();
+        Lead lead = new Lead();
 
         if(existingCandidate == null ) {
-            Lead lead = new Lead();
-            lead.leadId = Util.randomLong();
-            lead.leadMobile = candidateSignUpRequest.getAutoCandidateMobile();
-            lead.leadUUId = UUID.randomUUID().toString();
-            lead.leadChannel = ServerConstants.LEAD_CHANNEL_WEBSITE;
-            lead.leadName = candidateSignUpRequest.getCandidateName();
-            lead.leadType = ServerConstants.TYPE_CANDIDATE;
-            lead.save();
+            Lead existingLead = Lead.find.where().eq("leadMobile", mobile).findUnique();
+            if(existingLead == null) {
+                lead.leadId = Util.randomLong();
+                lead.leadMobile = candidateSignUpRequest.getCandidateMobile();
+                lead.leadUUId = UUID.randomUUID().toString();
+                lead.leadChannel = ServerConstants.LEAD_CHANNEL_WEBSITE;
+                lead.leadName = candidateSignUpRequest.getCandidateName();
+                lead.leadType = ServerConstants.TYPE_CANDIDATE;
+                lead.save();
 
-            candidate.candidateId = Util.randomLong();
-            candidate.candidateUUId = UUID.randomUUID().toString();
-            candidate.candidateName = candidateSignUpRequest.getCandidateName();
-            candidate.candidateMobile = candidateSignUpRequest.getCandidateMobile();
-            candidate.candidateAge = 0;
-            candidate.leadId = lead.leadId;
-            candidate.candidateStatusId = 0;
-            int randomPIN = (int)(Math.random()*9000)+1000;
-            String otpCode = String.valueOf(randomPIN);
-            candidate.candidateOtp = randomPIN;
-            candidate.save();
+                candidate.candidateId = Util.randomLong();
+                candidate.candidateUUId = UUID.randomUUID().toString();
+                candidate.candidateName = candidateSignUpRequest.getCandidateName();
+                candidate.candidateMobile = candidateSignUpRequest.getCandidateMobile();
+                candidate.candidateAge = 0;
+                candidate.leadId = lead.leadId;
+                candidate.candidateStatusId = 0;
+                int randomPIN = (int)(Math.random()*9000)+1000;
+                String otpCode = String.valueOf(randomPIN);
+                candidate.candidateOtp = randomPIN;
+                candidate.save();
 
-            Interaction interaction = new Interaction();
-            interaction.objectAUUId = candidate.candidateUUId;
-            interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
-            interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
-            interaction.result = "New Candidate Added";
-            interaction.save();
+                List<String> locality = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
+                for(String  s : locality) {
+                    CandidateLocality candidateLocality = new CandidateLocality();
+                    candidateLocality.candidateLocalityId = Util.randomLong();
+                    candidateLocality.candidateLocalityCandidateId = candidate.candidateId;
+                    candidateLocality.candidateLocalityLocalityId = s;
+                    candidateLocality.save();
+                }
 
-            List<String> locality = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
-            for(String  s : locality) {
-                CandidateLocality candidateLocality = new CandidateLocality();
-                candidateLocality.candidateLocalityId = Util.randomLong();
-                candidateLocality.candidateLocalityCandidateId = candidate.candidateId;
-                candidateLocality.candidateLocalityLocalityId = s;
-                candidateLocality.save();
+                List<String> jobs = Arrays.asList(candidateSignUpRequest.getCandidateJobPref().split("\\s*,\\s*"));
+                for(String  s : jobs) {
+                    CandidateJob candidateJob = new CandidateJob();
+                    candidateJob.candidateJobId = Util.randomLong();
+                    candidateJob.candidateJobCandidateId = candidate.candidateId;
+                    candidateJob.candidateJobJobId = s;
+                    candidateJob.save();
+                }
+                String msg = "Welcome to Trujobs! Use OTP " + otpCode + " to register";
+
+                SmsUtil.sendSms(candidate.candidateMobile,msg);
+                Logger.info("Candidate successfully registered " + candidate);
+                candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
             }
 
-            List<String> jobs = Arrays.asList(candidateSignUpRequest.getCandidateJobPref().split("\\s*,\\s*"));
-            for(String  s : jobs) {
-                CandidateJob candidateJob = new CandidateJob();
-                candidateJob.candidateJobId = Util.randomLong();
-                candidateJob.candidateJobCandidateId = candidate.candidateId;
-                candidateJob.candidateJobJobId = s;
-                candidateJob.save();
-            }
-            String msg = "Welcome to Trujobs! Use OTP " + otpCode + " to register";
-
-            SmsUtil.sendSms(candidate.candidateMobile,msg);
-            Logger.info("Candidate successfully registered " + candidate);
-            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
         }
         else if(existingCandidate != null && existingCandidate.candidateStatusId == 0) {
             int randomPIN = (int)(Math.random()*9000)+1000;
@@ -135,6 +132,11 @@ public class Candidate extends Model {
             existingCandidate.candidateStatusId = 0;
             existingCandidate.update();
 
+            List<CandidateLocality> allLocality = CandidateLocality.find.where().eq("candidateLocalityCandidateId", existingCandidate.candidateId).findList();
+            for(CandidateLocality candidateLocality : allLocality){
+                candidateLocality.delete();
+            }
+
             List<String> locality = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
             for(String  s : locality) {
                 CandidateLocality candidateLocality = new CandidateLocality();
@@ -142,6 +144,11 @@ public class Candidate extends Model {
                 candidateLocality.candidateLocalityCandidateId = existingCandidate.candidateId;
                 candidateLocality.candidateLocalityLocalityId = s;
                 candidateLocality.save();
+            }
+
+            List<CandidateJob> allJob = CandidateJob.find.where().eq("candidateJobCandidateId", existingCandidate.candidateId).findList();
+            for(CandidateJob candidateJobs : allJob){
+                candidateJobs.delete();
             }
 
             List<String> jobs = Arrays.asList(candidateSignUpRequest.getCandidateJobPref().split("\\s*,\\s*"));
@@ -238,7 +245,7 @@ public class Candidate extends Model {
             existingCandidate.candidateOtp = randomPIN;
             existingCandidate.update();
             String msg = "Welcome to Trujobs! Use OTP " + otpCode + " to reset password";
-            SmsUtil.sendSms(existingCandidate.candidateMobile, otpCode);
+            SmsUtil.sendSms(existingCandidate.candidateMobile, msg);
             Logger.info("Reset otp sent");
 
             resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);

@@ -15,7 +15,7 @@
     <link href="http://sbootstrap.startbootstrapc.netdna-cdn.com/assets/css/startbootstrap.css" rel="stylesheet" type="text/css">
     <link rel="icon" type="image/png" href="/assets/img/icon.png">
     <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
-    <link href='https://fonts.googleapis.com/css?family=Titillium+Web' rel='stylesheet' type='text/css'>
+      <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lato" />
     <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
@@ -529,6 +529,7 @@
 
               <div class="collapse navbar-collapse" id="navigationbar">
                   <ul class="nav navbar-nav navbar-right">
+                      <li><a href="tel:+918880007799">JOB HOTLINE 8880007799</a></li>
                       <li><a><div id="helloMsg"></div></a></li>
                       <li style="cursor: hand" onclick="logout()"><a>Logout</a></li>
 
@@ -554,47 +555,60 @@
       </div>
 
       <br>
-      <div class="material_grid">
-        <div class="dashboardHeader">
-          <h3>PROFILE INFORMATION</h3 >
-        </div>
-        <br>
-        <div class="dashboardBody">
-            <div class="row" style="margin-left: 12%; margin-right: 12%">
-                <div class="col-sm-6">
-                    <div class="row" style="padding-left: 5%">
-                        <div style="display : inline-block"><img src="/assets/img/user.png" height="30px;"></div>
-                        <div style="margin-left: 4px; display: inline-block" id="userName"></div>
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="row" style="padding-left: 5%">
-                        <div style="display : inline-block"><img src="/assets/img/phone.png" height="30px;"></div>
-                        <div style="margin-left: 4px; display: inline-block" id="userMobile"></div>
-                    </div>
-                </div>
+        <div class="material_grid">
+            <div class="dashboardHeader">
+                <h3>PROFILE INFORMATION</h3 >
             </div>
             <br>
-            <div class="row" style="margin-left: 12%; margin-right: 12%">
-                <div class="col-sm-6">
-                    <div class="row" style="padding-left: 5%">
-                        <div style="display : inline-block"><img src="/assets/img/job.png" height="30px;"></div>
-                        <div style="margin-left: 4px; display: inline-block" >Interested Jobs:</div>
-                    </div>
-                    <ul class="preferredJobs" style="margin-left: 20px">
-                    </ul>
-                </div>
-                <div class="col-sm-6">
-                    <div class="row" style="padding-left: 5%">
-                        <div style="display : inline-block"><img src="/assets/img/location.png" height="30px;"></div>
-                        <div style="margin-left: 4px; display: inline-block">Preferred Location:
+            <div class="dashboardBody">
+                <div class="row" style="margin-left: 12%; margin-right: 12%">
+                    <div class="col-sm-5">
+                        <div class="row" style="padding-left: 5%">
+                            <div style="display : inline-block"><img src="/assets/img/user.png" height="30px;"></div>
+                            <div style="margin-left: 4px; display: inline-block" id="userName"></div>
                         </div>
                     </div>
-                    <ul class="preferredLocation" style="margin-left: 20px">
+                    <div class="col-sm-2">
+                            &nbsp;
+                    </div>
+                    <div class="col-sm-5">
+                        <div class="row" style="padding-left: 5%">
+                            <div style="display : inline-block"><img src="/assets/img/phone.png" height="30px;"></div>
+                            <div style="margin-left: 4px; display: inline-block" id="userMobile"></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-1">
+                            &nbsp;
+                    </div>
+                </div>
+                <div class="row" style="margin-left: 12%; margin-right: 12%">
+                    <div class="col-sm-5">
+                        <div class="row" style="padding-left: 5%">
+                            <div style="display : inline-block"><img src="/assets/img/job.png" height="30px;"></div>
+                            <div style="margin-left: 4px; display: inline-block" >Interested Jobs:</div>
+                        </div>
+                        <ul class="preferredJobs" style="margin-left: 20px">
                     </ul>
+                    </div>
+                    <div class="col-sm-2">
+
+                </div>
+                    <div class="col-sm-5">
+                        <div class="row" style="padding-left: 5%">
+                            <div style="display : inline-block"><img src="/assets/img/location.png" height="30px;"></div>
+                            <div style="margin-left: 4px; display: inline-block">Preferred Location:
+                            </div>
+                        </div>
+                        <ul class="preferredLocation" style="margin-left: 20px">
+                    </ul>
+                    </div>
+                    <div class="col-sm-1">
+
+                </div>
                 </div>
             </div>
-        </div>
+            </div>
+
       <br>
 
       <div class="material_grid">
@@ -609,11 +623,15 @@
           </div>
 
           <div id="doneAssessment" style="padding: 4%; display: none">
-              <img style="text-align: center" src="/assets/img/tick.png" height="60px;">
-              <h3 style="text-align : center;">You have successfully completed your assessment. You will receive matching job details via SMS/email.</h3>
+              <center>
+
+                  <img style="text-align: center" src="/assets/img/tick.png" height="60px;">
+              </center>
+                <h3 style="text-align : center;">You have successfully completed your assessment. You will receive matching job details via SMS/email.</h3>
+                <h4 style="text-align : center;">Call +91 888 000 7799 for any queries.</h4>
           </div>
         </div>
-        </div>
+      </div>
       <br>
       <div class="material_grid">
         <div class="dashboardHeader">
@@ -622,19 +640,32 @@
         <br><br>
         <div class="row" style="text-align: center; padding: 40px;">
           <div class="col-sm-4">
-              <div style="overflow:hidden;height:220px;width:320px;"><div id="youtube_canvas" style="height:220px;width:320px;"><iframe style="height:220px;width:320px;border:0;" frameborder="0" src="https://www.youtube.com/embed/OjBMvx0e3zQ?hl=en&amp;autoplay=1&amp;cc_load_policy=0&amp;loop=0&amp;iv_load_policy=1&amp;fs=1&amp;showinfo=1"></iframe></div><a class="youtube-embed-code" href="http://www.tubeembed.com" id="get-youtube-data">tubeembed</a><style>#youtube_canvas img{max-width:none!important;background:none!important}</style></div>
+              <div style="overflow:hidden;height:220px;width:320px;">
+                  <div id="youtube_canvas" style="height:auto ;width:100%;">
+                      <iframe style="height:auto;width:100%;border:0;" frameborder="0" src="https://www.youtube.com/embed/OjBMvx0e3zQ?hl=en&amp;cc_load_policy=0&amp;loop=0&amp;iv_load_policy=1&amp;fs=1&amp;showinfo=1"></iframe>
+                  </div>
+              </div>
           </div>
           <div class="col-sm-4">
-              <div style="overflow:hidden;height:220px;width:320px;"><div id="youtube_canvas" style="height:220px;width:320px;"><iframe style="height:220px;width:320px;border:0;" frameborder="0" src="https://www.youtube.com/embed/gnqzM6FWgTE?hl=en&amp;autoplay=1&amp;cc_load_policy=0&amp;loop=0&amp;iv_load_policy=1&amp;fs=1&amp;showinfo=1"></iframe></div><a class="youtube-embed-code" href="https://www.tubeembed.com" id="get-youtube-data">tubeembed</a><style>#youtube_canvas img{max-width:none!important;background:none!important}</style></div>
+              <div style="overflow:hidden;height:220px;width:320px;">
+                  <div id="youtube_canvas" style="height:auto ;width:100%;">
+                      <iframe style="height:auto;width:100%;border:0;" frameborder="0" src="https://www.youtube.com/embed/gnqzM6FWgTE?hl=en&amp;cc_load_policy=0&amp;loop=0&amp;iv_load_policy=1&amp;fs=1&amp;showinfo=1"></iframe>
+                  </div>
+              </div>
           </div>
           <div class="col-sm-4">
-              <div style="overflow:hidden;height:220px;width:320px;"><div id="youtube_canvas" style="height:220px;width:320px;"><iframe style="height:220px;width:320px;border:0;" frameborder="0" src="https://www.youtube.com/embed/H3cH2wEQiSw?hl=en&amp;autoplay=1&amp;cc_load_policy=0&amp;loop=0&amp;iv_load_policy=1&amp;fs=1&amp;showinfo=1"></iframe></div><a class="youtube-embed-code" href="http://www.tubeembed.com" id="get-youtube-data">tubeembed</a><style>#youtube_canvas img{max-width:none!important;background:none!important}</style></div>
-        </div>
+              <div style="overflow:hidden;height:220px;width:320px;">
+                  <div id="youtube_canvas" style="height:auto ;width:100%;">
+                      <iframe style="height:auto;width:100%;border:0;" frameborder="0" src="https://www.youtube.com/embed/H3cH2wEQiSw?hl=en&amp;cc_load_policy=0&amp;loop=0&amp;iv_load_policy=1&amp;fs=1&amp;showinfo=1"></iframe>
+                  </div>
+              </div>
+          </div>
         </div>
       </div>
     </div>
 
       <!-- Including Bootstrap -->
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/assets/js/scroll.js"></script>

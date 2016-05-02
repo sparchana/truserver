@@ -19,13 +19,6 @@ ul.token-input-list-facebook {
     clear: left;
 }
 
-@media screen and (max-width: 800px) {
-    ul.token-input-list-facebook {
-        margin-left: 5%;
-        margin-right: 2%;
-        width: 90%;
-    }
-}
 ul.token-input-list-facebook li input {
     border: 0;
     width: 100%;

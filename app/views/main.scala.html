@@ -14,7 +14,7 @@
         <link rel="icon" type="image/png" href="/assets/img/icon.png">
         <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
 
-        <link href='https://fonts.googleapis.com/css?family=Titillium+Web' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lato" />
         <link rel="stylesheet" href="/assets/css/token-input.css" type="text/css" />
         <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
 
@@ -89,7 +89,7 @@
                 }
 
                 function processCheckLeadStatus() {
-                    alert("Thanks");
+                    alert("Thanks! We will get back soon!");
                     $("#addLeadMobile").val('');
 
                 }
@@ -112,16 +112,22 @@
                     } catch (exception) {
                         console.log("exception occured!!" + exception);
                     }
-
                 }
 
                 function openLogin() {
+
+                    $('#form_login_candidate').show();
+                    $('#noUserLogin').hide();
+                    $('#incorrectMsgLogin').hide();
                     $('#form_forgot_password').hide();
+                    $('#errorMsgReset').hide();
                     $('#form_password_reset_otp').hide();
                     $('#form_password_reset_new').hide();
                 }
 
                 function resetPassword() {
+                    $('#noUserLogin').hide();
+                    $('#incorrectMsgLogin').hide();
                     $('#form_login_candidate').hide();
                     $('#form_forgot_password').show();
                 }
@@ -170,36 +176,28 @@
         </nav>
         <div class="modal fade bs-example-modal-sm" id="myModal" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">
             <div class="modal-dialog modal-sm">
-                <div class="modal-content">
+                <div class="modal-content" style="text-align: center">
 
-                    <img src="/assets/img/logo.png" height="40px" style="text-align: center; margin-top: -8px;">
+                    <img src="/assets/img/logo.png" height="40px">
                     <form id="addLeadFormModal" class="form-horizontal" role="form" name="addLeadForm" >
                         <fieldset>
+                            <div class="c_form" align="center">
                             <br>
                             <div style="text-align: center;" id="interested"></div><br>
 
                                 <!-- Text input-->
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="name_gen">Name</label>
-                                <div class="col-md-4">
-                                    <input style="margin-left: 0%; margin-right: 0%; width: 100%;" id="leadNameModal" name="leadNameModal" type="text" placeholder="(eg: Manjunath)" class="form-control input-md" required>
-
-                                </div>
+                                    <input id="leadNameModal" name="leadNameModal" type="text" placeholder="Name: (eg: Manjunath)" class="form-control input-md" required>
                             </div>
 
                                 <!-- Text input-->
                             <div class="form-group">
-                                <label class="col-md-4 control-label" for="mobile_gen">Mobile</label>
-                                <div class="col-md-4">
-                                    <input style="width: 100%; margin-left: 0%;" id="leadMobileModal" name="leadMobileModal" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" placeholder="(eg: 8880007799)" class="form-control input-md">
-
-                                </div>
+                                    <input id="leadMobileModal" name="leadMobileModal" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" placeholder="Mobile: (eg: 8880007799)" class="form-control input-md">
                             </div>
 
                             <label class="radio-inline"><input id="candidateRadio" type="radio" name="mainLead" checked="checked" value="1" onclick="selectLead(1)">I am a Candidate</label>
 
                             <label class="radio-inline"><input id="recruiterRadio" type="radio" name="mainLead" onclick="selectLead(2)">I am a Recruiter</label>
-                            <br><br>
 
 
                                 <!-- hidden-->
@@ -208,20 +206,15 @@
                             </div>
 
                             <div class="form-group" style="display: none;">
-                                <input id="leadTypeModal" name="leadTypeModal" type="number" class="form-control input-md" value="2">
+                                <input id="leadTypeModal" name="leadTypeModal" type="number" class="form-control input-md" value="4">
                             </div>
 
                             <div class="form-group" style="display: none;">
                                 <input id="leadInterestModal" name="leadInterestModal" type="text" class="form-control input-md" value="General Registration">
                             </div>
 
-                            <div class="form-group">
-                                <label class="col-md-4 control-label" ></label>
-                                <div class="col-md-4">
-                                    <button type="submit" class="btn btn-primary" style="padding-top: 5%; padding-bottom: 5%; padding-right: 20%; padding-left: 20%;">Register</button>
-                                </div>
+                                    <button type="submit" class="btn btn-primary" style="padding-top: 5%; padding-bottom: 5%; width: 100%">Register</button>
                             </div>
-
                         </fieldset>
                     </form>
                     <div id="thanksMsg" style="margin-top: 2%;display: none; color: #2980b9">
@@ -249,20 +242,19 @@
                             <br>
                             <h4>Login</h4>
                             <div class="form-group">
-                                <input style="width: 120%; margin-left: -10%; margin-right: -10%" id="candidateLoginMobile" name="candidateLoginMobile" type="text" placeholder="Mobile No. (eg: 8880007799)" class="form-control input-md" required>
+                                <input style="width: 100%;" id="candidateLoginMobile" name="candidateLoginMobile" type="text" placeholder="Mobile No. (eg: 8880007799)" pattern="[7-9]{1}[0-9]{9}" maxlength="10" class="form-control input-md" required>
                             </div>
 
                                 <!-- Text input-->
                             <div class="form-group">
-                                <input style="width: 120%; margin-left: -10%; margin-right: -10%" id="candidateLoginPassword" name="candidateLoginPassword" type="password" placeholder="Password" class="form-control input-md" required>
+                                <input style="width: 100%;" id="candidateLoginPassword" name="candidateLoginPassword" type="password" placeholder="Password" class="form-control input-md" required>
                             </div>
 
-                            <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Log In</button>
+                            <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; width: 100%;" >Log In</button>
 
-                            <div id="pointerChange" style="margin-top: 6px;" onclick="resetPassword()">Reset Password</div>
+                            <div id="pointerChange" style="margin-top: 6px;" onclick="resetPassword()">Forgot Password</div>
                             <br>
-                            <font color="#022D4A">New User?</font>
-                            <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" ><a href="/">Sign Up</a></button>
+                            <font color="#022D4A">New User? <a style="color: #022D4A" href="/">Sign Up</a></font>
                         </div>
                     </form>
 
@@ -275,7 +267,7 @@
                                 <input style="width: 120%; margin-left: -10%; margin-right: -10%" id="resetPasswordMobile" type="text" maxlength="10" placeholder="Mobile No. (eg: 8880007799)" class="form-control input-md" required>
                             </div>
 
-                            <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Proceed</button>
+                            <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Submit</button>
 
                         </div>
                     </form>
@@ -319,7 +311,7 @@
                     <div id="incorrectMsg" style="margin-top: 2%;display: none; color: #2980b9">
                         <h5>Incorrect Login Credentials</h5>
                     </div>
-                    <div id="incorrectMsgLogin" style="margin-top: 2%;display: none; color: #2980b9">
+                    <div id="incorrectMsgLogin" style="margin-top: 2%;display: none; color: #2980b9" >
                         <h5>Incorrect Login Credentials</h5>
                     </div>
                     <div id="errorMsgReset" style="margin-top: 2%;display: none; color: #2980b9">
@@ -327,6 +319,10 @@
                     </div>
                     <div id="noUserLogin" style="margin-top: 2%;display: none; color: #2980b9">
                         <h5>User Does Not Exist!</h5>
+                    </div>
+
+                    <div id="wrongOtp" style="margin-top: 2%;display: none; color: #2980b9">
+                        <h5>Incorrect OTP!</h5>
                     </div>
 
                     <div id="errorMsg" style="margin-top: 2%;display: none; color: #2980b9">
@@ -340,7 +336,7 @@
         </div>
 
         <div id="fixed-menu" align="center">
-            Find a job and earn 40,000. Reach Us <input style="color: black" id="addLeadMobile" class="form-horizontal" type="text" placeholder="Mobile: (8880007799)">
+            Find a job and earn upto 30,000. Reach Us &nbsp;<input style="color: black" id="addLeadMobile" class="form-horizontal" type="text" placeholder="Mobile: (8880007799)">
             <button type="button" class="btn floating" onclick="addLead()">Call Me!</button>
         </div>
 
@@ -352,7 +348,7 @@
                 <div class="leadBox">
 
                     <form id="form_signup_candidate"  style="margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
-                        <h4>Candadidate Free Registraion</h4>
+                        <h4>Candidate Free Registraion</h4>
                         <div class="row">
                             <div class="col-sm-3" ><h6>Name:</h6></div>
                             <div class="col-sm-9"><input id="candidateName" name="candidateName" type="text" class="form-control input-md" required></div>
@@ -366,7 +362,7 @@
                         <div class="row" style="margin-top: 8px; color: #555">
                             <div class="col-sm-3" style="color: #0B4063"><h6>Localities:</h6></div>
                             <div class="col-sm-9">
-                                <input type="text" id="candidateLocality"/>
+                                <input type="text" id="candidateLocality" />
                                 <script type="text/javascript">
                                 $(document).ready(function() {
                                     $("#candidateLocality").tokenInput([
@@ -714,7 +710,8 @@
                                     ], {
                                         theme: "facebook",
                                         minChars: 3,
-                                        tokenLimit: 5
+                                        tokenLimit: 5,
+                                        hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)"
                                     });
                                 });
                                 </script>
@@ -723,7 +720,7 @@
                         <div class="row" style="margin-top: 8px;">
                             <div class="col-sm-3"><h6>Job Interest:</h6></div>
                             <div class="col-sm-9">
-                                <input type="text" id="candidateJobPref"/>
+                                <input type="text" id="candidateJobPref" />
                                 <script type="text/javascript">
                                 $(document).ready(function() {
                                     $("#candidateJobPref").tokenInput([
@@ -744,7 +741,8 @@
                                         {id: 15, name: "Telecaller"},
                                         {id: 16, name: "Waiter"}
                                     ], {
-                                        theme: "facebook"
+                                        theme: "facebook",
+                                        hintText: "Start typing jobs (eg. Cook,Delivery boy..)"
                                     });
                                 });
                                 </script>
@@ -754,7 +752,7 @@
                             <!-- Text input-->
                     </form>
                     <form id="form_otp" role="form" name="form_otp" style="display: none">
-                        <div class="c_form" align="center">
+                        <div class="c_form" style="margin-left: 10%; margin-right: 10%;" align="center">
                             <h5 id="helpTextSignup">Enter OTP</h5>
 
                             <div class="form-group">
@@ -771,7 +769,7 @@
                     </form>
 
                     <form id="form_auth" role="form" name="form_auth" style="display: none">
-                        <div class="c_form" align="center">
+                        <div class="c_form" style="margin-left: 10%; margin-right: 10%;" align="center">
                             <h4>Enter a password</h4>
                             <div class="form-group">
                                 <input id="candidatePassword" minlength="6" name="candidatePassword" type="password" placeholder="Enter password (Min. 6 characters)" class="form-control input-md" required>
@@ -789,6 +787,7 @@
 
                         <div id="alreadyMsgCandidate" style="margin-top: 2%;display: none; color: #2980b9">
                             <h5>User Already Exists! Please <a data-toggle="modal" data-target="#myLoginModal" style="cursor: hand; color: #888888">Login</a> to Continue</h5>
+                            <br>
                         </div>
                         <div id="thanksMsg" style="margin-top: 2%;display: none; color: #2980b9">
                             <h4>Account Created Successfully!</h4>
@@ -833,7 +832,7 @@
 
                     <div class="col-md-15 col-sm-3"><div class="categoryBox" data-toggle="modal" data-target="#myModal" onclick="openModal('Receptionist')">RECEPTIONIST</div></div>
                     <div class="col-md-15 col-sm-3"><div class="categoryBox" data-toggle="modal" data-target="#myModal" onclick="openModal('Data Entry')">DATA ENTRY</div></div>
-                    <div class="col-md-15 col-sm-3"><div class="categoryBox" data-toggle="modal" data-target="#myModal" onclick="openModal('Telecaller')">Telecaller</div></div>
+                    <div class="col-md-15 col-sm-3"><div class="categoryBox" data-toggle="modal" data-target="#myModal" onclick="openModal('Telecaller')">TELECALLER</div></div>
                     <div class="col-md-15 col-sm-3"><div class="categoryBox" data-toggle="modal" data-target="#myModal" onclick="openModal('Waiter')">WAITER</div></div>
                     <div class="col-md-15 col-sm-3"><div class="categoryBox" data-toggle="modal" data-target="#myModal" onclick="openModal('Massage Therapist')">MASSAGE THERAPIST</div></div>
                 </div>
@@ -917,7 +916,7 @@
                 <!-- form -->
             <form id="form_recruiter" class="form-horizontal" role="form" name="form_candidate" >
                 <h4>Looking to hire? Register for FREE</h4>
-                <div class="c_form" align="center">
+                <div class="r_form" align="center">
                         <!-- Text input-->
                     <div class="form-group">
                         <input id="leadName" name="leadName" type="text" placeholder="Name (eg: Manjunath)" class="form-control input-md" required>

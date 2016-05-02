@@ -1,9 +1,6 @@
 package models.entity;
 
-import api.CandidateSignUpRequest;
-import api.CandidateSignUpResponse;
-import api.ResetPasswordResponse;
-import api.ResetPasswordResquest;
+import api.*;
 import models.util.Util;
 import com.avaje.ebean.Model;
 import play.Logger;
@@ -59,8 +56,20 @@ public class Auth extends Model {
                 auth.passwordSalt = passwordSalt;
                 auth.save();
 
+                Interaction interaction = new Interaction();
+                interaction.objectAUUId = existingCandidate.candidateUUId;
+                interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
+                interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+                interaction.result = "New Candidate Added";
+                interaction.save();
+
                 existingCandidate.candidateStatusId = 1;
                 existingCandidate.update();
+
+                Lead existingLead = Lead.find.where().eq("leadMobile", existingCandidate.candidateMobile).findUnique();
+                existingLead.leadStatus = ServerConstants.LEAD_STATUS_WON;
+                existingLead.update();
+
                 candidateSignUpResponse.setCandidateId(existingCandidate.candidateId);
                 candidateSignUpResponse.setCandidateName(existingCandidate.candidateName);
                 candidateSignUpResponse.setAccountStatus(existingCandidate.candidateStatusId);
@@ -79,26 +88,25 @@ public class Auth extends Model {
         String candidatePassword = resetPasswordResquest.getCandidateNewPassword();
         String candidateAuthMobile = resetPasswordResquest.getForgotPasswordNewMobile();
         ResetPasswordResponse resetPasswordResponse= new ResetPasswordResponse();
-        Logger.info("--" + candidatePassword + candidateAuthMobile);
         Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", candidateAuthMobile).findUnique();
+
         Logger.info("Existing user mobile: " + existingCandidate.candidateMobile);
+
         if(existingCandidate != null) {
-                Auth auth = new Auth();
-                auth.authId =  (int)(Math.random()*9000)+100000;
-                auth.candidateId = existingCandidate.candidateId;
-                int passwordSalt = (new Random()).nextInt();
-                auth.passwordMd5 = Util.md5(candidatePassword + passwordSalt);
-                auth.passwordSalt = passwordSalt;
-                auth.save();
+            Auth auth = Auth.find.where().eq("candidateId", existingCandidate.candidateId).findUnique();
+            int passwordSalt = (new Random()).nextInt();
+            auth.passwordMd5 = Util.md5(candidatePassword + passwordSalt);
+            auth.passwordSalt = passwordSalt;
+            auth.update();
 
-                resetPasswordResponse.setCandidateId(existingCandidate.candidateId);
-                resetPasswordResponse.setCandidateName(existingCandidate.candidateName);
-                resetPasswordResponse.setCandidateMobile(existingCandidate.candidateMobile);
+            resetPasswordResponse.setCandidateId(existingCandidate.candidateId);
+            resetPasswordResponse.setCandidateName(existingCandidate.candidateName);
+            resetPasswordResponse.setCandidateMobile(existingCandidate.candidateMobile);
 
-                existingCandidate.candidateStatusId = 1;
-                existingCandidate.update();
-                resetPasswordResponse.setStatus(ResetPasswordResponse.STATUS_SUCCESS);
-                Logger.info("Auth Save Successful");
+            existingCandidate.candidateStatusId = 1;
+            existingCandidate.update();
+            resetPasswordResponse.setStatus(ResetPasswordResponse.STATUS_SUCCESS);
+            Logger.info("Auth Save Successful");
         }
         else {
             Logger.info("User Does not Exist!");

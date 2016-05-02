@@ -11,7 +11,16 @@ public class SupportDashboardElementResponse {
     public String leadName;
     public String leadType;
     public String leadMobile;
+    public String lastIncomingCallTimestamp;
+    public int totalInBounds;
 
+    public int getTotalInBounds() {
+        return totalInBounds;
+    }
+
+    public void setTotalInBounds(int totalInBounds) {
+        this.totalInBounds = totalInBounds;
+    }
 
     public long getLeadId() {
         return leadId;
@@ -69,4 +78,11 @@ public class SupportDashboardElementResponse {
         this.leadMobile = leadMobile;
     }
 
+    public String getLastIncomingCallTimestamp() {
+        return lastIncomingCallTimestamp;
+    }
+
+    public void setLastIncomingCallTimestamp(String lastIncomingCallTimestamp) {
+        this.lastIncomingCallTimestamp = lastIncomingCallTimestamp;
+    }
 }

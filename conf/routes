@@ -16,6 +16,10 @@ POST     /checkResetOtp                                           controllers.Ap
 
 POST     /addPassword                                             controllers.Application.addPassword()
 
+POST     /processCsv                                             controllers.Application.processcsv()
+
+GET      /getAll                                                 controllers.Application.getAll()
+
 POST     /savePassword                                            controllers.Application.savePassword()
 
 GET      /dashboard                                               controllers.Application.dashboard()
@@ -39,6 +43,17 @@ GET      /getCandidateLocality/:id                                controllers.Ap
 GET      /getCandidateJob/:id                                    controllers.Application.getCandidateJob(id : Long)
 
 
+GET      /updateLeadType/:leadId/:newStatus                      controllers.Application.updateLeadType(leadId: Long, newStatus: Long)
+
+GET      /updateLeadStatus/:leadId                               controllers.Application.updateLeadStatus(leadId: Long)
+
+GET      /street                                                 controllers.Application.supportAuth()
+
+POST     /auth                                                  controllers.Application.auth()
+
+GET      /logout                                                 controllers.Application.logout()
+
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
-#GET     /webjars/*file              controllers.WebJarAssets.at(file)
+GET    /robots.txt                                controllers.Assets.at(path="/public", file="robots.txt")
+GET    /assets/*file                             controllers.Assets.at(path="/public", file)
+#GET   /webjars/*file                           controllers.WebJarAssets.at(file)
