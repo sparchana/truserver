@@ -41,7 +41,7 @@ public class Interaction extends Model {
     public String result = "";
 
     @Column(name = "CreationTimestamp", columnDefinition = "timestamp default current_timestamp not null", nullable = false)
-    public Timestamp creationTimestamp;
+    public Timestamp creationTimestamp = new Timestamp(System.currentTimeMillis());
 
     @Column(name = "CreatedBy", columnDefinition = "varchar(255) not null default 'system'", nullable = false)
     public String createdBy = "system"; // system-> website, Knowlarity Dump
