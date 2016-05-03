@@ -55,12 +55,12 @@ public class Auth extends Model {
 
     public static CandidateSignUpResponse addAuth(CandidateSignUpRequest candidateSignUpRequest) {
         String candidatePassword = candidateSignUpRequest.getCandidatePassword();
-        String candidateAuthMobile = candidateSignUpRequest.getCandidateAuthMobile();
+        String candidateAuthMobile = "+91" + candidateSignUpRequest.getCandidateAuthMobile();
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
 
         Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", candidateAuthMobile).findUnique();
-        Logger.info("Existing user mobile: " + existingCandidate.candidateMobile);
         if(existingCandidate != null) {
+            Logger.info("Existing user mobile: " + existingCandidate.candidateMobile);
             Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.candidateId).findUnique();
             if(existingAuth != null){
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
@@ -77,6 +77,7 @@ public class Auth extends Model {
                 session("sessionId", auth.authSessionId);
                 session("sessionExpiry", String.valueOf(auth.authSessionIdExpiryMillis));
                 auth.save();
+                Logger.info("Password saved");
 
                 Interaction interaction = new Interaction();
                 interaction.objectAUUId = existingCandidate.candidateUUId;
@@ -84,13 +85,16 @@ public class Auth extends Model {
                 interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
                 interaction.result = "New Candidate Added";
                 interaction.save();
+                Logger.info("Interaction added");
 
-                existingCandidate.candidateStatusId = 1;
+                existingCandidate.candidateStatusId = ServerConstants.CANDIDATE_STATUS_VERIFIED;
                 existingCandidate.update();
+                Logger.info("candidate status confirmed");
 
-                Lead existingLead = Lead.find.where().eq("leadMobile", existingCandidate.candidateMobile).findUnique();
+                Lead existingLead = Lead.find.where().eq("leadId", existingCandidate.leadId).findUnique();
                 existingLead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
                 existingLead.update();
+                Logger.info("Lead converted in candidate");
 
                 candidateSignUpResponse.setCandidateId(existingCandidate.candidateId);
                 candidateSignUpResponse.setCandidateName(existingCandidate.candidateName);
@@ -111,7 +115,7 @@ public class Auth extends Model {
         String candidatePassword = resetPasswordResquest.getCandidateNewPassword();
         String candidateAuthMobile = resetPasswordResquest.getForgotPasswordNewMobile();
         ResetPasswordResponse resetPasswordResponse= new ResetPasswordResponse();
-        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", candidateAuthMobile).findUnique();
+        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", "+91" + candidateAuthMobile).findUnique();
 
         Logger.info("Existing user mobile: " + existingCandidate.candidateMobile);
 

@@ -6,7 +6,7 @@ function processDataLogin(returnedData) {
     console.log("returedData :" + returnedData.status + returnedData.candidateName + returnedData.accountStatus);
     if(returnedData.status == 1) {
         // Store
-        localStorage.setItem("mobile", $('#candidateLoginMobile').val());
+        localStorage.setItem("mobile", "+91" + $('#candidateLoginMobile').val());
         localStorage.setItem("name", returnedData.candidateName);
         localStorage.setItem("id", returnedData.candidateId);
         window.location = "/dashboard";
