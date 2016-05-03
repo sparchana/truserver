@@ -111,7 +111,7 @@ public class Application extends Controller {
                 .eq("leadStatus", ServerConstants.LEAD_STATUS_NEW).findList();
         ArrayList<SupportDashboardElementResponse> responses = new ArrayList<>();
 
-        SimpleDateFormat sfd = new SimpleDateFormat("yyyy-MM-dd hh:mm:ssXXX");
+        SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT);
 
         for(Lead l : allLead){
             SupportDashboardElementResponse response = new SupportDashboardElementResponse();
