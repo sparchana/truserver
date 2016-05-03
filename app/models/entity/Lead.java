@@ -55,7 +55,7 @@ public class Lead extends Model {
 
     public static AddLeadResponse addLead(AddLeadRequest addLeadRequest) {
 
-        String mobile = addLeadRequest.getLeadMobile();
+        String mobile = "+91" + addLeadRequest.getLeadMobile();
         Logger.info("inside addLead method " + addLeadRequest.getLeadName() + addLeadRequest.getLeadMobile());
 
         Lead lead = new Lead();
@@ -66,7 +66,7 @@ public class Lead extends Model {
             lead.leadId = Util.randomLong();
             lead.leadUUId = UUID.randomUUID().toString();
             lead.leadName = addLeadRequest.getLeadName();
-            lead.leadMobile = addLeadRequest.getLeadMobile();
+            lead.leadMobile = "+91" + addLeadRequest.getLeadMobile();
             lead.leadChannel = addLeadRequest.getLeadChannel();
             lead.leadType = addLeadRequest.getLeadType();
             lead.leadInterest = addLeadRequest.getLeadInterest();

@@ -503,7 +503,7 @@
       function sendAndDraw() {
           // Send the query with a callback function.
           var val = localStorage.getItem("mobile");
-          query.setQuery('select C where C=' + val);
+          query.setQuery('select C where C=' + val.substring(3, 13));
           query.send(handleQueryResponse);
       }
 

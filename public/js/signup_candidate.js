@@ -59,7 +59,7 @@ function processDataAddAuth(returnedData) {
     console.log("returedData :" + returnedData.status);
     if(returnedData.status == 1) {
         // Store
-        localStorage.setItem("mobile", $('#candidateAuthMobile').val());
+        localStorage.setItem("mobile", "+91" + $('#candidateAuthMobile').val());
         localStorage.setItem("name", returnedData.candidateName);
         localStorage.setItem("id", returnedData.candidateId);
         console.log(returnedData.candidateId);

@@ -81,7 +81,7 @@ public class Candidate extends Model {
             Lead existingLead = Lead.find.where().eq("leadMobile", mobile).findUnique();
             if(existingLead == null) {
                 lead.leadId = Util.randomLong();
-                lead.leadMobile = candidateSignUpRequest.getCandidateMobile();
+                lead.leadMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
                 lead.leadUUId = UUID.randomUUID().toString();
                 lead.leadChannel = ServerConstants.LEAD_CHANNEL_WEBSITE;
                 lead.leadName = candidateSignUpRequest.getCandidateName();
@@ -92,7 +92,7 @@ public class Candidate extends Model {
                 candidate.candidateId = Util.randomLong();
                 candidate.candidateUUId = UUID.randomUUID().toString();
                 candidate.candidateName = candidateSignUpRequest.getCandidateName();
-                candidate.candidateMobile = candidateSignUpRequest.getCandidateMobile();
+                candidate.candidateMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
                 candidate.candidateAge = 0;
                 candidate.candidateStatusId = 0;
                 int randomPIN = (int)(Math.random()*9000)+1000;
@@ -105,7 +105,7 @@ public class Candidate extends Model {
                 candidate.candidateId = Util.randomLong();
                 candidate.candidateUUId = UUID.randomUUID().toString();
                 candidate.candidateName = candidateSignUpRequest.getCandidateName();
-                candidate.candidateMobile = candidateSignUpRequest.getCandidateMobile();
+                candidate.candidateMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
                 candidate.candidateAge = 0;
                 candidate.candidateStatusId = 0;
                 int randomPIN = (int)(Math.random()*9000)+1000;
@@ -143,7 +143,7 @@ public class Candidate extends Model {
             otpCode = String.valueOf(randomPIN);
             existingCandidate.candidateOtp = randomPIN;
             existingCandidate.candidateName = candidateSignUpRequest.getCandidateName();
-            existingCandidate.candidateMobile = candidateSignUpRequest.getCandidateMobile();
+            existingCandidate.candidateMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
             existingCandidate.candidateAge = 0;
             existingCandidate.candidateStatusId = 0;
             existingCandidate.update();
@@ -191,11 +191,11 @@ public class Candidate extends Model {
 
     public static CandidateSignUpResponse verifyOtp(CandidateSignUpRequest candidateSignUpRequest) {
         int candidateOtp = candidateSignUpRequest.getCandidateOtp();
-        String candidateMobile = candidateSignUpRequest.getAutoCandidateMobile();
+        String candidateMobile = "+91" + candidateSignUpRequest.getAutoCandidateMobile();
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
 
         Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", candidateMobile).findUnique();
-        Logger.info("--> " + existingCandidate.candidateName + " " + existingCandidate.candidateOtp + " " + candidateOtp + "<--");
+        Logger.info( existingCandidate.candidateName + " " + existingCandidate.candidateOtp + " " + candidateOtp);
         if(existingCandidate != null){
             if(existingCandidate.candidateOtp == candidateOtp){
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
@@ -214,7 +214,7 @@ public class Candidate extends Model {
     }
 
     public static LoginResponse login(LoginRequest loginRequest) {
-        String candidateMobile = loginRequest.getCandidateLoginMobile();
+        String candidateMobile = "+91" + loginRequest.getCandidateLoginMobile();
         String candidatePassword = loginRequest.getCandidateLoginPassword();
         LoginResponse loginResponse = new LoginResponse();
 
@@ -260,7 +260,7 @@ public class Candidate extends Model {
         String candidateResetMobile = resetPasswordResquest.getResetPasswordMobile();
         ResetPasswordResponse resetPasswordResponse= new ResetPasswordResponse();
 
-        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", candidateResetMobile).findUnique();
+        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", "+91" + candidateResetMobile).findUnique();
         if(existingCandidate != null){
             int randomPIN = (int)(Math.random()*9000)+1000;
             String otpCode = String.valueOf(randomPIN);
@@ -283,8 +283,7 @@ public class Candidate extends Model {
         int candidateOtp = resetPasswordResquest.getCandidateForgotOtp();
         ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
 
-        Logger.info(resetPasswordResquest.getCandidateForgotOtp() + " ---");
-        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", candidateMobile).findUnique();
+        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", "+91" + candidateMobile).findUnique();
         if(existingCandidate != null){
 
             Logger.info(existingCandidate.candidateOtp + " = " + candidateOtp);
