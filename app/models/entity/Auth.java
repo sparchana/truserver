@@ -85,7 +85,7 @@ public class Auth extends Model {
                 existingCandidate.update();
 
                 Lead existingLead = Lead.find.where().eq("leadMobile", existingCandidate.candidateMobile).findUnique();
-                existingLead.leadStatus = ServerConstants.LEAD_STATUS_WON;
+                existingLead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
                 existingLead.update();
 
                 candidateSignUpResponse.setCandidateId(existingCandidate.candidateId);
@@ -116,6 +116,10 @@ public class Auth extends Model {
             int passwordSalt = (new Random()).nextInt();
             auth.passwordMd5 = Util.md5(candidatePassword + passwordSalt);
             auth.passwordSalt = passwordSalt;
+            auth.authSessionId = UUID.randomUUID().toString();
+            auth.authSessionIdExpiryMillis = System.currentTimeMillis() + 24 * 60 * 60 * 1000;
+            session("sessionId", auth.authSessionId);
+            session("sessionExpiry", String.valueOf(auth.authSessionIdExpiryMillis));
             auth.update();
 
             resetPasswordResponse.setCandidateId(existingCandidate.candidateId);

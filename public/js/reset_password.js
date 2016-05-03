@@ -14,6 +14,7 @@ function processDataResetCheckUser(returnedData) {
     }
 
     else {
+        document.getElementById("resetCheckUserBtn").disabled = false;
         $('#noUserLogin').show();
     }
 }
@@ -42,11 +43,13 @@ function processDataPostReset(returnedData) {
     }
 
     else if(returnedData.status == 2){
+        document.getElementById("resetNewPasswordBtn").disabled = false;
         $('#incorrectMsg').show();
         $('#errorMsg').hide();
     }
 
     else {
+        document.getElementById("resetNewPasswordBtn").disabled = false;
         $('#incorrectMsg').hide();
         $('#errorMsg').show();
     }
@@ -56,6 +59,7 @@ function processDataPostReset(returnedData) {
 $(function() {
     $("#form_forgot_password").submit(function(eventObj) {
         eventObj.preventDefault();
+        document.getElementById("resetCheckUserBtn").disabled = true;
         try {
             var phone = $('#resetPasswordMobile').val();
             console.log("phone: " + phone);
@@ -98,6 +102,7 @@ $(function() {
 
     $("#form_password_reset_new").submit(function(eventObj) {
         eventObj.preventDefault();
+        document.getElementById("resetNewPasswordBtn").disabled = true;
         try {
             var phone = $('#forgotPasswordNewMobile').val();
             var password = $('#candidateNewPassword').val();

@@ -18,6 +18,7 @@ function processDataSignUpSubmit(returnedData) {
     }
 
     else if(returnedData.status == 3){
+        document.getElementById("registerBtn").disabled = false;
         $('#alreadyMsgCandidate').show();
         $('#candidateName').val('');
         $('#candidateMobile').val('');
@@ -74,29 +75,38 @@ function processDataAddAuth(returnedData) {
 $(function() {
     $("#form_signup_candidate").submit(function(eventObj) {
         eventObj.preventDefault();
-        try {
-            var name  = $('#candidateName').val();
-            var phone = $('#candidateMobile').val();
-            console.log("phone: " + phone);
-            console.log($('#candidateLocality').val());
-            $('#alreadyMsgCandidate').hide();
-            var d = {
-                candidateName : name,
-                candidateMobile : phone,
-                candidateLocality : $('#candidateLocality').val(),
-                candidateJobPref : $('#candidateJobPref').val()
-            };
-
-            $.ajax({
-                type: "POST",
-                url: "/signUpSubmit",
-                data: d,
-                success: processDataSignUpSubmit
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
+        var localitySelected = $('#candidateLocality').val();
+        var jobSelected = $('#candidateJobPref').val();
+        if (localitySelected == "") {
+            alert("Please Enter your Job Localities");
+        } else if (jobSelected == "") {
+            alert("Please Enter the Jobs you are Interested");
         }
+        else{
+            document.getElementById("registerBtn").disabled = true;
+            try {
+                var name  = $('#candidateName').val();
+                var phone = $('#candidateMobile').val();
+                console.log("phone: " + phone);
+                console.log($('#candidateLocality').val());
+                $('#alreadyMsgCandidate').hide();
+                var d = {
+                    candidateName : name,
+                    candidateMobile : phone,
+                    candidateLocality : $('#candidateLocality').val(),
+                    candidateJobPref : $('#candidateJobPref').val()
+                };
 
+                $.ajax({
+                    type: "POST",
+                    url: "/signUpSubmit",
+                    data: d,
+                    success: processDataSignUpSubmit
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
+        }
     }); // end of submit
 }); // end of function
 

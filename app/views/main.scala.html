@@ -34,6 +34,12 @@
         </script>
 
         <script>
+            $(function () {
+                $('#myRegistrationModal').on('hidden.bs.modal', function () {
+                    document.getElementById("registerBtn").disabled = false;
+                    $('#form_signup_candidate').trigger("reset");
+                })
+            });
             $(document).ready(function(){
                 var userMobile = localStorage.getItem("mobile");
                 var userName = localStorage.getItem("name");
@@ -119,7 +125,6 @@
                             console.log("exception occured!!" + exception);
                         }
                     }
-
                 }
 
                 function openLogin() {
@@ -275,7 +280,7 @@
                                 <input style="width: 120%; margin-left: -10%; margin-right: -10%" id="resetPasswordMobile" type="text" maxlength="10" placeholder="Mobile No. (eg: 8880007799)" class="form-control input-md" required>
                             </div>
 
-                            <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Submit</button>
+                            <button type="submit" class="btn btn-primary" id="resetCheckUserBtn" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Submit</button>
 
                         </div>
                     </form>
@@ -310,7 +315,7 @@
                             <div class="form-group">
                                 <input style="width: 120%; margin-left: -10%; margin-right: -10%; display: none" id="forgotPasswordNewMobile" type="text" placeholder="Mobile No. (eg: 8880007799)" class="form-control input-md" required>
                             </div>
-                            <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Reset Password</button>
+                            <button type="submit" class="btn btn-primary" id="resetNewPasswordBtn" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Reset Password</button>
 
                         </div>
                     </form>
@@ -370,7 +375,7 @@
                         <div class="row" style="margin-top: 8px;">
                             <div class="col-sm-3"><h6>Interested Jobs:</h6></div>
                             <div class="col-sm-9">
-                                <input type="text" id="candidateJobPref" required>
+                                <input type="text" id="candidateJobPref" >
                                 <script type="text/javascript">
                                 $(document).ready(function() {
                                     $("#candidateJobPref").tokenInput([
@@ -404,7 +409,7 @@
                         <div class="row" style=" color: #555">
                             <div class="col-sm-3" style="color: #0B4063"><h6>Interested Areas:</h6></div>
                             <div class="col-sm-9">
-                                <input type="text" id="candidateLocality" required>
+                                <input type="text" id="candidateLocality">
                                 <script type="text/javascript">
                                 $(document).ready(function() {
                                     $("#candidateLocality").tokenInput([
@@ -758,7 +763,7 @@
                                     });
                                 });
                                 </script>
-                                <button type="submit" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register</button>
+                                <button type="submit" id="registerBtn" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register</button>
                             </div>
                         </div>
                             <!-- Text input-->
@@ -779,7 +784,7 @@
                                         <div class="form-group" style="display: none;">
                                             <input id="autoCandidateMobile" name="autoCandidateMobile" type="text"class="form-control input-md" >
                                         </div>
-                                        <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Verify OTP</button>
+                                        <button type="submit" id="verifyOtpBtn" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Verify OTP</button>
 
                                     </div>
                                 </form>
