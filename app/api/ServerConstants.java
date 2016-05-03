@@ -46,4 +46,10 @@ public class ServerConstants {
     public static final int DEV_ACCESS_LEVEL_SUPPORT_ROLE = 1;
     public static final int DEV_ACCESS_LEVEL_UPLOADER = 2;
 
+
+    public static final String SDF_FORMAT = "yyyy-MM-dd hh:mm:ss a";
+    public static final String SDF_FORMAT_ENTRY = "yyyy-MM-dd hh:mm:ss";
+
+
+
 }

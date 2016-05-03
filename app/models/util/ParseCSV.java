@@ -10,7 +10,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,8 +24,7 @@ public class ParseCSV {
         ArrayList<Lead> leads = new ArrayList<>();
         int count = 0;
         int overLappingRecordCount = 0;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ssXXX");
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_ENTRY);
         try {
             CSVReader reader = new CSVReader(new FileReader(file));
             reader.readNext();// skip title row
@@ -42,12 +40,7 @@ public class ParseCSV {
                     } else {
                         lead.leadMobile = nextLine[2];
                     }
-                    Date parsedDate;
-                    try {
-                        parsedDate = sdf.parse(nextLine[4]);
-                    } catch (ParseException e) {
-                        parsedDate = sdf2.parse(nextLine[4]);
-                    }
+                    Date  parsedDate = sdf.parse(nextLine[4]);
                     lead.leadCreationTimestamp = new Timestamp(parsedDate.getTime());
                     Lead existingLead = Lead.find.where()
                             .eq("leadMobile", lead.leadMobile)
