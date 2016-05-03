@@ -68,7 +68,7 @@ public class Candidate extends Model {
 
 
     public static CandidateSignUpResponse candidateSignUp(CandidateSignUpRequest candidateSignUpRequest) {
-        String mobile = candidateSignUpRequest.getCandidateMobile();
+        String mobile = "+91" + candidateSignUpRequest.getCandidateMobile();
         Logger.info("inside signup method" );
 
         Candidate candidate = new Candidate();
@@ -131,7 +131,7 @@ public class Candidate extends Model {
                     candidateJob.candidateJobJobId = s;
                     candidateJob.save();
                 }
-                String msg = "Welcome to Trujobs! Use OTP " + otpCode + " to register";
+                String msg = "Welcome to Trujobs.in! Use OTP " + otpCode + " to register";
 
                 SmsUtil.sendSms(candidate.candidateMobile,msg);
                 Logger.info("Candidate successfully registered " + candidate);
@@ -145,7 +145,7 @@ public class Candidate extends Model {
             existingCandidate.candidateName = candidateSignUpRequest.getCandidateName();
             existingCandidate.candidateMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
             existingCandidate.candidateAge = 0;
-            existingCandidate.candidateStatusId = 0;
+            existingCandidate.candidateStatusId = ServerConstants.CANDIDATE_STATUS_NO_VERIFICATION;
             existingCandidate.update();
 
             List<CandidateLocality> allLocality = CandidateLocality.find.where().eq("candidateLocalityCandidateId", existingCandidate.candidateId).findList();
@@ -177,7 +177,7 @@ public class Candidate extends Model {
                 candidateJob.save();
             }
 
-            String msg = "Welcome to Trujobs! Use OTP " + otpCode + " to register";
+            String msg = "Welcome to Trujobs.in! Use OTP " + otpCode + " to register";
             SmsUtil.sendSms(existingCandidate.candidateMobile,msg);
             Logger.info("Candidate successfully registered " + candidate);
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
@@ -266,7 +266,7 @@ public class Candidate extends Model {
             String otpCode = String.valueOf(randomPIN);
             existingCandidate.candidateOtp = randomPIN;
             existingCandidate.update();
-            String msg = "Welcome to Trujobs! Use OTP " + otpCode + " to reset password";
+            String msg = "Welcome to Trujobs.in! Use OTP " + otpCode + " to reset password";
             SmsUtil.sendSms(existingCandidate.candidateMobile, msg);
             Logger.info("Reset otp sent");
 

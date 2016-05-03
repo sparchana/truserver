@@ -83,7 +83,7 @@ public class Auth extends Model {
                 interaction.save();
                 Logger.info("Interaction added");
 
-                existingCandidate.candidateStatusId = 1;
+                existingCandidate.candidateStatusId = ServerConstants.CANDIDATE_STATUS_VERIFIED;
                 existingCandidate.update();
                 Logger.info("candidate status confirmed");
 
