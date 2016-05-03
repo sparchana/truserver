@@ -1,6 +1,7 @@
 package models.entity;
 
 import api.*;
+import api.http.*;
 import com.avaje.ebean.Model;
 import models.util.SmsUtil;
 import models.util.Util;

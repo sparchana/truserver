@@ -1,6 +1,10 @@
 package models.entity;
 
 import api.*;
+import api.http.CandidateSignUpRequest;
+import api.http.CandidateSignUpResponse;
+import api.http.ResetPasswordResponse;
+import api.http.ResetPasswordResquest;
 import com.avaje.ebean.Model;
 import models.util.Util;
 import play.Logger;

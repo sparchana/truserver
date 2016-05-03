@@ -1,33 +1,30 @@
 package controllers;
 
-import api.CandidateSignUpRequest;
-import api.LoginRequest;
-import api.ResetPasswordResquest;
 import api.ServerConstants;
 import api.http.*;
-import au.com.bytecode.opencsv.CSVReader;
+import com.google.inject.Inject;
 import models.entity.*;
+import models.util.ParseCSV;
 import models.util.Util;
 import play.Logger;
 import play.data.Form;
+import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {
+    @Inject
+    static FormFactory formFactory;
 
     public static Result index() {
         return ok(views.html.index.render());
@@ -40,7 +37,7 @@ public class Application extends Controller {
         if(developer != null && developer.developerAccessLevel == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE) {
             return ok(views.html.support.render());
         }
-        return badRequest("Your Access Level : Only Upload");
+        return redirect("/street");
     }
 
     public static Result addLead() {
@@ -102,76 +99,7 @@ public class Application extends Controller {
         if(file == null) {
             return badRequest("error uploading file. Check file type");
         }
-        Logger.info("File Uploaded "  + file.toString());
-        String[] nextLine;
-        ArrayList<Lead> leads = new ArrayList<>();
-        int count = 0;
-        int overLappingRecordCount = 0;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ssXXX");
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        try {
-            CSVReader reader = new CSVReader(new FileReader(file));
-            reader.readNext();// skip title row
-            while ((nextLine = reader.readNext()) != null) {
-                Lead lead = new Lead();
-                Interaction kwObject = new Interaction();
-                // Read all InBound Calls
-                if (nextLine != null && nextLine[0].equals("0")) {
-                    lead.leadUUId = UUID.randomUUID().toString();
-                    lead.leadId = Util.randomLong();
-                    if(!nextLine[1].contains("+")) {
-                        lead.leadMobile = "+"+nextLine[2];
-                    } else {
-                        lead.leadMobile = nextLine[2];
-                    }
-                    Date parsedDate;
-                    try {
-                        parsedDate = sdf.parse(nextLine[4]);
-                    } catch (ParseException e) {
-                        parsedDate = sdf2.parse(nextLine[4]);
-                    }
-                    lead.leadCreationTimestamp = new Timestamp(parsedDate.getTime());
-                    Lead existingLead = Lead.find.where()
-                            .eq("leadMobile", lead.leadMobile)
-                            .findUnique();
-                    lead.leadType = ServerConstants.TYPE_LEAD;
-                    lead.leadChannel = ServerConstants.LEAD_CHANNEL_KNOWLARITY;
-                    lead.leadStatus = ServerConstants.LEAD_STATUS_NEW;
-
-                    kwObject.objectAType = lead.leadType;
-                    kwObject.objectAUUId= lead.leadUUId;
-                    if (existingLead == null) {
-                        lead.save();
-                        count++;
-                        leads.add(lead);
-                    } else {
-                        if(existingLead.getLeadCreationTimestamp().getTime() > lead.leadCreationTimestamp.getTime()) {
-                            // recording the first inbound of a lead
-                            existingLead.setLeadCreationTimestamp(lead.leadCreationTimestamp);
-                            existingLead.update();
-                        }
-                        overLappingRecordCount++;
-                        kwObject.objectAType = existingLead.leadType;
-                        kwObject.objectAUUId= existingLead.leadUUId;
-                        Logger.info("compared DateTime: KwVer." + lead.leadCreationTimestamp.getTime() + "  OurDbVer. " + existingLead.leadCreationTimestamp.getTime());
-                    }
-                    // gives total no of old leads
-                    Logger.info("Total OverLapping records : " + overLappingRecordCount);
-
-                    // save all inbound calls to interaction
-                    kwObject.createdBy = "System";
-                    kwObject.creationTimestamp = new Timestamp(parsedDate.getTime());
-                    kwObject.interactionType = ServerConstants.INTERACTION_TYPE_CALL_IN;
-                    kwObject.save();
-                }
-            }
-            Logger.info("Csv File Parsed and stored in db!");
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return ok(toJson(count));
+        return ok(toJson(ParseCSV.parseCSV(file)));
     }
 
     public static Result getAll(){
@@ -229,40 +157,6 @@ public class Application extends Controller {
 
     public static Result getUserInfo(long id) {
         return ok(toJson(id));
-    }
-
-    public static Result addCandidate() {
-        Form<AddCandidateRequest> userForm = Form.form(AddCandidateRequest.class);
-        AddCandidateRequest request = userForm.bindFromRequest().get();
-        AddCandidateResponse response = new AddCandidateResponse();
-
-        // create interaction for AddCandidateAction
-        Interaction interaction = new Interaction();
-        interaction.setInteractionType(ServerConstants.INTERACTION_TYPE_CALL_OUT);
-        interaction.setCreatedBy(ServerConstants.INTERACTION_CREATED_BY_AGENT);
-        interaction.setNote(request.candidateNote);
-        interaction.setResult("Candidate Info Saved");
-        // checks if lead AlreadyExists
-        Candidate existingCandidate = Candidate.find.where().eq("leadId", request.getLeadId()).findUnique();
-        if(existingCandidate != null) {
-            interaction.setObjectAType(ServerConstants.TYPE_LEAD);
-            existingCandidate.candidateUpdateTimestamp =  new Timestamp(System.currentTimeMillis());
-            existingCandidate.update();
-            response.setStatus(AddCandidateResponse.STATUS_EXISTS);
-
-            interaction.setObjectAUUId(existingCandidate.candidateUUId);
-            Logger.info("Candidate Info Updated !!");
-        } else {
-
-            Lead updateLead = Lead.find.where().eq("leadId", request.getLeadId()).findUnique();
-
-            interaction.setObjectAUUId(updateLead.getLeadUUId());
-            interaction.setObjectAType(ServerConstants.TYPE_LEAD);
-
-            response.setStatus(AddCandidateResponse.STATUS_SUCCESS);
-        }
-        interaction.save();
-        return ok(toJson(response));
     }
 
     public static Result getCandidateInfo(long id) {
@@ -364,4 +258,7 @@ public class Application extends Controller {
         return badRequest();
     }
 
+    public static Result kwCdrInput() {
+        return ok("TODO");
+    }
 }

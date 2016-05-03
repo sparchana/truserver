@@ -1,19 +1,19 @@
-package api;
+package api.http;
 
 /**
- * Created by batcoder1 on 28/4/16.
+ * Created by batcoder1 on 26/4/16.
  */
-public class ResetPasswordResponse {
+public class LoginResponse {
     public static final int STATUS_SUCCESS = 1;
     public static final int STATUS_FAILURE = 2;
-    public static final int STATUS_EXISTS = 3;
+    public static final int STATUS_NO_USER = 3;
+    public static final int STATUS_WRONG_PASSWORD = 4;
 
     public int status;
     public long accountStatus;
     public long candidateId;
     public String candidateName;
     public String candidateEmail;
-    public String candidateMobile;
 
     public void setStatus(int status) {
         this.status = status;
@@ -29,8 +29,5 @@ public class ResetPasswordResponse {
     }
     public void setCandidateEmail(String candidateEmail) {
         this.candidateEmail = candidateEmail;
-    }
-    public void setCandidateMobile(String candidateMobile) {
-        this.candidateMobile = candidateMobile;
     }
 }

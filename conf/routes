@@ -28,8 +28,6 @@ POST     /loginSubmit                                             controllers.Ap
 
 POST     /checkCandidate                                          controllers.Application.checkCandidate()
 
-POST     /addCandidate                                            controllers.Application.addCandidate()
-
 POST     /processCsv                                              controllers.Application.processcsv()
 
 GET      /getAll                                                  controllers.Application.getAll()
@@ -53,6 +51,8 @@ POST     /auth                                                    controllers.Ap
 GET      /logout                                                  controllers.Application.logout()
 
 GET      /logoutUser                                              controllers.Application.logoutUser()
+
+POST     /api/kw/cdr                                              controllers.Application.kwCdrInput()
 
 # Map static resources from the /public folder to the /assets URL path
 GET    /robots.txt                                controllers.Assets.at(path="/public", file="robots.txt")

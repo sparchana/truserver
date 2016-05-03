@@ -78,6 +78,7 @@ function processDataForSupport(returnedData) {
             console.log("Null obj encountered");
         }
     });
+    NProgress.done();
 }
 function getCandidateInfo(id) {
     clearModal();
@@ -160,7 +161,6 @@ function refreshDashBoard() {
 
 
 $(function(){
-
     $("#callResponseForm").submit(function(eventObj) {
         eventObj.preventDefault();
         try {
@@ -169,12 +169,14 @@ $(function(){
             var answer = document.querySelector('input[name="answer"]:checked').value;
             var updateType = document.querySelector('input[name="updateType"]:checked').value;
             if(answer == 'yes') {
+                NProgress.start();
                 $.ajax({
                     type: "GET",
                     url: "/updateLeadType/"+leadId+"/"+updateType,
                     processData: false,
                     success: processLeadUpdate
                 });
+                NProgress.done();
             }
         } catch (exception) {
         }
@@ -183,6 +185,7 @@ $(function(){
 
     
     try {
+        NProgress.start();
         $.ajax({
             type: "GET",
             url: "/getAll",
