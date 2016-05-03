@@ -263,18 +263,22 @@ public class Candidate extends Model {
 
         Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", "+91" + candidateResetMobile).findUnique();
         if(existingCandidate != null){
-            int randomPIN = (int)(Math.random()*9000)+1000;
-            String otpCode = String.valueOf(randomPIN);
-            existingCandidate.candidateOtp = randomPIN;
-            existingCandidate.update();
-            String msg = "Welcome to Trujobs.in! Use OTP " + otpCode + " to reset password";
-            SmsUtil.sendSms(existingCandidate.candidateMobile, msg);
-            Logger.info("Reset otp sent");
+            if(existingCandidate.candidateStatusId == 2){
+                int randomPIN = (int)(Math.random()*9000)+1000;
+                String otpCode = String.valueOf(randomPIN);
+                existingCandidate.candidateOtp = randomPIN;
+                existingCandidate.update();
+                String msg = "Welcome to Trujobs.in! Use OTP " + otpCode + " to reset password";
+                SmsUtil.sendSms(existingCandidate.candidateMobile, msg);
 
-            resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);
+            }
+            else{
+                Logger.info("Reset otp sent");
+                resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
+            }
         }
         else{
-            resetPasswordResponse.setStatus(LoginResponse.STATUS_FAILURE);
+            resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
             Logger.info("Verification failed");
         }
         return resetPasswordResponse;

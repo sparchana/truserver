@@ -32,6 +32,10 @@ POST     /processCsv                                              controllers.Ap
 
 GET      /getAll                                                  controllers.Application.getAll()
 
+GET      /getAllLocality                                          controllers.Application.getAllLocality()
+
+GET      /getAllJobs                                               controllers.Application.getAllJobs()
+
 GET      /getUserInfo/:id                                         controllers.Application.getUserInfo(id : Long)
 
 GET      /getCandidateInfo/:id                                    controllers.Application.getCandidateInfo(id : Long)

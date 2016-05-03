@@ -261,4 +261,14 @@ public class Application extends Controller {
     public static Result kwCdrInput() {
         return ok("TODO");
     }
+
+    public static Result getAllLocality() {
+        List<Locality> localities = Locality.find.findList();
+        return ok(toJson(localities));
+    }
+
+    public static Result getAllJobs() {
+        List<Job> jobs = Job.find.findList();
+        return ok(toJson(jobs));
+    }
 }
