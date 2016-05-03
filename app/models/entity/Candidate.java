@@ -76,6 +76,7 @@ public class Candidate extends Model {
         Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", mobile).findUnique();
         Lead lead = new Lead();
 
+        String otpCode = null;
         if(existingCandidate == null ) {
             Lead existingLead = Lead.find.where().eq("leadMobile", mobile).findUnique();
             if(existingLead == null) {
@@ -94,6 +95,9 @@ public class Candidate extends Model {
                 candidate.candidateMobile = candidateSignUpRequest.getCandidateMobile();
                 candidate.candidateAge = 0;
                 candidate.candidateStatusId = 0;
+                int randomPIN = (int)(Math.random()*9000)+1000;
+                otpCode = String.valueOf(randomPIN);
+                candidate.candidateOtp = randomPIN;
                 candidate.save();
             }
             else{
@@ -104,11 +108,11 @@ public class Candidate extends Model {
                 candidate.candidateMobile = candidateSignUpRequest.getCandidateMobile();
                 candidate.candidateAge = 0;
                 candidate.candidateStatusId = 0;
+                int randomPIN = (int)(Math.random()*9000)+1000;
+                otpCode = String.valueOf(randomPIN);
+                candidate.candidateOtp = randomPIN;
                 candidate.save();
             }
-                int randomPIN = (int)(Math.random()*9000)+1000;
-                String otpCode = String.valueOf(randomPIN);
-                candidate.candidateOtp = randomPIN;
 
                 List<String> locality = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
                 for(String  s : locality) {
@@ -136,7 +140,7 @@ public class Candidate extends Model {
         }
         else if(existingCandidate != null && existingCandidate.candidateStatusId == 0) {
             int randomPIN = (int)(Math.random()*9000)+1000;
-            String otpCode = String.valueOf(randomPIN);
+            otpCode = String.valueOf(randomPIN);
             existingCandidate.candidateOtp = randomPIN;
             existingCandidate.candidateName = candidateSignUpRequest.getCandidateName();
             existingCandidate.candidateMobile = candidateSignUpRequest.getCandidateMobile();

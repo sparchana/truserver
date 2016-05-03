@@ -315,10 +315,7 @@ body {
     /* padding-left: 15px; */
     /* padding-right: 15px; */
 }
-ul.token-input-list-facebook
-{
-    width:100%;
-}
+
 @media screen and (max-width: 800px) {
 
     .c_form {

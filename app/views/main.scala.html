@@ -93,23 +93,33 @@
 
                 }
                 function addLead() {
-                    try {
-                        var d = {
-                            leadName : " ",
-                            leadMobile : $("#addLeadMobile").val(),
-                            leadChannel : 0,
-                            leadType : 0,
-                            leadInterest : "General Registration"
-                        };
-                        $.ajax({
-                            type: "POST",
-                            url: "/addLead",
-                            data: d,
-                            success: processCheckLeadStatus
-                        });
-                    } catch (exception) {
-                        console.log("exception occured!!" + exception);
+                    var phone = $('#addLeadMobile').val();
+                    var validPhone = /^[7-9]{1}[0-9]{9}$/i;
+                    if (phone.length > 0 && validPhone.test(phone) === false) {
+                        alert("Please enter valid 10 digit mobile number");
+                    } else if (phone.length == 0) {
+                        alert("Please enter your mobile number");
                     }
+                    else{
+                        try {
+                            var d = {
+                                leadName : " ",
+                                leadMobile : $("#addLeadMobile").val(),
+                                leadChannel : 0,
+                                leadType : 0,
+                                leadInterest : "General Registration"
+                            };
+                            $.ajax({
+                                type: "POST",
+                                url: "/addLead",
+                                data: d,
+                                success: processCheckLeadStatus
+                            });
+                        } catch (exception) {
+                            console.log("exception occured!!" + exception);
+                        }
+                    }
+
                 }
 
                 function openLogin() {
@@ -277,7 +287,7 @@
                             <h5 id="helpText"></h5>
 
                             <div class="form-group">
-                                <input id="candidateForgotOtp" type="number" minlength="4" maxlength="4" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
+                                <input id="candidateForgotOtp" type="number" minlength="1000" maxlength="9999" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
                             </div>
                             <div class="form-group">
                                 <input style="width: 120%; margin-left: -10%; margin-right: -10%; display: none" id="forgotPasswordAutoMobile" type="text" placeholder="Mobile No. (eg: 8880007799)" class="form-control input-md" required>
@@ -382,11 +392,12 @@
                                         {id: 16, name: "Waiter"}
                                     ], {
                                         theme: "facebook",
-                                        hintText: "Start typing jobs (eg. Cook,Delivery boy..)"
-                                    });
+                                        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                                        minChars: 0,
+                                        preventDuplicates: true
+                                     });
                                 });
                                 </script>
-
                             </div>
                         </div>
 
@@ -742,7 +753,8 @@
                                         theme: "facebook",
                                         minChars: 3,
                                         tokenLimit: 5,
-                                        hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)"
+                                        hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
+                                        preventDuplicates: true
                                     });
                                 });
                                 </script>
@@ -760,7 +772,7 @@
                                         <h5 id="helpTextSignup">Enter OTP</h5>
 
                                         <div class="form-group">
-                                            <input id="candidateOtp" style="width: 80%;" min="4" max="4" name="candidateOtp" type="number" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
+                                            <input id="candidateOtp" style="width: 80%;" min="1000" max="9999" name="candidateOtp" type="number" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
                                         </div>
 
                                             <!-- hidden-->
@@ -903,7 +915,7 @@
                 <div class="col-sm-4">
                     <p><img class="dropShadow" src="/assets/img/call.png" width="100px"></p>
                     <br>
-                    CALL 8880007799 (Option 1) TO SPECIFY REQUIREMENT
+                    CALL 8880007799 TO SPECIFY REQUIREMENT
                 </div>
                 <div class="col-sm-4">
                     <p><img id="stats" class="dropShadow" src="/assets/img/users.png" width="100px"></p>
@@ -963,7 +975,7 @@
 
         <div class="sectionFive" id="contact">
             <h4>Write us at <a href="mailto:hi@@trujobs.in">hi@@trujobs.in</a></h4>
-            <h4>Have queries? Talk to us at 8880007799 (Option 2)</h4>
+            <h4>Have queries? Talk to us at 8880007799</h4>
         </div>
 
         <div class="footer">

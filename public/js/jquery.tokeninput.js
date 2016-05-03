@@ -254,10 +254,9 @@
           })
           .attr("id", $(input).data("settings").idPrefix + input.id)
           .focus(function () {
-              if ($(input).data("settings").disabled) {
-                  return false;
-              } else
-              if ($(input).data("settings").tokenLimit === null || $(input).data("settings").tokenLimit !== token_count) {
+              if (settings.local_data) {
+                  setTimeout(function() { run_search(''); }, 5);
+              } else {
                   show_dropdown_hint();
               }
               token_list.addClass($(input).data("settings").classes.focused);
