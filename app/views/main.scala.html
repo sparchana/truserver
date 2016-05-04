@@ -75,11 +75,6 @@
                 })
             });
             $(document).ready(function(){
-                var userMobile = localStorage.getItem("mobile");
-                var userName = localStorage.getItem("name");
-                if(userMobile != null){
-                    window.location = "/dashboard";
-                }
                 try {
                     $.ajax({
                         type: "GET",
@@ -418,60 +413,44 @@
                 <h3>Give a missed call at 8880007799 for Best Jobs</h3>
                 <br>
                 <div class="leadBox">
-                    <form id="form_signup_candidate"  style="margin-top: -3%; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
-                        <div class="row">
-                            <div class="col-sm-3" ></div>
-                            <div class="col-sm-9">
+                    <form id="form_signup_candidate"  style="margin-top: 0%; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
                                 <h4>Job Seeker Registration</h4>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-3" ><h6>Name:</h6></div>
-                            <div class="col-sm-9">
-                                <input id="candidateName" name="candidateName" type="text" class="form-control input-md" required>
-                            </div>
-                        </div>
+                                <input id="candidateName" name="candidateName" placeholder="What is your name?" type="text" class="form-control input-md" required>
 
-                        <div class="row" style="margin-top: 8px;">
-                            <div class="col-sm-3"><h6>Mobile:</h6></div>
-                            <div class="col-sm-9"><input id="candidateMobile" name="candidateMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" class="form-control input-md" required></div>
-                        </div>
+                                <input id="candidateMobile" style="margin-top: 8px" placeholder="What is your mobile no.?" name="candidateMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" class="form-control input-md" required>
 
-                        <div class="row" style="margin-top: 8px;">
-                            <div class="col-sm-3"><h6>Interested Jobs:</h6></div>
-                            <div class="col-sm-9">
-                                <input type="text" id="candidateJobPref" >
-                                <script type="text/javascript">
-                                $(document).ready(function() {
-                                    $("#candidateJobPref").tokenInput(getJob(), {
-                                        theme: "facebook",
-                                        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-                                        minChars: 0,
-                                        preventDuplicates: true
-                                     });
-                                });
-                                </script>
-                            </div>
-                        </div>
+                                <div style="margin-top: 8px">
+                                    <input type="text" id="candidateJobPref">
+                                    <script type="text/javascript">
+                                        $(document).ready(function() {
+                                            $("#candidateJobPref").tokenInput(getJob(), {
+                                                theme: "facebook",
+                                                placeholder: "What jobs you are Interested in?",
+                                                hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                                                minChars: 0,
+                                                preventDuplicates: true
+                                            });
+                                        });
+                                    </script>
+                                </div>
 
-                        <div class="row" style=" color: #555">
-                            <div class="col-sm-3" style="color: #0B4063"><h6>Interested Areas:</h6></div>
-                            <div class="col-sm-9">
-                                <input type="text" id="candidateLocality">
-                                <script type="text/javascript">
-                                $(document).ready(function() {
-                                    $("#candidateLocality").tokenInput(getLocality(), {
-                                        theme: "facebook",
-                                        minChars: 3,
-                                        tokenLimit: 5,
-                                        hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
-                                        preventDuplicates: true
-                                    });
-                                });
-                                </script>
+                                <div style="margin-top: 8px">
+                                    <input type="text" id="candidateLocality" style="margin-top: 4px">
+                                    <script type="text/javascript">
+                                        $(document).ready(function() {
+                                            $("#candidateLocality").tokenInput(getLocality(), {
+                                                theme: "facebook",
+                                                placeholder: "Where do you want to Work?",
+                                                minChars: 3,
+                                                tokenLimit: 5,
+                                                hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
+                                                preventDuplicates: true
+                                            });
+                                        });
+                                        </script>
+                                </div>
+
                                 <button type="submit" id="registerBtn" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
-                            </div>
-                        </div>
                             <!-- Text input-->
                     </form>
                     <div class="modal fade bs-example-modal-sm" id="myRegistrationModal" tabindex="-1" role="dialog" aria-labelledby="myRegistrationModal">

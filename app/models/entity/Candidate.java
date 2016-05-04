@@ -82,11 +82,12 @@ public class Candidate extends Model {
             Lead existingLead = Lead.find.where().eq("leadMobile", mobile).findUnique();
             if(existingLead == null) {
                 lead.leadId = Util.randomLong();
-                lead.leadMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
                 lead.leadUUId = UUID.randomUUID().toString();
-                lead.leadChannel = ServerConstants.LEAD_CHANNEL_WEBSITE;
                 lead.leadName = candidateSignUpRequest.getCandidateName();
+                lead.leadMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
+                lead.leadChannel = ServerConstants.LEAD_CHANNEL_WEBSITE;
                 lead.leadType = ServerConstants.TYPE_CANDIDATE;
+                lead.leadStatus = ServerConstants.LEAD_STATUS_NEW;
                 lead.save();
 
                 candidate.leadId = lead.leadId;

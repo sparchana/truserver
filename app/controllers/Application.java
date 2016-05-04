@@ -3,6 +3,7 @@ package controllers;
 import api.ServerConstants;
 import api.http.*;
 import com.google.inject.Inject;
+import controllers.businessLogic.CandidateService;
 import models.entity.*;
 import models.util.ParseCSV;
 import models.util.Util;
@@ -27,6 +28,11 @@ public class Application extends Controller {
     static FormFactory formFactory;
 
     public static Result index() {
+        String sessionId = session().get("sessionId");
+        Logger.info("sessionid = " + sessionId);
+        if(sessionId != null){
+            return ok(views.html.candidate_home.render());
+        }
         return ok(views.html.index.render());
     }
 
@@ -43,7 +49,8 @@ public class Application extends Controller {
     public static Result addLead() {
         Form<AddLeadRequest> userForm = Form.form(AddLeadRequest.class);
         AddLeadRequest addLeadRequest = userForm.bindFromRequest().get();
-        return ok(toJson(Lead.addLead(addLeadRequest)));
+        /*return ok(toJson(Lead.addLead(addLeadRequest)));*/
+        return ok(toJson(CandidateService.createLead(addLeadRequest)));
     }
 
     public static Result signUpSubmit() {

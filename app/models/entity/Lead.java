@@ -54,7 +54,6 @@ public class Lead extends Model {
     public static Finder<String, Lead> find = new Finder(Lead.class);
 
     public static AddLeadResponse addLead(AddLeadRequest addLeadRequest) {
-
         String mobile = "+91" + addLeadRequest.getLeadMobile();
         Logger.info("inside addLead method " + addLeadRequest.getLeadName() + addLeadRequest.getLeadMobile());
 
