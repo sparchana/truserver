@@ -163,14 +163,12 @@
             var userMobile = localStorage.getItem("mobile");
             var userName = localStorage.getItem("name");
             if(userMobile == null){
-                $('#noUser').show();
-                $('#userExist').hide();
+                window.location = "/";
             }
             else{
                 document.getElementById("helloMsg").innerHTML = "Hello " + userName + "!";
                 document.getElementById("userName").innerHTML = userName;
                 document.getElementById("userMobile").innerHTML = userMobile;
-                $('#noUser').hide();
                 $('#userExist').show();
                 $('#doneAssessment').hide();
                 $('#takeAssessment').hide();
@@ -178,8 +176,8 @@
 
         });
         function logoutUser() {
-            localStorage.clear();
             try {
+                localStorage.clear();
                 $.ajax({
                     type: "GET",
                     url: "/logoutUser",
@@ -249,14 +247,6 @@
     </nav>
 
     <div id="table" style="display: none;"></div>
-
-    <div class="sectionThree" id="noUser" style="display: none;">
-        <div class="row" style="text-align: center">
-            <div class="noUser">
-                <h5>User not logged in!</h5>
-            </div>
-        </div>
-    </div>
 
     <div class="sectionDashboard" style="text-align: left" id="userExist">
         <div class="row" style="text-align: center">
