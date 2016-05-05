@@ -24,7 +24,7 @@ $(function() {
             var name  = $('#leadNameModal').val();
             var phone = $('#leadMobileModal').val();
             var channel = $('#leadChannelModal').val();
-            var type = 1;
+            var type = 2;
             var interested = document.getElementById("interested").innerHTML;
             console.log("phone : " + phone + " " + interested);
 

@@ -28,7 +28,6 @@ create table candidate (
   candidateage                  int signed not null default 0,
   candidatecreatetimestamp      timestamp default current_timestamp not null,
   candidateupdatetimestamp      timestamp null,
-  candidateotp                  int signed not null default 1234,
   constraint uq_candidate_candidateuuid unique (candidateuuid),
   constraint uq_candidate_leadid unique (leadid),
   constraint pk_candidate primary key (candidateid)

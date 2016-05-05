@@ -6,6 +6,7 @@ import api.http.CandidateSignUpResponse;
 import api.http.ResetPasswordResponse;
 import api.http.ResetPasswordResquest;
 import com.avaje.ebean.Model;
+import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
 
@@ -59,6 +60,7 @@ public class Auth extends Model {
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
 
         Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", candidateAuthMobile).findUnique();
+        Logger.info("getting : " + candidateAuthMobile + " got : " + existingCandidate.candidateMobile);
         if(existingCandidate != null) {
             Logger.info("Existing user mobile: " + existingCandidate.candidateMobile);
             Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.candidateId).findUnique();
@@ -95,6 +97,10 @@ public class Auth extends Model {
                 existingLead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
                 existingLead.update();
                 Logger.info("Lead converted in candidate");
+
+                String msg = "Hey " + existingCandidate.candidateName +
+                        "! Welcome to Trujobs.in. Complete our skill assessment today and find your right job. Take assessment now: bit.ly/trujobstest";
+                SmsUtil.sendSms(existingCandidate.candidateMobile,msg);
 
                 candidateSignUpResponse.setCandidateId(existingCandidate.candidateId);
                 candidateSignUpResponse.setCandidateName(existingCandidate.candidateName);
@@ -134,7 +140,7 @@ public class Auth extends Model {
             resetPasswordResponse.setCandidateName(existingCandidate.candidateName);
             resetPasswordResponse.setCandidateMobile(existingCandidate.candidateMobile);
 
-            existingCandidate.candidateStatusId = 1;
+            existingCandidate.candidateStatusId = ServerConstants.CANDIDATE_STATUS_VERIFIED;
             existingCandidate.update();
             resetPasswordResponse.setStatus(ResetPasswordResponse.STATUS_SUCCESS);
             Logger.info("Auth Save Successful");

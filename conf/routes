@@ -10,10 +10,6 @@ POST     /addLead                                                 controllers.Ap
 
 POST     /signUpSubmit                                            controllers.Application.signUpSubmit()
 
-POST     /verifyOtp                                               controllers.Application.verifyOtp()
-
-POST     /checkResetOtp                                           controllers.Application.checkResetOtp()
-
 POST     /addPassword                                             controllers.Application.addPassword()
 
 POST     /processCsv                                             controllers.Application.processcsv()

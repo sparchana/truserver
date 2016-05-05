@@ -1,13 +1,14 @@
 /**
  * Created by batcoder1 on 28/4/16.
  */
-/* forgot password | reset password */
 
+var returnedOtp;
+var candidateMobile;
 function processDataResetCheckUser(returnedData) {
-    console.log("returedData :" + returnedData.status);
+    console.log("returedData :" + returnedData.status + " " + returnedData.otp);
     if(returnedData.status == 1) {
+        returnedOtp = returnedData.otp;
         document.getElementById("helpText").innerHTML = "Enter OTP sent on " + $('#resetPasswordMobile').val();
-        $('#forgotPasswordAutoMobile').val($('#resetPasswordMobile').val());
         $('#form_password_reset_otp').show();
         $('#form_forgot_password').hide();
         $('#noUserLogin').hide();
@@ -19,24 +20,10 @@ function processDataResetCheckUser(returnedData) {
     }
 }
 
-function processDataCheckResetOtp(returnedData) {
-    console.log("returedData :" + returnedData.status);
-    if(returnedData.status == 1) {
-        $('#forgotPasswordNewMobile').val($('#forgotPasswordAutoMobile').val());
-        $('#form_password_reset_otp').hide();
-        $('#form_password_reset_new').show();
-        $('#wrongOtp').hide();
-    }
-        
-    else {
-        $('#wrongOtp').show();
-    }
-}
-
 function processDataPostReset(returnedData) {
     console.log("returedData :" + returnedData.status);
     if(returnedData.status == 1) {
-        localStorage.setItem("mobile", returnedData.candidateMobile);
+        localStorage.setItem("mobile", candidateMobile);
         localStorage.setItem("name", returnedData.candidateName);
         localStorage.setItem("id", returnedData.candidateId);
         window.location = "/dashboard";
@@ -62,7 +49,7 @@ $(function() {
         document.getElementById("resetCheckUserBtn").disabled = true;
         try {
             var phone = $('#resetPasswordMobile').val();
-            console.log("phone: " + phone);
+            candidateMobile = phone;
             var s = {
                 resetPasswordMobile : phone
             };
@@ -80,31 +67,23 @@ $(function() {
 
     $("#form_password_reset_otp").submit(function(eventObj) {
         eventObj.preventDefault();
-        try {
-            var phone = $('#forgotPasswordAutoMobile').val();
-            var otp = $('#candidateForgotOtp').val();
-            console.log("phone: " + phone);
-            var s = {
-                candidateForgotOtp : otp,
-                candidateForgotMobile : phone,
-            };
-            $.ajax({
-                type: "POST",
-                url: "/checkResetOtp",
-                data: s,
-                success: processDataCheckResetOtp
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
+        var userOtp = $('#candidateForgotOtp').val();
+        if(userOtp == returnedOtp){
+            $('#form_password_reset_otp').hide();
+            $('#form_password_reset_new').show();
+            $('#wrongOtp').hide();
         }
 
+        else {
+            $('#wrongOtp').show();
+        }
     }); // end of submit
 
     $("#form_password_reset_new").submit(function(eventObj) {
         eventObj.preventDefault();
         document.getElementById("resetNewPasswordBtn").disabled = true;
         try {
-            var phone = $('#forgotPasswordNewMobile').val();
+            var phone = candidateMobile;
             var password = $('#candidateNewPassword').val();
             console.log("phone: " + phone);
             var s = {

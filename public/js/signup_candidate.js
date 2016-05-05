@@ -1,12 +1,14 @@
 /**
  * Created by batcoder1 on 25/4/16.
  */
-
+var returnedOtp;
+var candidateMobile;
 function processDataSignUpSubmit(returnedData) {
     console.log("returedData :" + returnedData.status);
     if(returnedData.status == 1) {
+        returnedOtp = returnedData.otp;
         $('#myRegistrationModal').modal('show');
-        $('#autoCandidateMobile').val($('#candidateMobile').val());
+        $('#authMobile').val($('#candidateMobile').val());
         $('#candidateName').val('');
         $('#candidateMobile').val('');
         $('#candidateEmail').val('');
@@ -32,34 +34,11 @@ function processDataSignUpSubmit(returnedData) {
     }
 }
 
-function processDataVerifyOtp(returnedData) {
-    console.log("returedData :" + returnedData.status);
-    if(returnedData.status == 1) {
-        $('#incorrectOtpMsg').hide();
-        $('#candidateAuthMobile').val($('#autoCandidateMobile').val());
-        $('#form_otp').hide();
-        $('#form_auth').show();
-        $('#errorMsg').hide();
-        $('#incorrectMsg').hide();
-        
-    }
-    else if(returnedData.status == 4){
-        $('#incorrectOtpMsg').show();
-        $('#errorMsg').hide();
-        $('#candidateOtp').val('');
-    }
-
-    else {
-        $('#incorrectMsg').hide();
-        $('#errorMsg').show();
-    }
-}
-
 function processDataAddAuth(returnedData) {
     console.log("returedData :" + returnedData.status);
     if(returnedData.status == 1) {
         // Store
-        localStorage.setItem("mobile", "+91" + $('#candidateAuthMobile').val());
+        localStorage.setItem("mobile", "+91" + candidateMobile);
         localStorage.setItem("name", returnedData.candidateName);
         localStorage.setItem("id", returnedData.candidateId);
         console.log(returnedData.candidateId);
@@ -87,8 +66,7 @@ $(function() {
             try {
                 var name  = $('#candidateName').val();
                 var phone = $('#candidateMobile').val();
-                console.log("phone: " + phone);
-                console.log($('#candidateLocality').val());
+                candidateMobile = phone;
                 $('#alreadyMsgCandidate').hide();
                 var d = {
                     candidateName : name,
@@ -114,20 +92,20 @@ $(function() {
 $(function() {
     $("#form_otp").submit(function(eventObj) {
         eventObj.preventDefault();
-        try {
             var userOtp = $('#candidateOtp').val();
-            var userMobile = $('#autoCandidateMobile').val();
-            console.log("userOtp: " + userOtp);
-            $.ajax({
-                type: "POST",
-                url: "/verifyOtp",
-                data: $("#form_otp").serialize(),
-                dataType: "json",
-                success: processDataVerifyOtp
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
-        }
+            if(userOtp == returnedOtp){
+                    $('#incorrectOtpMsg').hide();
+                    $('#form_otp').hide();
+                    $('#form_auth').show();
+                    $('#errorMsg').hide();
+                    $('#incorrectMsg').hide();
+
+                }
+                else {
+                    $('#incorrectOtpMsg').show();
+                    $('#errorMsg').hide();
+                    $('#candidateOtp').val('');
+                }
 
     }); // end of submit
 }); // end of function
@@ -139,13 +117,16 @@ $(function() {
         document.getElementById("btnSubmit").disabled = true;
         try {
             var authPassword = $('#candidatePassword').val();
-            var authMobile = $('#authMobile').val();
+            var authMobile = candidateMobile;
+            var d = {
+                candidatePassword : authPassword,
+                candidateAuthMobile : authMobile
+            }
             console.log("userMobile: " + authMobile);
             $.ajax({
                 type: "POST",
                 url: "/addPassword",
-                data: $("#form_auth").serialize(),
-                dataType: "json",
+                data: d,
                 success: processDataAddAuth
             });
         } catch (exception) {

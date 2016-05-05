@@ -183,6 +183,8 @@
 
                 function openLogin() {
 
+                    document.getElementById("resetCheckUserBtn").disabled = false;
+                    document.getElementById("resetNewPasswordBtn").disabled = fales;
                     $('#form_login_candidate').show();
                     $('#noUserLogin').hide();
                     $('#incorrectMsgLogin').hide();
@@ -348,10 +350,6 @@
                             <div class="form-group">
                                 <input id="candidateForgotOtp" type="number" minlength="1000" maxlength="9999" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
                             </div>
-                            <div class="form-group">
-                                <input style="width: 120%; margin-left: -10%; margin-right: -10%; display: none" id="forgotPasswordAutoMobile" type="text" placeholder="Mobile No. (eg: 8880007799)" class="form-control input-md" required>
-                            </div>
-
                             <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Verify OTP</button>
 
                         </div>
@@ -365,9 +363,6 @@
 
                             <div class="form-group">
                                 <input id="candidateNewPassword" type="password" placeholder="Enter new Password" class="form-control input-md" required>
-                            </div>
-                            <div class="form-group">
-                                <input style="width: 120%; margin-left: -10%; margin-right: -10%; display: none" id="forgotPasswordNewMobile" type="text" placeholder="Mobile No. (eg: 8880007799)" class="form-control input-md" required>
                             </div>
                             <button type="submit" class="btn btn-primary" id="resetNewPasswordBtn" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Reset Password</button>
 
@@ -465,10 +460,6 @@
                                             <input id="candidateOtp" style="width: 80%;" min="1000" max="9999" name="candidateOtp" type="number" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
                                         </div>
 
-                                            <!-- hidden-->
-                                        <div class="form-group" style="display: none;">
-                                            <input id="autoCandidateMobile" name="autoCandidateMobile" type="text"class="form-control input-md" >
-                                        </div>
                                         <button type="submit" id="verifyOtpBtn" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Verify OTP</button>
 
                                     </div>
@@ -630,7 +621,7 @@
 
                         <!-- Text input-->
                     <div class="form-group">
-                        <input id="leadMobile" name="leadMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" placeholder="Mobile (eg: 8880007799)" class="form-control input-md">
+                        <input id="leadMobile" name="leadMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" placeholder="Mobile (eg: 8880007799)" class="form-control input-md" required>
                     </div>
 
                     <!-- hidden-->

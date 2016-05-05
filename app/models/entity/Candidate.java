@@ -62,9 +62,6 @@ public class Candidate extends Model {
     @Column(name = "CandidateUpdateTimestamp", columnDefinition = "timestamp null")
     public Timestamp candidateUpdateTimestamp;
 
-    @Column(name = "CandidateOtp", columnDefinition = "int signed not null default 1234")
-    public int candidateOtp = 1234;
-
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
 
@@ -76,7 +73,7 @@ public class Candidate extends Model {
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
         Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", mobile).findUnique();
         Lead lead = new Lead();
-
+        int randomPIN;
         String otpCode = null;
         if(existingCandidate == null ) {
             Lead existingLead = Lead.find.where().eq("leadMobile", mobile).findUnique();
@@ -87,7 +84,7 @@ public class Candidate extends Model {
                 lead.leadMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
                 lead.leadChannel = ServerConstants.LEAD_CHANNEL_WEBSITE;
                 lead.leadType = ServerConstants.TYPE_CANDIDATE;
-                lead.leadStatus = ServerConstants.LEAD_STATUS_NEW;
+                lead.leadStatus = ServerConstants.LEAD_STATUS_WON;
                 lead.save();
 
                 candidate.leadId = lead.leadId;
@@ -96,10 +93,9 @@ public class Candidate extends Model {
                 candidate.candidateName = candidateSignUpRequest.getCandidateName();
                 candidate.candidateMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
                 candidate.candidateAge = 0;
-                candidate.candidateStatusId = 0;
-                int randomPIN = (int)(Math.random()*9000)+1000;
+                candidate.candidateStatusId = ServerConstants.CANDIDATE_STATUS_NOT_VERIFIED;
+                randomPIN = (int)(Math.random()*9000)+1000;
                 otpCode = String.valueOf(randomPIN);
-                candidate.candidateOtp = randomPIN;
                 candidate.save();
             }
             else{
@@ -109,45 +105,46 @@ public class Candidate extends Model {
                 candidate.candidateName = candidateSignUpRequest.getCandidateName();
                 candidate.candidateMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
                 candidate.candidateAge = 0;
-                candidate.candidateStatusId = 0;
-                int randomPIN = (int)(Math.random()*9000)+1000;
+                candidate.candidateStatusId = ServerConstants.CANDIDATE_STATUS_NOT_VERIFIED;
+                randomPIN = (int)(Math.random()*9000)+1000;
                 otpCode = String.valueOf(randomPIN);
-                candidate.candidateOtp = randomPIN;
                 candidate.save();
+                candidateSignUpResponse.setOtp(randomPIN);
             }
 
-                List<String> locality = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
-                for(String  s : locality) {
-                    CandidateLocality candidateLocality = new CandidateLocality();
-                    candidateLocality.candidateLocalityId = Util.randomLong();
-                    candidateLocality.candidateLocalityCandidateId = candidate.candidateId;
-                    candidateLocality.candidateLocalityLocalityId = s;
-                    candidateLocality.save();
-                }
+            List<String> locality = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
+            for(String  s : locality) {
+                CandidateLocality candidateLocality = new CandidateLocality();
+                candidateLocality.candidateLocalityId = Util.randomLong();
+                candidateLocality.candidateLocalityCandidateId = candidate.candidateId;
+                candidateLocality.candidateLocalityLocalityId = s;
+                candidateLocality.save();
+            }
 
-                List<String> jobs = Arrays.asList(candidateSignUpRequest.getCandidateJobPref().split("\\s*,\\s*"));
-                for(String  s : jobs) {
-                    CandidateJob candidateJob = new CandidateJob();
-                    candidateJob.candidateJobId = Util.randomLong();
-                    candidateJob.candidateJobCandidateId = candidate.candidateId;
-                    candidateJob.candidateJobJobId = s;
-                    candidateJob.save();
-                }
-                String msg = "Welcome to Trujobs.in! Use OTP " + otpCode + " to register";
+            List<String> jobs = Arrays.asList(candidateSignUpRequest.getCandidateJobPref().split("\\s*,\\s*"));
+            for(String  s : jobs) {
+                CandidateJob candidateJob = new CandidateJob();
+                candidateJob.candidateJobId = Util.randomLong();
+                candidateJob.candidateJobCandidateId = candidate.candidateId;
+                candidateJob.candidateJobJobId = s;
+                candidateJob.save();
+            }
+            String msg = "Welcome to Trujobs.in! Use OTP " + otpCode + " to register";
 
-                SmsUtil.sendSms(candidate.candidateMobile,msg);
-                Logger.info("Candidate successfully registered " + candidate);
-                candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+            SmsUtil.sendSms(candidate.candidateMobile,msg);
+            Logger.info("Candidate successfully registered " + candidate);
+
+            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+            candidateSignUpResponse.setOtp(randomPIN);
 
         }
         else if(existingCandidate != null && existingCandidate.candidateStatusId == 0) {
-            int randomPIN = (int)(Math.random()*9000)+1000;
+            randomPIN = (int)(Math.random()*9000)+1000;
             otpCode = String.valueOf(randomPIN);
-            existingCandidate.candidateOtp = randomPIN;
             existingCandidate.candidateName = candidateSignUpRequest.getCandidateName();
             existingCandidate.candidateMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
             existingCandidate.candidateAge = 0;
-            existingCandidate.candidateStatusId = ServerConstants.CANDIDATE_STATUS_NO_VERIFICATION;
+            existingCandidate.candidateStatusId = ServerConstants.CANDIDATE_STATUS_NOT_VERIFIED;
             existingCandidate.update();
 
             List<CandidateLocality> allLocality = CandidateLocality.find.where().eq("candidateLocalityCandidateId", existingCandidate.candidateId).findList();
@@ -182,35 +179,12 @@ public class Candidate extends Model {
             String msg = "Welcome to Trujobs.in! Use OTP " + otpCode + " to register";
             SmsUtil.sendSms(existingCandidate.candidateMobile,msg);
             Logger.info("Candidate successfully registered " + candidate);
+            candidateSignUpResponse.setOtp(randomPIN);
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
         }
         else {
             Logger.info("Candidate already exists");
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
-        }
-        return candidateSignUpResponse;
-    }
-
-    public static CandidateSignUpResponse verifyOtp(CandidateSignUpRequest candidateSignUpRequest) {
-        int candidateOtp = candidateSignUpRequest.getCandidateOtp();
-        String candidateMobile = "+91" + candidateSignUpRequest.getAutoCandidateMobile();
-        CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
-
-        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", candidateMobile).findUnique();
-        Logger.info( existingCandidate.candidateName + " " + existingCandidate.candidateOtp + " " + candidateOtp);
-        if(existingCandidate != null){
-            if(existingCandidate.candidateOtp == candidateOtp){
-                candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-                Logger.info("OTP correct!");
-            }
-            else{
-                candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_INCORRECT_OTP);
-                Logger.info("OTP incorrect!");
-            }
-        }
-        else{
-            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
-            Logger.info("Verification failed");
         }
         return candidateSignUpResponse;
     }
@@ -264,14 +238,14 @@ public class Candidate extends Model {
 
         Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", "+91" + candidateResetMobile).findUnique();
         if(existingCandidate != null){
-            if(existingCandidate.candidateStatusId == 2){
+            if(existingCandidate.candidateStatusId == ServerConstants.CANDIDATE_STATUS_VERIFIED){
                 int randomPIN = (int)(Math.random()*9000)+1000;
                 String otpCode = String.valueOf(randomPIN);
-                existingCandidate.candidateOtp = randomPIN;
                 existingCandidate.update();
                 String msg = "Welcome to Trujobs.in! Use OTP " + otpCode + " to reset password";
-                SmsUtil.sendSms(existingCandidate.candidateMobile, msg);
-
+                String getResponse = SmsUtil.sendSms(existingCandidate.candidateMobile, msg);
+                resetPasswordResponse.setOtp(randomPIN);
+                resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);
             }
             else{
                 Logger.info("Reset otp sent");
@@ -281,30 +255,6 @@ public class Candidate extends Model {
         else{
             resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
             Logger.info("Verification failed");
-        }
-        return resetPasswordResponse;
-    }
-    public static ResetPasswordResponse checkResetOtp(ResetPasswordResquest resetPasswordResquest) {
-        String candidateMobile = resetPasswordResquest.getCandidateForgotMobile();
-        int candidateOtp = resetPasswordResquest.getCandidateForgotOtp();
-        ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
-
-        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", "+91" + candidateMobile).findUnique();
-        if(existingCandidate != null){
-
-            Logger.info(existingCandidate.candidateOtp + " = " + candidateOtp);
-            if(existingCandidate.candidateOtp == candidateOtp){
-                resetPasswordResponse.setStatus(ResetPasswordResponse.STATUS_SUCCESS);
-                Logger.info("Otp Correct");
-            }
-            else{
-                resetPasswordResponse.setStatus(ResetPasswordResponse.STATUS_FAILURE);
-                Logger.info("Otp Incorrect");
-            }
-        }
-        else{
-            resetPasswordResponse.setStatus(ResetPasswordResponse.STATUS_FAILURE);
-            Logger.info("No User");
         }
         return resetPasswordResponse;
     }

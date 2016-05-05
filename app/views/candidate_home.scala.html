@@ -36,11 +36,9 @@
         function getLocality(){
             return localityArray;
         }
-
         function getJob(){
             return jobArray;
         }
-
         function getLocalityName(id){
             var localityArray = getLocality();
             var returnLocalityName;
@@ -65,7 +63,6 @@
             });
             return returnJobName;
         }
-
         function processDataCheck(returnedData) {
             var parent = $('.preferredLocation')[0];
             returnedData.forEach(function (locality) {
@@ -74,7 +71,6 @@
                 parent.appendChild(l);
             });
         }
-
         function processDataCheckJob(returnedData) {
             console.log(returnedData);
             var parent = $('.preferredJobs')[0];
@@ -83,7 +79,6 @@
                 l.textContent = getJobName(job.candidateJobJobId);
                 parent.appendChild(l);
             });
-
         }
         function processDataCheckLocality(returnedData) {
             returnedData.forEach(function(locality)
@@ -96,7 +91,6 @@
                 localityArray.push(item);
             });
         }
-
         function processDataCheckJobs(returnedData) {
             returnedData.forEach(function(job)
             {
@@ -121,7 +115,6 @@
             } catch (exception) {
                 console.log("exception occured!!" + exception);
             }
-
             try {
                 $.ajax({
                     type: "GET",
@@ -146,7 +139,6 @@
             } catch (exception) {
                 console.log("exception occured!!" + exception);
             }
-
             try {
                 $.ajax({
                     type: "GET",
@@ -198,7 +190,6 @@
       var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1HwEWPzZD4BFCyeRf5HO_KqNXyaMporxYQfg5lhOoA2g/edit#gid=496359801');
 
       function sendAndDraw() {
-          // Send the query with a callback function.
           var val = localStorage.getItem("mobile");
           query.setQuery('select C where C=' + val.substring(3, 13));
           query.send(handleQueryResponse);
@@ -282,6 +273,7 @@
                     <div class="row" style="padding-left: 5%">
                         <div style="display : inline-block"><img src="/assets/img/job.png" height="30px;"></div>
                         <div style="margin-left: 4px; display: inline-block" >Interested Jobs:</div>
+
                     </div>
                     <ul class="preferredJobs" style="margin-left: 20px">
                     </ul>
@@ -327,15 +319,15 @@
             </div>
             <div class="row" style="text-align: center; padding: 4%;">
                 <div class="col-sm-4">
-                    <iframe frameborder="0" src="https://www.youtube.com/embed/OjBMvx0e3zQ?hl=en&amp;cc_load_policy=0&amp;loop=0&amp;iv_load_policy=1&amp;fs=1&amp;showinfo=1">
+                    <iframe onclick="_gaq.push(['_trackEvent', 'video', 'clicked', 'contact us', 'true'])" frameborder="0" src="https://www.youtube.com/embed/OjBMvx0e3zQ?hl=en&amp;cc_load_policy=0&amp;loop=0&amp;iv_load_policy=1&amp;fs=1&amp;showinfo=1">
                     </iframe>
                 </div>
                 <div class="col-sm-4">
-                    <iframe frameborder="0" src="https://www.youtube.com/embed/gnqzM6FWgTE?hl=en&amp;cc_load_policy=0&amp;loop=0&amp;iv_load_policy=1&amp;fs=1&amp;showinfo=1">
+                    <iframe onclick="_gaq.push(['_trackEvent', 'video', 'clicked', 'contact us', 'true'])" frameborder="0" src="https://www.youtube.com/embed/gnqzM6FWgTE?hl=en&amp;cc_load_policy=0&amp;loop=0&amp;iv_load_policy=1&amp;fs=1&amp;showinfo=1">
                     </iframe>
                 </div>
                 <div class="col-sm-4">
-                    <iframe frameborder="0" src="https://www.youtube.com/embed/H3cH2wEQiSw?hl=en&amp;cc_load_policy=0&amp;loop=0&amp;iv_load_policy=1&amp;fs=1&amp;showinfo=1">
+                    <iframe onclick="_gaq.push(['_trackEvent', 'video', 'clicked', 'contact us', 'true'])" frameborder="0" src="https://www.youtube.com/embed/H3cH2wEQiSw?hl=en&amp;cc_load_policy=0&amp;loop=0&amp;iv_load_policy=1&amp;fs=1&amp;showinfo=1">
                     </iframe>
                 </div>
 

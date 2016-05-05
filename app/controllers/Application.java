@@ -60,12 +60,6 @@ public class Application extends Controller {
         return ok(toJson(Candidate.candidateSignUp(candidateSignUpRequest)));
     }
 
-    public static Result verifyOtp() {
-        Form<CandidateSignUpRequest> candidateForm = Form.form(CandidateSignUpRequest.class);
-        CandidateSignUpRequest candidateSignUpRequest = candidateForm.bindFromRequest().get();
-        return ok(toJson(Candidate.verifyOtp(candidateSignUpRequest)));
-    }
-
     public static Result addPassword() {
         Form<CandidateSignUpRequest> candidateForm = Form.form(CandidateSignUpRequest.class);
         CandidateSignUpRequest candidateSignUpRequest = candidateForm.bindFromRequest().get();
@@ -93,12 +87,6 @@ public class Application extends Controller {
         Form<ResetPasswordResquest> checkCandidate = Form.form(ResetPasswordResquest.class);
         ResetPasswordResquest resetPasswordResquest = checkCandidate.bindFromRequest().get();
         return ok(toJson(Candidate.checkCandidate(resetPasswordResquest)));
-    }
-
-    public static Result checkResetOtp() {
-        Form<ResetPasswordResquest> checkResetOtp = Form.form(ResetPasswordResquest.class);
-        ResetPasswordResquest resetPasswordResquest = checkResetOtp.bindFromRequest().get();
-        return ok(toJson(Candidate.checkResetOtp(resetPasswordResquest)));
     }
 
     public static Result processcsv() {
