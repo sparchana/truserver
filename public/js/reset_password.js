@@ -23,7 +23,7 @@ function processDataResetCheckUser(returnedData) {
 function processDataPostReset(returnedData) {
     console.log("returedData :" + returnedData.status);
     if(returnedData.status == 1) {
-        localStorage.setItem("mobile", candidateMobile);
+        localStorage.setItem("mobile", "+91" + candidateMobile);
         localStorage.setItem("name", returnedData.candidateName);
         localStorage.setItem("id", returnedData.candidateId);
         window.location = "/dashboard";
@@ -73,7 +73,6 @@ $(function() {
             $('#form_password_reset_new').show();
             $('#wrongOtp').hide();
         }
-
         else {
             $('#wrongOtp').show();
         }
@@ -87,12 +86,12 @@ $(function() {
             var password = $('#candidateNewPassword').val();
             console.log("phone: " + phone);
             var s = {
-                candidateNewPassword : password,
-                forgotPasswordNewMobile : phone,
+                candidatePassword : password,
+                candidateAuthMobile : phone,
             };
             $.ajax({
                 type: "POST",
-                url: "/savePassword",
+                url: "/addPassword",
                 data: s,
                 success: processDataPostReset
             });

@@ -58,11 +58,17 @@ $(function() {
             var type = $('#leadType').val();
             var interested = $('#leadInterest').val();
             console.log("phone: " + phone);
+            var d = {
+                leadName: name,
+                leadMobile: phone,
+                leadChannel: channel,
+                leadType: type,
+                leadInterest: interested
+            }
             $.ajax({
                 type: "POST",
                 url: "/addLead",
-                data: $("#form_recruiter").serialize(),
-                dataType: "json",
+                data: d,
                 success: processDataRecruiter
             });
         } catch (exception) {

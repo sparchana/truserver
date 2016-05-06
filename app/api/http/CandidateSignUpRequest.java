@@ -5,14 +5,23 @@ package api.http;
  */
 
 public class CandidateSignUpRequest {
+    protected int channel; //1 = website; 2 = support
+
     protected String candidateName;
     protected String candidateMobile;
     protected String candidateLocality;
     protected String candidateJobPref;
-    protected int candidateOtp;
-    protected String autoCandidateMobile;
+
     protected String candidatePassword;
     protected String candidateAuthMobile;
+
+    public void setChannel(int channel) {
+        this.channel = channel;
+    }
+
+    public int getChannel() {
+        return channel;
+    }
 
     public void setCandidateName(String candidateName) {
         this.candidateName = candidateName;
@@ -41,23 +50,8 @@ public class CandidateSignUpRequest {
     public void setCandidateMobile(String candidateMobile) {
         this.candidateMobile = candidateMobile;
     }
-
-    public String getAutoCandidateMobile() { return autoCandidateMobile; }
-
-    public void setAutoCandidateMobile(String autoCandidateMobile) {
-        this.autoCandidateMobile = autoCandidateMobile;
-    }
-
     public String getCandidateMobile() {
         return candidateMobile;
-    }
-
-    public void setCandidateOtp(int candidateOtp) {
-        this.candidateOtp = candidateOtp;
-    }
-
-    public int getCandidateOtp() {
-        return candidateOtp;
     }
 
     public void setCandidatePassword(String candidatePassword) {

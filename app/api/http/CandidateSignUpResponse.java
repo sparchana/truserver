@@ -10,6 +10,7 @@ public class CandidateSignUpResponse {
     public static final int STATUS_INCORRECT_OTP = 4;
 
     public int status;
+    public int selfRegister;
     public int otp;
     public long accountStatus;
     public long candidateId;
@@ -18,6 +19,9 @@ public class CandidateSignUpResponse {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+    public void setSelfRegister(int selfRegister) {
+        this.selfRegister = selfRegister;
     }
     public void setOtp(int otp) {
         this.otp = otp;

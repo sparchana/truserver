@@ -16,8 +16,6 @@ POST     /processCsv                                             controllers.App
 
 GET      /getAll                                                 controllers.Application.getAll()
 
-POST     /savePassword                                            controllers.Application.savePassword()
-
 GET      /dashboard                                               controllers.Application.dashboard()
 
 POST     /loginSubmit                                             controllers.Application.loginSubmit()

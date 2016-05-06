@@ -3,9 +3,12 @@ package controllers;
 import api.ServerConstants;
 import api.http.*;
 import com.google.inject.Inject;
+import controllers.businessLogic.AuthService;
 import controllers.businessLogic.CandidateService;
+import controllers.businessLogic.LeadService;
 import models.entity.*;
 import models.util.ParseCSV;
+import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
 import play.data.Form;
@@ -18,6 +21,7 @@ import java.io.File;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,7 +33,6 @@ public class Application extends Controller {
 
     public static Result index() {
         String sessionId = session().get("sessionId");
-        Logger.info("sessionid = " + sessionId);
         if(sessionId != null){
             return ok(views.html.candidate_home.render());
         }
@@ -49,33 +52,55 @@ public class Application extends Controller {
     public static Result addLead() {
         Form<AddLeadRequest> userForm = Form.form(AddLeadRequest.class);
         AddLeadRequest addLeadRequest = userForm.bindFromRequest().get();
-        /*return ok(toJson(Lead.addLead(addLeadRequest)));*/
-        return ok(toJson(CandidateService.createLead(addLeadRequest)));
+        Lead lead = new Lead();
+        lead.leadId = Util.randomLong();
+        lead.leadUUId = UUID.randomUUID().toString();
+        lead.leadName = addLeadRequest.getLeadName();
+        lead.leadMobile = addLeadRequest.getLeadMobile();
+        lead.leadChannel = addLeadRequest.getLeadChannel();
+        lead.leadType = ServerConstants.TYPE_LEAD;
+        lead.leadStatus = ServerConstants.LEAD_STATUS_NEW;
+        lead.leadInterest = addLeadRequest.getLeadInterest();
+        return ok(toJson(LeadService.createLead(lead)));
     }
 
     public static Result signUpSubmit() {
         Form<CandidateSignUpRequest> candidateForm = Form.form(CandidateSignUpRequest.class);
         CandidateSignUpRequest candidateSignUpRequest = candidateForm.bindFromRequest().get();
+        CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
 
-        return ok(toJson(Candidate.candidateSignUp(candidateSignUpRequest)));
+        Candidate candidate = new Candidate();
+        candidate.candidateId = Util.randomLong();
+        candidate.candidateUUId = UUID.randomUUID().toString();
+        candidate.candidateName = candidateSignUpRequest.getCandidateName();
+        candidate.candidateMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
+        candidate.candidateAge = 0;
+        candidate.candidateStatusId = ServerConstants.CANDIDATE_STATUS_NOT_VERIFIED;
+
+        List<String> locality = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
+        List<String> jobs = Arrays.asList(candidateSignUpRequest.getCandidateJobPref().split("\\s*,\\s*"));
+        candidateSignUpResponse = CandidateService.createCandidate(candidate,locality,jobs);
+
+        return ok(toJson(candidateSignUpResponse));
     }
 
     public static Result addPassword() {
         Form<CandidateSignUpRequest> candidateForm = Form.form(CandidateSignUpRequest.class);
         CandidateSignUpRequest candidateSignUpRequest = candidateForm.bindFromRequest().get();
-        return ok(toJson(Auth.addAuth(candidateSignUpRequest)));
-    }
 
-    public static Result savePassword() {
-        Form<ResetPasswordResquest> resetPassword = Form.form(ResetPasswordResquest.class);
-        ResetPasswordResquest resetPasswordResquest = resetPassword.bindFromRequest().get();
-        return ok(toJson(Auth.savePassword(resetPasswordResquest)));
+        String userMobile = candidateSignUpRequest.getCandidateAuthMobile();
+        String userPassword = candidateSignUpRequest.getCandidatePassword();
+
+        return ok(toJson(AuthService.savePassword(userMobile, userPassword)));
     }
 
     public static Result loginSubmit() {
         Form<LoginRequest> loginForm = Form.form(LoginRequest.class);
         LoginRequest loginRequest = loginForm.bindFromRequest().get();
-        return ok(toJson(Candidate.login(loginRequest)));
+        String loginMobile = loginRequest.getCandidateLoginMobile();
+        String loginPassword = loginRequest.getCandidateLoginPassword();
+
+        return ok(toJson(CandidateService.login(loginMobile, loginPassword)));
     }
 
     @Security.Authenticated(SecuredUser.class)
@@ -86,7 +111,9 @@ public class Application extends Controller {
     public static Result checkCandidate() {
         Form<ResetPasswordResquest> checkCandidate = Form.form(ResetPasswordResquest.class);
         ResetPasswordResquest resetPasswordResquest = checkCandidate.bindFromRequest().get();
-        return ok(toJson(Candidate.checkCandidate(resetPasswordResquest)));
+
+        String candidateMobile = resetPasswordResquest.getResetPasswordMobile();
+        return ok(toJson(CandidateService.checkCandidate(candidateMobile)));
     }
 
     public static Result processcsv() {
@@ -190,9 +217,13 @@ public class Application extends Controller {
 
     public static Result logoutUser() {
         session().clear();
-        return redirect(
-                routes.Application.index()
-        );
+        String sessionId = session().get("sessionId");
+        if(sessionId != null){
+            return ok(views.html.candidate_home.render());
+        }
+        else{
+            return ok(views.html.index.render());
+        }
     }
     public static Result auth() {
         Form<DevLoginRequest> userForm = Form.form(DevLoginRequest.class);

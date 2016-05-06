@@ -1,22 +1,12 @@
 package models.entity;
 
-import api.*;
-import api.http.*;
+import api.http.CandidateSignUpResponse;
 import com.avaje.ebean.Model;
-import models.util.SmsUtil;
-import models.util.Util;
 import play.Logger;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
-
-import static play.mvc.Controller.session;
 
 /**
  * Created by batcoder1 on 19/4/16.
@@ -65,198 +55,32 @@ public class Candidate extends Model {
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
 
-    public static CandidateSignUpResponse candidateSignUp(CandidateSignUpRequest candidateSignUpRequest) {
-        String mobile = "+91" + candidateSignUpRequest.getCandidateMobile();
+    public static CandidateSignUpResponse candidateSignUp(Candidate candidate) {
         Logger.info("inside signup method" );
-
-        Candidate candidate = new Candidate();
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
-        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", mobile).findUnique();
-        Lead lead = new Lead();
-        int randomPIN;
-        String otpCode = null;
-        if(existingCandidate == null ) {
-            Lead existingLead = Lead.find.where().eq("leadMobile", mobile).findUnique();
-            if(existingLead == null) {
-                lead.leadId = Util.randomLong();
-                lead.leadUUId = UUID.randomUUID().toString();
-                lead.leadName = candidateSignUpRequest.getCandidateName();
-                lead.leadMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
-                lead.leadChannel = ServerConstants.LEAD_CHANNEL_WEBSITE;
-                lead.leadType = ServerConstants.TYPE_CANDIDATE;
-                lead.leadStatus = ServerConstants.LEAD_STATUS_WON;
-                lead.save();
+        candidate.save();
+        candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+        candidateSignUpResponse.setCandidateId(candidate.candidateId);
+        candidateSignUpResponse.setCandidateName(candidate.candidateName);
 
-                candidate.leadId = lead.leadId;
-                candidate.candidateId = Util.randomLong();
-                candidate.candidateUUId = UUID.randomUUID().toString();
-                candidate.candidateName = candidateSignUpRequest.getCandidateName();
-                candidate.candidateMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
-                candidate.candidateAge = 0;
-                candidate.candidateStatusId = ServerConstants.CANDIDATE_STATUS_NOT_VERIFIED;
-                randomPIN = (int)(Math.random()*9000)+1000;
-                otpCode = String.valueOf(randomPIN);
-                candidate.save();
-            }
-            else{
-                candidate.leadId = existingLead.leadId;
-                candidate.candidateId = Util.randomLong();
-                candidate.candidateUUId = UUID.randomUUID().toString();
-                candidate.candidateName = candidateSignUpRequest.getCandidateName();
-                candidate.candidateMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
-                candidate.candidateAge = 0;
-                candidate.candidateStatusId = ServerConstants.CANDIDATE_STATUS_NOT_VERIFIED;
-                randomPIN = (int)(Math.random()*9000)+1000;
-                otpCode = String.valueOf(randomPIN);
-                candidate.save();
-                candidateSignUpResponse.setOtp(randomPIN);
-            }
-
-            List<String> locality = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
-            for(String  s : locality) {
-                CandidateLocality candidateLocality = new CandidateLocality();
-                candidateLocality.candidateLocalityId = Util.randomLong();
-                candidateLocality.candidateLocalityCandidateId = candidate.candidateId;
-                candidateLocality.candidateLocalityLocalityId = s;
-                candidateLocality.save();
-            }
-
-            List<String> jobs = Arrays.asList(candidateSignUpRequest.getCandidateJobPref().split("\\s*,\\s*"));
-            for(String  s : jobs) {
-                CandidateJob candidateJob = new CandidateJob();
-                candidateJob.candidateJobId = Util.randomLong();
-                candidateJob.candidateJobCandidateId = candidate.candidateId;
-                candidateJob.candidateJobJobId = s;
-                candidateJob.save();
-            }
-            String msg = "Welcome to Trujobs.in! Use OTP " + otpCode + " to register";
-
-            SmsUtil.sendSms(candidate.candidateMobile,msg);
-            Logger.info("Candidate successfully registered " + candidate);
-
-            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-            candidateSignUpResponse.setOtp(randomPIN);
-
-        }
-        else if(existingCandidate != null && existingCandidate.candidateStatusId == 0) {
-            randomPIN = (int)(Math.random()*9000)+1000;
-            otpCode = String.valueOf(randomPIN);
-            existingCandidate.candidateName = candidateSignUpRequest.getCandidateName();
-            existingCandidate.candidateMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
-            existingCandidate.candidateAge = 0;
-            existingCandidate.candidateStatusId = ServerConstants.CANDIDATE_STATUS_NOT_VERIFIED;
-            existingCandidate.update();
-
-            List<CandidateLocality> allLocality = CandidateLocality.find.where().eq("candidateLocalityCandidateId", existingCandidate.candidateId).findList();
-            for(CandidateLocality candidateLocality : allLocality){
-                candidateLocality.delete();
-            }
-
-            List<String> locality = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
-            for(String  s : locality) {
-                CandidateLocality candidateLocality = new CandidateLocality();
-                candidateLocality.candidateLocalityId = Util.randomLong();
-                candidateLocality.candidateLocalityCandidateId = existingCandidate.candidateId;
-                candidateLocality.candidateLocalityLocalityId = s;
-                candidateLocality.save();
-            }
-
-            List<CandidateJob> allJob = CandidateJob.find.where().eq("candidateJobCandidateId", existingCandidate.candidateId).findList();
-            for(CandidateJob candidateJobs : allJob){
-                candidateJobs.delete();
-            }
-
-            List<String> jobs = Arrays.asList(candidateSignUpRequest.getCandidateJobPref().split("\\s*,\\s*"));
-            for(String  s : jobs) {
-
-                CandidateJob candidateJob = new CandidateJob();
-                candidateJob.candidateJobId = Util.randomLong();
-                candidateJob.candidateJobCandidateId = existingCandidate.candidateId;
-                candidateJob.candidateJobJobId = s;
-                candidateJob.save();
-            }
-
-            String msg = "Welcome to Trujobs.in! Use OTP " + otpCode + " to register";
-            SmsUtil.sendSms(existingCandidate.candidateMobile,msg);
-            Logger.info("Candidate successfully registered " + candidate);
-            candidateSignUpResponse.setOtp(randomPIN);
-            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-        }
-        else {
-            Logger.info("Candidate already exists");
-            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
-        }
         return candidateSignUpResponse;
     }
 
-    public static LoginResponse login(LoginRequest loginRequest) {
-        String candidateMobile = "+91" + loginRequest.getCandidateLoginMobile();
-        String candidatePassword = loginRequest.getCandidateLoginPassword();
-        LoginResponse loginResponse = new LoginResponse();
+    public static CandidateSignUpResponse candidateUpdate(Candidate eCandidate, Candidate candidate) {
+        Logger.info("inside Candidate Update method" );
+        CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
+        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", eCandidate.candidateMobile).findUnique();
 
-        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", candidateMobile).findUnique();
-        if(existingCandidate == null){
-            loginResponse.setStatus(loginResponse.STATUS_NO_USER);
-            Logger.info("User Does not Exists");
-        }
-        else {
-            long candidateId = existingCandidate.candidateId;
-            Auth existingAuth = Auth.find.where().eq("candidateId",candidateId).findUnique();
-            if(existingAuth != null){
-                if (((existingAuth.passwordMd5.equals(Util.md5(candidatePassword + existingAuth.passwordSalt))) &&
-                        (existingCandidate.candidateStatusId != 0))) {
-                    Logger.info(existingCandidate.candidateName + " " + existingCandidate.candidateStatusId);
-                    loginResponse.setCandidateId(existingCandidate.candidateId);
-                    loginResponse.setCandidateName(existingCandidate.candidateName);
-                    loginResponse.setAccountStatus(existingCandidate.candidateStatusId);
-                    loginResponse.setCandidateEmail(existingCandidate.candidateEmail);
-                    loginResponse.setStatus(loginResponse.STATUS_SUCCESS);
+        existingCandidate.candidateName = candidate.candidateName;
+        existingCandidate.candidateMobile = candidate.candidateMobile;
+        existingCandidate.update();
 
-                    existingAuth.authSessionId = UUID.randomUUID().toString();
-                    existingAuth.authSessionIdExpiryMillis = System.currentTimeMillis() + 24 * 60 * 60 * 1000;
-                    session("sessionId", existingAuth.authSessionId);
-                    session("sessionExpiry", String.valueOf(existingAuth.authSessionIdExpiryMillis));
-                    existingAuth.update();
-                    Logger.info("Login Successful");
-                }
-                else {
-                    loginResponse.setStatus(loginResponse.STATUS_WRONG_PASSWORD);
-                    Logger.info("Incorrect Password");
-                }
-            }
-            else {
-                loginResponse.setStatus(loginResponse.STATUS_NO_USER);
-                Logger.info("No User");
-            }
-        }
-        return loginResponse;
-    }
+        candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+        candidateSignUpResponse.setCandidateId(candidate.candidateId);
+        candidateSignUpResponse.setCandidateName(candidate.candidateName);
+        candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
-    public static ResetPasswordResponse checkCandidate(ResetPasswordResquest resetPasswordResquest) {
-        String candidateResetMobile = resetPasswordResquest.getResetPasswordMobile();
-        ResetPasswordResponse resetPasswordResponse= new ResetPasswordResponse();
-
-        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", "+91" + candidateResetMobile).findUnique();
-        if(existingCandidate != null){
-            if(existingCandidate.candidateStatusId == ServerConstants.CANDIDATE_STATUS_VERIFIED){
-                int randomPIN = (int)(Math.random()*9000)+1000;
-                String otpCode = String.valueOf(randomPIN);
-                existingCandidate.update();
-                String msg = "Welcome to Trujobs.in! Use OTP " + otpCode + " to reset password";
-                String getResponse = SmsUtil.sendSms(existingCandidate.candidateMobile, msg);
-                resetPasswordResponse.setOtp(randomPIN);
-                resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);
-            }
-            else{
-                Logger.info("Reset otp sent");
-                resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
-            }
-        }
-        else{
-            resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
-            Logger.info("Verification failed");
-        }
-        return resetPasswordResponse;
+        return candidateSignUpResponse;
     }
 }
 
