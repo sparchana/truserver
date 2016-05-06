@@ -5,7 +5,6 @@ package api.http;
  */
 
 public class CandidateSignUpRequest {
-    protected int channel; //1 = website; 2 = support
 
     protected String candidateName;
     protected String candidateMobile;
@@ -14,14 +13,6 @@ public class CandidateSignUpRequest {
 
     protected String candidatePassword;
     protected String candidateAuthMobile;
-
-    public void setChannel(int channel) {
-        this.channel = channel;
-    }
-
-    public int getChannel() {
-        return channel;
-    }
 
     public void setCandidateName(String candidateName) {
         this.candidateName = candidateName;

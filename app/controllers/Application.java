@@ -8,7 +8,6 @@ import controllers.businessLogic.CandidateService;
 import controllers.businessLogic.LeadService;
 import models.entity.*;
 import models.util.ParseCSV;
-import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
 import play.data.Form;
@@ -79,9 +78,8 @@ public class Application extends Controller {
 
         List<String> locality = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
         List<String> jobs = Arrays.asList(candidateSignUpRequest.getCandidateJobPref().split("\\s*,\\s*"));
-        candidateSignUpResponse = CandidateService.createCandidate(candidate,locality,jobs);
 
-        return ok(toJson(candidateSignUpResponse));
+        return ok(toJson(CandidateService.createCandidate(candidate,locality,jobs)));
     }
 
     public static Result addPassword() {

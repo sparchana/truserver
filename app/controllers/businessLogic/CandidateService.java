@@ -30,7 +30,7 @@ public class CandidateService {
         Interaction interaction = new Interaction();
         if(existingCandidate == null) {
             if(existingLead == null){
-                AddLeadResponse addLeadResponse = null;
+                AddLeadResponse addLeadResponse = new AddLeadResponse();
                 Lead lead = new Lead();
                 lead.leadId = Util.randomLong();
                 lead.leadUUId = UUID.randomUUID().toString();
@@ -49,7 +49,6 @@ public class CandidateService {
                 interaction.objectAUUId = candidate.candidateUUId;
             }
 
-
             for(String  s : locality) {
                 CandidateLocality candidateLocality = new CandidateLocality();
                 candidateLocality.candidateLocalityId = Util.randomLong();
@@ -57,7 +56,6 @@ public class CandidateService {
                 candidateLocality.candidateLocalityLocalityId = s;
                 candidateLocality.save();
             }
-
 
             for(String  s : jobs) {
                 CandidateJob candidateJob = new CandidateJob();
@@ -75,7 +73,7 @@ public class CandidateService {
 
             randomPIN = (int)(Math.random()*9000)+1000;
             otpCode = String.valueOf(randomPIN);
-            String msg = "Welcome to Trujobs.in! Use OTP " + candidateSignUpResponse.otp + " to register";
+            String msg = "Welcome to Trujobs.in! Use OTP " + otpCode + " to register";
             SmsUtil.sendSms(candidate.candidateMobile, msg);
 
             Logger.info("Candidate successfully registered " + candidate);
@@ -86,6 +84,7 @@ public class CandidateService {
 
         else if(existingCandidate != null && existingCandidate.candidateStatusId == 0){
             candidateSignUpResponse = Candidate.candidateUpdate(existingCandidate,candidate);
+
 
             List<CandidateLocality> allLocality = CandidateLocality.find.where().eq("candidateLocalityCandidateId", existingCandidate.candidateId).findList();
             for(CandidateLocality candidateLocality : allLocality){
@@ -122,7 +121,7 @@ public class CandidateService {
             interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
             interaction.result = "New Candidate Added";
             InteractionService.createIntraction(interaction);
-            String msg = "Welcome to Trujobs.in! Use OTP " + candidateSignUpResponse.otp + " to register";
+            String msg = "Welcome to Trujobs.in! Use OTP " + otpCode + " to register";
             SmsUtil.sendSms(candidate.candidateMobile, msg);
             candidateSignUpResponse.setOtp(randomPIN);
 

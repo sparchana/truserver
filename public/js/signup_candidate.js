@@ -69,7 +69,6 @@ $(function() {
                 candidateMobile = phone;
                 $('#alreadyMsgCandidate').hide();
                 var d = {
-                    channel: 1,
                     candidateName : name,
                     candidateMobile : phone,
                     candidateLocality : $('#candidateLocality').val(),
