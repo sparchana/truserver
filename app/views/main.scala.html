@@ -288,13 +288,13 @@
                             </div>
                         </fieldset>
                     </form>
-                    <div id="thanksMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                    <div id="thanksMsg" style="margin-top: 2%;display: none;">
                         <h4>Thanks for applying. We will contact you soon!</h4>
                     </div>
-                    <div id="errorMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                    <div id="errorMsg" style="margin-top: 2%;display: none;">
                         <h4>Looks like something went wrong. Please try again later!</h4>
                     </div>
-                    <div id="alreadyMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                    <div class="errorMsgText" id="alreadyMsg" style="margin-top: 2%;display: none;">
                         <h5>User with the above mobile no. already exists!</h5>
                     </div>
                 </div>
@@ -372,24 +372,24 @@
                     </form>
 
 
-                    <div id="incorrectMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                    <div class="errorMsgText" id="incorrectMsg" style="margin-top: 2%;display: none;">
                         <h5>Incorrect Login Credentials</h5>
                     </div>
-                    <div id="incorrectMsgLogin" style="margin-top: 2%;display: none; color: #2980b9" >
+                    <div class="errorMsgText" id="incorrectMsgLogin" style="margin-top: 2%;display: none;" >
                         <h5>Incorrect Login Credentials</h5>
                     </div>
-                    <div id="errorMsgReset" style="margin-top: 2%;display: none; color: #2980b9">
+                    <div class="errorMsgText" id="errorMsgReset" style="margin-top: 2%;display: none;">
                         <h5>User Does Not Exist!</h5>
                     </div>
-                    <div id="noUserLogin" style="margin-top: 2%;display: none; color: #2980b9">
+                    <div class="errorMsgText" id="noUserLogin" style="margin-top: 2%;display: none;">
                         <h5>User Does Not Exist!</h5>
                     </div>
 
-                    <div id="wrongOtp" style="margin-top: 2%;display: none; color: #2980b9">
+                    <div class="errorMsgText" id="wrongOtp" style="margin-top: 2%;display: none;">
                         <h5>Incorrect OTP!</h5>
                     </div>
 
-                    <div id="errorMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                    <div class="errorMsgText" id="errorMsg" style="margin-top: 2%;display: none;">
                         <h5>Looks like something went wrong. Please try again later!</h5>
                     </div>
 
@@ -417,7 +417,7 @@
                                 <input id="candidateMobile" style="margin-top: 8px" placeholder="What is your mobile no.?" name="candidateMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" class="form-control input-md" required>
 
                                 <div style="margin-top: 8px">
-                                    <input type="text" id="candidateJobPref">
+                                    <input type="text" id="candidateJobPref" placeholder="What jobs you are Interested in?">
                                     <script type="text/javascript">
                                         $(document).ready(function() {
                                             $("#candidateJobPref").tokenInput(getJob(), {
@@ -494,7 +494,7 @@
                     </div>
 
                     <div style="text-align: center">
-                        <div id="alreadyMsgCandidate" style="margin-top: 2%;display: none; color: #2980b9">
+                        <div class="errorMsgText" id="alreadyMsgCandidate" style="margin-top: 2%;display: none;">
                             <h5>User Already Exists! Please <a data-toggle="modal" data-target="#myLoginModal" style="cursor: hand; color: #888888">Login</a> to Continue</h5>
                             <br>
                         </div>

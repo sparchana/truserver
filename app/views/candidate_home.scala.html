@@ -32,19 +32,28 @@
 
     <script>
         var localityArray = [];
+        var candidateLocalityArray = [];
         var jobArray = [];
+        var candidateJobArray = [];
         function getLocality(){
             return localityArray;
         }
         function getJob(){
             return jobArray;
         }
+
+        function getCandidateLocality(){
+            return candidateLocalityArray;
+        }
+
+        function getCandidateJob(){
+            return candidateJobArray;
+        }
         function getLocalityName(id){
             var localityArray = getLocality();
             var returnLocalityName;
             localityArray.forEach(function (locality) {
                 if(locality.id == id){
-                    console.log(locality.name);
                     returnLocalityName = locality.name;
                     return true;
                 }
@@ -56,7 +65,6 @@
             var returnJobName;
             jobArray.forEach(function (job) {
                 if(job.id == id){
-                    console.log(job.name);
                     returnJobName = job.name;
                     return true;
                 }
@@ -69,15 +77,28 @@
                 var l = document.createElement("li");
                 l.textContent = getLocalityName(locality.candidateLocalityLocalityId);
                 parent.appendChild(l);
+
+                var id = locality.candidateLocalityLocalityId;
+                var name = getLocalityName(locality.candidateLocalityLocalityId);
+                var item = {}
+                item ["id"] = id;
+                item ["name"] = name;
+                candidateLocalityArray.push(item);
             });
         }
         function processDataCheckJob(returnedData) {
-            console.log(returnedData);
             var parent = $('.preferredJobs')[0];
             returnedData.forEach(function (job) {
                 var l = document.createElement("li");
                 l.textContent = getJobName(job.candidateJobJobId);
                 parent.appendChild(l);
+
+                var id = job.candidateJobJobId;
+                var name = getLocalityName(job.candidateJobJobId);
+                var item = {}
+                item ["id"] = id;
+                item ["name"] = name;
+                candidateJobArray.push(item);
             });
         }
         function processDataCheckLocality(returnedData) {
@@ -85,7 +106,7 @@
             {
                 var id = locality.localityId;
                 var name = locality.localityName;
-                item = {}
+                var item = {}
                 item ["id"] = id;
                 item ["name"] = name;
                 localityArray.push(item);
@@ -96,7 +117,7 @@
             {
                 var id = job.jobId;
                 var name = job.jobName;
-                item = {}
+                var item = {}
                 item ["id"] = id;
                 item ["name"] = name;
                 jobArray.push(item);
@@ -278,6 +299,7 @@
                     </div>
                     <ul class="preferredJobs" style="margin-left: 20px">
                     </ul>
+
                 </div>
                 <div class="col-sm-2">
                 </div>
@@ -289,6 +311,7 @@
                     </div>
                     <ul class="preferredLocation" style="margin-left: 20px">
                   </ul>
+
                 </div>
             </div>
         </div>

@@ -1,36 +1,37 @@
 package controllers.businessLogic;
 
 import api.ServerConstants;
-import api.http.AddLeadResponse;
 import api.http.CandidateSignUpResponse;
 import api.http.LoginResponse;
 import api.http.ResetPasswordResponse;
 import models.entity.*;
-import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
 
 import java.util.List;
 import java.util.UUID;
 
+import static models.util.Util.generateOtp;
 import static play.mvc.Controller.session;
 
 /**
  * Created by batcoder1 on 3/5/16.
  */
 public class CandidateService {
-    public static CandidateSignUpResponse createCandidate(Candidate candidate, List<String> locality, List<String> jobs){
+    public static CandidateSignUpResponse createCandidate(Candidate candidate, List<String> localityList, List<String> jobsList){
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
         Logger.info("Checking this mobile : " + candidate.candidateMobile );
         Candidate existingCandidate = Candidate.find.where().eq("candidateMobile",candidate.candidateMobile).findUnique();
         Lead existingLead = Lead.find.where().eq("leadMobile", candidate.candidateMobile).findUnique();
-        int randomPIN = 0;
-        String otpCode;
+        int randomPIN = generateOtp();
 
         Interaction interaction = new Interaction();
         if(existingCandidate == null) {
+
+            // if no candidate exists
             if(existingLead == null){
-                AddLeadResponse addLeadResponse = new AddLeadResponse();
+
+                // if not lead is there with the given mobile no.
                 Lead lead = new Lead();
                 lead.leadId = Util.randomLong();
                 lead.leadUUId = UUID.randomUUID().toString();
@@ -40,16 +41,14 @@ public class CandidateService {
                 lead.leadType = ServerConstants.TYPE_LEAD;
                 lead.leadStatus = ServerConstants.LEAD_STATUS_WON;
                 candidate.leadId = lead.leadId;
-                interaction.objectAUUId = candidate.candidateUUId;
 
-                addLeadResponse = LeadService.createLead(lead);
+                LeadService.createLead(lead);
             }
             else{
                 candidate.leadId = existingLead.leadId;
-                interaction.objectAUUId = candidate.candidateUUId;
             }
 
-            for(String  s : locality) {
+            for(String  s : localityList) {
                 CandidateLocality candidateLocality = new CandidateLocality();
                 candidateLocality.candidateLocalityId = Util.randomLong();
                 candidateLocality.candidateLocalityCandidateId = candidate.candidateId;
@@ -57,7 +56,7 @@ public class CandidateService {
                 candidateLocality.save();
             }
 
-            for(String  s : jobs) {
+            for(String  s : jobsList) {
                 CandidateJob candidateJob = new CandidateJob();
                 candidateJob.candidateJobId = Util.randomLong();
                 candidateJob.candidateJobCandidateId = candidate.candidateId;
@@ -65,33 +64,41 @@ public class CandidateService {
                 candidateJob.save();
             }
 
-            candidateSignUpResponse = Candidate.candidateSignUp(candidate);
-            interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
-            interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
-            interaction.result = "New Candidate Added";
-            InteractionService.createIntraction(interaction);
+            Candidate.registerCandidate(candidate);
+            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+            candidateSignUpResponse.setCandidateId(candidate.candidateId);
+            candidateSignUpResponse.setCandidateName(candidate.candidateName);
 
-            randomPIN = (int)(Math.random()*9000)+1000;
-            otpCode = String.valueOf(randomPIN);
-            String msg = "Welcome to Trujobs.in! Use OTP " + otpCode + " to register";
-            SmsUtil.sendSms(candidate.candidateMobile, msg);
+            interaction.objectAUUId = candidate.candidateUUId;
+            interaction.result = "New Candidate Added";
+
+            String msg = "Welcome to Trujobs.in! Use OTP " + randomPIN + " to register";
+            SendOtpService.sendSms(candidate.candidateMobile, msg);
 
             Logger.info("Candidate successfully registered " + candidate);
+            interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
+            interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+            InteractionService.createIntraction(interaction);
 
             candidateSignUpResponse.setOtp(randomPIN);
-            Logger.info(" -- " + candidateSignUpResponse.otp);
         }
 
         else if(existingCandidate != null && existingCandidate.candidateStatusId == 0){
-            candidateSignUpResponse = Candidate.candidateUpdate(existingCandidate,candidate);
+            existingCandidate.candidateName = candidate.candidateName;
+            existingCandidate.candidateMobile = candidate.candidateMobile;
+            Candidate.candidateUpdate(existingCandidate);
 
+            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+            candidateSignUpResponse.setCandidateId(candidate.candidateId);
+            candidateSignUpResponse.setCandidateName(candidate.candidateName);
+            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
             List<CandidateLocality> allLocality = CandidateLocality.find.where().eq("candidateLocalityCandidateId", existingCandidate.candidateId).findList();
             for(CandidateLocality candidateLocality : allLocality){
                 candidateLocality.delete();
             }
 
-            for(String  s : locality) {
+            for(String  s : localityList) {
                 CandidateLocality candidateLocality = new CandidateLocality();
                 candidateLocality.candidateLocalityId = Util.randomLong();
                 candidateLocality.candidateLocalityCandidateId = existingCandidate.candidateId;
@@ -104,7 +111,7 @@ public class CandidateService {
                 candidateJobs.delete();
             }
 
-            for(String  s : jobs) {
+            for(String  s : jobsList) {
 
                 CandidateJob candidateJob = new CandidateJob();
                 candidateJob.candidateJobId = Util.randomLong();
@@ -113,23 +120,25 @@ public class CandidateService {
                 candidateJob.save();
             }
 
-            randomPIN = (int)(Math.random()*9000)+1000;
-            otpCode = String.valueOf(randomPIN);
             Logger.info("Existing Candidate successfully updated" + candidate);
+
             interaction.objectAUUId = existingCandidate.candidateUUId;
-            interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
-            interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
             interaction.result = "New Candidate Added";
             InteractionService.createIntraction(interaction);
-            String msg = "Welcome to Trujobs.in! Use OTP " + otpCode + " to register";
-            SmsUtil.sendSms(candidate.candidateMobile, msg);
+
+            String msg = "Welcome to Trujobs.in! Use OTP " + randomPIN + " to register";
+            SendOtpService.sendSms(candidate.candidateMobile, msg);
             candidateSignUpResponse.setOtp(randomPIN);
 
+            interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
+            interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+            InteractionService.createIntraction(interaction);
         }
 
         else{
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
         }
+
         return candidateSignUpResponse;
     }
 
@@ -173,16 +182,15 @@ public class CandidateService {
         return loginResponse;
     }
 
-    public static ResetPasswordResponse checkCandidate(String candidateMobile){
+    public static ResetPasswordResponse findUserAndSendOtp(String candidateMobile){
         ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
         Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", "+91" + candidateMobile).findUnique();
         if(existingCandidate != null){
             if(existingCandidate.candidateStatusId == ServerConstants.CANDIDATE_STATUS_VERIFIED){
-                int randomPIN = (int)(Math.random()*9000)+1000;
-                String otpCode = String.valueOf(randomPIN);
+                int randomPIN = generateOtp();
                 existingCandidate.update();
-                String msg = "Welcome to Trujobs.in! Use OTP " + otpCode + " to reset password";
-                String getResponse = SmsUtil.sendSms(existingCandidate.candidateMobile, msg);
+                String msg = "Welcome to Trujobs.in! Use OTP " + randomPIN + " to reset password";
+                SendOtpService.sendSms(existingCandidate.candidateMobile, msg);
                 resetPasswordResponse.setOtp(randomPIN);
                 resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);
             }

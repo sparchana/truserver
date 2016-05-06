@@ -8,7 +8,7 @@ GET      /support                                                 controllers.Ap
 
 POST     /addLead                                                 controllers.Application.addLead()
 
-POST     /signUpSubmit                                            controllers.Application.signUpSubmit()
+POST     /signUp                                                  controllers.Application.signUp()
 
 POST     /addPassword                                             controllers.Application.addPassword()
 
@@ -20,7 +20,7 @@ GET      /dashboard                                               controllers.Ap
 
 POST     /loginSubmit                                             controllers.Application.loginSubmit()
 
-POST     /checkCandidate                                          controllers.Application.checkCandidate()
+POST     /findUserAndSendOtp                                          controllers.Application.findUserAndSendOtp()
 
 POST     /processCsv                                              controllers.Application.processcsv()
 

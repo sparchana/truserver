@@ -55,7 +55,7 @@ $(function() {
             };
             $.ajax({
                 type: "POST",
-                url: "/checkCandidate",
+                url: "/findUserAndSendOtp",
                 data: s,
                 success: processDataResetCheckUser
             });

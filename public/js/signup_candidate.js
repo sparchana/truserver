@@ -12,8 +12,6 @@ function processDataSignUpSubmit(returnedData) {
         $('#candidateName').val('');
         $('#candidateMobile').val('');
         $('#candidateEmail').val('');
-        $('#candidateMobile').val('');
-        $('#candidateName').val('');
         document.getElementById("helpTextSignup").innerHTML = "Enter OTP sent on " + candidateMobile;
         $('#form_otp').show();
 
@@ -21,10 +19,14 @@ function processDataSignUpSubmit(returnedData) {
 
     else if(returnedData.status == 3){
         document.getElementById("registerBtn").disabled = false;
+        $('.token-input-delete-token-facebook').click();
+        $('.token-input-dropdown-facebook').hide();
+
         $('#alreadyMsgCandidate').show();
         $('#candidateName').val('');
         $('#candidateMobile').val('');
         $('#candidateEmail').val('');
+
     }
     else {
         $('#errorMsg').show();
@@ -77,7 +79,7 @@ $(function() {
 
                 $.ajax({
                     type: "POST",
-                    url: "/signUpSubmit",
+                    url: "/signUp",
                     data: d,
                     success: processDataSignUpSubmit
                 });

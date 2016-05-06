@@ -20,6 +20,11 @@ public class Util {
         return random;
     }
 
+    public static int generateOtp() {
+        int otpCode = (int) ((Math.random()*9000)+1000);
+        return otpCode;
+    }
+
     public static int randomInt() {
         return new Random().nextInt();
     }

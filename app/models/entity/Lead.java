@@ -50,7 +50,6 @@ public class Lead extends Model {
 
     public static void addLead(Lead lead) {
         Logger.info("inside addLead method");
-        Logger.info("inside addLead method");
         lead.save();
     }
 

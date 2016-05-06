@@ -1,12 +1,13 @@
 package models.entity;
 
-import api.http.CandidateSignUpResponse;
 import com.avaje.ebean.Model;
 import play.Logger;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.sql.Timestamp;
-import java.util.List;
 
 /**
  * Created by batcoder1 on 19/4/16.
@@ -55,32 +56,14 @@ public class Candidate extends Model {
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
 
-    public static CandidateSignUpResponse candidateSignUp(Candidate candidate) {
+    public static void registerCandidate(Candidate candidate) {
         Logger.info("inside signup method" );
-        CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
         candidate.save();
-        candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-        candidateSignUpResponse.setCandidateId(candidate.candidateId);
-        candidateSignUpResponse.setCandidateName(candidate.candidateName);
-
-        return candidateSignUpResponse;
     }
 
-    public static CandidateSignUpResponse candidateUpdate(Candidate eCandidate, Candidate candidate) {
+    public static void candidateUpdate(Candidate candidate) {
         Logger.info("inside Candidate Update method" );
-        CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
-        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", eCandidate.candidateMobile).findUnique();
-
-        existingCandidate.candidateName = candidate.candidateName;
-        existingCandidate.candidateMobile = candidate.candidateMobile;
-        existingCandidate.update();
-
-        candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-        candidateSignUpResponse.setCandidateId(candidate.candidateId);
-        candidateSignUpResponse.setCandidateName(candidate.candidateName);
-        candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-
-        return candidateSignUpResponse;
+        candidate.update();
     }
 }
 

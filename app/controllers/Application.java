@@ -51,6 +51,8 @@ public class Application extends Controller {
     public static Result addLead() {
         Form<AddLeadRequest> userForm = Form.form(AddLeadRequest.class);
         AddLeadRequest addLeadRequest = userForm.bindFromRequest().get();
+
+        AddLeadResponse addLeadResponse = new AddLeadResponse();
         Lead lead = new Lead();
         lead.leadId = Util.randomLong();
         lead.leadUUId = UUID.randomUUID().toString();
@@ -60,13 +62,15 @@ public class Application extends Controller {
         lead.leadType = ServerConstants.TYPE_LEAD;
         lead.leadStatus = ServerConstants.LEAD_STATUS_NEW;
         lead.leadInterest = addLeadRequest.getLeadInterest();
-        return ok(toJson(LeadService.createLead(lead)));
+        Logger.info("going inside");
+        LeadService.createLead(lead);
+        addLeadResponse.setStatus(AddLeadResponse.STATUS_SUCCESS);
+        return ok(toJson(addLeadResponse));
     }
 
-    public static Result signUpSubmit() {
+    public static Result signUp() {
         Form<CandidateSignUpRequest> candidateForm = Form.form(CandidateSignUpRequest.class);
         CandidateSignUpRequest candidateSignUpRequest = candidateForm.bindFromRequest().get();
-        CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
 
         Candidate candidate = new Candidate();
         candidate.candidateId = Util.randomLong();
@@ -76,10 +80,10 @@ public class Application extends Controller {
         candidate.candidateAge = 0;
         candidate.candidateStatusId = ServerConstants.CANDIDATE_STATUS_NOT_VERIFIED;
 
-        List<String> locality = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
-        List<String> jobs = Arrays.asList(candidateSignUpRequest.getCandidateJobPref().split("\\s*,\\s*"));
+        List<String> localityList = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
+        List<String> jobsList = Arrays.asList(candidateSignUpRequest.getCandidateJobPref().split("\\s*,\\s*"));
 
-        return ok(toJson(CandidateService.createCandidate(candidate,locality,jobs)));
+        return ok(toJson(CandidateService.createCandidate(candidate,localityList,jobsList)));
     }
 
     public static Result addPassword() {
@@ -106,12 +110,12 @@ public class Application extends Controller {
         return ok(views.html.candidate_home.render());
     }
 
-    public static Result checkCandidate() {
+    public static Result findUserAndSendOtp() {
         Form<ResetPasswordResquest> checkCandidate = Form.form(ResetPasswordResquest.class);
         ResetPasswordResquest resetPasswordResquest = checkCandidate.bindFromRequest().get();
 
         String candidateMobile = resetPasswordResquest.getResetPasswordMobile();
-        return ok(toJson(CandidateService.checkCandidate(candidateMobile)));
+        return ok(toJson(CandidateService.findUserAndSendOtp(candidateMobile)));
     }
 
     public static Result processcsv() {

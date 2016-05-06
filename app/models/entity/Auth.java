@@ -1,6 +1,5 @@
 package models.entity;
 
-import api.http.CandidateSignUpResponse;
 import com.avaje.ebean.Model;
 import play.Logger;
 
@@ -44,12 +43,10 @@ public class Auth extends Model {
 
     public static Model.Finder<String, Auth> find = new Model.Finder(Auth.class);
 
-    public static CandidateSignUpResponse savePassword(Auth auth) {
+    public static void savePassword(Auth auth) {
         auth.save();
         Logger.info("Password Saved!");
-        CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
-        candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-        return candidateSignUpResponse;
+
     }
 
     public static void updatePassword(Auth auth) {

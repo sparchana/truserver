@@ -19,39 +19,44 @@ import static play.mvc.Controller.session;
  * Created by batcoder1 on 5/5/16.
  */
 public class AuthService {
+    public static void setNewPassword(Auth auth, String password){
+        int passwordSalt = (new Random()).nextInt();
+        auth.passwordMd5 = Util.md5(password + passwordSalt);
+        auth.passwordSalt = passwordSalt;
+        auth.authSessionId = UUID.randomUUID().toString();
+        auth.authSessionIdExpiryMillis = System.currentTimeMillis() + 24 * 60 * 60 * 1000;
+        session("sessionId", auth.authSessionId);
+        session("sessionExpiry", String.valueOf(auth.authSessionIdExpiryMillis));
+
+    }
     public static CandidateSignUpResponse savePassword(String mobile, String password){
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
 
         Logger.info("to check: " + mobile);
         Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", "+91" + mobile).findUnique();
+
         if(existingCandidate != null) {
+            // If candidate exists
             Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.candidateId).findUnique();
             if(existingAuth != null){
+                // If candidate exists and has a password, reset the old password
                 Logger.info("Resetting password");
-                int passwordSalt = (new Random()).nextInt();
-                existingAuth.passwordMd5 = Util.md5(password + passwordSalt);
-                existingAuth.passwordSalt = passwordSalt;
-                existingAuth.authSessionId = UUID.randomUUID().toString();
-                existingAuth.authSessionIdExpiryMillis = System.currentTimeMillis() + 24 * 60 * 60 * 1000;
-                session("sessionId", existingAuth.authSessionId);
-                session("sessionExpiry", String.valueOf(existingAuth.authSessionIdExpiryMillis));
+                setNewPassword(existingAuth, password);
+                Auth.savePassword(existingAuth);
 
                 candidateSignUpResponse.setCandidateName(existingCandidate.candidateName);
                 candidateSignUpResponse.setCandidateId(existingCandidate.candidateId);
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
             }
+
             else{
                 Auth auth = new Auth();
                 auth.authId =  (int)(Math.random()*9000)+100000;
                 auth.candidateId = existingCandidate.candidateId;
-                int passwordSalt = (new Random()).nextInt();
-                auth.passwordMd5 = Util.md5(password + passwordSalt);
-                auth.passwordSalt = passwordSalt;
-                auth.authSessionId = UUID.randomUUID().toString();
-                auth.authSessionIdExpiryMillis = System.currentTimeMillis() + 24 * 60 * 60 * 1000;
-                session("sessionId", auth.authSessionId);
-                session("sessionExpiry", String.valueOf(auth.authSessionIdExpiryMillis));
-                candidateSignUpResponse = Auth.savePassword(auth);
+                setNewPassword(auth,password);
+                Auth.savePassword(auth);
+
+                candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
                 Logger.info("Password saved");
 
