@@ -4,7 +4,7 @@
 var returnedOtp;
 var candidateMobile;
 function processDataSignUpSubmit(returnedData) {
-    console.log("returedData :" + returnedData.status + " " + returnedData.otp);
+    console.log("returedData :" + returnedData.status);
     if(returnedData.status == 1) {
         returnedOtp = returnedData.otp;
         $('#myRegistrationModal').modal('show');
@@ -12,7 +12,7 @@ function processDataSignUpSubmit(returnedData) {
         $('#candidateName').val('');
         $('#candidateMobile').val('');
         $('#candidateEmail').val('');
-        document.getElementById("helpTextSignup").innerHTML = "Enter OTP sent on " + candidateMobile;
+        document.getElementById("helpTextSignUp").innerHTML = "Enter OTP sent on " + candidateMobile;
         $('#form_otp').show();
 
     }
