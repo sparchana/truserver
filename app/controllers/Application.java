@@ -57,7 +57,7 @@ public class Application extends Controller {
         lead.leadId = Util.randomLong();
         lead.leadUUId = UUID.randomUUID().toString();
         lead.leadName = addLeadRequest.getLeadName();
-        lead.leadMobile = addLeadRequest.getLeadMobile();
+        lead.leadMobile = "+91" + addLeadRequest.getLeadMobile();
         lead.leadChannel = addLeadRequest.getLeadChannel();
         lead.leadType = ServerConstants.TYPE_LEAD;
         lead.leadStatus = ServerConstants.LEAD_STATUS_NEW;
