@@ -87,7 +87,7 @@ public class Auth extends Model {
                 interaction.save();
                 Logger.info("Interaction added");
 
-                existingCandidate.candidateStatusId = ServerConstants.CANDIDATE_STATUS_VERIFIED;
+                existingCandidate.candidateprofilestatus.profileStatusId = ServerConstants.CANDIDATE_STATUS_VERIFIED;
                 existingCandidate.update();
                 Logger.info("candidate status confirmed");
 
@@ -98,7 +98,7 @@ public class Auth extends Model {
 
                 candidateSignUpResponse.setCandidateId(existingCandidate.candidateId);
                 candidateSignUpResponse.setCandidateName(existingCandidate.candidateName);
-                candidateSignUpResponse.setAccountStatus(existingCandidate.candidateStatusId);
+                candidateSignUpResponse.setAccountStatus(existingCandidate.candidateprofilestatus.profileStatusId);
                 candidateSignUpResponse.setCandidateEmail(existingCandidate.candidateEmail);
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
             }
@@ -134,7 +134,7 @@ public class Auth extends Model {
             resetPasswordResponse.setCandidateName(existingCandidate.candidateName);
             resetPasswordResponse.setCandidateMobile(existingCandidate.candidateMobile);
 
-            existingCandidate.candidateStatusId = 1;
+            existingCandidate.candidateprofilestatus.profileStatusId = 1;
             existingCandidate.update();
             resetPasswordResponse.setStatus(ResetPasswordResponse.STATUS_SUCCESS);
             Logger.info("Auth Save Successful");

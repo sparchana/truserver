@@ -2,13 +2,15 @@ package controllers;
 
 import api.ServerConstants;
 import api.http.*;
-import com.google.inject.Inject;
 import models.entity.*;
+import models.entity.OM.IDProofreference;
+import models.entity.Static.CandidateProfileStatus;
+import models.entity.Static.Locality;
 import models.util.ParseCSV;
 import models.util.Util;
+import models.util.Validator;
 import play.Logger;
 import play.data.Form;
-import play.data.FormFactory;
 import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -23,8 +25,6 @@ import java.util.UUID;
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {
-    @Inject
-    static FormFactory formFactory;
 
     public static Result index() {
         return ok(views.html.index.render());
@@ -103,12 +103,16 @@ public class Application extends Controller {
     }
 
     public static Result getAll(){
-        List<Lead> allLead = Lead.find.where().ne("leadStatus", ServerConstants.LEAD_STATUS_WON).findList();
-        List<Interaction> allInteractions = Interaction.find.all();
-        List<Lead> allNewLeads = Lead.find.where()
-                .eq("leadType", ServerConstants.TYPE_LEAD)
+        List<Lead> allLead = Lead.find.where()
                 .ne("leadStatus", ServerConstants.LEAD_STATUS_WON)
-                .eq("leadStatus", ServerConstants.LEAD_STATUS_NEW).findList();
+                .ne("leadStatus", ServerConstants.LEAD_STATUS_LOST)
+                .findList();
+
+//        List<Interaction> allInteractions = Interaction.find.all();
+//        List<Lead> allNewLeads = Lead.find.where()
+//                .eq("leadType", ServerConstants.TYPE_LEAD)
+//                .ne("leadStatus", ServerConstants.LEAD_STATUS_WON)
+//                .eq("leadStatus", ServerConstants.LEAD_STATUS_NEW).findList();
         ArrayList<SupportDashboardElementResponse> responses = new ArrayList<>();
 
         SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT);
@@ -240,15 +244,22 @@ public class Application extends Controller {
         return badRequest();
     }
 
-    public static Result updateLeadStatus(long leadId) {
+    public static Result updateLeadStatus(long leadId, int leadStatus) {
         try {
             Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
 
             if(lead != null){
-                if(lead.leadStatus == ServerConstants.LEAD_STATUS_NEW) {
-                    lead.setLeadStatus(ServerConstants.LEAD_STATUS_TTC);
-                    lead.update();
+                Logger.info("updateLeadStatus invoked leadId:"+leadId+" status:" + leadStatus);
+                switch (leadStatus) {
+                    case 1: lead.setLeadStatus(ServerConstants.LEAD_STATUS_TTC);
+                        break;
+                    case 2: lead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
+                        break;
+                    case 3: lead.setLeadStatus(ServerConstants.LEAD_STATUS_LOST);
+                        break;
                 }
+                lead.update();
+
                 return ok(toJson(lead.leadStatus));
             }
 
@@ -270,5 +281,89 @@ public class Application extends Controller {
     public static Result getAllJobs() {
         List<Job> jobs = Job.find.findList();
         return ok(toJson(jobs));
+    }
+
+    public static Result test() {
+        int n=3;
+        switch (n) {
+            case 1: // fetch in json
+                try{
+                    List<IDProofreference>idProofreferenceList = IDProofreference.find.all();
+                    List<Candidate> candidates = Candidate.find.all();
+                    for(IDProofreference i: idProofreferenceList) {
+                        if(i != null){
+                            Logger.info("idProofreference " + i.candidate);
+                        }
+                    }
+                    return ok(toJson(candidates));
+                } catch (NullPointerException e){
+                    e.printStackTrace();
+                }
+                break;
+            case 2: // insert new candidate with every sub-object filled and just save candidate obj
+                Candidate candidate = new Candidate();
+                candidate.candidateId = Util.randomLong();
+                candidate.candidateUUId = UUID.randomUUID().toString();
+                candidate.leadId = Util.randomLong();
+                candidate.candidateMobile = "8984584584";
+                candidate.candidateName = "Sandeep";
+
+                // create a sub-obj
+                CandidateProfileStatus newcandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 1).findUnique();
+                if(newcandidateProfileStatus  == null){
+                    newcandidateProfileStatus = new CandidateProfileStatus();
+                    newcandidateProfileStatus.setProfileStatusId(10);
+                    newcandidateProfileStatus.setProfileStatusName("Test10");
+                    candidate.candidateprofilestatus = newcandidateProfileStatus ;
+                } else {
+                    newcandidateProfileStatus.setProfileStatusName("Changed");
+                    candidate.candidateprofilestatus = newcandidateProfileStatus ;
+                }
+
+                // save the parent obj
+                candidate.save();
+                break;
+            case 3: // retrive a candidate obj and update sub-obj of candidate class
+                Candidate retrievedCandidate = Candidate.find.where().eq("candidateId", 2).findUnique();
+                System.out.println(retrievedCandidate.candidateName);
+
+                // create a sub-obj
+                newcandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 11).findUnique();
+                if(newcandidateProfileStatus  == null){
+                    newcandidateProfileStatus = new CandidateProfileStatus();
+                    newcandidateProfileStatus.setProfileStatusId(11);
+                    newcandidateProfileStatus.setProfileStatusName("Test11");
+                    retrievedCandidate.candidateprofilestatus = newcandidateProfileStatus;
+                } else {
+                    Logger.info("New Status:"+retrievedCandidate.candidateprofilestatus.profileStatusName);
+                    retrievedCandidate.candidateprofilestatus = newcandidateProfileStatus;
+                }
+                retrievedCandidate.save();
+                break;
+            case 4: // delete a candidate obj and check if the sub-obj data also gets cleared or not.
+                break;
+            case 5: // Testing validator
+                String phoneNo = "7666666666";
+                String result;
+                if(Validator.isPhoneNumberValid(phoneNo)){
+                    result = phoneNo + " is valid";
+                } else {
+                    result = phoneNo + " is Invalid";
+                }
+                String testName= "aaa+_as";
+                if(Validator.isNameValid(testName)){
+                    result = testName + " is valid";
+                } else {
+                    result = phoneNo + " is Invalid";
+                }
+                String testEmail= "test_a@yahoo.com";
+                if(Validator.isEmailVaild(testName)){
+                    result = testEmail + " is valid";
+                } else {
+                    result = testEmail + " is Invalid";
+                }
+                return  ok(result);
+        }
+        return ok("");
     }
 }

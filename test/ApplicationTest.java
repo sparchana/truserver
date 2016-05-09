@@ -1,22 +1,7 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import models.entity.OM.IDProofreference;
+import org.junit.Test;
 
-import controllers.routes;
-import org.junit.*;
-
-import play.mvc.*;
-import play.test.*;
-import play.data.DynamicForm;
-import play.data.validation.ValidationError;
-import play.data.validation.Constraints.RequiredValidator;
-import play.i18n.Lang;
-import play.libs.F;
-import play.libs.F.*;
-
-import static play.test.Helpers.*;
-import static org.fest.assertions.Assertions.*;
+import static org.junit.Assert.assertEquals;
 
 
 /**
@@ -30,31 +15,17 @@ public class ApplicationTest {
     @Test
     public void simpleCheck() {
         int a = 1 + 1;
-        assertThat(a).isEqualTo(2);
+        assertEquals(2,a);
     }
 
     @Test
-    public void indexTemplateShouldContainTheStringThatIsPassedToIt() {
-        running(fakeApplication(), new Runnable() {
-            public void run() {
-                Content html = views.html.index.render("Your new application is ready.");
-                assertThat(contentType(html)).isEqualTo("text/html");
-                assertThat(contentAsString(html)).contains("Your new application is ready.");
-            }
-        });
+    public void aTest() {
+        assertEquals(2, 1 + 1); // A really important thing to test
     }
 
     @Test
-    public void indexShouldContainTheCorrectString() {
-        running(fakeApplication(), new Runnable() {
-            public void run() {
-                Result result = callAction(routes.ref.Application.index());
-                assertThat(status(result)).isEqualTo(OK);
-                assertThat(contentType(result)).isEqualTo("text/html");
-                assertThat(charset(result)).isEqualTo("utf-8");
-                assertThat(contentAsString(result)).contains("Hello Play Framework");
-            }
-        });
+    public void testUsers() {
+        IDProofreference idProofreference = IDProofreference.find.where().eq("idproofreferenceid", 1).findUnique();
+        assertEquals(idProofreference.idProof, 1);
     }
-
 }

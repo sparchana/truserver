@@ -34,7 +34,7 @@ GET      /getAll                                                  controllers.Ap
 
 GET      /getAllLocality                                          controllers.Application.getAllLocality()
 
-GET      /getAllJobs                                               controllers.Application.getAllJobs()
+GET      /getAllJobs                                              controllers.Application.getAllJobs()
 
 GET      /getUserInfo/:id                                         controllers.Application.getUserInfo(id : Long)
 
@@ -46,7 +46,7 @@ GET      /getCandidateJob/:id                                     controllers.Ap
 
 GET      /updateLeadType/:leadId/:newStatus                       controllers.Application.updateLeadType(leadId: Long, newStatus: Long)
 
-GET      /updateLeadStatus/:leadId                                controllers.Application.updateLeadStatus(leadId: Long)
+GET      /updateLeadStatus/:leadId/:leadStatus                    controllers.Application.updateLeadStatus(leadId: Long, leadStatus: Integer)
 
 GET      /street                                                  controllers.Application.supportAuth()
 
@@ -55,6 +55,8 @@ POST     /auth                                                    controllers.Ap
 GET      /logout                                                  controllers.Application.logout()
 
 GET      /logoutUser                                              controllers.Application.logoutUser()
+
+#GET      /test                                                    controllers.Application.test()
 
 POST     /api/kw/cdr                                              controllers.Application.kwCdrInput()
 

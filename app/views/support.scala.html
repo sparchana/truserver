@@ -21,24 +21,19 @@
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
-                            <h5 class="modal-title">Call Assesment :</h5>
+                            <h5 class="modal-title">Call Assesment for <input type="text" class="form-control" name="leadMobileNumber" id="leadMobileNumber" disabled/></h5>
                         </div>
-
                         <div class="modal-body">
                                 <!-- The form is placed inside the body of modal -->
                             <form id="callResponseForm" method="post" class="form-horizontal">
+                                <h3 class="modal-title">Is Lead a Candidate/Recruiter/Lost/Not able to Connect now?</h3>
                                 <div class="form-group">
-                                    <label class="col-xs-3 control-label">Is Candidate Profile Complete?</label>
-                                        <label class="radio-inline"><input type="radio" name="answer" id="yes" value="yes"  />Yes</label>
-                                        <label class="radio-inline"><input type="radio" name="answer" id="yes" data-dismiss="modal" value="no"  />No</label>
-                                </div>
-                                <div class="form-group">
-                                    <label class="col-xs-3 control-label">If Yes then Select Lead Type</label>
-                                    <label class="radio-inline"><input type="radio" name="updateType" id="candidate" value="4" />Candidate</label>
-                                    <label class="radio-inline"><input type="radio" name="updateType" id="recruiter" value="5"/>Recruiter</label>
+                                    <label class="radio-inline"><input type="radio" name="answer" id="no" data-dismiss="modal" value="no"  />Profile Not Created</label>
+                                    <label class="radio-inline"><input type="radio" name="answer" id="lost" value="lost"  />Lost</label>
+                                    <label class="radio-inline"><input type="radio" name="answer" id="candidate" value="candidate"  />Candidate</label>
+                                    <label class="radio-inline"><input type="radio" name="answer" id="recruiter" value="recruiter"  />Recruiter</label>
                                 </div>
                                 <input type="hidden" class="form-control" name="leadId" id="leadId"/>
-
 
                                 <div class="form-group">
                                     <div class="col-xs-5 col-xs-offset-3">
