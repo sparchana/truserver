@@ -72,20 +72,6 @@ create table candidatecurrentjobdetail (
   constraint pk_candidatecurrentjobdetail primary key (candidatecurrentjobid)
 );
 
-create table candidatejob (
-  candidatejobid                bigint signed not null auto_increment not null,
-  candidatejobcandidateid       bigint not null default 0,
-  candidatejobjobid             varchar(4) not null default 0,
-  constraint pk_candidatejob primary key (candidatejobid)
-);
-
-create table candidatelocality (
-  candidatelocalityid           bigint signed not null auto_increment not null,
-  candidatelocalitycandidateid  bigint not null default 0,
-  candidatelocalitylocalityid   varchar(4) not null default 0,
-  constraint pk_candidatelocality primary key (candidatelocalityid)
-);
-
 create table candidateskill (
   candidateskillid              int signed not null auto_increment not null,
   updatetimestamp               timestamp default current_timestamp null,
@@ -145,12 +131,6 @@ create table interaction (
   creationtimestamp             timestamp default current_timestamp not null not null,
   createdby                     varchar(255) not null default 'system' not null,
   constraint pk_interaction primary key (rowid)
-);
-
-create table job (
-  jobid                         int signed not null auto_increment not null,
-  jobname                       varchar(50) not null,
-  constraint pk_job primary key (jobid)
 );
 
 create table jobhistory (
@@ -407,10 +387,6 @@ drop table if exists candidateprofilestatus;
 
 drop table if exists candidatecurrentjobdetail;
 
-drop table if exists candidatejob;
-
-drop table if exists candidatelocality;
-
 drop table if exists candidateskill;
 
 drop table if exists channels;
@@ -424,8 +400,6 @@ drop table if exists idproof;
 drop table if exists idproofreference;
 
 drop table if exists interaction;
-
-drop table if exists job;
 
 drop table if exists jobhistory;
 

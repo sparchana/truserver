@@ -2,9 +2,16 @@ package controllers;
 
 import api.ServerConstants;
 import api.http.*;
+import com.google.inject.Inject;
+import controllers.businessLogic.AuthService;
+import controllers.businessLogic.CandidateService;
+import controllers.businessLogic.LeadService;
 import models.entity.*;
 import models.entity.OM.IDProofreference;
+import models.entity.OM.JobPreference;
+import models.entity.OM.LocalityPreference;
 import models.entity.Static.CandidateProfileStatus;
+import models.entity.Static.JobRole;
 import models.entity.Static.Locality;
 import models.util.ParseCSV;
 import models.util.Util;
@@ -19,6 +26,7 @@ import java.io.File;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,6 +35,10 @@ import static play.libs.Json.toJson;
 public class Application extends Controller {
 
     public static Result index() {
+        String sessionId = session().get("sessionId");
+        if(sessionId != null){
+            return ok(views.html.candidate_home.render());
+        }
         return ok(views.html.index.render());
     }
 
@@ -43,38 +55,58 @@ public class Application extends Controller {
     public static Result addLead() {
         Form<AddLeadRequest> userForm = Form.form(AddLeadRequest.class);
         AddLeadRequest addLeadRequest = userForm.bindFromRequest().get();
-        return ok(toJson(Lead.addLead(addLeadRequest)));
+
+        AddLeadResponse addLeadResponse = new AddLeadResponse();
+        Lead lead = new Lead();
+        lead.leadId = Util.randomLong();
+        lead.leadUUId = UUID.randomUUID().toString();
+        lead.leadName = addLeadRequest.getLeadName();
+        lead.leadMobile = "+91" + addLeadRequest.getLeadMobile();
+        lead.leadChannel = addLeadRequest.getLeadChannel();
+        lead.leadType = ServerConstants.TYPE_LEAD;
+        lead.leadStatus = ServerConstants.LEAD_STATUS_NEW;
+        lead.leadInterest = addLeadRequest.getLeadInterest();
+        Logger.info("going inside");
+        LeadService.createLead(lead);
+        addLeadResponse.setStatus(AddLeadResponse.STATUS_SUCCESS);
+        return ok(toJson(addLeadResponse));
     }
 
-    public static Result signUpSubmit() {
+    public static Result signUp() {
         Form<CandidateSignUpRequest> candidateForm = Form.form(CandidateSignUpRequest.class);
         CandidateSignUpRequest candidateSignUpRequest = candidateForm.bindFromRequest().get();
 
-        return ok(toJson(Candidate.candidateSignUp(candidateSignUpRequest)));
-    }
+        Candidate candidate = new Candidate();
+        candidate.candidateId = Util.randomLong();
+        candidate.candidateUUId = UUID.randomUUID().toString();
+        candidate.candidateName = candidateSignUpRequest.getCandidateName();
+        candidate.candidateMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
+        CandidateProfileStatus newcandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 1).findUnique();
+        candidate.candidateprofilestatus = newcandidateProfileStatus;
 
-    public static Result verifyOtp() {
-        Form<CandidateSignUpRequest> candidateForm = Form.form(CandidateSignUpRequest.class);
-        CandidateSignUpRequest candidateSignUpRequest = candidateForm.bindFromRequest().get();
-        return ok(toJson(Candidate.verifyOtp(candidateSignUpRequest)));
+        List<String> localityList = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
+        List<String> jobsList = Arrays.asList(candidateSignUpRequest.getCandidateJobPref().split("\\s*,\\s*"));
+
+        return ok(toJson(CandidateService.createCandidate(candidate,localityList,jobsList)));
     }
 
     public static Result addPassword() {
         Form<CandidateSignUpRequest> candidateForm = Form.form(CandidateSignUpRequest.class);
         CandidateSignUpRequest candidateSignUpRequest = candidateForm.bindFromRequest().get();
-        return ok(toJson(Auth.addAuth(candidateSignUpRequest)));
-    }
 
-    public static Result savePassword() {
-        Form<ResetPasswordResquest> resetPassword = Form.form(ResetPasswordResquest.class);
-        ResetPasswordResquest resetPasswordResquest = resetPassword.bindFromRequest().get();
-        return ok(toJson(Auth.savePassword(resetPasswordResquest)));
+        String userMobile = candidateSignUpRequest.getCandidateAuthMobile();
+        String userPassword = candidateSignUpRequest.getCandidatePassword();
+
+        return ok(toJson(AuthService.savePassword(userMobile, userPassword)));
     }
 
     public static Result loginSubmit() {
         Form<LoginRequest> loginForm = Form.form(LoginRequest.class);
         LoginRequest loginRequest = loginForm.bindFromRequest().get();
-        return ok(toJson(Candidate.login(loginRequest)));
+        String loginMobile = loginRequest.getCandidateLoginMobile();
+        String loginPassword = loginRequest.getCandidateLoginPassword();
+
+        return ok(toJson(CandidateService.login(loginMobile, loginPassword)));
     }
 
     @Security.Authenticated(SecuredUser.class)
@@ -82,16 +114,12 @@ public class Application extends Controller {
         return ok(views.html.candidate_home.render());
     }
 
-    public static Result checkCandidate() {
+    public static Result findUserAndSendOtp() {
         Form<ResetPasswordResquest> checkCandidate = Form.form(ResetPasswordResquest.class);
         ResetPasswordResquest resetPasswordResquest = checkCandidate.bindFromRequest().get();
-        return ok(toJson(Candidate.checkCandidate(resetPasswordResquest)));
-    }
 
-    public static Result checkResetOtp() {
-        Form<ResetPasswordResquest> checkResetOtp = Form.form(ResetPasswordResquest.class);
-        ResetPasswordResquest resetPasswordResquest = checkResetOtp.bindFromRequest().get();
-        return ok(toJson(Candidate.checkResetOtp(resetPasswordResquest)));
+        String candidateMobile = resetPasswordResquest.getResetPasswordMobile();
+        return ok(toJson(CandidateService.findUserAndSendOtp(candidateMobile)));
     }
 
     public static Result processcsv() {
@@ -176,12 +204,12 @@ public class Application extends Controller {
     }
 
     public static Result getCandidateLocality(long id) {
-        List<CandidateLocality> candidateLocalities = CandidateLocality.find.where().eq("CandidateLocalityCandidateId", id).findList();
+        List<LocalityPreference> candidateLocalities = LocalityPreference.find.where().eq("CandidateId", id).findList();
         return ok(toJson(candidateLocalities));
     }
 
     public static Result getCandidateJob(long id) {
-        List<CandidateJob> candidateJobs = CandidateJob.find.where().eq("CandidateJobCandidateId", id).findList();
+        List<JobPreference> candidateJobs = JobPreference.find.where().eq("CandidateId", id).findList();
         return ok(toJson(candidateJobs));
     }
 
@@ -199,9 +227,13 @@ public class Application extends Controller {
 
     public static Result logoutUser() {
         session().clear();
-        return redirect(
-                routes.Application.index()
-        );
+        String sessionId = session().get("sessionId");
+        if(sessionId != null){
+            return ok(views.html.candidate_home.render());
+        }
+        else{
+            return ok(views.html.index.render());
+        }
     }
     public static Result auth() {
         Form<DevLoginRequest> userForm = Form.form(DevLoginRequest.class);
@@ -279,12 +311,12 @@ public class Application extends Controller {
     }
 
     public static Result getAllJobs() {
-        List<Job> jobs = Job.find.findList();
+        List<JobRole> jobs = JobRole.find.findList();
         return ok(toJson(jobs));
     }
 
     public static Result test() {
-        int n=3;
+        int n=1;
         switch (n) {
             case 1: // fetch in json
                 try{
@@ -308,6 +340,13 @@ public class Application extends Controller {
                 candidate.candidateMobile = "8984584584";
                 candidate.candidateName = "Sandeep";
 
+                JobPreference jobPreference = new JobPreference();
+                JobRole jobRole = new JobRole();
+                jobRole.setJobRoleId(1);
+                jobPreference.jobRole=jobRole;
+                jobPreference.candidate = candidate;
+                candidate.jobPreferencesList.add(jobPreference);
+
                 // create a sub-obj
                 CandidateProfileStatus newcandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 1).findUnique();
                 if(newcandidateProfileStatus  == null){
@@ -319,10 +358,9 @@ public class Application extends Controller {
                     newcandidateProfileStatus.setProfileStatusName("Changed");
                     candidate.candidateprofilestatus = newcandidateProfileStatus ;
                 }
-
                 // save the parent obj
                 candidate.save();
-                break;
+                return ok(toJson(candidate));
             case 3: // retrive a candidate obj and update sub-obj of candidate class
                 Candidate retrievedCandidate = Candidate.find.where().eq("candidateId", 2).findUnique();
                 System.out.println(retrievedCandidate.candidateName);
@@ -339,7 +377,7 @@ public class Application extends Controller {
                     retrievedCandidate.candidateprofilestatus = newcandidateProfileStatus;
                 }
                 retrievedCandidate.save();
-                break;
+                return ok(toJson(retrievedCandidate));
             case 4: // delete a candidate obj and check if the sub-obj data also gets cleared or not.
                 break;
             case 5: // Testing validator

@@ -48,6 +48,10 @@ public class Interaction extends Model {
 
     public static Finder<String, Interaction> find = new Finder(Interaction.class);
 
+    public static void addInteraction(Interaction interaction){
+        interaction.save();
+    }
+
     public long getId() {
         return id;
     }

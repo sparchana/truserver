@@ -1,7 +1,6 @@
 ul.token-input-list-facebook {
     overflow: hidden;
-    height: auto !important;
-    height: 1%;
+    height: auto;
     width: 100%;
     text-align: left;
     border: 1px solid #c8c8c8;
@@ -10,8 +9,8 @@ ul.token-input-list-facebook {
     border-radius: 4px;
     z-index: 999;
     margin: 0;
-    padding-top: 3px;
-    padding-bottom: 3px;
+    padding-top: 2px;
+    padding-bottom: 1px;
     padding-right: 0;
     padding-left: 0;
     background-color: #fff;
@@ -22,7 +21,7 @@ ul.token-input-list-facebook {
 ul.token-input-list-facebook li input {
     border: 0;
     width: 100%;
-    padding: 3px 8px;
+    padding: 4px 12px;
     background-color: white;
     margin: 2px 0;
     -webkit-appearance: caret;
@@ -77,7 +76,7 @@ div.token-input-dropdown-facebook {
     z-index: 99999;
     background-color: #fff;
     overflow: auto;
-    max-height: 80px;
+    max-height: 120px;
     border-left: 1px solid #ccc;
     border-right: 1px solid #ccc;
     border-bottom: 1px solid #ccc;

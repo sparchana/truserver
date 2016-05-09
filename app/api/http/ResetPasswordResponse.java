@@ -9,6 +9,7 @@ public class ResetPasswordResponse {
     public static final int STATUS_EXISTS = 3;
 
     public int status;
+    public int otp;
     public long accountStatus;
     public long candidateId;
     public String candidateName;
@@ -17,6 +18,9 @@ public class ResetPasswordResponse {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+    public void setOtp(int otp) {
+        this.otp = otp;
     }
     public void setAccountStatus(long accountStatus) {
         this.status = status;

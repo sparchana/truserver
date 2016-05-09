@@ -6,11 +6,11 @@ package api.http;
 public class AddCandidateRequest {
     public String candidateUUID;
     public long leadId;
-    public String candidateName;
-    public String candidateMobile;
-    public String candidateJobInterest;
-    public String candidateLocality;
-    public String candidateNote;
+    public String candidateName = " ";
+    public String candidateMobile = " ";
+    public String candidateJobInterest = " ";
+    public String candidateLocality = " ";
+    public String candidateNote = " ";
 
 
     public void setCandidateName(String candidateName) {

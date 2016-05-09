@@ -24,7 +24,7 @@ $(function() {
             var name  = $('#leadNameModal').val();
             var phone = $('#leadMobileModal').val();
             var channel = $('#leadChannelModal').val();
-            var type = 1;
+            var type = 2;
             var interested = document.getElementById("interested").innerHTML;
             console.log("phone : " + phone + " " + interested);
 
@@ -58,11 +58,17 @@ $(function() {
             var type = $('#leadType').val();
             var interested = $('#leadInterest').val();
             console.log("phone: " + phone);
+            var d = {
+                leadName: name,
+                leadMobile: phone,
+                leadChannel: channel,
+                leadType: type,
+                leadInterest: interested
+            }
             $.ajax({
                 type: "POST",
                 url: "/addLead",
-                data: $("#form_recruiter").serialize(),
-                dataType: "json",
+                data: d,
                 success: processDataRecruiter
             });
         } catch (exception) {

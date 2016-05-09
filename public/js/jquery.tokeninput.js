@@ -652,6 +652,7 @@
                   var existing_token = $(this);
                   var existing_data = $.data(existing_token.get(0), "tokeninput");
                   if(existing_data && existing_data[settings.tokenValue] === item[settings.tokenValue]) {
+                      document.getElementsByClassName('token-input-dropdown-facebook').hide();
                       found_existing_token = existing_token;
                       return false;
                   }

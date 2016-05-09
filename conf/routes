@@ -8,11 +8,7 @@ GET      /support                                                 controllers.Ap
 
 POST     /addLead                                                 controllers.Application.addLead()
 
-POST     /signUpSubmit                                            controllers.Application.signUpSubmit()
-
-POST     /verifyOtp                                               controllers.Application.verifyOtp()
-
-POST     /checkResetOtp                                           controllers.Application.checkResetOtp()
+POST     /signUp                                                  controllers.Application.signUp()
 
 POST     /addPassword                                             controllers.Application.addPassword()
 
@@ -20,13 +16,11 @@ POST     /processCsv                                             controllers.App
 
 GET      /getAll                                                 controllers.Application.getAll()
 
-POST     /savePassword                                            controllers.Application.savePassword()
-
 GET      /dashboard                                               controllers.Application.dashboard()
 
 POST     /loginSubmit                                             controllers.Application.loginSubmit()
 
-POST     /checkCandidate                                          controllers.Application.checkCandidate()
+POST     /findUserAndSendOtp                                          controllers.Application.findUserAndSendOtp()
 
 POST     /processCsv                                              controllers.Application.processcsv()
 
@@ -56,7 +50,7 @@ GET      /logout                                                  controllers.Ap
 
 GET      /logoutUser                                              controllers.Application.logoutUser()
 
-#GET      /test                                                    controllers.Application.test()
+GET      /test                                                    controllers.Application.test()
 
 POST     /api/kw/cdr                                              controllers.Application.kwCdrInput()
 

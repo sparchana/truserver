@@ -3,12 +3,8 @@ package models.util;
 import play.Logger;
 import play.Play;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.io.*;
+import java.net.*;
 
 /**
  * Created by batcoder1 on 26/4/16.
@@ -33,27 +29,35 @@ public class SmsUtil {
 
         Logger.info("msg: "+ requestString);
 
+        String smsResponse = "";
         try {
             URL url = new URL(requestString);
-            HttpURLConnection uc = (HttpURLConnection)url.openConnection();
-            System.out.println(uc.getResponseMessage());
-            uc.disconnect();
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+            BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+            smsResponse = br.readLine();
         } catch (IOException e) {
             e.printStackTrace();
         }
-/*
-        URLConnection connection = null;
+
+        return smsResponse;
+    }
+
+    public static String checkDevliveryReport(String scheduleId){
+
         try {
-            connection = (URLConnection) new URL(requestString).openConnection();
-            InputStream response = connection.getInputStream();
+            scheduleId= URLEncoder.encode(scheduleId, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            Logger.info("Exception while encoding the message" + e);
+        }
+
+        String requestString = "http://www.smsjust.com/sms/user/response.php?%20Scheduleid=" + scheduleId;
+        String deliveryReport = "";
+        try {
+            URL url = new URL(requestString);
+            BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+            deliveryReport = br.readLine();
         } catch (IOException e) {
             e.printStackTrace();
         }
-*/
-
-        return "done";
+        return deliveryReport;
     }
 }

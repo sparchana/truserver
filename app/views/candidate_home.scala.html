@@ -32,77 +32,71 @@
 
     <script>
         var localityArray = [];
+        var candidateLocalityArray = [];
         var jobArray = [];
+        var candidateJobArray = [];
         function getLocality(){
             return localityArray;
         }
-
         function getJob(){
             return jobArray;
         }
 
-        function getLocalityName(id){
-            var localityArray = getLocality();
-            var returnLocalityName;
-            localityArray.forEach(function (locality) {
-                if(locality.id == id){
-                    console.log(locality.name);
-                    returnLocalityName = locality.name;
-                    return true;
-                }
-            });
-            return returnLocalityName;
+        function getCandidateLocality(){
+            return candidateLocalityArray;
         }
-        function getJobName(id){
-            var jobArray = getJob();
-            var returnJobName;
-            jobArray.forEach(function (job) {
-                if(job.id == id){
-                    console.log(job.name);
-                    returnJobName = job.name;
-                    return true;
-                }
-            });
-            return returnJobName;
+
+        function getCandidateJob(){
+            return candidateJobArray;
         }
 
         function processDataCheck(returnedData) {
             var parent = $('.preferredLocation')[0];
             returnedData.forEach(function (locality) {
                 var l = document.createElement("li");
-                l.textContent = getLocalityName(locality.candidateLocalityLocalityId);
+                l.textContent = locality.locality.localityName;
                 parent.appendChild(l);
+
+                var id = locality.localityId;
+                var name = locality.locality.localityName;
+                var item = {}
+                item ["id"] = id;
+                item ["name"] = name;
+                candidateLocalityArray.push(item);
             });
         }
-
         function processDataCheckJob(returnedData) {
-            console.log(returnedData);
             var parent = $('.preferredJobs')[0];
             returnedData.forEach(function (job) {
                 var l = document.createElement("li");
-                l.textContent = getJobName(job.candidateJobJobId);
+                l.textContent = job.jobRole.jobName;
                 parent.appendChild(l);
-            });
 
+                var id = job.jobRole.jobRoleId;
+                var name = job.jobRole.jobName;
+                var item = {}
+                item ["id"] = id;
+                item ["name"] = name;
+                candidateJobArray.push(item);
+            });
         }
         function processDataCheckLocality(returnedData) {
             returnedData.forEach(function(locality)
             {
                 var id = locality.localityId;
                 var name = locality.localityName;
-                item = {}
+                var item = {}
                 item ["id"] = id;
                 item ["name"] = name;
                 localityArray.push(item);
             });
         }
-
         function processDataCheckJobs(returnedData) {
             returnedData.forEach(function(job)
             {
                 var id = job.jobId;
                 var name = job.jobName;
-                item = {}
+                var item = {}
                 item ["id"] = id;
                 item ["name"] = name;
                 jobArray.push(item);
@@ -121,7 +115,6 @@
             } catch (exception) {
                 console.log("exception occured!!" + exception);
             }
-
             try {
                 $.ajax({
                     type: "GET",
@@ -146,7 +139,6 @@
             } catch (exception) {
                 console.log("exception occured!!" + exception);
             }
-
             try {
                 $.ajax({
                     type: "GET",
@@ -162,24 +154,23 @@
 
             var userMobile = localStorage.getItem("mobile");
             var userName = localStorage.getItem("name");
-            if(userMobile == null){
-                $('#noUser').show();
-                $('#userExist').hide();
-            }
-            else{
-                document.getElementById("helloMsg").innerHTML = "Hello " + userName + "!";
-                document.getElementById("userName").innerHTML = userName;
-                document.getElementById("userMobile").innerHTML = userMobile;
-                $('#noUser').hide();
-                $('#userExist').show();
-                $('#doneAssessment').hide();
-                $('#takeAssessment').hide();
-            }
+
+           if(userMobile != null){
+               document.getElementById("helloMsg").innerHTML = "Hello " + userName + "!";
+               document.getElementById("userName").innerHTML = userName;
+               document.getElementById("userMobile").innerHTML = userMobile;
+               $('#userExist').show();
+               $('#doneAssessment').hide();
+               $('#takeAssessment').hide();
+           }
+           else
+               window.location = "/";
 
         });
         function logoutUser() {
             localStorage.clear();
             try {
+
                 $.ajax({
                     type: "GET",
                     url: "/logoutUser",
@@ -191,8 +182,8 @@
                 console.log("exception occured!!" + exception);
             }
             window.location = "/";
-
         }
+
     </script>
     <script type="text/javascript">
       var options = {'showRowNumber': true};
@@ -200,7 +191,6 @@
       var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1HwEWPzZD4BFCyeRf5HO_KqNXyaMporxYQfg5lhOoA2g/edit#gid=496359801');
 
       function sendAndDraw() {
-          // Send the query with a callback function.
           var val = localStorage.getItem("mobile");
           query.setQuery('select C where C=' + val.substring(3, 13));
           query.send(handleQueryResponse);
@@ -250,14 +240,6 @@
 
     <div id="table" style="display: none;"></div>
 
-    <div class="sectionThree" id="noUser" style="display: none;">
-        <div class="row" style="text-align: center">
-            <div class="noUser">
-                <h5>User not logged in!</h5>
-            </div>
-        </div>
-    </div>
-
     <div class="sectionDashboard" style="text-align: left" id="userExist">
         <div class="row" style="text-align: center">
             <h3>Welcome to Trujobs!<br></h3>
@@ -292,9 +274,11 @@
                     <div class="row" style="padding-left: 5%">
                         <div style="display : inline-block"><img src="/assets/img/job.png" height="30px;"></div>
                         <div style="margin-left: 4px; display: inline-block" >Interested Jobs:</div>
+
                     </div>
                     <ul class="preferredJobs" style="margin-left: 20px">
                     </ul>
+
                 </div>
                 <div class="col-sm-2">
                 </div>
@@ -306,6 +290,7 @@
                     </div>
                     <ul class="preferredLocation" style="margin-left: 20px">
                   </ul>
+
                 </div>
             </div>
         </div>
@@ -337,15 +322,15 @@
             </div>
             <div class="row" style="text-align: center; padding: 4%;">
                 <div class="col-sm-4">
-                    <iframe frameborder="0" src="https://www.youtube.com/embed/OjBMvx0e3zQ?hl=en&amp;cc_load_policy=0&amp;loop=0&amp;iv_load_policy=1&amp;fs=1&amp;showinfo=1">
+                    <iframe onclick="_gaq.push(['_trackEvent', 'video', 'clicked', 'contact us', 'true'])" frameborder="0" src="https://www.youtube.com/embed/OjBMvx0e3zQ?hl=en&amp;cc_load_policy=0&amp;loop=0&amp;iv_load_policy=1&amp;fs=1&amp;showinfo=1">
                     </iframe>
                 </div>
                 <div class="col-sm-4">
-                    <iframe frameborder="0" src="https://www.youtube.com/embed/gnqzM6FWgTE?hl=en&amp;cc_load_policy=0&amp;loop=0&amp;iv_load_policy=1&amp;fs=1&amp;showinfo=1">
+                    <iframe onclick="_gaq.push(['_trackEvent', 'video', 'clicked', 'contact us', 'true'])" frameborder="0" src="https://www.youtube.com/embed/gnqzM6FWgTE?hl=en&amp;cc_load_policy=0&amp;loop=0&amp;iv_load_policy=1&amp;fs=1&amp;showinfo=1">
                     </iframe>
                 </div>
                 <div class="col-sm-4">
-                    <iframe frameborder="0" src="https://www.youtube.com/embed/H3cH2wEQiSw?hl=en&amp;cc_load_policy=0&amp;loop=0&amp;iv_load_policy=1&amp;fs=1&amp;showinfo=1">
+                    <iframe onclick="_gaq.push(['_trackEvent', 'video', 'clicked', 'contact us', 'true'])" frameborder="0" src="https://www.youtube.com/embed/H3cH2wEQiSw?hl=en&amp;cc_load_policy=0&amp;loop=0&amp;iv_load_policy=1&amp;fs=1&amp;showinfo=1">
                     </iframe>
                 </div>
 

@@ -1,12 +1,12 @@
 /**
  * Created by batcoder1 on 26/4/16.
  */
-
+var candidateMobile;
 function processDataLogin(returnedData) {
     console.log("returedData :" + returnedData.status + returnedData.candidateName + returnedData.accountStatus);
     if(returnedData.status == 1) {
         // Store
-        localStorage.setItem("mobile", "+91" + $('#candidateLoginMobile').val());
+        localStorage.setItem("mobile", "+91" + candidateMobile);
         localStorage.setItem("name", returnedData.candidateName);
         localStorage.setItem("id", returnedData.candidateId);
         window.location = "/dashboard";
@@ -30,6 +30,7 @@ $(function() {
         try {
             var phone  = $('#candidateLoginMobile').val();
             var password = $('#candidateLoginPassword').val();
+            candidateMobile = phone;
             console.log("phone: " + phone);
             var s = {
                 candidateLoginMobile: phone,

@@ -34,4 +34,19 @@ public class LocalityPreference extends Model {
 
     public static Finder<String, LocalityPreference> find = new Finder(LocalityPreference.class);
 
+    public long getLocalityPreferenceId() {
+        return localityPreferenceId;
+    }
+
+    public void setLocalityPreferenceId(long localityPreferenceId) {
+        this.localityPreferenceId = localityPreferenceId;
+    }
+
+    public long getUpdateTimeStamp() {
+        return updateTimeStamp;
+    }
+
+    public void setUpdateTimeStamp(long updateTimeStamp) {
+        this.updateTimeStamp = updateTimeStamp;
+    }
 }

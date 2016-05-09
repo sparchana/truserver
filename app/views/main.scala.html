@@ -7,9 +7,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>Trujobs - Trusted Employers - Verified Candidates</title>
-        <meta name="keywords" content="freshers jobs, driver jobs, delivery boy jobs, field sales agent,call center jobs, BPO jobs, data entry jobs, back office jobs, receptionist jobs, beautician jobs, waiter jobs, cook jobs, restaurant jobs, cashier jobs">
+        <meta name="keywords" content="freshers jobs, driver jobs, delivery boy jobs, field sales agent,call center jobs, BPO jobs, data entry jobs, back office jobs, receptionist jobs, beautician jobs, waiter jobs, cook jobs, restaurant jobs, cashier jobs, experienced jobs, jobs in Bangalore, driver jobs, delivery boy jobs, field sales agent,call center jobs, BPO jobs, data entry jobs, back office jobs, receptionist jobs, beautician jobs, waiter jobs, cook jobs, restaurant jobs, cashier jobs, full time jobs, part time jobs, entry level jobs, plumber jobs, electrician jobs">
 
-            <!-- Bootstrap Core CSS -->
+        <meta name="description" content="TruJobs helps you find the right job! Give a missed call at 8880007799 for Best Jobs. We pre-screen, match and schedule interviews for Jobs" />
+
+        <!-- Bootstrap Core CSS -->
         <link href="http://sbootstrap.startbootstrapc.netdna-cdn.com/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
 
         <link rel="icon" type="image/png" href="/assets/img/icon.png">
@@ -50,7 +52,7 @@
                 {
                     var id = locality.localityId;
                     var name = locality.localityName;
-                    item = {}
+                    var item = {};
                     item ["id"] = id;
                     item ["name"] = name;
                     localityArray.push(item);
@@ -60,9 +62,9 @@
             function processDataCheckJobs(returnedData) {
                 returnedData.forEach(function(job)
                 {
-                    var id = job.jobId;
+                    var id = job.jobRoleId;
                     var name = job.jobName;
-                    item = {}
+                    var item = {};
                     item ["id"] = id;
                     item ["name"] = name;
                     jobArray.push(item);
@@ -76,11 +78,6 @@
                 })
             });
             $(document).ready(function(){
-                var userMobile = localStorage.getItem("mobile");
-                var userName = localStorage.getItem("name");
-                if(userMobile != null){
-                    window.location = "/dashboard";
-                }
                 try {
                     $.ajax({
                         type: "GET",
@@ -189,6 +186,8 @@
 
                 function openLogin() {
 
+                    document.getElementById("resetCheckUserBtn").disabled = false;
+                    document.getElementById("resetNewPasswordBtn").disabled = false;
                     $('#form_login_candidate').show();
                     $('#noUserLogin').hide();
                     $('#incorrectMsgLogin').hide();
@@ -290,13 +289,13 @@
                             </div>
                         </fieldset>
                     </form>
-                    <div id="thanksMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                    <div id="thanksMsg" style="margin-top: 2%;display: none;">
                         <h4>Thanks for applying. We will contact you soon!</h4>
                     </div>
-                    <div id="errorMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                    <div id="errorMsg" style="margin-top: 2%;display: none;">
                         <h4>Looks like something went wrong. Please try again later!</h4>
                     </div>
-                    <div id="alreadyMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                    <div class="errorMsgText" id="alreadyMsg" style="margin-top: 2%;display: none;">
                         <h5>User with the above mobile no. already exists!</h5>
                     </div>
                 </div>
@@ -354,10 +353,6 @@
                             <div class="form-group">
                                 <input id="candidateForgotOtp" type="number" minlength="1000" maxlength="9999" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
                             </div>
-                            <div class="form-group">
-                                <input style="width: 120%; margin-left: -10%; margin-right: -10%; display: none" id="forgotPasswordAutoMobile" type="text" placeholder="Mobile No. (eg: 8880007799)" class="form-control input-md" required>
-                            </div>
-
                             <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Verify OTP</button>
 
                         </div>
@@ -372,33 +367,30 @@
                             <div class="form-group">
                                 <input id="candidateNewPassword" type="password" placeholder="Enter new Password" class="form-control input-md" required>
                             </div>
-                            <div class="form-group">
-                                <input style="width: 120%; margin-left: -10%; margin-right: -10%; display: none" id="forgotPasswordNewMobile" type="text" placeholder="Mobile No. (eg: 8880007799)" class="form-control input-md" required>
-                            </div>
                             <button type="submit" class="btn btn-primary" id="resetNewPasswordBtn" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Reset Password</button>
 
                         </div>
                     </form>
 
 
-                    <div id="incorrectMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                    <div class="errorMsgText" id="incorrectMsg" style="margin-top: 2%;display: none;">
                         <h5>Incorrect Login Credentials</h5>
                     </div>
-                    <div id="incorrectMsgLogin" style="margin-top: 2%;display: none; color: #2980b9" >
+                    <div class="errorMsgText" id="incorrectMsgLogin" style="margin-top: 2%;display: none;" >
                         <h5>Incorrect Login Credentials</h5>
                     </div>
-                    <div id="errorMsgReset" style="margin-top: 2%;display: none; color: #2980b9">
+                    <div class="errorMsgText" id="errorMsgReset" style="margin-top: 2%;display: none;">
                         <h5>User Does Not Exist!</h5>
                     </div>
-                    <div id="noUserLogin" style="margin-top: 2%;display: none; color: #2980b9">
+                    <div class="errorMsgText" id="noUserLogin" style="margin-top: 2%;display: none;">
                         <h5>User Does Not Exist!</h5>
                     </div>
 
-                    <div id="wrongOtp" style="margin-top: 2%;display: none; color: #2980b9">
+                    <div class="errorMsgText" id="wrongOtp" style="margin-top: 2%;display: none;">
                         <h5>Incorrect OTP!</h5>
                     </div>
 
-                    <div id="errorMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                    <div class="errorMsgText" id="errorMsg" style="margin-top: 2%;display: none;">
                         <h5>Looks like something went wrong. Please try again later!</h5>
                     </div>
 
@@ -419,60 +411,44 @@
                 <h3>Give a missed call at 8880007799 for Best Jobs</h3>
                 <br>
                 <div class="leadBox">
-                    <form id="form_signup_candidate"  style="margin-top: -3%; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
-                        <div class="row">
-                            <div class="col-sm-3" ></div>
-                            <div class="col-sm-9">
+                    <form id="form_signup_candidate"  style="margin-top: 0%; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
                                 <h4>Job Seeker Registration</h4>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-3" ><h6>Name:</h6></div>
-                            <div class="col-sm-9">
-                                <input id="candidateName" name="candidateName" type="text" class="form-control input-md" required>
-                            </div>
-                        </div>
+                                <input id="candidateName" name="candidateName" placeholder="What is your name?" type="text" class="form-control input-md" required>
 
-                        <div class="row" style="margin-top: 8px;">
-                            <div class="col-sm-3"><h6>Mobile:</h6></div>
-                            <div class="col-sm-9"><input id="candidateMobile" name="candidateMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" class="form-control input-md" required></div>
-                        </div>
+                                <input id="candidateMobile" style="margin-top: 8px" placeholder="What is your mobile no.?" name="candidateMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" class="form-control input-md" required>
 
-                        <div class="row" style="margin-top: 8px;">
-                            <div class="col-sm-3"><h6>Interested Jobs:</h6></div>
-                            <div class="col-sm-9">
-                                <input type="text" id="candidateJobPref" >
-                                <script type="text/javascript">
-                                $(document).ready(function() {
-                                    $("#candidateJobPref").tokenInput(getJob(), {
-                                        theme: "facebook",
-                                        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-                                        minChars: 0,
-                                        preventDuplicates: true
-                                     });
-                                });
-                                </script>
-                            </div>
-                        </div>
+                                <div style="margin-top: 8px">
+                                    <input type="text" id="candidateJobPref" placeholder="What jobs you are Interested in?">
+                                    <script type="text/javascript">
+                                        $(document).ready(function() {
+                                            $("#candidateJobPref").tokenInput(getJob(), {
+                                                theme: "facebook",
+                                                placeholder: "What jobs you are Interested in?",
+                                                hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                                                minChars: 0,
+                                                preventDuplicates: true
+                                            });
+                                        });
+                                    </script>
+                                </div>
 
-                        <div class="row" style=" color: #555">
-                            <div class="col-sm-3" style="color: #0B4063"><h6>Interested Areas:</h6></div>
-                            <div class="col-sm-9">
-                                <input type="text" id="candidateLocality">
-                                <script type="text/javascript">
-                                $(document).ready(function() {
-                                    $("#candidateLocality").tokenInput(getLocality(), {
-                                        theme: "facebook",
-                                        minChars: 3,
-                                        tokenLimit: 5,
-                                        hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
-                                        preventDuplicates: true
-                                    });
-                                });
-                                </script>
+                                <div style="margin-top: 8px">
+                                    <input type="text" id="candidateLocality" style="margin-top: 4px">
+                                    <script type="text/javascript">
+                                        $(document).ready(function() {
+                                            $("#candidateLocality").tokenInput(getLocality(), {
+                                                theme: "facebook",
+                                                placeholder: "Where do you want to Work?",
+                                                minChars: 3,
+                                                tokenLimit: 5,
+                                                hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
+                                                preventDuplicates: true
+                                            });
+                                        });
+                                        </script>
+                                </div>
+
                                 <button type="submit" id="registerBtn" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
-                            </div>
-                        </div>
                             <!-- Text input-->
                     </form>
                     <div class="modal fade bs-example-modal-sm" id="myRegistrationModal" tabindex="-1" role="dialog" aria-labelledby="myRegistrationModal">
@@ -481,16 +457,12 @@
                                 <img src="/assets/img/logo.png" height="40px">
                                 <form id="form_otp" role="form" name="form_otp" style="display: none">
                                     <div class="c_form" style="margin-left: 10%; margin-right: 10%;" align="center">
-                                        <h5 id="helpTextSignup">Enter OTP</h5>
+                                        <h5 id="helpTextSignUp">Enter OTP</h5>
 
                                         <div class="form-group">
                                             <input id="candidateOtp" style="width: 80%;" min="1000" max="9999" name="candidateOtp" type="number" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
                                         </div>
 
-                                            <!-- hidden-->
-                                        <div class="form-group" style="display: none;">
-                                            <input id="autoCandidateMobile" name="autoCandidateMobile" type="text"class="form-control input-md" >
-                                        </div>
                                         <button type="submit" id="verifyOtpBtn" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%;" >Verify OTP</button>
 
                                     </div>
@@ -523,7 +495,7 @@
                     </div>
 
                     <div style="text-align: center">
-                        <div id="alreadyMsgCandidate" style="margin-top: 2%;display: none; color: #2980b9">
+                        <div class="errorMsgText" id="alreadyMsgCandidate" style="margin-top: 2%;display: none;">
                             <h5>User Already Exists! Please <a data-toggle="modal" data-target="#myLoginModal" style="cursor: hand; color: #888888">Login</a> to Continue</h5>
                             <br>
                         </div>
@@ -652,7 +624,7 @@
 
                         <!-- Text input-->
                     <div class="form-group">
-                        <input id="leadMobile" name="leadMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" placeholder="Mobile (eg: 8880007799)" class="form-control input-md">
+                        <input id="leadMobile" name="leadMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" placeholder="Mobile (eg: 8880007799)" class="form-control input-md" required>
                     </div>
 
                     <!-- hidden-->
@@ -686,8 +658,18 @@
 
 
         <div class="sectionFive" id="contact">
-            <h4>Write us at <a href="mailto:hi@@trujobs.in">hi@@trujobs.in</a></h4>
+
+            <h4>Write us at <a href="mailto:info@@trujobs.in">info@@trujobs.in</a></h4>
             <h4>Have queries? Talk to us at 8880007799</h4>
+            <br>
+            Follow us on &nbsp;
+            <a href="https://www.facebook.com/trujobs" target="_blank">
+                <img src="/assets/img/fb.png" width="48px"
+                onmouseover="this.src='/assets/img/fb_blue.png'"
+                onmouseout="this.src='/assets/img/fb.png'"
+                border="0" alt=""/>
+            </a>
+
         </div>
 
         <div class="footer">

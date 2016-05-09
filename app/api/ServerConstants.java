@@ -20,7 +20,7 @@ public class ServerConstants {
     public static final int LEAD_STATUS_WON= 2; // Converted:
     public static final int LEAD_STATUS_LOST= 3; // LOST:
 
-    public static final int CANDIDATE_STATUS_NO_VERIFICATION= 0;
+    public static final int CANDIDATE_STATUS_NOT_VERIFIED = 0;
     public static final int CANDIDATE_STATUS_SUPPORT= 1;
     public static final int CANDIDATE_STATUS_VERIFIED= 2;
 

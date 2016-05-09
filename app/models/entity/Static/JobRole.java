@@ -41,7 +41,6 @@ public class JobRole extends Model {
 
     // static functions
 
-
     public long getJobRoleId() {
         return jobRoleId;
     }

@@ -1,10 +1,6 @@
 package models.entity;
 
-import api.ServerConstants;
-import api.http.AddLeadRequest;
-import api.http.AddLeadResponse;
 import com.avaje.ebean.Model;
-import models.util.Util;
 import play.Logger;
 
 import javax.persistence.Column;
@@ -12,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.sql.Timestamp;
-import java.util.UUID;
 
 /**
  * Created by zero on 23/4/16.
@@ -53,46 +48,9 @@ public class Lead extends Model {
 
     public static Finder<String, Lead> find = new Finder(Lead.class);
 
-    public static AddLeadResponse addLead(AddLeadRequest addLeadRequest) {
-
-        String mobile = "+91" + addLeadRequest.getLeadMobile();
-        Logger.info("inside addLead method " + addLeadRequest.getLeadName() + addLeadRequest.getLeadMobile());
-
-        Lead lead = new Lead();
-        Lead existingLead = Lead.find.where().eq("leadMobile", mobile).findUnique();
-        AddLeadResponse addLeadResponse = new AddLeadResponse();
-
-        if(existingLead == null) {
-            lead.leadId = Util.randomLong();
-            lead.leadUUId = UUID.randomUUID().toString();
-            lead.leadName = addLeadRequest.getLeadName();
-            lead.leadMobile = "+91" + addLeadRequest.getLeadMobile();
-            lead.leadChannel = addLeadRequest.getLeadChannel();
-            lead.leadType = addLeadRequest.getLeadType();
-            lead.leadInterest = addLeadRequest.getLeadInterest();
-            lead.leadStatus = ServerConstants.LEAD_STATUS_NEW;
-            addLeadResponse.setStatus(AddLeadResponse.STATUS_SUCCESS);
-            lead.save();
-
-            Interaction interaction = new Interaction();
-            interaction.objectAUUId = lead.leadUUId;
-            interaction.objectAType = addLeadRequest.getLeadType();
-            interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
-            interaction.result = "New Lead Added";
-            interaction.save();
-            Logger.info("saved data " + lead);
-        } else {
-            Interaction interaction = new Interaction();
-            interaction.objectAUUId = existingLead.leadUUId;
-            interaction.objectAType = existingLead.getLeadType();
-            interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
-            interaction.result = "Existing lead made contact through website";
-            interaction.save();
-            Logger.info("Lead already exists");
-
-            addLeadResponse.setStatus(AddLeadResponse.STATUS_FAILURE);
-        }
-        return addLeadResponse;
+    public static void addLead(Lead lead) {
+        Logger.info("inside addLead method");
+        lead.save();
     }
 
     public void setLeadMobile(String leadMobile) {
