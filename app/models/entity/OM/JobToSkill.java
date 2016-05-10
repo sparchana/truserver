@@ -6,6 +6,7 @@ import models.entity.Static.JobRole;
 import models.entity.Static.Skill;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 /**
  * Created by zero on 6/5/16.
@@ -18,7 +19,7 @@ public class JobToSkill  extends Model {
     public int jobToSkillId = 0;
 
     @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp default current_timestamp null")
-    public long updateTimeStamp = 0;
+    public Timestamp updateTimeStamp;
 
     @ManyToOne
     @JsonManagedReference
@@ -29,6 +30,38 @@ public class JobToSkill  extends Model {
     @JsonManagedReference
     @JoinColumn(name = "SkillId", referencedColumnName = "skillId")
     public Skill skill;
+
+    public int getJobToSkillId() {
+        return jobToSkillId;
+    }
+
+    public void setJobToSkillId(int jobToSkillId) {
+        this.jobToSkillId = jobToSkillId;
+    }
+
+    public Timestamp getUpdateTimeStamp() {
+        return updateTimeStamp;
+    }
+
+    public void setUpdateTimeStamp(Timestamp updateTimeStamp) {
+        this.updateTimeStamp = updateTimeStamp;
+    }
+
+    public JobRole getJobRole() {
+        return jobRole;
+    }
+
+    public void setJobRole(JobRole jobRole) {
+        this.jobRole = jobRole;
+    }
+
+    public Skill getSkill() {
+        return skill;
+    }
+
+    public void setSkill(Skill skill) {
+        this.skill = skill;
+    }
 
     public static Model.Finder<String, JobToSkill> find = new Model.Finder(JobToSkill.class);
 }

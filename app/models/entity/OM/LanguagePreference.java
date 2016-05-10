@@ -7,6 +7,7 @@ import models.entity.Candidate;
 import models.entity.Static.Language;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 /**
  * Created by zero on 4/5/16.
@@ -15,14 +16,8 @@ import javax.persistence.*;
 @Table(name = "languagepreference")
 public class LanguagePreference extends Model {
     @Id
-    @Column(name = "LanguagePreference", columnDefinition = "int signed not null", unique = true)
-    public int languagePreference = 0;
-
-    @Column(name = "CandidateId", columnDefinition = "bigint signed not null")
-    public long candidateId = 0;
-
-    @Column(name = "LanguageId", columnDefinition = "int signed not null")
-    public int languageId = 0;
+    @Column(name = "LanguagePreferenceId", columnDefinition = "int signed not null", unique = true)
+    public int languagePreferenceId = 0;
 
     @Column(name = "VerbalAbility", columnDefinition = "int signed null")
     public int verbalAbility = 0; // 0/1
@@ -34,7 +29,7 @@ public class LanguagePreference extends Model {
     public int writingAbility = 0; // 0/1
 
     @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp default current_timestamp null")
-    public long updateTimeStamp = 0;
+    public Timestamp updateTimeStamp;
 
     @ManyToOne
     @JsonManagedReference
@@ -46,6 +41,47 @@ public class LanguagePreference extends Model {
     @JoinColumn(name = "CandidateId", referencedColumnName= "CandidateId")
     public Candidate candidate;
 
-   public static Finder<String, LanguagePreference> find = new Finder(LanguagePreference.class);
+
+    public int getVerbalAbility() {
+        return verbalAbility;
+    }
+
+    public void setVerbalAbility(int verbalAbility) {
+        this.verbalAbility = verbalAbility;
+    }
+
+    public int getReadingAbility() {
+        return readingAbility;
+    }
+
+    public void setReadingAbility(int readingAbility) {
+        this.readingAbility = readingAbility;
+    }
+
+    public int getWritingAbility() {
+        return writingAbility;
+    }
+
+    public void setWritingAbility(int writingAbility) {
+        this.writingAbility = writingAbility;
+    }
+
+    public Timestamp getUpdateTimeStamp() {
+        return updateTimeStamp;
+    }
+
+    public void setUpdateTimeStamp(Timestamp updateTimeStamp) {
+        this.updateTimeStamp = updateTimeStamp;
+    }
+
+    public Language getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(Language language) {
+        this.language = language;
+    }
+
+    public static Finder<String, LanguagePreference> find = new Finder(LanguagePreference.class);
 
 }

@@ -7,6 +7,7 @@ import models.entity.Candidate;
 import models.entity.Static.JobRole;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 /**
  * Created by zero on 4/5/16.
@@ -19,7 +20,7 @@ public class JobPreference extends Model {
     public int jobPreferenceId = 0;
 
     @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp default current_timestamp null")
-    public long updateTimeStamp = 0;
+    public Timestamp updateTimeStamp;
 
     @ManyToOne
     @JsonManagedReference

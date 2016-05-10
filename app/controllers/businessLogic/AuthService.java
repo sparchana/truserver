@@ -6,6 +6,7 @@ import models.entity.Auth;
 import models.entity.Candidate;
 import models.entity.Interaction;
 import models.entity.Lead;
+import models.entity.Static.CandidateProfileStatus;
 import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
@@ -66,8 +67,14 @@ public class AuthService {
                 interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
                 interaction.result = "New Candidate Added";
                 InteractionService.createIntraction(interaction);
+                try {
+                    existingCandidate.candidateprofilestatus = CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_NEW).findUnique();
+                    candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+                }catch (NullPointerException n) {
+                    Logger.info("Oops ProfileStatusId"+ " doesnot exists");
+                    candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
 
-                existingCandidate.candidateprofilestatus.profileStatusId = ServerConstants.CANDIDATE_STATUS_VERIFIED;
+                }
                 existingCandidate.update();
                 Logger.info("candidate status confirmed");
 
@@ -82,9 +89,6 @@ public class AuthService {
 
                 candidateSignUpResponse.setCandidateId(existingCandidate.candidateId);
                 candidateSignUpResponse.setCandidateName(existingCandidate.candidateName);
-                candidateSignUpResponse.setAccountStatus(existingCandidate.candidateprofilestatus.profileStatusId);
-                candidateSignUpResponse.setCandidateEmail(existingCandidate.candidateEmail);
-                candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
             }
             Logger.info("Auth Save Successful");
         }

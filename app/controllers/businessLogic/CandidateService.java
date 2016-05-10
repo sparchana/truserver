@@ -29,83 +29,79 @@ public class CandidateService {
 
     public static CandidateSignUpResponse createCandidate(Candidate candidate, List<String> localityList, List<String> jobsList){
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
+        Interaction interaction = new Interaction();
         Logger.info("Checking this mobile : " + candidate.candidateMobile );
         Candidate existingCandidate = Candidate.find.where().eq("candidateMobile",candidate.candidateMobile).findUnique();
         Lead existingLead = Lead.find.where().eq("leadMobile", candidate.candidateMobile).findUnique();
         int randomPIN = generateOtp();
 
-        Interaction interaction = new Interaction();
-        if(existingCandidate == null) {
+        try {
+            if(existingCandidate == null) {
+                // if no candidate exists
+                if(existingLead == null){
+                    LeadService.createLead(getLeadFromCandidate(candidate));
+                }
+                else{
+                    candidate.leadId = existingLead.leadId;
+                }
 
-            // if no candidate exists
-            if(existingLead == null){
-                LeadService.createLead(getLeadFromCandidate(candidate));
+                candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(localityList, candidate);
+                candidate.jobPreferencesList = getCandidateJobPreferenceList(jobsList, candidate);
+
+                Candidate.registerCandidate(candidate);
+
+                String msg = "Welcome to Trujobs.in! Use OTP " + randomPIN + " to register";
+                SendOtpService.sendSms(candidate.candidateMobile, msg);
+
+                candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+                candidateSignUpResponse.setCandidateId(candidate.candidateId);
+                candidateSignUpResponse.setCandidateName(candidate.candidateName);
+                candidateSignUpResponse.setOtp(randomPIN);
+
+                Logger.info("Candidate successfully registered " + candidate);
+                interaction.objectAUUId = candidate.candidateUUId;
+                interaction.result = "New Candidate Added";
+                interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
+                interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+                InteractionService.createIntraction(interaction);
+
+            } else if(existingCandidate != null && existingCandidate.candidateprofilestatus.profileStatusId == 0){
+                List<LocalityPreference> allLocality = models.entity.OM.LocalityPreference.find.where().eq("CandidateId", existingCandidate.candidateId).findList();
+                for(LocalityPreference candidateLocality : allLocality){
+                    candidateLocality.delete();
+                }
+
+                List<JobPreference> allJob = JobPreference.find.where().eq("CandidateId", existingCandidate.candidateId).findList();
+                for(JobPreference candidateJobs : allJob){
+                    candidateJobs.delete();
+                }
+                existingCandidate.localityPreferenceList = getCandidateLocalityPreferenceList(localityList, candidate);
+                existingCandidate.jobPreferencesList = getCandidateJobPreferenceList(jobsList, candidate);
+
+                Candidate.candidateUpdate(existingCandidate);
+
+                Logger.info("Existing Candidate successfully updated" + candidate);
+
+                String msg = "Welcome to Trujobs.in! Use OTP " + randomPIN + " to register";
+                SendOtpService.sendSms(candidate.candidateMobile, msg);
+
+                candidateSignUpResponse.setCandidateId(candidate.candidateId);
+                candidateSignUpResponse.setCandidateName(candidate.candidateName);
+                candidateSignUpResponse.setOtp(randomPIN);
+                candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+
+                interaction.objectAUUId = existingCandidate.candidateUUId;
+                interaction.result = "New Candidate Added";
+                InteractionService.createIntraction(interaction);
+                interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
+                interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+                InteractionService.createIntraction(interaction);
+            } else{
+                candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
             }
-            else{
-                candidate.leadId = existingLead.leadId;
-            }
-
-            candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(localityList, candidate);
-            candidate.jobPreferencesList = getCandidateJobPreferenceList(jobsList, candidate);
-
-            Candidate.registerCandidate(candidate);
-            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-            candidateSignUpResponse.setCandidateId(candidate.candidateId);
-            candidateSignUpResponse.setCandidateName(candidate.candidateName);
-
-            interaction.objectAUUId = candidate.candidateUUId;
-            interaction.result = "New Candidate Added";
-
-            String msg = "Welcome to Trujobs.in! Use OTP " + randomPIN + " to register";
-            SendOtpService.sendSms(candidate.candidateMobile, msg);
-
-            Logger.info("Candidate successfully registered " + candidate);
-            interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
-            interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
-            InteractionService.createIntraction(interaction);
-
-            candidateSignUpResponse.setOtp(randomPIN);
-        }
-
-        else if(existingCandidate != null && existingCandidate.candidateprofilestatus.profileStatusId == 0){
-
-            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-            candidateSignUpResponse.setCandidateId(candidate.candidateId);
-            candidateSignUpResponse.setCandidateName(candidate.candidateName);
-            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-
-            List<LocalityPreference> allLocality = models.entity.OM.LocalityPreference.find.where().eq("CandidateId", existingCandidate.candidateId).findList();
-            for(LocalityPreference candidateLocality : allLocality){
-                candidateLocality.delete();
-            }
-
-            List<JobPreference> allJob = JobPreference.find.where().eq("CandidateId", existingCandidate.candidateId).findList();
-            for(JobPreference candidateJobs : allJob){
-                candidateJobs.delete();
-            }
-
-            existingCandidate.localityPreferenceList = getCandidateLocalityPreferenceList(localityList, candidate);
-            existingCandidate.jobPreferencesList = getCandidateJobPreferenceList(jobsList, candidate);
-
-            Candidate.candidateUpdate(existingCandidate);
-
-            Logger.info("Existing Candidate successfully updated" + candidate);
-
-            interaction.objectAUUId = existingCandidate.candidateUUId;
-            interaction.result = "New Candidate Added";
-            InteractionService.createIntraction(interaction);
-
-            String msg = "Welcome to Trujobs.in! Use OTP " + randomPIN + " to register";
-            SendOtpService.sendSms(candidate.candidateMobile, msg);
-            candidateSignUpResponse.setOtp(randomPIN);
-
-            interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
-            interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
-            InteractionService.createIntraction(interaction);
-        }
-
-        else{
-            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
+        } catch (NullPointerException n){
+            n.printStackTrace();
+            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
         }
 
         return candidateSignUpResponse;

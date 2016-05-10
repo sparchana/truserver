@@ -42,8 +42,8 @@ public class Candidate extends Model {
     @Column(name = "CandidateGender", columnDefinition = "int(1) null default 0")
     public int candidateGender = 0;
 
-    @Column(name = "CandidateDOB", columnDefinition = "varchar(20) null default 0")
-    public String candidateDOB = "";
+    @Column(name = "CandidateDOB", columnDefinition = "timestamp null ")
+    public Timestamp candidateDOB;
 
     @Column(name = "CandidateMobile", columnDefinition = "varchar(13) not null")
     public String candidateMobile = "";
@@ -54,7 +54,7 @@ public class Candidate extends Model {
     @Column(name = "CandidateMaritalStatus", columnDefinition = "int null default 0")
     public int candidateMaritalStatus = 0;
 
-    @Column(name = "CandidateEmail", columnDefinition = "varchar(50) not null")
+    @Column(name = "CandidateEmail", columnDefinition = "varchar(255) null")
     public String candidateEmail = "";
 
     @Column(name = "CandidateIsEmployed", columnDefinition = "int not null")
@@ -62,12 +62,6 @@ public class Candidate extends Model {
 
     @Column(name = "CandidateTotalExperience", columnDefinition = "decimal(3,2) signed null default 0.00")
     public float candidateTotalExperience = 0;  // data in years
-
-    @Column(name = "CandidateType", columnDefinition = "int signed not null default 0")
-    public int candidateState = 0;
-
-    @Column(name = "CandidateChannel", columnDefinition = "int signed not null default 0")
-    public int candidateChannel = 0;
 
     @Column(name = "CandidateAge", columnDefinition = "int signed not null default 0")
     public int candidateAge = 0;
@@ -87,7 +81,6 @@ public class Candidate extends Model {
     @Column(name = "CandidateSalarySlip", columnDefinition = "int signed not null default 0")
     public int candidateSalarySlip = 0;
 
-
     @Column(name = "CandidateAppointmentLetter", columnDefinition = "int signed not null default 0")
     public int candidateAppointmentLetter = 0;
 
@@ -95,24 +88,31 @@ public class Candidate extends Model {
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
     public List<IDProofreference> idProofreferenceList;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
     public List<JobHistory> jobHistoryList;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
     public List<JobPreference> jobPreferencesList;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
     public List<LanguagePreference> languagePreferenceList;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
     public List<LocalityPreference> localityPreferenceList;
 
-    @OneToMany(mappedBy = "candidate")
+    @JsonManagedReference
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
     public List<CandidateSkill> candidateSkillList;
 
+    @JsonManagedReference
     @OneToOne(mappedBy = "candidate")
     public CandidateCurrentJobDetail candidateCurrentJobDetail;
 
+    @JsonManagedReference
     @OneToOne(mappedBy = "candidate")
     public TimeShiftPreference timeShiftPreference;
 
@@ -126,7 +126,7 @@ public class Candidate extends Model {
     @JoinColumn(name = "CandidateHomeLocality")
     public Locality locality;
 
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonManagedReference
     @JoinColumn(name = "CandidateStatusId", referencedColumnName = "profileStatusId")
     public CandidateProfileStatus candidateprofilestatus;
@@ -135,7 +135,6 @@ public class Candidate extends Model {
     @JsonManagedReference
     @JoinColumn(name = "EducationId", referencedColumnName = "EducationId")
     public Education education;
-
 
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 

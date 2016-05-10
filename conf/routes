@@ -12,15 +12,15 @@ POST     /signUp                                                  controllers.Ap
 
 POST     /addPassword                                             controllers.Application.addPassword()
 
-POST     /processCsv                                             controllers.Application.processcsv()
+POST     /processCsv                                              controllers.Application.processcsv()
 
-GET      /getAll                                                 controllers.Application.getAll()
+GET      /getAll                                                  controllers.Application.getAll()
 
 GET      /dashboard                                               controllers.Application.dashboard()
 
 POST     /loginSubmit                                             controllers.Application.loginSubmit()
 
-POST     /findUserAndSendOtp                                          controllers.Application.findUserAndSendOtp()
+POST     /findUserAndSendOtp                                      controllers.Application.findUserAndSendOtp()
 
 POST     /processCsv                                              controllers.Application.processcsv()
 
@@ -50,7 +50,7 @@ GET      /logout                                                  controllers.Ap
 
 GET      /logoutUser                                              controllers.Application.logoutUser()
 
-GET      /test                                                    controllers.Application.test()
+GET      /test/:id                                                controllers.Application.test(id: Integer)
 
 POST     /api/kw/cdr                                              controllers.Application.kwCdrInput()
 
