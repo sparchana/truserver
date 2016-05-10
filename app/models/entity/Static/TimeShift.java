@@ -2,7 +2,6 @@ package models.entity.Static;
 
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.OO.TimeShiftPreference;
 
 import javax.persistence.*;
@@ -22,7 +21,7 @@ public class TimeShift extends Model{
     public String timeShiftName = "";
 
     @JsonBackReference
-    @OneToOne(mappedBy = "timeShift", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "timeShift", cascade = CascadeType.REMOVE)
     public TimeShiftPreference timeShiftPreference;
 
     public static Finder<String, TimeShift> find = new Finder(TimeShift.class);

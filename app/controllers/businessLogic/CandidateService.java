@@ -10,6 +10,7 @@ import models.entity.Interaction;
 import models.entity.Lead;
 import models.entity.OM.JobPreference;
 import models.entity.OM.LocalityPreference;
+import models.entity.Static.CandidateProfileStatus;
 import models.entity.Static.JobRole;
 import models.entity.Static.Locality;
 import models.util.Util;
@@ -47,13 +48,18 @@ public class CandidateService {
 
                 candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(localityList, candidate);
                 candidate.jobPreferencesList = getCandidateJobPreferenceList(jobsList, candidate);
-
-                Candidate.registerCandidate(candidate);
+                CandidateProfileStatus candidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_NEW).findUnique();
+                if(candidateProfileStatus != null){
+                    candidate.setCandidateprofilestatus(candidateProfileStatus);
+                    candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+                    Candidate.registerCandidate(candidate);
+                } else {
+                    candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
+                }
 
                 String msg = "Welcome to Trujobs.in! Use OTP " + randomPIN + " to register";
                 SendOtpService.sendSms(candidate.candidateMobile, msg);
 
-                candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
                 candidateSignUpResponse.setCandidateId(candidate.candidateId);
                 candidateSignUpResponse.setCandidateName(candidate.candidateName);
                 candidateSignUpResponse.setOtp(randomPIN);
@@ -212,5 +218,4 @@ public class CandidateService {
         candidate.leadId = lead.leadId;
         return lead;
     }
-
 }

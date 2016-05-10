@@ -21,6 +21,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
 
+import javax.persistence.PersistenceException;
 import java.io.File;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -315,7 +316,7 @@ public class Application extends Controller {
     }
 
     public static Result test(int n) {
-        long testCandidateId = 68600208;
+        long testCandidateId = 27854603;
         switch (n) {
             case 1: // fetch in json
                 try{
@@ -345,8 +346,8 @@ public class Application extends Controller {
                 CandidateProfileStatus newcandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 1).findUnique();
                 if(newcandidateProfileStatus  == null){
                     newcandidateProfileStatus = new CandidateProfileStatus();
-                    newcandidateProfileStatus.setProfileStatusId(10);
-                    newcandidateProfileStatus.setProfileStatusName("Test10");
+                    newcandidateProfileStatus.setProfileStatusId(1);
+                    newcandidateProfileStatus.setProfileStatusName("New");
                     candidate.candidateprofilestatus = newcandidateProfileStatus ;
                 } else {
                     candidate.candidateprofilestatus = newcandidateProfileStatus ;
@@ -360,11 +361,11 @@ public class Application extends Controller {
                 System.out.println(retrievedCandidate.candidateName);
 
                 // create a sub-obj
-                newcandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 11).findUnique();
+                newcandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 1).findUnique();
                 if(newcandidateProfileStatus  == null){
                     newcandidateProfileStatus = new CandidateProfileStatus();
-                    newcandidateProfileStatus.setProfileStatusId(11);
-                    newcandidateProfileStatus.setProfileStatusName("Test11");
+                    newcandidateProfileStatus.setProfileStatusId(1);
+                    newcandidateProfileStatus.setProfileStatusName("New");
                     retrievedCandidate.candidateprofilestatus = newcandidateProfileStatus;
                 } else {
                     Logger.info("New Status:"+retrievedCandidate.candidateprofilestatus.profileStatusName);
@@ -498,8 +499,8 @@ public class Application extends Controller {
                     System.out.println("Test 8 : candidateNotFound Check TestCase...");
                 }
                 break;
-            case 9: // No candidates required
-                titleMsg = "Test 9 :Adding JobToSkill Mapping";
+            case 9: // No candidates required/ always use save since this obj is getting created all the time
+                titleMsg = "Test 9 :Add JobToSkill Mapping";
                 try {
                     System.out.println(titleMsg);
                     System.out.println("Test 9 Initiated .......\n No candidateObj Req" );
@@ -510,17 +511,19 @@ public class Application extends Controller {
                     JobRole jobRole = JobRole.find.where().eq("jobRoleId", 1).findUnique();
                     Skill skill= Skill.find.where().eq("skillId", 1).findUnique();
                     if(jobRole == null){
+                        System.out.println("null jobRole" );
                     } else{
                         jobToSkill.setJobRole(jobRole);
                     }
                     if(skill == null){
+                        System.out.println("null skill" );
                     } else{
                         jobToSkill.setSkill(skill);
                     }
                     // get ref to existing skill
 
                     jobToSkill.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
-                    jobToSkill.update();
+                    jobToSkill.save();
                     System.out.println("Test 9 Completed ");
                     List<JobToSkill> jobToSkillList = JobToSkill.find.all();
                     return ok(toJson(jobToSkillList));
@@ -538,16 +541,18 @@ public class Application extends Controller {
                     System.out.println("Test 10 Initiated .......\n On CandidateId " + candidate10.candidateId);
 
                     // create one obj to add
-                    LanguagePreference languagePreference = new LanguagePreference();
-                    LanguagePreference languagePreference2 = new LanguagePreference();
+                    LanguageKnown languageKnown = new LanguageKnown();
+                    LanguageKnown languageKnown2 = new LanguageKnown();
 
                     // create sub-obj // this will be in a loop for multiple id
                     Language english = Language.find.where().eq("languageId", 1).findUnique();
-                    languagePreference.setLanguage(english);
-                    candidate10.languagePreferenceList.add(languagePreference);
+                    languageKnown.setLanguage(english);
+                    languageKnown.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
+                    candidate10.languageKnownList.add(languageKnown);
                     Language hindi = Language.find.where().eq("languageId", 2).findUnique();
-                    languagePreference2.setLanguage(hindi);
-                    candidate10.languagePreferenceList.add(languagePreference2);
+                    languageKnown2.setLanguage(hindi);
+                    languageKnown2.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
+                    candidate10.languageKnownList.add(languageKnown2);
 
                     candidate10.update();
                     System.out.println("Test 10 Completed ");
@@ -560,6 +565,7 @@ public class Application extends Controller {
             case 11: // For existing Candidates
                 // TimeShift Table Test
                 // one to one table
+                // should allow update of existing data
                 titleMsg = "Test 11 :Adding TimeShiftPref and Mapping it to TimeShift table";
                 try{
                     System.out.println(titleMsg);
@@ -573,10 +579,15 @@ public class Application extends Controller {
                     if(timeShift == null){
                         Logger.info("static table empty");
                     } else{
-                        candidate11.timeShiftPreference.setTimeShift(timeShift);
+                        Logger.info("static table associating");
+                        timeShiftPreference.setTimeShift(timeShift);
+                        candidate11.timeShiftPreference = timeShiftPreference;
                     }
+                    try {
+                        candidate11.save();
+                    } catch (PersistenceException p){
 
-                    candidate11.update();
+                    }
                     System.out.println("Test 11 Completed ");
                     candidate11 = Candidate.find.where().eq("candidateId", candidate11.candidateId).findUnique();
                     return ok(toJson(candidate11));
@@ -585,6 +596,10 @@ public class Application extends Controller {
                     System.out.println("Test 11 : candidateNotFound Check TestCase...");
                 }
                 break;
+            case 12:
+                List<CandidateSkill> candidateSkillList = CandidateSkill.find.where().eq("CandidateId", 1).findList(); // working
+                List<Skill> skillList = Skill.find.where().eq("SkillId", 1).findList(); // works
+                return ok(toJson(candidateSkillList));
         }
         return ok("");
     }

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
 import models.entity.Static.Skill;
+import models.entity.Static.SkillQualifier;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -23,17 +24,27 @@ public class CandidateSkill extends Model {
     public Timestamp updateTimeStamp;
 
     @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "CandidateId", referencedColumnName = "CandidateId")
+    public Candidate candidate;
+
+    @ManyToOne
     @JsonManagedReference
-    @JoinColumn(name = "SkillId", referencedColumnName = "skillId")
+    @JoinColumn(name = "SkillId", referencedColumnName = "SkillId")
     public Skill skill;
 
     @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "candidateId", referencedColumnName = "CandidateId")
-    public Candidate candidate;
+    @JsonManagedReference
+    @JoinColumn(name = "SkillQualifierId", referencedColumnName = "skillqualifierId")
+    public SkillQualifier skillQualifier;
 
     public int getCandidateSkillId() {
         return candidateSkillId;
+    }
+
+
+    public void setSkill(Skill skill) {
+        this.skill = skill;
     }
 
     public Timestamp getUpdateTimeStamp() {
@@ -52,14 +63,6 @@ public class CandidateSkill extends Model {
         this.candidate = candidate;
     }
 
-    public Skill getSkill() {
-        return skill;
-    }
-
-    public void setSkill(Skill skill) {
-        this.skill = skill;
-    }
-
-    public static Model.Finder<String, JobToSkill> find = new Model.Finder(JobToSkill.class);
+    public static Model.Finder<String, CandidateSkill> find = new Model.Finder(CandidateSkill.class);
 
 }

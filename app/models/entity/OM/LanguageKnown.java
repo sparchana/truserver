@@ -12,12 +12,12 @@ import java.sql.Timestamp;
 /**
  * Created by zero on 4/5/16.
  */
-@Entity(name = "languagepreference")
-@Table(name = "languagepreference")
-public class LanguagePreference extends Model {
+@Entity(name = "languageknown")
+@Table(name = "languageknown")
+public class LanguageKnown extends Model {
     @Id
-    @Column(name = "LanguagePreferenceId", columnDefinition = "int signed not null", unique = true)
-    public int languagePreferenceId = 0;
+    @Column(name = "LanguageKnownId", columnDefinition = "int signed not null", unique = true)
+    public int languageKnownId = 0;
 
     @Column(name = "VerbalAbility", columnDefinition = "int signed null")
     public int verbalAbility = 0; // 0/1
@@ -82,6 +82,6 @@ public class LanguagePreference extends Model {
         this.language = language;
     }
 
-    public static Finder<String, LanguagePreference> find = new Finder(LanguagePreference.class);
+    public static Finder<String, LanguageKnown> find = new Finder(LanguageKnown.class);
 
 }

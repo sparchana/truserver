@@ -28,7 +28,7 @@ public class JobToSkill  extends Model {
 
     @ManyToOne
     @JsonManagedReference
-    @JoinColumn(name = "SkillId", referencedColumnName = "skillId")
+    @JoinColumn(name = "SkillId", referencedColumnName = "SkillId")
     public Skill skill;
 
     public int getJobToSkillId() {

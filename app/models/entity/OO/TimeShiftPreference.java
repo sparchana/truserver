@@ -28,7 +28,7 @@ public class TimeShiftPreference extends Model {
     @JoinColumn(name = "CandidateId", referencedColumnName = "CandidateId")
     public Candidate candidate;
 
-    @OneToOne
+    @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "TimeShiftId", referencedColumnName = "TimeShiftId")
     public TimeShift timeShift;

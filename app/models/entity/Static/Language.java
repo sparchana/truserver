@@ -3,7 +3,7 @@ package models.entity.Static;
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import models.entity.Candidate;
-import models.entity.OM.LanguagePreference;
+import models.entity.OM.LanguageKnown;
 
 import javax.persistence.*;
 import java.util.List;
@@ -28,7 +28,7 @@ public class Language extends Model {
 
     @JsonBackReference
     @OneToMany(mappedBy = "language", cascade = CascadeType.REMOVE)
-    public List<LanguagePreference> languagePreferenceList;
+    public List<LanguageKnown> languageKnownList;
 
     public static Finder<String, Language> find = new Finder(Language.class);
 }

@@ -39,7 +39,6 @@ public class Lead extends Model {
     @Column(name = "LeadType", columnDefinition = "int signed not null", nullable = false)
     public int leadType = 0; // recruter, candidate
 
-
     @Column(name = "LeadInterest", columnDefinition = "varchar(30)")
     public String leadInterest = "";
 
