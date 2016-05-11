@@ -1,9 +1,7 @@
 package controllers.businessLogic;
 
 import api.ServerConstants;
-import api.http.CandidateSignUpResponse;
-import api.http.LoginResponse;
-import api.http.ResetPasswordResponse;
+import api.http.*;
 import models.entity.Auth;
 import models.entity.Candidate;
 import models.entity.Interaction;
@@ -28,7 +26,7 @@ import static play.mvc.Controller.session;
  */
 public class CandidateService {
 
-    public static CandidateSignUpResponse createCandidate(Candidate candidate, List<String> localityList, List<String> jobsList){
+    public static CandidateSignUpResponse createCandidate(Candidate candidate){
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
         Interaction interaction = new Interaction();
         Logger.info("Checking this mobile : " + candidate.candidateMobile );
@@ -46,8 +44,6 @@ public class CandidateService {
                     candidate.leadId = existingLead.leadId;
                 }
 
-                candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(localityList, candidate);
-                candidate.jobPreferencesList = getCandidateJobPreferenceList(jobsList, candidate);
                 CandidateProfileStatus candidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_NEW).findUnique();
                 if(candidateProfileStatus != null){
                     candidate.setCandidateprofilestatus(candidateProfileStatus);
@@ -81,8 +77,8 @@ public class CandidateService {
                 for(JobPreference candidateJobs : allJob){
                     candidateJobs.delete();
                 }
-                existingCandidate.localityPreferenceList = getCandidateLocalityPreferenceList(localityList, candidate);
-                existingCandidate.jobPreferencesList = getCandidateJobPreferenceList(jobsList, candidate);
+                existingCandidate.localityPreferenceList = candidate.localityPreferenceList;
+                existingCandidate.jobPreferencesList = candidate.jobPreferencesList;
 
                 Candidate.candidateUpdate(existingCandidate);
 
@@ -113,7 +109,53 @@ public class CandidateService {
         return candidateSignUpResponse;
     }
 
+    public static CandidateProfileCreateResponse createCandidateBySupport(CandidateProfileCreateRequest request){
+        CandidateProfileCreateResponse response = new CandidateProfileCreateResponse();
+        // get candidateBasic obj from req
+        // Handle jobPrefList and any other list with , as break point at application only
+        Candidate candidate = new Candidate();
+        candidate.candidateId = Util.randomLong();
+        candidate.candidateUUId = UUID.randomUUID().toString();
+        candidate.candidateName = request.getCandidateName();
+        candidate.candidateMobile = request.getCandidateMobile();
+        CandidateProfileStatus newcandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 1).findUnique();
+        candidate.candidateprofilestatus = newcandidateProfileStatus;
+        candidate.localityPreferenceList  = request.localityPreferenceList;
+        candidate.jobPreferencesList = request.jobPreferencesList;
 
+        // call createCandidate
+        CandidateSignUpResponse candidateSignUpResponse = createCandidate(candidate);
+        if(candidateSignUpResponse == null){
+            response.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
+            return response;
+        }
+
+        // create CandidateJobPref obj List
+         candidate.jobPreferencesList = request.jobPreferencesList;
+
+        // create CandidateLocalityPref obj List
+        candidate.localityPreferenceList = request.localityPreferenceList;
+
+        // create CandidateJobHistoryPref obj List
+        candidate.jobHistoryList = request.jobHistoryList;
+
+        // create CandidateCurrentJobDetail obj
+        candidate.candidateCurrentJobDetail = request.candidateCurrentJobDetail;
+
+        // create CandidateTimeShiftPref Obj
+        candidate.timeShiftPreference = request.timeShiftPreference;
+
+        // call UpdateCandidateTimeShiftPref
+        // create CandidateSkillQualifier obj List
+        // call UpdateCandidateSkillQualifier
+        // create CandidateSkill obj List
+        // call UpdateCandidateSkill
+        // create CandidateEducation Obj
+        // call UpdateCandidateEducation
+
+        Candidate.candidateUpdate(candidate);
+        return response;
+    }
     public static LoginResponse login(String loginMobile, String loginPassword){
         LoginResponse loginResponse = new LoginResponse();
         Logger.info(" login mobile: " + loginMobile);
@@ -178,7 +220,7 @@ public class CandidateService {
         return resetPasswordResponse;
     }
 
-    private static ArrayList<JobPreference> getCandidateJobPreferenceList(List<String> jobsList, Candidate candidate) {
+    public static ArrayList<JobPreference> getCandidateJobPreferenceList(List<String> jobsList, Candidate candidate) {
 
         ArrayList<JobPreference> candidateJobPreferences = new ArrayList<>();
         for(String  s : jobsList) {
@@ -191,7 +233,7 @@ public class CandidateService {
         return candidateJobPreferences;
     }
 
-    private static ArrayList<LocalityPreference> getCandidateLocalityPreferenceList(List<String> localityList, Candidate candidate) {
+    public static ArrayList<LocalityPreference> getCandidateLocalityPreferenceList(List<String> localityList, Candidate candidate) {
         ArrayList<LocalityPreference> candidateLocalityPreferences = new ArrayList<>();
         for(String  localityId : localityList) {
             LocalityPreference candidateLocalityPreference = new LocalityPreference();

@@ -30,6 +30,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static controllers.businessLogic.CandidateService.getCandidateJobPreferenceList;
+import static controllers.businessLogic.CandidateService.getCandidateLocalityPreferenceList;
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {
@@ -75,6 +77,8 @@ public class Application extends Controller {
     public static Result signUp() {
         Form<CandidateSignUpRequest> candidateForm = Form.form(CandidateSignUpRequest.class);
         CandidateSignUpRequest candidateSignUpRequest = candidateForm.bindFromRequest().get();
+        List<String> localityList = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
+        List<String> jobsList = Arrays.asList(candidateSignUpRequest.getCandidateJobPref().split("\\s*,\\s*"));
 
         Candidate candidate = new Candidate();
         candidate.candidateId = Util.randomLong();
@@ -83,11 +87,10 @@ public class Application extends Controller {
         candidate.candidateMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
         CandidateProfileStatus newcandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 1).findUnique();
         candidate.candidateprofilestatus = newcandidateProfileStatus;
+        candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(localityList, candidate);
+        candidate.jobPreferencesList = getCandidateJobPreferenceList(jobsList, candidate);
 
-        List<String> localityList = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
-        List<String> jobsList = Arrays.asList(candidateSignUpRequest.getCandidateJobPref().split("\\s*,\\s*"));
-
-        return ok(toJson(CandidateService.createCandidate(candidate,localityList,jobsList)));
+        return ok(toJson(CandidateService.createCandidate(candidate)));
     }
 
     public static Result addPassword() {
@@ -599,7 +602,8 @@ public class Application extends Controller {
             case 12:
                 List<CandidateSkill> candidateSkillList = CandidateSkill.find.where().eq("CandidateId", 1).findList(); // working
                 List<Skill> skillList = Skill.find.where().eq("SkillId", 1).findList(); // works
-                return ok(toJson(candidateSkillList));
+                List<JobToSkill> jobToSkillList = JobToSkill.find.where().eq("JobRoleId", 1).findList();
+                return ok(toJson(jobToSkillList));
         }
         return ok("");
     }

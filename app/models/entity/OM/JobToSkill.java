@@ -1,6 +1,7 @@
 package models.entity.OM;
 
 import com.avaje.ebean.Model;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Static.JobRole;
 import models.entity.Static.Skill;
@@ -15,14 +16,16 @@ import java.sql.Timestamp;
 @Table(name = "jobtoskill")
 public class JobToSkill  extends Model {
     @Id
+    @JsonBackReference
     @Column(name = "jobToSkillId", columnDefinition = "int signed not null", unique = true)
     public int jobToSkillId = 0;
 
+    @JsonBackReference
     @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp default current_timestamp null")
     public Timestamp updateTimeStamp;
 
     @ManyToOne
-    @JsonManagedReference
+    @JsonBackReference
     @JoinColumn(name = "JobRoleId", referencedColumnName = "JobRoleId")
     public JobRole jobRole;
 
