@@ -2,12 +2,14 @@
  * Created by batcoder1 on 9/5/16.
  */
 
+var skillMap = {};
 var localityArray = [];
 var jobArray = [];
 var timeShiftArray = [];
 var transportationArray = [];
 var educationArray = [];
 var languageArray = [];
+var idProofArray = [];
 
 $(document).ready(function(){
     $("#candidateSignUpSupportForm input").prop("disabled", true);
@@ -92,6 +94,19 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/getAllIdProof",
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckIdProofs
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
 });
 
 function getLocality(){
@@ -106,6 +121,10 @@ function getTimeShift(){
     return timeShiftArray;
 }
 
+function getIdProofs(){
+    return idProofArray;
+}
+
 function processDataCheckLocality(returnedData) {
     returnedData.forEach(function(locality)
     {
@@ -115,6 +134,18 @@ function processDataCheckLocality(returnedData) {
         item ["id"] = id;
         item ["name"] = name;
         localityArray.push(item);
+    });
+}
+
+function processDataCheckIdProofs(returnedData) {
+    returnedData.forEach(function(id)
+    {
+        var id = id.idProofId;
+        var name = id.idProofName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        idProofArray.push(item);
     });
 }
 
@@ -220,6 +251,38 @@ function employedNo(){
     $('#employedForm').hide();
 }
 
+function processDataCheckSkills(returnedData) {
+    var parent = $('#skill_details');
+    returnedData.forEach(function (singleSkill) {
+        var q = document.createElement("h5");
+
+        var question = singleSkill.skill.skillQuestion + "?: ";
+        q.textContent = question;
+        parent.append(q);
+
+        var object = singleSkill.skill.skillQualifierList;
+        object.forEach(function (x) {
+
+            var o = document.createElement("input");
+            o.type = "radio";
+            o.name = singleSkill.skill.skillName;
+            o.value = x.qualifier;
+            o.onclick = function () {
+                var skillId = singleSkill.skill.skillId;
+                var skillQualifier = x.qualifier;
+                skillMap[skillId] = skillQualifier;
+                console.log(skillMap);
+            };
+
+            var op = document.createElement("label");
+            op.innerHTML = x.qualifier;
+
+            parent.append(o);
+            parent.append(op);
+        });
+    });
+}
+
 function generateSkills(){
     var selectedJobPref = $('#candidateJobPref').val();
     var selectedJobPref_array = selectedJobPref.split(',');
@@ -232,7 +295,7 @@ function generateSkills(){
                 data: false,
                 contentType: false,
                 processData: false,
-                success: processDataCheckEducation
+                success: processDataCheckSkills
             });
         } catch (exception) {
             console.log("exception occured!!" + exception);
@@ -269,7 +332,6 @@ $(function() {
 
                     //others
                     candidateDob: c_dob,
-                    candidateAge: $('#candidateAge').val(),
                     candidatePhoneType: $('#candidatePhoneType').val(),
                     candidateGender: $('input:radio[name="gender"]:checked').val(),
                     candidateHomeLocality: $('#candidateHomeLocality').val(),
@@ -298,6 +360,8 @@ $(function() {
                     candidateTimeShiftPref: $('#candidateTimeShiftPref').val(),
 
                     candidateMotherTongue: $('#candidateMotherTongue').val(),
+                    
+                    candidateSkills: skillMap,
 
                     candidateIdProof: $('#candidateIdProof').val(),
                     candidateSalarySlip: $('input:radio[name="payslip"]:checked').val(),

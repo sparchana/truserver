@@ -80,7 +80,7 @@
           <div class="row" style="margin-top: 4px">
             <div class="col-sm-3"><h5>Job Role Preference:</h5></div>
             <div class="col-sm-9">
-              <input type="text" id="candidateJobPref">
+              <input type="text" id="candidateJobPref" >
               <script type="text/javascript">
                   $(document).ready(function() {
                     $("#candidateJobPref").tokenInput(getJob(), {
@@ -101,13 +101,6 @@
                 <div class="col-sm-3"><h5>Date of Birth:</h5></div>
                 <div class="col-sm-9">
                   <input id="candidateDob" data-date-format="dd/mm/yyyy" name="candidateDob" placeholder="When is your Birthday?" type="date" class="form-control input-md"  data-date-inline-picker="true" onclick="generateSkills()"/>
-                </div>
-              </div>
-
-              <div class="row" style="margin-top: 4px">
-                <div class="col-sm-3"><h5>Candidate Age:</h5></div>
-                <div class="col-sm-9">
-                  <input id="candidateAge" placeholder="What is your age?" type="number" class="form-control input-md" value="0">
                 </div>
               </div>
 
@@ -312,6 +305,7 @@
                           placeholder: "Do you want to work Full/Part time and do you want Day/Night shift?",
                           hintText: "Start typing jobs (eg. Day shift..)",
                           minChars: 0,
+                          tokenLimit: 1,
                           preventDuplicates: true
                       });
                   });
@@ -378,106 +372,9 @@
           </div>
           <hr>
 
-          <!skill details -->
+          <!-- skill details -->
           <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Candidate Skills</h4>
           <div id="skill_details">
-
-            <!-- driver/delivery boy skill section -->
-            <div class="skillSubSection" id="delivery_driver_skill" >
-              <h4>Skills for [Drivers/Delivery Executives]</h4>
-                <div class="row" style="margin-top: 4px">
-                  <div class="col-sm-5"><h5>Two Wheeler driving licence:</h5></div>
-                  <div class="col-sm-7" style="margin-top: 6px;">
-                      <input type="radio" name="2WLicence" id="2WLicenceY" value="0">Yes
-                      <input type="radio" name="2WLicence" id="2WLicenceN" value="1">No
-                  </div>
-                </div>
-
-                <div class="row" style="margin-top: 4px">
-                  <div class="col-sm-5"><h5>Four Wheeler driving licence:</h5></div>
-                  <div class="col-sm-7" style="margin-top: 6px;">
-                    <input type="radio" name="4WLicence" id="4WLicenceY" value="0">Yes
-                    <input type="radio" name="4WLicence" id="4WLicenceN" value="1">No
-                  </div>
-                </div>
-
-                <div class="row" style="margin-top: 4px">
-                  <div class="col-sm-5"><h5>Do you have a 2 wheeler vehicle:</h5></div>
-                  <div class="col-sm-7" style="margin-top: 6px;">
-                    <input type="radio" name="2WOwner" id="2WOwnerY" value="0">Yes
-                    <input type="radio" name="2WOwner" id="2WOwnerN" value="1">No
-                  </div>
-                </div>
-
-                <div class="row" style="margin-top: 4px">
-                    <div class="col-sm-5"><h5>Do you have a 4 wheeler vehicle:</h5></div>
-                    <div class="col-sm-7" style="margin-top: 6px;">
-                        <input type="radio" name="4WOwner" id="4WOwnerY" value="0">Yes
-                        <input type="radio" name="4WOwner" id="4WOwnerN" value="1">No
-                    </div>
-                </div>
-            </div>
-
-            <! -- BPO/Data entry/call center/receptionist skill section -->
-            <div id="bpo_callcenter_skill" class="skillSubSection">
-                <h4>Skills for [BPO/Call Center/Receptionist]</h4>
-                <div class="row" style="margin-top: 4px">
-                    <div class="col-sm-5"><h5>Do you know how to browse Internet?: </h5></div>
-                    <div class="col-sm-7" style="margin-top: 6px;">
-                        <input type="radio" name="internetBrowsing" id="internetBrowsingY" value="0">Yes
-                        <input type="radio" name="internetBrowsing" id="internetBrowsingN" value="1">No
-                    </div>
-                </div>
-
-                <div class="row" style="margin-top: 4px">
-                    <div class="col-sm-5"><h5>Do you know how to use Email?: </h5></div>
-                    <div class="col-sm-7" style="margin-top: 6px;">
-                        <input type="radio" name="emailUse" id="emailUseY" value="0">Yes
-                        <input type="radio" name="emailUse" id="emailUseN" value="1">No
-                    </div>
-                </div>
-
-                <div class="row" style="margin-top: 4px">
-                    <div class="col-sm-5"><h5>Do you know how to use MS Word?: </h5></div>
-                    <div class="col-sm-7" style="margin-top: 6px;">
-                        <input type="radio" name="MsWordUse" id="MsWordUseY" value="0">Yes
-                        <input type="radio" name="MsWordUse" id="MsWordUseN" value="1">No
-                    </div>
-                </div>
-
-                <div class="row" style="margin-top: 4px">
-                    <div class="col-sm-5"><h5>Do you know how to use MS Excel?: </h5></div>
-                    <div class="col-sm-7" style="margin-top: 6px;">
-                        <input type="radio" name="MsExcelUse" id="MsExcelUseY" value="0">Yes
-                        <input type="radio" name="MsExcelUse" id="MsExcelUseN" value="1">No
-                    </div>
-                </div>
-            </div>
-
-            <!-- steward/waiter skill section -->
-            <div id="steward_waiter_skill" class="skillSubSection">
-                <h4>Skills for [Steward/Waiter]</h4>
-                <div class="row" style="margin-top: 4px">
-                    <div class="col-sm-5"><h5>Did you get any formal hotel management degree?:</h5></div>
-                    <div class="col-sm-7" style="margin-top: 6px;">
-                        <input type="radio" name="hotelCertification" id="hotelCertificationY" value="0">Yes
-                        <input type="radio" name="hotelCertification" id="hotelCertificationN" value="1">No
-                    </div>
-                </div>
-
-            </div>
-
-            <!--  beautician skill section -->
-            <div id="beautician_skill" class="skillSubSection">
-                <h4>Skills for [Beauticians]</h4>
-                <div class="row" style="margin-top: 4px">
-                    <div class="col-sm-5"><h5>Did you get any formal beauty training certificate?:</h5></div>
-                    <div class="col-sm-7" style="margin-top: 6px;">
-                        <input type="radio" name="beautyCertification" id="beautyCertificationY" value="0">Yes
-                        <input type="radio" name="beautyCertification" id="beautyCertificationN" value="1">No
-                    </div>
-                </div>
-            </div>
           </div>
           <hr>
 
@@ -487,8 +384,18 @@
               <div class="row" style="margin-top: 4px">
                   <div class="col-sm-3"><h5>ID Proof/Address proof ID?:</h5></div>
                   <div class="col-sm-9" style="margin-top: 6px;">
-                      <select id="candidateIdProof" size="5">
-                </select>
+                      <input type="text" id="candidateIdProof" >
+                      <script type="text/javascript">
+                        $(document).ready(function() {
+                            $("#candidateIdProof").tokenInput(getIdProofs(), {
+                                theme: "facebook",
+                                placeholder: "What ID Proofs you have?",
+                                hintText: "Start typing jobs (eg. PAN, Driving Licence,..)",
+                                minChars: 0,
+                                preventDuplicates: true
+                            });
+                        });
+                      </script>
                   </div>
               </div>
 

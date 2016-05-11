@@ -1,6 +1,7 @@
 package models.entity.Static;
 
 import com.avaje.ebean.Model;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.OM.JobToSkill;
 
@@ -18,14 +19,34 @@ public class Skill extends Model{
     public int skillId = 0;
 
     @Column(name = "skillName", columnDefinition = "varchar(100) null")
-    public String skillName = "";
+    public String skillName;
 
-    @Column(name = "skillDescription", columnDefinition = "varchar(255) null")
-    public String skillDescription = "";
+    @Column(name = "skillQuestion", columnDefinition = "varchar(255) null")
+    public String skillQuestion;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "skill", cascade = CascadeType.REMOVE)
+    public List<JobToSkill> jobToSkillList;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "skill", cascade = CascadeType.REMOVE)
-    public List<JobToSkill> jobToSkillList;
+    public List<SkillQualifier> skillQualifierList;
+
+    public String getSkillName() {
+        return skillName;
+    }
+
+    public void setSkillName(String skillName) {
+        this.skillName = skillName;
+    }
+
+    public List<JobToSkill> getJobToSkillList() {
+        return jobToSkillList;
+    }
+
+    public void setJobToSkillList(List<JobToSkill> jobToSkillList) {
+        this.jobToSkillList = jobToSkillList;
+    }
 
     public static Model.Finder<String, Skill> find = new Model.Finder(Skill.class);
 }

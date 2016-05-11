@@ -6,6 +6,7 @@
 create table auth (
   authid                        bigint signed not null auto_increment not null,
   candidateid                   bigint signed not null,
+  authstatus                    int signed not null not null,
   passwordmd5                   char(60) not null,
   passwordsalt                  bigint signed not null,
   authsessionid                 varchar(50) not null not null,
@@ -20,24 +21,22 @@ create table candidate (
   candidateuuid                 varchar(255) not null not null,
   leadid                        bigint signed not null,
   candidatename                 varchar(50) not null,
-  candidatelastname             varchar(50) not null,
+  candidatelastname             varchar(50) null,
   candidategender               int(1) null default 0,
-  candidatedob                  date null,
+  candidatedob                  timestamp null,
   candidatemobile               varchar(13) not null,
   candidatephonetype            varchar(100) null,
-  candidatemaritalstatus        int null default 0,
-  candidateemail                varchar(50) not null,
+  candidatemaritalstatus        int null,
+  candidateemail                varchar(255) null,
   candidateisemployed           int not null,
   candidatetotalexperience      decimal(3,2) signed null default 0.00,
-  candidatetype                 int signed not null default 0,
-  candidatechannel              int signed not null default 0,
   candidateage                  int signed not null default 0,
   candidatecreatetimestamp      timestamp default current_timestamp not null,
   candidateupdatetimestamp      timestamp null,
-  candidateotp                  int signed not null default 1234,
   candidateisassessed           int signed not null default 0,
   candidatesalaryslip           int signed not null default 0,
   candidateappointmentletter    int signed not null default 0,
+  isminprofilecomplete          int signed not null default 0,
   candidatemothertongue         int signed null,
   candidatehomelocality         bigint signed null,
   candidatestatusid             int signed null,
@@ -72,18 +71,12 @@ create table candidatecurrentjobdetail (
   constraint pk_candidatecurrentjobdetail primary key (candidatecurrentjobid)
 );
 
-create table candidatejob (
-  candidatejobid                bigint signed not null auto_increment not null,
-  candidatejobcandidateid       bigint not null default 0,
-  candidatejobjobid             varchar(4) not null default 0,
-  constraint pk_candidatejob primary key (candidatejobid)
-);
-
-create table candidatelocality (
-  candidatelocalityid           bigint signed not null auto_increment not null,
-  candidatelocalitycandidateid  bigint not null default 0,
-  candidatelocalitylocalityid   varchar(4) not null default 0,
-  constraint pk_candidatelocality primary key (candidatelocalityid)
+create table candidateeducation (
+  candidateeducationid          int signed not null auto_increment not null,
+  updatetimestamp               timestamp default current_timestamp null,
+  educationid                   int signed null,
+  candidateid                   bigint signed not null,
+  constraint pk_candidateeducation primary key (candidateeducationid)
 );
 
 create table candidateskill (
@@ -91,6 +84,7 @@ create table candidateskill (
   updatetimestamp               timestamp default current_timestamp null,
   candidateid                   bigint signed not null,
   skillid                       int signed not null,
+  skillqualifierid              int signed,
   constraint pk_candidateskill primary key (candidateskillid)
 );
 
@@ -147,15 +141,9 @@ create table interaction (
   constraint pk_interaction primary key (rowid)
 );
 
-create table job (
-  jobid                         int signed not null auto_increment not null,
-  jobname                       varchar(50) not null,
-  constraint pk_job primary key (jobid)
-);
-
 create table jobhistory (
   jobhistoryid                  bigint signed not null auto_increment not null,
-  candidatepastcompany          bigint signed null,
+  candidatepastcompany          varchar(255) null,
   candidatepastsalary           bigint signed null,
   updatetimestamp               timestamp default current_timestamp null,
   jobroleid                     bigint signed not null,
@@ -191,15 +179,15 @@ create table language (
   constraint pk_language primary key (languageid)
 );
 
-create table languagepreference (
-  languagepreference            int signed not null auto_increment not null,
-  candidateid                   bigint signed not null,
-  languageid                    int signed not null,
+create table languageknown (
+  languageknownid               int signed not null auto_increment not null,
   verbalability                 int signed null,
   readingability                int signed null,
   writingability                int signed null,
   updatetimestamp               timestamp default current_timestamp null,
-  constraint pk_languagepreference primary key (languagepreference)
+  languageid                    int signed null,
+  candidateid                   bigint signed not null,
+  constraint pk_languageknown primary key (languageknownid)
 );
 
 create table lead (
@@ -214,12 +202,6 @@ create table lead (
   leadcreationtimestamp         timestamp default current_timestamp not null not null,
   constraint uq_lead_leaduuid unique (leaduuid),
   constraint pk_lead primary key (leadid)
-);
-
-create table leadtype (
-  leadtypeid                    int signed not null auto_increment not null,
-  leadtypename                  varchar(50) not null default 0 not null,
-  constraint pk_leadtype primary key (leadtypeid)
 );
 
 create table locality (
@@ -244,8 +226,15 @@ create table localitypreference (
 create table skill (
   skillid                       int signed not null auto_increment not null,
   skillname                     varchar(100) null,
-  skilldescription              varchar(255) null,
+  skillquestion                 varchar(255) null,
   constraint pk_skill primary key (skillid)
+);
+
+create table skillqualifier (
+  skillqualifierid              int signed auto_increment not null,
+  qualifier                     varchar(100) null,
+  skillid                       int signed not null,
+  constraint pk_skillqualifier primary key (skillqualifierid)
 );
 
 create table timeshift (
@@ -260,7 +249,6 @@ create table timeshiftpreference (
   candidateid                   bigint signed not null,
   timeshiftid                   int signed,
   constraint uq_timeshiftpreference_candidateid unique (candidateid),
-  constraint uq_timeshiftpreference_timeshiftid unique (timeshiftid),
   constraint pk_timeshiftpreference primary key (timeshiftpreferenceid)
 );
 
@@ -287,11 +275,20 @@ alter table candidatecurrentjobdetail add constraint fk_candidatecurrentjobdetai
 alter table candidatecurrentjobdetail add constraint fk_candidatecurrentjobdetail_jobroleid foreign key (jobroleid) references jobrole (jobroleid) on delete restrict on update restrict;
 create index ix_candidatecurrentjobdetail_jobroleid on candidatecurrentjobdetail (jobroleid);
 
+alter table candidateeducation add constraint fk_candidateeducation_educationid foreign key (educationid) references education (educationid) on delete restrict on update restrict;
+create index ix_candidateeducation_educationid on candidateeducation (educationid);
+
+alter table candidateeducation add constraint fk_candidateeducation_candidateid foreign key (candidateid) references candidate (candidateid) on delete restrict on update restrict;
+create index ix_candidateeducation_candidateid on candidateeducation (candidateid);
+
 alter table candidateskill add constraint fk_candidateskill_candidateid foreign key (candidateid) references candidate (candidateid) on delete restrict on update restrict;
 create index ix_candidateskill_candidateid on candidateskill (candidateid);
 
 alter table candidateskill add constraint fk_candidateskill_skillid foreign key (skillid) references skill (skillid) on delete restrict on update restrict;
 create index ix_candidateskill_skillid on candidateskill (skillid);
+
+alter table candidateskill add constraint fk_candidateskill_skillqualifierid foreign key (skillqualifierid) references skillqualifier (skillqualifierid) on delete restrict on update restrict;
+create index ix_candidateskill_skillqualifierid on candidateskill (skillqualifierid);
 
 alter table idproofreference add constraint fk_idproofreference_candidateid foreign key (candidateid) references candidate (candidateid) on delete restrict on update restrict;
 create index ix_idproofreference_candidateid on idproofreference (candidateid);
@@ -317,11 +314,11 @@ create index ix_jobtoskill_jobroleid on jobtoskill (jobroleid);
 alter table jobtoskill add constraint fk_jobtoskill_skillid foreign key (skillid) references skill (skillid) on delete restrict on update restrict;
 create index ix_jobtoskill_skillid on jobtoskill (skillid);
 
-alter table languagepreference add constraint fk_languagepreference_candidateid foreign key (candidateid) references candidate (candidateid) on delete restrict on update restrict;
-create index ix_languagepreference_candidateid on languagepreference (candidateid);
+alter table languageknown add constraint fk_languageknown_languageid foreign key (languageid) references language (languageid) on delete restrict on update restrict;
+create index ix_languageknown_languageid on languageknown (languageid);
 
-alter table languagepreference add constraint fk_languagepreference_languageid foreign key (languageid) references language (languageid) on delete restrict on update restrict;
-create index ix_languagepreference_languageid on languagepreference (languageid);
+alter table languageknown add constraint fk_languageknown_candidateid foreign key (candidateid) references candidate (candidateid) on delete restrict on update restrict;
+create index ix_languageknown_candidateid on languageknown (candidateid);
 
 alter table localitypreference add constraint fk_localitypreference_localityid foreign key (localityid) references locality (localityid) on delete restrict on update restrict;
 create index ix_localitypreference_localityid on localitypreference (localityid);
@@ -329,9 +326,13 @@ create index ix_localitypreference_localityid on localitypreference (localityid)
 alter table localitypreference add constraint fk_localitypreference_candidateid foreign key (candidateid) references candidate (candidateid) on delete restrict on update restrict;
 create index ix_localitypreference_candidateid on localitypreference (candidateid);
 
+alter table skillqualifier add constraint fk_skillqualifier_skillid foreign key (skillid) references skill (skillid) on delete restrict on update restrict;
+create index ix_skillqualifier_skillid on skillqualifier (skillid);
+
 alter table timeshiftpreference add constraint fk_timeshiftpreference_candidateid foreign key (candidateid) references candidate (candidateid) on delete restrict on update restrict;
 
 alter table timeshiftpreference add constraint fk_timeshiftpreference_timeshiftid foreign key (timeshiftid) references timeshift (timeshiftid) on delete restrict on update restrict;
+create index ix_timeshiftpreference_timeshiftid on timeshiftpreference (timeshiftid);
 
 
 # --- !Downs
@@ -353,11 +354,20 @@ alter table candidatecurrentjobdetail drop foreign key fk_candidatecurrentjobdet
 alter table candidatecurrentjobdetail drop foreign key fk_candidatecurrentjobdetail_jobroleid;
 drop index ix_candidatecurrentjobdetail_jobroleid on candidatecurrentjobdetail;
 
+alter table candidateeducation drop foreign key fk_candidateeducation_educationid;
+drop index ix_candidateeducation_educationid on candidateeducation;
+
+alter table candidateeducation drop foreign key fk_candidateeducation_candidateid;
+drop index ix_candidateeducation_candidateid on candidateeducation;
+
 alter table candidateskill drop foreign key fk_candidateskill_candidateid;
 drop index ix_candidateskill_candidateid on candidateskill;
 
 alter table candidateskill drop foreign key fk_candidateskill_skillid;
 drop index ix_candidateskill_skillid on candidateskill;
+
+alter table candidateskill drop foreign key fk_candidateskill_skillqualifierid;
+drop index ix_candidateskill_skillqualifierid on candidateskill;
 
 alter table idproofreference drop foreign key fk_idproofreference_candidateid;
 drop index ix_idproofreference_candidateid on idproofreference;
@@ -383,11 +393,11 @@ drop index ix_jobtoskill_jobroleid on jobtoskill;
 alter table jobtoskill drop foreign key fk_jobtoskill_skillid;
 drop index ix_jobtoskill_skillid on jobtoskill;
 
-alter table languagepreference drop foreign key fk_languagepreference_candidateid;
-drop index ix_languagepreference_candidateid on languagepreference;
+alter table languageknown drop foreign key fk_languageknown_languageid;
+drop index ix_languageknown_languageid on languageknown;
 
-alter table languagepreference drop foreign key fk_languagepreference_languageid;
-drop index ix_languagepreference_languageid on languagepreference;
+alter table languageknown drop foreign key fk_languageknown_candidateid;
+drop index ix_languageknown_candidateid on languageknown;
 
 alter table localitypreference drop foreign key fk_localitypreference_localityid;
 drop index ix_localitypreference_localityid on localitypreference;
@@ -395,9 +405,13 @@ drop index ix_localitypreference_localityid on localitypreference;
 alter table localitypreference drop foreign key fk_localitypreference_candidateid;
 drop index ix_localitypreference_candidateid on localitypreference;
 
+alter table skillqualifier drop foreign key fk_skillqualifier_skillid;
+drop index ix_skillqualifier_skillid on skillqualifier;
+
 alter table timeshiftpreference drop foreign key fk_timeshiftpreference_candidateid;
 
 alter table timeshiftpreference drop foreign key fk_timeshiftpreference_timeshiftid;
+drop index ix_timeshiftpreference_timeshiftid on timeshiftpreference;
 
 drop table if exists auth;
 
@@ -407,9 +421,7 @@ drop table if exists candidateprofilestatus;
 
 drop table if exists candidatecurrentjobdetail;
 
-drop table if exists candidatejob;
-
-drop table if exists candidatelocality;
+drop table if exists candidateeducation;
 
 drop table if exists candidateskill;
 
@@ -425,8 +437,6 @@ drop table if exists idproofreference;
 
 drop table if exists interaction;
 
-drop table if exists job;
-
 drop table if exists jobhistory;
 
 drop table if exists jobpreference;
@@ -437,17 +447,17 @@ drop table if exists jobtoskill;
 
 drop table if exists language;
 
-drop table if exists languagepreference;
+drop table if exists languageknown;
 
 drop table if exists lead;
-
-drop table if exists leadtype;
 
 drop table if exists locality;
 
 drop table if exists localitypreference;
 
 drop table if exists skill;
+
+drop table if exists skillqualifier;
 
 drop table if exists timeshift;
 

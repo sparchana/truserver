@@ -1,10 +1,14 @@
 package models.entity.OM;
 
 import com.avaje.ebean.Model;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
 import models.entity.Static.Skill;
+import models.entity.Static.SkillQualifier;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 /**
  * Created by zero on 6/5/16.
@@ -17,16 +21,48 @@ public class CandidateSkill extends Model {
     public int candidateSkillId = 0;
 
     @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp default current_timestamp null")
-    public long updateTimeStamp = 0;
+    public Timestamp updateTimeStamp;
 
     @ManyToOne
-    @JoinColumn(name = "candidateId", referencedColumnName = "CandidateId")
+    @JsonBackReference
+    @JoinColumn(name = "CandidateId", referencedColumnName = "CandidateId")
     public Candidate candidate;
 
     @ManyToOne
-    @JoinColumn(name = "SkillId", referencedColumnName = "skillId")
+    @JsonManagedReference
+    @JoinColumn(name = "SkillId", referencedColumnName = "SkillId")
     public Skill skill;
 
-    public static Model.Finder<String, JobToSkill> find = new Model.Finder(JobToSkill.class);
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "SkillQualifierId", referencedColumnName = "skillqualifierId")
+    public SkillQualifier skillQualifier;
+
+    public int getCandidateSkillId() {
+        return candidateSkillId;
+    }
+
+
+    public void setSkill(Skill skill) {
+        this.skill = skill;
+    }
+
+    public Timestamp getUpdateTimeStamp() {
+        return updateTimeStamp;
+    }
+
+    public void setUpdateTimeStamp(Timestamp updateTimeStamp) {
+        this.updateTimeStamp = updateTimeStamp;
+    }
+
+    public Candidate getCandidate() {
+        return candidate;
+    }
+
+    public void setCandidate(Candidate candidate) {
+        this.candidate = candidate;
+    }
+
+    public static Model.Finder<String, CandidateSkill> find = new Model.Finder(CandidateSkill.class);
 
 }

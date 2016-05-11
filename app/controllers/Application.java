@@ -5,10 +5,12 @@ import api.http.*;
 import controllers.businessLogic.AuthService;
 import controllers.businessLogic.CandidateService;
 import controllers.businessLogic.LeadService;
-import models.entity.*;
-import models.entity.OM.IDProofreference;
-import models.entity.OM.JobToSkill;
-import models.entity.OO.CandidateCurrentJobDetail;
+import models.entity.Candidate;
+import models.entity.Developer;
+import models.entity.Interaction;
+import models.entity.Lead;
+import models.entity.OM.*;
+import models.entity.OO.TimeShiftPreference;
 import models.entity.Static.*;
 import models.util.ParseCSV;
 import models.util.Util;
@@ -19,8 +21,8 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
 
+import javax.persistence.PersistenceException;
 import java.io.File;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,6 +30,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import static controllers.businessLogic.CandidateService.getCandidateJobPreferenceList;
+import static controllers.businessLogic.CandidateService.getCandidateLocalityPreferenceList;
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {
@@ -73,18 +77,21 @@ public class Application extends Controller {
     public static Result signUp() {
         Form<CandidateSignUpRequest> candidateForm = Form.form(CandidateSignUpRequest.class);
         CandidateSignUpRequest candidateSignUpRequest = candidateForm.bindFromRequest().get();
+        List<String> localityList = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
+        List<String> jobsList = Arrays.asList(candidateSignUpRequest.getCandidateJobPref().split("\\s*,\\s*"));
 
         Candidate candidate = new Candidate();
         candidate.candidateId = Util.randomLong();
         candidate.candidateUUId = UUID.randomUUID().toString();
         candidate.candidateName = candidateSignUpRequest.getCandidateName();
         candidate.candidateMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
-        candidate.candidateAge = 0;
 
-        List<String> localityList = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
-        List<String> jobsList = Arrays.asList(candidateSignUpRequest.getCandidateJobPref().split("\\s*,\\s*"));
+        CandidateProfileStatus newcandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 1).findUnique();
+        candidate.candidateprofilestatus = newcandidateProfileStatus;
+        candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(localityList, candidate);
+        candidate.jobPreferencesList = getCandidateJobPreferenceList(jobsList, candidate);
 
-        return ok(toJson(CandidateService.createCandidate(candidate,localityList,jobsList)));
+        return ok(toJson(CandidateService.createCandidate(candidate)));
     }
 
     public static Result signUpSupport() {
@@ -97,8 +104,7 @@ public class Application extends Controller {
         candidate.candidateName = addSupportCandidateRequest.getCandidateName();
         candidate.candidateMobile = "+91" + addSupportCandidateRequest.getCandidateMobile();
 
-        candidate.candidateDOB = addSupportCandidateRequest.getCandidateDob();
-        candidate.candidateAge = addSupportCandidateRequest.getCandidateAge();
+        candidate.candidateDOB = (Timestamp) addSupportCandidateRequest.getCandidateDob();
         candidate.candidatePhoneType = addSupportCandidateRequest.getCandidatePhoneType();
         candidate.candidateGender = addSupportCandidateRequest.getCandidateGender();
         candidate.candidateMaritalStatus = addSupportCandidateRequest.getCandidateMaritalStatus();
@@ -129,7 +135,9 @@ public class Application extends Controller {
 
         int candidateMotherTongue = addSupportCandidateRequest.getCandidateMotherTongue();
 
-        int candidateIdProof = addSupportCandidateRequest.getCandidateIdProof();
+        String candidateSkills = addSupportCandidateRequest.getCandidateSkills();
+
+        List<String> candidateIdProof = Arrays.asList(addSupportCandidateRequest.getCandidateIdProof().split("\\s*,\\s*"));
         int candidateSalarySlip = addSupportCandidateRequest.getCandidateSalarySlip();
         int candidateAppointmentLetter = addSupportCandidateRequest.getCandidateAppointmentLetter();
 
@@ -253,12 +261,12 @@ public class Application extends Controller {
     }
 
     public static Result getCandidateLocality(long id) {
-        List<CandidateLocality> candidateLocalities = CandidateLocality.find.where().eq("CandidateLocalityCandidateId", id).findList();
+        List<LocalityPreference> candidateLocalities = LocalityPreference.find.where().eq("CandidateId", id).findList();
         return ok(toJson(candidateLocalities));
     }
 
     public static Result getCandidateJob(long id) {
-        List<CandidateJob> candidateJobs = CandidateJob.find.where().eq("CandidateJobCandidateId", id).findList();
+        List<JobPreference> candidateJobs = JobPreference.find.where().eq("CandidateId", id).findList();
         return ok(toJson(candidateJobs));
     }
 
@@ -370,8 +378,8 @@ public class Application extends Controller {
     }
 
     public static Result getAllShift() {
-        List<Timeshift> timeshifts = Timeshift.find.findList();
-        return ok(toJson(timeshifts));
+        List<TimeShift> timeShifts = TimeShift.find.findList();
+        return ok(toJson(timeShifts));
     }
 
     public static Result getAllTransportation() {
@@ -389,8 +397,13 @@ public class Application extends Controller {
         return ok(toJson(languages));
     }
 
-    public static Result test() {
-        int n=3;
+    public static Result getAllIdProof() {
+        List<IdProof> idProofs = IdProof.find.findList();
+        return ok(toJson(idProofs));
+    }
+
+    public static Result test(int n) {
+        long testCandidateId = 27854603;
         switch (n) {
             case 1: // fetch in json
                 try{
@@ -414,39 +427,48 @@ public class Application extends Controller {
                 candidate.candidateMobile = "8984584584";
                 candidate.candidateName = "Sandeep";
 
+                // testcase related var set
+
                 // create a sub-obj
                 CandidateProfileStatus newcandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 1).findUnique();
                 if(newcandidateProfileStatus  == null){
                     newcandidateProfileStatus = new CandidateProfileStatus();
-                    newcandidateProfileStatus.setProfileStatusId(10);
-                    newcandidateProfileStatus.setProfileStatusName("Test10");
+                    newcandidateProfileStatus.setProfileStatusId(1);
+                    newcandidateProfileStatus.setProfileStatusName("New");
                     candidate.candidateprofilestatus = newcandidateProfileStatus ;
                 } else {
-                    newcandidateProfileStatus.setProfileStatusName("Changed");
                     candidate.candidateprofilestatus = newcandidateProfileStatus ;
                 }
-
                 // save the parent obj
                 candidate.save();
-                break;
+                candidate = Candidate.find.where().eq("candidateId", candidate.candidateId).findUnique();
+                return ok(toJson(candidate));
             case 3: // retrive a candidate obj and update sub-obj of candidate class
-                Candidate retrievedCandidate = Candidate.find.where().eq("candidateId", 2).findUnique();
+                Candidate retrievedCandidate = Candidate.find.where().eq("candidateId", testCandidateId).findUnique();
                 System.out.println(retrievedCandidate.candidateName);
 
                 // create a sub-obj
-                newcandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 11).findUnique();
+                newcandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 1).findUnique();
                 if(newcandidateProfileStatus  == null){
                     newcandidateProfileStatus = new CandidateProfileStatus();
-                    newcandidateProfileStatus.setProfileStatusId(11);
-                    newcandidateProfileStatus.setProfileStatusName("Test11");
+                    newcandidateProfileStatus.setProfileStatusId(1);
+                    newcandidateProfileStatus.setProfileStatusName("New");
                     retrievedCandidate.candidateprofilestatus = newcandidateProfileStatus;
                 } else {
                     Logger.info("New Status:"+retrievedCandidate.candidateprofilestatus.profileStatusName);
                     retrievedCandidate.candidateprofilestatus = newcandidateProfileStatus;
                 }
                 retrievedCandidate.save();
-                break;
+                return ok(toJson(retrievedCandidate));
             case 4: // delete a candidate obj and check if the sub-obj data also gets cleared or not.
+                try{
+                    Candidate toDelete = Candidate.find.where().eq("candidateId", testCandidateId).findUnique();
+                    Logger.info("Candidate Delete inititalted: " + toDelete.candidateName);
+                    toDelete.delete();
+                    Logger.info("Candidate Deleted check Jobpref and locPref ");
+                } catch (NullPointerException e){
+                    Logger.info("Candidate Doesnot exists");
+                }
                 break;
             case 5: // Testing validator
                 String phoneNo = "7666666666";
@@ -469,6 +491,203 @@ public class Application extends Controller {
                     result = testEmail + " is Invalid";
                 }
                 return  ok(result);
+            case 6: // For existing Candidates
+                // CandidateSkill Table Test
+                String titleMsg = "Test 6 :Adding candidate Skill";
+                try{
+                    System.out.println(titleMsg);
+                    Candidate candidate6 = Candidate.find.where().eq("candidateId", testCandidateId).findUnique();
+                    System.out.println("Test 6 Initiated .......\n On CandidateId " + candidate6.candidateId);
+                    CandidateSkill candidateSkill = new CandidateSkill();
+                    candidateSkill.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
+
+                    // TODO: since requres db query hence find a way
+                    Skill skill = Skill.find.where().eq("skillId", 1).findUnique();
+                    // binding both skill and candidate to candidateskill
+                    if(skill == null){
+                        System.out.println("Test 6: NPE, static table skill is not set");
+                    } else{
+                        candidateSkill.setSkill(skill);
+                        System.out.println("Test 6: associating skill obj to candidateskill obj.............");
+                    }
+                    // get ref to existing skill
+                    candidateSkill.setCandidate(candidate6);
+                    System.out.println("Test 6: associating candidate obj to candidateskill obj.............");
+                    candidate6.candidateSkillList.add(candidateSkill);
+                    candidate6.save();
+                    System.out.println("Test 6 Completed ");
+                    candidate6 = Candidate.find.where().eq("candidateId", candidate6.candidateId).findUnique();
+                    return ok(toJson(candidate6));
+                } catch(NullPointerException n6){
+                    System.out.println("Test 6 : candidateNotFound Check TestCase...");
+                }
+                break;
+            case 7: // For existing Candidates
+                // JobRole Table Test
+                titleMsg = "Test 7 :Adding JobPref for a candidate";
+                try{
+                    System.out.println(titleMsg);
+                    Candidate candidate7 = Candidate.find.where().eq("candidateId", testCandidateId).findUnique();
+                    System.out.println("Test 7 Initiated .......\n On CandidateId " + candidate7.candidateId);
+
+                    JobPreference jobPreference = new JobPreference();
+                    JobRole jobRole = new JobRole();
+                    jobRole.setJobRoleId(8);
+                    jobPreference.jobRole=jobRole;
+                    jobPreference.candidate = candidate7;
+                    jobPreference.updateTimeStamp = new Timestamp(System.currentTimeMillis());
+                    candidate7.jobPreferencesList.add(jobPreference);
+                    candidate7.update();
+                    System.out.println("Test 7 Completed ");
+                    candidate7 = Candidate.find.where().eq("candidateId", candidate7.candidateId).findUnique();
+                    return ok(toJson(candidate7));
+                } catch(NullPointerException n6){
+                    System.out.println("Test 7 : candidateNotFound Check TestCase...");
+                }
+                break;
+            case 8: // For existing Candidates
+                // JobHistory Table Test
+                titleMsg = "Test 8 :Adding Job History";
+                try{
+                    System.out.println(titleMsg);
+                    Candidate candidate8 = Candidate.find.where().eq("candidateId", testCandidateId).findUnique();
+                    System.out.println("Test 8 Initiated .......\n On CandidateId " + candidate8.candidateId);
+
+                    JobHistory candidateJobHistory = new JobHistory();
+                    JobHistory candidateJobHistory2 = new JobHistory();
+                    candidateJobHistory.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
+                    candidateJobHistory2.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
+                    candidateJobHistory.setCandidate(candidate8);
+                    candidateJobHistory2.setCandidate(candidate8);
+                    candidateJobHistory.setCandidatepastCompany("AGS");
+                    candidateJobHistory2.setCandidatepastCompany("Microtek");
+                    candidateJobHistory.setCandidatepastSalary(15000);
+                    candidateJobHistory2.setCandidatepastSalary(20500);
+                    // TODO: since requres db query hence find a way
+                    JobRole jobRole = JobRole.find.where().eq("jobRoleId", 1).findUnique();
+                    JobRole jobRole2 = JobRole.find.where().eq("jobRoleId", 2).findUnique();
+                    // binding both JobRole and candidate to JobHistory
+                    if(jobRole == null){
+                        System.out.println("Test 8: NPE, static table skill is not set");
+                    } else{
+                        candidateJobHistory.setJobRole(jobRole);
+                        candidateJobHistory2.setJobRole(jobRole2);
+                        System.out.println("Test 8: associating skill obj to candidateJobHistory obj.............");
+                    }
+                    // get ref to existing skill
+                    System.out.println("Test 8: associating candidate obj to candidateJobHistory obj.............");
+                    candidate8.jobHistoryList.add(candidateJobHistory);
+                    candidate8.jobHistoryList.add(candidateJobHistory2);
+                    candidate8.update();
+                    System.out.println("Test 8 Completed ");
+                    candidate8 = Candidate.find.where().eq("candidateId", candidate8.candidateId).findUnique();
+                    return ok(toJson(candidate8));
+                } catch(NullPointerException n8){
+                    System.out.println("Test 8 : candidateNotFound Check TestCase...");
+                }
+                break;
+            case 9: // No candidates required/ always use save since this obj is getting created all the time
+                titleMsg = "Test 9 :Add JobToSkill Mapping";
+                try {
+                    System.out.println(titleMsg);
+                    System.out.println("Test 9 Initiated .......\n No candidateObj Req" );
+
+                    JobToSkill jobToSkill = new JobToSkill();
+
+                    // TODO: since requres db query hence find a way
+                    JobRole jobRole = JobRole.find.where().eq("jobRoleId", 1).findUnique();
+                    Skill skill= Skill.find.where().eq("skillId", 1).findUnique();
+                    if(jobRole == null){
+                        System.out.println("null jobRole" );
+                    } else{
+                        jobToSkill.setJobRole(jobRole);
+                    }
+                    if(skill == null){
+                        System.out.println("null skill" );
+                    } else{
+                        jobToSkill.setSkill(skill);
+                    }
+                    // get ref to existing skill
+
+                    jobToSkill.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
+                    jobToSkill.save();
+                    System.out.println("Test 9 Completed ");
+                    List<JobToSkill> jobToSkillList = JobToSkill.find.all();
+                    return ok(toJson(jobToSkillList));
+                } catch(NullPointerException n9){
+                    System.out.println("Test 9 : candidateNotFound Check TestCase...");
+                }
+                break;
+
+            case 10: // For existing Candidates
+                // LanguagePref Table Test
+                titleMsg = "Test 10 :Adding LanguagePref and Mapping it to language table";
+                try{
+                    System.out.println(titleMsg);
+                    Candidate candidate10 = Candidate.find.where().eq("candidateId", testCandidateId).findUnique();
+                    System.out.println("Test 10 Initiated .......\n On CandidateId " + candidate10.candidateId);
+
+                    // create one obj to add
+                    LanguageKnown languageKnown = new LanguageKnown();
+                    LanguageKnown languageKnown2 = new LanguageKnown();
+
+                    // create sub-obj // this will be in a loop for multiple id
+                    Language english = Language.find.where().eq("languageId", 1).findUnique();
+                    languageKnown.setLanguage(english);
+                    languageKnown.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
+                    candidate10.languageKnownList.add(languageKnown);
+                    Language hindi = Language.find.where().eq("languageId", 2).findUnique();
+                    languageKnown2.setLanguage(hindi);
+                    languageKnown2.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
+                    candidate10.languageKnownList.add(languageKnown2);
+
+                    candidate10.update();
+                    System.out.println("Test 10 Completed ");
+                    candidate10 = Candidate.find.where().eq("candidateId", candidate10.candidateId).findUnique();
+                    return ok(toJson(candidate10));
+                } catch(NullPointerException n8){
+                    System.out.println("Test 10 : candidateNotFound Check TestCase...");
+                }
+                break;
+            case 11: // For existing Candidates
+                // TimeShift Table Test
+                // one to one table
+                // should allow update of existing data
+                titleMsg = "Test 11 :Adding TimeShiftPref and Mapping it to TimeShift table";
+                try{
+                    System.out.println(titleMsg);
+                    Candidate candidate11 = Candidate.find.where().eq("candidateId", testCandidateId).findUnique();
+                    System.out.println("Test 11 Initiated .......\n On CandidateId " + candidate11.candidateId);
+
+                    TimeShiftPreference timeShiftPreference = new TimeShiftPreference();
+                    timeShiftPreference.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
+
+                    TimeShift timeShift = TimeShift.find.where().eq("timeShiftId", 1).findUnique();
+                    if(timeShift == null){
+                        Logger.info("static table empty");
+                    } else{
+                        Logger.info("static table associating");
+                        timeShiftPreference.setTimeShift(timeShift);
+                        candidate11.timeShiftPreference = timeShiftPreference;
+                    }
+                    try {
+                        candidate11.save();
+                    } catch (PersistenceException p){
+
+                    }
+                    System.out.println("Test 11 Completed ");
+                    candidate11 = Candidate.find.where().eq("candidateId", candidate11.candidateId).findUnique();
+                    return ok(toJson(candidate11));
+                } catch(NullPointerException n11){
+                    n11.printStackTrace();
+                    System.out.println("Test 11 : candidateNotFound Check TestCase...");
+                }
+                break;
+            case 12:
+                List<CandidateSkill> candidateSkillList = CandidateSkill.find.where().eq("CandidateId", 1).findList(); // working
+                List<Skill> skillList = Skill.find.where().eq("SkillId", 1).findList(); // works
+                List<JobToSkill> jobToSkillList = JobToSkill.find.where().eq("JobRoleId", 1).findList();
+                return ok(toJson(jobToSkillList));
         }
         return ok("");
     }

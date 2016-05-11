@@ -12,14 +12,13 @@ public class AddSupportCandidateRequest {
     public String candidateLocality = " ";
 
     public Date candidateDob = new Date();
-    public int candidateAge = 0;
     public String candidatePhoneType = " ";
     public int candidateGender = 0;
     public String candidateHomeLocality = " ";
     public int candidateMaritalStatus = 0;
     public String candidateEmail = " ";
     public int candidateIsEmployed = 0;
-    public long candidateTotalExperience = 0;
+    public int candidateTotalExperience = 0;
 
     public String candidateCurrentCompany = " ";
     public String candidateCurrentJobLocation = " ";
@@ -41,7 +40,9 @@ public class AddSupportCandidateRequest {
 
     public int candidateMotherTongue = 0;
 
-    public int candidateIdProof = 0;
+    public String candidateSkills = " ";
+
+    public String candidateIdProof = " ";
     public int candidateSalarySlip = 0;
     public int candidateAppointmentLetter = 0;
 
@@ -83,13 +84,6 @@ public class AddSupportCandidateRequest {
         return candidateGender;
     }
 
-    public void setCandidateAge(int candidateAge) {
-        this.candidateAge = candidateAge;
-    }
-    public int getCandidateAge() {
-        return candidateAge;
-    }
-
     public void setCandidateHomeLocality(String candidateHomeLocality) { this.candidateHomeLocality = candidateHomeLocality; }
     public String getCandidateHomeLocality() {
         return candidateHomeLocality;
@@ -120,7 +114,7 @@ public class AddSupportCandidateRequest {
     }
 
     public void setCandidateTotalExperience(int candidateTotalExperience) { this.candidateTotalExperience = candidateTotalExperience; }
-    public long getCandidateTotalExperience() {
+    public int getCandidateTotalExperience() {
         return candidateTotalExperience;
     }
 
@@ -232,10 +226,17 @@ public class AddSupportCandidateRequest {
         return candidateMotherTongue;
     }
 
-    public void setCandidateIdProof(int candidateIdProof) {
+    public void setCandidateSkills(String candidateSkills) {
+        this.candidateSkills = candidateSkills;
+    }
+    public String getCandidateSkills() {
+        return candidateSkills;
+    }
+
+    public void setCandidateIdProof(String candidateIdProof) {
         this.candidateIdProof = candidateIdProof;
     }
-    public int getCandidateIdProof() {
+    public String getCandidateIdProof() {
         return candidateIdProof;
     }
 

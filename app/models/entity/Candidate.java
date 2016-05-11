@@ -13,7 +13,6 @@ import play.Logger;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -29,49 +28,43 @@ public class Candidate extends Model {
     public long candidateId = 0;
 
     @Column(name = "candidateUUId", columnDefinition = "varchar(255) not null", nullable = false, unique = true)
-    public String candidateUUId = "";
+    public String candidateUUId;
 
     @Column(name = "LeadId", columnDefinition = "bigint signed not null", unique = true)
-    public long leadId = 0;
+    public long leadId;
 
     @Column(name = "CandidateName", columnDefinition = "varchar(50) not null")
-    public String candidateName = "";
+    public String candidateName;
 
-    @Column(name = "CandidateLastName", columnDefinition = "varchar(50) not null")
-    public String candidateLastName = "";
+    @Column(name = "CandidateLastName", columnDefinition = "varchar(50) null")
+    public String candidateLastName;
 
     @Column(name = "CandidateGender", columnDefinition = "int(1) null default 0")
-    public int candidateGender = 0;
+    public int candidateGender;
 
-    @Column(name = "CandidateDOB", columnDefinition = "date null")
-    public Date candidateDOB;
+    @Column(name = "CandidateDOB", columnDefinition = "timestamp null")
+    public Timestamp candidateDOB;
 
     @Column(name = "CandidateMobile", columnDefinition = "varchar(13) not null")
-    public String candidateMobile = "";
+    public String candidateMobile;
 
     @Column(name = "CandidatePhoneType", columnDefinition = "varchar(100) null")
-    public String candidatePhoneType = "";
+    public String candidatePhoneType;
 
-    @Column(name = "CandidateMaritalStatus", columnDefinition = "int null default 0")
-    public int candidateMaritalStatus = 0;
+    @Column(name = "CandidateMaritalStatus", columnDefinition = "int null")
+    public int candidateMaritalStatus;
 
-    @Column(name = "CandidateEmail", columnDefinition = "varchar(50) not null")
-    public String candidateEmail = "";
+    @Column(name = "CandidateEmail", columnDefinition = "varchar(255) null")
+    public String candidateEmail;
 
     @Column(name = "CandidateIsEmployed", columnDefinition = "int not null")
-    public int candidateIsEmployed = 0;
+    public int candidateIsEmployed;
 
     @Column(name = "CandidateTotalExperience", columnDefinition = "decimal(3,2) signed null default 0.00")
-    public float candidateTotalExperience = 0;  // data in years
-
-    @Column(name = "CandidateType", columnDefinition = "int signed not null default 0")
-    public int candidateState = 0;
-
-    @Column(name = "CandidateChannel", columnDefinition = "int signed not null default 0")
-    public int candidateChannel = 0;
+    public float candidateTotalExperience;  // data in years
 
     @Column(name = "CandidateAge", columnDefinition = "int signed not null default 0")
-    public int candidateAge = 0;
+    public int candidateAge;
 
     @Column(name = "CandidateCreateTimestamp", columnDefinition = "timestamp default current_timestamp not null")
     public Timestamp candidateCreateTimestamp = new Timestamp(System.currentTimeMillis());
@@ -79,41 +72,48 @@ public class Candidate extends Model {
     @Column(name = "CandidateUpdateTimestamp", columnDefinition = "timestamp null")
     public Timestamp candidateUpdateTimestamp;
 
-    @Column(name = "CandidateOtp", columnDefinition = "int signed not null default 1234")
-    public int candidateOtp = 1234;
-
     @Column(name = "CandidateIsAssessed", columnDefinition = "int signed not null default 0")
-    public int candidateIsAssessed = 0;
+    public int candidateIsAssessed;
 
     @Column(name = "CandidateSalarySlip", columnDefinition = "int signed not null default 0")
-    public int candidateSalarySlip = 0;
+    public int candidateSalarySlip;
 
     @Column(name = "CandidateAppointmentLetter", columnDefinition = "int signed not null default 0")
-    public int candidateAppointmentLetter = 0;
+    public int candidateAppointmentLetter;
+
+    @Column(name = "IsMinProfileComplete", columnDefinition = "int signed not null default 0")
+    public int IsMinProfileComplete = 0; // 0 - Not Complete
 
     @JsonManagedReference
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
     public List<IDProofreference> idProofreferenceList;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
     public List<JobHistory> jobHistoryList;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
     public List<JobPreference> jobPreferencesList;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
-    public List<LanguagePreference> languagePreferenceList;
+    public List<LanguageKnown> languageKnownList;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
     public List<LocalityPreference> localityPreferenceList;
 
-    @OneToMany(mappedBy = "candidate")
+    @JsonManagedReference
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
     public List<CandidateSkill> candidateSkillList;
 
-    @OneToOne(mappedBy = "candidate")
+    @JsonManagedReference
+    @OneToOne(mappedBy = "candidate", cascade = CascadeType.ALL)
     public CandidateCurrentJobDetail candidateCurrentJobDetail;
 
-    @OneToOne(mappedBy = "candidate")
+    @JsonManagedReference
+    @OneToOne(mappedBy = "candidate", cascade = CascadeType.ALL)
     public TimeShiftPreference timeShiftPreference;
 
     @JsonManagedReference
@@ -126,7 +126,7 @@ public class Candidate extends Model {
     @JoinColumn(name = "CandidateHomeLocality")
     public Locality locality;
 
-    @ManyToOne(cascade = {CascadeType.ALL})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonManagedReference
     @JoinColumn(name = "CandidateStatusId", referencedColumnName = "profileStatusId")
     public CandidateProfileStatus candidateprofilestatus;
@@ -135,7 +135,6 @@ public class Candidate extends Model {
     @JsonManagedReference
     @JoinColumn(name = "EducationId", referencedColumnName = "EducationId")
     public Education education;
-
 
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
@@ -147,6 +146,23 @@ public class Candidate extends Model {
     public static void candidateUpdate(Candidate candidate) {
         Logger.info("inside Candidate Update method" );
         candidate.update();
+    }
+
+    public void setCandidateDOB(Timestamp candidateDOB) {
+        // calculate age and save that too
+        this.candidateDOB = candidateDOB;
+    }
+
+    public void setCandidateprofilestatus(CandidateProfileStatus candidateprofilestatus) {
+        this.candidateprofilestatus = candidateprofilestatus;
+    }
+
+    public void setCandidateId(long candidateId) {
+        this.candidateId = candidateId;
+    }
+
+    public void setCandidateName(String candidateName) {
+        this.candidateName = candidateName;
     }
 }
 

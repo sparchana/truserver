@@ -7,6 +7,7 @@ import models.entity.Candidate;
 import models.entity.Static.Locality;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 /**
  * Created by zero on 4/5/16.
@@ -20,7 +21,7 @@ public class LocalityPreference extends Model {
     public long localityPreferenceId = 0;
 
     @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp default current_timestamp null")
-    public long updateTimeStamp = 0;
+    public Timestamp updateTimeStamp;
 
     @ManyToOne
     @JsonManagedReference
@@ -34,4 +35,19 @@ public class LocalityPreference extends Model {
 
     public static Finder<String, LocalityPreference> find = new Finder(LocalityPreference.class);
 
+    public long getLocalityPreferenceId() {
+        return localityPreferenceId;
+    }
+
+    public void setLocalityPreferenceId(long localityPreferenceId) {
+        this.localityPreferenceId = localityPreferenceId;
+    }
+
+    public Timestamp getUpdateTimeStamp() {
+        return updateTimeStamp;
+    }
+
+    public void setUpdateTimeStamp(Timestamp updateTimeStamp) {
+        this.updateTimeStamp = updateTimeStamp;
+    }
 }

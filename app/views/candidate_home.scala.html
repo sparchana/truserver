@@ -49,37 +49,16 @@
         function getCandidateJob(){
             return candidateJobArray;
         }
-        function getLocalityName(id){
-            var localityArray = getLocality();
-            var returnLocalityName;
-            localityArray.forEach(function (locality) {
-                if(locality.id == id){
-                    returnLocalityName = locality.name;
-                    return true;
-                }
-            });
-            return returnLocalityName;
-        }
-        function getJobName(id){
-            var jobArray = getJob();
-            var returnJobName;
-            jobArray.forEach(function (job) {
-                if(job.id == id){
-                    returnJobName = job.name;
-                    return true;
-                }
-            });
-            return returnJobName;
-        }
+
         function processDataCheck(returnedData) {
             var parent = $('.preferredLocation')[0];
             returnedData.forEach(function (locality) {
                 var l = document.createElement("li");
-                l.textContent = getLocalityName(locality.candidateLocalityLocalityId);
+                l.textContent = locality.locality.localityName;
                 parent.appendChild(l);
 
-                var id = locality.candidateLocalityLocalityId;
-                var name = getLocalityName(locality.candidateLocalityLocalityId);
+                var id = locality.localityId;
+                var name = locality.locality.localityName;
                 var item = {}
                 item ["id"] = id;
                 item ["name"] = name;
@@ -90,11 +69,11 @@
             var parent = $('.preferredJobs')[0];
             returnedData.forEach(function (job) {
                 var l = document.createElement("li");
-                l.textContent = getJobName(job.candidateJobJobId);
+                l.textContent = job.jobRole.jobName;
                 parent.appendChild(l);
 
-                var id = job.candidateJobJobId;
-                var name = getLocalityName(job.candidateJobJobId);
+                var id = job.jobRole.jobRoleId;
+                var name = job.jobRole.jobName;
                 var item = {}
                 item ["id"] = id;
                 item ["name"] = name;

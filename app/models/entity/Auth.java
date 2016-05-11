@@ -23,6 +23,9 @@ public class Auth extends Model {
     @Column(name = "CandidateId", columnDefinition = "bigint signed not null")
     public long candidateId = 0;
 
+    @Column(name = "AuthStatus", columnDefinition = "int signed not null", nullable = false)
+    public int authStatus = 0; // verified, Not-Yet-Verified
+
     @Column(name = "PasswordMd5", columnDefinition = "char(60) not null")
     public String passwordMd5 = "";
 
@@ -52,6 +55,5 @@ public class Auth extends Model {
     public static void updatePassword(Auth auth) {
         Logger.info("inside Auth Update method" );
         auth.update();
-
     }
 }

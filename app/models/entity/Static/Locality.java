@@ -2,7 +2,6 @@ package models.entity.Static;
 
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import models.entity.Candidate;
 import models.entity.OM.LocalityPreference;
 
 import javax.persistence.*;
@@ -41,10 +40,6 @@ public class Locality extends Model {
     @JsonBackReference
     @OneToMany(mappedBy = "locality", cascade = CascadeType.REMOVE)
     public List<LocalityPreference> localityPreferenceList;
-
-    @JsonBackReference
-    @OneToMany(mappedBy = "locality", cascade = CascadeType.REMOVE)
-    public List<Candidate> candidateList;
 
     public static Finder<String, Locality> find = new Finder(Locality.class);
 }
