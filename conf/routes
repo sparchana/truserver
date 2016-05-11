@@ -10,6 +10,8 @@ POST     /addLead                                                 controllers.Ap
 
 POST     /signUp                                                  controllers.Application.signUp()
 
+POST     /signUpSupport                                           controllers.Application.signUpSupport()
+
 POST     /addPassword                                             controllers.Application.addPassword()
 
 POST     /processCsv                                             controllers.Application.processcsv()
@@ -28,7 +30,15 @@ GET      /getAll                                                  controllers.Ap
 
 GET      /getAllLocality                                          controllers.Application.getAllLocality()
 
-GET      /getAllJobs                                               controllers.Application.getAllJobs()
+GET      /getAllJobs                                              controllers.Application.getAllJobs()
+
+GET      /getAllShift                                              controllers.Application.getAllShift()
+
+GET      /getAllTransportation                                    controllers.Application.getAllTransportation()
+
+GET      /getAllEducation                                        controllers.Application.getAllEducation()
+
+GET      /getAllLanguage                                         controllers.Application.getAllLanguage()
 
 GET      /getUserInfo/:id                                         controllers.Application.getUserInfo(id : Long)
 
@@ -38,9 +48,11 @@ GET      /getCandidateLocality/:id                                controllers.Ap
 
 GET      /getCandidateJob/:id                                     controllers.Application.getCandidateJob(id : Long)
 
+GET      /getAllSkills/:id                                      controllers.Application.getAllSkills(id : Long)
+
 GET      /updateLeadType/:leadId/:newStatus                       controllers.Application.updateLeadType(leadId: Long, newStatus: Long)
 
-GET      /updateLeadStatus/:leadId                                controllers.Application.updateLeadStatus(leadId: Long)
+GET      /updateLeadStatus/:leadId/:leadStatus                    controllers.Application.updateLeadStatus(leadId: Long, leadStatus: Integer)
 
 GET      /street                                                  controllers.Application.supportAuth()
 
@@ -50,7 +62,11 @@ GET      /logout                                                  controllers.Ap
 
 GET      /logoutUser                                              controllers.Application.logoutUser()
 
+#GET      /test                                                    controllers.Application.test()
+
 POST     /api/kw/cdr                                              controllers.Application.kwCdrInput()
+
+GET      /candidateSignupSupport                                  controllers.Application.candidateSignupSupport()
 
 # Map static resources from the /public folder to the /assets URL path
 GET    /robots.txt                                controllers.Assets.at(path="/public", file="robots.txt")

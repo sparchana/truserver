@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+  <head>
+    <meta charset="UTF-8">
+    <title>Create Candidate - Support | Trujobs.in</title>
+      <link rel="stylesheet" href="assets/support/css/bootstrap.min.css">
+      <link rel="stylesheet" href="assets/support/css/nprogress.css">
+      <script type="text/javascript" src="assets/support/js/jquery-1.12.0.min.js"></script>
+      <link rel="stylesheet" href="/assets/css/token-input.css" type="text/css" />
+      <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
+      <link rel="stylesheet" href="assets/support/css/style.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+      <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
+  </head>
+
+  <body style="font-size: 13px;">
+    <div class="container">
+      <h2> Create Candidate Admin:&nbsp;<a href="/logout"><button class="btn btn-danger" style="align-items: flex-end"> Logout</button></a></h2>
+      <br>
+      <h4>Call Connected? :&nbsp;
+        <input type="radio" name="callConnected" id="callYes" value="yes" onclick="onCallYes()">Yes&nbsp;
+        <input type="radio" name="callConnected" id="callNo" value="no" onclick="onCallNo()">No
+      </h4>
+
+      <div id="callNoClass" style="display: none">
+        <h5>Reason?:
+          <select>
+            <option value="busy">Busy</option>
+            <option value="not_reachable">Not Reachable</option>
+            <option value="not_answering">Not Answering</option>
+            <option value="switched_off">Switched Off</option>
+            <option value="dnd">DND</option>
+            <option value="others">Others</option>
+          </select>
+
+          <input type="text" placeholder="Note">
+          <button type="submit" class="btn btn-primary" >Save</button>
+        </h5>
+      </div>
+
+      <hr>
+      <form id="candidateSignUpSupportForm">
+        <div style="margin-left: 20%; margin-right: 20%">
+          <h3>Candidate Registration Form:</h3>
+          <hr>
+          <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Mandatory Details</h4>
+          <div class="row">
+            <div class="col-sm-3"><h5>Candidate Name:</h5></div>
+            <div class="col-sm-9">
+              <input id="candidateName" name="candidateName" placeholder="What is your name?" type="text" class="form-control input-md" required>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top: 4px">
+            <div class="col-sm-3"><h5>Candidate Mobile:</h5></div>
+            <div class="col-sm-9">
+              <input id="candidateMobile" placeholder="What is your mobile no.?" name="candidateMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" class="form-control input-md" required>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top: 4px">
+            <div class="col-sm-3"><h5>Locality Preference:</h5></div>
+            <div class="col-sm-9">
+              <input type="text" id="candidateLocalityPref" placeholder="Where do you want to work?">
+              <script type="text/javascript">
+                  $(document).ready(function() {
+                    $("#candidateLocalityPref").tokenInput(getLocality(), {
+                      theme: "facebook",
+                      placeholder: "Where do you want to work?",
+                      hintText: "Start typing jobs (eg. BTM Layout, Bellandur..)",
+                      minChars: 0,
+                      preventDuplicates: true
+                    });
+                  });
+              </script>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top: 4px">
+            <div class="col-sm-3"><h5>Job Role Preference:</h5></div>
+            <div class="col-sm-9">
+              <input type="text" id="candidateJobPref">
+              <script type="text/javascript">
+                  $(document).ready(function() {
+                    $("#candidateJobPref").tokenInput(getJob(), {
+                      theme: "facebook",
+                      placeholder: "What job roles are you interested?",
+                      hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                      minChars: 0,
+                      preventDuplicates: true
+                    });
+                  });
+              </script>
+            </div>
+          </div>
+          <hr>
+            <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Basic Details</h4>
+            <div id="basic_details">
+              <div class="row">
+                <div class="col-sm-3"><h5>Date of Birth:</h5></div>
+                <div class="col-sm-9">
+                  <input id="candidateDob" data-date-format="dd/mm/yyyy" name="candidateDob" placeholder="When is your Birthday?" type="date" class="form-control input-md"  data-date-inline-picker="true" onclick="generateSkills()"/>
+                </div>
+              </div>
+
+              <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Candidate Age:</h5></div>
+                <div class="col-sm-9">
+                  <input id="candidateAge" placeholder="What is your age?" type="number" class="form-control input-md" value="0">
+                </div>
+              </div>
+
+              <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Phone Type:</h5></div>
+                <div class="col-sm-9">
+                  <input id="candidatePhoneType" placeholder="Which phone do you use? (Eg. Samsung Galaxy S3)" type="text" class="form-control input-md">
+                </div>
+              </div>
+
+              <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Candidate Gender:</h5></div>
+                <div class="col-sm-9" style="margin-top: 6px;">
+                  <input type="radio" name="gender" id="genderMale" value="0">Male
+                  <input type="radio" name="gender" id="genderFemale" value="1">Female
+                </div>
+              </div>
+
+              <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Current Location:</h5></div>
+                <div class="col-sm-9">
+                  <input type="text" id="candidateHomeLocality">
+                  <script type="text/javascript">
+                  $(document).ready(function() {
+                    $("#candidateHomeLocality").tokenInput(getLocality(), {
+                      theme: "facebook",
+                      placeholder: "Where do you Live?",
+                      hintText: "Start typing jobs (eg. BTM Layout, Bellandur..)",
+                      minChars: 0,
+                      tokenLimit: 1,
+                      preventDuplicates: true
+                    });
+                  });
+                  </script>
+                </div>
+              </div>
+
+              <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Married?:</h5></div>
+                <div class="col-sm-9" style="margin-top: 6px;">
+                  <input type="radio" name="married" id="married" value="0">Married
+                  <input type="radio" name="married" id="married" value="1">Not Married
+                </div>
+              </div>
+
+              <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Candidate Email:</h5></div>
+                <div class="col-sm-9">
+                  <input id="candidateEmail" placeholder="What is your email ID?" name="candidateEmail" type="email" class="form-control input-md">
+                </div>
+              </div>
+
+            </div>
+
+          <hr>
+          <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Employment Status and Experience</h4>
+          <div id="experience_details">
+            <div class="row" style="margin-top: 4px">
+              <div class="col-sm-3"><h5>Do you have a Job?:</h5></div>
+              <div class="col-sm-9" style="margin-top: 6px;">
+                <input type="radio" name="employed" id="employed" value="0" onclick="employedYes()">Yes
+                <input type="radio" name="employed" id="employed" value="1" onclick="employedNo()">No
+              </div>
+            </div>
+
+            <div id="employedForm" style="display: none">
+              <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Current Company:</h5></div>
+                <div class="col-sm-9">
+                  <input id="candidateCurrentCompany" placeholder="What is your Company name?" type="text" class="form-control input-md">
+                </div>
+              </div>
+
+              <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Current Job Location:</h5></div>
+                <div class="col-sm-9">
+                  <input type="text" id="candidateCurrentJobLocation">
+                  <script type="text/javascript">
+                  $(document).ready(function() {
+                    $("#candidateCurrentJobLocation").tokenInput(getLocality(), {
+                      theme: "facebook",
+                      placeholder: "Which area in Bangalore you work now?",
+                      hintText: "Start typing jobs (eg. BTM Layout, Bellandur..)",
+                      minChars: 0,
+                      preventDuplicates: true
+                    });
+                  });
+                  </script>
+                </div>
+              </div>
+
+              <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Mode of Transport:</h5></div>
+                <div class="col-sm-9" style="margin-top: 8px">
+                  <select id="selectTransportation">
+                  </select>
+                </div>
+              </div>
+
+              <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Current work shift?: </h5></div>
+                <div class="col-sm-9" style="margin-top: 8px">
+                  <select id="currentWorkShift">
+                  </select>
+                </div>
+              </div>
+
+              <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Current Job Role:</h5></div>
+                <div class="col-sm-9">
+                  <select id="candidateCurrentJobRole" size="5">
+                  </select>
+                </div>
+              </div>
+
+              <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Current Job Designation:</h5></div>
+                <div class="col-sm-9">
+                  <input id="candidateCurrentJobDesignation" placeholder="What is your Designation?" type="text" class="form-control input-md">
+                </div>
+              </div>
+
+              <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Current Job Salary:</h5></div>
+                <div class="col-sm-9">
+                  <input id="candidateCurrentJobSalary" placeholder="What is your current Salary?" type="number" class="form-control input-md">
+                </div>
+              </div>
+
+              <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Current Job Duration(Months):</h5></div>
+                <div class="col-sm-9">
+                  <input id="candidateCurrentJobDuration" placeholder="How long you have been working with the current company?" type="number" class="form-control input-md">
+                </div>
+              </div>
+
+            </div>
+
+            <div class="row" style="margin-top: 4px">
+              <div class="col-sm-3"><h5>Total Experience(years):</h5></div>
+              <div class="col-sm-9">
+                <input id="candidateTotalExperience" value="0" placeholder="For how many years have you been working?" type="number" class="form-control input-md">
+              </div>
+            </div>
+
+            <div class="row" style="margin-top: 4px">
+              <div class="col-sm-3"><h5>Past Company:</h5></div>
+              <div class="col-sm-9">
+                  <input id="candidatePastCompany" value="0" placeholder="What was your previous company Name?" type="text" class="form-control input-md">
+              </div>
+            </div>
+
+              <div class="row" style="margin-top: 4px">
+                  <div class="col-sm-3"><h5>Past Job Role:</h5></div>
+                  <div class="col-sm-9">
+                      <select id="candidatePastJobRole" size="5">
+                </select>
+                  </div>
+              </div>
+
+              <div class="row" style="margin-top: 4px">
+                  <div class="col-sm-3"><h5>Past Job Salary:</h5></div>
+                  <div class="col-sm-9">
+                      <input id="candidatePastJobSalary" value="0" placeholder="Waht was your previous job salary?" type="number" class="form-control input-md">
+                  </div>
+              </div>
+          </div>
+
+          <hr>
+
+          <!-- Education details -->
+          <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Educational Details</h4>
+          <div id="education_details">
+            <div class="row" style="margin-top: 4px">
+              <div class="col-sm-3"><h5>Highest Education Degree?:</h5></div>
+              <div class="col-sm-9" style="margin-top: 6px;">
+                <select id="candidateHighestEducation" size="5">
+                </select>
+              </div>
+            </div>
+
+            <div class="row" style="margin-top: 4px">
+              <div class="col-sm-3"><h5>Last attended Education Institute?</h5></div>
+              <div class="col-sm-9">
+                <input id="candidateEducationInstitute" placeholder="Which was the last college u went to?" type="text" class="form-control input-md">
+              </div>
+            </div>
+
+          </div>
+          <hr>
+            <!-- Job Preference details -->
+          <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Job Preferences</h4>
+          <div id="job_pref_details">
+            <div class="row">
+              <div class="col-sm-3"><h5 style="margin-top: 4px">Preferred work shift?: </h5></div>
+              <div class="col-sm-9" style="margin-top: 8px">
+                  <input type="text" id="candidateTimeShiftPref">
+                  <script type="text/javascript">
+                  $(document).ready(function() {
+                      $("#candidateTimeShiftPref").tokenInput(getTimeShift(), {
+                          theme: "facebook",
+                          placeholder: "Do you want to work Full/Part time and do you want Day/Night shift?",
+                          hintText: "Start typing jobs (eg. Day shift..)",
+                          minChars: 0,
+                          preventDuplicates: true
+                      });
+                  });
+                  </script>
+              </div>
+            </div>
+          </div>
+          <hr>
+
+            <!-- Language details -->
+          <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Language Details</h4>
+          <div id="language_details">
+            <div class="row" style="margin-top: 4px">
+              <div class="col-sm-3"><h5>Mother Tongue?: </h5></div>
+              <div class="col-sm-9" style="margin-top: 8px">
+                <select id="candidateMotherTongue" onchange="selectMotherTongue()">
+                </select>
+              </div>
+            </div>
+
+              <table id="languageTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+                  <thead>
+                      <tr>
+                          <th>Language</th>
+                          <th>Speak</th>
+                          <th>Read</th>
+                          <th>Write</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                          <td>Hindi</td>
+                          <td><input type="checkbox" id="hindiSpeak"/></td>
+                          <td><input type="checkbox" id="hindiRead"/></td>
+                          <td><input type="checkbox" id="hindiWrite"/></td>
+                      </tr>
+                      <tr>
+                          <td>English</td>
+                          <td><input type="checkbox" id="englishSpeak"/></td>
+                          <td><input type="checkbox" id="englishRead"/></td>
+                          <td><input type="checkbox" id="englishWrite"/></td>
+                      </tr>
+                      <tr>
+                          <td>Kannada</td>
+                          <td><input type="checkbox" id="kannadaSpeak"/></td>
+                          <td><input type="checkbox" id="kannadaRead"/></td>
+                          <td><input type="checkbox" id="kannadaWrite"/></td>
+                      </tr>
+                      <tr>
+                          <td>Tamil</td>
+                          <td><input type="checkbox" id="tamilSpeak"/></td>
+                          <td><input type="checkbox" id="tamilRead"/></td>
+                          <td><input type="checkbox" id="tamilWrite"/></td>
+                      </tr>
+                      <tr>
+                          <td>Telugu</td>
+                          <td><input type="checkbox" id="teluguSpeak"/></td>
+                          <td><input type="checkbox" id="teluguRead"/></td>
+                          <td><input type="checkbox" id="teluguWrite"/></td>
+                      </tr>
+                  </tbody>
+              </table>
+
+          </div>
+          <hr>
+
+          <!skill details -->
+          <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Candidate Skills</h4>
+          <div id="skill_details">
+
+            <!-- driver/delivery boy skill section -->
+            <div class="skillSubSection" id="delivery_driver_skill" >
+              <h4>Skills for [Drivers/Delivery Executives]</h4>
+                <div class="row" style="margin-top: 4px">
+                  <div class="col-sm-5"><h5>Two Wheeler driving licence:</h5></div>
+                  <div class="col-sm-7" style="margin-top: 6px;">
+                      <input type="radio" name="2WLicence" id="2WLicenceY" value="0">Yes
+                      <input type="radio" name="2WLicence" id="2WLicenceN" value="1">No
+                  </div>
+                </div>
+
+                <div class="row" style="margin-top: 4px">
+                  <div class="col-sm-5"><h5>Four Wheeler driving licence:</h5></div>
+                  <div class="col-sm-7" style="margin-top: 6px;">
+                    <input type="radio" name="4WLicence" id="4WLicenceY" value="0">Yes
+                    <input type="radio" name="4WLicence" id="4WLicenceN" value="1">No
+                  </div>
+                </div>
+
+                <div class="row" style="margin-top: 4px">
+                  <div class="col-sm-5"><h5>Do you have a 2 wheeler vehicle:</h5></div>
+                  <div class="col-sm-7" style="margin-top: 6px;">
+                    <input type="radio" name="2WOwner" id="2WOwnerY" value="0">Yes
+                    <input type="radio" name="2WOwner" id="2WOwnerN" value="1">No
+                  </div>
+                </div>
+
+                <div class="row" style="margin-top: 4px">
+                    <div class="col-sm-5"><h5>Do you have a 4 wheeler vehicle:</h5></div>
+                    <div class="col-sm-7" style="margin-top: 6px;">
+                        <input type="radio" name="4WOwner" id="4WOwnerY" value="0">Yes
+                        <input type="radio" name="4WOwner" id="4WOwnerN" value="1">No
+                    </div>
+                </div>
+            </div>
+
+            <! -- BPO/Data entry/call center/receptionist skill section -->
+            <div id="bpo_callcenter_skill" class="skillSubSection">
+                <h4>Skills for [BPO/Call Center/Receptionist]</h4>
+                <div class="row" style="margin-top: 4px">
+                    <div class="col-sm-5"><h5>Do you know how to browse Internet?: </h5></div>
+                    <div class="col-sm-7" style="margin-top: 6px;">
+                        <input type="radio" name="internetBrowsing" id="internetBrowsingY" value="0">Yes
+                        <input type="radio" name="internetBrowsing" id="internetBrowsingN" value="1">No
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top: 4px">
+                    <div class="col-sm-5"><h5>Do you know how to use Email?: </h5></div>
+                    <div class="col-sm-7" style="margin-top: 6px;">
+                        <input type="radio" name="emailUse" id="emailUseY" value="0">Yes
+                        <input type="radio" name="emailUse" id="emailUseN" value="1">No
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top: 4px">
+                    <div class="col-sm-5"><h5>Do you know how to use MS Word?: </h5></div>
+                    <div class="col-sm-7" style="margin-top: 6px;">
+                        <input type="radio" name="MsWordUse" id="MsWordUseY" value="0">Yes
+                        <input type="radio" name="MsWordUse" id="MsWordUseN" value="1">No
+                    </div>
+                </div>
+
+                <div class="row" style="margin-top: 4px">
+                    <div class="col-sm-5"><h5>Do you know how to use MS Excel?: </h5></div>
+                    <div class="col-sm-7" style="margin-top: 6px;">
+                        <input type="radio" name="MsExcelUse" id="MsExcelUseY" value="0">Yes
+                        <input type="radio" name="MsExcelUse" id="MsExcelUseN" value="1">No
+                    </div>
+                </div>
+            </div>
+
+            <!-- steward/waiter skill section -->
+            <div id="steward_waiter_skill" class="skillSubSection">
+                <h4>Skills for [Steward/Waiter]</h4>
+                <div class="row" style="margin-top: 4px">
+                    <div class="col-sm-5"><h5>Did you get any formal hotel management degree?:</h5></div>
+                    <div class="col-sm-7" style="margin-top: 6px;">
+                        <input type="radio" name="hotelCertification" id="hotelCertificationY" value="0">Yes
+                        <input type="radio" name="hotelCertification" id="hotelCertificationN" value="1">No
+                    </div>
+                </div>
+
+            </div>
+
+            <!--  beautician skill section -->
+            <div id="beautician_skill" class="skillSubSection">
+                <h4>Skills for [Beauticians]</h4>
+                <div class="row" style="margin-top: 4px">
+                    <div class="col-sm-5"><h5>Did you get any formal beauty training certificate?:</h5></div>
+                    <div class="col-sm-7" style="margin-top: 6px;">
+                        <input type="radio" name="beautyCertification" id="beautyCertificationY" value="0">Yes
+                        <input type="radio" name="beautyCertification" id="beautyCertificationN" value="1">No
+                    </div>
+                </div>
+            </div>
+          </div>
+          <hr>
+
+            <!-- Document details -->
+          <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Document Details</h4>
+          <div id="document_details">
+              <div class="row" style="margin-top: 4px">
+                  <div class="col-sm-3"><h5>ID Proof/Address proof ID?:</h5></div>
+                  <div class="col-sm-9" style="margin-top: 6px;">
+                      <select id="candidateIdProof" size="5">
+                </select>
+                  </div>
+              </div>
+
+              <div class="row" style="margin-top: 4px">
+                  <div class="col-sm-5"><h5>Did you get Monthly Pay Slip?:</h5></div>
+                  <div class="col-sm-7" style="margin-top: 6px;">
+                      <input type="radio" name="payslip" id="payslipY" value="0">Yes
+                      <input type="radio" name="payslip" id="payslipN" value="1">No
+                  </div>
+              </div>
+
+              <div class="row" style="margin-top: 4px">
+                  <div class="col-sm-5"><h5>Do you have an Appointment Letter for your Current job?:</h5></div>
+                  <div class="col-sm-7" style="margin-top: 6px;">
+                      <input type="radio" name="appointmentLetter" id="appointmentLetterY" value="0">Yes
+                      <input type="radio" name="appointmentLetter" id="appointmentLetterN" value="1">No
+                  </div>
+              </div>
+          </div>
+          <hr>
+
+          <br>
+          <button type="submit" id="saveBtn" class="btn btn-primary" >Save</button>
+          <button type="button" id="cancelBtn" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        </div>
+        <br><br>
+
+      </form>
+
+    </div>
+      <!-- Including Bootstrap -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/assets/js/scroll.js"></script>
+    <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
+    <script type="text/javascript" src="assets/support/js/sign_up_support.js"></script>
+  </body>
+</html>

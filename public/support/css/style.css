@@ -1,0 +1,47 @@
+::-webkit-scrollbar
+{
+  width: 8px;  /* for vertical scrollbars */
+  height: 8px; /* for horizontal scrollbars */
+}
+
+::-webkit-scrollbar-track
+{
+  background: rgba(41, 128, 185, 1);
+}
+
+::-webkit-scrollbar-thumb
+{
+  background: rgba(255, 255, 255, 1);
+}
+
+::-webkit-input-placeholder { /* WebKit browsers */
+    font-size: 14px;
+    color:    #999;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    font-size: 14px;
+    color:    #999;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    font-size: 14px;
+    color:    #999;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+    font-size: 14px;
+    color:    #999;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+.skillSubSection{
+    margin: 2%;
+    padding: 2%;
+    border-radius: 5px;
+    background: #f4f4f4;
+}
+

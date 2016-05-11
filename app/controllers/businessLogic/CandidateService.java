@@ -83,7 +83,7 @@ public class CandidateService {
             candidateSignUpResponse.setOtp(randomPIN);
         }
 
-        else if(existingCandidate != null && existingCandidate.candidateStatusId == 0){
+/*        else if(existingCandidate != null && existingCandidate.candidateStatusId == 0){
             existingCandidate.candidateName = candidate.candidateName;
             existingCandidate.candidateMobile = candidate.candidateMobile;
             Candidate.candidateUpdate(existingCandidate);
@@ -133,7 +133,7 @@ public class CandidateService {
             interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
             interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
             InteractionService.createIntraction(interaction);
-        }
+        }*/
 
         else{
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
@@ -154,12 +154,9 @@ public class CandidateService {
             long candidateId = existingCandidate.candidateId;
             Auth existingAuth = Auth.find.where().eq("candidateId",candidateId).findUnique();
             if(existingAuth != null){
-                if (((existingAuth.passwordMd5.equals(Util.md5(loginPassword + existingAuth.passwordSalt))) &&
-                    (existingCandidate.candidateStatusId != 0))) {
-                    Logger.info(existingCandidate.candidateName + " " + existingCandidate.candidateStatusId);
+                if (((existingAuth.passwordMd5.equals(Util.md5(loginPassword + existingAuth.passwordSalt))))) {
                     loginResponse.setCandidateId(existingCandidate.candidateId);
                     loginResponse.setCandidateName(existingCandidate.candidateName);
-                    loginResponse.setAccountStatus(existingCandidate.candidateStatusId);
                     loginResponse.setStatus(loginResponse.STATUS_SUCCESS);
 
                     existingAuth.authSessionId = UUID.randomUUID().toString();
@@ -186,7 +183,7 @@ public class CandidateService {
         ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
         Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", "+91" + candidateMobile).findUnique();
         if(existingCandidate != null){
-            if(existingCandidate.candidateStatusId == ServerConstants.CANDIDATE_STATUS_VERIFIED){
+            /*if(existingCandidate.candidateStatusId == ServerConstants.CANDIDATE_STATUS_VERIFIED){
                 int randomPIN = generateOtp();
                 existingCandidate.update();
                 String msg = "Welcome to Trujobs.in! Use OTP " + randomPIN + " to reset password";
@@ -197,7 +194,7 @@ public class CandidateService {
             else{
                 Logger.info("Reset otp sent");
                 resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
-            }
+            }*/
         }
         else{
             resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);

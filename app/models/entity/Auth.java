@@ -52,5 +52,6 @@ public class Auth extends Model {
     public static void updatePassword(Auth auth) {
         Logger.info("inside Auth Update method" );
         auth.update();
+
     }
 }

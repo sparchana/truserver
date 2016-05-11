@@ -104,10 +104,11 @@ function myHandler (mobile, id) {
     console.log("+"+mobile + " " +id);
     // changes modal leadId field value
     $("#leadId").val(id);
+    $("#leadMobileNumber").val("+"+mobile);
     var s = {
         api_key: "dae93473-50a6-11e5-bbe8-067cf20e9301",
         agent_number: "+919980303169",
-        phone_number: "+"+mobile,
+        phone_number: "+",
         sr_number: "+918880007799"
     };
 
@@ -124,7 +125,7 @@ function myHandler (mobile, id) {
         });
         $.ajax({
             type: "GET",
-            url: "/updateLeadStatus/"+id,
+            url: "/updateLeadStatus/"+id+"/1",
             processData: false,
             success: function (e) {
                 if(e == '1'){
@@ -163,12 +164,39 @@ $(function(){
 
             var leadId = $("#leadId").val();
             var answer = document.querySelector('input[name="answer"]:checked').value;
-            var updateType = document.querySelector('input[name="updateType"]:checked').value;
-            if(answer == 'yes') {
+            var updateType = "";
+            var doSend = "no";
+            if(answer == 'candidate') {
+                updateType = '4';
+                doSend = "yes";
+            } else if (answer == 'recruiter'){
+                updateType = '5';
+                doSend = "yes";
+            } else if (answer == 'lost'){
+                NProgress.start();
+                $.ajax({
+                    type: "GET",
+                    url: "/updateLeadStatus/"+leadId+"/"+"3",
+                    processData: false,
+                    success: processLeadUpdate
+                });
+                NProgress.done();
+
+            } else {
+                doSend = "no";
+            }
+
+            if(doSend == "yes") {
                 NProgress.start();
                 $.ajax({
                     type: "GET",
                     url: "/updateLeadType/"+leadId+"/"+updateType,
+                    processData: false,
+                    success: processLeadUpdate
+                });
+                $.ajax({
+                    type: "GET",
+                    url: "/updateLeadStatus/"+leadId+"/"+"2",
                     processData: false,
                     success: processLeadUpdate
                 });

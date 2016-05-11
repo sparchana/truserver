@@ -67,7 +67,6 @@ public class AuthService {
                 interaction.result = "New Candidate Added";
                 InteractionService.createIntraction(interaction);
 
-                existingCandidate.candidateStatusId = ServerConstants.CANDIDATE_STATUS_VERIFIED;
                 existingCandidate.update();
                 Logger.info("candidate status confirmed");
 
@@ -82,7 +81,6 @@ public class AuthService {
 
                 candidateSignUpResponse.setCandidateId(existingCandidate.candidateId);
                 candidateSignUpResponse.setCandidateName(existingCandidate.candidateName);
-                candidateSignUpResponse.setAccountStatus(existingCandidate.candidateStatusId);
                 candidateSignUpResponse.setCandidateEmail(existingCandidate.candidateEmail);
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
             }

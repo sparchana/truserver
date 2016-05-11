@@ -1,13 +1,21 @@
 package models.entity;
 
 import com.avaje.ebean.Model;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import models.entity.OM.*;
+import models.entity.OO.CandidateCurrentJobDetail;
+import models.entity.OO.TimeShiftPreference;
+import models.entity.Static.CandidateProfileStatus;
+import models.entity.Static.Education;
+import models.entity.Static.Language;
+import models.entity.Static.Locality;
 import play.Logger;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Created by batcoder1 on 19/4/16.
@@ -29,20 +37,38 @@ public class Candidate extends Model {
     @Column(name = "CandidateName", columnDefinition = "varchar(50) not null")
     public String candidateName = "";
 
+    @Column(name = "CandidateLastName", columnDefinition = "varchar(50) not null")
+    public String candidateLastName = "";
+
+    @Column(name = "CandidateGender", columnDefinition = "int(1) null default 0")
+    public int candidateGender = 0;
+
+    @Column(name = "CandidateDOB", columnDefinition = "date null")
+    public Date candidateDOB;
+
     @Column(name = "CandidateMobile", columnDefinition = "varchar(13) not null")
     public String candidateMobile = "";
+
+    @Column(name = "CandidatePhoneType", columnDefinition = "varchar(100) null")
+    public String candidatePhoneType = "";
+
+    @Column(name = "CandidateMaritalStatus", columnDefinition = "int null default 0")
+    public int candidateMaritalStatus = 0;
+
+    @Column(name = "CandidateEmail", columnDefinition = "varchar(50) not null")
+    public String candidateEmail = "";
+
+    @Column(name = "CandidateIsEmployed", columnDefinition = "int not null")
+    public int candidateIsEmployed = 0;
+
+    @Column(name = "CandidateTotalExperience", columnDefinition = "decimal(3,2) signed null default 0.00")
+    public float candidateTotalExperience = 0;  // data in years
 
     @Column(name = "CandidateType", columnDefinition = "int signed not null default 0")
     public int candidateState = 0;
 
     @Column(name = "CandidateChannel", columnDefinition = "int signed not null default 0")
     public int candidateChannel = 0;
-
-    @Column(name = "CandidateStatusId", columnDefinition = "int signed not null default 0")
-    public long candidateStatusId = 0;
-
-    @Column(name = "CandidateEmail", columnDefinition = "varchar(50) not null")
-    public String candidateEmail = "";
 
     @Column(name = "CandidateAge", columnDefinition = "int signed not null default 0")
     public int candidateAge = 0;
@@ -53,8 +79,65 @@ public class Candidate extends Model {
     @Column(name = "CandidateUpdateTimestamp", columnDefinition = "timestamp null")
     public Timestamp candidateUpdateTimestamp;
 
-    public static Finder<String, Candidate> find = new Finder(Candidate.class);
+    @Column(name = "CandidateOtp", columnDefinition = "int signed not null default 1234")
+    public int candidateOtp = 1234;
 
+    @Column(name = "CandidateIsAssessed", columnDefinition = "int signed not null default 0")
+    public int candidateIsAssessed = 0;
+
+    @Column(name = "CandidateSalarySlip", columnDefinition = "int signed not null default 0")
+    public int candidateSalarySlip = 0;
+
+    @Column(name = "CandidateAppointmentLetter", columnDefinition = "int signed not null default 0")
+    public int candidateAppointmentLetter = 0;
+
+    @JsonManagedReference
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
+    public List<IDProofreference> idProofreferenceList;
+
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
+    public List<JobHistory> jobHistoryList;
+
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
+    public List<JobPreference> jobPreferencesList;
+
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
+    public List<LanguagePreference> languagePreferenceList;
+
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
+    public List<LocalityPreference> localityPreferenceList;
+
+    @OneToMany(mappedBy = "candidate")
+    public List<CandidateSkill> candidateSkillList;
+
+    @OneToOne(mappedBy = "candidate")
+    public CandidateCurrentJobDetail candidateCurrentJobDetail;
+
+    @OneToOne(mappedBy = "candidate")
+    public TimeShiftPreference timeShiftPreference;
+
+    @JsonManagedReference
+    @ManyToOne
+    @JoinColumn(name = "CandidateMotherTongue", referencedColumnName = "languageId")
+    public Language motherTongue;
+
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "CandidateHomeLocality")
+    public Locality locality;
+
+    @ManyToOne(cascade = {CascadeType.ALL})
+    @JsonManagedReference
+    @JoinColumn(name = "CandidateStatusId", referencedColumnName = "profileStatusId")
+    public CandidateProfileStatus candidateprofilestatus;
+
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "EducationId", referencedColumnName = "EducationId")
+    public Education education;
+
+
+    public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
     public static void registerCandidate(Candidate candidate) {
         Logger.info("inside signup method" );
