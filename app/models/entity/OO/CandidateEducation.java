@@ -1,4 +1,4 @@
-package models.entity.OM;
+package models.entity.OO;
 
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -22,13 +22,27 @@ public class CandidateEducation extends Model{
     @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp default current_timestamp null")
     public Timestamp updateTimeStamp;
 
-    @ManyToOne
-    @JsonManagedReference
-    @JoinColumn(name = "EducationId", referencedColumnName = "educationId")
-    public Education education;
+    @OneToOne
+    @JsonBackReference
+    @JoinColumn(name = "CandidateId", referencedColumnName = "CandidateId")
+    public Candidate candidate;
 
     @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "candidateId", referencedColumnName = "CandidateId")
-    public Candidate candidate;
+    @JsonManagedReference
+    @JoinColumn(name = "EducationId", referencedColumnName = "EducationId")
+    public Education education;
+
+    public static Model.Finder<String, CandidateEducation> find = new Model.Finder(CandidateEducation.class);
+
+    public void setUpdateTimeStamp(Timestamp updateTimeStamp) {
+        this.updateTimeStamp = updateTimeStamp;
+    }
+
+    public void setEducation(Education education) {
+        this.education = education;
+    }
+
+    public void setCandidate(Candidate candidate) {
+        this.candidate = candidate;
+    }
 }

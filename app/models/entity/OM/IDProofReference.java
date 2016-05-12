@@ -32,5 +32,17 @@ public class IDProofReference extends Model {
     @JoinColumn(name = "IdProofId", referencedColumnName = "idProofId")
     public IdProof idProof;
 
+    public void setUpdateTimeStamp(Timestamp updateTimeStamp) {
+        this.updateTimeStamp = updateTimeStamp;
+    }
+
+    public void setCandidate(Candidate candidate) {
+        this.candidate = candidate;
+    }
+
+    public void setIdProof(IdProof idProof) {
+        this.idProof = idProof;
+    }
+
     public static Finder<String, IDProofReference> find = new Finder(IDProofReference.class);
 }

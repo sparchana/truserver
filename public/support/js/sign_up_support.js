@@ -2,8 +2,7 @@
  * Created by batcoder1 on 9/5/16.
  */
 
-var skillMap = {};
-var languageMap = {};
+var skillMap = [];
 var localityArray = [];
 var jobArray = [];
 var timeShiftArray = [];
@@ -11,6 +10,7 @@ var transportationArray = [];
 var educationArray = [];
 var languageArray = [];
 var idProofArray = [];
+var check = 0;
 var head = document.createElement("label");
 
 $(document).ready(function(){
@@ -297,9 +297,25 @@ function processDataCheckSkills(returnedData) {
             o.name = singleSkill.skill.skillName;
             o.value = x.qualifier;
             o.onclick = function () {
-                var skillId = singleSkill.skill.skillId;
-                var skillQualifier = x.qualifier;
-                skillMap[skillId] = skillQualifier;
+                check=0;
+                var id = singleSkill.skill.skillId;
+                var name = x.qualifier;
+                var item = {}
+                item ["skillId"] = id;
+                item ["qualifier"] = name;
+
+                var pos;
+                for(var i in skillMap){
+                    if(skillMap[i].id == id){
+                        check=1;
+                        pos=i;
+                        break;
+                    }
+                }
+                if(check==0)
+                    skillMap.push(item);
+                else
+                    skillMap[pos] = item;
                 console.log(skillMap);
             };
 
@@ -335,7 +351,38 @@ function generateSkills(){
 }
 
 function processDataSignUpSupportSubmit(returnedData) {
-    console.log("returedData :" + returnedData.status);
+    console.log("returedData:candidateName :" + returnedData.candidateName);
+    console.log("returedData:candidateMobile :" + returnedData.candidateMobile);
+    console.log("returedData:candidateLocality :" + returnedData.candidateLocality);
+    console.log("returedData:candidateJobInterest :" + returnedData.candidateJobInterest);
+    console.log("returedData:candidateDob :" + returnedData.candidateDob);
+    console.log("returedData:candidatePhoneType :" + returnedData.candidatePhoneType);
+    console.log("returedData:candidateGender :" + returnedData.candidateGender);
+    console.log("returedData:candidateHomeLocality :" + returnedData.candidateHomeLocality);
+    console.log("returedData:candidateMaritalStatus :" + returnedData.candidateMaritalStatus);
+    console.log("returedData:candidateEmail :" + returnedData.candidateEmail);
+    console.log("returedData:candidateIsEmployed :" + returnedData.candidateIsEmployed);
+    console.log("returedData:candidateTotalExperience :" + returnedData.candidateTotalExperience);
+    console.log("returedData:candidateCurrentCompany :" + returnedData.candidateCurrentCompany);
+    console.log("returedData:candidateCurrentJobLocation :" + returnedData.candidateCurrentJobLocation);
+    console.log("returedData:candidateTransportation :" + returnedData.candidateTransportation);
+    console.log("returedData:candidateCurrentWorkShift :" + returnedData.candidateCurrentWorkShift);
+    console.log("returedData:candidateCurrentJobRole :" + returnedData.candidateCurrentJobRole);
+    console.log("returedData:candidateCurrentJobDesignation :" + returnedData.candidateCurrentJobDesignation);
+    console.log("returedData:candidateCurrentSalary :" + returnedData.candidateCurrentSalary);
+    console.log("returedData:candidateCurrentJobDuration :" + returnedData.candidateCurrentJobDuration);
+    console.log("returedData:candidatePastJobCompany :" + returnedData.candidatePastJobCompany);
+    console.log("returedData:candidatePastJobRole :" + returnedData.candidatePastJobRole);
+    console.log("returedData:candidatePastJobSalary :" + returnedData.candidatePastJobSalary);
+    console.log("returedData:candidateEducationLevel :" + returnedData.candidateEducationLevel);
+    console.log("returedData:candidateEducationInstitute :" + returnedData.candidateEducationInstitute);
+    console.log("returedData:candidateTimeShiftPref :" + returnedData.candidateTimeShiftPref);
+    console.log("returedData:candidateMotherTongue :" + returnedData.candidateMotherTongue);
+    console.log("returedData:candidateLanguageKnown :" + returnedData.candidateLanguageKnown);
+    console.log("returedData:candidateSkills :" + (returnedData.candidateSkills));
+    console.log("returedData:candidateIdProof :" + returnedData.candidateIdProof);
+    console.log("returedData:candidateSalarySlip :" + returnedData.candidateSalarySlip);
+    console.log("returedData:candidateAppointmentLetter :" + returnedData.candidateAppointmentLetter);
 }
 
 // form_candidate ajax script
@@ -408,7 +455,8 @@ $(function() {
                 $.ajax({
                     type: "POST",
                     url: "/signUpSupport",
-                    data: d,
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
                     success: processDataSignUpSupportSubmit
                 });
             } catch (exception) {
