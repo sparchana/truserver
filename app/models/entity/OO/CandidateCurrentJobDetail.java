@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
 import models.entity.Static.JobRole;
+import models.entity.Static.Locality;
+import models.entity.Static.TimeShift;
+import models.entity.Static.TransportationMode;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -19,35 +22,23 @@ public class CandidateCurrentJobDetail extends Model{
     @Column(name = "CandidateCurrentJobId", columnDefinition = "bigint signed not null", unique = true)
     public long candidateCurrentJobId = 0;
 
-    @Column(name = "CandidateCurrentCompany", columnDefinition = "bigint signed null")
-    public long candidateCurrentCompany = 0;
+    @Column(name = "CandidateCurrentCompany", columnDefinition = "varchar(100) null")
+    public String candidateCurrentCompany;
 
-    @Column(name = "CandidateCurrentJobLocation", columnDefinition = "bigint signed null")
-    public long candidateCurrentJobLocation = 0;
-
-    @Column(name = "CandidateTransportationMode", columnDefinition = "int null")
-    public int candidateTransportationMode = 0; // Inner Join to Static.TransportationMode table
-
-    @Column(name = "CandidateCurrentWorkShift", columnDefinition = "int null")
-    public int candidateCurrentWorkShift = 0;
-
-    @Column(name = "CandidateCurrentDesignation", columnDefinition = "bigint signed null")
-    public long candidateCurrentDesignation = 0;
+    @Column(name = "CandidateCurrentDesignation", columnDefinition = "varchar(255) null")
+    public String candidateCurrentDesignation;
 
     @Column(name = "CandidateCurrentSalary", columnDefinition = "bigint signed null")
-    public long candidateCurrentSalary = 0;
+    public long candidateCurrentSalary;
 
     @Column(name = "CandidateCurrentJobDuration", columnDefinition = "int signed null")
-    public int candidateCurrentJobDuration = 0;
+    public int candidateCurrentJobDuration;
 
     @Column(name = "CandidateCurrentEmployerRefName", columnDefinition = "varchar(100) null")
-    public String candidateCurrentEmployerRefName = "";
+    public String candidateCurrentEmployerRefName;
 
     @Column(name = "CandidateCurrentEmployerRefMobile", columnDefinition = "varchar(13) null")
-    public String candidateCurrentEmployerRefMobile = "";
-
-    @Column(name = "CandidateCurrentJob", columnDefinition = "bigint signed null")
-    public long candidateCurrentJob = 0;
+    public String candidateCurrentEmployerRefMobile;
 
     @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp default current_timestamp null")
     public Timestamp updateTimeStamp;
@@ -62,6 +53,68 @@ public class CandidateCurrentJobDetail extends Model{
     @JoinColumn(name = "JobRoleId", referencedColumnName = "JobRoleId")
     public JobRole jobRole;
 
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "LocalityId", referencedColumnName = "LocalityId")
+    public Locality candidateCurrentJobLocation;
+
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "TransportationModeId", referencedColumnName = "TransportationModeId")
+    public TransportationMode candidateTransportationMode;
+
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "TimeShiftId", referencedColumnName = "TimeShiftId")
+    public TimeShift candidateCurrentWorkShift;
+
     public static Finder<String, CandidateCurrentJobDetail> find = new Finder(CandidateCurrentJobDetail.class);
 
+    public void setCandidateCurrentCompany(String candidateCurrentCompany) {
+        this.candidateCurrentCompany = candidateCurrentCompany;
+    }
+
+    public void setCandidateCurrentJobLocation(Locality candidateCurrentJobLocation) {
+        this.candidateCurrentJobLocation = candidateCurrentJobLocation;
+    }
+
+    public void setCandidateTransportationMode(TransportationMode candidateTransportationMode) {
+        this.candidateTransportationMode = candidateTransportationMode;
+    }
+
+    public void setCandidateCurrentWorkShift(TimeShift candidateCurrentWorkShift) {
+        this.candidateCurrentWorkShift = candidateCurrentWorkShift;
+    }
+
+    public void setCandidateCurrentDesignation(String candidateCurrentDesignation) {
+        this.candidateCurrentDesignation = candidateCurrentDesignation;
+    }
+
+    public void setCandidateCurrentSalary(long candidateCurrentSalary) {
+        this.candidateCurrentSalary = candidateCurrentSalary;
+    }
+
+    public void setCandidateCurrentJobDuration(int candidateCurrentJobDuration) {
+        this.candidateCurrentJobDuration = candidateCurrentJobDuration;
+    }
+
+    public void setCandidateCurrentEmployerRefName(String candidateCurrentEmployerRefName) {
+        this.candidateCurrentEmployerRefName = candidateCurrentEmployerRefName;
+    }
+
+    public void setCandidateCurrentEmployerRefMobile(String candidateCurrentEmployerRefMobile) {
+        this.candidateCurrentEmployerRefMobile = candidateCurrentEmployerRefMobile;
+    }
+
+    public void setUpdateTimeStamp(Timestamp updateTimeStamp) {
+        this.updateTimeStamp = updateTimeStamp;
+    }
+
+    public void setCandidate(Candidate candidate) {
+        this.candidate = candidate;
+    }
+
+    public void setJobRole(JobRole jobRole) {
+        this.jobRole = jobRole;
+    }
 }

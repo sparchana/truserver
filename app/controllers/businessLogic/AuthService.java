@@ -78,7 +78,7 @@ public class AuthService {
                 existingCandidate.update();
                 Logger.info("candidate status confirmed");
 
-                Lead existingLead = Lead.find.where().eq("leadId", existingCandidate.leadId).findUnique();
+                Lead existingLead = Lead.find.where().eq("leadId", existingCandidate.lead.leadId).findUnique();
                 existingLead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
                 existingLead.update();
                 Logger.info("Lead converted in candidate");

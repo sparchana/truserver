@@ -20,10 +20,10 @@ public class JobHistory extends Model {
     public long jobHistoryId = 0;
 
     @Column(name = "CandidatePastCompany", columnDefinition = "varchar(255) null")
-    public String candidatepastCompany = "";
+    public String candidatePastCompany = "";
 
     @Column(name = "CandidatePastSalary", columnDefinition = "bigint signed null")
-    public long candidatepastSalary = 0;
+    public long candidatePastSalary = 0;
 
     @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp default current_timestamp null")
     public Timestamp updateTimeStamp;
@@ -60,19 +60,19 @@ public class JobHistory extends Model {
         this.updateTimeStamp = updateTimeStamp;
     }
 
-    public String getCandidatepastCompany() {
-        return candidatepastCompany;
+    public String getCandidatePastCompany() {
+        return candidatePastCompany;
     }
 
-    public void setCandidatepastCompany(String candidatepastCompany) {
-        this.candidatepastCompany = candidatepastCompany;
+    public void setCandidatePastCompany(String candidatePastCompany) {
+        this.candidatePastCompany = candidatePastCompany;
     }
 
-    public long getCandidatepastSalary() {
-        return candidatepastSalary;
+    public long getCandidatePastSalary() {
+        return candidatePastSalary;
     }
 
-    public void setCandidatepastSalary(long candidatepastSalary) {
-        this.candidatepastSalary = candidatepastSalary;
+    public void setCandidatePastSalary(long candidatePastSalary) {
+        this.candidatePastSalary = candidatePastSalary;
     }
 }

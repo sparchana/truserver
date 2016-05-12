@@ -8,6 +8,8 @@ GET      /support                                                 controllers.Ap
 
 POST     /addLead                                                 controllers.Application.addLead()
 
+GET      /addSupportCandidate                                     controllers.Application.addSupportCandidate()
+
 POST     /signUp                                                  controllers.Application.signUp()
 
 POST     /addPassword                                             controllers.Application.addPassword()

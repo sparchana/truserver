@@ -18,7 +18,7 @@ import java.sql.Timestamp;
 public class Lead extends Model {
 
     @Id
-    @Column(name = "LeadId", columnDefinition = "bigint signed not null", nullable = false, unique = true)
+    @Column(name = "LeadId", columnDefinition = "bigint signed null", nullable = false, unique = true)
     public long leadId = 0;
 
     @Column(name = "LeadUUId", columnDefinition = "varchar(255) not null", nullable = false, unique = true)

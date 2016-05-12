@@ -2,7 +2,7 @@ package models.entity.Static;
 
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import models.entity.OM.IDProofreference;
+import models.entity.OM.IDProofReference;
 
 import javax.persistence.*;
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
 @Table(name = "idproof")
 public class IdProof extends Model {
     @Id
-    @Column(name = "IdProofId", columnDefinition = "int signed not null", unique = true)
+    @Column(name = "IdProofId", columnDefinition = "int signed null", unique = true)
     public int idProofId = 0;
 
     @Column(name = "IdProofName", columnDefinition = "varchar(255) null")
@@ -22,7 +22,7 @@ public class IdProof extends Model {
 
     @JsonBackReference
     @OneToMany(mappedBy = "idProof", cascade = CascadeType.REMOVE)
-    public List<IDProofreference> idProofreferenceList;
+    public List<IDProofReference> idProofReferenceList;
 
     public static Model.Finder<String, IdProof> find = new Model.Finder(IdProof.class);
 }

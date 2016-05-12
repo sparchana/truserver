@@ -14,7 +14,7 @@ import java.sql.Timestamp;
  */
 @Entity(name = "idproofreference")
 @Table(name = "idproofreference")
-public class IDProofreference extends Model {
+public class IDProofReference extends Model {
     @Id
     @Column(name = "IDProofReferenceId", columnDefinition = "int signed not null", unique = true)
     public int idProofReferenceId = 0;
@@ -32,5 +32,5 @@ public class IDProofreference extends Model {
     @JoinColumn(name = "IdProofId", referencedColumnName = "idProofId")
     public IdProof idProof;
 
-    public static Finder<String, IDProofreference> find = new Finder(IDProofreference.class);
+    public static Finder<String, IDProofReference> find = new Finder(IDProofReference.class);
 }

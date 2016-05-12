@@ -17,7 +17,7 @@ import java.util.List;
 @Table(name = "jobrole")
 public class JobRole extends Model {
     @Id
-    @Column(name = "JobRoleId", columnDefinition = "bigint signed not null", unique = true)
+    @Column(name = "JobRoleId", columnDefinition = "bigint signed null", unique = true)
     public long jobRoleId = 0;
 
     @Column(name = "JobName", columnDefinition = "varchar(255) null")
