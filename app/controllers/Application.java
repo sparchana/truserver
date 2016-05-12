@@ -2,6 +2,7 @@ package controllers;
 
 import api.ServerConstants;
 import api.http.*;
+import com.fasterxml.jackson.databind.JsonNode;
 import controllers.businessLogic.AuthService;
 import controllers.businessLogic.CandidateService;
 import controllers.businessLogic.LeadService;
@@ -96,10 +97,8 @@ public class Application extends Controller {
     }
 
     public static Result signUpSupport() {
-        Form<AddSupportCandidateRequest> candidateForm = Form.form(AddSupportCandidateRequest.class);
-        AddSupportCandidateRequest addSupportCandidateRequest = candidateForm.bindFromRequest().get();
-
-        return ok(toJson(CandidateService.createCandidateBySupport(addSupportCandidateRequest)));
+        JsonNode json = request().body().asJson();
+        return ok(json);
     }
 
     public static Result addPassword() {

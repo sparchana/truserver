@@ -8,6 +8,7 @@ import models.entity.Interaction;
 import models.entity.Lead;
 import models.entity.OM.*;
 import models.entity.OO.CandidateCurrentJobDetail;
+import models.entity.OO.CandidateEducation;
 import models.entity.OO.TimeShiftPreference;
 import models.entity.Static.*;
 import models.util.Util;
@@ -155,9 +156,10 @@ public class CandidateService {
             candidate.candidateCurrentJobDetail = candidateCurrentJobDetail;
             candidate.timeShiftPreference = getTimeShiftPrefFromAddSupportCandidate(request, candidate);
             candidate.jobHistoryList = getJobHistoryListFromAddSupportCandidate(request, candidate);
-            candidate.candidateSkillList = getCandidateSkillListFromAddSupportCandidate(request, candidate);
             candidate.idProofReferenceList = getCandidateIdProofListFromAddSupportCandidate(Arrays.asList(request.candidateIdProof.split("\\s*,\\s*")), candidate);
-            candidate.education = getCandidateEducationFromAddSupportCandidate(request, candidate);
+            candidate.candidateSkillList = getCandidateSkillListFromAddSupportCandidate(request, candidate);
+            //candidate.candidateEducation = getCandidateEducationFromAddSupportCandidate(request, candidate);
+            //candidate.languageKnownList = getCandidateLanguageFromSupportCandidate(request, candidate);
             Auth auth = Auth.find.where().eq("CandidateId", candidate.candidateId).findUnique();
             if(auth == null ) {
                 createAndSaveDummpyAuthFor(candidate);
@@ -175,6 +177,11 @@ public class CandidateService {
             response.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
         return response;
+    }
+
+    private static List<LanguageKnown> getCandidateLanguageFromSupportCandidate(AddSupportCandidateRequest request, Candidate candidate) {
+
+        return null;
     }
 
     private static void triggerOtp(Candidate candidate, CandidateSignUpResponse candidateSignUpResponse) {
@@ -198,20 +205,34 @@ public class CandidateService {
             }
             idProofReference.idProof = idProof;
             idProofReference.candidate = candidate;
+            idProofReference.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
             response.add(idProofReference);
         }
         return response;
     }
 
-    private static Education getCandidateEducationFromAddSupportCandidate(AddSupportCandidateRequest request, Candidate candidate) {
-        return null;
+    private static CandidateEducation getCandidateEducationFromAddSupportCandidate(AddSupportCandidateRequest request, Candidate candidate) {
+        CandidateEducation response = CandidateEducation.find.where().eq("candidateId",candidate.candidateId).findUnique();
+        if(response== null){
+            response = new CandidateEducation();
+        }
+        Education education = Education.find.where().eq("educationId", request.getCandidateEducationLevel()).findUnique();
+        if(education == null){
+            Logger.info("education static table empty");
+            return null;
+        } else {
+            response.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
+            response.setCandidate(candidate);
+            response.setEducation(education);
+        }
+        return response;
     }
 
     private static List<CandidateSkill> getCandidateSkillListFromAddSupportCandidate(AddSupportCandidateRequest request, Candidate candidate) {
         List<CandidateSkill> response = new ArrayList<>();
 
         CandidateSkill candidateSkill = new CandidateSkill();
-        Skill skill = new Skill();
+        Skill skill = Skill.find.where().eq("skillId", request.getCandidateSkills()).findUnique();
         // TODO: add skill obj from req
         candidateSkill.setCandidate(candidate);
         candidateSkill.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));

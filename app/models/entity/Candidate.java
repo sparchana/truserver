@@ -4,9 +4,9 @@ import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.OM.*;
 import models.entity.OO.CandidateCurrentJobDetail;
+import models.entity.OO.CandidateEducation;
 import models.entity.OO.TimeShiftPreference;
 import models.entity.Static.CandidateProfileStatus;
-import models.entity.Static.Education;
 import models.entity.Static.Language;
 import models.entity.Static.Locality;
 import play.Logger;
@@ -132,10 +132,8 @@ public class Candidate extends Model {
     @JoinColumn(name = "CandidateStatusId", referencedColumnName = "profileStatusId")
     public CandidateProfileStatus candidateprofilestatus;
 
-    @ManyToOne
-    @JsonManagedReference
-    @JoinColumn(name = "EducationId", referencedColumnName = "EducationId")
-    public Education education;
+    @OneToOne(mappedBy = "candidate", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    public CandidateEducation candidateEducation;
 
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
@@ -266,8 +264,8 @@ public class Candidate extends Model {
         this.locality = locality;
     }
 
-    public void setEducation(Education education) {
-        this.education = education;
+    public void setCandidateEducation(CandidateEducation candidateEducation) {
+        this.candidateEducation = candidateEducation;
     }
 
     public void setCandidateUUId(String candidateUUId) {

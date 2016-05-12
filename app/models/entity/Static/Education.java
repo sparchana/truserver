@@ -2,10 +2,9 @@ package models.entity.Static;
 
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import models.entity.Candidate;
+import models.entity.OO.CandidateEducation;
 
 import javax.persistence.*;
-import java.util.List;
 
 /**
  * Created by zero on 6/5/16.
@@ -22,7 +21,7 @@ public class Education extends Model {
 
     @JsonBackReference
     @OneToMany(mappedBy = "education", cascade = CascadeType.REMOVE)
-    public List<Candidate> candidateList;
+    public CandidateEducation candidateEducation;
 
     public static Model.Finder<String, Education> find = new Model.Finder(Education.class);
 
