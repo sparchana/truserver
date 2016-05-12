@@ -32,5 +32,9 @@ public class JobPreference extends Model {
     @JoinColumn(name = "CandidateId", referencedColumnName= "CandidateId")
     public Candidate candidate;
 
+    public void setUpdateTimeStamp(Timestamp updateTimeStamp) {
+        this.updateTimeStamp = updateTimeStamp;
+    }
+
     public static Finder<String, JobPreference> find = new Finder(JobPreference.class);
 }

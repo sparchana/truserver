@@ -10,6 +10,8 @@ GET      /candidateInteraction                                controllers.Applic
 
 POST     /addLead                                                 controllers.Application.addLead()
 
+GET      /addSupportCandidate                                     controllers.Application.addSupportCandidate()
+
 POST     /signUp                                                  controllers.Application.signUp()
 
 POST     /signUpSupport                                           controllers.Application.signUpSupport()

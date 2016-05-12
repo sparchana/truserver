@@ -80,7 +80,7 @@ public class Application extends Controller {
         CandidateSignUpRequest candidateSignUpRequest = candidateForm.bindFromRequest().get();
         List<String> localityList = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
         List<String> jobsList = Arrays.asList(candidateSignUpRequest.getCandidateJobPref().split("\\s*,\\s*"));
-
+        boolean isSupport = false;
         Candidate candidate = new Candidate();
         candidate.candidateId = Util.randomLong();
         candidate.candidateUUId = UUID.randomUUID().toString();
@@ -92,7 +92,7 @@ public class Application extends Controller {
         candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(localityList, candidate);
         candidate.jobPreferencesList = getCandidateJobPreferenceList(jobsList, candidate);
 
-        return ok(toJson(CandidateService.createCandidate(candidate)));
+        return ok(toJson(CandidateService.createCandidate(candidate, isSupport)));
     }
 
     public static Result signUpSupport() {
@@ -121,14 +121,14 @@ public class Application extends Controller {
         int candidateCurrentWorkShift = addSupportCandidateRequest.getCandidateCurrentWorkShift();
         String candidateCurrentJobRole = addSupportCandidateRequest.getCandidateCurrentJobRole();
         String candidateCurrentJobDesignation = addSupportCandidateRequest.getCandidateCurrentJobDesignation();
-        String candidateCurrentSalary = addSupportCandidateRequest.getCandidateCurrentSalary();
-        String candidateCurrentJobDuration = addSupportCandidateRequest.getCandidateCurrentJobDuration();
+        int candidateCurrentSalary = addSupportCandidateRequest.getCandidateCurrentSalary();
+        int candidateCurrentJobDuration = addSupportCandidateRequest.getCandidateCurrentJobDuration();
 
         String candidatePastJobCompany = addSupportCandidateRequest.getCandidatePastJobCompany();
         String candidatePastJobRole = addSupportCandidateRequest.getCandidatePastJobRole();
-        long candidatePastJobSalary = addSupportCandidateRequest.getCandidatePastJobSalary();
+        int candidatePastJobSalary = addSupportCandidateRequest.getCandidatePastJobSalary();
 
-        String candidateEducationLevel = addSupportCandidateRequest.getCandidateEducationLevel();
+        int candidateEducationLevel = addSupportCandidateRequest.getCandidateEducationLevel();
         int candidateDegree = addSupportCandidateRequest.getCandidateDegree();
         String candidateEducationInstitute = addSupportCandidateRequest.getCandidateEducationInstitute();
 
@@ -410,13 +410,13 @@ public class Application extends Controller {
     }
 
     public static Result test(int n) {
-        long testCandidateId = 27854603;
+        long testCandidateId = 73064660;
         switch (n) {
             case 1: // fetch in json
                 try{
-                    List<IDProofreference>idProofreferenceList = IDProofreference.find.all();
+                    List<IDProofReference> idProofReferenceList = IDProofReference.find.all();
                     List<Candidate> candidates = Candidate.find.all();
-                    for(IDProofreference i: idProofreferenceList) {
+                    for(IDProofReference i: idProofReferenceList) {
                         if(i != null){
                             Logger.info("idProofreference " + i.candidate);
                         }
@@ -430,9 +430,13 @@ public class Application extends Controller {
                 Candidate candidate = new Candidate();
                 candidate.candidateId = Util.randomLong();
                 candidate.candidateUUId = UUID.randomUUID().toString();
-                candidate.leadId = Util.randomLong();
-                candidate.candidateMobile = "8984584584";
-                candidate.candidateName = "Sandeep";
+                candidate.candidateMobile = "8111110011";
+                candidate.candidateName = "frog";
+                Lead lead = new Lead();
+                lead.leadId = Util.randomLong();
+                lead.leadMobile = candidate.candidateMobile;
+                candidate.lead = lead;
+                Logger.info("logged " + candidate.candidateId);
 
                 // testcase related var set
 
@@ -566,10 +570,10 @@ public class Application extends Controller {
                     candidateJobHistory2.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
                     candidateJobHistory.setCandidate(candidate8);
                     candidateJobHistory2.setCandidate(candidate8);
-                    candidateJobHistory.setCandidatepastCompany("AGS");
-                    candidateJobHistory2.setCandidatepastCompany("Microtek");
-                    candidateJobHistory.setCandidatepastSalary(15000);
-                    candidateJobHistory2.setCandidatepastSalary(20500);
+                    candidateJobHistory.setCandidatePastCompany("AGS");
+                    candidateJobHistory2.setCandidatePastCompany("Microtek");
+                    candidateJobHistory.setCandidatePastSalary(15000);
+                    candidateJobHistory2.setCandidatePastSalary(20500);
                     // TODO: since requres db query hence find a way
                     JobRole jobRole = JobRole.find.where().eq("jobRoleId", 1).findUnique();
                     JobRole jobRole2 = JobRole.find.where().eq("jobRoleId", 2).findUnique();
@@ -703,4 +707,49 @@ public class Application extends Controller {
         return ok(views.html.signup_support.render());
     }
 
+    public static Result addSupportCandidate() {
+        AddSupportCandidateRequest request = new AddSupportCandidateRequest();
+
+        request.setCandidateCurrentCompany("Apple"); // #
+        request.setCandidateCurrentJobDesignation("PA");  // #
+        request.setCandidateCurrentJobRole("5"); // #
+        request.setCandidateCurrentJobDuration(22); // #
+        request.setCandidateCurrentJobLocation("1"); // #
+        request.setCandidateCurrentSalary(20500); // #
+        request.setCandidateCurrentWorkShift(1); // # Full Day
+        // -------done------------------
+
+        request.setCandidateDob(new Date());//#
+        request.setCandidateAge(20); // use less
+
+        // no column to handle this
+        request.setCandidateDegree(1);
+        request.setCandidateEducationInstitute("Christ University");
+        request.setCandidateEducationLevel(1);
+
+        request.setCandidateEmail("test@trujobs.in"); //#
+        request.setCandidateGender(1); //female #
+        request.setCandidateHomeLocality("5"); //#
+        request.setCandidateIsEmployed(1); //yes #
+        request.setCandidateMaritalStatus(0); // single marega #
+        request.setCandidateMotherTongue(2); // Hindi #
+        request.setCandidateTimeShiftPref("1"); // #
+
+        request.setCandidatePastJobCompany("Google India"); //#
+        request.setCandidatePastJobRole("4"); //#
+        request.setCandidatePastJobSalary(15800); //#
+
+
+        request.setCandidateIdProof("1,2,3"); // # Adhaar
+        request.setCandidateLocality("1, 5, 7"); //#* localitypref
+        request.setCandidateJobInterest("1, 5, 7"); //#*
+
+        request.setCandidateName("TEST5"); //*#
+        request.setCandidateMobile("8111111113"); //*#
+        request.setCandidatePhoneType("Apple"); //#
+        request.setCandidateTotalExperience(10); //#
+        request.setCandidateTransportation(1); // Scooter
+
+        return ok(toJson(CandidateService.createCandidateBySupport(request).status));
+    }
 }

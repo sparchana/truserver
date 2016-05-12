@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @Table(name = "transportationmodes")
 public class TransportationMode extends Model{
     @Id
-    @Column(name = "TransportationModeId", columnDefinition = "int signed not null", unique = true)
+    @Column(name = "TransportationModeId", columnDefinition = "int signed null", unique = true)
     public int transportationModeId = 0;
 
     @Column(name = "TransportationModeName", columnDefinition = "varchar(255) null")

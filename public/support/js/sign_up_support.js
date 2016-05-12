@@ -369,40 +369,39 @@ $(function() {
                     //others
                     candidateDob: c_dob,
                     candidatePhoneType: $('#candidatePhoneType').val(),
-                    candidateGender: $('input:radio[name="gender"]:checked').val(),
+                    candidateGender: parseInt($('input:radio[name="gender"]:checked').val()),
                     candidateHomeLocality: $('#candidateHomeLocality').val(),
-                    candidateMaritalStatus: $('input:radio[name="married"]:checked').val(),
+                    candidateMaritalStatus: parseInt($('input:radio[name="married"]:checked').val()),
                     candidateEmail: $('#candidateEmail').val(),
-                    candidateIsEmployed: $('input:radio[name="employed"]:checked').val(),
-                    candidateTotalExperience: $('#candidateTotalExperience').val(),
+                    candidateIsEmployed: parseInt($('input:radio[name="employed"]:checked').val()),
+                    candidateTotalExperience: parseInt($('#candidateTotalExperience').val()),
 
                     candidateCurrentCompany: $('#candidateCurrentCompany').val(),
                     candidateCurrentJobLocation: $('#candidateCurrentJobLocation').val(),
-                    candidateTransportation: $('#selectTransportation').val(),
-                    candidateCurrentWorkShift: $('#currentWorkShift').val(),
+                    candidateTransportation: parseInt($('#selectTransportation').val()),
+                    candidateCurrentWorkShift: parseInt($('#currentWorkShift').val()),
                     candidateCurrentJobRole: $('#candidateCurrentJobRole').val(),
                     candidateCurrentJobDesignation: $('#candidateCurrentJobDesignation').val(),
-                    candidateCurrentSalary: $('#candidateCurrentCompany').val(),
-                    candidateCurrentJobDuration: $('#candidateCurrentJobDuration').val(),
+                    candidateCurrentSalary: parseInt($('#candidateCurrentJobSalary').val()),
+                    candidateCurrentJobDuration: parseInt($('#candidateCurrentJobDuration').val()),
 
                     candidatePastJobCompany: $('#candidatePastCompany').val(),
                     candidatePastJobRole: $('#candidatePastJobRole').val(),
-                    candidatePastJobSalary: $('#candidatePastJobSalary').val(),
+                    candidatePastJobSalary: parseInt($('#candidatePastJobSalary').val()),
 
-                    candidateEducationLevel: $('#candidateHighestEducation').val(),
-                    candidateDegree: $('#candidateDe').val(),
+                    candidateEducationLevel: parseInt($('#candidateHighestEducation').val()),
                     candidateEducationInstitute: $('#candidateEducationInstitute').val(),
 
                     candidateTimeShiftPref: $('#candidateTimeShiftPref').val(),
 
-                    candidateMotherTongue: $('#candidateMotherTongue').val(),
+                    candidateMotherTongue: parseInt($('#candidateMotherTongue').val()),
                     candidateLanguageKnown: languageKnown,
                     
                     candidateSkills: skillMap,
 
                     candidateIdProof: $('#candidateIdProof').val(),
-                    candidateSalarySlip: $('input:radio[name="payslip"]:checked').val(),
-                    candidateAppointmentLetter: $('input:radio[name="appointmentLetter"]:checked').val()
+                    candidateSalarySlip: parseInt($('input:radio[name="payslip"]:checked').val()),
+                    candidateAppointmentLetter: parseInt($('input:radio[name="appointmentLetter"]:checked').val())
                 };
 
                 $.ajax({

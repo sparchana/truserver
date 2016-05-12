@@ -1,4 +1,4 @@
-import models.entity.OM.IDProofreference;
+import models.entity.OM.IDProofReference;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -25,7 +25,7 @@ public class ApplicationTest {
 
     @Test
     public void testUsers() {
-        IDProofreference idProofreference = IDProofreference.find.where().eq("idproofreferenceid", 1).findUnique();
-        assertEquals(idProofreference.idProof, 1);
+        IDProofReference idProofReference = IDProofReference.find.where().eq("idproofreferenceid", 1).findUnique();
+        assertEquals(idProofReference.idProof, 1);
     }
 }

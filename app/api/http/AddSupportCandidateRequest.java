@@ -1,5 +1,7 @@
 package api.http;
 
+import java.util.Date;
+
 /**
  * Created by batcoder1 on 10/5/16.
  */
@@ -9,7 +11,8 @@ public class AddSupportCandidateRequest {
     public String candidateJobInterest = " ";
     public String candidateLocality = " ";
 
-    public String candidateDob ;
+    public Date candidateDob = new Date();
+    public int candidateAge = 0;
     public String candidatePhoneType = " ";
     public int candidateGender = 0;
     public String candidateHomeLocality = " ";
@@ -24,13 +27,13 @@ public class AddSupportCandidateRequest {
     public int candidateCurrentWorkShift = 0;
     public String candidateCurrentJobRole = " ";
     public String candidateCurrentJobDesignation = " ";
-    public String candidateCurrentSalary =  " ";
-    public String candidateCurrentJobDuration = " ";
+    public int candidateCurrentSalary = 0;
+    public int candidateCurrentJobDuration = 0;
     public String candidatePastJobCompany = " ";
     public String candidatePastJobRole = " ";
-    public long candidatePastJobSalary = 0;
+    public int candidatePastJobSalary = 0;
 
-    public String candidateEducationLevel= " ";
+    public int candidateEducationLevel= 0;
     public int candidateDegree = 0;
     public String candidateEducationInstitute = " ";
 
@@ -68,10 +71,10 @@ public class AddSupportCandidateRequest {
     }
 
     /* others */
-    public void setCandidateDob(String candidateDob) {
+    public void setCandidateDob(Date candidateDob) {
         this.candidateDob = candidateDob;
     }
-    public String getCandidateDob() {
+    public Date getCandidateDob() {
         return candidateDob;
     }
 
@@ -80,6 +83,13 @@ public class AddSupportCandidateRequest {
     }
     public int getCandidateGender() {
         return candidateGender;
+    }
+
+    public void setCandidateAge(int candidateAge) {
+        this.candidateAge = candidateAge;
+    }
+    public int getCandidateAge() {
+        return candidateAge;
     }
 
     public void setCandidateHomeLocality(String candidateHomeLocality) { this.candidateHomeLocality = candidateHomeLocality; }
@@ -158,15 +168,15 @@ public class AddSupportCandidateRequest {
         return candidateCurrentJobDesignation;
     }
 
-    public void setCandidateCurrentSalary(String candidateCurrentSalary) { this.candidateCurrentSalary = candidateCurrentSalary; }
-    public String getCandidateCurrentSalary() {
+    public void setCandidateCurrentSalary(int candidateCurrentSalary) { this.candidateCurrentSalary = candidateCurrentSalary; }
+    public int getCandidateCurrentSalary() {
         return candidateCurrentSalary;
     }
 
-    public void setCandidateCurrentJobDuration(String candidateCurrentJobDuration) {
+    public void setCandidateCurrentJobDuration(int candidateCurrentJobDuration) {
         this.candidateCurrentJobDuration = candidateCurrentJobDuration;
     }
-    public String getCandidateCurrentJobDuration() {
+    public int getCandidateCurrentJobDuration() {
         return candidateCurrentJobDuration;
     }
 
@@ -185,14 +195,14 @@ public class AddSupportCandidateRequest {
     }
 
     public void setCandidatePastJobSalary(int candidatePastJobSalary) { this.candidatePastJobSalary = candidatePastJobSalary; }
-    public long getCandidatePastJobSalary() {
+    public int getCandidatePastJobSalary() {
         return candidatePastJobSalary;
     }
 
-    public void setCandidateEducationLevel(String candidateEducationLevel) {
+    public void setCandidateEducationLevel(int candidateEducationLevel) {
         this.candidateEducationLevel = candidateEducationLevel;
     }
-    public String getCandidateEducationLevel() {
+    public int getCandidateEducationLevel() {
         return candidateEducationLevel;
     }
 
@@ -251,7 +261,5 @@ public class AddSupportCandidateRequest {
     public int getCandidateAppointmentLetter() {
         return candidateAppointmentLetter;
     }
-
-
 
 }
