@@ -104,22 +104,6 @@ public class CandidateService {
         return candidateSignUpResponse;
     }
 
-    private static void resetLocalityAndJobPref(Candidate existingCandidate, List<LocalityPreference> localityPreferenceList, List<JobPreference> jobPreferencesList) {
-
-        // reset pref
-        List<LocalityPreference> allLocality = LocalityPreference.find.where().eq("CandidateId", existingCandidate.candidateId).findList();
-        for(LocalityPreference candidateLocality : allLocality){
-            candidateLocality.delete();
-        }
-
-        List<JobPreference> allJob = JobPreference.find.where().eq("CandidateId", existingCandidate.candidateId).findList();
-        for(JobPreference candidateJobs : allJob){
-            candidateJobs.delete();
-        }
-        existingCandidate.localityPreferenceList = localityPreferenceList;
-        existingCandidate.jobPreferencesList = jobPreferencesList;
-    }
-
     public static AddCandidateResponse createCandidateBySupport(AddSupportCandidateRequest request){
         AddCandidateResponse response = new AddCandidateResponse();
         // get candidateBasic obj from req
@@ -403,6 +387,7 @@ public class CandidateService {
         candidate.lead = lead;
         return lead;
     }
+
     private static void createAndSaveDummpyAuthFor(Candidate candidate) {
         // create dummy auth
         Auth authToken = new Auth();
@@ -417,5 +402,20 @@ public class CandidateService {
         String msg = "Welcome to Trujobs.in! Your login details are Username: " + candidate.candidateMobile + " and password: " +dummyPassword+ ". Use this to login at trujobs.in !!";
         SendOtpService.sendSms(candidate.candidateMobile, msg);
         Logger.info("Dummy auth created + otp triggered + auth saved");
+    }
+    private static void resetLocalityAndJobPref(Candidate existingCandidate, List<LocalityPreference> localityPreferenceList, List<JobPreference> jobPreferencesList) {
+
+        // reset pref
+        List<LocalityPreference> allLocality = LocalityPreference.find.where().eq("CandidateId", existingCandidate.candidateId).findList();
+        for(LocalityPreference candidateLocality : allLocality){
+            candidateLocality.delete();
+        }
+
+        List<JobPreference> allJob = JobPreference.find.where().eq("CandidateId", existingCandidate.candidateId).findList();
+        for(JobPreference candidateJobs : allJob){
+            candidateJobs.delete();
+        }
+        existingCandidate.localityPreferenceList = localityPreferenceList;
+        existingCandidate.jobPreferencesList = jobPreferencesList;
     }
 }
