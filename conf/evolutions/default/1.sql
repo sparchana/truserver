@@ -23,7 +23,7 @@ create table candidate (
   candidatename                 varchar(50) not null,
   candidatelastname             varchar(50) null,
   candidategender               int(1) null default 0,
-  candidatedob                  timestamp null,
+  candidatedob                  date null,
   candidatemobile               varchar(13) not null,
   candidatephonetype            varchar(100) null,
   candidatemaritalstatus        int null,

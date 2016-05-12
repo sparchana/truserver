@@ -25,10 +25,7 @@ import javax.persistence.PersistenceException;
 import java.io.File;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static controllers.businessLogic.CandidateService.getCandidateJobPreferenceList;
 import static controllers.businessLogic.CandidateService.getCandidateLocalityPreferenceList;
@@ -52,6 +49,10 @@ public class Application extends Controller {
             return ok(views.html.support.render());
         }
         return redirect("/street");
+    }
+
+    public static Result candidateInteraction() {
+        return ok(views.html.candidate_interaction.render());
     }
 
     public static Result addLead() {
@@ -104,7 +105,7 @@ public class Application extends Controller {
         candidate.candidateName = addSupportCandidateRequest.getCandidateName();
         candidate.candidateMobile = "+91" + addSupportCandidateRequest.getCandidateMobile();
 
-        candidate.candidateDOB = (Timestamp) addSupportCandidateRequest.getCandidateDob();
+/*        candidate.candidateDOB = addSupportCandidateRequest.getCandidateDob();*/
         candidate.candidatePhoneType = addSupportCandidateRequest.getCandidatePhoneType();
         candidate.candidateGender = addSupportCandidateRequest.getCandidateGender();
         candidate.candidateMaritalStatus = addSupportCandidateRequest.getCandidateMaritalStatus();
@@ -120,14 +121,14 @@ public class Application extends Controller {
         int candidateCurrentWorkShift = addSupportCandidateRequest.getCandidateCurrentWorkShift();
         String candidateCurrentJobRole = addSupportCandidateRequest.getCandidateCurrentJobRole();
         String candidateCurrentJobDesignation = addSupportCandidateRequest.getCandidateCurrentJobDesignation();
-        long candidateCurrentSalary = addSupportCandidateRequest.getCandidateCurrentSalary();
-        int candidateCurrentJobDuration = addSupportCandidateRequest.getCandidateCurrentJobDuration();
+        String candidateCurrentSalary = addSupportCandidateRequest.getCandidateCurrentSalary();
+        String candidateCurrentJobDuration = addSupportCandidateRequest.getCandidateCurrentJobDuration();
 
         String candidatePastJobCompany = addSupportCandidateRequest.getCandidatePastJobCompany();
         String candidatePastJobRole = addSupportCandidateRequest.getCandidatePastJobRole();
         long candidatePastJobSalary = addSupportCandidateRequest.getCandidatePastJobSalary();
 
-        int candidateEducationLevel = addSupportCandidateRequest.getCandidateEducationLevel();
+        String candidateEducationLevel = addSupportCandidateRequest.getCandidateEducationLevel();
         int candidateDegree = addSupportCandidateRequest.getCandidateDegree();
         String candidateEducationInstitute = addSupportCandidateRequest.getCandidateEducationInstitute();
 
@@ -144,6 +145,12 @@ public class Application extends Controller {
         List<String> localityPrefList = Arrays.asList(addSupportCandidateRequest.getCandidateLocality().split("\\s*,\\s*"));
         List<String> jobsPrefList = Arrays.asList(addSupportCandidateRequest.getCandidateJobInterest().split("\\s*,\\s*"));
 
+        Logger.info(candidateHomeLocality + " " + candidateCurrentCompany + " " + candidateCurrentJobLocation + " " +
+        candidateTransportation + " " + candidateCurrentWorkShift + " " + candidateCurrentJobRole + " " + candidateCurrentJobDesignation +
+        candidateCurrentSalary + " " + candidateCurrentJobDuration + " " + candidatePastJobCompany + " " + candidatePastJobRole + " " +
+        candidatePastJobSalary + " " + candidateEducationLevel + " " + candidateDegree + " " + candidateEducationInstitute + " " +
+        shiftTimePref + " " + candidateMotherTongue + " " + candidateSkills + " " + candidateIdProof + " " + candidateSalarySlip + "  " +
+        candidateAppointmentLetter + " " + localityPrefList + " " + jobsPrefList + " " );
         return ok("done");
     }
 

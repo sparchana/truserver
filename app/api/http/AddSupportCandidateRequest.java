@@ -1,7 +1,5 @@
 package api.http;
 
-import java.util.Date;
-
 /**
  * Created by batcoder1 on 10/5/16.
  */
@@ -11,7 +9,7 @@ public class AddSupportCandidateRequest {
     public String candidateJobInterest = " ";
     public String candidateLocality = " ";
 
-    public Date candidateDob = new Date();
+    public String candidateDob ;
     public String candidatePhoneType = " ";
     public int candidateGender = 0;
     public String candidateHomeLocality = " ";
@@ -26,13 +24,13 @@ public class AddSupportCandidateRequest {
     public int candidateCurrentWorkShift = 0;
     public String candidateCurrentJobRole = " ";
     public String candidateCurrentJobDesignation = " ";
-    public long candidateCurrentSalary = 0;
-    public int candidateCurrentJobDuration = 0;
+    public String candidateCurrentSalary =  " ";
+    public String candidateCurrentJobDuration = " ";
     public String candidatePastJobCompany = " ";
     public String candidatePastJobRole = " ";
     public long candidatePastJobSalary = 0;
 
-    public int candidateEducationLevel= 0;
+    public String candidateEducationLevel= " ";
     public int candidateDegree = 0;
     public String candidateEducationInstitute = " ";
 
@@ -70,10 +68,10 @@ public class AddSupportCandidateRequest {
     }
 
     /* others */
-    public void setCandidateDob(Date candidateDob) {
+    public void setCandidateDob(String candidateDob) {
         this.candidateDob = candidateDob;
     }
-    public Date getCandidateDob() {
+    public String getCandidateDob() {
         return candidateDob;
     }
 
@@ -160,15 +158,15 @@ public class AddSupportCandidateRequest {
         return candidateCurrentJobDesignation;
     }
 
-    public void setCandidateCurrentSalary(int candidateCurrentSalary) { this.candidateCurrentSalary = candidateCurrentSalary; }
-    public long getCandidateCurrentSalary() {
+    public void setCandidateCurrentSalary(String candidateCurrentSalary) { this.candidateCurrentSalary = candidateCurrentSalary; }
+    public String getCandidateCurrentSalary() {
         return candidateCurrentSalary;
     }
 
-    public void setCandidateCurrentJobDuration(int candidateCurrentJobDuration) {
+    public void setCandidateCurrentJobDuration(String candidateCurrentJobDuration) {
         this.candidateCurrentJobDuration = candidateCurrentJobDuration;
     }
-    public int getCandidateCurrentJobDuration() {
+    public String getCandidateCurrentJobDuration() {
         return candidateCurrentJobDuration;
     }
 
@@ -191,10 +189,10 @@ public class AddSupportCandidateRequest {
         return candidatePastJobSalary;
     }
 
-    public void setCandidateEducationLevel(int candidateEducationLevel) {
+    public void setCandidateEducationLevel(String candidateEducationLevel) {
         this.candidateEducationLevel = candidateEducationLevel;
     }
-    public int getCandidateEducationLevel() {
+    public String getCandidateEducationLevel() {
         return candidateEducationLevel;
     }
 

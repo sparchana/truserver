@@ -3,6 +3,7 @@
  */
 
 var skillMap = {};
+var languageMap = {};
 var localityArray = [];
 var jobArray = [];
 var timeShiftArray = [];
@@ -10,6 +11,7 @@ var transportationArray = [];
 var educationArray = [];
 var languageArray = [];
 var idProofArray = [];
+var head = document.createElement("label");
 
 $(document).ready(function(){
     $("#candidateSignUpSupportForm input").prop("disabled", true);
@@ -138,10 +140,10 @@ function processDataCheckLocality(returnedData) {
 }
 
 function processDataCheckIdProofs(returnedData) {
-    returnedData.forEach(function(id)
+    returnedData.forEach(function(idProof)
     {
-        var id = id.idProofId;
-        var name = id.idProofName;
+        var id = idProof.idProofId;
+        var name = idProof.idProofName;
         var item = {};
         item ["id"] = id;
         item ["name"] = name;
@@ -163,8 +165,6 @@ function processDataCheckJobs(returnedData) {
         $('#candidatePastJobRole').append(option);
         jobArray.push(item);
     });
-
-
 }
 
 function processDataCheckShift(returnedData) {
@@ -210,7 +210,8 @@ function processDataCheckEducation(returnedData) {
 }
 
 function processDataCheckLanguage(returnedData) {
-
+    var arrayLang =[];
+    var arrayLangId =[];
     returnedData.forEach(function(language)
     {
         var id = language.languageId;
@@ -218,11 +219,35 @@ function processDataCheckLanguage(returnedData) {
         var item = {};
         item ["id"] = id;
         item ["name"] = name;
+        arrayLang.push(name);
+        arrayLangId.push(id);
         var option=$('<option value=' + id + '></option>').text(name);
         $('#candidateMotherTongue').append(option);
+
         languageArray.push(item);
     });
+    populateLanguages(arrayLang.reverse(), arrayLangId.reverse());
 }
+
+function populateLanguages(l, lId) {
+    var i;
+    var table = document.getElementById("languageTable");
+    for(i=0;i<l.length; i++) {
+        var row = table.insertRow(0);
+
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        var cell3 = row.insertCell(2);
+        var cell4 = row.insertCell(3);
+
+        cell1.innerHTML = l[i];
+        cell2.innerHTML = "<input type=\"checkbox\" name=" + lId[i] + "_R " + " value=0 >";
+        cell3.innerHTML = "<input type=\"checkbox\" name=" + lId[i] + "_W " + " value=0 >";
+        cell4.innerHTML = "<input type=\"checkbox\" name=" + lId[i] + "_S " + " value=0 >";
+    }
+
+}
+
 function selectMotherTongue(){
     document.getElementById("checkbox").checked = true;
 }
@@ -253,14 +278,18 @@ function employedNo(){
 
 function processDataCheckSkills(returnedData) {
     var parent = $('#skill_details');
+
+    parent.append(head);
+
     returnedData.forEach(function (singleSkill) {
         var q = document.createElement("h5");
-
-        var question = singleSkill.skill.skillQuestion + "?: ";
+        head.innerHTML = "Skills for " + singleSkill.skill.skillName;
+        var question = singleSkill.skill.skillQuestion;
         q.textContent = question;
         parent.append(q);
 
         var object = singleSkill.skill.skillQualifierList;
+
         object.forEach(function (x) {
 
             var o = document.createElement("input");
@@ -284,6 +313,8 @@ function processDataCheckSkills(returnedData) {
 }
 
 function generateSkills(){
+    var myNode = document.getElementById("skill_details");
+    myNode.innerHTML = '';
     var selectedJobPref = $('#candidateJobPref').val();
     var selectedJobPref_array = selectedJobPref.split(',');
     for(var i = 0; i < selectedJobPref_array.length; i++)
@@ -316,13 +347,18 @@ $(function() {
         if (localitySelected == "") {
             alert("Please Enter your Job Localities");
         } else if (jobSelected == "") {
-            alert("Please Enter the Jobs you are Interested --" + jobSelected);
+            alert("Please Enter the Jobs you are Interested");
         }
         else{
+            var languageKnown = $('#languageTable input:checked').map(function() {
+                return this.name;
+            }).get();
+
             document.getElementById("saveBtn").disabled = true;
             try {
-                var selected = $('#candidateDob').val();
-                var c_dob = new Date(selected);
+                var selectedDob = $('#candidateDob').val();
+/*                var c_dob = new Date(selectedDob);*/
+                var c_dob = String(selectedDob);
                 var d = {
                     //mandatory fields
                     candidateName: $('#candidateName').val(),
@@ -354,12 +390,13 @@ $(function() {
                     candidatePastJobSalary: $('#candidatePastJobSalary').val(),
 
                     candidateEducationLevel: $('#candidateHighestEducation').val(),
-                    /*candidateDegree: $('#candidateDe').val(),*/
+                    candidateDegree: $('#candidateDe').val(),
                     candidateEducationInstitute: $('#candidateEducationInstitute').val(),
 
                     candidateTimeShiftPref: $('#candidateTimeShiftPref').val(),
 
                     candidateMotherTongue: $('#candidateMotherTongue').val(),
+                    candidateLanguageKnown: languageKnown,
                     
                     candidateSkills: skillMap,
 

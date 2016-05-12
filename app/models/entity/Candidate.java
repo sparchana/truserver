@@ -42,8 +42,8 @@ public class Candidate extends Model {
     @Column(name = "CandidateGender", columnDefinition = "int(1) null default 0")
     public int candidateGender;
 
-    @Column(name = "CandidateDOB", columnDefinition = "timestamp null")
-    public Timestamp candidateDOB;
+    @Column(name = "CandidateDOB", columnDefinition = "date null")
+    public Date candidateDOB;
 
     @Column(name = "CandidateMobile", columnDefinition = "varchar(13) not null")
     public String candidateMobile;
@@ -148,7 +148,7 @@ public class Candidate extends Model {
         candidate.update();
     }
 
-    public void setCandidateDOB(Timestamp candidateDOB) {
+    public void setCandidateDOB(Date candidateDOB) {
         // calculate age and save that too
         this.candidateDOB = candidateDOB;
     }

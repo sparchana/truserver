@@ -6,6 +6,8 @@ GET      /                                                        controllers.Ap
 
 GET      /support                                                 controllers.Application.support()
 
+GET      /candidateInteraction                                controllers.Application.candidateInteraction()
+
 POST     /addLead                                                 controllers.Application.addLead()
 
 POST     /signUp                                                  controllers.Application.signUp()
@@ -32,15 +34,15 @@ GET      /getAllLocality                                          controllers.Ap
 
 GET      /getAllJobs                                              controllers.Application.getAllJobs()
 
-GET      /getAllShift                                              controllers.Application.getAllShift()
+GET      /getAllShift                                             controllers.Application.getAllShift()
 
 GET      /getAllTransportation                                    controllers.Application.getAllTransportation()
 
-GET      /getAllEducation                                        controllers.Application.getAllEducation()
+GET      /getAllEducation                                         controllers.Application.getAllEducation()
 
-GET      /getAllLanguage                                         controllers.Application.getAllLanguage()
+GET      /getAllLanguage                                          controllers.Application.getAllLanguage()
 
-GET      /getAllIdProof                                          controllers.Application.getAllIdProof()
+GET      /getAllIdProof                                           controllers.Application.getAllIdProof()
 
 GET      /getUserInfo/:id                                         controllers.Application.getUserInfo(id : Long)
 
@@ -50,7 +52,7 @@ GET      /getCandidateLocality/:id                                controllers.Ap
 
 GET      /getCandidateJob/:id                                     controllers.Application.getCandidateJob(id : Long)
 
-GET      /getAllSkills/:id                                      controllers.Application.getAllSkills(id : Long)
+GET      /getAllSkills/:id                                        controllers.Application.getAllSkills(id : Long)
 
 GET      /updateLeadType/:leadId/:newStatus                       controllers.Application.updateLeadType(leadId: Long, newStatus: Long)
 
