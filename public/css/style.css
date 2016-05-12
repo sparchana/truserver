@@ -75,6 +75,11 @@ body {
     margin-left: 35%;
 }
 
+.candidateSignUpSupportForm{
+    margin-left: 20%;
+    margin-right: 20%
+}
+
 .nav.navbar-nav.navbar-right li a {
     color: #2980b9;
     font-size: 12px;

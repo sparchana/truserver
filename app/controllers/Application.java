@@ -51,6 +51,10 @@ public class Application extends Controller {
         return redirect("/street");
     }
 
+    public static Result candidateInteraction() {
+        return ok(views.html.candidate_interaction.render());
+    }
+
     public static Result addLead() {
         Form<AddLeadRequest> userForm = Form.form(AddLeadRequest.class);
         AddLeadRequest addLeadRequest = userForm.bindFromRequest().get();
@@ -82,12 +86,72 @@ public class Application extends Controller {
         candidate.candidateUUId = UUID.randomUUID().toString();
         candidate.candidateName = candidateSignUpRequest.getCandidateName();
         candidate.candidateMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
+
         CandidateProfileStatus newcandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 1).findUnique();
         candidate.candidateprofilestatus = newcandidateProfileStatus;
         candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(localityList, candidate);
         candidate.jobPreferencesList = getCandidateJobPreferenceList(jobsList, candidate);
 
         return ok(toJson(CandidateService.createCandidate(candidate, isSupport)));
+    }
+
+    public static Result signUpSupport() {
+        Form<AddSupportCandidateRequest> candidateForm = Form.form(AddSupportCandidateRequest.class);
+        AddSupportCandidateRequest addSupportCandidateRequest = candidateForm.bindFromRequest().get();
+
+        Candidate candidate = new Candidate();
+        candidate.candidateId = Util.randomLong();
+        candidate.candidateUUId = UUID.randomUUID().toString();
+        candidate.candidateName = addSupportCandidateRequest.getCandidateName();
+        candidate.candidateMobile = "+91" + addSupportCandidateRequest.getCandidateMobile();
+
+/*        candidate.candidateDOB = addSupportCandidateRequest.getCandidateDob();*/
+        candidate.candidatePhoneType = addSupportCandidateRequest.getCandidatePhoneType();
+        candidate.candidateGender = addSupportCandidateRequest.getCandidateGender();
+        candidate.candidateMaritalStatus = addSupportCandidateRequest.getCandidateMaritalStatus();
+        candidate.candidateEmail = addSupportCandidateRequest.getCandidateEmail();
+        candidate.candidateIsEmployed = addSupportCandidateRequest.getCandidateIsEmployed();
+        candidate.candidateTotalExperience = addSupportCandidateRequest.getCandidateTotalExperience();
+
+        String candidateHomeLocality = addSupportCandidateRequest.getCandidateHomeLocality();
+
+        String candidateCurrentCompany = addSupportCandidateRequest.getCandidateCurrentCompany();
+        String candidateCurrentJobLocation = addSupportCandidateRequest.getCandidateCurrentJobLocation();
+        int candidateTransportation = addSupportCandidateRequest.getCandidateTransportation();
+        int candidateCurrentWorkShift = addSupportCandidateRequest.getCandidateCurrentWorkShift();
+        String candidateCurrentJobRole = addSupportCandidateRequest.getCandidateCurrentJobRole();
+        String candidateCurrentJobDesignation = addSupportCandidateRequest.getCandidateCurrentJobDesignation();
+        int candidateCurrentSalary = addSupportCandidateRequest.getCandidateCurrentSalary();
+        int candidateCurrentJobDuration = addSupportCandidateRequest.getCandidateCurrentJobDuration();
+
+        String candidatePastJobCompany = addSupportCandidateRequest.getCandidatePastJobCompany();
+        String candidatePastJobRole = addSupportCandidateRequest.getCandidatePastJobRole();
+        int candidatePastJobSalary = addSupportCandidateRequest.getCandidatePastJobSalary();
+
+        int candidateEducationLevel = addSupportCandidateRequest.getCandidateEducationLevel();
+        int candidateDegree = addSupportCandidateRequest.getCandidateDegree();
+        String candidateEducationInstitute = addSupportCandidateRequest.getCandidateEducationInstitute();
+
+        List<String> shiftTimePref = Arrays.asList(addSupportCandidateRequest.getCandidateTimeShiftPref().split("\\s*,\\s*"));
+
+        int candidateMotherTongue = addSupportCandidateRequest.getCandidateMotherTongue();
+
+        String candidateSkills = addSupportCandidateRequest.getCandidateSkills();
+
+        List<String> candidateIdProof = Arrays.asList(addSupportCandidateRequest.getCandidateIdProof().split("\\s*,\\s*"));
+        int candidateSalarySlip = addSupportCandidateRequest.getCandidateSalarySlip();
+        int candidateAppointmentLetter = addSupportCandidateRequest.getCandidateAppointmentLetter();
+
+        List<String> localityPrefList = Arrays.asList(addSupportCandidateRequest.getCandidateLocality().split("\\s*,\\s*"));
+        List<String> jobsPrefList = Arrays.asList(addSupportCandidateRequest.getCandidateJobInterest().split("\\s*,\\s*"));
+
+        Logger.info(candidateHomeLocality + " " + candidateCurrentCompany + " " + candidateCurrentJobLocation + " " +
+        candidateTransportation + " " + candidateCurrentWorkShift + " " + candidateCurrentJobRole + " " + candidateCurrentJobDesignation +
+        candidateCurrentSalary + " " + candidateCurrentJobDuration + " " + candidatePastJobCompany + " " + candidatePastJobRole + " " +
+        candidatePastJobSalary + " " + candidateEducationLevel + " " + candidateDegree + " " + candidateEducationInstitute + " " +
+        shiftTimePref + " " + candidateMotherTongue + " " + candidateSkills + " " + candidateIdProof + " " + candidateSalarySlip + "  " +
+        candidateAppointmentLetter + " " + localityPrefList + " " + jobsPrefList + " " );
+        return ok("done");
     }
 
     public static Result addPassword() {
@@ -213,6 +277,11 @@ public class Application extends Controller {
         return ok(toJson(candidateJobs));
     }
 
+    public static Result getAllSkills(long id) {
+        List<JobToSkill> jobToSkillList = JobToSkill.find.where().eq("JobRoleId",id).findList();
+        return ok(toJson(jobToSkillList));
+    }
+
     public static Result supportAuth() {
         return ok(views.html.supportAuth.render());
     }
@@ -313,6 +382,31 @@ public class Application extends Controller {
     public static Result getAllJobs() {
         List<JobRole> jobs = JobRole.find.findList();
         return ok(toJson(jobs));
+    }
+
+    public static Result getAllShift() {
+        List<TimeShift> timeShifts = TimeShift.find.findList();
+        return ok(toJson(timeShifts));
+    }
+
+    public static Result getAllTransportation() {
+        List<TransportationMode> transportationModes = TransportationMode.find.findList();
+        return ok(toJson(transportationModes));
+    }
+
+    public static Result getAllEducation() {
+        List<Education> educations = Education.find.findList();
+        return ok(toJson(educations));
+    }
+
+    public static Result getAllLanguage() {
+        List<Language> languages = Language.find.findList();
+        return ok(toJson(languages));
+    }
+
+    public static Result getAllIdProof() {
+        List<IdProof> idProofs = IdProof.find.findList();
+        return ok(toJson(idProofs));
     }
 
     public static Result test(int n) {
@@ -607,6 +701,10 @@ public class Application extends Controller {
                 return ok(toJson(jobToSkillList));
         }
         return ok("");
+    }
+
+    public static Result candidateSignupSupport() {
+        return ok(views.html.signup_support.render());
     }
 
     public static Result addSupportCandidate() {

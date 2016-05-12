@@ -27,11 +27,11 @@ public class AddSupportCandidateRequest {
     public int candidateCurrentWorkShift = 0;
     public String candidateCurrentJobRole = " ";
     public String candidateCurrentJobDesignation = " ";
-    public long candidateCurrentSalary = 0;
+    public int candidateCurrentSalary = 0;
     public int candidateCurrentJobDuration = 0;
     public String candidatePastJobCompany = " ";
     public String candidatePastJobRole = " ";
-    public long candidatePastJobSalary = 0;
+    public int candidatePastJobSalary = 0;
 
     public int candidateEducationLevel= 0;
     public int candidateDegree = 0;
@@ -41,7 +41,9 @@ public class AddSupportCandidateRequest {
 
     public int candidateMotherTongue = 0;
 
-    public String candidateIdProof = "";
+    public String candidateSkills = " ";
+
+    public String candidateIdProof = " ";
     public int candidateSalarySlip = 0;
     public int candidateAppointmentLetter = 0;
 
@@ -167,7 +169,7 @@ public class AddSupportCandidateRequest {
     }
 
     public void setCandidateCurrentSalary(int candidateCurrentSalary) { this.candidateCurrentSalary = candidateCurrentSalary; }
-    public long getCandidateCurrentSalary() {
+    public int getCandidateCurrentSalary() {
         return candidateCurrentSalary;
     }
 
@@ -193,7 +195,7 @@ public class AddSupportCandidateRequest {
     }
 
     public void setCandidatePastJobSalary(int candidatePastJobSalary) { this.candidatePastJobSalary = candidatePastJobSalary; }
-    public long getCandidatePastJobSalary() {
+    public int getCandidatePastJobSalary() {
         return candidatePastJobSalary;
     }
 
@@ -232,6 +234,13 @@ public class AddSupportCandidateRequest {
         return candidateMotherTongue;
     }
 
+    public void setCandidateSkills(String candidateSkills) {
+        this.candidateSkills = candidateSkills;
+    }
+    public String getCandidateSkills() {
+        return candidateSkills;
+    }
+
     public void setCandidateIdProof(String candidateIdProof) {
         this.candidateIdProof = candidateIdProof;
     }
@@ -252,7 +261,5 @@ public class AddSupportCandidateRequest {
     public int getCandidateAppointmentLetter() {
         return candidateAppointmentLetter;
     }
-
-
 
 }

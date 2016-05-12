@@ -6,11 +6,15 @@ GET      /                                                        controllers.Ap
 
 GET      /support                                                 controllers.Application.support()
 
+GET      /candidateInteraction                                controllers.Application.candidateInteraction()
+
 POST     /addLead                                                 controllers.Application.addLead()
 
 GET      /addSupportCandidate                                     controllers.Application.addSupportCandidate()
 
 POST     /signUp                                                  controllers.Application.signUp()
+
+POST     /signUpSupport                                           controllers.Application.signUpSupport()
 
 POST     /addPassword                                             controllers.Application.addPassword()
 
@@ -32,6 +36,16 @@ GET      /getAllLocality                                          controllers.Ap
 
 GET      /getAllJobs                                              controllers.Application.getAllJobs()
 
+GET      /getAllShift                                             controllers.Application.getAllShift()
+
+GET      /getAllTransportation                                    controllers.Application.getAllTransportation()
+
+GET      /getAllEducation                                         controllers.Application.getAllEducation()
+
+GET      /getAllLanguage                                          controllers.Application.getAllLanguage()
+
+GET      /getAllIdProof                                           controllers.Application.getAllIdProof()
+
 GET      /getUserInfo/:id                                         controllers.Application.getUserInfo(id : Long)
 
 GET      /getCandidateInfo/:id                                    controllers.Application.getCandidateInfo(id : Long)
@@ -39,6 +53,8 @@ GET      /getCandidateInfo/:id                                    controllers.Ap
 GET      /getCandidateLocality/:id                                controllers.Application.getCandidateLocality(id : Long)
 
 GET      /getCandidateJob/:id                                     controllers.Application.getCandidateJob(id : Long)
+
+GET      /getAllSkills/:id                                        controllers.Application.getAllSkills(id : Long)
 
 GET      /updateLeadType/:leadId/:newStatus                       controllers.Application.updateLeadType(leadId: Long, newStatus: Long)
 
@@ -55,6 +71,8 @@ GET      /logoutUser                                              controllers.Ap
 GET      /test/:id                                                controllers.Application.test(id: Integer)
 
 POST     /api/kw/cdr                                              controllers.Application.kwCdrInput()
+
+GET      /candidateSignupSupport                                  controllers.Application.candidateSignupSupport()
 
 # Map static resources from the /public folder to the /assets URL path
 GET    /robots.txt                                controllers.Assets.at(path="/public", file="robots.txt")
