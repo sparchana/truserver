@@ -2,8 +2,7 @@
  * Created by batcoder1 on 9/5/16.
  */
 
-var skillMap = {};
-var languageMap = {};
+var skillMap = [];
 var localityArray = [];
 var jobArray = [];
 var timeShiftArray = [];
@@ -11,9 +10,11 @@ var transportationArray = [];
 var educationArray = [];
 var languageArray = [];
 var idProofArray = [];
+var check = 0;
 var head = document.createElement("label");
 
 $(document).ready(function(){
+
     $("#candidateSignUpSupportForm input").prop("disabled", true);
     $("#saveBtn").prop("disabled", true);
     $("#cancelBtn").prop("disabled", true);
@@ -291,15 +292,30 @@ function processDataCheckSkills(returnedData) {
         var object = singleSkill.skill.skillQualifierList;
 
         object.forEach(function (x) {
-
             var o = document.createElement("input");
             o.type = "radio";
             o.name = singleSkill.skill.skillName;
             o.value = x.qualifier;
             o.onclick = function () {
-                var skillId = singleSkill.skill.skillId;
-                var skillQualifier = x.qualifier;
-                skillMap[skillId] = skillQualifier;
+                check=0;
+                var id = singleSkill.skill.skillId;
+                var name = x.qualifier;
+                var item = {}
+                var pos;
+
+                item ["id"] = id;
+                item ["qualifier"] = name;
+                for(var i in skillMap){
+                    if(skillMap[i].id == id){
+                        check = 1;
+                        pos=i;
+                    }
+                }
+                if(check == 0)
+                    skillMap.push(item);
+                else
+                    skillMap[pos] = item;
+
                 console.log(skillMap);
             };
 
@@ -353,12 +369,14 @@ $(function() {
             var languageKnown = $('#languageTable input:checked').map(function() {
                 return this.name;
             }).get();
+            alert(languageKnown);
 
             document.getElementById("saveBtn").disabled = true;
             try {
                 var selectedDob = $('#candidateDob').val();
-/*                var c_dob = new Date(selectedDob);*/
-                var c_dob = String(selectedDob);
+                var c_dob = new Date(selectedDob);
+                var s = c_dob.getDate() + "/" + c_dob.get
+                alert(c_dob);
                 var d = {
                     //mandatory fields
                     candidateName: $('#candidateName').val(),

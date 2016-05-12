@@ -29,7 +29,9 @@ function processLeadUpdate(returnedData) {
     window.location="/support";
 }
 
-
+function openCreateCandidate() {
+    window.location="/candidateSignupSupport";
+}
 
 function processCandidateReg(returnedData) {
 
@@ -68,9 +70,9 @@ function processDataForSupport(returnedData) {
                 newLead.leadName,
                 function(){
                     if(newLead.leadStatus == 'New') {
-                        return '<input type="submit" data-toggle="modal" data-target="#callResponseModal" value="Call" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+')" id="'+newLead.leadId+'" class="btn btn-primary">'
+                        return '<input type="submit" value="Call" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+'); openCreateCandidate()" id="'+newLead.leadId+'" class="btn btn-primary">'
                     } else {
-                        return '<input type="submit" data-toggle="modal" data-target="#callResponseModal" value="Call Back" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+')" id="'+newLead.leadId+'"  class="btn btn-default">'
+                        return '<input type="submit" value="Call Back" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+'); openCreateCandidate()" id="'+newLead.leadId+'"  class="btn btn-default">'
                     }
                 }
             ] ).draw( false );
