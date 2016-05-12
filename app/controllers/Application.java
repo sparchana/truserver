@@ -99,59 +99,7 @@ public class Application extends Controller {
         Form<AddSupportCandidateRequest> candidateForm = Form.form(AddSupportCandidateRequest.class);
         AddSupportCandidateRequest addSupportCandidateRequest = candidateForm.bindFromRequest().get();
 
-        Candidate candidate = new Candidate();
-        candidate.candidateId = Util.randomLong();
-        candidate.candidateUUId = UUID.randomUUID().toString();
-        candidate.candidateName = addSupportCandidateRequest.getCandidateName();
-        candidate.candidateMobile = "+91" + addSupportCandidateRequest.getCandidateMobile();
-
-/*        candidate.candidateDOB = addSupportCandidateRequest.getCandidateDob();*/
-        candidate.candidatePhoneType = addSupportCandidateRequest.getCandidatePhoneType();
-        candidate.candidateGender = addSupportCandidateRequest.getCandidateGender();
-        candidate.candidateMaritalStatus = addSupportCandidateRequest.getCandidateMaritalStatus();
-        candidate.candidateEmail = addSupportCandidateRequest.getCandidateEmail();
-        candidate.candidateIsEmployed = addSupportCandidateRequest.getCandidateIsEmployed();
-        candidate.candidateTotalExperience = addSupportCandidateRequest.getCandidateTotalExperience();
-
-        String candidateHomeLocality = addSupportCandidateRequest.getCandidateHomeLocality();
-
-        String candidateCurrentCompany = addSupportCandidateRequest.getCandidateCurrentCompany();
-        String candidateCurrentJobLocation = addSupportCandidateRequest.getCandidateCurrentJobLocation();
-        int candidateTransportation = addSupportCandidateRequest.getCandidateTransportation();
-        int candidateCurrentWorkShift = addSupportCandidateRequest.getCandidateCurrentWorkShift();
-        String candidateCurrentJobRole = addSupportCandidateRequest.getCandidateCurrentJobRole();
-        String candidateCurrentJobDesignation = addSupportCandidateRequest.getCandidateCurrentJobDesignation();
-        int candidateCurrentSalary = addSupportCandidateRequest.getCandidateCurrentSalary();
-        int candidateCurrentJobDuration = addSupportCandidateRequest.getCandidateCurrentJobDuration();
-
-        String candidatePastJobCompany = addSupportCandidateRequest.getCandidatePastJobCompany();
-        String candidatePastJobRole = addSupportCandidateRequest.getCandidatePastJobRole();
-        int candidatePastJobSalary = addSupportCandidateRequest.getCandidatePastJobSalary();
-
-        int candidateEducationLevel = addSupportCandidateRequest.getCandidateEducationLevel();
-        int candidateDegree = addSupportCandidateRequest.getCandidateDegree();
-        String candidateEducationInstitute = addSupportCandidateRequest.getCandidateEducationInstitute();
-
-        List<String> shiftTimePref = Arrays.asList(addSupportCandidateRequest.getCandidateTimeShiftPref().split("\\s*,\\s*"));
-
-        int candidateMotherTongue = addSupportCandidateRequest.getCandidateMotherTongue();
-
-        String candidateSkills = addSupportCandidateRequest.getCandidateSkills();
-
-        List<String> candidateIdProof = Arrays.asList(addSupportCandidateRequest.getCandidateIdProof().split("\\s*,\\s*"));
-        int candidateSalarySlip = addSupportCandidateRequest.getCandidateSalarySlip();
-        int candidateAppointmentLetter = addSupportCandidateRequest.getCandidateAppointmentLetter();
-
-        List<String> localityPrefList = Arrays.asList(addSupportCandidateRequest.getCandidateLocality().split("\\s*,\\s*"));
-        List<String> jobsPrefList = Arrays.asList(addSupportCandidateRequest.getCandidateJobInterest().split("\\s*,\\s*"));
-
-        Logger.info(candidateHomeLocality + " " + candidateCurrentCompany + " " + candidateCurrentJobLocation + " " +
-        candidateTransportation + " " + candidateCurrentWorkShift + " " + candidateCurrentJobRole + " " + candidateCurrentJobDesignation +
-        candidateCurrentSalary + " " + candidateCurrentJobDuration + " " + candidatePastJobCompany + " " + candidatePastJobRole + " " +
-        candidatePastJobSalary + " " + candidateEducationLevel + " " + candidateDegree + " " + candidateEducationInstitute + " " +
-        shiftTimePref + " " + candidateMotherTongue + " " + candidateSkills + " " + candidateIdProof + " " + candidateSalarySlip + "  " +
-        candidateAppointmentLetter + " " + localityPrefList + " " + jobsPrefList + " " );
-        return ok("done");
+        return ok(toJson(CandidateService.createCandidateBySupport(addSupportCandidateRequest)));
     }
 
     public static Result addPassword() {
@@ -710,9 +658,9 @@ public class Application extends Controller {
     public static Result addSupportCandidate() {
         AddSupportCandidateRequest request = new AddSupportCandidateRequest();
 
-        request.setCandidateCurrentCompany("Apple"); // #
+        request.setCandidateCurrentCompany("Orange"); // #
         request.setCandidateCurrentJobDesignation("PA");  // #
-        request.setCandidateCurrentJobRole("5"); // #
+        request.setCandidateCurrentJobRole("2"); // #
         request.setCandidateCurrentJobDuration(22); // #
         request.setCandidateCurrentJobLocation("1"); // #
         request.setCandidateCurrentSalary(20500); // #
@@ -724,10 +672,10 @@ public class Application extends Controller {
 
         // no column to handle this
         request.setCandidateDegree(1);
-        request.setCandidateEducationInstitute("Christ University");
+        request.setCandidateEducationInstitute("Christ Sucks University");
         request.setCandidateEducationLevel(1);
 
-        request.setCandidateEmail("test@trujobs.in"); //#
+        request.setCandidateEmail("best@trujobs.in"); //#
         request.setCandidateGender(1); //female #
         request.setCandidateHomeLocality("5"); //#
         request.setCandidateIsEmployed(1); //yes #
@@ -735,17 +683,17 @@ public class Application extends Controller {
         request.setCandidateMotherTongue(2); // Hindi #
         request.setCandidateTimeShiftPref("1"); // #
 
-        request.setCandidatePastJobCompany("Google India"); //#
+        request.setCandidatePastJobCompany("Microsoft India"); //#
         request.setCandidatePastJobRole("4"); //#
         request.setCandidatePastJobSalary(15800); //#
 
 
         request.setCandidateIdProof("1,2,3"); // # Adhaar
-        request.setCandidateLocality("1, 5, 7"); //#* localitypref
-        request.setCandidateJobInterest("1, 5, 7"); //#*
+        request.setCandidateLocality("2, 1, 7"); //#* localitypref
+        request.setCandidateJobInterest("10, 11, 12"); //#*
 
-        request.setCandidateName("TEST5"); //*#
-        request.setCandidateMobile("8111111113"); //*#
+        request.setCandidateName("Sandy"); //*#
+        request.setCandidateMobile("8111111115"); //*#
         request.setCandidatePhoneType("Apple"); //#
         request.setCandidateTotalExperience(10); //#
         request.setCandidateTransportation(1); // Scooter

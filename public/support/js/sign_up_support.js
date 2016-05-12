@@ -307,7 +307,7 @@ function processDataCheckSkills(returnedData) {
                 item ["qualifier"] = name;
                 for(var i in skillMap){
                     if(skillMap[i].id == id){
-                        check = 1;
+                        check = 1;  
                         pos=i;
                     }
                 }
@@ -374,15 +374,14 @@ $(function() {
             document.getElementById("saveBtn").disabled = true;
             try {
                 var selectedDob = $('#candidateDob').val();
-                var c_dob = new Date(selectedDob);
-                var s = c_dob.getDate() + "/" + c_dob.get
-                alert(c_dob);
+/*                var c_dob = new Date(selectedDob);*/
+                var c_dob = String(selectedDob);
                 var d = {
                     //mandatory fields
                     candidateName: $('#candidateName').val(),
                     candidateMobile: $('#candidateMobile').val(),
-                    candidateLocality: $('#candidateLocality').val(),
-                    candidateJobPref: $('#candidateJobPref').val(),
+                    candidateLocality: $('#candidateLocalityPref').val(),
+                    candidateJobInterest: $('#candidateJobPref').val(),
 
                     //others
                     candidateDob: c_dob,
