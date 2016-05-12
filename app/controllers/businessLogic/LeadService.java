@@ -28,6 +28,6 @@ public class LeadService {
         }
 
         interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
-        InteractionService.createIntraction(interaction);
+        InteractionService.createInteraction(interaction);
     }
 }

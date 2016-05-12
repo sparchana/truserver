@@ -612,9 +612,9 @@ public class Application extends Controller {
     public static Result addSupportCandidate() {
         AddSupportCandidateRequest request = new AddSupportCandidateRequest();
 
-        request.setCandidateCurrentCompany("Apple"); // #
+        request.setCandidateCurrentCompany("Orange"); // #
         request.setCandidateCurrentJobDesignation("PA");  // #
-        request.setCandidateCurrentJobRole("5"); // #
+        request.setCandidateCurrentJobRole("2"); // #
         request.setCandidateCurrentJobDuration(22); // #
         request.setCandidateCurrentJobLocation("1"); // #
         request.setCandidateCurrentSalary(20500); // #
@@ -626,10 +626,10 @@ public class Application extends Controller {
 
         // no column to handle this
         request.setCandidateDegree(1);
-        request.setCandidateEducationInstitute("Christ University");
+        request.setCandidateEducationInstitute("Christ Sucks University");
         request.setCandidateEducationLevel(1);
 
-        request.setCandidateEmail("test@trujobs.in"); //#
+        request.setCandidateEmail("best@trujobs.in"); //#
         request.setCandidateGender(1); //female #
         request.setCandidateHomeLocality("5"); //#
         request.setCandidateIsEmployed(1); //yes #
@@ -637,17 +637,17 @@ public class Application extends Controller {
         request.setCandidateMotherTongue(2); // Hindi #
         request.setCandidateTimeShiftPref("1"); // #
 
-        request.setCandidatePastJobCompany("Google India"); //#
+        request.setCandidatePastJobCompany("Microsoft India"); //#
         request.setCandidatePastJobRole("4"); //#
         request.setCandidatePastJobSalary(15800); //#
 
 
         request.setCandidateIdProof("1,2,3"); // # Adhaar
-        request.setCandidateLocality("1, 5, 7"); //#* localitypref
-        request.setCandidateJobInterest("1, 5, 7"); //#*
+        request.setCandidateLocality("2, 1, 7"); //#* localitypref
+        request.setCandidateJobInterest("10, 11, 12"); //#*
 
-        request.setCandidateName("TEST5"); //*#
-        request.setCandidateMobile("8111111113"); //*#
+        request.setCandidateName("Sandy"); //*#
+        request.setCandidateMobile("8111111115"); //*#
         request.setCandidatePhoneType("Apple"); //#
         request.setCandidateTotalExperience(10); //#
         request.setCandidateTransportation(1); // Scooter

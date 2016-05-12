@@ -66,7 +66,7 @@ public class AuthService {
                 interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
                 interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
                 interaction.result = "New Candidate Added";
-                InteractionService.createIntraction(interaction);
+                InteractionService.createInteraction(interaction);
                 try {
                     existingCandidate.candidateprofilestatus = CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_NEW).findUnique();
                     candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);

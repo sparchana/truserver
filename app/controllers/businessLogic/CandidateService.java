@@ -31,20 +31,15 @@ public class CandidateService {
         Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", mobile).findUnique();
         if(existingCandidate != null) {
             return existingCandidate;
-        } else {
-            return null;
-        }
+        } else {return null;}
     }
 
     public static Lead isLeadExists(String mobile){
         Lead existingLead = Lead.find.where().eq("leadMobile", mobile).findUnique();
         if(existingLead != null) {
             return existingLead;
-        } else {
-            return null;
-        }
+        } else {return null;}
     }
-
 
     public static CandidateSignUpResponse createCandidate(Candidate candidate, boolean isSupport){
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
@@ -59,10 +54,7 @@ public class CandidateService {
                 if(existingLead == null){
                     LeadService.createLead(getLeadFromCandidate(candidate));
                 }
-                else {
-                    candidate.lead = existingLead;
-                }
-
+                else {candidate.lead = existingLead;}
                 CandidateProfileStatus candidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_NEW).findUnique();
                 if(candidateProfileStatus != null){
                     candidate.setCandidateprofilestatus(candidateProfileStatus);
@@ -74,55 +66,58 @@ public class CandidateService {
                 } else {
                     candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
                 }
+                interaction.result = "New Candidate Added";
                 if(!isSupport){
                     triggerOtp(candidate, candidateSignUpResponse);
+                    interaction.result = "New Candidate Added by support";
                 }
 
                 interaction.objectAUUId = candidate.candidateUUId;
-                interaction.result = "New Candidate Added";
                 interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
                 interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
-                InteractionService.createIntraction(interaction);
+                InteractionService.createInteraction(interaction);
 
             } else {
                 Auth auth = Auth.find.where().eq("CandidateId", existingCandidate.candidateId).findUnique();
-                if(auth != null){
-                    List<LocalityPreference> allLocality = LocalityPreference.find.where().eq("CandidateId", existingCandidate.candidateId).findList();
-                    for(LocalityPreference candidateLocality : allLocality){
-                        candidateLocality.delete();
-                    }
-
-                    List<JobPreference> allJob = JobPreference.find.where().eq("CandidateId", existingCandidate.candidateId).findList();
-                    for(JobPreference candidateJobs : allJob){
-                        candidateJobs.delete();
-                    }
-                    existingCandidate.localityPreferenceList = candidate.localityPreferenceList;
-                    existingCandidate.jobPreferencesList = candidate.jobPreferencesList;
-
-                    existingCandidate.candidateUpdate();
-                    Logger.info("Existing Candidate successfully updated" + candidate);
-
+                if(auth == null ){
+                    Logger.info("auth doesn't exists for this canidate");
+                    resetLocalityAndJobPref(existingCandidate, candidate.localityPreferenceList, candidate.jobPreferencesList);
                     if(!isSupport){
                         triggerOtp(candidate, candidateSignUpResponse);
+                    } else {
+                        createAndSaveDummpyAuthFor(candidate);
                     }
-
-                    interaction.objectAUUId = existingCandidate.candidateUUId;
-                    interaction.result = "Candidate updated jobPref and locality pref by reSignup";
-                    InteractionService.createIntraction(interaction);
-                    interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
-                    interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
-                    InteractionService.createIntraction(interaction);
-                } else {
-                    existingCandidate.candidateUpdate();
                 }
+                interaction.objectAUUId = existingCandidate.candidateUUId;
+                interaction.result = "Candidate updated jobPref and locality pref by reSignup";
+                InteractionService.createInteraction(interaction);
+                interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
+                interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+                InteractionService.createInteraction(interaction);
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
+                existingCandidate.candidateUpdate();
             }
         } catch (NullPointerException n){
             n.printStackTrace();
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
         }
-
         return candidateSignUpResponse;
+    }
+
+    private static void resetLocalityAndJobPref(Candidate existingCandidate, List<LocalityPreference> localityPreferenceList, List<JobPreference> jobPreferencesList) {
+
+        // reset pref
+        List<LocalityPreference> allLocality = LocalityPreference.find.where().eq("CandidateId", existingCandidate.candidateId).findList();
+        for(LocalityPreference candidateLocality : allLocality){
+            candidateLocality.delete();
+        }
+
+        List<JobPreference> allJob = JobPreference.find.where().eq("CandidateId", existingCandidate.candidateId).findList();
+        for(JobPreference candidateJobs : allJob){
+            candidateJobs.delete();
+        }
+        existingCandidate.localityPreferenceList = localityPreferenceList;
+        existingCandidate.jobPreferencesList = jobPreferencesList;
     }
 
     public static AddCandidateResponse createCandidateBySupport(AddSupportCandidateRequest request){
@@ -130,12 +125,8 @@ public class CandidateService {
         // get candidateBasic obj from req
         // Handle jobPrefList and any other list with , as break point at application only
         boolean isSupport = true;
-        boolean doesExists = false;
         Candidate candidate = isCandidateExists(request.candidateMobile);
-        if(candidate != null){
-            doesExists = true;
-        }
-        if(!doesExists){
+        if(candidate == null){
             candidate = new Candidate();
             candidate.candidateId = Util.randomLong();
             candidate.candidateUUId = UUID.randomUUID().toString();
@@ -159,6 +150,11 @@ public class CandidateService {
                 return response;
             }
         } else {
+            List<LocalityPreference> localityPreferenceList = getCandidateLocalityPreferenceList(Arrays.asList(request.candidateLocality.split("\\s*,\\s*")), candidate);
+            List<JobPreference> jobPreferenceList = getCandidateJobPreferenceList(Arrays.asList(request.candidateJobInterest.split("\\s*,\\s*")), candidate);
+
+            resetLocalityAndJobPref(candidate, localityPreferenceList, jobPreferenceList);
+
             candidate.setCandidateUpdateTimestamp(new Timestamp(System.currentTimeMillis()));
             candidate.setCandidatePhoneType(request.getCandidatePhoneType());
             candidate.setCandidateTotalExperience(request.getCandidateTotalExperience());
@@ -177,8 +173,19 @@ public class CandidateService {
             candidate.candidateSkillList = getCandidateSkillListFromAddSupportCandidate(request, candidate);
             candidate.idProofReferenceList = getCandidateIdProofListFromAddSupportCandidate(Arrays.asList(request.candidateIdProof.split("\\s*,\\s*")), candidate);
             candidate.education = getCandidateEducationFromAddSupportCandidate(request, candidate);
+            Auth auth = Auth.find.where().eq("CandidateId", candidate.candidateId).findUnique();
+            if(auth == null ) {
+                createAndSaveDummpyAuthFor(candidate);
+            }
+            // create interaction record
+            Interaction interaction = new Interaction();
+            interaction.objectAUUId = candidate.candidateUUId;
+            interaction.result = "Candidate updated jobPref and locality pref by reSignup";
+            InteractionService.createInteraction(interaction);
+            interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
+            interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+            InteractionService.createInteraction(interaction);
 
-            Logger.info("checking setValue exists or not : " + candidate.candidatePhoneType);
             candidate.update();
             response.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
         }
@@ -381,6 +388,7 @@ public class CandidateService {
         }
         return candidateLocalityPreferenceList;
     }
+
     // extract lead features from candidate obj and returns a lead object
     private static Lead getLeadFromCandidate(Candidate candidate) {
         // call this fuction only to create new lead
@@ -394,5 +402,20 @@ public class CandidateService {
         lead.leadStatus = ServerConstants.LEAD_STATUS_WON;
         candidate.lead = lead;
         return lead;
+    }
+    private static void createAndSaveDummpyAuthFor(Candidate candidate) {
+        // create dummy auth
+        Auth authToken = new Auth();
+        String dummyPassword = String.valueOf(Util.randomLong());
+        authToken.authStatus = ServerConstants.CANDIDATE_STATUS_NOT_VERIFIED;
+        authToken.authCreateTimestamp = new Timestamp(System.currentTimeMillis());
+        authToken.authUpdateTimestamp = new Timestamp(System.currentTimeMillis());
+        authToken.candidateId = candidate.candidateId;
+        authToken.passwordSalt = Util.randomInt();
+        authToken.passwordMd5 = Util.md5(dummyPassword + authToken.passwordSalt);
+        authToken.save();
+        String msg = "Welcome to Trujobs.in! Your login details are Username: " + candidate.candidateMobile + " and password: " +dummyPassword+ ". Use this to login at trujobs.in !!";
+        SendOtpService.sendSms(candidate.candidateMobile, msg);
+        Logger.info("Dummy auth created + otp triggered + auth saved");
     }
 }
