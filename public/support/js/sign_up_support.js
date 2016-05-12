@@ -359,12 +359,13 @@ $(function() {
                 var selectedDob = $('#candidateDob').val();
 /*                var c_dob = new Date(selectedDob);*/
                 var c_dob = String(selectedDob);
+                alert($('#candidateJobPref').val());
                 var d = {
                     //mandatory fields
                     candidateName: $('#candidateName').val(),
                     candidateMobile: $('#candidateMobile').val(),
-                    candidateLocality: $('#candidateLocality').val(),
-                    candidateJobPref: $('#candidateJobPref').val(),
+                    candidateLocality: $('#candidateLocalityPref').val(),
+                    candidateJobInterest: $('#candidateJobPref').val(),
 
                     //others
                     candidateDob: c_dob,

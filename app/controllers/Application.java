@@ -99,59 +99,7 @@ public class Application extends Controller {
         Form<AddSupportCandidateRequest> candidateForm = Form.form(AddSupportCandidateRequest.class);
         AddSupportCandidateRequest addSupportCandidateRequest = candidateForm.bindFromRequest().get();
 
-        Candidate candidate = new Candidate();
-        candidate.candidateId = Util.randomLong();
-        candidate.candidateUUId = UUID.randomUUID().toString();
-        candidate.candidateName = addSupportCandidateRequest.getCandidateName();
-        candidate.candidateMobile = "+91" + addSupportCandidateRequest.getCandidateMobile();
-
-/*        candidate.candidateDOB = addSupportCandidateRequest.getCandidateDob();*/
-        candidate.candidatePhoneType = addSupportCandidateRequest.getCandidatePhoneType();
-        candidate.candidateGender = addSupportCandidateRequest.getCandidateGender();
-        candidate.candidateMaritalStatus = addSupportCandidateRequest.getCandidateMaritalStatus();
-        candidate.candidateEmail = addSupportCandidateRequest.getCandidateEmail();
-        candidate.candidateIsEmployed = addSupportCandidateRequest.getCandidateIsEmployed();
-        candidate.candidateTotalExperience = addSupportCandidateRequest.getCandidateTotalExperience();
-
-        String candidateHomeLocality = addSupportCandidateRequest.getCandidateHomeLocality();
-
-        String candidateCurrentCompany = addSupportCandidateRequest.getCandidateCurrentCompany();
-        String candidateCurrentJobLocation = addSupportCandidateRequest.getCandidateCurrentJobLocation();
-        int candidateTransportation = addSupportCandidateRequest.getCandidateTransportation();
-        int candidateCurrentWorkShift = addSupportCandidateRequest.getCandidateCurrentWorkShift();
-        String candidateCurrentJobRole = addSupportCandidateRequest.getCandidateCurrentJobRole();
-        String candidateCurrentJobDesignation = addSupportCandidateRequest.getCandidateCurrentJobDesignation();
-        int candidateCurrentSalary = addSupportCandidateRequest.getCandidateCurrentSalary();
-        int candidateCurrentJobDuration = addSupportCandidateRequest.getCandidateCurrentJobDuration();
-
-        String candidatePastJobCompany = addSupportCandidateRequest.getCandidatePastJobCompany();
-        String candidatePastJobRole = addSupportCandidateRequest.getCandidatePastJobRole();
-        int candidatePastJobSalary = addSupportCandidateRequest.getCandidatePastJobSalary();
-
-        int candidateEducationLevel = addSupportCandidateRequest.getCandidateEducationLevel();
-        int candidateDegree = addSupportCandidateRequest.getCandidateDegree();
-        String candidateEducationInstitute = addSupportCandidateRequest.getCandidateEducationInstitute();
-
-        List<String> shiftTimePref = Arrays.asList(addSupportCandidateRequest.getCandidateTimeShiftPref().split("\\s*,\\s*"));
-
-        int candidateMotherTongue = addSupportCandidateRequest.getCandidateMotherTongue();
-
-        String candidateSkills = addSupportCandidateRequest.getCandidateSkills();
-
-        List<String> candidateIdProof = Arrays.asList(addSupportCandidateRequest.getCandidateIdProof().split("\\s*,\\s*"));
-        int candidateSalarySlip = addSupportCandidateRequest.getCandidateSalarySlip();
-        int candidateAppointmentLetter = addSupportCandidateRequest.getCandidateAppointmentLetter();
-
-        List<String> localityPrefList = Arrays.asList(addSupportCandidateRequest.getCandidateLocality().split("\\s*,\\s*"));
-        List<String> jobsPrefList = Arrays.asList(addSupportCandidateRequest.getCandidateJobInterest().split("\\s*,\\s*"));
-
-        Logger.info(candidateHomeLocality + " " + candidateCurrentCompany + " " + candidateCurrentJobLocation + " " +
-        candidateTransportation + " " + candidateCurrentWorkShift + " " + candidateCurrentJobRole + " " + candidateCurrentJobDesignation +
-        candidateCurrentSalary + " " + candidateCurrentJobDuration + " " + candidatePastJobCompany + " " + candidatePastJobRole + " " +
-        candidatePastJobSalary + " " + candidateEducationLevel + " " + candidateDegree + " " + candidateEducationInstitute + " " +
-        shiftTimePref + " " + candidateMotherTongue + " " + candidateSkills + " " + candidateIdProof + " " + candidateSalarySlip + "  " +
-        candidateAppointmentLetter + " " + localityPrefList + " " + jobsPrefList + " " );
-        return ok("done");
+        return ok(toJson(CandidateService.createCandidateBySupport(addSupportCandidateRequest)));
     }
 
     public static Result addPassword() {

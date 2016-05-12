@@ -123,6 +123,7 @@ public class CandidateService {
                 Logger.info("Static Table is empty");
                 response.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
             }
+            Logger.info(" reqJobPref: " + request.candidateJobInterest);
             candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(Arrays.asList(request.candidateLocality.split("\\s*,\\s*")), candidate);
             candidate.jobPreferencesList = getCandidateJobPreferenceList(Arrays.asList(request.candidateJobInterest.split("\\s*,\\s*")), candidate);
             CandidateSignUpResponse candidateSignUpResponse = createCandidate(candidate, isSupport);
@@ -133,11 +134,11 @@ public class CandidateService {
                 response.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
                 return response;
             }
-        } else {
-            List<LocalityPreference> localityPreferenceList = getCandidateLocalityPreferenceList(Arrays.asList(request.candidateLocality.split("\\s*,\\s*")), candidate);
-            List<JobPreference> jobPreferenceList = getCandidateJobPreferenceList(Arrays.asList(request.candidateJobInterest.split("\\s*,\\s*")), candidate);
-
-            resetLocalityAndJobPref(candidate, localityPreferenceList, jobPreferenceList);
+        } else{
+            Logger.info(" reqJobPref: " + request.candidateJobInterest);
+            candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(Arrays.asList(request.candidateLocality.split("\\s*,\\s*")), candidate);
+            candidate.jobPreferencesList = getCandidateJobPreferenceList(Arrays.asList(request.candidateJobInterest.split("\\s*,\\s*")), candidate);
+        }
 
             candidate.setCandidateUpdateTimestamp(new Timestamp(System.currentTimeMillis()));
             candidate.setCandidatePhoneType(request.getCandidatePhoneType());
@@ -172,7 +173,7 @@ public class CandidateService {
 
             candidate.update();
             response.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-        }
+
         return response;
     }
 
@@ -368,6 +369,7 @@ public class CandidateService {
             Locality locality = Locality.find.where()
                     .eq("localityId", localityId).findUnique();
             candidateLocalityPreference.locality = locality;
+            Logger.info("candiateLocalitypref"+candidateLocalityPreference.locality + " == " + localityId);
             candidateLocalityPreferenceList.add(candidateLocalityPreference);
         }
         return candidateLocalityPreferenceList;
