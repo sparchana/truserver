@@ -43,6 +43,10 @@ public class CandidateEducation extends Model{
 
     public static Model.Finder<String, CandidateEducation> find = new Model.Finder(CandidateEducation.class);
 
+    public void setDegree(Degree degree) {
+        this.degree = degree;
+    }
+
     public void setUpdateTimeStamp(Timestamp updateTimeStamp) {
         this.updateTimeStamp = updateTimeStamp;
     }

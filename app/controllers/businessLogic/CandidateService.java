@@ -237,13 +237,18 @@ public class CandidateService {
             response = new CandidateEducation();
         }
         Education education = Education.find.where().eq("educationId", request.getCandidateEducationLevel()).findUnique();
+        Degree degree = Degree.find.where().eq("degreeId", request.getCandidateDegree()).findUnique();
         if(education == null){
             Logger.info("education static table empty");
+            return null;
+        } if(degree == null){
+            Logger.info("degree static table empty");
             return null;
         } else {
             response.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
             response.setCandidate(candidate);
             response.setEducation(education);
+            response.setDegree(degree);
             response.setCandidateLastInstitute(request.getCandidateEducationInstitute());
         }
         return response;
