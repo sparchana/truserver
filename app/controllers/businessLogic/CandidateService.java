@@ -393,18 +393,12 @@ public class CandidateService {
                 resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
                 Logger.info("reset password not allowed as Auth don't exists");
             } else {
-                if(exisitingAuth.authStatus == ServerConstants.CANDIDATE_STATUS_VERIFIED){
                     int randomPIN = generateOtp();
                     existingCandidate.update();
                     String msg = "Welcome to Trujobs.in! Use OTP " + randomPIN + " to reset password";
                     SendOtpService.sendSms(existingCandidate.candidateMobile, msg);
                     resetPasswordResponse.setOtp(randomPIN);
                     resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);
-                }
-                else{
-                    resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
-                    Logger.info("reset password not allowed as Auth not verified");
-                }
             }
         } else{
             resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
