@@ -185,22 +185,14 @@ public class CandidateService {
             LanguageKnown languageKnown = new LanguageKnown();
             Language language = Language.find.where().eq("LanguageId", languageClass.getId()).findUnique();
             if(language == null) {
-                Logger.info("Language static table is empty");
+                Logger.info("Language static table is empty for:" + languageClass.getId());
                 return null;
             }
             languageKnown.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
             languageKnown.setLanguage(language);
-            switch (languageClass.getValue()){
-                case "R":
-                    languageKnown.setReadingAbility(1);
-                    break;
-                case "W":
-                    languageKnown.setWritingAbility(1);
-                    break;
-                case "S":
-                    languageKnown.setVerbalAbility(1);
-                    break;
-            }
+            languageKnown.setReadingAbility(languageClass.getR());
+            languageKnown.setWritingAbility(languageClass.getW());
+            languageKnown.setVerbalAbility(languageClass.getS());
             languageKnownList.add(languageKnown);
         }
         return languageKnownList;

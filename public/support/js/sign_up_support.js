@@ -3,6 +3,7 @@
  */
 
 var skillMap = [];
+var languageMap = [];
 var localityArray = [];
 var jobArray = [];
 var timeShiftArray = [];
@@ -242,9 +243,9 @@ function populateLanguages(l, lId) {
         var cell4 = row.insertCell(3);
 
         cell1.innerHTML = l[i];
-        cell2.innerHTML = "<input type=\"checkbox\" name=" + lId[i] +" value='R' >";
-        cell3.innerHTML = "<input type=\"checkbox\" name=" + lId[i] +" value='W' >";
-        cell4.innerHTML = "<input type=\"checkbox\" name=" + lId[i] +" value='S' >";
+        cell2.innerHTML = "<input id=" + lId[i] + " type=\"checkbox\" name=\"r\" value=0 >";
+        cell3.innerHTML = "<input id=" + lId[i] + " type=\"checkbox\" name=\"w\" value=0 >";
+        cell4.innerHTML = "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >";
     }
 
 }
@@ -367,12 +368,41 @@ $(function() {
             alert("Please Enter the Jobs you are Interested");
         }
         else{
-            var lanArray = [];
-            var element = {};
             var languageKnown = $('#languageTable input:checked').map(function() {
-                element = {"id":this.name, "value":this.value};
-                lanArray.push((element));
-                return this.name;
+                check=0;
+                var id = this.id;
+                var name = this.name;
+                var item = {}
+                var pos;
+
+                for(var i in languageMap){
+                    if(languageMap[i].id == id){
+                        pos=i;
+                        check=1;
+                        break;
+                    }
+                }
+                if(check==0){
+                    item["id"] = id;
+                    item["r"] = 0;
+                    item["w"] = 0;
+                    item["s"] = 0;
+                    if(name == "r")
+                        item["r"] = 1;
+                    else if(name == "w")
+                        item["w"] = 1;
+                    else
+                        item["s"] = 1;
+                    languageMap.push(item);
+                }
+                else{
+                    if(name == "r")
+                        languageMap[pos].r = 1;
+                    else if(name == "w")
+                        languageMap[pos].w = 1;
+                    else
+                        languageMap[pos].s = 1;
+                }
             }).get();
             alert(languageKnown);
 
@@ -417,7 +447,7 @@ $(function() {
                     candidateTimeShiftPref: $('#candidateTimeShiftPref').val(),
 
                     candidateMotherTongue: ($('#candidateMotherTongue').val()),
-                    candidateLanguageKnown: lanArray,
+                    candidateLanguageKnown: languageMap,
 
                     candidateSkills: skillMap,
 

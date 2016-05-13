@@ -5,7 +5,10 @@ package api.http;
  */
 public class LanguageClass {
     public String id;
-    public String value;
+    public int s;
+    public int r;
+    public int w;
+
 
     public String getId() {
         return id;
@@ -15,11 +18,27 @@ public class LanguageClass {
         this.id = id;
     }
 
-    public String getValue() {
-        return value;
+    public int getS() {
+        return s;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setS(int s) {
+        this.s = s;
+    }
+
+    public int getR() {
+        return r;
+    }
+
+    public void setR(int r) {
+        this.r = r;
+    }
+
+    public int getW() {
+        return w;
+    }
+
+    public void setW(int w) {
+        this.w = w;
     }
 }
