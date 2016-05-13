@@ -72,6 +72,7 @@ create table candidatecurrentjobdetail (
 create table candidateeducation (
   candidateeducationid          int signed not null auto_increment not null,
   updatetimestamp               timestamp default current_timestamp null,
+  candidatelastinstitute        varchar(256) null,
   candidateid                   bigint signed null,
   educationid                   int signed null,
   degreeid                      int signed not null,

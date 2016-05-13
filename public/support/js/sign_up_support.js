@@ -12,6 +12,7 @@ var educationArray = [];
 var languageArray = [];
 var idProofArray = [];
 var check = 0;
+var jobId;
 var head = document.createElement("label");
 
 $(document).ready(function(){
@@ -127,6 +128,19 @@ function getTimeShift(){
 
 function getIdProofs(){
     return idProofArray;
+}
+
+
+function getJobName(id){
+    var jobArray = getJob();
+    var returnJobName;
+    jobArray.forEach(function (job) {
+        if(job.id == id){
+            returnJobName = job.name;
+            return true;
+        }
+    });
+    return returnJobName;
 }
 
 function processDataCheckLocality(returnedData) {
@@ -285,7 +299,7 @@ function processDataCheckSkills(returnedData) {
 
     returnedData.forEach(function (singleSkill) {
         var q = document.createElement("h5");
-        head.innerHTML = "Skills for " + singleSkill.skill.skillName;
+        head.innerHTML = "Skills for " + getJobName(jobId);
         var question = singleSkill.skill.skillQuestion;
         q.textContent = question;
         parent.append(q);
@@ -335,6 +349,7 @@ function generateSkills(){
     var selectedJobPref_array = selectedJobPref.split(',');
     for(var i = 0; i < selectedJobPref_array.length; i++)
     {
+        jobId = selectedJobPref_array[i];
         try {
             $.ajax({
                 type: "GET",

@@ -23,6 +23,9 @@ public class CandidateEducation extends Model{
     @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp default current_timestamp null")
     public Timestamp updateTimeStamp;
 
+    @Column(name = "CandidateLastInstitute", columnDefinition = "varchar(256) null")
+    public String candidateLastInstitute;
+
     @OneToOne
     @JsonBackReference
     @JoinColumn(name = "CandidateId", referencedColumnName = "CandidateId")
@@ -51,4 +54,9 @@ public class CandidateEducation extends Model{
     public void setCandidate(Candidate candidate) {
         this.candidate = candidate;
     }
+
+    public void setCandidateLastInstitute(String candidateLastInstitute) {
+        this.candidateLastInstitute = candidateLastInstitute;
+    }
+
 }
