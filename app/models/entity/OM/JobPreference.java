@@ -16,9 +16,11 @@ import java.sql.Timestamp;
 @Table(name = "jobpreference")
 public class JobPreference extends Model {
     @Id
+    @JsonBackReference
     @Column(name = "JobPreferenceId", columnDefinition = "int signed", nullable = false, unique = true)
     public int jobPreferenceId = 0;
 
+    @JsonBackReference
     @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp default current_timestamp null")
     public Timestamp updateTimeStamp;
 

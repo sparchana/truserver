@@ -6,7 +6,7 @@ GET      /                                                        controllers.Ap
 
 GET      /support                                                 controllers.Application.support()
 
-GET      /candidateInteraction                                controllers.Application.candidateInteraction()
+GET      /candidateInteraction                                    controllers.Application.candidateInteraction()
 
 POST     /addLead                                                 controllers.Application.addLead()
 

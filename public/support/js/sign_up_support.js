@@ -242,9 +242,9 @@ function populateLanguages(l, lId) {
         var cell4 = row.insertCell(3);
 
         cell1.innerHTML = l[i];
-        cell2.innerHTML = "<input type=\"checkbox\" name=" + lId[i] + "_R " + " value=0 >";
-        cell3.innerHTML = "<input type=\"checkbox\" name=" + lId[i] + "_W " + " value=0 >";
-        cell4.innerHTML = "<input type=\"checkbox\" name=" + lId[i] + "_S " + " value=0 >";
+        cell2.innerHTML = "<input type=\"checkbox\" name=" + lId[i] +" value='R' >";
+        cell3.innerHTML = "<input type=\"checkbox\" name=" + lId[i] +" value='W' >";
+        cell4.innerHTML = "<input type=\"checkbox\" name=" + lId[i] +" value='S' >";
     }
 
 }
@@ -309,6 +309,7 @@ function processDataCheckSkills(returnedData) {
                     if(skillMap[i].id == id){
                         check = 1;  
                         pos=i;
+                        break;
                     }
                 }
                 if(check == 0)
@@ -351,38 +352,7 @@ function generateSkills(){
 }
 
 function processDataSignUpSupportSubmit(returnedData) {
-    console.log("returedData:candidateName :" + returnedData.candidateName);
-    console.log("returedData:candidateMobile :" + returnedData.candidateMobile);
-    console.log("returedData:candidateLocality :" + returnedData.candidateLocality);
-    console.log("returedData:candidateJobInterest :" + returnedData.candidateJobInterest);
-    console.log("returedData:candidateDob :" + returnedData.candidateDob);
-    console.log("returedData:candidatePhoneType :" + returnedData.candidatePhoneType);
-    console.log("returedData:candidateGender :" + returnedData.candidateGender);
-    console.log("returedData:candidateHomeLocality :" + returnedData.candidateHomeLocality);
-    console.log("returedData:candidateMaritalStatus :" + returnedData.candidateMaritalStatus);
-    console.log("returedData:candidateEmail :" + returnedData.candidateEmail);
-    console.log("returedData:candidateIsEmployed :" + returnedData.candidateIsEmployed);
-    console.log("returedData:candidateTotalExperience :" + returnedData.candidateTotalExperience);
-    console.log("returedData:candidateCurrentCompany :" + returnedData.candidateCurrentCompany);
-    console.log("returedData:candidateCurrentJobLocation :" + returnedData.candidateCurrentJobLocation);
-    console.log("returedData:candidateTransportation :" + returnedData.candidateTransportation);
-    console.log("returedData:candidateCurrentWorkShift :" + returnedData.candidateCurrentWorkShift);
-    console.log("returedData:candidateCurrentJobRole :" + returnedData.candidateCurrentJobRole);
-    console.log("returedData:candidateCurrentJobDesignation :" + returnedData.candidateCurrentJobDesignation);
-    console.log("returedData:candidateCurrentSalary :" + returnedData.candidateCurrentSalary);
-    console.log("returedData:candidateCurrentJobDuration :" + returnedData.candidateCurrentJobDuration);
-    console.log("returedData:candidatePastJobCompany :" + returnedData.candidatePastJobCompany);
-    console.log("returedData:candidatePastJobRole :" + returnedData.candidatePastJobRole);
-    console.log("returedData:candidatePastJobSalary :" + returnedData.candidatePastJobSalary);
-    console.log("returedData:candidateEducationLevel :" + returnedData.candidateEducationLevel);
-    console.log("returedData:candidateEducationInstitute :" + returnedData.candidateEducationInstitute);
-    console.log("returedData:candidateTimeShiftPref :" + returnedData.candidateTimeShiftPref);
-    console.log("returedData:candidateMotherTongue :" + returnedData.candidateMotherTongue);
-    console.log("returedData:candidateLanguageKnown :" + returnedData.candidateLanguageKnown);
-    console.log("returedData:candidateSkills :" + (returnedData.candidateSkills));
-    console.log("returedData:candidateIdProof :" + returnedData.candidateIdProof);
-    console.log("returedData:candidateSalarySlip :" + returnedData.candidateSalarySlip);
-    console.log("returedData:candidateAppointmentLetter :" + returnedData.candidateAppointmentLetter);
+    console.log(JSON.stringify(returnedData));
 }
 
 // form_candidate ajax script
@@ -397,7 +367,11 @@ $(function() {
             alert("Please Enter the Jobs you are Interested");
         }
         else{
+            var lanArray = [];
+            var element = {};
             var languageKnown = $('#languageTable input:checked').map(function() {
+                element = {"id":this.name, "value":this.value};
+                lanArray.push((element));
                 return this.name;
             }).get();
             alert(languageKnown);
@@ -417,39 +391,39 @@ $(function() {
                     //others
                     candidateDob: c_dob,
                     candidatePhoneType: $('#candidatePhoneType').val(),
-                    candidateGender: parseInt($('input:radio[name="gender"]:checked').val()),
+                    candidateGender: ($('input:radio[name="gender"]:checked').val()),
                     candidateHomeLocality: $('#candidateHomeLocality').val(),
-                    candidateMaritalStatus: parseInt($('input:radio[name="married"]:checked').val()),
+                    candidateMaritalStatus: ($('input:radio[name="married"]:checked').val()),
                     candidateEmail: $('#candidateEmail').val(),
-                    candidateIsEmployed: parseInt($('input:radio[name="employed"]:checked').val()),
-                    candidateTotalExperience: parseInt($('#candidateTotalExperience').val()),
+                    candidateIsEmployed: ($('input:radio[name="employed"]:checked').val()),
+                    candidateTotalExperience: ($('#candidateTotalExperience').val()),
 
                     candidateCurrentCompany: $('#candidateCurrentCompany').val(),
                     candidateCurrentJobLocation: $('#candidateCurrentJobLocation').val(),
-                    candidateTransportation: parseInt($('#selectTransportation').val()),
-                    candidateCurrentWorkShift: parseInt($('#currentWorkShift').val()),
+                    candidateTransportation: ($('#selectTransportation').val()),
+                    candidateCurrentWorkShift: ($('#currentWorkShift').val()),
                     candidateCurrentJobRole: $('#candidateCurrentJobRole').val(),
                     candidateCurrentJobDesignation: $('#candidateCurrentJobDesignation').val(),
-                    candidateCurrentSalary: parseInt($('#candidateCurrentJobSalary').val()),
-                    candidateCurrentJobDuration: parseInt($('#candidateCurrentJobDuration').val()),
+                    candidateCurrentSalary: ($('#candidateCurrentJobSalary').val()),
+                    candidateCurrentJobDuration: ($('#candidateCurrentJobDuration').val()),
 
                     candidatePastJobCompany: $('#candidatePastCompany').val(),
                     candidatePastJobRole: $('#candidatePastJobRole').val(),
-                    candidatePastJobSalary: parseInt($('#candidatePastJobSalary').val()),
+                    candidatePastJobSalary: ($('#candidatePastJobSalary').val()),
 
-                    candidateEducationLevel: parseInt($('#candidateHighestEducation').val()),
+                    candidateEducationLevel: ($('#candidateHighestEducation').val()),
                     candidateEducationInstitute: $('#candidateEducationInstitute').val(),
 
                     candidateTimeShiftPref: $('#candidateTimeShiftPref').val(),
 
-                    candidateMotherTongue: parseInt($('#candidateMotherTongue').val()),
-                    candidateLanguageKnown: languageKnown,
-                    
+                    candidateMotherTongue: ($('#candidateMotherTongue').val()),
+                    candidateLanguageKnown: lanArray,
+
                     candidateSkills: skillMap,
 
                     candidateIdProof: $('#candidateIdProof').val(),
-                    candidateSalarySlip: parseInt($('input:radio[name="payslip"]:checked').val()),
-                    candidateAppointmentLetter: parseInt($('input:radio[name="appointmentLetter"]:checked').val())
+                    candidateSalarySlip: ($('input:radio[name="payslip"]:checked').val()),
+                    candidateAppointmentLetter: ($('input:radio[name="appointmentLetter"]:checked').val())
                 };
 
                 $.ajax({
