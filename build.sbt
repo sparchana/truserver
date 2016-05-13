@@ -25,4 +25,8 @@ libraryDependencies += "com.google.protobuf" % "protobuf-java" % "3.0.0-beta-2"
 
 libraryDependencies += "net.sf.opencsv" % "opencsv" % "2.3"
 
+libraryDependencies += "com.typesafe.play" % "play-json_2.11" % "2.5.0"
+
+libraryDependencies += "com.google.code.gson" % "gson" % "2.5"
+
 libraryDependencies += evolutions

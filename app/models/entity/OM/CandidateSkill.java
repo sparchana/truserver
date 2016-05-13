@@ -63,6 +63,10 @@ public class CandidateSkill extends Model {
         this.candidate = candidate;
     }
 
+    public void setSkillQualifier(SkillQualifier skillQualifier) {
+        this.skillQualifier = skillQualifier;
+    }
+
     public static Model.Finder<String, CandidateSkill> find = new Model.Finder(CandidateSkill.class);
 
 }

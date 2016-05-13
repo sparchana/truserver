@@ -158,8 +158,8 @@ public class CandidateService {
             candidate.jobHistoryList = getJobHistoryListFromAddSupportCandidate(request, candidate);
             candidate.idProofReferenceList = getCandidateIdProofListFromAddSupportCandidate(Arrays.asList(request.candidateIdProof.split("\\s*,\\s*")), candidate);
             candidate.candidateSkillList = getCandidateSkillListFromAddSupportCandidate(request, candidate);
-            //candidate.candidateEducation = getCandidateEducationFromAddSupportCandidate(request, candidate);
-            //candidate.languageKnownList = getCandidateLanguageFromSupportCandidate(request, candidate);
+            candidate.candidateEducation = getCandidateEducationFromAddSupportCandidate(request, candidate);
+            candidate.languageKnownList = getCandidateLanguageFromSupportCandidate(request, candidate);
             Auth auth = Auth.find.where().eq("CandidateId", candidate.candidateId).findUnique();
             if(auth == null ) {
                 createAndSaveDummpyAuthFor(candidate);
@@ -180,8 +180,22 @@ public class CandidateService {
     }
 
     private static List<LanguageKnown> getCandidateLanguageFromSupportCandidate(AddSupportCandidateRequest request, Candidate candidate) {
-
-        return null;
+        List<LanguageKnown> languageKnownList = new ArrayList<>();
+        for(LanguageClass languageClass: request.candidateLanguageKnown){
+            LanguageKnown languageKnown = new LanguageKnown();
+            Language language = Language.find.where().eq("LanguageId", languageClass.getId()).findUnique();
+            if(language == null) {
+                Logger.info("Language static table is empty for:" + languageClass.getId());
+                return null;
+            }
+            languageKnown.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
+            languageKnown.setLanguage(language);
+            languageKnown.setReadingAbility(languageClass.getR());
+            languageKnown.setWritingAbility(languageClass.getW());
+            languageKnown.setVerbalAbility(languageClass.getS());
+            languageKnownList.add(languageKnown);
+        }
+        return languageKnownList;
     }
 
     private static void triggerOtp(Candidate candidate, CandidateSignUpResponse candidateSignUpResponse) {
@@ -230,14 +244,30 @@ public class CandidateService {
 
     private static List<CandidateSkill> getCandidateSkillListFromAddSupportCandidate(AddSupportCandidateRequest request, Candidate candidate) {
         List<CandidateSkill> response = new ArrayList<>();
-
-        CandidateSkill candidateSkill = new CandidateSkill();
-        Skill skill = Skill.find.where().eq("skillId", request.getCandidateSkills()).findUnique();
-        // TODO: add skill obj from req
-        candidateSkill.setCandidate(candidate);
-        candidateSkill.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
-        candidateSkill.setSkill(skill);
-        return null;
+        for(SkillMapClass item: request.candidateSkills){
+            item.getQualifier();
+            CandidateSkill candidateSkill = new CandidateSkill();
+            Skill skill = Skill.find.where().eq("skillId", item.getId()).findUnique();
+            if(skill == null) {
+                Logger.info("skill static table empty");
+                return null;
+            }
+            SkillQualifier skillQualifier =SkillQualifier.find.where()
+                    .eq("skillId", item.getId())
+                    .eq("qualifier", item.getQualifier())
+                    .findUnique();
+            if(skillQualifier == null){
+                Logger.info("skillQualifier static table is empty");
+                return null;
+            }
+            candidateSkill.setCandidate(candidate);
+            candidateSkill.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
+            candidateSkill.setSkill(skill);
+            candidateSkill.setSkillQualifier(skillQualifier);
+            response.add(candidateSkill);
+            Logger.info("skill........ " + skillQualifier.qualifier);
+        }
+        return response;
     }
 
     private static List<JobHistory> getJobHistoryListFromAddSupportCandidate(AddSupportCandidateRequest request, Candidate candidate) {
@@ -265,7 +295,7 @@ public class CandidateService {
         }
         TimeShift existingTimeShift = TimeShift.find.where().eq("timeShiftId", request.getCandidateTimeShiftPref()).findUnique();
         if(existingTimeShift == null) {
-            Logger.info("timeshift staic table empty");
+            Logger.info("timeshift staic table empty for Pref: " + request.getCandidateTimeShiftPref());
             return null;
         }
         response.setTimeShift(existingTimeShift);

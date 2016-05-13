@@ -3,6 +3,7 @@ package controllers;
 import api.ServerConstants;
 import api.http.*;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.AuthService;
 import controllers.businessLogic.CandidateService;
 import controllers.businessLogic.LeadService;
@@ -24,6 +25,7 @@ import play.mvc.Security;
 
 import javax.persistence.PersistenceException;
 import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -124,8 +126,16 @@ public class Application extends Controller {
     }
 
     public static Result signUpSupport() {
-        JsonNode json = request().body().asJson();
-        return ok(json);
+        JsonNode req = request().body().asJson();
+        AddSupportCandidateRequest addSupportCandidateRequest = new AddSupportCandidateRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addSupportCandidateRequest = newMapper.readValue(req.toString(), AddSupportCandidateRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Logger.info("------------>" + toJson(CandidateService.createCandidateBySupport(addSupportCandidateRequest)));
+        return ok(req);
     }
 
     public static Result addPassword() {

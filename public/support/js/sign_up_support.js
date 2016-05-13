@@ -310,6 +310,7 @@ function processDataCheckSkills(returnedData) {
                     if(skillMap[i].id == id){
                         check = 1;  
                         pos=i;
+                        break;
                     }
                 }
                 if(check == 0)
@@ -350,7 +351,7 @@ function generateSkills(){
 }
 
 function processDataSignUpSupportSubmit(returnedData) {
-
+    console.log(JSON.stringify(returnedData));
 }
 
 // form_candidate ajax script
@@ -418,39 +419,39 @@ $(function() {
                     //others
                     candidateDob: c_dob,
                     candidatePhoneType: $('#candidatePhoneType').val(),
-                    candidateGender: parseInt($('input:radio[name="gender"]:checked').val()),
+                    candidateGender: ($('input:radio[name="gender"]:checked').val()),
                     candidateHomeLocality: $('#candidateHomeLocality').val(),
-                    candidateMaritalStatus: parseInt($('input:radio[name="married"]:checked').val()),
+                    candidateMaritalStatus: ($('input:radio[name="married"]:checked').val()),
                     candidateEmail: $('#candidateEmail').val(),
-                    candidateIsEmployed: parseInt($('input:radio[name="employed"]:checked').val()),
-                    candidateTotalExperience: parseInt($('#candidateTotalExperience').val()),
+                    candidateIsEmployed: ($('input:radio[name="employed"]:checked').val()),
+                    candidateTotalExperience: ($('#candidateTotalExperience').val()),
 
                     candidateCurrentCompany: $('#candidateCurrentCompany').val(),
                     candidateCurrentJobLocation: $('#candidateCurrentJobLocation').val(),
-                    candidateTransportation: parseInt($('#selectTransportation').val()),
-                    candidateCurrentWorkShift: parseInt($('#currentWorkShift').val()),
+                    candidateTransportation: ($('#selectTransportation').val()),
+                    candidateCurrentWorkShift: ($('#currentWorkShift').val()),
                     candidateCurrentJobRole: $('#candidateCurrentJobRole').val(),
                     candidateCurrentJobDesignation: $('#candidateCurrentJobDesignation').val(),
-                    candidateCurrentSalary: parseInt($('#candidateCurrentJobSalary').val()),
-                    candidateCurrentJobDuration: parseInt($('#candidateCurrentJobDuration').val()),
+                    candidateCurrentSalary: ($('#candidateCurrentJobSalary').val()),
+                    candidateCurrentJobDuration: ($('#candidateCurrentJobDuration').val()),
 
                     candidatePastJobCompany: $('#candidatePastCompany').val(),
                     candidatePastJobRole: $('#candidatePastJobRole').val(),
-                    candidatePastJobSalary: parseInt($('#candidatePastJobSalary').val()),
+                    candidatePastJobSalary: ($('#candidatePastJobSalary').val()),
 
-                    candidateEducationLevel: parseInt($('#candidateHighestEducation').val()),
+                    candidateEducationLevel: ($('#candidateHighestEducation').val()),
                     candidateEducationInstitute: $('#candidateEducationInstitute').val(),
 
                     candidateTimeShiftPref: $('#candidateTimeShiftPref').val(),
 
-                    candidateMotherTongue: parseInt($('#candidateMotherTongue').val()),
-                    candidateLanguageKnown: languageKnown,
-                    
+                    candidateMotherTongue: ($('#candidateMotherTongue').val()),
+                    candidateLanguageKnown: languageMap,
+
                     candidateSkills: skillMap,
 
                     candidateIdProof: $('#candidateIdProof').val(),
-                    candidateSalarySlip: parseInt($('input:radio[name="payslip"]:checked').val()),
-                    candidateAppointmentLetter: parseInt($('input:radio[name="appointmentLetter"]:checked').val())
+                    candidateSalarySlip: ($('input:radio[name="payslip"]:checked').val()),
+                    candidateAppointmentLetter: ($('input:radio[name="appointmentLetter"]:checked').val())
                 };
 
                 $.ajax({
