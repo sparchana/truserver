@@ -167,6 +167,7 @@ public class Application extends Controller {
         ResetPasswordResquest resetPasswordResquest = checkCandidate.bindFromRequest().get();
 
         String candidateMobile = resetPasswordResquest.getResetPasswordMobile();
+        Logger.info("==> " + candidateMobile);
         return ok(toJson(CandidateService.findUserAndSendOtp(candidateMobile)));
     }
 
