@@ -4,6 +4,7 @@ import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
+import models.entity.Static.Degree;
 import models.entity.Static.Education;
 
 import javax.persistence.*;
@@ -31,6 +32,11 @@ public class CandidateEducation extends Model{
     @JsonManagedReference
     @JoinColumn(name = "EducationId", referencedColumnName = "EducationId")
     public Education education;
+
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "DegreeId", referencedColumnName = "DegreeId")
+    public Degree degree;
 
     public static Model.Finder<String, CandidateEducation> find = new Model.Finder(CandidateEducation.class);
 

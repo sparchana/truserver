@@ -74,6 +74,7 @@ create table candidateeducation (
   updatetimestamp               timestamp default current_timestamp null,
   candidateid                   bigint signed null,
   educationid                   int signed null,
+  degreeid                      int signed not null,
   constraint uq_candidateeducation_candidateid unique (candidateid),
   constraint pk_candidateeducation primary key (candidateeducationid)
 );
@@ -91,6 +92,12 @@ create table channels (
   channelid                     int signed not null auto_increment not null,
   channelname                   varchar(50) not null default 0 not null,
   constraint pk_channels primary key (channelid)
+);
+
+create table degree (
+  degreeid                      int signed not null auto_increment not null,
+  degreename                    varchar(100) null,
+  constraint pk_degree primary key (degreeid)
 );
 
 create table developer (
@@ -287,6 +294,9 @@ alter table candidateeducation add constraint fk_candidateeducation_candidateid 
 alter table candidateeducation add constraint fk_candidateeducation_educationid foreign key (educationid) references education (educationid) on delete restrict on update restrict;
 create index ix_candidateeducation_educationid on candidateeducation (educationid);
 
+alter table candidateeducation add constraint fk_candidateeducation_degreeid foreign key (degreeid) references degree (degreeid) on delete restrict on update restrict;
+create index ix_candidateeducation_degreeid on candidateeducation (degreeid);
+
 alter table candidateskill add constraint fk_candidateskill_candidateid foreign key (candidateid) references candidate (candidateid) on delete restrict on update restrict;
 create index ix_candidateskill_candidateid on candidateskill (candidateid);
 
@@ -373,6 +383,9 @@ alter table candidateeducation drop foreign key fk_candidateeducation_candidatei
 alter table candidateeducation drop foreign key fk_candidateeducation_educationid;
 drop index ix_candidateeducation_educationid on candidateeducation;
 
+alter table candidateeducation drop foreign key fk_candidateeducation_degreeid;
+drop index ix_candidateeducation_degreeid on candidateeducation;
+
 alter table candidateskill drop foreign key fk_candidateskill_candidateid;
 drop index ix_candidateskill_candidateid on candidateskill;
 
@@ -439,6 +452,8 @@ drop table if exists candidateeducation;
 drop table if exists candidateskill;
 
 drop table if exists channels;
+
+drop table if exists degree;
 
 drop table if exists developer;
 
