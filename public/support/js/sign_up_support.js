@@ -487,6 +487,7 @@ $(function() {
                     candidatePastJobSalary: ($('#candidatePastJobSalary').val()),
 
                     candidateEducationLevel: ($('#candidateHighestEducation').val()),
+                    candidateDegree: ($('#candidateHighestDegree').val()),
                     candidateEducationInstitute: $('#candidateEducationInstitute').val(),
 
                     candidateTimeShiftPref: $('#candidateTimeShiftPref').val(),

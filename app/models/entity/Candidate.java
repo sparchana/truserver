@@ -114,7 +114,7 @@ public class Candidate extends Model {
     public Lead lead;
 
     @JsonManagedReference
-    @OneToOne(mappedBy = "candidate", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OneToOne(mappedBy = "candidate", cascade = CascadeType.ALL)
     public TimeShiftPreference timeShiftPreference;
 
     @JsonManagedReference

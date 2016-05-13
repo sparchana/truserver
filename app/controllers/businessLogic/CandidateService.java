@@ -232,9 +232,13 @@ public class CandidateService {
     }
 
     private static CandidateEducation getCandidateEducationFromAddSupportCandidate(AddSupportCandidateRequest request, Candidate candidate) {
-        CandidateEducation response  = new CandidateEducation();
+        CandidateEducation response  = CandidateEducation.find.where().eq("candidateId", candidate.candidateId).findUnique();
         Education education = Education.find.where().eq("educationId", request.getCandidateEducationLevel()).findUnique();
         Degree degree = Degree.find.where().eq("degreeId", request.getCandidateDegree()).findUnique();
+        if(response == null){
+            response = new CandidateEducation();
+            response.setCandidate(candidate);
+        }
         if(education == null){
             Logger.info("education static table empty");
             return null;
@@ -243,7 +247,6 @@ public class CandidateService {
             return null;
         } else {
             response.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
-            response.setCandidate(candidate);
             response.setEducation(education);
             response.setDegree(degree);
             response.setCandidateLastInstitute(request.getCandidateEducationInstitute());
@@ -298,22 +301,28 @@ public class CandidateService {
     }
 
     private static TimeShiftPreference getTimeShiftPrefFromAddSupportCandidate(AddSupportCandidateRequest request, Candidate candidate) {
-        TimeShiftPreference response = new TimeShiftPreference();
-        TimeShift existingTimeShift = TimeShift.find.where().eq("timeShiftId", request.getCandidateTimeShiftPref()).findUnique();
-        if(existingTimeShift == null) {
-            Logger.info("timeshift staic table empty for Pref: " + request.getCandidateTimeShiftPref());
-            return null;
+        TimeShiftPreference response = TimeShiftPreference.find.where().eq("candidateId",candidate.candidateId).findUnique();
+        if(response == null){
+            response = new TimeShiftPreference();
+            TimeShift existingTimeShift = TimeShift.find.where().eq("timeShiftId", request.getCandidateTimeShiftPref()).findUnique();
+            if(existingTimeShift == null) {
+                Logger.info("timeshift staic table empty for Pref: " + request.getCandidateTimeShiftPref());
+                return null;
+            }
+            response.setTimeShift(existingTimeShift);
+            response.candidate = candidate;
+            response.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
         }
-        response.setTimeShift(existingTimeShift);
-        response.candidate = candidate;
-        response.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
         return response;
     }
 
     private static CandidateCurrentJobDetail getCandidateCurrentJobDetailFromAddSupportCandidate(AddSupportCandidateRequest request, Candidate candidate) {
-        CandidateCurrentJobDetail response =  new CandidateCurrentJobDetail();
+        CandidateCurrentJobDetail response =  CandidateCurrentJobDetail.find.where().eq("candidateId", candidate.candidateId).findUnique();
+        if(response == null){
+            response = new CandidateCurrentJobDetail();
+            response.setCandidate( candidate);
+        }
         response.setUpdateTimeStamp( new Timestamp(System.currentTimeMillis()));
-        response.setCandidate( candidate);
         response.setCandidateCurrentCompany( request.getCandidateCurrentCompany());
         response.setCandidateCurrentDesignation( request.getCandidateCurrentJobDesignation());
         response.setCandidateCurrentSalary(request.getCandidateCurrentSalary());

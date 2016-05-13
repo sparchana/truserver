@@ -12,8 +12,6 @@ GET      /getCandidateInteraction/:id                             controllers.Ap
 
 POST     /addLead                                                 controllers.Application.addLead()
 
-GET      /addSupportCandidate                                     controllers.Application.addSupportCandidate()
-
 POST     /signUp                                                  controllers.Application.signUp()
 
 POST     /signUpSupport                                           controllers.Application.signUpSupport()

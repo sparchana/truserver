@@ -17,7 +17,7 @@ public class Degree extends Model {
     public int degreeId = 0;
 
     @Column(name = "DegreeName", columnDefinition = "varchar(100) null")
-    public String degreeName;
+    public String degreeName = "";
 
     @JsonBackReference
     @OneToMany(mappedBy = "degree", cascade = CascadeType.REMOVE)
