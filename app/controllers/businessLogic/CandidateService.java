@@ -161,7 +161,7 @@ public class CandidateService {
             candidate.candidateEducation = getCandidateEducationFromAddSupportCandidate(request, candidate);
             candidate.languageKnownList = getCandidateLanguageFromSupportCandidate(request, candidate);
             Auth auth = Auth.find.where().eq("CandidateId", candidate.candidateId).findUnique();
-            if(auth == null ) {
+            if(auth == null) {
                 createAndSaveDummpyAuthFor(candidate);
             }
             // create interaction record

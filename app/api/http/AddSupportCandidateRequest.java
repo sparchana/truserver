@@ -7,45 +7,45 @@ import java.util.List;
  * Created by batcoder1 on 10/5/16.
  */
 public class AddSupportCandidateRequest {
-    public String candidateName = " ";
-    public String candidateMobile = " ";
-    public String candidateJobInterest = " ";
-    public String candidateLocality = " ";
+    public String candidateName;
+    public String candidateMobile;
+    public String candidateJobInterest;
+    public String candidateLocality;
 
     public Date candidateDob = new Date();
-    public int candidateAge = 0;
-    public String candidatePhoneType = " ";
-    public int candidateGender = 0;
-    public String candidateHomeLocality = " ";
-    public int candidateMaritalStatus = 0;
-    public String candidateEmail = " ";
-    public int candidateIsEmployed = 0;
-    public int candidateTotalExperience = 0;
+    public int candidateAge ;
+    public String candidatePhoneType;
+    public int candidateGender ;
+    public String candidateHomeLocality;
+    public int candidateMaritalStatus ;
+    public String candidateEmail;
+    public int candidateIsEmployed ;
+    public int candidateTotalExperience ;
 
-    public String candidateCurrentCompany = " ";
-    public String candidateCurrentJobLocation = " ";
-    public int candidateTransportation = 0;
-    public int candidateCurrentWorkShift = 0;
-    public String candidateCurrentJobRole = " ";
-    public String candidateCurrentJobDesignation = " ";
-    public int candidateCurrentSalary = 0;
-    public int candidateCurrentJobDuration = 0;
-    public String candidatePastJobCompany = " ";
-    public String candidatePastJobRole = " ";
-    public int candidatePastJobSalary = 0;
+    public String candidateCurrentCompany;
+    public String candidateCurrentJobLocation;
+    public int candidateTransportation ;
+    public int candidateCurrentWorkShift ;
+    public String candidateCurrentJobRole;
+    public String candidateCurrentJobDesignation;
+    public int candidateCurrentSalary ;
+    public int candidateCurrentJobDuration ;
+    public String candidatePastJobCompany;
+    public String candidatePastJobRole;
+    public int candidatePastJobSalary ;
 
-    public int candidateEducationLevel= 0;
-    public int candidateDegree = 0;
-    public String candidateEducationInstitute = " ";
+    public int candidateEducationLevel;
+    public int candidateDegree ;
+    public String candidateEducationInstitute;
 
-    public String candidateTimeShiftPref = " ";
+    public String candidateTimeShiftPref;
 
-    public int candidateMotherTongue = 0;
+    public int candidateMotherTongue ;
 
-    public String candidateIdProof = " ";
+    public String candidateIdProof;
 
-    public int candidateSalarySlip = 0;
-    public int candidateAppointmentLetter = 0;
+    public int candidateSalarySlip ;
+    public int candidateAppointmentLetter ;
 
     public List<SkillMapClass> candidateSkills;
 
@@ -60,13 +60,19 @@ public class AddSupportCandidateRequest {
 
     /* Mandatory */
     public void setCandidateName(String candidateName) {
-        this.candidateName = candidateName;
+            this.candidateName = candidateName;
     }
     public String getCandidateName() {
         return candidateName;
     }
 
-    public void setCandidateMobile(String candidateMobile) { this.candidateMobile = candidateMobile; }
+    public void setCandidateMobile(String candidateMobile) {
+        if(candidateMobile.length() != 10){
+            this.candidateMobile = "+91" + candidateMobile;
+        } else{
+            this.candidateMobile = candidateMobile;
+        }
+    }
     public String getCandidateMobile() {
         return candidateMobile;
     }
