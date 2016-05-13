@@ -163,8 +163,10 @@
                $('#doneAssessment').hide();
                $('#takeAssessment').hide();
            }
-           else
+           else{
+               logoutUser();
                window.location = "/";
+           }
 
         });
         function logoutUser() {

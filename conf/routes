@@ -48,6 +48,8 @@ GET      /getAllLanguage                                          controllers.Ap
 
 GET      /getAllIdProof                                           controllers.Application.getAllIdProof()
 
+GET      /getAllDegree                                            controllers.Application.getAllDegree()
+
 GET      /getUserInfo/:id                                         controllers.Application.getUserInfo(id : Long)
 
 GET      /getCandidateInfo/:id                                    controllers.Application.getCandidateInfo(id : Long)

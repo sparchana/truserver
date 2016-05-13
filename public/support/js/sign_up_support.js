@@ -11,6 +11,7 @@ var transportationArray = [];
 var educationArray = [];
 var languageArray = [];
 var idProofArray = [];
+var degreeArray = [];
 var check = 0;
 var jobId;
 var head = document.createElement("label");
@@ -112,6 +113,19 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/getAllDegree",
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckDegree
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
 });
 
 function getLocality(){
@@ -130,6 +144,9 @@ function getIdProofs(){
     return idProofArray;
 }
 
+function getDegree(){
+    return degreeArray;
+}
 
 function getJobName(id){
     var jobArray = getJob();
@@ -164,6 +181,20 @@ function processDataCheckIdProofs(returnedData) {
         item ["id"] = id;
         item ["name"] = name;
         idProofArray.push(item);
+    });
+}
+
+function processDataCheckDegree(returnedData) {
+    returnedData.forEach(function(degree)
+    {
+        var id = degree.degreeId;
+        var name = degree.degreeName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        var option=$('<option value=' + id + '></option>').text(name);
+        $('#candidateHighestDegree').append(option);
+        degreeArray.push(item);
     });
 }
 
@@ -264,10 +295,6 @@ function populateLanguages(l, lId) {
 
 }
 
-function selectMotherTongue(){
-    document.getElementById("checkbox").checked = true;
-}
-
 function onCallYes(){
     $("#saveBtn").prop("disabled", false);
     $("#cancelBtn").prop("disabled", false);
@@ -342,11 +369,16 @@ function processDataCheckSkills(returnedData) {
     });
 }
 
+
 function generateSkills(){
     var myNode = document.getElementById("skill_details");
     myNode.innerHTML = '';
     var selectedJobPref = $('#candidateJobPref').val();
     var selectedJobPref_array = selectedJobPref.split(',');
+    var len = selectedJobPref_array.length;
+    if(len==1){
+        head.innerHTML = "No Skills found for the above Job Roles";
+    }
     for(var i = 0; i < selectedJobPref_array.length; i++)
     {
         jobId = selectedJobPref_array[i];

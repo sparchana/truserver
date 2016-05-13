@@ -394,6 +394,11 @@ public class Application extends Controller {
         return ok(toJson(idProofs));
     }
 
+    public static Result getAllDegree() {
+        List<Degree> degreeList = Degree.find.findList();
+        return ok(toJson(degreeList));
+    }
+
     public static Result test(int n) {
         long testCandidateId = 73064660;
         switch (n) {
@@ -737,4 +742,5 @@ public class Application extends Controller {
 
         return ok(toJson(CandidateService.createCandidateBySupport(request).status));
     }
+
 }
