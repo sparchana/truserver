@@ -8,6 +8,8 @@ GET      /support                                                 controllers.Ap
 
 GET      /candidateInteraction                                controllers.Application.candidateInteraction()
 
+GET      /getCandidateInteraction/:id                             controllers.Application.getCandidateInteraction(id : Long)
+
 POST     /addLead                                                 controllers.Application.addLead()
 
 GET      /addSupportCandidate                                     controllers.Application.addSupportCandidate()
