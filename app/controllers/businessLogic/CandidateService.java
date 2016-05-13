@@ -284,7 +284,7 @@ public class CandidateService {
         jobHistory.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
         jobHistory.setCandidatePastSalary(request.getCandidatePastJobSalary());
         jobHistory.setCandidatePastCompany(request.getCandidatePastJobCompany());
-        JobRole jobRole = JobRole.find.where().eq("jobRoleId",request.getCandidateCurrentJobRole()).findUnique();
+        JobRole jobRole = JobRole.find.where().eq("jobRoleId",request.getCandidatePastJobRole()).findUnique();
         if(jobRole == null) {
             Logger.info("jobRole staic table empty");
             return null;
@@ -379,14 +379,14 @@ public class CandidateService {
 
     public static ResetPasswordResponse findUserAndSendOtp(String candidateMobile){
         ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
-        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", "+91" + candidateMobile).findUnique();
+        Candidate existingCandidate = isCandidateExists("+91"+candidateMobile);
         if(existingCandidate != null){
+            Logger.info("CandidateExists");
             Auth exisitingAuth = Auth.find.where().eq("candidateId", existingCandidate.candidateId).findUnique();
             if(exisitingAuth == null){
                 resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
                 Logger.info("reset password not allowed as Auth don't exists");
-            }
-            else {
+            } else {
                 if(exisitingAuth.authStatus == ServerConstants.CANDIDATE_STATUS_VERIFIED){
                     int randomPIN = generateOtp();
                     existingCandidate.update();
@@ -397,13 +397,12 @@ public class CandidateService {
                 }
                 else{
                     resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
-                    Logger.info("reset password not allowed as Auth don't exists");
+                    Logger.info("reset password not allowed as Auth not verified");
                 }
             }
-        }
-        else{
+        } else{
             resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
-            Logger.info("reset password not allowed as Auth don't exists");
+            Logger.info("reset password not allowed as Candidate don't exists");
         }
         return resetPasswordResponse;
     }

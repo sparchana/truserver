@@ -110,7 +110,7 @@ public class Candidate extends Model {
     public CandidateCurrentJobDetail candidateCurrentJobDetail;
 
     @JsonManagedReference
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     public Lead lead;
 
     @JsonManagedReference

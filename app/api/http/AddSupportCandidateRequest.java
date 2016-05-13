@@ -1,5 +1,7 @@
 package api.http;
 
+import play.Logger;
+
 import java.util.Date;
 import java.util.List;
 
@@ -67,7 +69,8 @@ public class AddSupportCandidateRequest {
     }
 
     public void setCandidateMobile(String candidateMobile) {
-        if(candidateMobile.length() != 10){
+        if(candidateMobile.length() == 10){
+            Logger.info("adding +91 to " + candidateMobile);
             this.candidateMobile = "+91" + candidateMobile;
         } else{
             this.candidateMobile = candidateMobile;

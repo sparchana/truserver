@@ -55,6 +55,7 @@ public class AuthService {
                 auth.authId =  (int)(Math.random()*9000)+100000;
                 auth.candidateId = existingCandidate.candidateId;
                 setNewPassword(auth,password);
+                auth.authStatus = ServerConstants.CANDIDATE_STATUS_VERIFIED;
                 Auth.savePassword(auth);
 
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);

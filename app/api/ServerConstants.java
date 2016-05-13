@@ -21,8 +21,7 @@ public class ServerConstants {
     public static final int LEAD_STATUS_LOST= 3; // LOST:
 
     public static final int CANDIDATE_STATUS_NOT_VERIFIED = 0;
-    public static final int CANDIDATE_STATUS_SUPPORT= 1;
-    public static final int CANDIDATE_STATUS_VERIFIED= 2;
+    public static final int CANDIDATE_STATUS_VERIFIED= 1;
 
     public static final int OBJECT_TYPE_LEAD= 1;
     public static final int OBJECT_TYPE_RECRUTER= 2;
