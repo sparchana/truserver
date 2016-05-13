@@ -317,8 +317,6 @@ function processDataCheckSkills(returnedData) {
                     skillMap.push(item);
                 else
                     skillMap[pos] = item;
-
-                console.log(skillMap);
             };
 
             var op = document.createElement("label");
@@ -404,10 +402,10 @@ $(function() {
                         languageMap[pos].s = 1;
                 }
             }).get();
-            alert(languageKnown);
 
             document.getElementById("saveBtn").disabled = true;
             try {
+                console.log(languageMap);
                 var selectedDob = $('#candidateDob').val();
 /*                var c_dob = new Date(selectedDob);*/
                 var c_dob = String(selectedDob);

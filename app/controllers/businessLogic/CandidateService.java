@@ -85,17 +85,23 @@ public class CandidateService {
                     resetLocalityAndJobPref(existingCandidate, candidate.localityPreferenceList, candidate.jobPreferencesList);
                     if(!isSupport){
                         triggerOtp(candidate, candidateSignUpResponse);
+                        candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
                     } else {
                         createAndSaveDummpyAuthFor(candidate);
+                        candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
                     }
+
+                } else{
+                    candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
                 }
+
                 interaction.objectAUUId = existingCandidate.candidateUUId;
                 interaction.result = "Candidate updated jobPref and locality pref by reSignup";
                 InteractionService.createInteraction(interaction);
                 interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
                 interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
                 InteractionService.createInteraction(interaction);
-                candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
+
                 existingCandidate.candidateUpdate();
             }
         } catch (NullPointerException n){
@@ -342,10 +348,9 @@ public class CandidateService {
         }
         else {
             long candidateId = existingCandidate.candidateId;
-            Auth existingAuth = Auth.find.where().eq("candidateId",candidateId).findUnique();
+            Auth existingAuth = Auth.find.where().eq("candidateId", candidateId).findUnique();
             if(existingAuth != null){
-                if (((existingAuth.passwordMd5.equals(Util.md5(loginPassword + existingAuth.passwordSalt))) &&
-                    (existingCandidate.candidateprofilestatus.profileStatusId != 0))) {
+                if ((existingAuth.passwordMd5.equals(Util.md5(loginPassword + existingAuth.passwordSalt)))) {
                     Logger.info(existingCandidate.candidateName + " " + existingCandidate.candidateprofilestatus.profileStatusId);
                     loginResponse.setCandidateId(existingCandidate.candidateId);
                     loginResponse.setCandidateName(existingCandidate.candidateName);
@@ -377,22 +382,28 @@ public class CandidateService {
         Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", "+91" + candidateMobile).findUnique();
         if(existingCandidate != null){
             Auth exisitingAuth = Auth.find.where().eq("candidateId", existingCandidate.candidateId).findUnique();
-            if(exisitingAuth.authStatus == ServerConstants.CANDIDATE_STATUS_VERIFIED){
-                int randomPIN = generateOtp();
-                existingCandidate.update();
-                String msg = "Welcome to Trujobs.in! Use OTP " + randomPIN + " to reset password";
-                SendOtpService.sendSms(existingCandidate.candidateMobile, msg);
-                resetPasswordResponse.setOtp(randomPIN);
-                resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);
-            }
-            else{
-                Logger.info("Reset otp sent");
+            if(exisitingAuth == null){
                 resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
+                Logger.info("reset password not allowed as Auth don't exists");
+            }
+            else {
+                if(exisitingAuth.authStatus == ServerConstants.CANDIDATE_STATUS_VERIFIED){
+                    int randomPIN = generateOtp();
+                    existingCandidate.update();
+                    String msg = "Welcome to Trujobs.in! Use OTP " + randomPIN + " to reset password";
+                    SendOtpService.sendSms(existingCandidate.candidateMobile, msg);
+                    resetPasswordResponse.setOtp(randomPIN);
+                    resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);
+                }
+                else{
+                    resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
+                    Logger.info("reset password not allowed as Auth don't exists");
+                }
             }
         }
         else{
             resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
-            Logger.info("Verification failed");
+            Logger.info("reset password not allowed as Auth don't exists");
         }
         return resetPasswordResponse;
     }

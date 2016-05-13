@@ -58,6 +58,33 @@ public class Application extends Controller {
         return ok(views.html.candidate_interaction.render());
     }
 
+    public static Result getCandidateInteraction(long id){
+        Candidate candidate = Candidate.find.where().eq("candidateId",id).findUnique();
+        if(candidate !=null){
+            String objId = candidate.candidateUUId;
+            List<Interaction> interactionList = Interaction.find.where().eq("ObjectAUUId", objId).findList();
+
+            ArrayList<SupportInteractionResponse> responses = new ArrayList<>();
+
+            SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT);
+
+            for(Interaction i : interactionList){
+                SupportInteractionResponse response = new SupportInteractionResponse();
+
+                response.setUser_interaction_timestamp(sfd.format(i.getCreationTimestamp()));
+                response.setUser_id(candidate.candidateId);
+                response.setUser_name(candidate.candidateName);
+                response.setUser_note(i.getResult());
+
+                responses.add(response);
+            }
+            return ok(toJson(responses));
+
+        }
+        else
+            return ok("no records");
+    }
+
     public static Result addLead() {
         Form<AddLeadRequest> userForm = Form.form(AddLeadRequest.class);
         AddLeadRequest addLeadRequest = userForm.bindFromRequest().get();
@@ -140,6 +167,7 @@ public class Application extends Controller {
         ResetPasswordResquest resetPasswordResquest = checkCandidate.bindFromRequest().get();
 
         String candidateMobile = resetPasswordResquest.getResetPasswordMobile();
+        Logger.info("==> " + candidateMobile);
         return ok(toJson(CandidateService.findUserAndSendOtp(candidateMobile)));
     }
 
