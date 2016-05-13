@@ -232,10 +232,7 @@ public class CandidateService {
     }
 
     private static CandidateEducation getCandidateEducationFromAddSupportCandidate(AddSupportCandidateRequest request, Candidate candidate) {
-        CandidateEducation response = CandidateEducation.find.where().eq("candidateId",candidate.candidateId).findUnique();
-        if(response== null){
-            response = new CandidateEducation();
-        }
+        CandidateEducation response  = new CandidateEducation();
         Education education = Education.find.where().eq("educationId", request.getCandidateEducationLevel()).findUnique();
         Degree degree = Degree.find.where().eq("degreeId", request.getCandidateDegree()).findUnique();
         if(education == null){
@@ -301,10 +298,7 @@ public class CandidateService {
     }
 
     private static TimeShiftPreference getTimeShiftPrefFromAddSupportCandidate(AddSupportCandidateRequest request, Candidate candidate) {
-        TimeShiftPreference response = TimeShiftPreference.find.where().eq("candidateId", candidate.candidateId).findUnique();
-        if(response == null){
-            response = new TimeShiftPreference();
-        }
+        TimeShiftPreference response = new TimeShiftPreference();
         TimeShift existingTimeShift = TimeShift.find.where().eq("timeShiftId", request.getCandidateTimeShiftPref()).findUnique();
         if(existingTimeShift == null) {
             Logger.info("timeshift staic table empty for Pref: " + request.getCandidateTimeShiftPref());
@@ -317,10 +311,7 @@ public class CandidateService {
     }
 
     private static CandidateCurrentJobDetail getCandidateCurrentJobDetailFromAddSupportCandidate(AddSupportCandidateRequest request, Candidate candidate) {
-        CandidateCurrentJobDetail response = CandidateCurrentJobDetail.find.where().eq("candidateId", candidate.candidateId).findUnique();
-        if(response == null) {
-            response = new CandidateCurrentJobDetail();
-        }
+        CandidateCurrentJobDetail response =  new CandidateCurrentJobDetail();
         response.setUpdateTimeStamp( new Timestamp(System.currentTimeMillis()));
         response.setCandidate( candidate);
         response.setCandidateCurrentCompany( request.getCandidateCurrentCompany());
@@ -414,7 +405,6 @@ public class CandidateService {
     }
 
     public static List<JobPreference> getCandidateJobPreferenceList(List<String> jobsList, Candidate candidate) {
-
         List<JobPreference> candidateJobPreferences = new ArrayList<>();
         for(String  s : jobsList) {
             JobPreference candidateJobPreference = new JobPreference();

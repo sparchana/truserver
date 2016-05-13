@@ -75,7 +75,7 @@ create table candidateeducation (
   candidatelastinstitute        varchar(256) null,
   candidateid                   bigint signed null,
   educationid                   int signed null,
-  degreeid                      int signed not null,
+  degreeid                      int signed null,
   constraint uq_candidateeducation_candidateid unique (candidateid),
   constraint pk_candidateeducation primary key (candidateeducationid)
 );
@@ -96,7 +96,7 @@ create table channels (
 );
 
 create table degree (
-  degreeid                      int signed not null auto_increment not null,
+  degreeid                      int signed null auto_increment not null,
   degreename                    varchar(100) null,
   constraint pk_degree primary key (degreeid)
 );
