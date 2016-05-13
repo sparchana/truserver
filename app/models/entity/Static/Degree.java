@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Table(name = "degree")
 public class Degree extends Model {
     @Id
-    @Column(name = "DegreeId", columnDefinition = "int signed not null", unique = true)
+    @Column(name = "DegreeId", columnDefinition = "int signed null", unique = true)
     public int degreeId = 0;
 
     @Column(name = "DegreeName", columnDefinition = "varchar(100) null")
