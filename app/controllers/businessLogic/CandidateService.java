@@ -244,6 +244,7 @@ public class CandidateService {
             response.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
             response.setCandidate(candidate);
             response.setEducation(education);
+            response.setCandidateLastInstitute(request.getCandidateEducationInstitute());
         }
         return response;
     }

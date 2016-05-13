@@ -99,7 +99,7 @@
               <div class="row">
                 <div class="col-sm-3"><h5>Date of Birth:</h5></div>
                 <div class="col-sm-9">
-                  <input id="candidateDob" data-date-format="dd/mm/yyyy" name="candidateDob" placeholder="When is your Birthday?" type="date" class="form-control input-md"  data-date-inline-picker="true"/>
+                  <input id="candidateDob" name="candidateDob" placeholder="When is your Birthday?" type="date" class="form-control input-md"  data-date-inline-picker="true"/>
                 </div>
               </div>
 
@@ -166,6 +166,7 @@
             </div>
 
             <div id="employedForm" style="display: none">
+
               <div class="row" style="margin-top: 4px">
                 <div class="col-sm-3"><h5>Current Company:</h5></div>
                 <div class="col-sm-9">
@@ -176,14 +177,14 @@
               <div class="row" style="margin-top: 4px">
                 <div class="col-sm-3"><h5>Current Job Location:</h5></div>
                 <div class="col-sm-9">
-                  <input type="text" id="candidateCurrentJobLocation">
+                  <input type="text" id="candidateCurrentJobLocation" >
                   <script type="text/javascript">
                   $(document).ready(function() {
                     $("#candidateCurrentJobLocation").tokenInput(getLocality(), {
                       theme: "facebook",
-                      placeholder: "Which area in Bangalore you work now?",
-                      hintText: "Start typing jobs (eg. BTM Layout, Bellandur..)",
+                      placeholder: "Office Location",
                       minChars: 0,
+                      tokenLimit: 1,
                       preventDuplicates: true
                     });
                   });
@@ -191,21 +192,6 @@
                 </div>
               </div>
 
-              <div class="row" style="margin-top: 4px">
-                <div class="col-sm-3"><h5>Mode of Transport:</h5></div>
-                <div class="col-sm-9" style="margin-top: 8px">
-                  <select id="selectTransportation">
-                  </select>
-                </div>
-              </div>
-
-              <div class="row" style="margin-top: 4px">
-                <div class="col-sm-3"><h5>Current work shift?: </h5></div>
-                <div class="col-sm-9" style="margin-top: 8px">
-                  <select id="currentWorkShift">
-                  </select>
-                </div>
-              </div>
 
               <div class="row" style="margin-top: 4px">
                 <div class="col-sm-3"><h5>Current Job Role:</h5></div>
@@ -225,7 +211,7 @@
               <div class="row" style="margin-top: 4px">
                 <div class="col-sm-3"><h5>Current Job Salary:</h5></div>
                 <div class="col-sm-9">
-                  <input id="candidateCurrentJobSalary" value="0" placeholder="What is your current Salary?" type="number" class="form-control input-md">
+                  <input id="candidateCurrentJobSalary" placeholder="What is your current Salary?" type="number" class="form-control input-md">
                 </div>
               </div>
 
@@ -236,12 +222,30 @@
                 </div>
               </div>
 
+              <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Mode of Transport:</h5></div>
+                <div class="col-sm-9" style="margin-top: 8px">
+                  <select id="selectTransportation">
+                    <option>- select one -</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="row" style="margin-top: 4px">
+                <div class="col-sm-3"><h5>Current work shift?: </h5></div>
+                <div class="col-sm-9" style="margin-top: 8px">
+                  <select id="currentWorkShift">
+                    <option>- select one -</option>
+                  </select>
+                </div>
+              </div>
+
             </div>
 
             <div class="row" style="margin-top: 4px">
               <div class="col-sm-3"><h5>Total Experience(years):</h5></div>
               <div class="col-sm-9">
-                <input id="candidateTotalExperience" value="0" placeholder="For how many years have you been working?" type="number" class="form-control input-md">
+                <input id="candidateTotalExperience" placeholder="For how many years have you been working?" type="number" class="form-control input-md">
               </div>
             </div>
 
@@ -263,7 +267,7 @@
               <div class="row" style="margin-top: 4px">
                   <div class="col-sm-3"><h5>Past Job Salary:</h5></div>
                   <div class="col-sm-9">
-                      <input id="candidatePastJobSalary" value="0" placeholder="Waht was your previous job salary?" type="number" class="form-control input-md">
+                      <input id="candidatePastJobSalary" placeholder="Waht was your previous job salary?" type="number" class="form-control input-md">
                   </div>
               </div>
           </div>
@@ -276,7 +280,8 @@
             <div class="row" style="margin-top: 4px">
               <div class="col-sm-3"><h5>Highest Education Qualification?:</h5></div>
               <div class="col-sm-9" style="margin-top: 6px;">
-                <select id="candidateHighestEducation" size="5">
+                <select id="candidateHighestEducation">
+                  <option>- select one -</option>
                 </select>
               </div>
             </div>
@@ -299,7 +304,7 @@
           </div>
           <hr>
             <!-- Job Preference details -->
-          <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Job Preferences</h4>
+          <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Job TimeShift Preferences</h4>
           <div id="job_pref_details">
             <div class="row">
               <div class="col-sm-3" style="margin-top: 5px"><h5 style="margin-top: 4px">Preferred work shift?: </h5></div>
@@ -329,6 +334,7 @@
               <div class="col-sm-3"><h5>Mother Tongue?: </h5></div>
               <div class="col-sm-9" style="margin-top: 8px">
                 <select id="candidateMotherTongue" onchange="selectMotherTongue()">
+                  <option>- select one -</option>
                 </select>
               </div>
             </div>

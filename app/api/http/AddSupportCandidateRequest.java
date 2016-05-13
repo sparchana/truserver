@@ -30,11 +30,11 @@ public class AddSupportCandidateRequest {
     public int candidateCurrentWorkShift ;
     public String candidateCurrentJobRole;
     public String candidateCurrentJobDesignation;
-    public int candidateCurrentSalary ;
+    public long candidateCurrentSalary ;
     public int candidateCurrentJobDuration ;
     public String candidatePastJobCompany;
     public String candidatePastJobRole;
-    public int candidatePastJobSalary ;
+    public long candidatePastJobSalary ;
 
     public int candidateEducationLevel;
     public int candidateDegree ;
@@ -188,8 +188,8 @@ public class AddSupportCandidateRequest {
         return candidateCurrentJobDesignation;
     }
 
-    public void setCandidateCurrentSalary(int candidateCurrentSalary) { this.candidateCurrentSalary = candidateCurrentSalary; }
-    public int getCandidateCurrentSalary() {
+    public void setCandidateCurrentSalary(long candidateCurrentSalary) { this.candidateCurrentSalary = candidateCurrentSalary; }
+    public long getCandidateCurrentSalary() {
         return candidateCurrentSalary;
     }
 
@@ -214,8 +214,8 @@ public class AddSupportCandidateRequest {
         return candidatePastJobCompany;
     }
 
-    public void setCandidatePastJobSalary(int candidatePastJobSalary) { this.candidatePastJobSalary = candidatePastJobSalary; }
-    public int getCandidatePastJobSalary() {
+    public void setCandidatePastJobSalary(long candidatePastJobSalary) { this.candidatePastJobSalary = candidatePastJobSalary; }
+    public long getCandidatePastJobSalary() {
         return candidatePastJobSalary;
     }
 
