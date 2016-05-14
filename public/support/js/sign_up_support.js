@@ -313,7 +313,7 @@ function onCallYes(leadId){
     $('#callNoClass').hide();
     $('#callYesClass').show();
 
-    var value = "Call OutBound SuccessFully";
+    var value = "Out Bound Call Successfuly got connected";
     //update leadStatus to TTC
     NProgress.start();
     $.ajax({
@@ -337,7 +337,6 @@ function onCallNo(leadId){
 
 function saveResponse(id) {
     var value = $('#callResponse').val();
-    console.log("pressed save for action 'NO': result value to be sent : " + value);
 
     // update status and interaction
     $.ajax({

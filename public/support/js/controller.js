@@ -58,7 +58,9 @@ function renderKWResponse(returnedData) {
 }
 function processDataForSupport(returnedData) {
 
-    var t = $('table#leadTable').DataTable();
+    var t = $('table#leadTable').DataTable({
+        "order": [[ 5, "desc" ]]
+    });
     //DoTheDue Here
     returnedData.forEach(function (newLead) {
         if(newLead.leadId != null){
