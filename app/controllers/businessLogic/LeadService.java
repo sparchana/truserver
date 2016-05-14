@@ -18,7 +18,7 @@ public class LeadService {
         if(existingLead == null){
             //if lead does not exists
             Lead.addLead(lead);
-            interaction.result = "New lead through website";
+            interaction.result = "New lead Added";
             Logger.info("Lead added");
             interaction.objectAUUId = lead.leadUUId;
             interaction.objectAType = lead.getLeadType();

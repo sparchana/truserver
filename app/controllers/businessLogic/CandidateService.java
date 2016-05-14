@@ -55,7 +55,11 @@ public class CandidateService {
                 if(existingLead == null){
                     LeadService.createLead(getLeadFromCandidate(candidate), isSupport);
                 }
-                else {candidate.lead = existingLead;}
+                else {
+                    existingLead.leadType = ServerConstants.TYPE_CANDIDATE;
+                    existingLead.leadStatus = ServerConstants.LEAD_STATUS_WON;
+                    candidate.lead = existingLead;
+                }
                 CandidateProfileStatus candidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_NEW).findUnique();
                 if(candidateProfileStatus != null){
                     candidate.setCandidateprofilestatus(candidateProfileStatus);
@@ -444,7 +448,7 @@ public class CandidateService {
         lead.leadName = candidate.candidateName;
         lead.leadMobile = candidate.candidateMobile;
         lead.leadChannel = ServerConstants.LEAD_CHANNEL_WEBSITE;
-        lead.leadType = ServerConstants.TYPE_LEAD;
+        lead.leadType = ServerConstants.TYPE_CANDIDATE;
         lead.leadStatus = ServerConstants.LEAD_STATUS_WON;
         candidate.lead = lead;
         return lead;

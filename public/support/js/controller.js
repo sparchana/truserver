@@ -29,8 +29,8 @@ function processLeadUpdate(returnedData) {
     window.location="/support";
 }
 
-function openCreateCandidate() {
-    window.location="/candidateSignupSupport";
+function openCreateCandidate(id) {
+    window.location="/candidateSignupSupport/"+id;
 }
 
 function processCandidateReg(returnedData) {
@@ -52,6 +52,10 @@ function reportCandidateRegError(returnedData) {
     alert(returnedData);
 
 }
+function renderKWResponse(returnedData) {
+    console.log(returnedData.error.message);
+
+}
 function processDataForSupport(returnedData) {
 
     var t = $('table#leadTable').DataTable();
@@ -70,9 +74,9 @@ function processDataForSupport(returnedData) {
                 newLead.leadName,
                 function(){
                     if(newLead.leadStatus == 'New') {
-                        return '<input type="submit" value="Call" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+'); openCreateCandidate()" id="'+newLead.leadId+'" class="btn btn-primary">'
+                        return '<input type="submit" value="Call" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+');" id="'+newLead.leadId+'" class="btn btn-primary">'
                     } else {
-                        return '<input type="submit" value="Call Back" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+'); openCreateCandidate()" id="'+newLead.leadId+'"  class="btn btn-default">'
+                        return '<input type="submit" value="Call Back" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+'); " id="'+newLead.leadId+'"  class="btn btn-default">'
                     }
                 }
             ] ).draw( false );
@@ -122,23 +126,10 @@ function myHandler (mobile, id) {
             contentType: "jsonp",
             dataType: 'jsonp',
             cache: !1,
-            success: false,
+            success: renderKWResponse,
             error: false
         });
-        $.ajax({
-            type: "GET",
-            url: "/updateLeadStatus/"+id+"/1",
-            processData: false,
-            success: function (e) {
-                if(e == '1'){
-                    var table = $('#leadTable').DataTable();
-                    $("input#"+id).removeClass();
-                    $("input#"+id).addClass("btn btn-default");
-                    $('input#'+id).prop('value', 'Call back');
-                }
-            }
-        });
-
+        openCreateCandidate(id);
     } catch (exception) {
 
     }

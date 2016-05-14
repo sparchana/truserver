@@ -1,14 +1,16 @@
+@(id: Long)
 <!doctype html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
   <head>
     <meta charset="UTF-8">
     <title>Create Candidate - Support | Trujobs.in</title>
-      <link rel="stylesheet" href="assets/support/css/bootstrap.min.css">
+      <link rel="stylesheet" href="/assets/support/css/bootstrap.min.css">
 
-      <script type="text/javascript" src="assets/support/js/jquery-1.12.0.min.js"></script>
+      <script type="text/javascript" src="/assets/support/js/jquery-1.12.0.min.js"></script>
       <link rel="stylesheet" href="/assets/css/token-input.css" type="text/css" />
       <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
-      <link rel="stylesheet" href="assets/support/css/style.css">
+      <link rel="stylesheet" href="/assets/support/css/style.css">
+      <link rel="stylesheet" href="/assets/support/css/nprogress.css">
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
       <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
   </head>
@@ -18,13 +20,13 @@
       <h2> Create Candidate Admin:&nbsp;<a href="/logout"><button class="btn btn-danger" style="align-items: flex-end"> Logout</button></a></h2>
       <br>
       <h4>Call Connected? :&nbsp;
-        <input type="radio" name="callConnected" id="callYes" value="yes" onclick="onCallYes()">Yes&nbsp;
-        <input type="radio" name="callConnected" id="callNo" value="no" onclick="onCallNo()">No
+        <input type="radio" name="callConnected" id="callYes" value="yes" onclick="onCallYes(@id)">Yes&nbsp;
+        <input type="radio" name="callConnected" id="callNo" value="no" onclick="onCallNo(@id)">No
       </h4>
 
       <div id="callNoClass" style="display: none">
         <h5>Reason?:
-          <select>
+          <select id="callResponse">
             <option value="busy">Busy</option>
             <option value="not_reachable">Not Reachable</option>
             <option value="not_answering">Not Answering</option>
@@ -33,8 +35,7 @@
             <option value="others">Others</option>
           </select>
 
-          <input type="text" placeholder="Note">
-          <button type="submit" class="btn btn-primary" >Save</button>
+          <button type="submit" id="responseSaveBtn"  class="btn btn-primary" onclick="saveResponse(@id)">Save</button>
         </h5>
       </div>
 
@@ -420,10 +421,9 @@
     </div>
       <!-- Including Bootstrap -->
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-      <script type="text/javascript" src="assets/support/js/bootstrap.min.js"></script>
-
-
+      <script type="text/javascript" src="/assets/support/js/bootstrap.min.js"></script>
+      <script type="text/javascript" src="/assets/support/js/nprogress.js"></script>
       <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
-      <script type="text/javascript" src="assets/support/js/sign_up_support.js"></script>
+      <script type="text/javascript" src="/assets/support/js/sign_up_support.js"></script>
   </body>
 </html>
