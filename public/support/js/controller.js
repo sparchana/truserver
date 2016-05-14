@@ -109,14 +109,14 @@ function getCandidateInfo(id) {
 
 
 function myHandler (mobile, id) {
-    console.log("+"+mobile + " " +id);
+    // console.log("+"+mobile + " " +id);
     // changes modal leadId field value
     $("#leadId").val(id);
     $("#leadMobileNumber").val("+"+mobile);
     var s = {
         api_key: "dae93473-50a6-11e5-bbe8-067cf20e9301",
         agent_number: "+919980303169",
-        phone_number: "+",
+        phone_number: "+"+mobile,
         sr_number: "+918880007799"
     };
 

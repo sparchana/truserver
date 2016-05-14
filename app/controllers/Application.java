@@ -345,8 +345,8 @@ public class Application extends Controller {
     public static Result updateLeadStatus(long leadId, int leadStatus, String interactionResult) {
         try {
             Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
-
-            if(lead != null){
+            // A vlaue is for overriding leadStatus is also there in Lead Model setLeadStatus
+            if(lead != null && lead.leadStatus < leadStatus){
                 Logger.info("updateLeadStatus invoked leadId:"+leadId+" status:" + leadStatus);
                 switch (leadStatus) {
                     case 1: lead.setLeadStatus(ServerConstants.LEAD_STATUS_TTC);
@@ -370,7 +370,6 @@ public class Application extends Controller {
                 interaction.save();
                 return ok(toJson(lead.leadStatus));
             }
-
         } catch (NullPointerException n) {
             n.printStackTrace();
         }

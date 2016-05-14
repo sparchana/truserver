@@ -70,7 +70,7 @@ public class ParseCSV {
                     Logger.info("Total OverLapping records : " + overLappingRecordCount);
 
                     // save all inbound calls to interaction
-                    kwObject.createdBy = "System";
+                    kwObject.createdBy = "System - Knowlarity";
                     kwObject.creationTimestamp = new Timestamp(parsedDate.getTime());
                     kwObject.interactionType = ServerConstants.INTERACTION_TYPE_CALL_IN;
                     kwObject.save();

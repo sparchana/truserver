@@ -90,7 +90,9 @@ public class Lead extends Model {
         this.leadType = leadType;
     }
     public void setLeadStatus(int leadStatus) {
-        this.leadStatus = leadStatus;
+        if(this.leadStatus < leadStatus){
+            this.leadStatus = leadStatus;
+        }
     }
 
     public void setLeadCreationTimestamp(Timestamp leadCreationTimestamp) {
