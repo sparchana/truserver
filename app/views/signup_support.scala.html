@@ -193,12 +193,21 @@
                 </div>
               </div>
 
-
               <div class="row" style="margin-top: 4px">
                 <div class="col-sm-3"><h5>Current Job Role:</h5></div>
                 <div class="col-sm-9">
-                  <select id="candidateCurrentJobRole" size="5">
-                  </select>
+                  <input type="text" id="candidateCurrentJobRole" >
+                  <script type="text/javascript">
+                          $(document).ready(function() {
+                            $("#candidateCurrentJobRole").tokenInput(getJob(), {
+                              theme: "facebook",
+                              placeholder: "Current Jobrole?",
+                              minChars: 0,
+                              tokenLimit: 1,
+                              preventDuplicates: true
+                            });
+                          });
+                  </script>
                 </div>
               </div>
 
@@ -257,13 +266,23 @@
               </div>
             </div>
 
-              <div class="row" style="margin-top: 4px">
-                  <div class="col-sm-3"><h5>Past Job Role:</h5></div>
-                  <div class="col-sm-9">
-                      <select id="candidatePastJobRole" size="5">
-                </select>
-                  </div>
+            <div class="row" style="margin-top: 4px">
+              <div class="col-sm-3"><h5>Past Job Role:</h5></div>
+              <div class="col-sm-9">
+                <input type="text" id="candidatePastJobRole" >
+                <script type="text/javascript">
+                        $(document).ready(function() {
+                          $("#candidatePastJobRole").tokenInput(getJob(), {
+                            theme: "facebook",
+                            placeholder: "What was your past Job Role?",
+                            minChars: 0,
+                            tokenLimit: 1,
+                            preventDuplicates: true
+                          });
+                        });
+                </script>
               </div>
+            </div>
 
               <div class="row" style="margin-top: 4px">
                   <div class="col-sm-3"><h5>Past Job Salary:</h5></div>

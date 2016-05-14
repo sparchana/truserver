@@ -226,10 +226,6 @@ function processDataCheckJobs(returnedData) {
         var item = {};
         item ["id"] = id;
         item ["name"] = name;
-        var option=$('<option value=' + id + '></option>').text(name);
-        $('#candidateCurrentJobRole').append(option);
-        var option=$('<option value=' + id + '></option>').text(name);
-        $('#candidatePastJobRole').append(option);
         jobArray.push(item);
     });
 }
@@ -388,7 +384,7 @@ function processDataCheckSkills(returnedData) {
         var q = document.createElement("h5");
 
         var question = singleSkill.skill.skillQuestion;
-        q.textContent = question;
+        q.textContent = question + "       ";
         head.appendChild(q);
 
         var object = singleSkill.skill.skillQualifierList;
@@ -421,7 +417,7 @@ function processDataCheckSkills(returnedData) {
             };
 
             var op = document.createElement("label");
-            op.innerHTML = x.qualifier;
+            op.innerHTML = "&nbsp;" + x.qualifier + "  &nbsp;&nbsp;&nbsp";
 
             q.appendChild(o);
             q.appendChild(op);
