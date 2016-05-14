@@ -24,8 +24,8 @@ public class ServerConstants {
     public static final int CANDIDATE_STATUS_VERIFIED= 1;
 
     public static final int OBJECT_TYPE_LEAD= 1;
-    public static final int OBJECT_TYPE_RECRUTER= 2;
-    public static final int OBJECT_TYPE_CANDIDATE= 3;
+    public static final int OBJECT_TYPE_CANDIDATE= 4;
+    public static final int OBJECT_TYPE_RECRUTER= 5;
 
     public static final int INTERACTION_TYPE_CALL_IN= 1;
     public static final int INTERACTION_TYPE_CALL_OUT= 2;

@@ -295,20 +295,58 @@ function populateLanguages(l, lId) {
 
 }
 
-function onCallYes(){
+
+function processLeadUpdate(returnedData) {
+    if(returnedData.leadType != '0' && returnedData.leadType != '1') {
+        // existing data hence pre fill form
+    } else {
+        clearModal();
+        alert('Unable to show data');
+    }
+    window.location="/support";
+}
+
+function onCallYes(leadId){
     $("#saveBtn").prop("disabled", false);
     $("#cancelBtn").prop("disabled", false);
     $("#candidateSignUpSupportForm input").prop("disabled", false);
     $('#callNoClass').hide();
     $('#callYesClass').show();
+
+    var value = "Call OutBound SuccessFully";
+    //update leadStatus to TTC
+    NProgress.start();
+    $.ajax({
+        type: "GET",
+        url: "/updateLeadStatus/"+leadId+"/1/"+value,
+        processData: false,
+        success: false
+    });
+    NProgress.done();
 }
 
-function onCallNo(){
+
+
+function onCallNo(leadId){
     $("#saveBtn").prop("disabled", true);
     $("#cancelBtn").prop("disabled", true);
     $("#candidateSignUpSupportForm input").prop("disabled", true);
     $('#callYesClass').hide();
     $('#callNoClass').show();
+}
+
+function saveResponse(id) {
+    var value = $('#callResponse').val();
+    console.log("pressed save for action 'NO': result value to be sent : " + value);
+
+    // update status and interaction
+    $.ajax({
+        type: "GET",
+        url: "/updateLeadStatus/"+id+"/1/"+value,
+        processData: false,
+        success: processLeadUpdate
+    });
+
 }
 
 function employedYes(){

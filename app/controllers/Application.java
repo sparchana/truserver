@@ -223,6 +223,7 @@ public class Application extends Controller {
             List<Interaction> interactionsOfLead = Interaction.find.where().eq("objectAUUId", l.leadUUId).findList();
             Timestamp mostRecent = l.leadCreationTimestamp;
             for(Interaction i: interactionsOfLead){
+                Logger.info("");
                 mTotalInteraction++;
                 if(mostRecent.getTime() <= i.creationTimestamp.getTime()){
                     mostRecent = i.creationTimestamp;
@@ -322,6 +323,15 @@ public class Application extends Controller {
                 lead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
                 lead.setLeadType((int) newType);
                 lead.update();
+
+                Interaction interaction = new Interaction();
+                interaction.setObjectAUUId(lead.getLeadUUId());
+                interaction.setObjectAType(lead.getLeadType());
+                interaction.setResult("System Updated LeadType to " + newType);
+                interaction.setCreatedBy("System");
+                interaction.setCreationTimestamp(new Timestamp(System.currentTimeMillis()));
+                interaction.save();
+
                 return ok(toJson(newType));
             }
         } catch (NullPointerException n) {
@@ -330,7 +340,7 @@ public class Application extends Controller {
         return badRequest();
     }
 
-    public static Result updateLeadStatus(long leadId, int leadStatus) {
+    public static Result updateLeadStatus(long leadId, int leadStatus, String interactionResult) {
         try {
             Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
 
@@ -346,6 +356,14 @@ public class Application extends Controller {
                 }
                 lead.update();
 
+                Interaction interaction = new Interaction();
+                interaction.setObjectAUUId(lead.getLeadUUId());
+                interaction.setObjectAType(lead.getLeadType());
+                interaction.setNote(interactionResult);
+                interaction.setResult("System Updated LeadStatus to " + leadStatus);
+                interaction.setCreatedBy("System");
+                interaction.setCreationTimestamp(new Timestamp(System.currentTimeMillis()));
+                interaction.save();
                 return ok(toJson(lead.leadStatus));
             }
 
@@ -693,54 +711,8 @@ public class Application extends Controller {
         return ok("");
     }
 
-    public static Result candidateSignupSupport() {
-        return ok(views.html.signup_support.render());
-    }
-
-    public static Result addSupportCandidate() {
-        AddSupportCandidateRequest request = new AddSupportCandidateRequest();
-
-        request.setCandidateCurrentCompany("Orange"); // #
-        request.setCandidateCurrentJobDesignation("PA");  // #
-        request.setCandidateCurrentJobRole("2"); // #
-        request.setCandidateCurrentJobDuration(22); // #
-        request.setCandidateCurrentJobLocation("1"); // #
-        request.setCandidateCurrentSalary(20500); // #
-        request.setCandidateCurrentWorkShift(1); // # Full Day
-        // -------done------------------
-
-        request.setCandidateDob(new Date());//#
-        request.setCandidateAge(20); // use less
-
-        // no column to handle this
-        request.setCandidateDegree(1);
-        request.setCandidateEducationInstitute("Christ Sucks University");
-        request.setCandidateEducationLevel(1);
-
-        request.setCandidateEmail("best@trujobs.in"); //#
-        request.setCandidateGender(1); //female #
-        request.setCandidateHomeLocality("5"); //#
-        request.setCandidateIsEmployed(1); //yes #
-        request.setCandidateMaritalStatus(0); // single marega #
-        request.setCandidateMotherTongue(2); // Hindi #
-        request.setCandidateTimeShiftPref("1"); // #
-
-        request.setCandidatePastJobCompany("Microsoft India"); //#
-        request.setCandidatePastJobRole("4"); //#
-        request.setCandidatePastJobSalary(15800); //#
-
-
-        request.setCandidateIdProof("1,2,3"); // # Adhaar
-        request.setCandidateLocality("2, 1, 7"); //#* localitypref
-        request.setCandidateJobInterest("10, 11, 12"); //#*
-
-        request.setCandidateName("Sandy"); //*#
-        request.setCandidateMobile("8111111115"); //*#
-        request.setCandidatePhoneType("Apple"); //#
-        request.setCandidateTotalExperience(10); //#
-        request.setCandidateTransportation(1); // Scooter
-
-        return ok(toJson(CandidateService.createCandidateBySupport(request).status));
+    public static Result candidateSignupSupport(Long candidateId) {
+        return ok(views.html.signup_support.render(candidateId));
     }
 
 }
