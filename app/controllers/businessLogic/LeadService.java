@@ -9,9 +9,12 @@ import play.Logger;
  * Created by batcoder1 on 5/5/16.
  */
 public class LeadService {
-    public static void createLead(Lead lead){
+    public static void createLead(Lead lead, boolean isSupport){
         Lead existingLead = Lead.find.where().eq("leadMobile",lead.leadMobile).findUnique();
         Interaction interaction = new Interaction();
+        if(!isSupport){
+            interaction.setCreatedBy("Website");
+        }
         if(existingLead == null){
             //if lead does not exists
             Lead.addLead(lead);

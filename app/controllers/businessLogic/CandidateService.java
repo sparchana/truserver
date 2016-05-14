@@ -53,7 +53,7 @@ public class CandidateService {
                 Logger.info("inside !exisitingCandidate of createCandidate");
                 // if no candidate exists
                 if(existingLead == null){
-                    LeadService.createLead(getLeadFromCandidate(candidate));
+                    LeadService.createLead(getLeadFromCandidate(candidate), isSupport);
                 }
                 else {candidate.lead = existingLead;}
                 CandidateProfileStatus candidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_NEW).findUnique();

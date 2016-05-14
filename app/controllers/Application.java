@@ -100,7 +100,8 @@ public class Application extends Controller {
         lead.leadStatus = ServerConstants.LEAD_STATUS_NEW;
         lead.leadInterest = addLeadRequest.getLeadInterest();
         Logger.info("going inside");
-        LeadService.createLead(lead);
+        boolean isSupport = false;
+        LeadService.createLead(lead, isSupport);
         addLeadResponse.setStatus(AddLeadResponse.STATUS_SUCCESS);
         return ok(toJson(addLeadResponse));
     }

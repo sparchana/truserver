@@ -13,8 +13,7 @@ var languageArray = [];
 var idProofArray = [];
 var degreeArray = [];
 var check = 0;
-var jobId;
-var head = document.createElement("label");
+var selectedJobPref_array;
 
 $(document).ready(function(){
 
@@ -320,16 +319,19 @@ function employedNo(){
 }
 
 function processDataCheckSkills(returnedData) {
+    var jobName = getJobName(selectedJobPref_array[check++]);
     var parent = $('#skill_details');
-
+    var head = document.createElement("label");
+    head.style.display = "block";
+    head.innerHTML = "<br>Skills for " + jobName;
     parent.append(head);
 
     returnedData.forEach(function (singleSkill) {
         var q = document.createElement("h5");
-        head.innerHTML = "Skills for " + getJobName(jobId);
+
         var question = singleSkill.skill.skillQuestion;
         q.textContent = question;
-        parent.append(q);
+        head.appendChild(q);
 
         var object = singleSkill.skill.skillQualifierList;
 
@@ -363,8 +365,8 @@ function processDataCheckSkills(returnedData) {
             var op = document.createElement("label");
             op.innerHTML = x.qualifier;
 
-            parent.append(o);
-            parent.append(op);
+            q.appendChild(o);
+            q.appendChild(op);
         });
     });
 }
@@ -374,14 +376,10 @@ function generateSkills(){
     var myNode = document.getElementById("skill_details");
     myNode.innerHTML = '';
     var selectedJobPref = $('#candidateJobPref').val();
-    var selectedJobPref_array = selectedJobPref.split(',');
-    var len = selectedJobPref_array.length;
-    if(len==1){
-        head.innerHTML = "No Skills found for the above Job Roles";
-    }
+    selectedJobPref_array = selectedJobPref.split(',');
+    check=0;
     for(var i = 0; i < selectedJobPref_array.length; i++)
     {
-        jobId = selectedJobPref_array[i];
         try {
             $.ajax({
                 type: "GET",
@@ -391,6 +389,7 @@ function generateSkills(){
                 processData: false,
                 success: processDataCheckSkills
             });
+
         } catch (exception) {
             console.log("exception occured!!" + exception);
         }
