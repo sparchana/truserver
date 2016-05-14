@@ -90,20 +90,24 @@ public class CandidateService {
                     if(!isSupport){
                         triggerOtp(candidate, candidateSignUpResponse);
                         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+                        interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+                        interaction.setCreatedBy("Self");
                     } else {
                         createAndSaveDummpyAuthFor(candidate);
                         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
+                        interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+                        interaction.setNote("Candidate got Registered with Mandatory Info and dummy password by system");
+                        interaction.setCreatedBy("System");
                     }
 
                 } else{
                     candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
                 }
 
-                interaction.objectAUUId = existingCandidate.candidateUUId;
-                interaction.result = "Candidate updated jobPref and locality pref by reSignup";
-                InteractionService.createInteraction(interaction);
-                interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
-                interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+                interaction.setObjectAUUId(existingCandidate.candidateUUId);
+                interaction.setObjectAType(ServerConstants.OBJECT_TYPE_CANDIDATE);
+                interaction.result = "Candidate updated jobPref and locality pref";
+                interaction.setCreationTimestamp(new Timestamp(System.currentTimeMillis()));
                 InteractionService.createInteraction(interaction);
 
                 existingCandidate.candidateUpdate();
@@ -151,40 +155,43 @@ public class CandidateService {
             candidate.jobPreferencesList = getCandidateJobPreferenceList(Arrays.asList(request.candidateJobInterest.split("\\s*,\\s*")), candidate);
         }
 
-            candidate.setCandidateUpdateTimestamp(new Timestamp(System.currentTimeMillis()));
-            candidate.setCandidatePhoneType(request.getCandidatePhoneType());
-            candidate.setCandidateTotalExperience(request.getCandidateTotalExperience());
-            candidate.setCandidateDOB(request.getCandidateDob()); // age gets calc inside this method
-            candidate.setCandidateEmail(request.getCandidateEmail());
-            candidate.setCandidateGender(request.getCandidateGender());
-            candidate.setCandidateIsEmployed(request.getCandidateIsEmployed());
-            candidate.setCandidateMaritalStatus(request.getCandidateMaritalStatus());
-            candidate.setLocality(Locality.find.where().eq("localityId", request.getCandidateHomeLocality()).findUnique());
-            candidate.setMotherTongue(Language.find.where().eq("languageId", request.getCandidateMotherTongue()).findUnique());
+        candidate.setCandidateUpdateTimestamp(new Timestamp(System.currentTimeMillis()));
+        candidate.setCandidatePhoneType(request.getCandidatePhoneType());
+        candidate.setCandidateTotalExperience(request.getCandidateTotalExperience());
+        candidate.setCandidateDOB(request.getCandidateDob()); // age gets calc inside this method
+        candidate.setCandidateEmail(request.getCandidateEmail());
+        candidate.setCandidateGender(request.getCandidateGender());
+        candidate.setCandidateIsEmployed(request.getCandidateIsEmployed());
+        candidate.setCandidateMaritalStatus(request.getCandidateMaritalStatus());
+        candidate.setLocality(Locality.find.where().eq("localityId", request.getCandidateHomeLocality()).findUnique());
+        candidate.setMotherTongue(Language.find.where().eq("languageId", request.getCandidateMotherTongue()).findUnique());
 
-            CandidateCurrentJobDetail candidateCurrentJobDetail = getCandidateCurrentJobDetailFromAddSupportCandidate(request, candidate);
-            candidate.candidateCurrentJobDetail = candidateCurrentJobDetail;
-            candidate.timeShiftPreference = getTimeShiftPrefFromAddSupportCandidate(request, candidate);
-            candidate.jobHistoryList = getJobHistoryListFromAddSupportCandidate(request, candidate);
-            candidate.idProofReferenceList = getCandidateIdProofListFromAddSupportCandidate(Arrays.asList(request.candidateIdProof.split("\\s*,\\s*")), candidate);
-            candidate.candidateSkillList = getCandidateSkillListFromAddSupportCandidate(request, candidate);
-            candidate.candidateEducation = getCandidateEducationFromAddSupportCandidate(request, candidate);
-            candidate.languageKnownList = getCandidateLanguageFromSupportCandidate(request, candidate);
-            Auth auth = Auth.find.where().eq("CandidateId", candidate.candidateId).findUnique();
-            if(auth == null) {
-                createAndSaveDummpyAuthFor(candidate);
-            }
-            // create interaction record
-            Interaction interaction = new Interaction();
-            interaction.objectAUUId = candidate.candidateUUId;
-            interaction.result = "Candidate updated jobPref and locality pref by reSignup";
-            InteractionService.createInteraction(interaction);
-            interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
-            interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
-            InteractionService.createInteraction(interaction);
+        CandidateCurrentJobDetail candidateCurrentJobDetail = getCandidateCurrentJobDetailFromAddSupportCandidate(request, candidate);
+        candidate.candidateCurrentJobDetail = candidateCurrentJobDetail;
+        candidate.timeShiftPreference = getTimeShiftPrefFromAddSupportCandidate(request, candidate);
+        candidate.jobHistoryList = getJobHistoryListFromAddSupportCandidate(request, candidate);
+        candidate.idProofReferenceList = getCandidateIdProofListFromAddSupportCandidate(Arrays.asList(request.candidateIdProof.split("\\s*,\\s*")), candidate);
+        candidate.candidateSkillList = getCandidateSkillListFromAddSupportCandidate(request, candidate);
+        candidate.candidateEducation = getCandidateEducationFromAddSupportCandidate(request, candidate);
+        candidate.languageKnownList = getCandidateLanguageFromSupportCandidate(request, candidate);
 
-            candidate.update();
-            response.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+        Interaction interaction = new Interaction();
+        Auth auth = Auth.find.where().eq("CandidateId", candidate.candidateId).findUnique();
+        if (auth == null) {
+            createAndSaveDummpyAuthFor(candidate);
+            interaction.setNote("Candidate got Registered with dummy password by system");
+            interaction.setCreatedBy("System");
+        }
+
+        interaction.interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT;
+        interaction.setObjectAUUId(candidate.candidateUUId);
+        interaction.setObjectAType(ServerConstants.OBJECT_TYPE_CANDIDATE);
+        interaction.setResult("Candidate Info got updated by System");
+        interaction.setNote("Out Bound Call");
+        InteractionService.createInteraction(interaction);
+
+        candidate.update();
+        response.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
         return response;
     }
@@ -392,8 +399,8 @@ public class CandidateService {
         Candidate existingCandidate = isCandidateExists("+91"+candidateMobile);
         if(existingCandidate != null){
             Logger.info("CandidateExists");
-            Auth exisitingAuth = Auth.find.where().eq("candidateId", existingCandidate.candidateId).findUnique();
-            if(exisitingAuth == null){
+            Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.candidateId).findUnique();
+            if(existingAuth == null){
                 resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
                 Logger.info("reset password not allowed as Auth don't exists");
             } else {

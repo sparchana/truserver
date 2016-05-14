@@ -358,9 +358,11 @@ public class Application extends Controller {
                 }
                 lead.update();
 
+                /* TODO: SEPERATE THIS INOT A METHOD */
                 Interaction interaction = new Interaction();
                 interaction.setObjectAUUId(lead.getLeadUUId());
                 interaction.setObjectAType(lead.getLeadType());
+                interaction.setInteractionType(ServerConstants.INTERACTION_TYPE_CALL_OUT);
                 interaction.setNote(interactionResult);
                 interaction.setResult("System Updated LeadStatus to " + leadStatus);
                 interaction.setCreatedBy("System");
