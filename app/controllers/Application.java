@@ -135,8 +135,7 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Logger.info("------------>" + toJson(CandidateService.createCandidateBySupport(addSupportCandidateRequest)));
-        return ok(req);
+        return ok(toJson(CandidateService.createCandidateBySupport(addSupportCandidateRequest)));
     }
 
     public static Result addPassword() {
@@ -239,7 +238,9 @@ public class Application extends Controller {
     }
 
     public static Result getUserInfo(long id) {
-        return ok(toJson(id));
+        Lead lead = Lead.find.where().eq("leadId",id).findUnique();
+        String leadMobile = lead.getLeadMobile();
+        return ok(leadMobile);
     }
 
     public static Result getCandidateInfo(long id) {

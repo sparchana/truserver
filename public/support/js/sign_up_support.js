@@ -16,10 +16,27 @@ var check = 0;
 var selectedJobPref_array;
 
 $(document).ready(function(){
+    var pathname = window.location.pathname; // Returns path only
+    var candidate_id = pathname.split('/');
+    var candidateId = candidate_id[(candidate_id.length)-1];
 
     $("#candidateSignUpSupportForm input").prop("disabled", true);
     $("#saveBtn").prop("disabled", true);
     $("#cancelBtn").prop("disabled", true);
+
+    /* ajax commands to fetch leads Info */
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/getUserInfo/" + candidateId,
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckUserMobile
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
 
     /* ajax commands to fetch all localities and jobs*/
     try {
@@ -157,6 +174,10 @@ function getJobName(id){
         }
     });
     return returnJobName;
+}
+
+function processDataCheckUserMobile(returnedData) {
+    $("#candidateMobile").val(returnedData.substring(3,13));
 }
 
 function processDataCheckLocality(returnedData) {
@@ -435,7 +456,18 @@ function generateSkills(){
 }
 
 function processDataSignUpSupportSubmit(returnedData) {
-    console.log(JSON.stringify(returnedData));
+    if(returnedData.status == 1){ // save successful
+        alert("Candidate record saved successfully");
+        window.location = "/support";
+    }
+    else if(returnedData.status == 2){ // save failed
+        alert("Unable to save the candidate record!");
+        window.location = "/support";
+    }
+    else { // candidate exists
+        alert("Candidate Already Exists.sig");
+        window.location = "/support";
+    }
 }
 
 // form_candidate ajax script

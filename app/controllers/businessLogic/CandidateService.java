@@ -131,7 +131,7 @@ public class CandidateService {
             if(newcandidateProfileStatus != null){
                 candidate.candidateprofilestatus = newcandidateProfileStatus;
             } else {
-                Logger.info("Static Table is empty");
+                Logger.info("Profile status static Table is empty");
                 response.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
             }
             Logger.info(" reqJobPref: " + request.candidateJobInterest);
