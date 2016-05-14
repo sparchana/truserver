@@ -50,15 +50,16 @@ public class CandidateService {
         Lead existingLead = isLeadExists(candidate.candidateMobile);
         try {
             if(existingCandidate == null) {
-                Logger.info("inside !exisitingCandidate of createCandidate");
+                Logger.info("inside !existingCandidate of createCandidate");
                 // if no candidate exists
                 if(existingLead == null){
                     LeadService.createLead(getLeadFromCandidate(candidate), isSupport);
                 }
                 else {
-                    existingLead.leadType = ServerConstants.TYPE_CANDIDATE;
-                    existingLead.leadStatus = ServerConstants.LEAD_STATUS_WON;
-                    candidate.lead = existingLead;
+                    existingLead.setLeadType(ServerConstants.TYPE_CANDIDATE);
+                    existingLead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
+                    candidate.setLead(existingLead);
+                    Logger.info("Check mobile no " + existingLead.leadMobile);
                 }
                 CandidateProfileStatus candidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_NEW).findUnique();
                 if(candidateProfileStatus != null){
@@ -83,6 +84,10 @@ public class CandidateService {
                 InteractionService.createInteraction(interaction);
 
             } else {
+                Logger.info("CandidateExists: " + existingCandidate.candidateId + " | LeadExists: " + existingLead.leadId);
+                existingLead.setLeadType(ServerConstants.TYPE_CANDIDATE);
+                existingLead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
+                existingCandidate.setLead(existingLead);
                 Auth auth = Auth.find.where().eq("CandidateId", existingCandidate.candidateId).findUnique();
                 if(auth == null ){
                     Logger.info("auth doesn't exists for this canidate");
@@ -99,7 +104,6 @@ public class CandidateService {
                         interaction.setNote("Candidate got Registered with Mandatory Info and dummy password by system");
                         interaction.setCreatedBy("System");
                     }
-
                 } else{
                     candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
                 }
@@ -141,6 +145,7 @@ public class CandidateService {
             Logger.info(" reqJobPref: " + request.candidateJobInterest);
             candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(Arrays.asList(request.candidateLocality.split("\\s*,\\s*")), candidate);
             candidate.jobPreferencesList = getCandidateJobPreferenceList(Arrays.asList(request.candidateJobInterest.split("\\s*,\\s*")), candidate);
+            // lead is getting updated inside createCandidate 
             CandidateSignUpResponse candidateSignUpResponse = createCandidate(candidate, isSupport);
 
             // 1st call to basic createCandidate
@@ -150,11 +155,15 @@ public class CandidateService {
                 return response;
             }
         } else{
+            Lead existingLead = isLeadExists(candidate.candidateMobile);
             Logger.info(" reqJobPref: " + request.candidateJobInterest);
             candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(Arrays.asList(request.candidateLocality.split("\\s*,\\s*")), candidate);
             candidate.jobPreferencesList = getCandidateJobPreferenceList(Arrays.asList(request.candidateJobInterest.split("\\s*,\\s*")), candidate);
+            Logger.info("CandidateExists: " + candidate.candidateId + " | LeadExists: " + existingLead.leadId);
+            existingLead.setLeadType(ServerConstants.TYPE_CANDIDATE);
+            existingLead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
+            candidate.setLead(existingLead);
         }
-
         candidate.setCandidateUpdateTimestamp(new Timestamp(System.currentTimeMillis()));
         candidate.setCandidatePhoneType(request.getCandidatePhoneType());
         candidate.setCandidateTotalExperience(request.getCandidateTotalExperience());
@@ -251,10 +260,10 @@ public class CandidateService {
             response.setCandidate(candidate);
         }
         if(education == null){
-            Logger.info("education static table empty");
+            Logger.info("education static table empty! Error: while adding education");
             return null;
         } if(degree == null){
-            Logger.info("degree static table empty");
+            Logger.info("degree static table empty! Error: while adding education");
             return null;
         } else {
             response.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
@@ -303,7 +312,7 @@ public class CandidateService {
         jobHistory.setCandidatePastCompany(request.getCandidatePastJobCompany());
         JobRole jobRole = JobRole.find.where().eq("jobRoleId",request.getCandidatePastJobRole()).findUnique();
         if(jobRole == null) {
-            Logger.info("jobRole staic table empty");
+            Logger.info("jobRole staic table empty. Error : Adding jobHistory");
             return null;
         }
         jobHistory.setJobRole(jobRole);
