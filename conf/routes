@@ -20,8 +20,6 @@ POST     /addPassword                                             controllers.Ap
 
 POST     /processCsv                                              controllers.Application.processcsv()
 
-GET      /getAll                                                  controllers.Application.getAll()
-
 GET      /dashboard                                               controllers.Application.dashboard()
 
 POST     /loginSubmit                                             controllers.Application.loginSubmit()
@@ -30,7 +28,7 @@ POST     /findUserAndSendOtp                                      controllers.Ap
 
 POST     /processCsv                                              controllers.Application.processcsv()
 
-GET      /getAll                                                  controllers.Application.getAll()
+GET      /getAll/:id                                              controllers.Application.getAll(id: Integer)
 
 GET      /getAllLocality                                          controllers.Application.getAllLocality()
 

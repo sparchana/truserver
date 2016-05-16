@@ -42,6 +42,7 @@ public class ParseCSV {
                     }
                     Date  parsedDate = sdf.parse(nextLine[4]);
                     lead.leadCreationTimestamp = new Timestamp(parsedDate.getTime());
+                    Logger.info("leadmobile" + lead.leadMobile);
                     Lead existingLead = Lead.find.where()
                             .eq("leadMobile", lead.leadMobile)
                             .findUnique();
