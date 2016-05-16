@@ -45,10 +45,8 @@ function processCandidateReg(returnedData) {
         clearModal();
         alert('Unable to show data');
     }
-
 }
 function reportCandidateRegError(returnedData) {
-
     alert(returnedData);
 
 }
@@ -57,9 +55,14 @@ function renderKWResponse(returnedData) {
 
 }
 function processDataForSupport(returnedData) {
+    if ( $.fn.dataTable.isDataTable( '#leadTable' ) ) {
+        $('#leadTable').DataTable().clear();
+    }
 
     var t = $('table#leadTable').DataTable({
-        "order": [[ 5, "desc" ]]
+        "deferRender": true,
+        "order": [[5, "desc"]],
+        retrieve: true
     });
     //DoTheDue Here
     returnedData.forEach(function (newLead) {
@@ -76,9 +79,9 @@ function processDataForSupport(returnedData) {
                 newLead.leadName,
                 function(){
                     if(newLead.leadStatus == 'New') {
-                        return '<input type="submit" value="Call" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+');" id="'+newLead.leadId+'" class="btn btn-primary">'
+                        return '<input type="submit" value="Call"  style="width:90px" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+');" id="'+newLead.leadId+'" class="btn btn-primary">'
                     } else {
-                        return '<input type="submit" value="Call Back" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+'); " id="'+newLead.leadId+'"  class="btn btn-default">'
+                        return '<input type="submit" value="Call Back"  style="width:90px" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+'); " id="'+newLead.leadId+'"  class="btn btn-default">'
                     }
                 }
             ] ).draw( false );
@@ -92,7 +95,6 @@ function getCandidateInfo(id) {
     clearModal();
     console.log(id);
     try {
-
         $.ajax({
             url: "/getCandidateInfo/"+id,
             type: "GET",
@@ -104,6 +106,22 @@ function getCandidateInfo(id) {
         });
     } catch (exception) {
 
+    }
+}
+
+function getThis(id){
+    try {
+        NProgress.start();
+        $.ajax({
+            type: "GET",
+            url: "/getAll/" + id,
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataForSupport
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
     }
 }
 
@@ -156,7 +174,6 @@ $(function(){
     $("#callResponseForm").submit(function(eventObj) {
         eventObj.preventDefault();
         try {
-
             var leadId = $("#leadId").val();
             var answer = document.querySelector('input[name="answer"]:checked').value;
             var updateType = "";
@@ -201,13 +218,12 @@ $(function(){
         }
 
     }); // end of submit
-
     
     try {
         NProgress.start();
         $.ajax({
             type: "GET",
-            url: "/getAll",
+            url: "/getAll/" + "3",
             data: false,
             contentType: false,
             processData: false,

@@ -179,11 +179,28 @@ public class Application extends Controller {
         return ok(toJson(ParseCSV.parseCSV(file)));
     }
 
-    public static Result getAll(){
-        List<Lead> allLead = Lead.find.where()
-                .ne("leadStatus", ServerConstants.LEAD_STATUS_WON)
-                .ne("leadStatus", ServerConstants.LEAD_STATUS_LOST)
-                .findList();
+    public static Result getAll(int id){
+        List<Lead> allLead = new ArrayList<>();
+        switch (id){
+            case 1: // get all leads only
+                allLead = Lead.find.where()
+                        .ne("leadStatus", ServerConstants.LEAD_STATUS_WON)
+                        .ne("leadStatus", ServerConstants.LEAD_STATUS_LOST)
+                        .findList();
+                break;
+            case 2: // get all candidates only
+                allLead = Lead.find.where()
+                        .eq("leadType", ServerConstants.TYPE_CANDIDATE)
+                        .eq("leadStatus", ServerConstants.LEAD_STATUS_WON)
+                        .findList();
+                break;
+            case 3: // get all
+                allLead = Lead.find.where()
+                        .ne("leadStatus", ServerConstants.LEAD_STATUS_LOST)
+                        .findList();
+                break;
+        }
+
 
 //        List<Interaction> allInteractions = Interaction.find.all();
 //        List<Lead> allNewLeads = Lead.find.where()
@@ -346,17 +363,19 @@ public class Application extends Controller {
         try {
             Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
             // A vlaue is for overriding leadStatus is also there in Lead Model setLeadStatus
-            if(lead != null && lead.leadStatus < leadStatus){
-                Logger.info("updateLeadStatus invoked leadId:"+leadId+" status:" + leadStatus);
-                switch (leadStatus) {
-                    case 1: lead.setLeadStatus(ServerConstants.LEAD_STATUS_TTC);
-                        break;
-                    case 2: lead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
-                        break;
-                    case 3: lead.setLeadStatus(ServerConstants.LEAD_STATUS_LOST);
-                        break;
+            if(lead != null){
+                if(lead.leadStatus <= leadStatus){
+                    switch (leadStatus) {
+                        case 1: lead.setLeadStatus(ServerConstants.LEAD_STATUS_TTC);
+                            break;
+                        case 2: lead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
+                            break;
+                        case 3: lead.setLeadStatus(ServerConstants.LEAD_STATUS_LOST);
+                            break;
+                    }
+                    Logger.info("updateLeadStatus invoked leadId:"+leadId+" status:" + leadStatus);
+                    lead.update();
                 }
-                lead.update();
 
                 /* TODO: SEPERATE THIS INOT A METHOD */
                 Interaction interaction = new Interaction();

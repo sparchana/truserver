@@ -23,35 +23,14 @@
                             </button>
                             <h5 class="modal-title">Call Assesment for <input type="text" class="form-control" name="leadMobileNumber" id="leadMobileNumber" disabled/></h5>
                         </div>
-                        <div class="modal-body">
-                                <!-- The form is placed inside the body of modal -->
-                            <form id="callResponseForm" method="post" class="form-horizontal">
-                                <h3 class="modal-title">Is Lead a Candidate/Recruiter/Lost/Not able to Connect now?</h3>
-                                <div class="form-group">
-                                    <label class="radio-inline"><input type="radio" name="answer" id="no" data-dismiss="modal" value="no"  />Profile Not Created</label>
-                                    <label class="radio-inline"><input type="radio" name="answer" id="lost" value="lost"  />Lost</label>
-                                    <label class="radio-inline"><input type="radio" name="answer" id="candidate" value="candidate"  />Candidate</label>
-                                    <label class="radio-inline"><input type="radio" name="answer" id="recruiter" value="recruiter"  />Recruiter</label>
-                                </div>
-                                <input type="hidden" class="form-control" name="leadId" id="leadId"/>
-
-                                <div class="form-group">
-                                    <div class="col-xs-5 col-xs-offset-3">
-                                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                                    </div>
-                                </div>
-                            </form>
-
-                        </div>
                     </div>
                 </div>
             </div>
 
             <h2> Support Dashboard :<a href="/logout"><button class="btn btn-danger" style="align-items: flex-end"> Logout</button></a></h2>
-            <button class="btn btn-primary">Show Lead</button>
-            <button class="btn btn-primary">Show Candidates</button>
-            <button class="btn btn-primary">Show All</button>
+            <button class="btn btn-primary" onclick="getThis(1)">Show Lead</button>
+            <button class="btn btn-primary" onclick="getThis(2)">Show Candidates</button>
+            <button class="btn btn-primary" onclick="getThis(3)">Show All</button>
             <div style="margin-top: 16px"></div>
             <table id="leadTable" class="table table-striped table-bordered" style="margin-top: 16px" cellspacing="0" width="100%">
                 <thead>
