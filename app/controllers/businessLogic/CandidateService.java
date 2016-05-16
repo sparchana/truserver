@@ -123,8 +123,8 @@ public class CandidateService {
         return candidateSignUpResponse;
     }
 
-    public static AddCandidateResponse createCandidateBySupport(AddSupportCandidateRequest request){
-        AddCandidateResponse response = new AddCandidateResponse();
+    public static CandidateSignUpResponse createCandidateBySupport(AddSupportCandidateRequest request){
+        CandidateSignUpResponse response = new CandidateSignUpResponse();
         // get candidateBasic obj from req
         // Handle jobPrefList and any other list with , as break point at application only
         boolean isSupport = true;

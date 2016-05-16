@@ -353,6 +353,9 @@ function onCallYes(leadId){
     NProgress.done();
 }
 
+function cancelAndRedirect() {
+    window.location = "/support";
+}
 
 
 function onCallNo(leadId){
@@ -530,8 +533,14 @@ $(function() {
             try {
                 console.log(languageMap);
                 var selectedDob = $('#candidateDob').val();
-/*                var c_dob = new Date(selectedDob);*/
                 var c_dob = String(selectedDob);
+
+                /* calculate total experience in months */
+                var expMonth = parseInt($('#candidateTotalExperienceMonth').val());
+                var expYear = parseInt($('#candidateTotalExperienceYear').val());
+                var totalExp = expMonth + (12*expYear);
+                alert(totalExp);
+
                 var d = {
                     //mandatory fields
                     candidateFirstName: $('#candidateFirstName').val(),
@@ -548,7 +557,7 @@ $(function() {
                     candidateMaritalStatus: ($('input:radio[name="married"]:checked').val()),
                     candidateEmail: $('#candidateEmail').val(),
                     candidateIsEmployed: ($('input:radio[name="employed"]:checked').val()),
-                    candidateTotalExperience: ($('#candidateTotalExperience').val()),
+                    candidateTotalExperience: totalExp,
 
                     candidateCurrentCompany: $('#candidateCurrentCompany').val(),
                     candidateCurrentJobLocation: $('#candidateCurrentJobLocation').val(),
