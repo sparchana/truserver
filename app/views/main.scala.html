@@ -264,7 +264,7 @@
 
                                 <!-- Text input-->
                             <div class="form-group">
-                                    <input id="leadMobileModal" name="leadMobileModal" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" placeholder="Mobile: (eg: 8880007799)" class="form-control input-md">
+                                    <input id="leadMobileModal" name="leadMobileModal" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" placeholder="Mobile: (eg: 8880007799)" class="form-control input-md" required>
                             </div>
 
                             <label class="radio-inline"><input id="candidateRadio" type="radio" name="mainLead" checked="checked" value="1" onclick="selectLead(1)">I am a Candidate</label>
@@ -393,8 +393,6 @@
                     <div class="errorMsgText" id="errorMsg" style="margin-top: 2%;display: none;">
                         <h5>Looks like something went wrong. Please try again later!</h5>
                     </div>
-
-
                 </div>
             </div>
                 <!-- Lead form block ends -->
@@ -412,43 +410,44 @@
                 <br>
                 <div class="leadBox">
                     <form id="form_signup_candidate"  style="margin-top: 0%; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
-                                <h4>Job Seeker Registration</h4>
-                                <input id="candidateName" name="candidateName" placeholder="What is your name?" type="text" class="form-control input-md" required>
+                        <h4>Job Seeker Registration</h4>
+                        <input id="candidateName" name="candidateName" placeholder="What is your First name?" type="text" class="form-control input-md" required>
+                        <input id="candidateSecondName" style="margin-top: 8px" name="candidateSecondName" placeholder="What is your Second name?" type="text" class="form-control input-md" required>
 
-                                <input id="candidateMobile" style="margin-top: 8px" placeholder="What is your mobile no.?" name="candidateMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" class="form-control input-md" required>
+                        <input id="candidateMobile" style="margin-top: 8px" placeholder="What is your mobile no.?" name="candidateMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" class="form-control input-md" required>
 
-                                <div style="margin-top: 8px">
-                                    <input type="text" id="candidateJobPref" placeholder="What jobs you are Interested in?">
-                                    <script type="text/javascript">
-                                        $(document).ready(function() {
-                                            $("#candidateJobPref").tokenInput(getJob(), {
-                                                theme: "facebook",
-                                                placeholder: "What jobs you are Interested in?",
-                                                hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-                                                minChars: 0,
-                                                preventDuplicates: true
-                                            });
-                                        });
-                                    </script>
-                                </div>
+                        <div style="margin-top: 8px">
+                            <input type="text" id="candidateJobPref" placeholder="What jobs you are Interested in?">
+                            <script type="text/javascript">
+                            $(document).ready(function() {
+                                $("#candidateJobPref").tokenInput(getJob(), {
+                                    theme: "facebook",
+                                    placeholder: "What jobs you are Interested in?",
+                                    hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                                    minChars: 0,
+                                    preventDuplicates: true
+                                });
+                            });
+                            </script>
+                        </div>
 
-                                <div style="margin-top: 8px">
-                                    <input type="text" id="candidateLocality" style="margin-top: 4px">
-                                    <script type="text/javascript">
-                                        $(document).ready(function() {
-                                            $("#candidateLocality").tokenInput(getLocality(), {
-                                                theme: "facebook",
-                                                placeholder: "Where do you want to Work?",
-                                                minChars: 3,
-                                                hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
-                                                preventDuplicates: true
-                                            });
-                                        });
-                                        </script>
-                                </div>
+                        <div style="margin-top: 8px">
+                            <input type="text" id="candidateLocality" style="margin-top: 4px">
+                            <script type="text/javascript">
+                            $(document).ready(function() {
+                                $("#candidateLocality").tokenInput(getLocality(), {
+                                    theme: "facebook",
+                                    placeholder: "Where do you want to Work?",
+                                    minChars: 3,
+                                    hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
+                                    preventDuplicates: true
+                                });
+                            });
+                            </script>
+                        </div>
 
-                                <button type="submit" id="registerBtn" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
-                            <!-- Text input-->
+                        <button type="submit" id="registerBtn" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
+                    <!-- Text input-->
                     </form>
                     <div class="modal fade bs-example-modal-sm" id="myRegistrationModal" tabindex="-1" role="dialog" aria-labelledby="myRegistrationModal">
                         <div class="modal-dialog modal-sm">

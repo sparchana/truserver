@@ -20,8 +20,8 @@
       <h2> Create Candidate Admin:&nbsp;<a href="/logout"><button class="btn btn-danger" style="align-items: flex-end"> Logout</button></a></h2>
       <br>
       <h4>Call Connected? :&nbsp;
-        <input type="radio" name="callConnected" id="callYes" value="yes" onclick="onCallYes(@id)">Yes&nbsp;
-        <input type="radio" name="callConnected" id="callNo" value="no" onclick="onCallNo(@id)">No
+        <input type="radio" name="callConnected" id="callYes" value="yes" onclick="onCallYes(@id)">&nbsp;Yes&nbsp;
+        <input type="radio" name="callConnected" id="callNo" value="no" onclick="onCallNo(@id)">&nbsp;No
       </h4>
 
       <div id="callNoClass" style="display: none">
@@ -46,9 +46,16 @@
           <hr>
           <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Mandatory Details</h4>
           <div class="row">
-            <div class="col-sm-3"><h5>Candidate Name:</h5></div>
+            <div class="col-sm-3"><h5>Candidate First Name:</h5></div>
             <div class="col-sm-9">
-              <input id="candidateName" name="candidateName" placeholder="What is your name?" type="text" class="form-control input-md" required>
+              <input id="candidateFirstName" name="candidateFirstName" placeholder="What is your First name?" type="text" class="form-control input-md" required>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Candidate Last Name:</h5></div>
+            <div class="col-sm-9">
+              <input id="candidateSecondName" name="candidateSecondName" placeholder="What is your second name?" type="text" class="form-control input-md" required>
             </div>
           </div>
 
@@ -114,8 +121,8 @@
               <div class="row" style="margin-top: 4px">
                 <div class="col-sm-3"><h5>Candidate Gender:</h5></div>
                 <div class="col-sm-9" style="margin-top: 6px;">
-                  <input type="radio" name="gender" id="genderMale" value="0">Male
-                  <input type="radio" name="gender" id="genderFemale" value="1">Female
+                  <input type="radio" name="gender" id="genderMale" value="0">&nbsp;Male&nbsp;&nbsp;
+                  <input type="radio" name="gender" id="genderFemale" value="1">&nbsp;Female
                 </div>
               </div>
 
@@ -141,8 +148,8 @@
               <div class="row" style="margin-top: 4px">
                 <div class="col-sm-3"><h5>Married?:</h5></div>
                 <div class="col-sm-9" style="margin-top: 6px;">
-                  <input type="radio" name="married" id="married" value="0">Married
-                  <input type="radio" name="married" id="married" value="1">Not Married
+                  <input type="radio" name="married" id="married" value="0">&nbsp;Married&nbsp;&nbsp;
+                  <input type="radio" name="married" id="married" value="1">&nbsp;Not Married
                 </div>
               </div>
 
@@ -161,8 +168,8 @@
             <div class="row" style="margin-top: 4px">
               <div class="col-sm-3"><h5>Do you have a Job?:</h5></div>
               <div class="col-sm-9" style="margin-top: 6px;">
-                <input type="radio" name="employed" id="employed" value="1" onclick="employedYes()">Yes
-                <input type="radio" name="employed" id="employed" value="0" onclick="employedNo()">No
+                <input type="radio" name="employed" id="employed" value="1" onclick="employedYes()">&nbsp;Yes&nbsp;&nbsp;
+                <input type="radio" name="employed" id="employed" value="0" onclick="employedNo()">&nbsp;No
               </div>
             </div>
 
@@ -414,16 +421,16 @@
               <div class="row" style="margin-top: 4px">
                   <div class="col-sm-5"><h5>Do you get Monthly Pay Slip?:</h5></div>
                   <div class="col-sm-7" style="margin-top: 6px;">
-                      <input type="radio" name="payslip" id="payslipY" value="1">Yes
-                      <input type="radio" name="payslip" id="payslipN" value="0">No
+                      <input type="radio" name="payslip" id="payslipY" value="1">&nbsp;Yes&nbsp;&nbsp;
+                      <input type="radio" name="payslip" id="payslipN" value="0">&nbsp;No
                   </div>
               </div>
 
               <div class="row" style="margin-top: 4px">
                   <div class="col-sm-5"><h5>Do you have an Appointment Letter for your Current job?:</h5></div>
                   <div class="col-sm-7" style="margin-top: 6px;">
-                      <input type="radio" name="appointmentLetter" id="appointmentLetterY" value="1">Yes
-                      <input type="radio" name="appointmentLetter" id="appointmentLetterN" value="0">No
+                      <input type="radio" name="appointmentLetter" id="appointmentLetterY" value="1">&nbsp;Yes&nbsp;&nbsp;
+                      <input type="radio" name="appointmentLetter" id="appointmentLetterN" value="0">&nbsp;No
                   </div>
               </div>
           </div>

@@ -116,8 +116,10 @@ public class Application extends Controller {
         candidate.candidateId = Util.randomLong();
         candidate.candidateUUId = UUID.randomUUID().toString();
         candidate.candidateName = candidateSignUpRequest.getCandidateName();
+        candidate.candidateLastName = candidateSignUpRequest.getCandidateSecondName();
         candidate.candidateMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
 
+        Logger.info("---->> " + candidateSignUpRequest.getCandidateSecondName());
         CandidateProfileStatus newcandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 1).findUnique();
         candidate.candidateprofilestatus = newcandidateProfileStatus;
         candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(localityList, candidate);

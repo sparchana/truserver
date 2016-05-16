@@ -133,7 +133,8 @@ public class CandidateService {
             candidate = new Candidate();
             candidate.candidateId = Util.randomLong();
             candidate.candidateUUId = UUID.randomUUID().toString();
-            candidate.candidateName = request.getCandidateName();
+            candidate.candidateName = request.getCandidateFirstName();
+            candidate.candidateLastName = request.getCandidateSecondName();
             candidate.candidateMobile = request.getCandidateMobile();
             CandidateProfileStatus newcandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 1).findUnique();
             if(newcandidateProfileStatus != null){

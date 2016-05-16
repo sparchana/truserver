@@ -15,6 +15,14 @@ var degreeArray = [];
 var check = 0;
 var selectedJobPref_array;
 
+$.fn.sortSelect = function() {
+    var op = this.children("option");
+    op.sort(function(a, b) {
+        return a.text > b.text ? 1 : -1;
+    })
+    return this.empty().append(op);
+}
+
 $(document).ready(function(){
     var pathname = window.location.pathname; // Returns path only
     var candidate_id = pathname.split('/');
@@ -143,6 +151,10 @@ $(document).ready(function(){
         console.log("exception occured!!" + exception);
     }
 });
+
+
+
+$('#candidateHighestDegree').sortSelect();
 
 function getLocality(){
     return localityArray;
@@ -522,7 +534,8 @@ $(function() {
                 var c_dob = String(selectedDob);
                 var d = {
                     //mandatory fields
-                    candidateName: $('#candidateName').val(),
+                    candidateFirstName: $('#candidateFirstName').val(),
+                    candidateSecondName: $('#candidateSecondName').val(),
                     candidateMobile: $('#candidateMobile').val(),
                     candidateLocality: $('#candidateLocalityPref').val(),
                     candidateJobInterest: $('#candidateJobPref').val(),
