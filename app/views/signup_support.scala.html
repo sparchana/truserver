@@ -67,24 +67,6 @@
           </div>
 
           <div class="row" style="margin-top: 4px">
-            <div class="col-sm-3"><h5>Locality Preference:</h5></div>
-            <div class="col-sm-9">
-              <input type="text" id="candidateLocalityPref" placeholder="Where do you want to work?">
-              <script type="text/javascript">
-                  $(document).ready(function() {
-                    $("#candidateLocalityPref").tokenInput(getLocality(), {
-                      theme: "facebook",
-                      placeholder: "Where do you want to work?",
-                      hintText: "Start typing jobs (eg. BTM Layout, Bellandur..)",
-                      minChars: 0,
-                      preventDuplicates: true
-                    });
-                  });
-              </script>
-            </div>
-          </div>
-
-          <div class="row" style="margin-top: 4px">
             <div class="col-sm-3"><h5>Job Role Preference:</h5></div>
             <div class="col-sm-9">
               <input type="text" id="candidateJobPref" >
@@ -101,6 +83,25 @@
               </script>
             </div>
           </div>
+
+          <div class="row" style="margin-top: 4px">
+            <div class="col-sm-3"><h5>Locality Preference:</h5></div>
+            <div class="col-sm-9">
+              <input type="text" id="candidateLocalityPref" placeholder="Where do you want to work?">
+              <script type="text/javascript">
+                      $(document).ready(function() {
+                        $("#candidateLocalityPref").tokenInput(getLocality(), {
+                          theme: "facebook",
+                          placeholder: "Where do you want to work?",
+                          hintText: "Start typing jobs (eg. BTM Layout, Bellandur..)",
+                          minChars: 0,
+                          preventDuplicates: true
+                        });
+                      });
+              </script>
+            </div>
+          </div>
+
           <hr>
             <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Basic Details</h4>
             <div id="basic_details">
