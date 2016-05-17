@@ -218,13 +218,16 @@ function processDataAndFillAllFields(returnedData) {
     }
 
     $("#candidateCurrentCompany").val(returnedData.candidateCurrentJobDetail.candidateCurrentCompany);
-    console.log(returnedData.candidateCurrentJobDetail.candidateCurrentCompany);
     $("#candidateCurrentJobDesignation").val(returnedData.candidateCurrentJobDetail.candidateCurrentDesignation);
     $("#candidateCurrentSalary").val(returnedData.candidateCurrentJobDetail.candidateCurrentSalary);
-    $("#candidateCurrentJobDuration").val(returnedData.candidateCurrentJobDetail.candidateCurrentJobDuration); // months
-    $("#selectTransportation").val(returnedData.candidateCurrentJobDetail.candidateTransportationMode.transportationModeId);
+    $("#candidateCurrentJobDurationYear").val(Math.floor(parseInt(returnedData.candidateCurrentJobDetail.candidateCurrentJobDuration)/12)); // year
+    $("#candidateCurrentJobDurationMonth").val(parseInt(returnedData.candidateCurrentJobDetail.candidateCurrentJobDuration)%12); // months
     $("#currentWorkShift").val(returnedData.candidateCurrentJobDetail.candidateCurrentWorkShift.timeShiftId);
-    $("#candidateTotalExperience").val(returnedData.candidateTotalExperience); // months
+
+    $("#candidateTotalExperienceYear").val(Math.floor(parseInt(returnedData.candidateTotalExperience)/12)); // year
+    $("#candidateTotalExperienceMonth").val(parseInt(returnedData.candidateTotalExperience)%12); // months
+
+    $("#selectTransportation").val(returnedData.candidateCurrentJobDetail.candidateTransportationMode.transportationModeId);
 
     $("#candidateHighestEducation").val(returnedData.candidateEducation.education.educationId);
     $("#candidateHighestDegree").val(returnedData.candidateEducation.degree.degreeId);
