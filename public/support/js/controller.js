@@ -73,7 +73,7 @@ function processDataForSupport(returnedData) {
                 newLead.leadStatus,
                 newLead.leadCreationTimestamp,
                 /*newLead.totalInBounds,*/
-                '<input value='+newLead.totalInBounds+' type=\'button\' id="'+newLead.leadId+'" onclick="showInteraction(this);" class=\"btn\"/>',
+                '<a style=\"cursor: hand\" id="'+newLead.leadId+'" onclick="showInteraction(this);">' + newLead.totalInBounds + '</a>',
                 newLead.lastIncomingCallTimestamp,
                 newLead.leadChannel,
                 newLead.leadMobile,
@@ -92,6 +92,11 @@ function processDataForSupport(returnedData) {
     });
     NProgress.done();
 }
+
+function showInteraction(x) {
+    window.location = "/candidateInteraction/" + x.id;
+}
+
 function getCandidateInfo(id) {
     clearModal();
     console.log(id);
