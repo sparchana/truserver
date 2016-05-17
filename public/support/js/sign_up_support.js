@@ -36,6 +36,21 @@ $(document).ready(function(){
     try {
         $.ajax({
             type: "GET",
+            url: "/getUserInfo/" + leadId,
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckUserMobile
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+
+    /* ajax commands to fetch leads Info */
+    try {
+        $.ajax({
+            type: "GET",
             url: "/getCandidateInfo/" + leadId,
             data: false,
             contentType: false,
@@ -188,8 +203,13 @@ function getJobName(id){
     return returnJobName;
 }
 
+function processDataCheckUserMobile(returnedData) {
+    $("#candidateMobile").val(returnedData.substring(3,13));
+}
+
 function processDataAndFillAllFields(returnedData) {
-    $("#candidateName").val(returnedData.candidateName);
+    $("#candidateFirstName").val(returnedData.candidateName);
+    $("#candidateLastName").val(returnedData.candidateLastName);
     $("#candidateMobile").val(returnedData.candidateMobile.substring(3,13));
     var date = JSON.parse(returnedData.candidateDOB);
     var yr = new Date(date).getFullYear();
@@ -598,7 +618,6 @@ $(function() {
                 var expMonth = parseInt($('#candidateTotalExperienceMonth').val());
                 var expYear = parseInt($('#candidateTotalExperienceYear').val());
                 var totalExp = expMonth + (12*expYear);
-                alert(totalExp);
 
                 var d = {
                     //mandatory fields
