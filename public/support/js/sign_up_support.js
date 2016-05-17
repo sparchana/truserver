@@ -6,22 +6,12 @@ var skillMap = [];
 var languageMap = [];
 var localityArray = [];
 var jobArray = [];
-var timeShiftArray = [];
 var transportationArray = [];
 var educationArray = [];
 var languageArray = [];
 var idProofArray = [];
-var degreeArray = [];
 var check = 0;
 var selectedJobPref_array;
-
-$.fn.sortSelect = function() {
-    var op = this.children("option");
-    op.sort(function(a, b) {
-        return a.text > b.text ? 1 : -1;
-    })
-    return this.empty().append(op);
-}
 
 $(document).ready(function(){
     var pathname = window.location.pathname; // Returns path only
@@ -47,7 +37,7 @@ $(document).ready(function(){
     }
 
 
-    /* ajax commands to fetch leads Info */
+    /* ajax commands to fetch candidate's Info */
     try {
         $.ajax({
             type: "GET",
@@ -167,10 +157,6 @@ $(document).ready(function(){
     }
 });
 
-
-
-$('#candidateHighestDegree').sortSelect();
-
 function getLocality(){
     return localityArray;
 }
@@ -179,16 +165,8 @@ function getJob(){
     return jobArray;
 }
 
-function getTimeShift(){
-    return timeShiftArray;
-}
-
 function getIdProofs(){
     return idProofArray;
-}
-
-function getDegree(){
-    return degreeArray;
 }
 
 function getJobName(id){
@@ -209,13 +187,15 @@ function processDataCheckUserMobile(returnedData) {
 
 function processDataAndFillAllFields(returnedData) {
     $("#candidateFirstName").val(returnedData.candidateName);
-    $("#candidateLastName").val(returnedData.candidateLastName);
+    $("#candidateSecondName").val(returnedData.candidateLastName);
     $("#candidateMobile").val(returnedData.candidateMobile.substring(3,13));
+
     var date = JSON.parse(returnedData.candidateDOB);
     var yr = new Date(date).getFullYear();
     var month = ('0' + new Date(date).getMonth()).slice(-2);
     var d = ('0' + new Date(date).getDate()).slice(-2);
     $("#candidateDob").val(yr+"-"+month+"-"+d);
+
     $("#candidatePhoneType").val(returnedData.candidatePhoneType);
     if(returnedData.candidateGender !=null && returnedData.candidateGender == 0) {
         $('input[id=genderMale]').attr('checked', true);
@@ -227,13 +207,16 @@ function processDataAndFillAllFields(returnedData) {
     } else {
         $('input[id=married]').attr('checked', true);
     }
+
     $("#candidateEmail").val(returnedData.candidateEmail);
+
     if(returnedData.candidateIsEmployed == 1){
         $('input[id=employed]').attr('checked', true);
         $('#employedForm').show();
     } else {
         $('input[id=employedNot]').attr('checked', true);
     }
+
     $("#candidateCurrentCompany").val(returnedData.candidateCurrentJobDetail.candidateCurrentCompany);
     console.log(returnedData.candidateCurrentJobDetail.candidateCurrentCompany);
     $("#candidateCurrentJobDesignation").val(returnedData.candidateCurrentJobDetail.candidateCurrentDesignation);
@@ -300,12 +283,8 @@ function processDataCheckDegree(returnedData) {
     {
         var id = degree.degreeId;
         var name = degree.degreeName;
-        var item = {};
-        item ["id"] = id;
-        item ["name"] = name;
         var option=$('<option value=' + id + '></option>').text(name);
         $('#candidateHighestDegree').append(option);
-        degreeArray.push(item);
     });
 }
 
@@ -326,12 +305,12 @@ function processDataCheckShift(returnedData) {
     {
         var id = timeshift.timeShiftId;
         var name = timeshift.timeShiftName;
-        var item = {};
-        item ["id"] = id;
-        item ["name"] = name;
         var option=$('<option value=' + id + '></option>').text(name);
         $('#currentWorkShift').append(option);
-        timeShiftArray.push(item);
+
+        var option=$('<option value=' + id + '></option>').text(name);
+        $('#candidateTimeShiftPref').append(option);
+        
     });
 }
 
@@ -618,6 +597,11 @@ $(function() {
                 var expYear = parseInt($('#candidateTotalExperienceYear').val());
                 var totalExp = expMonth + (12*expYear);
 
+                /* calculate current job duration in months */
+                var currentJobMonth = parseInt($('#candidateCurrentJobDurationMonth').val());
+                var currentJobYear = parseInt($('#candidateCurrentJobDurationYear').val());
+                var currentJobDuration = currentJobMonth + (12 * currentJobYear);
+
                 var d = {
                     //mandatory fields
                     candidateFirstName: $('#candidateFirstName').val(),
@@ -643,7 +627,7 @@ $(function() {
                     candidateCurrentJobRole: $('#candidateCurrentJobRole').val(),
                     candidateCurrentJobDesignation: $('#candidateCurrentJobDesignation').val(),
                     candidateCurrentSalary: ($('#candidateCurrentJobSalary').val()),
-                    candidateCurrentJobDuration: ($('#candidateCurrentJobDuration').val()),
+                    candidateCurrentJobDuration: currentJobDuration,
 
                     candidatePastJobCompany: $('#candidatePastCompany').val(),
                     candidatePastJobRole: $('#candidatePastJobRole').val(),
