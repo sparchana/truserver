@@ -6,7 +6,7 @@ GET      /                                                        controllers.Ap
 
 GET      /support                                                 controllers.Application.support()
 
-GET      /candidateInteraction                                    controllers.Application.candidateInteraction()
+GET      /candidateInteraction/:id                                controllers.Application.candidateInteraction(id : Long)
 
 GET      /getCandidateInteraction/:id                             controllers.Application.getCandidateInteraction(id : Long)
 

@@ -39,6 +39,7 @@
         <script>
             var localityArray = [];
             var jobArray = [];
+
             function getLocality(){
                 return localityArray;
             }
@@ -83,6 +84,7 @@
                         type: "GET",
                         url: "/getAllLocality",
                         data: false,
+                        async: false,
                         contentType: false,
                         processData: false,
                         success: processDataCheckLocality
@@ -96,6 +98,7 @@
                         type: "GET",
                         url: "/getAllJobs",
                         data: false,
+                        async: false,
                         contentType: false,
                         processData: false,
                         success: processDataCheckJobs
@@ -108,116 +111,116 @@
 
             <!-- Hide radio button on job category box -->
         <script>
-                function openModal(str) {
-                    $('.form-horizontal').show();
-                    $('#thanksMsg').hide();
-                    $('#alreadyMsg').hide();
-                    $('#errorMsg').hide();
-                    $('#interestedModal').show();
-                    $('#leadNameModal').val('')
-                    $('#leadMobileModal').val('')
-                    document.getElementById("interested").innerHTML = "Jobs for " + str;
-                    $('#leadInterestModal').val(str)
-                    $('#leadInterestModal').show()
-                    $('.radio-inline').hide();
+            function openModal(str) {
+                $('.form-horizontal').show();
+                $('#thanksMsg').hide();
+                $('#alreadyMsg').hide();
+                $('#errorMsg').hide();
+                $('#interestedModal').show();
+                $('#leadNameModal').val('')
+                $('#leadMobileModal').val('')
+                document.getElementById("interested").innerHTML = "Jobs for " + str;
+                $('#leadInterestModal').val(str)
+                $('#leadInterestModal').show()
+                $('.radio-inline').hide();
+            }
+            function resetModal() {
+                document.getElementById('recruiterRadio').checked = false;
+                document.getElementById('candidateRadio').checked = true;
+                $('#interested').hide();
+                $('#leadInterest').val('General Registration')
+                $('#leadName').val('')
+                $('#leadMobile').val('')
+                $('.form-horizontal').show();
+                $('#thanksMsg').hide();
+                $('#alreadyMsg').hide();
+                $('#errorMsg').hide();
+                $('#leadInterest').hide();
+                $('.radio-inline').show();
+            }
+            function resetForms() {
+                var mob = $('#mobile_gen').val();
+                var len = mob.length;
+                if((mob[0]=='7' || mob[0]=='8' || mob[0]=='9') && len==10 )
+                {
+                    $('.form-horizontal').hide();
+                    $('#thanksMsg').show();
                 }
-                function resetModal() {
-                    document.getElementById('recruiterRadio').checked = false;
-                    document.getElementById('candidateRadio').checked = true;
-                    $('#interested').hide();
-                    $('#leadInterest').val('General Registration')
-                    $('#leadName').val('')
-                    $('#leadMobile').val('')
-                    $('.form-horizontal').show();
-                    $('#thanksMsg').hide();
-                    $('#alreadyMsg').hide();
-                    $('#errorMsg').hide();
-                    $('#leadInterest').hide();
-                    $('.radio-inline').show();
+                else{
                 }
-                function resetForms() {
-                    var mob = $('#mobile_gen').val();
-                    var len = mob.length;
-                    if((mob[0]=='7' || mob[0]=='8' || mob[0]=='9') && len==10 )
-                    {
-                        $('.form-horizontal').hide();
-                        $('#thanksMsg').show();
-                    }
-                    else{
-                    }
-                }
-                function selectLead(type) {
-                    $('#leadType').val(type)
-                }
+            }
+            function selectLead(type) {
+                $('#leadType').val(type)
+            }
 
-                function processCheckLeadStatus() {
-                    alert("Thanks! We will get back soon!");
-                    $("#addLeadMobile").val('');
+            function processCheckLeadStatus() {
+                alert("Thanks! We will get back soon!");
+                $("#addLeadMobile").val('');
 
+            }
+            function addLead() {
+                var phone = $('#addLeadMobile').val();
+                var validPhone = /^[7-9]{1}[0-9]{9}$/i;
+                if (phone.length > 0 && validPhone.test(phone) === false) {
+                    alert("Please enter valid 10 digit mobile number");
+                } else if (phone.length == 0) {
+                    alert("Please enter your mobile number");
                 }
-                function addLead() {
-                    var phone = $('#addLeadMobile').val();
-                    var validPhone = /^[7-9]{1}[0-9]{9}$/i;
-                    if (phone.length > 0 && validPhone.test(phone) === false) {
-                        alert("Please enter valid 10 digit mobile number");
-                    } else if (phone.length == 0) {
-                        alert("Please enter your mobile number");
-                    }
-                    else{
-                        try {
-                            var d = {
-                                leadName : " ",
-                                leadMobile : $("#addLeadMobile").val(),
-                                leadChannel : 0,
-                                leadType : 1,
-                                leadInterest : "General Registration"
-                            };
-                            $.ajax({
-                                type: "POST",
-                                url: "/addLead",
-                                data: d,
-                                success: processCheckLeadStatus
-                            });
-                        } catch (exception) {
-                            console.log("exception occured!!" + exception);
-                        }
-                    }
-                }
-
-                function openLogin() {
-
-                    document.getElementById("resetCheckUserBtn").disabled = false;
-                    document.getElementById("resetNewPasswordBtn").disabled = false;
-                    $('#form_login_candidate').show();
-                    $('#noUserLogin').hide();
-                    $('#incorrectMsgLogin').hide();
-                    $('#form_forgot_password').hide();
-                    $('#errorMsgReset').hide();
-                    $('#form_password_reset_otp').hide();
-                    $('#form_password_reset_new').hide();
-                }
-
-                function resetPassword() {
-                    $('#noUserLogin').hide();
-                    $('#incorrectMsgLogin').hide();
-                    $('#form_login_candidate').hide();
-                    $('#form_forgot_password').show();
-                }
-                function resetFormsForCandidate() {
-                    $('.form-candidate').hide();
-
-                }
-                function resetFormsForRecruiter() {
-                    var mob = $('#mobile_r').val();
-                    var len = mob.length;
-                    if((mob[0]=='7' || mob[0]=='8' || mob[0]=='9') && len==10 )
-                    {
-                        $('.form-recruiter').hide();
-                        $('#thanksMsgRecruiter').show();
-                    }
-                    else{
+                else{
+                    try {
+                        var d = {
+                            leadName : " ",
+                            leadMobile : $("#addLeadMobile").val(),
+                            leadChannel : 0,
+                            leadType : 1,
+                            leadInterest : "General Registration"
+                        };
+                        $.ajax({
+                            type: "POST",
+                            url: "/addLead",
+                            data: d,
+                            success: processCheckLeadStatus
+                        });
+                    } catch (exception) {
+                        console.log("exception occured!!" + exception);
                     }
                 }
+            }
+
+            function openLogin() {
+
+                document.getElementById("resetCheckUserBtn").disabled = false;
+                document.getElementById("resetNewPasswordBtn").disabled = false;
+                $('#form_login_candidate').show();
+                $('#noUserLogin').hide();
+                $('#incorrectMsgLogin').hide();
+                $('#form_forgot_password').hide();
+                $('#errorMsgReset').hide();
+                $('#form_password_reset_otp').hide();
+                $('#form_password_reset_new').hide();
+            }
+
+            function resetPassword() {
+                $('#noUserLogin').hide();
+                $('#incorrectMsgLogin').hide();
+                $('#form_login_candidate').hide();
+                $('#form_forgot_password').show();
+            }
+            function resetFormsForCandidate() {
+                $('.form-candidate').hide();
+
+            }
+            function resetFormsForRecruiter() {
+                var mob = $('#mobile_r').val();
+                var len = mob.length;
+                if((mob[0]=='7' || mob[0]=='8' || mob[0]=='9') && len==10 )
+                {
+                    $('.form-recruiter').hide();
+                    $('#thanksMsgRecruiter').show();
+                }
+                else{
+                }
+            }
         </script>
     </head>
     <body>
@@ -411,7 +414,7 @@
                 <div class="leadBox">
                     <form id="form_signup_candidate"  style="margin-top: 0%; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
                         <h4>Job Seeker Registration</h4>
-                        <input id="candidateName" name="candidateName" placeholder="What is your First name?" type="text" class="form-control input-md" required>
+                        <input id="candidateName"ca name="candidateName" placeholder="What is your First name?" type="text" class="form-control input-md" required>
                         <input id="candidateSecondName" style="margin-top: 8px" name="candidateSecondName" placeholder="What is your Second name?" type="text" class="form-control input-md" required>
 
                         <input id="candidateMobile" style="margin-top: 8px" placeholder="What is your mobile no.?" name="candidateMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" class="form-control input-md" required>
