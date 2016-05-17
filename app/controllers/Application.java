@@ -240,14 +240,16 @@ public class Application extends Controller {
             List<Interaction> interactionsOfLead = Interaction.find.where().eq("objectAUUId", l.leadUUId).findList();
             Timestamp mostRecent = l.leadCreationTimestamp;
             for(Interaction i: interactionsOfLead){
-                Logger.info("");
-                mTotalInteraction++;
-                if(mostRecent.getTime() <= i.creationTimestamp.getTime()){
-                    mostRecent = i.creationTimestamp;
+                if(i.getInteractionType() == 1 || i.getInteractionType() == 5) {
+                    mTotalInteraction++;
+                    if(mostRecent.getTime() <= i.creationTimestamp.getTime()){
+                        mostRecent = i.creationTimestamp;
+                    }
                 }
             }
             response.setLastIncomingCallTimestamp(sfd.format(mostRecent));
             response.setTotalInBounds(mTotalInteraction);
+            mTotalInteraction = 0;
             responses.add(response);
         }
 
@@ -260,14 +262,13 @@ public class Application extends Controller {
         return ok(leadMobile);
     }
 
-    public static Result getCandidateInfo(long id) {
-            Lead lead = Lead.find.where().eq("leadId", id).findUnique();
+    public static Result getCandidateInfo(long leadId) {
+            Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
             if(lead != null) {
-                Interaction currentInteraction = Interaction.find.where().eq("objectAUUId", lead.leadUUId).findUnique();
-                if(currentInteraction != null) {
-                    return ok(toJson(lead+""+currentInteraction));
+                Candidate candidate = Candidate.find.where().eq("lead_leadId", lead.getLeadId()).findUnique();
+                if(candidate!=null){
+                    return ok(toJson(candidate));
                 }
-                return ok(toJson(lead));
             }
         return badRequest("{ status: 0}");
     }

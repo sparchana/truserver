@@ -60,8 +60,8 @@ function processDataForSupport(returnedData) {
     }
 
     var t = $('table#leadTable').DataTable({
-        "deferRender": true,
         "order": [[5, "desc"]],
+        "deferRender": true,
         retrieve: true
     });
     //DoTheDue Here
@@ -79,9 +79,9 @@ function processDataForSupport(returnedData) {
                 newLead.leadName,
                 function(){
                     if(newLead.leadStatus == 'New') {
-                        return '<input type="submit" value="Call"  style="width:90px" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+');" id="'+newLead.leadId+'" class="btn btn-primary">'
+                        return '<input type="submit" value="Call"  style="width:100px" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+');" id="'+newLead.leadId+'" class="btn btn-primary">'
                     } else {
-                        return '<input type="submit" value="Call Back"  style="width:90px" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+'); " id="'+newLead.leadId+'"  class="btn btn-default">'
+                        return '<input type="submit" value="Call Back"  style="width:100px" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+'); " id="'+newLead.leadId+'"  class="btn btn-default">'
                     }
                 }
             ] ).draw( false );
@@ -154,21 +154,6 @@ function myHandler (mobile, id) {
 
     }
 }
-function refreshDashBoard() {
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/getAll",
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataForSupport
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-}
-
 
 $(function(){
     $("#callResponseForm").submit(function(eventObj) {
