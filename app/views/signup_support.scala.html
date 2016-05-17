@@ -235,9 +235,10 @@
               </div>
 
               <div class="row" style="margin-top: 4px">
-                <div class="col-sm-3"><h5>Current Job Duration(Months):</h5></div>
+                <div class="col-sm-3"><h5>Current Job Duration:</h5></div>
                 <div class="col-sm-9">
-                  <input id="candidateCurrentJobDuration" placeholder="How long you have been working with the current company?" type="number" class="form-control input-md">
+                  <input id="candidateCurrentJobDurationYear" value="0" style="width: 15%; display: inline-block" placeholder="Years" type="number" class="form-control input-md">&nbsp;Years&nbsp;&nbsp;
+                  <input id="candidateCurrentJobDurationMonth" value="0" style="width: 15%; display: inline-block" placeholder="Months" type="number" class="form-control input-md">&nbsp; Months
                 </div>
               </div>
 
@@ -318,7 +319,7 @@
             <div class="row" style="margin-top: 4px">
               <div class="col-sm-3"><h5>Highest Education Degree?:</h5></div>
               <div class="col-sm-9" style="margin-top: 6px;">
-                <select id="candidateHighestDegree" size="5">
+                <select id="candidateHighestDegree" size="5" style="width: 128px">
                 </select>
               </div>
             </div>
@@ -337,21 +338,10 @@
           <div id="job_pref_details">
             <div class="row">
               <div class="col-sm-3" style="margin-top: 5px"><h5 style="margin-top: 4px">Preferred work shift?: </h5></div>
-              <div class="col-sm-9">
-                  <input type="text" id="candidateTimeShiftPref">
-                  <script type="text/javascript">
-                  $(document).ready(function() {
-                      $("#candidateTimeShiftPref").tokenInput(getTimeShift(), {
-                          theme: "facebook",
-                          placeholder: "Do you want to work Full/Part time and do you want Day/Night shift?",
-                          hintText: "Start typing jobs (eg. Day shift..)",
-                          minChars: 0,
-                          tokenLimit: 1,
-                          preventDuplicates: true
-                      });
-                  });
-                  </script>
-              </div>
+                <div class="col-sm-9" style="margin-top: 6px;">
+                    <select id="candidateTimeShiftPref" size="5">
+                </select>
+                </div>
             </div>
           </div>
           <hr>
