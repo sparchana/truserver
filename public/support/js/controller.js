@@ -72,7 +72,8 @@ function processDataForSupport(returnedData) {
                 newLead.leadType,
                 newLead.leadStatus,
                 newLead.leadCreationTimestamp,
-                newLead.totalInBounds,
+                /*newLead.totalInBounds,*/
+                '<input value='+newLead.totalInBounds+' type=\'button\' id="'+newLead.leadId+'" onclick="showInteraction(this);" class=\"btn\"/>',
                 newLead.lastIncomingCallTimestamp,
                 newLead.leadChannel,
                 newLead.leadMobile,

@@ -9,7 +9,8 @@ import java.util.List;
  * Created by batcoder1 on 10/5/16.
  */
 public class AddSupportCandidateRequest {
-    public String candidateName;
+    public String candidateFirstName;
+    public String candidateSecondName;
     public String candidateMobile;
     public String candidateJobInterest;
     public String candidateLocality;
@@ -61,11 +62,18 @@ public class AddSupportCandidateRequest {
     }
 
     /* Mandatory */
-    public void setCandidateName(String candidateName) {
-            this.candidateName = candidateName;
+    public void setCandidateFirstName(String candidateFirstName) {
+            this.candidateFirstName = candidateFirstName;
     }
-    public String getCandidateName() {
-        return candidateName;
+    public String getCandidateFirstName() {
+        return candidateFirstName;
+    }
+
+    public void setCandidateSecondName(String candidateSecondName) {
+        this.candidateSecondName = candidateSecondName;
+    }
+    public String getCandidateSecondName() {
+        return candidateSecondName;
     }
 
     public void setCandidateMobile(String candidateMobile) {

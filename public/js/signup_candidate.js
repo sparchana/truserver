@@ -10,6 +10,7 @@ function processDataSignUpSubmit(returnedData) {
         $('#myRegistrationModal').modal('show');
         $('#authMobile').val($('#candidateMobile').val());
         $('#candidateName').val('');
+        $('#candidateSecondName').val('');
         $('#candidateMobile').val('');
         $('#candidateEmail').val('');
         document.getElementById("helpTextSignUp").innerHTML = "Enter OTP sent on " + candidateMobile;
@@ -67,11 +68,13 @@ $(function() {
             document.getElementById("registerBtn").disabled = true;
             try {
                 var name  = $('#candidateName').val();
+                var secondName  = $('#candidateSecondName').val();
                 var phone = $('#candidateMobile').val();
                 candidateMobile = phone;
                 $('#alreadyMsgCandidate').hide();
                 var d = {
                     candidateName : name,
+                    candidateSecondName : secondName,
                     candidateMobile : phone,
                     candidateLocality : $('#candidateLocality').val(),
                     candidateJobPref : $('#candidateJobPref').val()

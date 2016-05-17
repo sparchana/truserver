@@ -7,6 +7,17 @@ public class SupportInteractionResponse {
     public long user_id;
     public String user_name;
     public String user_interaction_timestamp;
+    public String user_interactionType;
+    public String user_note;
+    public String user_results;
+
+    public void setUser_interactionType(String user_interactionType) {
+        this.user_interactionType = user_interactionType;
+    }
+
+    public void setUser_results(String user_results) {
+        this.user_results = user_results;
+    }
 
     public long getUser_id() {
         return user_id;
@@ -40,5 +51,5 @@ public class SupportInteractionResponse {
         this.user_note = user_note;
     }
 
-    public String user_note;
+
 }

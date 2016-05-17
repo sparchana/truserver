@@ -7,6 +7,7 @@ package api.http;
 public class CandidateSignUpRequest {
 
     protected String candidateName;
+    protected String candidateSecondName;
     protected String candidateMobile;
     protected String candidateLocality;
     protected String candidateJobPref;
@@ -20,6 +21,14 @@ public class CandidateSignUpRequest {
 
     public String getCandidateName() {
         return candidateName;
+    }
+
+    public void setCandidateSecondName(String candidateSecondName) {
+        this.candidateSecondName = candidateSecondName;
+    }
+
+    public String getCandidateSecondName() {
+        return candidateSecondName;
     }
 
     public void setCandidateLocality(String candidateLocality) {

@@ -54,14 +54,14 @@ public class Application extends Controller {
         return redirect("/street");
     }
 
-    public static Result candidateInteraction() {
+    public static Result candidateInteraction(long id) {
         return ok(views.html.candidate_interaction.render());
     }
 
     public static Result getCandidateInteraction(long id){
-        Candidate candidate = Candidate.find.where().eq("candidateId",id).findUnique();
-        if(candidate !=null){
-            String objId = candidate.candidateUUId;
+        Lead lead = Lead.find.where().eq("leadId",id).findUnique();
+        if(lead !=null){
+            String objId = lead.leadUUId;
             List<Interaction> interactionList = Interaction.find.where().eq("ObjectAUUId", objId).findList();
 
             ArrayList<SupportInteractionResponse> responses = new ArrayList<>();
@@ -72,9 +72,18 @@ public class Application extends Controller {
                 SupportInteractionResponse response = new SupportInteractionResponse();
 
                 response.setUser_interaction_timestamp(sfd.format(i.getCreationTimestamp()));
-                response.setUser_id(candidate.candidateId);
-                response.setUser_name(candidate.candidateName);
-                response.setUser_note(i.getResult());
+                response.setUser_id(lead.leadId);
+                response.setUser_name(lead.leadName);
+                response.setUser_note(i.getNote());
+                response.setUser_results(i.getResult());
+                switch (i.getInteractionType()) {
+                    case 0: response.setUser_interactionType("Unknown"); break;
+                    case 1: response.setUser_interactionType("Incoming Call"); break;
+                    case 2: response.setUser_interactionType("Out Going Call"); break;
+                    case 3: response.setUser_interactionType("Incoming SMS"); break;
+                    case 4: response.setUser_interactionType("Out Going SMS"); break;
+                    case 5: response.setUser_interactionType("Website Interaction"); break;
+                }
 
                 responses.add(response);
             }
@@ -116,8 +125,10 @@ public class Application extends Controller {
         candidate.candidateId = Util.randomLong();
         candidate.candidateUUId = UUID.randomUUID().toString();
         candidate.candidateName = candidateSignUpRequest.getCandidateName();
+        candidate.candidateLastName = candidateSignUpRequest.getCandidateSecondName();
         candidate.candidateMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
 
+        Logger.info("---->> " + candidateSignUpRequest.getCandidateSecondName());
         CandidateProfileStatus newcandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 1).findUnique();
         candidate.candidateprofilestatus = newcandidateProfileStatus;
         candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(localityList, candidate);

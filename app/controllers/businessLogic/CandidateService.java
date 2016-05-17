@@ -123,8 +123,8 @@ public class CandidateService {
         return candidateSignUpResponse;
     }
 
-    public static AddCandidateResponse createCandidateBySupport(AddSupportCandidateRequest request){
-        AddCandidateResponse response = new AddCandidateResponse();
+    public static CandidateSignUpResponse createCandidateBySupport(AddSupportCandidateRequest request){
+        CandidateSignUpResponse response = new CandidateSignUpResponse();
         // get candidateBasic obj from req
         // Handle jobPrefList and any other list with , as break point at application only
         boolean isSupport = true;
@@ -133,7 +133,8 @@ public class CandidateService {
             candidate = new Candidate();
             candidate.candidateId = Util.randomLong();
             candidate.candidateUUId = UUID.randomUUID().toString();
-            candidate.candidateName = request.getCandidateName();
+            candidate.candidateName = request.getCandidateFirstName();
+            candidate.candidateLastName = request.getCandidateSecondName();
             candidate.candidateMobile = request.getCandidateMobile();
             CandidateProfileStatus newcandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 1).findUnique();
             if(newcandidateProfileStatus != null){
