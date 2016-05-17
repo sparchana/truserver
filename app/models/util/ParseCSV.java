@@ -13,6 +13,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -28,9 +29,10 @@ public class ParseCSV {
         try {
             CSVReader reader = new CSVReader(new FileReader(file));
             reader.readNext();// skip title row
+            Logger.info("csv parsing begins");
             while ((nextLine = reader.readNext()) != null) {
                 Lead lead = new Lead();
-                Interaction kwObject = new Interaction();
+                Interaction interaction = new Interaction();
                 // Read all InBound Calls
                 if (nextLine != null && nextLine[0].equals("0")) {
                     lead.leadUUId = UUID.randomUUID().toString();
@@ -40,9 +42,8 @@ public class ParseCSV {
                     } else {
                         lead.leadMobile = nextLine[2];
                     }
-                    Date  parsedDate = sdf.parse(nextLine[4]);
-                    lead.leadCreationTimestamp = new Timestamp(parsedDate.getTime());
-                    Logger.info("leadmobile" + lead.leadMobile);
+                    Date  knowlarityInBoundDate = sdf.parse(nextLine[4]);
+                    lead.leadCreationTimestamp = new Timestamp(knowlarityInBoundDate.getTime());
                     Lead existingLead = Lead.find.where()
                             .eq("leadMobile", lead.leadMobile)
                             .findUnique();
@@ -50,8 +51,8 @@ public class ParseCSV {
                     lead.leadChannel = ServerConstants.LEAD_CHANNEL_KNOWLARITY;
                     lead.leadStatus = ServerConstants.LEAD_STATUS_NEW;
 
-                    kwObject.objectAType = lead.leadType;
-                    kwObject.objectAUUId= lead.leadUUId;
+                    interaction.objectAType = lead.leadType;
+                    interaction.objectAUUId= lead.leadUUId;
                     if (existingLead == null) {
                         lead.save();
                         count++;
@@ -63,18 +64,23 @@ public class ParseCSV {
                             existingLead.update();
                         }
                         overLappingRecordCount++;
-                        kwObject.objectAType = existingLead.leadType;
-                        kwObject.objectAUUId= existingLead.leadUUId;
-                        Logger.info("compared DateTime: KwVer." + lead.leadCreationTimestamp.getTime() + "  OurDbVer. " + existingLead.leadCreationTimestamp.getTime());
+                        interaction.objectAType = existingLead.leadType;
+                        interaction.objectAUUId= existingLead.leadUUId;
                     }
                     // gives total no of old leads
-                    Logger.info("Total OverLapping records : " + overLappingRecordCount);
 
-                    // save all inbound calls to interaction
-                    kwObject.createdBy = "System - Knowlarity";
-                    kwObject.creationTimestamp = new Timestamp(parsedDate.getTime());
-                    kwObject.interactionType = ServerConstants.INTERACTION_TYPE_CALL_IN;
-                    kwObject.save();
+                    List<Interaction> existingInteraction = Interaction.find.where()
+                            .eq("objectAUUID", interaction.objectAUUId)
+                            .eq("CreationTimestamp", new Timestamp(knowlarityInBoundDate.getTime()))
+                            .findList();
+                    if(existingInteraction == null){
+                        Logger.info("No existing interacton found for " + existingLead.getLeadMobile());
+                        // save all inbound calls to interaction
+                        interaction.createdBy = "System - Knowlarity";
+                        interaction.creationTimestamp = new Timestamp(knowlarityInBoundDate.getTime());
+                        interaction.interactionType = ServerConstants.INTERACTION_TYPE_CALL_IN;
+                        interaction.save();
+                    }
                 }
             }
             Logger.info("Csv File Parsed and stored in db!");

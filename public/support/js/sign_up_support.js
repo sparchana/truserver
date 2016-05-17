@@ -402,7 +402,6 @@ function populateLanguages(l, lId) {
 
 }
 
-
 function processLeadUpdate(returnedData) {
     if(returnedData.leadType != '0' && returnedData.leadType != '1') {
         // existing data hence pre fill form
