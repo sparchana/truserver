@@ -13,6 +13,7 @@
       <link rel="stylesheet" href="/assets/support/css/nprogress.css">
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
       <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
+      <script type="text/javascript" src="/assets/support/js/sign_up_support.js"></script>
   </head>
 
   <body style="font-size: 13px;">
@@ -77,6 +78,7 @@
                       placeholder: "What job roles are you interested?",
                       hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
                       minChars: 0,
+                      prePopulate: jobPrefArray,
                       preventDuplicates: true
                     });
                   });
@@ -93,8 +95,9 @@
                         $("#candidateLocalityPref").tokenInput(getLocality(), {
                           theme: "facebook",
                           placeholder: "Where do you want to work?",
-                          hintText: "Start typing jobs (eg. BTM Layout, Bellandur..)",
+                          hintText: "Start typing Area (eg. BTM Layout, Bellandur..)",
                           minChars: 0,
+                          prePopulate: localityPrefArray,
                           preventDuplicates: true
                         });
                       });
@@ -138,6 +141,7 @@
                       placeholder: "Where do you Live?",
                       hintText: "Start typing jobs (eg. BTM Layout, Bellandur..)",
                       minChars: 0,
+                      prePopulate: currentLocationArray,
                       tokenLimit: 1,
                       preventDuplicates: true
                     });
@@ -184,7 +188,7 @@
                 </div>
               </div>
 
-              <div class="row" style="margin-top: 4px">
+              <div class="row" style="margin-top: 8px">
                 <div class="col-sm-3"><h5>Current Job Location:</h5></div>
                 <div class="col-sm-9">
                   <input type="text" id="candidateCurrentJobLocation" >
@@ -194,6 +198,7 @@
                       theme: "facebook",
                       placeholder: "Office Location",
                       minChars: 0,
+                      prePopulate: currentJobLocationArray,
                       tokenLimit: 1,
                       preventDuplicates: true
                     });
@@ -213,6 +218,7 @@
                               placeholder: "Current Jobrole?",
                               minChars: 0,
                               tokenLimit: 1,
+                              prePopulate: currentJobRoleArray,
                               preventDuplicates: true
                             });
                           });
@@ -287,6 +293,7 @@
                             theme: "facebook",
                             placeholder: "What was your past Job Role?",
                             minChars: 0,
+                            prePopulate: pastJobRoleArray,
                             tokenLimit: 1,
                             preventDuplicates: true
                           });
@@ -404,6 +411,7 @@
                                 placeholder: "What ID Proofs you have?",
                                 hintText: "Start typing jobs (eg. PAN, Driving Licence,..)",
                                 minChars: 0,
+                                prePopulate: candidateIdProofArray,
                                 preventDuplicates: true
                             });
                         });
@@ -443,6 +451,5 @@
       <script type="text/javascript" src="/assets/support/js/bootstrap.min.js"></script>
       <script type="text/javascript" src="/assets/support/js/nprogress.js"></script>
       <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
-      <script type="text/javascript" src="/assets/support/js/sign_up_support.js"></script>
   </body>
 </html>
