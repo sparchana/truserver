@@ -25,10 +25,6 @@ function processDataForSupportInteraction(returnedData) {
     NProgress.done();
 }
 
-function showInteraction(x) {
-    window.location = "/candidateInteraction/" + x.id;
-}
-
 $(function(){
     var pathname = window.location.pathname; // Returns path only
     var leadIdUrl = pathname.split('/');

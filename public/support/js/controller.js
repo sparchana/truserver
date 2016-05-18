@@ -92,6 +92,11 @@ function processDataForSupport(returnedData) {
     });
     NProgress.done();
 }
+
+function showInteraction(x) {
+    window.location = "/candidateInteraction/" + x.id;
+}
+
 function getCandidateInfo(id) {
     clearModal();
     console.log(id);

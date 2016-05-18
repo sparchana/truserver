@@ -255,6 +255,16 @@ function processDataAndFillAllFields(returnedData) {
     } catch(err){
         console.log(err);
     }
+    prefillLanguageTable();
+}
+
+function prefillLanguageTable() {
+    $('#languageTable tr').each(function(){
+        $(this).find('td').each(function(){
+            //do your stuff, you can use $(this) to get current cell
+           console.log($(this).get(0));
+        });
+    });
 }
 
 function processDataCheckLocality(returnedData) {

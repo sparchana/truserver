@@ -163,6 +163,8 @@ public class CandidateService {
             Logger.info("CandidateExists: " + candidate.candidateId + " | LeadExists: " + existingLead.leadId);
             existingLead.setLeadType(ServerConstants.TYPE_CANDIDATE);
             existingLead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
+            candidate.setCandidateName(request.getCandidateFirstName());
+            candidate.setCandidateLastName(request.getCandidateSecondName());
             candidate.setLead(existingLead);
         }
         candidate.setCandidateUpdateTimestamp(new Timestamp(System.currentTimeMillis()));
@@ -311,12 +313,14 @@ public class CandidateService {
         jobHistory.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
         jobHistory.setCandidatePastSalary(request.getCandidatePastJobSalary());
         jobHistory.setCandidatePastCompany(request.getCandidatePastJobCompany());
-        JobRole jobRole = JobRole.find.where().eq("jobRoleId",request.getCandidatePastJobRole()).findUnique();
-        if(jobRole == null) {
-            Logger.info("jobRole staic table empty. Error : Adding jobHistory");
-            return null;
+        if(request.getCandidatePastJobRole() != null){
+            JobRole jobRole = JobRole.find.where().eq("jobRoleId",request.getCandidatePastJobRole()).findUnique();
+            if(jobRole == null) {
+                Logger.info("jobRole staic table empty. Error : Adding jobHistory");
+                return null;
+            }
+            jobHistory.setJobRole(jobRole);
         }
-        jobHistory.setJobRole(jobRole);
         response.add(jobHistory);
         return response;
     }
