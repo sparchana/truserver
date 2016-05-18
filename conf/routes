@@ -68,7 +68,7 @@ GET      /logout                                                  controllers.Ap
 
 GET      /logoutUser                                              controllers.Application.logoutUser()
 
-GET      /test/:id                                                controllers.Application.test(id: Integer)
+#GET      /test/:id                                                controllers.Application.test(id: Integer)
 
 POST     /api/kw/cdr                                              controllers.Application.kwCdrInput()
 

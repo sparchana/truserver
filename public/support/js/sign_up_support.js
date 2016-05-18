@@ -255,7 +255,7 @@ function processDataAndFillAllFields(returnedData) {
     } catch(err){
         console.log(err);
     }
-    prefillLanguageTable();
+   // prefillLanguageTable();
 }
 
 function prefillLanguageTable() {
