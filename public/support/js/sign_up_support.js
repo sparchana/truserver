@@ -210,18 +210,6 @@ function processDataAndFillAllFields(returnedData) {
     $("#candidateSecondName").val(returnedData.candidateLastName);
     $("#candidateMobile").val(returnedData.candidateMobile.substring(3,13));
 
-    try {
-        var jobHistory = returnedData.jobHistoryList;
-        jobHistory.forEach(function (historyItem){
-            $("#candidatePastCompany").val(historyItem.candidatePastCompany);
-            $("#candidatePastJobSalary").val(historyItem.candidatePastSalary);
-            // job role here
-        });
-        alert("past company: " + historyItem.candidatePastCompany);
-    } catch(err){
-        console.log(err);
-    }
-
     /* get Candidate's job preference */
     try {
         var jobPref = returnedData.jobPreferencesList;
@@ -236,7 +224,6 @@ function processDataAndFillAllFields(returnedData) {
     } catch(err){
         console.log(err);
     }
-    alert("job pref : " + jobPrefArray[0].name);
 
     /* get Candidate's locality preference */
     try {
@@ -249,7 +236,6 @@ function processDataAndFillAllFields(returnedData) {
             item ["name"] = name;
             localityPrefArray.push(item);
         });
-        alert("locality pref : " + localityPrefArray[0].name);
     } catch(err){
         console.log(err);
     }
@@ -260,7 +246,17 @@ function processDataAndFillAllFields(returnedData) {
         item ["id"] = returnedData.locality.localityId;
         item ["name"] = returnedData.locality.localityName;
         currentLocationArray.push(item);
-        alert("current location : " + returnedData.locality.localityName);
+    } catch(err){
+        console.log(err);
+    }
+
+    try {
+        var jobHistory = returnedData.jobHistoryList;
+        jobHistory.forEach(function (historyItem){
+            $("#candidatePastCompany").val(historyItem.candidatePastCompany);
+            $("#candidatePastJobSalary").val(historyItem.candidatePastSalary);
+            // job role here
+        });
     } catch(err){
         console.log(err);
     }
@@ -273,7 +269,6 @@ function processDataAndFillAllFields(returnedData) {
         item ["id"] = id;
         item ["name"] = name;
         currentJobRoleArray.push(item);
-        alert("current job role : " + returnedData.candidateCurrentJobDetail.jobRole.jobName)
     } catch(err){
         console.log(err);
     }
@@ -286,7 +281,6 @@ function processDataAndFillAllFields(returnedData) {
         item ["id"] = id;
         item ["name"] = name;
         currentJobLocationArray.push(item);
-        alert("current job location: " + currentJobLocationArray[0].name);
     } catch(err){
         console.log(err);
     }
@@ -302,7 +296,6 @@ function processDataAndFillAllFields(returnedData) {
             item ["name"] = name;
             pastJobRoleArray.push(item);
         });
-        alert("past jobrole: " + pastJobRoleArray[0].name);
     } catch(err){
         console.log(err);
     }
@@ -318,7 +311,6 @@ function processDataAndFillAllFields(returnedData) {
             item ["name"] = name;
             candidateIdProofArray.push(item);
         });
-        alert("idproof: " + candidateIdProofArray[0].name);
     } catch(err){
         console.log(err);
     }
@@ -391,7 +383,7 @@ function processDataAndFillAllFields(returnedData) {
 
     try {
         $("#candidateHighestEducation").val(returnedData.candidateEducation.education.educationId);
-        $("#candidateHighestDegree").val(returnedData.candidateEducation.degree.degreeId);
+        $("#candidateHighestDegree").val(returnedData.candidateEducation.degree.degreeName);
         $("#candidateEducationInstitute").val(returnedData.candidateEducation.candidateLastInstitute);
         $("#candidateMotherTongue").val(returnedData.motherTongue.languageId);
     } catch(err){

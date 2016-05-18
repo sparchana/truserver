@@ -72,7 +72,7 @@ public class CandidateService {
                 } else {
                     candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
                 }
-                interaction.result = "New Candidate Added";
+                interaction.result = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE;
                 if(!isSupport){
                     triggerOtp(candidate, candidateSignUpResponse);
                     interaction.result = "New Candidate Added by support";
@@ -91,18 +91,21 @@ public class CandidateService {
                 Auth auth = Auth.find.where().eq("CandidateId", existingCandidate.candidateId).findUnique();
                 if(auth == null ){
                     Logger.info("auth doesn't exists for this canidate");
+                    existingCandidate.candidateName = candidate.candidateName;
+                    existingCandidate.candidateLastName = candidate.candidateLastName;
+                    existingCandidate.update();
                     resetLocalityAndJobPref(existingCandidate, candidate.localityPreferenceList, candidate.jobPreferencesList);
                     if(!isSupport){
                         triggerOtp(candidate, candidateSignUpResponse);
                         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
                         interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
-                        interaction.setCreatedBy("Self");
+                        interaction.setCreatedBy(ServerConstants.INTERACTION_CREATED_SELF);
                     } else {
                         createAndSaveDummpyAuthFor(candidate);
                         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
                         interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
-                        interaction.setNote("Candidate got Registered with Mandatory Info and dummy password by system");
-                        interaction.setCreatedBy("System");
+                        interaction.setNote(ServerConstants.INTERACTION_NOTE_DUMMY_PASSWORD_CREATED);
+                        interaction.setCreatedBy(ServerConstants.INTERACTION_CREATED_SYSTEM);
                     }
                 } else{
                     candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
@@ -110,7 +113,7 @@ public class CandidateService {
 
                 interaction.setObjectAUUId(existingCandidate.candidateUUId);
                 interaction.setObjectAType(ServerConstants.OBJECT_TYPE_CANDIDATE);
-                interaction.result = "Candidate updated jobPref and locality pref";
+                interaction.result = ServerConstants.INTERACTION_RESULT_CANDIDATE_UPDATED_LOCALITY_JOBS;
                 interaction.setCreationTimestamp(new Timestamp(System.currentTimeMillis()));
                 InteractionService.createInteraction(interaction);
 
@@ -165,6 +168,8 @@ public class CandidateService {
             existingLead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
             candidate.setLead(existingLead);
         }
+        candidate.setCandidateName(request.candidateFirstName);
+        candidate.setCandidateLastName(request.candidateSecondName);
         candidate.setCandidateUpdateTimestamp(new Timestamp(System.currentTimeMillis()));
         candidate.setCandidatePhoneType(request.getCandidatePhoneType());
         candidate.setCandidateTotalExperience(request.getCandidateTotalExperience());
@@ -196,8 +201,8 @@ public class CandidateService {
         interaction.interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT;
         interaction.setObjectAUUId(candidate.candidateUUId);
         interaction.setObjectAType(ServerConstants.OBJECT_TYPE_CANDIDATE);
-        interaction.setResult("Candidate Info got updated by System");
-        interaction.setNote("Out Bound Call");
+        interaction.setResult(ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM);
+        interaction.setNote(ServerConstants.INTERACTION_NOTE_CALL_OUT_OF_BOUNDS);
         InteractionService.createInteraction(interaction);
 
         candidate.update();

@@ -6,6 +6,16 @@ package api;
 public class ServerConstants {
     // public static final String DEV_API_KEY = "123e4567-e89b-12d3-a456-426655440000";
     // public static final int TYPE_UNKNOW = 0;
+    public static final String INTERACTION_RESULT_NEW_CANDIDATE = "New Candidate Added";
+    public static final String INTERACTION_RESULT_CANDIDATE_UPDATED_LOCALITY_JOBS = "Candidate updated jobPref and locality pref";
+    public static final String INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM = "Candidate Info got updated by System";
+
+    public static final String INTERACTION_CREATED_SELF = "Self";
+    public static final String INTERACTION_CREATED_SYSTEM = "System";
+
+    public static final String INTERACTION_NOTE_DUMMY_PASSWORD_CREATED = "Candidate got Registered with Mandatory Info and dummy password by system";
+    public static final String INTERACTION_NOTE_CALL_OUT_OF_BOUNDS = "Out Bound Call";
+
     public static final int TYPE_LEAD = 1;
     public static final int TYPE_POTENTIAL_CANDIDATE = 2;
     public static final int TYPE_POTENTIAL_RECRUITER = 3;
