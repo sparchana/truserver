@@ -383,7 +383,7 @@ function processDataAndFillAllFields(returnedData) {
 
     try {
         $("#candidateHighestEducation").val(returnedData.candidateEducation.education.educationId);
-        $("#candidateHighestDegree").val(returnedData.candidateEducation.degree.degreeName);
+        $("#candidateHighestDegree").val(returnedData.candidateEducation.degree.degreeId);
         $("#candidateEducationInstitute").val(returnedData.candidateEducation.candidateLastInstitute);
         $("#candidateMotherTongue").val(returnedData.motherTongue.languageId);
     } catch(err){
@@ -521,17 +521,20 @@ function populateLanguages(l, lId) {
     var i;
     var table = document.getElementById("languageTable");
     for(i=0;i<l.length; i++) {
-        var row = table.insertRow(0);
+        if(lId[i] == 1 || lId[i] == 2 || lId[i] == 3 || lId[i] == 4 || lId[i] == 5){
+            var row = table.insertRow(0);
 
-        var cell1 = row.insertCell(0);
-        var cell2 = row.insertCell(1);
-        var cell3 = row.insertCell(2);
-        var cell4 = row.insertCell(3);
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+            var cell4 = row.insertCell(3);
 
-        cell1.innerHTML = l[i];
-        cell2.innerHTML = "<input id=" + lId[i] + " type=\"checkbox\" name=\"r\" value=0 >";
-        cell3.innerHTML = "<input id=" + lId[i] + " type=\"checkbox\" name=\"w\" value=0 >";
-        cell4.innerHTML = "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >";
+            cell1.innerHTML = l[i];
+            cell2.innerHTML = "<input id=" + lId[i] + " type=\"checkbox\" name=\"r\" value=0 >";
+            cell3.innerHTML = "<input id=" + lId[i] + " type=\"checkbox\" name=\"w\" value=0 >";
+            cell4.innerHTML = "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >";
+
+        }
     }
 
 }
