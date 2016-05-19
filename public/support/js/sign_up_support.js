@@ -46,21 +46,6 @@ $(document).ready(function(){
         console.log("exception occured!!" + exception);
     }
 
-    /* ajax commands to fetch candidate's Info */
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/getCandidateInfo/" + leadId,
-            data: false,
-            async: false,
-            contentType: false,
-            processData: false,
-            success: processDataAndFillAllFields
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-
     /* ajax commands to fetch all localities and jobs*/
     try {
         $.ajax({
@@ -209,8 +194,6 @@ function processDataAndFillAllFields(returnedData) {
     $("#candidateFirstName").val(returnedData.candidateName);
     $("#candidateSecondName").val(returnedData.candidateLastName);
     $("#candidateMobile").val(returnedData.candidateMobile.substring(3,13));
-
-
 
     /* get Candidate's job preference */
     try {
@@ -566,6 +549,24 @@ function populateLanguages(l, lId) {
             cell4.innerHTML = "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >";
 
         }
+    }
+    /* ajax commands to fetch candidate's Info */
+    var pathname = window.location.pathname; // Returns path only
+    var leadId = pathname.split('/');
+    leadId = leadId[(leadId.length)-1];
+
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/getCandidateInfo/" + leadId,
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataAndFillAllFields
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
     }
 
 }
