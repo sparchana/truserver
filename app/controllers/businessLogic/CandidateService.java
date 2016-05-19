@@ -390,7 +390,11 @@ public class CandidateService {
                 if ((existingAuth.passwordMd5.equals(Util.md5(loginPassword + existingAuth.passwordSalt)))) {
                     Logger.info(existingCandidate.candidateName + " " + existingCandidate.candidateprofilestatus.profileStatusId);
                     loginResponse.setCandidateId(existingCandidate.candidateId);
-                    loginResponse.setCandidateName(existingCandidate.candidateName + " " + existingCandidate.candidateLastName);
+                    if(existingCandidate.candidateLastName == null || existingCandidate.candidateLastName == ""){
+                        loginResponse.setCandidateName(existingCandidate.candidateName);
+                    }else{
+                        loginResponse.setCandidateName(existingCandidate.candidateName + " " + existingCandidate.candidateLastName);
+                    }
                     loginResponse.setAccountStatus(existingCandidate.candidateprofilestatus.profileStatusId);
                     loginResponse.setStatus(loginResponse.STATUS_SUCCESS);
 
