@@ -4,51 +4,51 @@ package api.http;
  * Created by batcoder1 on 13/5/16.
  */
 public class SupportInteractionResponse {
-    public long user_id;
-    public String user_name;
-    public String user_interaction_timestamp;
-    public String user_interactionType;
-    public String user_note;
-    public String user_results;
+    public long userId;
+    public String userName;
+    public String userInteractionTimestamp;
+    public String userInteractionType;
+    public String userNote;
+    public String userResults;
 
-    public void setUser_interactionType(String user_interactionType) {
-        this.user_interactionType = user_interactionType;
+    public void setUserInteractionType(String userInteractionType) {
+        this.userInteractionType = userInteractionType;
     }
 
-    public void setUser_results(String user_results) {
-        this.user_results = user_results;
+    public void setUserResults(String userResults) {
+        this.userResults = userResults;
     }
 
-    public long getUser_id() {
-        return user_id;
+    public long getUserId() {
+        return userId;
     }
 
-    public void setUser_id(long user_id) {
-        this.user_id = user_id;
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 
-    public String getUser_name() {
-        return user_name;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUser_name(String user_name) {
-        this.user_name = user_name;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public String getUser_interaction_timestamp() {
-        return user_interaction_timestamp;
+    public String getUserInteractionTimestamp() {
+        return userInteractionTimestamp;
     }
 
-    public void setUser_interaction_timestamp(String user_interaction_timestamp) {
-        this.user_interaction_timestamp = user_interaction_timestamp;
+    public void setUserInteractionTimestamp(String userInteractionTimestamp) {
+        this.userInteractionTimestamp = userInteractionTimestamp;
     }
 
-    public String getUser_note() {
-        return user_note;
+    public String getUserNote() {
+        return userNote;
     }
 
-    public void setUser_note(String user_note) {
-        this.user_note = user_note;
+    public void setUserNote(String userNote) {
+        this.userNote = userNote;
     }
 
 

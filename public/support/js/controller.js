@@ -73,7 +73,7 @@ function processDataForSupport(returnedData) {
                 newLead.leadStatus,
                 newLead.leadCreationTimestamp,
                 /*newLead.totalInBounds,*/
-                '<a style=\"cursor: hand\" id="'+newLead.leadId+'" onclick="showInteraction(this);">' + newLead.totalInBounds + '</a>',
+                '<a id="'+newLead.leadId+'" style="cursor:pointer;" onclick="showInteraction(this);">'+newLead.totalInBounds+'</a>',
                 newLead.lastIncomingCallTimestamp,
                 newLead.leadChannel,
                 newLead.leadMobile,
@@ -147,6 +147,7 @@ function myHandler (mobile, id) {
     try {
         $.ajax({
             url: "https://sr.knowlarity.com/vr/api/click2call/",
+            async: false,
             type: "POST",
             data: s,
             contentType: "jsonp",
@@ -212,9 +213,10 @@ $(function(){
     
     try {
         NProgress.start();
+        var leadView = "1";
         $.ajax({
             type: "GET",
-            url: "/getAll/" + "3",
+            url: "/getAll/" + leadView,
             data: false,
             contentType: false,
             processData: false,
@@ -223,5 +225,20 @@ $(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+    $('#showAll').click(function() {
+        $(this).toggleClass("active");
+        $("#showLead").removeClass("active");
+        $("#showCandidate").removeClass("active");
+    });
+    $('#showLead').click(function() {
+        $(this).toggleClass("active");
+        $("#showAll").removeClass("active");
+        $("#showCandidate").removeClass("active");
+    });
+    $('#showCandidate').click(function() {
+        $(this).toggleClass("active");
+        $("#showLead").removeClass("active");
+        $("#showAll").removeClass("active");
+    });
 });
 

@@ -61,34 +61,30 @@ public class Application extends Controller {
     public static Result getCandidateInteraction(long id){
         Lead lead = Lead.find.where().eq("leadId",id).findUnique();
         if(lead !=null){
-            String objId = lead.leadUUId;
-            List<Interaction> interactionList = Interaction.find.where().eq("ObjectAUUId", objId).findList();
+            List<Interaction> interactionList = Interaction.find.where().eq("objectAUUId", lead.getLeadUUId()).findList();
 
-            ArrayList<SupportInteractionResponse> responses = new ArrayList<>();
+            List<SupportInteractionResponse> responses = new ArrayList<>();
 
             SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT);
 
-            for(Interaction i : interactionList){
+            for(Interaction interaction : interactionList){
                 SupportInteractionResponse response = new SupportInteractionResponse();
-
-                response.setUser_interaction_timestamp(sfd.format(i.getCreationTimestamp()));
-                response.setUser_id(lead.leadId);
-                response.setUser_name(lead.leadName);
-                response.setUser_note(i.getNote());
-                response.setUser_results(i.getResult());
-                switch (i.getInteractionType()) {
-                    case 0: response.setUser_interactionType("Unknown"); break;
-                    case 1: response.setUser_interactionType("Incoming Call"); break;
-                    case 2: response.setUser_interactionType("Out Going Call"); break;
-                    case 3: response.setUser_interactionType("Incoming SMS"); break;
-                    case 4: response.setUser_interactionType("Out Going SMS"); break;
-                    case 5: response.setUser_interactionType("Website Interaction"); break;
+                response.setUserInteractionTimestamp(sfd.format(interaction.getCreationTimestamp()));
+                response.setUserId(lead.leadId);
+                response.setUserName(lead.leadName);
+                response.setUserNote(interaction.getNote());
+                response.setUserResults(interaction.getResult());
+                switch (interaction.getInteractionType()) {
+                    case 0: response.setUserInteractionType("Unknown"); break;
+                    case 1: response.setUserInteractionType("Incoming Call"); break;
+                    case 2: response.setUserInteractionType("Out Going Call"); break;
+                    case 3: response.setUserInteractionType("Incoming SMS"); break;
+                    case 4: response.setUserInteractionType("Out Going SMS"); break;
+                    case 5: response.setUserInteractionType("Website Interaction"); break;
                 }
-
                 responses.add(response);
             }
             return ok(toJson(responses));
-
         }
         else
             return ok("no records");
@@ -260,7 +256,6 @@ public class Application extends Controller {
             }
             response.setLastIncomingCallTimestamp(sfd.format(mostRecent));
             response.setTotalInBounds(mTotalInteraction);
-            mTotalInteraction = 0;
             responses.add(response);
         }
 

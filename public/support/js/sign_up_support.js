@@ -407,6 +407,17 @@ function processDataAndFillAllFields(returnedData) {
         console.log(err);
     }
 
+   prefillLanguageTable();
+}
+
+function prefillLanguageTable() {
+    $('#languageTable tr').each(function(){
+        $(this).find('input').each(function(){
+            //do your stuff, you can use $(this) to get current cell
+            $(this).get(0);
+           console.log($(this).get(0));
+        });
+    });
 }
 
 function processDataCheckLocality(returnedData) {
@@ -538,7 +549,6 @@ function populateLanguages(l, lId) {
     }
 
 }
-
 
 function processLeadUpdate(returnedData) {
     if(returnedData.leadType != '0' && returnedData.leadType != '1') {

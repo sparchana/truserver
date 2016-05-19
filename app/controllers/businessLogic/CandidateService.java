@@ -95,6 +95,8 @@ public class CandidateService {
                     existingCandidate.setCandidateLastName(candidate.candidateLastName);
                     resetLocalityAndJobPref(existingCandidate, candidate.localityPreferenceList, candidate.jobPreferencesList);
                     if(!isSupport){
+                        existingCandidate.setCandidateName(candidate.candidateName);
+                        existingCandidate.setCandidateLastName(candidate.candidateLastName);
                         triggerOtp(candidate, candidateSignUpResponse);
                         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
                         interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
@@ -165,6 +167,8 @@ public class CandidateService {
             Logger.info("CandidateExists: " + candidate.candidateId + " | LeadExists: " + existingLead.leadId);
             existingLead.setLeadType(ServerConstants.TYPE_CANDIDATE);
             existingLead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
+            candidate.setCandidateName(request.getCandidateFirstName());
+            candidate.setCandidateLastName(request.getCandidateSecondName());
             candidate.setLead(existingLead);
         }
         candidate.setCandidateName(request.candidateFirstName);
@@ -315,12 +319,14 @@ public class CandidateService {
         jobHistory.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
         jobHistory.setCandidatePastSalary(request.getCandidatePastJobSalary());
         jobHistory.setCandidatePastCompany(request.getCandidatePastJobCompany());
-        JobRole jobRole = JobRole.find.where().eq("jobRoleId",request.getCandidatePastJobRole()).findUnique();
-        if(jobRole == null) {
-            Logger.info("jobRole staic table empty. Error : Adding jobHistory");
-            return null;
+        if(request.getCandidatePastJobRole() != null){
+            JobRole jobRole = JobRole.find.where().eq("jobRoleId",request.getCandidatePastJobRole()).findUnique();
+            if(jobRole == null) {
+                Logger.info("jobRole staic table empty. Error : Adding jobHistory");
+                return null;
+            }
+            jobHistory.setJobRole(jobRole);
         }
-        jobHistory.setJobRole(jobRole);
         response.add(jobHistory);
         return response;
     }
