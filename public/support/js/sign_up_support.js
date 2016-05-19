@@ -255,13 +255,14 @@ function processDataAndFillAllFields(returnedData) {
     } catch(err){
         console.log(err);
     }
-   // prefillLanguageTable();
+   prefillLanguageTable();
 }
 
 function prefillLanguageTable() {
     $('#languageTable tr').each(function(){
-        $(this).find('td').each(function(){
+        $(this).find('input').each(function(){
             //do your stuff, you can use $(this) to get current cell
+            $(this).get(0);
            console.log($(this).get(0));
         });
     });

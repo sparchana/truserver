@@ -93,6 +93,8 @@ public class CandidateService {
                     Logger.info("auth doesn't exists for this canidate");
                     resetLocalityAndJobPref(existingCandidate, candidate.localityPreferenceList, candidate.jobPreferencesList);
                     if(!isSupport){
+                        existingCandidate.setCandidateName(candidate.candidateName);
+                        existingCandidate.setCandidateLastName(candidate.candidateLastName);
                         triggerOtp(candidate, candidateSignUpResponse);
                         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
                         interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
