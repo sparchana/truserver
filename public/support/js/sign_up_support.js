@@ -210,6 +210,8 @@ function processDataAndFillAllFields(returnedData) {
     $("#candidateSecondName").val(returnedData.candidateLastName);
     $("#candidateMobile").val(returnedData.candidateMobile.substring(3,13));
 
+
+
     /* get Candidate's job preference */
     try {
         var jobPref = returnedData.jobPreferencesList;
@@ -241,13 +243,15 @@ function processDataAndFillAllFields(returnedData) {
     }
 
     /* get Candidate's home location */
-    try {
-        var item = {};
-        item ["id"] = returnedData.locality.localityId;
-        item ["name"] = returnedData.locality.localityName;
-        currentLocationArray.push(item);
-    } catch(err){
-        console.log(err);
+    if(returnedData.locality.localityId != null){
+        try {
+            var item = {};
+            item ["id"] = returnedData.locality.localityId;
+            item ["name"] = returnedData.locality.localityName;
+            currentLocationArray.push(item);
+        } catch(err){
+            console.log(err);
+        }
     }
 
     try {
@@ -364,7 +368,6 @@ function processDataAndFillAllFields(returnedData) {
 
     try {
         $("#candidateCurrentCompany").val(returnedData.candidateCurrentJobDetail.candidateCurrentCompany);
-        console.log(returnedData.candidateCurrentJobDetail.candidateCurrentCompany);
         $("#candidateCurrentJobDesignation").val(returnedData.candidateCurrentJobDetail.candidateCurrentDesignation);
         $("#candidateCurrentJobSalary").val(returnedData.candidateCurrentJobDetail.candidateCurrentSalary);
         $("#candidateCurrentJobDuration").val(returnedData.candidateCurrentJobDetail.candidateCurrentJobDuration); // months
@@ -405,16 +408,24 @@ function processDataAndFillAllFields(returnedData) {
     } catch(err){
         console.log(err);
     }
-    prefillLanguageTable(returnedData.languageKnownList);
+
+    if(returnedData.languageKnownList != null) {
+        console.log("inside languageList");
+        prefillLanguageTable(returnedData.languageKnownList);
+    }
 }
 
 function prefillLanguageTable(languageKnownList) {
-    $('#languageTable tr').each(function(){
+    console.log("prefillLanguageTable ");
+    $('table#languageTable tr').each(function(){
+        console.log("test");
         $(this).find('input').each(function(){
+            console.log("langugaeKnown input element created");
+            //do your stuff, you can use $(this) to get current cell
             var x = document.createElement("INPUT");
             x= $(this).get(0);
-            //do your stuff, you can use $(this) to get current cell
             languageKnownList.forEach(function (languageKnown) {
+                console.log("langugaeKnown");
                 if(x.id == languageKnown.language.languageId){
                     if(languageKnown.verbalAbility == "1" && x.name == "s") {
                         x.checked = true;
