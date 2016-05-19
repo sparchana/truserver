@@ -255,15 +255,26 @@ function processDataAndFillAllFields(returnedData) {
     } catch(err){
         console.log(err);
     }
-   prefillLanguageTable();
+   prefillLanguageTable(returnedData.languageKnownList);
 }
 
-function prefillLanguageTable() {
+function prefillLanguageTable(languageKnownList) {
     $('#languageTable tr').each(function(){
         $(this).find('input').each(function(){
+            var x = document.createElement("INPUT");
+            x= $(this).get(0);
             //do your stuff, you can use $(this) to get current cell
-            $(this).get(0);
-           console.log($(this).get(0));
+            languageKnownList.forEach(function (languageKnown) {
+                if(x.id == languageKnown.language.languageId){
+                    if(languageKnown.verbalAbility == "1" && x.name == "s") {
+                        x.checked = true;
+                    } else if (languageKnown.readingAbility == "1" && x.name == "r") {
+                        x.checked = true;
+                    } else if(languageKnown.writingAbility == "1" && x.name == "w") {
+                        x.checked = true;
+                    }
+                }
+            });
         });
     });
 }
