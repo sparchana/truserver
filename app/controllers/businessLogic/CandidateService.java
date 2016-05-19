@@ -91,9 +91,8 @@ public class CandidateService {
                 Auth auth = Auth.find.where().eq("CandidateId", existingCandidate.candidateId).findUnique();
                 if(auth == null ){
                     Logger.info("auth doesn't exists for this canidate");
-                    existingCandidate.candidateName = candidate.candidateName;
-                    existingCandidate.candidateLastName = candidate.candidateLastName;
-                    existingCandidate.update();
+                    existingCandidate.setCandidateName(candidate.candidateName);
+                    existingCandidate.setCandidateLastName(candidate.candidateLastName);
                     resetLocalityAndJobPref(existingCandidate, candidate.localityPreferenceList, candidate.jobPreferencesList);
                     if(!isSupport){
                         triggerOtp(candidate, candidateSignUpResponse);
@@ -385,7 +384,7 @@ public class CandidateService {
                 if ((existingAuth.passwordMd5.equals(Util.md5(loginPassword + existingAuth.passwordSalt)))) {
                     Logger.info(existingCandidate.candidateName + " " + existingCandidate.candidateprofilestatus.profileStatusId);
                     loginResponse.setCandidateId(existingCandidate.candidateId);
-                    loginResponse.setCandidateName(existingCandidate.candidateName);
+                    loginResponse.setCandidateName(existingCandidate.candidateName + " " + existingCandidate.candidateLastName);
                     loginResponse.setAccountStatus(existingCandidate.candidateprofilestatus.profileStatusId);
                     loginResponse.setStatus(loginResponse.STATUS_SUCCESS);
 
