@@ -353,7 +353,9 @@ function processDataAndFillAllFields(returnedData) {
         $("#candidateCurrentCompany").val(returnedData.candidateCurrentJobDetail.candidateCurrentCompany);
         $("#candidateCurrentJobDesignation").val(returnedData.candidateCurrentJobDetail.candidateCurrentDesignation);
         $("#candidateCurrentJobSalary").val(returnedData.candidateCurrentJobDetail.candidateCurrentSalary);
-        $("#candidateCurrentJobDuration").val(returnedData.candidateCurrentJobDetail.candidateCurrentJobDuration); // months
+        var currentJobDuration = parseInt(returnedData.candidateCurrentJobDetail.candidateCurrentJobDuration);
+        $("#candidateCurrentJobDurationYear").val(parseInt((currentJobDuration / 12)).toString()); // years
+        $("#candidateCurrentJobDurationMonth").val(currentJobDuration % 12); // months
     } catch(err){
         console.log(err);
     }
@@ -361,7 +363,9 @@ function processDataAndFillAllFields(returnedData) {
     try {
         $("#selectTransportation").val(returnedData.candidateCurrentJobDetail.candidateTransportationMode.transportationModeId);
         $("#currentWorkShift").val(returnedData.candidateCurrentJobDetail.candidateCurrentWorkShift.timeShiftId);
-        $("#candidateTotalExperience").val(returnedData.candidateTotalExperience); // months
+        var totalExperience = parseInt(returnedData.candidateTotalExperience);
+        $("#candidateTotalExperienceYear").val(parseInt((totalExperience / 12)).toString()); // years
+        $("#candidateTotalExperienceMonth").val(totalExperience % 12); // years
     } catch(err){
         console.log(err);
     }
