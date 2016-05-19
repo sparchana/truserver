@@ -45,7 +45,7 @@ public class AuthService {
                 setNewPassword(existingAuth, password);
                 Auth.savePassword(existingAuth);
 
-                candidateSignUpResponse.setCandidateName(existingCandidate.candidateName);
+                candidateSignUpResponse.setCandidateName(existingCandidate.candidateName + " " + existingCandidate.candidateLastName);
                 candidateSignUpResponse.setCandidateId(existingCandidate.candidateId);
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
             }
@@ -89,7 +89,7 @@ public class AuthService {
                 SmsUtil.sendSms(existingCandidate.candidateMobile,msg);
 
                 candidateSignUpResponse.setCandidateId(existingCandidate.candidateId);
-                candidateSignUpResponse.setCandidateName(existingCandidate.candidateName);
+                candidateSignUpResponse.setCandidateName(existingCandidate.candidateName + " " + existingCandidate.candidateLastName);
             }
             Logger.info("Auth Save Successful");
         }

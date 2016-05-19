@@ -342,7 +342,14 @@ body {
 }
 
 @media screen and (max-width: 800px) {
-
+    #candidateName {
+        width: 97%;
+    }
+    #candidateSecondName {
+        width: 97%;
+        margin-top: 8px;
+        margin-left: 12px;
+    }
     .c_form {
         margin-left: 10%;
         margin-right: 10%;

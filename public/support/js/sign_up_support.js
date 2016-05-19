@@ -13,6 +13,15 @@ var idProofArray = [];
 var check = 0;
 var selectedJobPref_array;
 
+/* candidate Preference array */
+var jobPrefArray = [];
+var localityPrefArray = [];
+var currentJobLocationArray = [];
+var currentJobRoleArray = [];
+var currentLocationArray = [];
+var pastJobRoleArray = [];
+var candidateIdProofArray = [];
+
 $(document).ready(function(){
     var pathname = window.location.pathname; // Returns path only
     var leadId = pathname.split('/');
@@ -28,6 +37,7 @@ $(document).ready(function(){
             type: "GET",
             url: "/getUserInfo/" + leadId,
             data: false,
+            async: false,
             contentType: false,
             processData: false,
             success: processDataCheckUserMobile
@@ -36,13 +46,13 @@ $(document).ready(function(){
         console.log("exception occured!!" + exception);
     }
 
-
     /* ajax commands to fetch candidate's Info */
     try {
         $.ajax({
             type: "GET",
             url: "/getCandidateInfo/" + leadId,
             data: false,
+            async: false,
             contentType: false,
             processData: false,
             success: processDataAndFillAllFields
@@ -57,6 +67,7 @@ $(document).ready(function(){
             type: "GET",
             url: "/getAllLocality",
             data: false,
+            async: false,
             contentType: false,
             processData: false,
             success: processDataCheckLocality
@@ -65,11 +76,14 @@ $(document).ready(function(){
         console.log("exception occured!!" + exception);
     }
 
+
+
     try {
         $.ajax({
             type: "GET",
             url: "/getAllJobs",
             data: false,
+            async: false,
             contentType: false,
             processData: false,
             success: processDataCheckJobs
@@ -83,6 +97,7 @@ $(document).ready(function(){
             type: "GET",
             url: "/getAllShift",
             data: false,
+            async: false,
             contentType: false,
             processData: false,
             success: processDataCheckShift
@@ -96,6 +111,7 @@ $(document).ready(function(){
             type: "GET",
             url: "/getAllTransportation",
             data: false,
+            async: false,
             contentType: false,
             processData: false,
             success: processDataCheckTransportation
@@ -109,6 +125,7 @@ $(document).ready(function(){
             type: "GET",
             url: "/getAllEducation",
             data: false,
+            async: false,
             contentType: false,
             processData: false,
             success: processDataCheckEducation
@@ -122,6 +139,7 @@ $(document).ready(function(){
             type: "GET",
             url: "/getAllLanguage",
             data: false,
+            async: false,
             contentType: false,
             processData: false,
             success: processDataCheckLanguage
@@ -135,6 +153,7 @@ $(document).ready(function(){
             type: "GET",
             url: "/getAllIdProof",
             data: false,
+            async: false,
             contentType: false,
             processData: false,
             success: processDataCheckIdProofs
@@ -148,6 +167,7 @@ $(document).ready(function(){
             type: "GET",
             url: "/getAllDegree",
             data: false,
+            async: false,
             contentType: false,
             processData: false,
             success: processDataCheckDegree
@@ -190,61 +210,46 @@ function processDataAndFillAllFields(returnedData) {
     $("#candidateSecondName").val(returnedData.candidateLastName);
     $("#candidateMobile").val(returnedData.candidateMobile.substring(3,13));
 
-    var date = JSON.parse(returnedData.candidateDOB);
-    var yr = new Date(date).getFullYear();
-    var month = ('0' + new Date(date).getMonth()).slice(-2);
-    var d = ('0' + new Date(date).getDate()).slice(-2);
-    $("#candidateDob").val(yr+"-"+month+"-"+d);
-
-    $("#candidatePhoneType").val(returnedData.candidatePhoneType);
-    if(returnedData.candidateGender !=null && returnedData.candidateGender == 0) {
-        $('input[id=genderMale]').attr('checked', true);
-    } else {
-        $('input[id=genderFemale]').attr('checked', true);
-    }
-    if(returnedData.candidateMaritalStatus == 1) {
-        $('input[id=marriedNot]').attr('checked', true);
-    } else {
-        $('input[id=married]').attr('checked', true);
+    /* get Candidate's job preference */
+    try {
+        var jobPref = returnedData.jobPreferencesList;
+        jobPref.forEach(function (job){
+            var id = job.jobRole.jobRoleId;
+            var name = job.jobRole.jobName;
+            var item = {};
+            item ["id"] = id;
+            item ["name"] = name;
+            jobPrefArray.push(item);
+        });
+    } catch(err){
+        console.log(err);
     }
 
-    $("#candidateEmail").val(returnedData.candidateEmail);
-
-    if(returnedData.candidateIsEmployed == 1){
-        $('input[id=employed]').attr('checked', true);
-        $('#employedForm').show();
-    } else {
-        $('input[id=employedNot]').attr('checked', true);
+    /* get Candidate's locality preference */
+    try {
+        var localityPref = returnedData.localityPreferenceList;
+        localityPref.forEach(function (individualLocality){
+            var id = individualLocality.locality.localityId;
+            var name = individualLocality.locality.localityName;
+            var item = {};
+            item ["id"] = id;
+            item ["name"] = name;
+            localityPrefArray.push(item);
+        });
+    } catch(err){
+        console.log(err);
     }
 
-    $("#candidateCurrentCompany").val(returnedData.candidateCurrentJobDetail.candidateCurrentCompany);
-    $("#candidateCurrentJobDesignation").val(returnedData.candidateCurrentJobDetail.candidateCurrentDesignation);
-    $("#candidateCurrentSalary").val(returnedData.candidateCurrentJobDetail.candidateCurrentSalary);
-    $("#candidateCurrentJobDurationYear").val(Math.floor(parseInt(returnedData.candidateCurrentJobDetail.candidateCurrentJobDuration)/12)); // year
-    $("#candidateCurrentJobDurationMonth").val(parseInt(returnedData.candidateCurrentJobDetail.candidateCurrentJobDuration)%12); // months
-    $("#currentWorkShift").val(returnedData.candidateCurrentJobDetail.candidateCurrentWorkShift.timeShiftId);
-
-    $("#candidateTotalExperienceYear").val(Math.floor(parseInt(returnedData.candidateTotalExperience)/12)); // year
-    $("#candidateTotalExperienceMonth").val(parseInt(returnedData.candidateTotalExperience)%12); // months
-
-    $("#selectTransportation").val(returnedData.candidateCurrentJobDetail.candidateTransportationMode.transportationModeId);
-
-    $("#candidateHighestEducation").val(returnedData.candidateEducation.education.educationId);
-    $("#candidateHighestDegree").val(returnedData.candidateEducation.degree.degreeId);
-    $("#candidateEducationInstitute").val(returnedData.candidateEducation.candidateLastInstitute);
-    $("#candidateMotherTongue").val(returnedData.motherTongue.languageId);
-    if(returnedData.candidateSalarySlip !=null && returnedData.candidateSalarySlip == 1){
-        // hasPaySlip
-        $('input[id=payslipY]').attr('checked', true);
-    } else {
-        $('input[id=payslipN]').attr('checked', true);
+    /* get Candidate's home location */
+    try {
+        var item = {};
+        item ["id"] = returnedData.locality.localityId;
+        item ["name"] = returnedData.locality.localityName;
+        currentLocationArray.push(item);
+    } catch(err){
+        console.log(err);
     }
-    if(returnedData.candidateAppointmentLetter!=null && returnedData.candidateAppointmentLetter == 1){
-        // hasPaySlip
-        $('input[id=appointmentLetterY]').attr('checked', true);
-    } else {
-        $('input[id=appointmentLetterN]').attr('checked', true);
-    }
+
     try {
         var jobHistory = returnedData.jobHistoryList;
         jobHistory.forEach(function (historyItem){
@@ -255,7 +260,152 @@ function processDataAndFillAllFields(returnedData) {
     } catch(err){
         console.log(err);
     }
-   prefillLanguageTable(returnedData.languageKnownList);
+
+    /* get Candidate's current job details preference */
+    try {
+        var id = returnedData.candidateCurrentJobDetail.jobRole.jobRoleId;
+        var name = returnedData.candidateCurrentJobDetail.jobRole.jobName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        currentJobRoleArray.push(item);
+    } catch(err){
+        console.log(err);
+    }
+
+    /* get Candidate's current job details preference */
+    try {
+        var id = returnedData.candidateCurrentJobDetail.candidateCurrentJobLocation.localityId;
+        var name = returnedData.candidateCurrentJobDetail.candidateCurrentJobLocation.localityName;
+        var item ={};
+        item ["id"] = id;
+        item ["name"] = name;
+        currentJobLocationArray.push(item);
+    } catch(err){
+        console.log(err);
+    }
+
+    /* get Candidate's past job role */
+    try {
+        var pastJobRole = returnedData.jobHistoryList;
+        pastJobRole.forEach(function (pastJob){
+            var id = pastJob.jobRole.jobRoleId;
+            var name = pastJob.jobRole.jobName;
+            var item = {};
+            item ["id"] = id;
+            item ["name"] = name;
+            pastJobRoleArray.push(item);
+        });
+    } catch(err){
+        console.log(err);
+    }
+
+    /* get Candidate's idProofs */
+    try {
+        var idProof = returnedData.idProofReferenceList;
+        idProof.forEach(function (singleIdProof){
+            var id = singleIdProof.idProof.idProofId;
+            var name = singleIdProof.idProof.idProofName;
+            var item = {};
+            item ["id"] = id;
+            item ["name"] = name;
+            candidateIdProofArray.push(item);
+        });
+    } catch(err){
+        console.log(err);
+    }
+
+    try {
+        var date = JSON.parse(returnedData.candidateDOB);
+        var yr = new Date(date).getFullYear();
+        var month = ('0' + new Date(date).getMonth()).slice(-2);
+        var d = ('0' + new Date(date).getDate()).slice(-2);
+        $("#candidateDob").val(yr + "-" + month + "-" + d);
+    } catch(err){
+        console.log(err);
+    }
+
+    try {
+        $("#candidatePhoneType").val(returnedData.candidatePhoneType);
+    } catch(err){
+        console.log(err);
+    }
+
+    try {
+        if (returnedData.candidateGender != null && returnedData.candidateGender == 0) {
+            $('input[id=genderMale]').attr('checked', true);
+        } else {
+            $('input[id=genderFemale]').attr('checked', true);
+        }
+        if (returnedData.candidateMaritalStatus == 1) {
+            $('input[id=marriedNot]').attr('checked', true);
+        } else {
+            $('input[id=married]').attr('checked', true);
+        }
+    } catch(err){
+        console.log(err);
+    }
+    try {
+        $("#candidateEmail").val(returnedData.candidateEmail);
+    } catch(err){
+        console.log(err);
+    }
+
+    try {
+        if (returnedData.candidateIsEmployed == 1) {
+            $('input[id=employed]').attr('checked', true);
+            $('#employedForm').show();
+        } else {
+            $('input[id=employedNot]').attr('checked', true);
+        }
+    } catch(err){
+        console.log(err);
+    }
+
+    try {
+        $("#candidateCurrentCompany").val(returnedData.candidateCurrentJobDetail.candidateCurrentCompany);
+        console.log(returnedData.candidateCurrentJobDetail.candidateCurrentCompany);
+        $("#candidateCurrentJobDesignation").val(returnedData.candidateCurrentJobDetail.candidateCurrentDesignation);
+        $("#candidateCurrentJobSalary").val(returnedData.candidateCurrentJobDetail.candidateCurrentSalary);
+        $("#candidateCurrentJobDuration").val(returnedData.candidateCurrentJobDetail.candidateCurrentJobDuration); // months
+    } catch(err){
+        console.log(err);
+    }
+
+    try {
+        $("#selectTransportation").val(returnedData.candidateCurrentJobDetail.candidateTransportationMode.transportationModeId);
+        $("#currentWorkShift").val(returnedData.candidateCurrentJobDetail.candidateCurrentWorkShift.timeShiftId);
+        $("#candidateTotalExperience").val(returnedData.candidateTotalExperience); // months
+    } catch(err){
+        console.log(err);
+    }
+
+    try {
+        $("#candidateHighestEducation").val(returnedData.candidateEducation.education.educationId);
+        $("#candidateHighestDegree").val(returnedData.candidateEducation.degree.degreeId);
+        $("#candidateEducationInstitute").val(returnedData.candidateEducation.candidateLastInstitute);
+        $("#candidateMotherTongue").val(returnedData.motherTongue.languageId);
+    } catch(err){
+        console.log(err);
+    }
+
+    try {
+        if (returnedData.candidateSalarySlip != null && returnedData.candidateSalarySlip == 1) {
+            // hasPaySlip
+            $('input[id=payslipY]').attr('checked', true);
+        } else {
+            $('input[id=payslipN]').attr('checked', true);
+        }
+        if (returnedData.candidateAppointmentLetter != null && returnedData.candidateAppointmentLetter == 1) {
+            // hasPaySlip
+            $('input[id=appointmentLetterY]').attr('checked', true);
+        } else {
+            $('input[id=appointmentLetterN]').attr('checked', true);
+        }
+    } catch(err){
+        console.log(err);
+    }
+    prefillLanguageTable(returnedData.languageKnownList);
 }
 
 function prefillLanguageTable(languageKnownList) {
@@ -391,17 +541,20 @@ function populateLanguages(l, lId) {
     var i;
     var table = document.getElementById("languageTable");
     for(i=0;i<l.length; i++) {
-        var row = table.insertRow(0);
+        if(lId[i] == 1 || lId[i] == 2 || lId[i] == 3 || lId[i] == 4 || lId[i] == 5){
+            var row = table.insertRow(0);
 
-        var cell1 = row.insertCell(0);
-        var cell2 = row.insertCell(1);
-        var cell3 = row.insertCell(2);
-        var cell4 = row.insertCell(3);
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+            var cell4 = row.insertCell(3);
 
-        cell1.innerHTML = l[i];
-        cell2.innerHTML = "<input id=" + lId[i] + " type=\"checkbox\" name=\"r\" value=0 >";
-        cell3.innerHTML = "<input id=" + lId[i] + " type=\"checkbox\" name=\"w\" value=0 >";
-        cell4.innerHTML = "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >";
+            cell1.innerHTML = l[i];
+            cell2.innerHTML = "<input id=" + lId[i] + " type=\"checkbox\" name=\"r\" value=0 >";
+            cell3.innerHTML = "<input id=" + lId[i] + " type=\"checkbox\" name=\"w\" value=0 >";
+            cell4.innerHTML = "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >";
+
+        }
     }
 
 }

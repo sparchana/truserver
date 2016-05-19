@@ -279,11 +279,8 @@ public class Application extends Controller {
         return badRequest("{ status: 0}");
     }
 
-    public static Result getCandidateLocality(long leadId) {
-        Candidate candidate = Candidate.find.where().eq("lead_leadId", leadId).findUnique();
-        if(candidate == null)
-            return ok("0");
-        List<LocalityPreference> candidateLocalities = LocalityPreference.find.where().eq("candidateId", candidate.candidateId).findList();
+    public static Result getCandidateLocality(long candidateId) {
+        List<LocalityPreference> candidateLocalities = LocalityPreference.find.where().eq("candidateId", candidateId).findList();
         if(candidateLocalities == null)
             return ok("0");
         return ok(toJson(candidateLocalities));

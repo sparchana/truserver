@@ -414,8 +414,16 @@
                 <div class="leadBox">
                     <form id="form_signup_candidate"  style="margin-top: 0%; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
                         <h4>Job Seeker Registration</h4>
-                        <input id="candidateName"ca name="candidateName" placeholder="What is your First name?" type="text" class="form-control input-md" required>
-                        <input id="candidateSecondName" style="margin-top: 8px" name="candidateSecondName" placeholder="What is your Second name?" type="text" class="form-control input-md" required>
+                        <div class="row" id="firstNameLastName">
+                            <div class="col-sm-6" style="padding: 0 4px 0 16px">
+                                <input id="candidateName" placeholder="First name" type="text" class="form-control input-md" required>
+                            </div>
+                            <div class="col-sm-6" style="padding: 0 16px 0 4px">
+                                <input id="candidateSecondName" placeholder="Last name" type="text" class="form-control input-md" required>
+                            </div>
+                        </div>
+
+
 
                         <input id="candidateMobile" style="margin-top: 8px" placeholder="What is your mobile no.?" name="candidateMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" class="form-control input-md" required>
 
