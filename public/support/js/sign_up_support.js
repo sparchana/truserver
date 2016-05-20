@@ -23,9 +23,12 @@ var pastJobRoleArray = [];
 var candidateIdProofArray = [];
 
 $(document).ready(function(){
+
     var pathname = window.location.pathname; // Returns path only
     var leadId = pathname.split('/');
     leadId = leadId[(leadId.length)-1];
+
+    $("#candidateJobPref").change(function() { generateSkills();});
 
     $("#candidateSignUpSupportForm input").prop("disabled", true);
     $("#saveBtn").prop("disabled", true);

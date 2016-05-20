@@ -19,14 +19,14 @@ function processDataSignUpSubmit(returnedData) {
     }
 
     else if(returnedData.status == 3){
-        document.getElementById("registerBtn").disabled = false;
+        alert("User already exists! Please login to continue");
+        window.location = "/";
+/*        document.getElementById("registerBtn").disabled = false;
         $('.token-input-delete-token-facebook').click();
-        $('.token-input-dropdown-facebook').hide();
-
         $('#alreadyMsgCandidate').show();
         $('#candidateName').val('');
         $('#candidateMobile').val('');
-        $('#candidateEmail').val('');
+        $('#candidateEmail').val('');*/
 
     }
     else {
