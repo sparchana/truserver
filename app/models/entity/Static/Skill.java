@@ -49,4 +49,8 @@ public class Skill extends Model{
     }
 
     public static Model.Finder<String, Skill> find = new Model.Finder(Skill.class);
+
+    public int getSkillId() {
+        return skillId;
+    }
 }

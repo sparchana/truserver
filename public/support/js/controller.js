@@ -99,7 +99,6 @@ function showInteraction(x) {
 
 function getCandidateInfo(id) {
     clearModal();
-    console.log(id);
     try {
         $.ajax({
             url: "/getCandidateInfo/"+id,
@@ -133,8 +132,6 @@ function getThis(id){
 
 
 function myHandler (mobile, id) {
-    // console.log("+"+mobile + " " +id);
-    // changes modal leadId field value
     $("#leadId").val(id);
     $("#leadMobileNumber").val("+"+mobile);
     var s = {

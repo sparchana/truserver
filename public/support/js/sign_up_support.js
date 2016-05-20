@@ -61,8 +61,6 @@ $(document).ready(function(){
         console.log("exception occured!!" + exception);
     }
 
-
-
     try {
         $.ajax({
             type: "GET",
@@ -119,6 +117,7 @@ $(document).ready(function(){
         console.log("exception occured!!" + exception);
     }
 
+    console.log("fetching all lang beings...");
     try {
         $.ajax({
             type: "GET",
@@ -132,6 +131,7 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+    console.log("fetching all lang ends...");
 
     try {
         $.ajax({
@@ -305,7 +305,7 @@ function processDataAndFillAllFields(returnedData) {
     try {
         var date = JSON.parse(returnedData.candidateDOB);
         var yr = new Date(date).getFullYear();
-        var month = ('0' + new Date(date).getMonth()).slice(-2);
+        var month = ('0' + parseInt(new Date(date).getMonth()) + 1).slice(-2);
         var d = ('0' + new Date(date).getDate()).slice(-2);
         $("#candidateDob").val(yr + "-" + month + "-" + d);
     } catch(err){
@@ -363,6 +363,7 @@ function processDataAndFillAllFields(returnedData) {
     try {
         $("#selectTransportation").val(returnedData.candidateCurrentJobDetail.candidateTransportationMode.transportationModeId);
         $("#currentWorkShift").val(returnedData.candidateCurrentJobDetail.candidateCurrentWorkShift.timeShiftId);
+        $("#candidateTimeShiftPref").val(returnedData.timeShiftPreference.timeShift.timeShiftId);
         var totalExperience = parseInt(returnedData.candidateTotalExperience);
         $("#candidateTotalExperienceYear").val(parseInt((totalExperience / 12)).toString()); // years
         $("#candidateTotalExperienceMonth").val(totalExperience % 12); // years
@@ -380,13 +381,13 @@ function processDataAndFillAllFields(returnedData) {
     }
 
     try {
-        if (returnedData.candidateSalarySlip != null && returnedData.candidateSalarySlip == 1) {
+        if (returnedData.candidateSalarySlip != null && returnedData.candidateSalarySlip == '1') {
             // hasPaySlip
             $('input[id=payslipY]').attr('checked', true);
         } else {
             $('input[id=payslipN]').attr('checked', true);
         }
-        if (returnedData.candidateAppointmentLetter != null && returnedData.candidateAppointmentLetter == 1) {
+        if (returnedData.candidateAppointmentLetter != null && returnedData.candidateAppointmentLetter == '1') {
             // hasPaySlip
             $('input[id=appointmentLetterY]').attr('checked', true);
         } else {
@@ -397,22 +398,24 @@ function processDataAndFillAllFields(returnedData) {
     }
 
     if(returnedData.languageKnownList != null) {
-        console.log("inside languageList");
+        console.log('called langprefiller');
         prefillLanguageTable(returnedData.languageKnownList);
     }
+
+    if(returnedData.candidateSkillList != null){
+        prefillSkills(returnedData.candidateSkillList);
+    }
+    console.log("returned data processed");
 }
 
 function prefillLanguageTable(languageKnownList) {
-    console.log("prefillLanguageTable ");
+    console.log("prefillLanguage called");
     $('table#languageTable tr').each(function(){
-        console.log("test");
         $(this).find('input').each(function(){
-            console.log("langugaeKnown input element created");
             //do your stuff, you can use $(this) to get current cell
             var x = document.createElement("INPUT");
             x= $(this).get(0);
             languageKnownList.forEach(function (languageKnown) {
-                console.log("langugaeKnown");
                 if(x.id == languageKnown.language.languageId){
                     if(languageKnown.verbalAbility == "1" && x.name == "s") {
                         x.checked = true;
@@ -423,6 +426,22 @@ function prefillLanguageTable(languageKnownList) {
                     }
                 }
             });
+        });
+    });
+}
+
+
+function prefillSkills(candidateSkillList){
+    console.log("prefillerSkills Called ");
+    $('#skill_details h5 input').each(function() {
+        console.log("start" + candidateSkillList);
+        var skillResponse = document.createElement("INPUT");
+        skillResponse= $(this).get(0);
+        candidateSkillList.each(function (skillElement) {
+            if(skillResponse.name == skillElement.skill.skillName && skillResponse.value == skillElement.skill.skillQualifier.qualifier){
+                skillResponse.checked = true;
+                console.log("inside prefillskills");
+            }
         });
     });
 }
@@ -536,6 +555,7 @@ function processDataCheckLanguage(returnedData) {
 }
 
 function populateLanguages(l, lId) {
+    console.log("populateLang called");
     var i;
     var table = document.getElementById("languageTable");
     for(i=0;i<l.length; i++) {
@@ -553,24 +573,6 @@ function populateLanguages(l, lId) {
             cell4.innerHTML = "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >";
 
         }
-    }
-    /* ajax commands to fetch candidate's Info */
-    var pathname = window.location.pathname; // Returns path only
-    var leadId = pathname.split('/');
-    leadId = leadId[(leadId.length)-1];
-
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/getCandidateInfo/" + leadId,
-            data: false,
-            async: false,
-            contentType: false,
-            processData: false,
-            success: processDataAndFillAllFields
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
     }
 
 }
@@ -639,11 +641,11 @@ function employedNo(){
 }
 
 function processDataCheckSkills(returnedData) {
-    var jobName = getJobName(selectedJobPref_array[check++]);
+   // var jobName = getJobName(selectedJobPref_array[check++]);
     var parent = $('#skill_details');
     var head = document.createElement("label");
     head.style.display = "block";
-    head.innerHTML = "<br>Skills for " + jobName;
+    // head.innerHTML = "<br>Skills for " + jobName;
     parent.append(head);
 
     returnedData.forEach(function (singleSkill) {
@@ -664,7 +666,7 @@ function processDataCheckSkills(returnedData) {
                 check=0;
                 var id = singleSkill.skill.skillId;
                 var name = x.qualifier;
-                var item = {}
+                var item = {};
                 var pos;
 
                 item ["id"] = id;
@@ -688,32 +690,26 @@ function processDataCheckSkills(returnedData) {
             q.appendChild(o);
             q.appendChild(op);
         });
+        console.log("generated skill html")
     });
 }
-
 
 function generateSkills(){
     var myNode = document.getElementById("skill_details");
     myNode.innerHTML = '';
     var selectedJobPref = $('#candidateJobPref').val();
-    selectedJobPref_array = selectedJobPref.split(',');
-    check=0;
-    for(var i = 0; i < selectedJobPref_array.length; i++)
-    {
         try {
             $.ajax({
                 type: "GET",
-                url: "/getAllSkills/" + selectedJobPref_array[i],
+                url: "/getAllSkills/" + selectedJobPref,
                 data: false,
                 contentType: false,
                 processData: false,
                 success: processDataCheckSkills
             });
-
         } catch (exception) {
             console.log("exception occured!!" + exception);
         }
-    }
 }
 
 function processDataSignUpSupportSubmit(returnedData) {
@@ -733,6 +729,30 @@ function processDataSignUpSupportSubmit(returnedData) {
 
 // form_candidate ajax script
 $(function() {
+    $('#candidateJobPref').change(function () {
+        generateSkills();
+    });
+
+    /* ajax commands to fetch candidate's Info */
+    var pathname = window.location.pathname; // Returns path only
+    var leadId = pathname.split('/');
+    leadId = leadId[(leadId.length)-1];
+
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/getCandidateInfo/" + leadId,
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataAndFillAllFields
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+
     $("#candidateSignUpSupportForm").submit(function(eventObj) {
         eventObj.preventDefault();
         var localitySelected = $('#candidateLocalityPref').val();

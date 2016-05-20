@@ -291,9 +291,32 @@ public class Application extends Controller {
         return ok(toJson(candidateJobs));
     }
 
-    public static Result getAllSkills(long id) {
-        List<JobToSkill> jobToSkillList = JobToSkill.find.where().eq("JobRoleId",id).findList();
-        return ok(toJson(jobToSkillList));
+    public static Result getAllSkills(String ids) {
+        List<String> jobPrefIdList = Arrays.asList(ids.split("\\s*,\\s*"));
+        List<JobToSkill> response = new ArrayList<>();
+        int flag = 0;
+        Logger.info("Strings of ids : " + ids);
+        for(String jobId: jobPrefIdList) {
+            Logger.info("fetching data for jobId - " + jobId);
+            List<JobToSkill> jobToSkillList = JobToSkill.find.where().eq("JobRoleId", jobId).findList();
+            if(response.isEmpty()){
+                response.addAll(jobToSkillList);
+            } else {
+                for (JobToSkill dbItem: jobToSkillList){
+                    flag = 0;
+                    for(JobToSkill item: response){
+                            if(item.getSkill().getSkillId() == dbItem.getSkill().getSkillId()){
+                                flag = 1;
+                                break;
+                            }
+                        }
+                    if(flag == 0){
+                        response.add(dbItem);
+                    }
+                }
+            }
+        }
+        return ok(toJson(response));
     }
 
     public static Result supportAuth() {

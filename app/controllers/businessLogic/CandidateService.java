@@ -2,6 +2,7 @@ package controllers.businessLogic;
 
 import api.ServerConstants;
 import api.http.*;
+import com.google.api.client.repackaged.com.google.common.base.Strings;
 import models.entity.Auth;
 import models.entity.Candidate;
 import models.entity.Interaction;
@@ -180,6 +181,8 @@ public class CandidateService {
         candidate.setCandidateEmail(request.getCandidateEmail());
         candidate.setCandidateGender(request.getCandidateGender());
         candidate.setCandidateIsEmployed(request.getCandidateIsEmployed());
+        candidate.setCandidateAppointmentLetter(request.getCandidateAppointmentLetter());
+        candidate.setCandidateSalarySlip(request.getCandidateSalarySlip());
         candidate.setCandidateMaritalStatus(request.getCandidateMaritalStatus());
         candidate.setLocality(Locality.find.where().eq("localityId", request.getCandidateHomeLocality()).findUnique());
         candidate.setMotherTongue(Language.find.where().eq("languageId", request.getCandidateMotherTongue()).findUnique());
@@ -267,17 +270,13 @@ public class CandidateService {
         if(response == null){
             response = new CandidateEducation();
             response.setCandidate(candidate);
-        }
-        if(education == null){
-            Logger.info("education static table empty! Error: while adding education");
-            return null;
-        } if(degree == null){
-            Logger.info("degree static table empty! Error: while adding education");
-            return null;
-        } else {
-            response.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
+        } if(education != null){
             response.setEducation(education);
+        } if(degree != null){
             response.setDegree(degree);
+        }
+        response.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
+        if(!Strings.isNullOrEmpty(request.getCandidateEducationInstitute())){
             response.setCandidateLastInstitute(request.getCandidateEducationInstitute());
         }
         return response;
@@ -322,7 +321,7 @@ public class CandidateService {
         if(request.getCandidatePastJobRole() != null){
             JobRole jobRole = JobRole.find.where().eq("jobRoleId",request.getCandidatePastJobRole()).findUnique();
             if(jobRole == null) {
-                Logger.info("jobRole staic table empty. Error : Adding jobHistory");
+                Logger.info("jobRole static table empty. Error : Adding jobHistory");
                 return null;
             }
             jobHistory.setJobRole(jobRole);
@@ -335,15 +334,15 @@ public class CandidateService {
         TimeShiftPreference response = TimeShiftPreference.find.where().eq("candidateId",candidate.candidateId).findUnique();
         if(response == null){
             response = new TimeShiftPreference();
-            TimeShift existingTimeShift = TimeShift.find.where().eq("timeShiftId", request.getCandidateTimeShiftPref()).findUnique();
-            if(existingTimeShift == null) {
-                Logger.info("timeshift staic table empty for Pref: " + request.getCandidateTimeShiftPref());
-                return null;
-            }
-            response.setTimeShift(existingTimeShift);
             response.candidate = candidate;
-            response.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
         }
+        TimeShift existingTimeShift = TimeShift.find.where().eq("timeShiftId", request.getCandidateTimeShiftPref()).findUnique();
+        if(existingTimeShift == null) {
+            Logger.info("timeshift static table empty for Pref: " + request.getCandidateTimeShiftPref());
+            return null;
+        }
+        response.setTimeShift(existingTimeShift);
+        response.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
         return response;
     }
 
