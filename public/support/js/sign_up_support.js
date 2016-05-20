@@ -22,13 +22,13 @@ var currentLocationArray = [];
 var pastJobRoleArray = [];
 var candidateIdProofArray = [];
 
+var candidateSkill = [];
+
 $(document).ready(function(){
 
     var pathname = window.location.pathname; // Returns path only
     var leadId = pathname.split('/');
     leadId = leadId[(leadId.length)-1];
-
-    $("#candidateJobPref").change(function() { generateSkills();});
 
     $("#candidateSignUpSupportForm input").prop("disabled", true);
     $("#saveBtn").prop("disabled", true);
@@ -120,7 +120,6 @@ $(document).ready(function(){
         console.log("exception occured!!" + exception);
     }
 
-    console.log("fetching all lang beings...");
     try {
         $.ajax({
             type: "GET",
@@ -134,7 +133,6 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-    console.log("fetching all lang ends...");
 
     try {
         $.ajax({
@@ -401,18 +399,21 @@ function processDataAndFillAllFields(returnedData) {
     }
 
     if(returnedData.languageKnownList != null) {
-        console.log('called langprefiller');
         prefillLanguageTable(returnedData.languageKnownList);
     }
 
-    if(returnedData.candidateSkillList != null){
-        prefillSkills(returnedData.candidateSkillList);
+    if(returnedData.candidateSkillList != null) {
+        var skillList = returnedData.candidateSkillList;
+        skillList.forEach(function (skillElement) {
+           var obj = {};
+            obj["skillName"] = skillElement.skill.skillName;
+            obj["skillResponse"] = skillElement.skillQualifier.qualifier;
+            candidateSkill.push(obj);
+        });
     }
-    console.log("returned data processed");
 }
 
 function prefillLanguageTable(languageKnownList) {
-    console.log("prefillLanguage called");
     $('table#languageTable tr').each(function(){
         $(this).find('input').each(function(){
             //do your stuff, you can use $(this) to get current cell
@@ -435,15 +436,13 @@ function prefillLanguageTable(languageKnownList) {
 
 
 function prefillSkills(candidateSkillList){
-    console.log("prefillerSkills Called ");
     $('#skill_details h5 input').each(function() {
-        console.log("start" + candidateSkillList);
         var skillResponse = document.createElement("INPUT");
         skillResponse= $(this).get(0);
-        candidateSkillList.each(function (skillElement) {
-            if(skillResponse.name == skillElement.skill.skillName && skillResponse.value == skillElement.skill.skillQualifier.qualifier){
+        candidateSkillList.forEach(function (skillElement) {
+            if(skillResponse.name == skillElement.skillName && skillResponse.value == skillElement.skillResponse){
                 skillResponse.checked = true;
-                console.log("inside prefillskills");
+                skillResponse.click();
             }
         });
     });
@@ -558,7 +557,6 @@ function processDataCheckLanguage(returnedData) {
 }
 
 function populateLanguages(l, lId) {
-    console.log("populateLang called");
     var i;
     var table = document.getElementById("languageTable");
     for(i=0;i<l.length; i++) {
@@ -693,8 +691,8 @@ function processDataCheckSkills(returnedData) {
             q.appendChild(o);
             q.appendChild(op);
         });
-        console.log("generated skill html")
     });
+    prefillSkills(candidateSkill);
 }
 
 function generateSkills(){
@@ -706,6 +704,7 @@ function generateSkills(){
                 type: "GET",
                 url: "/getAllSkills/" + selectedJobPref,
                 data: false,
+                async: false,
                 contentType: false,
                 processData: false,
                 success: processDataCheckSkills
@@ -729,13 +728,7 @@ function processDataSignUpSupportSubmit(returnedData) {
         window.location = "/support";
     }
 }
-
-// form_candidate ajax script
-$(function() {
-    $('#candidateJobPref').change(function () {
-        generateSkills();
-    });
-
+function prefillAll() {
     /* ajax commands to fetch candidate's Info */
     var pathname = window.location.pathname; // Returns path only
     var leadId = pathname.split('/');
@@ -755,6 +748,15 @@ $(function() {
         console.log("exception occured!!" + exception);
     }
 
+}
+
+// form_candidate ajax script
+$(function() {
+    $('#candidateJobPref').change(function () {
+        generateSkills();
+    });
+
+    prefillAll();
 
     $("#candidateSignUpSupportForm").submit(function(eventObj) {
         eventObj.preventDefault();
@@ -805,7 +807,6 @@ $(function() {
 
             document.getElementById("saveBtn").disabled = true;
             try {
-                console.log(languageMap);
                 var selectedDob = $('#candidateDob').val();
                 var c_dob = String(selectedDob);
 

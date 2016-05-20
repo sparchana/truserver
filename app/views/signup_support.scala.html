@@ -81,7 +81,6 @@
                       prePopulate: jobPrefArray,
                       preventDuplicates: true
                     });
-                    console.log("calling genskill from html");
                       generateSkills();
                   });
               </script>
@@ -246,7 +245,7 @@
                 <div class="col-sm-3"><h5>Current Job Duration:</h5></div>
                 <div class="col-sm-9">
                   <input id="candidateCurrentJobDurationYear" value="0" style="width: 15%; display: inline-block" placeholder="Years" type="number" class="form-control input-md">&nbsp;Years&nbsp;&nbsp;
-                  <input id="candidateCurrentJobDurationMonth" value="0" style="width: 15%; display: inline-block" placeholder="Months" type="number" class="form-control input-md">&nbsp; Months
+                  <input id="candidateCurrentJobDurationMonth"  value="0" style="width: 15%; display: inline-block"  type="number" min="0" max="11" step="1" placeholder="Months" class="form-control input-md" >&nbsp; Months
                 </div>
               </div>
 
@@ -274,7 +273,7 @@
               <div class="col-sm-3"><h5>Total Experience:</h5></div>
               <div class="col-sm-9">
                 <input id="candidateTotalExperienceYear" value="0" style="width: 15%; display: inline-block" placeholder="Years" type="number" class="form-control input-md">&nbsp;Years&nbsp;&nbsp;
-                <input id="candidateTotalExperienceMonth" value="0" style="width: 15%; display: inline-block" placeholder="Months" type="number" class="form-control input-md">&nbsp; Months
+                <input id="candidateTotalExperienceMonth" value="0" style="width: 15%; display: inline-block" placeholder="Months" type="number" min="0" max="11" step="1"  class="form-control input-md">&nbsp; Months
               </div>
             </div>
 
