@@ -263,9 +263,14 @@ public class Application extends Controller {
     }
 
     public static Result getUserInfo(long id) {
-        Lead lead = Lead.find.where().eq("leadId",id).findUnique();
-        String leadMobile = lead.getLeadMobile();
-        return ok(leadMobile);
+        try{
+            Lead lead = Lead.find.where().eq("leadId",id).findUnique();
+            String leadMobile = lead.getLeadMobile();
+            return ok(leadMobile);
+        } catch (NullPointerException n){
+            Logger.info("Create new candidate initiated");
+        }
+        return ok();
     }
 
     public static Result getCandidateInfo(long leadId) {
@@ -295,9 +300,7 @@ public class Application extends Controller {
         List<String> jobPrefIdList = Arrays.asList(ids.split("\\s*,\\s*"));
         List<JobToSkill> response = new ArrayList<>();
         int flag = 0;
-        Logger.info("Strings of ids : " + ids);
         for(String jobId: jobPrefIdList) {
-            Logger.info("fetching data for jobId - " + jobId);
             List<JobToSkill> jobToSkillList = JobToSkill.find.where().eq("JobRoleId", jobId).findList();
             if(response.isEmpty()){
                 response.addAll(jobToSkillList);
@@ -769,4 +772,7 @@ public class Application extends Controller {
         return ok(views.html.signup_support.render(candidateId));
     }
 
+    public static Result createCandidateForm() {
+        return redirect("/candidateSignupSupport/"+"0");
+    }
 }

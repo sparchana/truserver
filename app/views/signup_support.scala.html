@@ -20,7 +20,7 @@
     <div class="container">
       <h2> Create Candidate Admin:&nbsp;<a href="/logout"><button class="btn btn-danger" style="align-items: flex-end"> Logout</button></a></h2>
       <br>
-      <h4>Call Connected? :&nbsp;
+      <h4 id="callConfirmation">Call Connected? :&nbsp;
         <input type="radio" name="callConnected" id="callYes" value="yes" onclick="onCallYes(@id)">&nbsp;Yes&nbsp;
         <input type="radio" name="callConnected" id="callNo" value="no" onclick="onCallNo(@id)">&nbsp;No
       </h4>
@@ -434,7 +434,7 @@
 
           <br>
           <button type="submit" id="saveBtn" class="btn btn-primary">Save</button>
-          <button type="button" id="cancelBtn" class="btn btn-default" onclick="cancelAndRedirect()">Cancel</button>
+          <button type="button" id="cancelBtn" class="btn btn-default" onclick="cancelAndRedirect()">Back</button>
         </div>
         <br><br>
 

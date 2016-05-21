@@ -54,45 +54,6 @@ function renderKWResponse(returnedData) {
     console.log(returnedData.error.message);
 
 }
-function processDataForSupport(returnedData) {
-    if ( $.fn.dataTable.isDataTable( '#leadTable' ) ) {
-        $('#leadTable').DataTable().clear();
-    }
-
-    var t = $('table#leadTable').DataTable({
-        "order": [[5, "desc"]],
-        "deferRender": true,
-        retrieve: true
-    });
-    //DoTheDue Here
-    returnedData.forEach(function (newLead) {
-        if(newLead.leadId != null){
-            t.row.add( [
-                newLead.leadId,
-                newLead.leadType,
-                newLead.leadStatus,
-                newLead.leadCreationTimestamp,
-                /*newLead.totalInBounds,*/
-                '<a id="'+newLead.leadId+'" style="cursor:pointer;" onclick="showInteraction(this);">'+newLead.totalInBounds+'</a>',
-                newLead.lastIncomingCallTimestamp,
-                newLead.leadChannel,
-                newLead.leadMobile,
-                newLead.leadName,
-                function(){
-                    if(newLead.leadStatus == 'New') {
-                        return '<input type="submit" value="Call"  style="width:100px" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+');" id="'+newLead.leadId+'" class="btn btn-primary">'
-                    } else {
-                        return '<input type="submit" value="Call Back"  style="width:100px" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+'); " id="'+newLead.leadId+'"  class="btn btn-default">'
-                    }
-                }
-            ] ).draw( false );
-        } else {
-            console.log("Null obj encountered");
-        }
-    });
-    NProgress.done();
-}
-
 function showInteraction(x) {
     window.location = "/candidateInteraction/" + x.id;
 }
@@ -114,20 +75,69 @@ function getCandidateInfo(id) {
     }
 }
 
-function getThis(id){
+function renderDashboard(viewType) {
+
     try {
+    var table = $('table#leadTable').DataTable({
+        "ajax": {
+            "url": "/getAll/" + viewType,
+            "dataSrc": function (returnedData) {
+                var returned_data = new Array();
+                returnedData.forEach(function (newLead) {
+                    console.log("manupulating returnData");
+                    returned_data.push({
+                        'leadId': newLead.leadId,
+                        'leadType' : newLead.leadType,
+                        'leadStatus' : newLead.leadStatus,
+                        'leadCreationTimestamp' : newLead.leadCreationTimestamp,
+                        'totalInBounds' :  '<a id="'+newLead.leadId+'" style="cursor:pointer;" onclick="showInteraction(this);">'+newLead.totalInBounds+'</a>',
+                        'lastIncomingCallTimestamp'  :  newLead.lastIncomingCallTimestamp,
+                        'leadChannel' : newLead.leadChannel,
+                        'leadMobile' : newLead.leadMobile,
+                        'leadName' :  newLead.leadName,
+                        'btnFUA' : function(){
+                            if(newLead.leadStatus == 'New') {
+                                return '<input type="submit" value="Call"  style="width:100px" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+');" id="'+newLead.leadId+'" class="btn btn-primary">'
+                            } else {
+                                return '<input type="submit" value="Call Back"  style="width:100px" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+'); " id="'+newLead.leadId+'"  class="btn btn-default">'
+                            }
+                        }
+                    })
+                });
+                return returned_data;
+            }
+        },
+        "deferRender": true,
+        "columns": [
+            { "data": "leadId" },
+            { "data": "leadType" },
+            { "data": "leadStatus" },
+            { "data": "leadCreationTimestamp" },
+            { "data": "totalInBounds" },
+            { "data": "lastIncomingCallTimestamp" },
+            { "data": "leadChannel" },
+            { "data": "leadMobile" },
+            { "data": "leadName" },
+            { "data": "btnFUA" }
+        ],
+        "order": [[5, "desc"]],
+        "language": {
+            "emptyTable": "No data available"
+        },
+        "destroy": true
+    });
+} catch (exception) {
+    console.log("exception occured!!" + exception);
+}
+}
+
+function getThis(viewType){
         NProgress.start();
-        $.ajax({
-            type: "GET",
-            url: "/getAll/" + id,
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataForSupport
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
+        if ( $.fn.dataTable.isDataTable( 'table#leadTable' ) ) {
+            $('table#leadTable').DataTable().clear();
+        }
+        renderDashboard(viewType);
+        NProgress.done();
 }
 
 
@@ -207,21 +217,8 @@ $(function(){
         }
 
     }); // end of submit
-    
-    try {
-        NProgress.start();
-        var leadView = "1";
-        $.ajax({
-            type: "GET",
-            url: "/getAll/" + leadView,
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataForSupport
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
+
+    getThis(1);
     $('#showAll').click(function() {
         $(this).toggleClass("active");
         $("#showLead").removeClass("active");

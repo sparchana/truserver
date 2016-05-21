@@ -588,13 +588,16 @@ function processLeadUpdate(returnedData) {
     window.location="/support";
 }
 
-function onCallYes(leadId){
+function activateEdit() {
     $("#saveBtn").prop("disabled", false);
     $("#cancelBtn").prop("disabled", false);
     $("#candidateSignUpSupportForm input").prop("disabled", false);
     $('#callNoClass').hide();
     $('#callYesClass').show();
+}
 
+function onCallYes(leadId){
+    activateEdit();
     var value = "Out Bound Call Successfuly got connected";
     //update leadStatus to TTC
     NProgress.start();
@@ -716,15 +719,15 @@ function generateSkills(){
 
 function processDataSignUpSupportSubmit(returnedData) {
     if(returnedData.status == 1){ // save successful
-        alert("Candidate record saved successfully");
+        console.log("Candidate record saved successfully");
         window.location = "/support";
     }
     else if(returnedData.status == 2){ // save failed
-        alert("Unable to save the candidate record!");
+        console.log("Unable to save the candidate record!");
         window.location = "/support";
     }
     else { // candidate exists
-        alert("Candidate Already Exists.sig");
+        console.log("Candidate Already Exists.sig");
         window.location = "/support";
     }
 }
@@ -749,6 +752,126 @@ function prefillAll() {
     }
 
 }
+function saveProfileForm(){
+    var localitySelected = $('#candidateLocalityPref').val();
+    var jobSelected = $('#candidateJobPref').val();
+    if (localitySelected == "") {
+        alert("Please Enter your Job Localities");
+    } else if (jobSelected == "") {
+        alert("Please Enter the Jobs you are Interested");
+    }
+    else{
+        var languageKnown = $('#languageTable input:checked').map(function() {
+            check=0;
+            var id = this.id;
+            var name = this.name;
+            var item = {}
+            var pos;
+
+            for(var i in languageMap){
+                if(languageMap[i].id == id){
+                    pos=i;
+                    check=1;
+                    break;
+                }
+            }
+            if(check==0){
+                item["id"] = id;
+                item["r"] = 0;
+                item["w"] = 0;
+                item["s"] = 0;
+                if(name == "r")
+                    item["r"] = 1;
+                else if(name == "w")
+                    item["w"] = 1;
+                else
+                    item["s"] = 1;
+                languageMap.push(item);
+            }
+            else{
+                if(name == "r")
+                    languageMap[pos].r = 1;
+                else if(name == "w")
+                    languageMap[pos].w = 1;
+                else
+                    languageMap[pos].s = 1;
+            }
+        }).get();
+
+        document.getElementById("saveBtn").disabled = true;
+        try {
+            var selectedDob = $('#candidateDob').val();
+            var c_dob = String(selectedDob);
+
+            /* calculate total experience in months */
+            var expMonth = parseInt($('#candidateTotalExperienceMonth').val());
+            var expYear = parseInt($('#candidateTotalExperienceYear').val());
+            var totalExp = expMonth + (12*expYear);
+
+            /* calculate current job duration in months */
+            var currentJobMonth = parseInt($('#candidateCurrentJobDurationMonth').val());
+            var currentJobYear = parseInt($('#candidateCurrentJobDurationYear').val());
+            var currentJobDuration = currentJobMonth + (12 * currentJobYear);
+
+            var d = {
+                //mandatory fields
+                candidateFirstName: $('#candidateFirstName').val(),
+                candidateSecondName: $('#candidateSecondName').val(),
+                candidateMobile: $('#candidateMobile').val(),
+                candidateLocality: $('#candidateLocalityPref').val(),
+                candidateJobInterest: $('#candidateJobPref').val(),
+
+                //others
+                candidateDob: c_dob,
+                candidatePhoneType: $('#candidatePhoneType').val(),
+                candidateGender: ($('input:radio[name="gender"]:checked').val()),
+                candidateHomeLocality: $('#candidateHomeLocality').val(),
+                candidateMaritalStatus: ($('input:radio[name="married"]:checked').val()),
+                candidateEmail: $('#candidateEmail').val(),
+                candidateIsEmployed: ($('input:radio[name="employed"]:checked').val()),
+                candidateTotalExperience: totalExp,
+
+                candidateCurrentCompany: $('#candidateCurrentCompany').val(),
+                candidateCurrentJobLocation: $('#candidateCurrentJobLocation').val(),
+                candidateTransportation: ($('#selectTransportation').val()),
+                candidateCurrentWorkShift: ($('#currentWorkShift').val()),
+                candidateCurrentJobRole: $('#candidateCurrentJobRole').val(),
+                candidateCurrentJobDesignation: $('#candidateCurrentJobDesignation').val(),
+                candidateCurrentSalary: ($('#candidateCurrentJobSalary').val()),
+                candidateCurrentJobDuration: currentJobDuration,
+
+                candidatePastJobCompany: $('#candidatePastCompany').val(),
+                candidatePastJobRole: $('#candidatePastJobRole').val(),
+                candidatePastJobSalary: ($('#candidatePastJobSalary').val()),
+
+                candidateEducationLevel: ($('#candidateHighestEducation').val()),
+                candidateDegree: ($('#candidateHighestDegree').val()),
+                candidateEducationInstitute: $('#candidateEducationInstitute').val(),
+
+                candidateTimeShiftPref: $('#candidateTimeShiftPref').val(),
+
+                candidateMotherTongue: ($('#candidateMotherTongue').val()),
+                candidateLanguageKnown: languageMap,
+
+                candidateSkills: skillMap,
+
+                candidateIdProof: $('#candidateIdProof').val(),
+                candidateSalarySlip: ($('input:radio[name="payslip"]:checked').val()),
+                candidateAppointmentLetter: ($('input:radio[name="appointmentLetter"]:checked').val())
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "/signUpSupport",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: processDataSignUpSupportSubmit
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+}
 
 // form_candidate ajax script
 $(function() {
@@ -756,127 +879,27 @@ $(function() {
         generateSkills();
     });
 
-    prefillAll();
-
-    $("#candidateSignUpSupportForm").submit(function(eventObj) {
-        eventObj.preventDefault();
+    //auto save code : incomplete
+    /*  $('#candidateSignUpSupportForm').change(function () {
+        var name = $('#candidateFirstName').val();
+        var phone = $('#candidateMobile').val();
         var localitySelected = $('#candidateLocalityPref').val();
         var jobSelected = $('#candidateJobPref').val();
-        if (localitySelected == "") {
-            alert("Please Enter your Job Localities");
-        } else if (jobSelected == "") {
-            alert("Please Enter the Jobs you are Interested");
+        if((phone.length == 10) && !(phone == "") && !(name == "") && !(localitySelected == "") && !(jobSelected = "") && ()){
+            saveProfileForm();
         }
-        else{
-            var languageKnown = $('#languageTable input:checked').map(function() {
-                check=0;
-                var id = this.id;
-                var name = this.name;
-                var item = {}
-                var pos;
+    });*/
+    var pathname = window.location.pathname; // Returns path only
+    var tempLeadId = pathname.split('/');
+    tempLeadId = tempLeadId[(tempLeadId.length)-1];
 
-                for(var i in languageMap){
-                    if(languageMap[i].id == id){
-                        pos=i;
-                        check=1;
-                        break;
-                    }
-                }
-                if(check==0){
-                    item["id"] = id;
-                    item["r"] = 0;
-                    item["w"] = 0;
-                    item["s"] = 0;
-                    if(name == "r")
-                        item["r"] = 1;
-                    else if(name == "w")
-                        item["w"] = 1;
-                    else
-                        item["s"] = 1;
-                    languageMap.push(item);
-                }
-                else{
-                    if(name == "r")
-                        languageMap[pos].r = 1;
-                    else if(name == "w")
-                        languageMap[pos].w = 1;
-                    else
-                        languageMap[pos].s = 1;
-                }
-            }).get();
-
-            document.getElementById("saveBtn").disabled = true;
-            try {
-                var selectedDob = $('#candidateDob').val();
-                var c_dob = String(selectedDob);
-
-                /* calculate total experience in months */
-                var expMonth = parseInt($('#candidateTotalExperienceMonth').val());
-                var expYear = parseInt($('#candidateTotalExperienceYear').val());
-                var totalExp = expMonth + (12*expYear);
-
-                /* calculate current job duration in months */
-                var currentJobMonth = parseInt($('#candidateCurrentJobDurationMonth').val());
-                var currentJobYear = parseInt($('#candidateCurrentJobDurationYear').val());
-                var currentJobDuration = currentJobMonth + (12 * currentJobYear);
-
-                var d = {
-                    //mandatory fields
-                    candidateFirstName: $('#candidateFirstName').val(),
-                    candidateSecondName: $('#candidateSecondName').val(),
-                    candidateMobile: $('#candidateMobile').val(),
-                    candidateLocality: $('#candidateLocalityPref').val(),
-                    candidateJobInterest: $('#candidateJobPref').val(),
-
-                    //others
-                    candidateDob: c_dob,
-                    candidatePhoneType: $('#candidatePhoneType').val(),
-                    candidateGender: ($('input:radio[name="gender"]:checked').val()),
-                    candidateHomeLocality: $('#candidateHomeLocality').val(),
-                    candidateMaritalStatus: ($('input:radio[name="married"]:checked').val()),
-                    candidateEmail: $('#candidateEmail').val(),
-                    candidateIsEmployed: ($('input:radio[name="employed"]:checked').val()),
-                    candidateTotalExperience: totalExp,
-
-                    candidateCurrentCompany: $('#candidateCurrentCompany').val(),
-                    candidateCurrentJobLocation: $('#candidateCurrentJobLocation').val(),
-                    candidateTransportation: ($('#selectTransportation').val()),
-                    candidateCurrentWorkShift: ($('#currentWorkShift').val()),
-                    candidateCurrentJobRole: $('#candidateCurrentJobRole').val(),
-                    candidateCurrentJobDesignation: $('#candidateCurrentJobDesignation').val(),
-                    candidateCurrentSalary: ($('#candidateCurrentJobSalary').val()),
-                    candidateCurrentJobDuration: currentJobDuration,
-
-                    candidatePastJobCompany: $('#candidatePastCompany').val(),
-                    candidatePastJobRole: $('#candidatePastJobRole').val(),
-                    candidatePastJobSalary: ($('#candidatePastJobSalary').val()),
-
-                    candidateEducationLevel: ($('#candidateHighestEducation').val()),
-                    candidateDegree: ($('#candidateHighestDegree').val()),
-                    candidateEducationInstitute: $('#candidateEducationInstitute').val(),
-
-                    candidateTimeShiftPref: $('#candidateTimeShiftPref').val(),
-
-                    candidateMotherTongue: ($('#candidateMotherTongue').val()),
-                    candidateLanguageKnown: languageMap,
-
-                    candidateSkills: skillMap,
-
-                    candidateIdProof: $('#candidateIdProof').val(),
-                    candidateSalarySlip: ($('input:radio[name="payslip"]:checked').val()),
-                    candidateAppointmentLetter: ($('input:radio[name="appointmentLetter"]:checked').val())
-                };
-
-                $.ajax({
-                    type: "POST",
-                    url: "/signUpSupport",
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify(d),
-                    success: processDataSignUpSupportSubmit
-                });
-            } catch (exception) {
-                console.log("exception occured!!" + exception);
-            }
-        }
+    if(tempLeadId == 0){
+        $('h4#callConfirmation').remove();
+        activateEdit();
+    }
+    prefillAll();
+    $("#candidateSignUpSupportForm").submit(function(eventObj) {
+        eventObj.preventDefault();
+        saveProfileForm();
     }); // end of submit
 }); // end of function
