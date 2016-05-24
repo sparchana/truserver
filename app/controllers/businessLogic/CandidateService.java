@@ -516,20 +516,82 @@ public class CandidateService {
     }
 
     public static List<Candidate> searchCandidateBySupport(SearchCandidateRequest searchCandidateRequest) {
-        // check for empty field
+        // TODO:check searchCandidateRequest member variable for special char, null value
+        // name || mobile || nameAndMobile - single
+        // locality || job || localityAndJob
+        // name may return list || mobile will always return unique result
+        // name first name + last name
         List<Candidate> candidateList = Candidate.find.all();
-        List<String> jobInterest = Arrays.asList(searchCandidateRequest.candidateJobInterest.split("\\s*,\\s*"));
-        List<JobPreference> jobPreferenceList = JobPreference.find.all();
-        for(JobPreference jobPreference : jobPreferenceList){
-            Logger.info("jobprefCand" + jobPreference.candidate.candidateName);
-            Logger.info("jobprefJobRole" + jobPreference.jobRole.jobName);
+        List<String> jobInterestIdList = Arrays.asList(searchCandidateRequest.candidateJobInterest.split("\\s*,\\s*"));
+        List<String> localityPreferenceIdList = Arrays.asList(searchCandidateRequest.candidateLocality.split("\\s*,\\s*"));
+        List<Candidate> candidateResponseList = new ArrayList<>();
+        List<Candidate> candidateFilteredByJobInterest =  new ArrayList<>();
+        List<Candidate> candidateFilteredByLocalityPreference = new ArrayList<>();
+
+        if(jobInterestIdList != null && jobInterestIdList.get(0) != ""){
+            candidateFilteredByJobInterest = getJobInterestFilteredSearchResult(candidateList, jobInterestIdList);
+            candidateResponseList.addAll(candidateFilteredByJobInterest);
         }
-        List<Candidate> candidateListResponse = new ArrayList<>();
+        if(localityPreferenceIdList != null && localityPreferenceIdList.get(0) != ""){
+            candidateFilteredByLocalityPreference = getLocalityPreferenceFilteredSearchResult(candidateList, localityPreferenceIdList);
+            candidateResponseList.addAll(candidateFilteredByLocalityPreference);
+        }
+        if(jobInterestIdList != null && jobInterestIdList.get(0) != "" && localityPreferenceIdList != null && localityPreferenceIdList.get(0) != ""){
+            candidateResponseList.clear();
+            candidateFilteredByJobInterest.retainAll(candidateFilteredByLocalityPreference);
+            candidateResponseList.addAll(candidateFilteredByJobInterest);
+        }
+        // match mobile no
         if(searchCandidateRequest.getCandidateMobile() != null) {
             Candidate candidate = Candidate.find.where().eq("candidateMobile",
                     "+91"+searchCandidateRequest.getCandidateMobile()).findUnique();
-            candidateListResponse.add(candidate);
+            if(candidate != null){
+                candidateResponseList.clear();
+                candidateResponseList.add(candidate);
+            }
         }
-        return candidateListResponse;
+        return candidateResponseList;
+    }
+
+    private static List<Candidate> getLocalityPreferenceFilteredSearchResult(List<Candidate> candidateList, List<String> localityPreferenceIdList) {
+        List<Candidate> candidateResponseList = new ArrayList<>();
+        for(Candidate eachCandidate : candidateList) {
+            // match localities
+            if (!localityPreferenceIdList.isEmpty()) {
+                for (LocalityPreference localityPreference : eachCandidate.localityPreferenceList) {
+                    for (String localityId : localityPreferenceIdList) {
+                        try {
+                            if (localityPreference.locality.localityId == Long.parseLong(localityId) && !candidateResponseList.contains(eachCandidate)) {
+                                Logger.info("Adding each candidate for localitymatch : " + eachCandidate.candidateName + " && parsedVal : " + Long.parseLong(localityId));
+                                candidateResponseList.add(eachCandidate);
+                            }
+                        } catch (NumberFormatException n) {
+                        }
+                    }
+                }
+            }
+        }
+        return candidateResponseList;
+    }
+
+    private static List<Candidate> getJobInterestFilteredSearchResult(List<Candidate> candidateList, List<String> jobInterestIdList) {
+        List<Candidate> candidateResponseList = new ArrayList<>();
+        // match jobInterests
+        for(Candidate eachCandidate : candidateList){
+            if(!jobInterestIdList.isEmpty()){
+                for(JobPreference jobPreference: eachCandidate.jobPreferencesList){
+                    for(String jobId : jobInterestIdList){
+                        try{
+                            if(jobPreference.jobRole.jobRoleId == Long.parseLong(jobId) && !candidateResponseList.contains(eachCandidate)){
+                                Logger.info("Adding each candidate for job role match : "+ eachCandidate.candidateName + " && parsedval " + Long.parseLong(jobId));
+                                candidateResponseList.add(eachCandidate);
+                            }
+                        } catch (NumberFormatException n){
+                        }
+                    }
+                }
+            }
+        }
+        return candidateResponseList;
     }
 }

@@ -6,8 +6,8 @@ package api.http;
 public class SearchCandidateRequest {
     public String candidateName;
     public String candidateMobile;
-    public String candidateJobInterest;
-    public String candidateLocality;
+    public String candidateJobInterest; // ',' separated jobRoleId values
+    public String candidateLocality; // ',' separated candidateLocalityId values
 
     public String getCandidateName() {
         return candidateName;

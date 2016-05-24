@@ -789,6 +789,7 @@ public class Application extends Controller {
         if(searchReq == null){
             return badRequest();
         }
+
         SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
