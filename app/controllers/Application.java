@@ -28,7 +28,10 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 import static controllers.businessLogic.CandidateService.getCandidateJobPreferenceList;
 import static controllers.businessLogic.CandidateService.getCandidateLocalityPreferenceList;
@@ -139,6 +142,7 @@ public class Application extends Controller {
         ObjectMapper newMapper = new ObjectMapper();
         try {
             addSupportCandidateRequest = newMapper.readValue(req.toString(), AddSupportCandidateRequest.class);
+            Logger.info("json" + req.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -774,5 +778,25 @@ public class Application extends Controller {
 
     public static Result createCandidateForm() {
         return redirect("/candidateSignupSupport/"+"0");
+    }
+
+    public static Result searchCandidate() {
+        return ok(views.html.search.render());
+    }
+
+    public static Result getSearchCandidateResult() {
+        JsonNode searchReq = request().body().asJson();
+        if(searchReq == null){
+            return badRequest();
+        }
+        SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            searchCandidateRequest = newMapper.readValue(searchReq.toString(), SearchCandidateRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ok(toJson(CandidateService.searchCandidateBySupport(searchCandidateRequest)));
     }
 }

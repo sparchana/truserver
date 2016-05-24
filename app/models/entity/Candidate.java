@@ -36,8 +36,8 @@ public class Candidate extends Model {
     @Column(name = "CandidateLastName", columnDefinition = "varchar(50) null")
     public String candidateLastName;
 
-    @Column(name = "CandidateGender", columnDefinition = "int(1) null default 0")
-    public int candidateGender;
+    @Column(name = "CandidateGender", columnDefinition = "int(1) null")
+    public Integer candidateGender;
 
     @Column(name = "CandidateDOB", columnDefinition = "date null")
     public Date candidateDOB;
@@ -49,19 +49,19 @@ public class Candidate extends Model {
     public String candidatePhoneType;
 
     @Column(name = "CandidateMaritalStatus", columnDefinition = "int null")
-    public int candidateMaritalStatus;
+    public Integer candidateMaritalStatus;
 
     @Column(name = "CandidateEmail", columnDefinition = "varchar(255) null")
     public String candidateEmail;
 
-    @Column(name = "CandidateIsEmployed", columnDefinition = "int not null")
-    public int candidateIsEmployed;
+    @Column(name = "CandidateIsEmployed", columnDefinition = "int null")
+    public Integer candidateIsEmployed;
 
-    @Column(name = "CandidateTotalExperience", columnDefinition = "int signed null default 0.00")
-    public int candidateTotalExperience;  // data in months
+    @Column(name = "CandidateTotalExperience", columnDefinition = "int signed null")
+    public Integer candidateTotalExperience;  // data in months
 
-    @Column(name = "CandidateAge", columnDefinition = "int signed not null default 0")
-    public int candidateAge;
+    @Column(name = "CandidateAge", columnDefinition = "int signed null")
+    public Integer candidateAge;
 
     @Column(name = "CandidateCreateTimestamp", columnDefinition = "timestamp default current_timestamp not null")
     public Timestamp candidateCreateTimestamp = new Timestamp(System.currentTimeMillis());
@@ -72,11 +72,11 @@ public class Candidate extends Model {
     @Column(name = "CandidateIsAssessed", columnDefinition = "int signed not null default 0")
     public int candidateIsAssessed;
 
-    @Column(name = "CandidateSalarySlip", columnDefinition = "int signed not null default 0")
-    public int candidateSalarySlip;
+    @Column(name = "CandidateSalarySlip", columnDefinition = "int signed null")
+    public Integer candidateSalarySlip;
 
-    @Column(name = "CandidateAppointmentLetter", columnDefinition = "int signed not null default 0")
-    public int candidateAppointmentLetter;
+    @Column(name = "CandidateAppointmentLetter", columnDefinition = "int signed null")
+    public Integer candidateAppointmentLetter;
 
     @Column(name = "IsMinProfileComplete", columnDefinition = "int signed not null default 0")
     public int IsMinProfileComplete = 0; // 0 - Not Complete

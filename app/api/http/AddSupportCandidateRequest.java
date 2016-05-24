@@ -16,39 +16,39 @@ public class AddSupportCandidateRequest {
     public String candidateLocality;
 
     public Date candidateDob = new Date();
-    public int candidateAge ;
+    public Integer candidateAge ;
     public String candidatePhoneType;
-    public int candidateGender ;
+    public Integer candidateGender ;
     public String candidateHomeLocality;
-    public int candidateMaritalStatus ;
+    public Integer candidateMaritalStatus ;
     public String candidateEmail;
-    public int candidateIsEmployed ;
-    public int candidateTotalExperience ;
+    public Integer candidateIsEmployed ;
+    public Integer candidateTotalExperience ;
 
     public String candidateCurrentCompany;
     public String candidateCurrentJobLocation;
-    public int candidateTransportation ;
-    public int candidateCurrentWorkShift ;
+    public Integer candidateTransportation ;
+    public Integer candidateCurrentWorkShift ;
     public String candidateCurrentJobRole;
     public String candidateCurrentJobDesignation;
     public long candidateCurrentSalary ;
-    public int candidateCurrentJobDuration ;
+    public Integer candidateCurrentJobDuration ;
     public String candidatePastJobCompany;
     public String candidatePastJobRole;
     public long candidatePastJobSalary ;
 
-    public int candidateEducationLevel;
-    public int candidateDegree ;
+    public Integer candidateEducationLevel;
+    public Integer candidateDegree ;
     public String candidateEducationInstitute;
 
     public String candidateTimeShiftPref;
 
-    public int candidateMotherTongue ;
+    public Integer candidateMotherTongue ;
 
     public String candidateIdProof;
 
-    public int candidateSalarySlip ;
-    public int candidateAppointmentLetter ;
+    public Integer candidateSalarySlip ;
+    public Integer candidateAppointmentLetter ;
 
     public List<SkillMapClass> candidateSkills;
 
@@ -109,14 +109,14 @@ public class AddSupportCandidateRequest {
     public void setCandidateGender(int candidateGender) {
         this.candidateGender = candidateGender;
     }
-    public int getCandidateGender() {
+    public Integer getCandidateGender() {
         return candidateGender;
     }
 
     public void setCandidateAge(int candidateAge) {
         this.candidateAge = candidateAge;
     }
-    public int getCandidateAge() {
+    public Integer getCandidateAge() {
         return candidateAge;
     }
 
@@ -133,12 +133,12 @@ public class AddSupportCandidateRequest {
     }
 
     public void setCandidateMaritalStatus(int candidateMaritalStatus) { this.candidateMaritalStatus = candidateMaritalStatus; }
-    public int getCandidateMaritalStatus() {
+    public Integer getCandidateMaritalStatus() {
         return candidateMaritalStatus;
     }
 
     public void setCandidateIsEmployed(int candidateIsEmployed) { this.candidateIsEmployed = candidateIsEmployed; }
-    public int getCandidateIsEmployed() {
+    public Integer getCandidateIsEmployed() {
         return candidateIsEmployed;
     }
 
@@ -150,7 +150,7 @@ public class AddSupportCandidateRequest {
     }
 
     public void setCandidateTotalExperience(int candidateTotalExperience) { this.candidateTotalExperience = candidateTotalExperience; }
-    public int getCandidateTotalExperience() {
+    public Integer getCandidateTotalExperience() {
         return candidateTotalExperience;
     }
 
@@ -171,14 +171,14 @@ public class AddSupportCandidateRequest {
     public void setCandidateTransportation(int candidateTransportation) {
         this.candidateTransportation = candidateTransportation;
     }
-    public int getCandidateTransportation() {
+    public Integer getCandidateTransportation() {
         return candidateTransportation;
     }
 
     public void setCandidateCurrentWorkShift(int candidateCurrentWorkShift) {
         this.candidateCurrentWorkShift = candidateCurrentWorkShift;
     }
-    public int getCandidateCurrentWorkShift() {
+    public Integer getCandidateCurrentWorkShift() {
         return candidateCurrentWorkShift;
     }
 
@@ -204,7 +204,7 @@ public class AddSupportCandidateRequest {
     public void setCandidateCurrentJobDuration(int candidateCurrentJobDuration) {
         this.candidateCurrentJobDuration = candidateCurrentJobDuration;
     }
-    public int getCandidateCurrentJobDuration() {
+    public Integer getCandidateCurrentJobDuration() {
         return candidateCurrentJobDuration;
     }
 
@@ -230,14 +230,14 @@ public class AddSupportCandidateRequest {
     public void setCandidateEducationLevel(int candidateEducationLevel) {
         this.candidateEducationLevel = candidateEducationLevel;
     }
-    public int getCandidateEducationLevel() {
+    public Integer getCandidateEducationLevel() {
         return candidateEducationLevel;
     }
 
     public void setCandidateDegree(int candidateDegree) {
         this.candidateDegree = candidateDegree;
     }
-    public int getCandidateDegree() {
+    public Integer getCandidateDegree() {
         return candidateDegree;
     }
 
@@ -258,7 +258,7 @@ public class AddSupportCandidateRequest {
     public void setCandidateMotherTongue(int candidateMotherTongue) {
         this.candidateMotherTongue = candidateMotherTongue;
     }
-    public int getCandidateMotherTongue() {
+    public Integer getCandidateMotherTongue() {
         return candidateMotherTongue;
     }
 
@@ -272,14 +272,14 @@ public class AddSupportCandidateRequest {
     public void setCandidateSalarySlip(int candidateSalarySlip) {
         this.candidateSalarySlip = candidateSalarySlip;
     }
-    public int getCandidateSalarySlip() {
+    public Integer getCandidateSalarySlip() {
         return candidateSalarySlip;
     }
 
     public void setCandidateAppointmentLetter(int candidateAppointmentLetter) {
         this.candidateAppointmentLetter = candidateAppointmentLetter;
     }
-    public int getCandidateAppointmentLetter() {
+    public Integer getCandidateAppointmentLetter() {
         return candidateAppointmentLetter;
     }
 

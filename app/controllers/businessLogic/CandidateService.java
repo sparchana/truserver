@@ -365,7 +365,7 @@ public class CandidateService {
         JobRole jobRole = JobRole.find.where().eq("jobRoleId",request.getCandidateCurrentJobRole()).findUnique();
         Locality locality = Locality.find.where().eq("localityId", request.getCandidateCurrentJobLocation()).findUnique();
         if(timeShift == null || jobRole == null || locality == null){
-            return null;
+            // do nothing let it save without these entity
         }
         response.setCandidateTransportationMode(transportationMode);
         response.setCandidateCurrentWorkShift(timeShift);
@@ -513,5 +513,23 @@ public class CandidateService {
         }
         existingCandidate.localityPreferenceList = localityPreferenceList;
         existingCandidate.jobPreferencesList = jobPreferencesList;
+    }
+
+    public static List<Candidate> searchCandidateBySupport(SearchCandidateRequest searchCandidateRequest) {
+        // check for empty field
+        List<Candidate> candidateList = Candidate.find.all();
+        List<String> jobInterest = Arrays.asList(searchCandidateRequest.candidateJobInterest.split("\\s*,\\s*"));
+        List<JobPreference> jobPreferenceList = JobPreference.find.all();
+        for(JobPreference jobPreference : jobPreferenceList){
+            Logger.info("jobprefCand" + jobPreference.candidate.candidateName);
+            Logger.info("jobprefJobRole" + jobPreference.jobRole.jobName);
+        }
+        List<Candidate> candidateListResponse = new ArrayList<>();
+        if(searchCandidateRequest.getCandidateMobile() != null) {
+            Candidate candidate = Candidate.find.where().eq("candidateMobile",
+                    "+91"+searchCandidateRequest.getCandidateMobile()).findUnique();
+            candidateListResponse.add(candidate);
+        }
+        return candidateListResponse;
     }
 }
