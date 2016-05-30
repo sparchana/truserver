@@ -11,6 +11,7 @@ function processDataCheckJobs(returnedData) {
         item ["name"] = name;
         jobArray.push(item);
     });
+    NProgress.done();
 }
 
 function processDataCheckLocality(returnedData) {
@@ -23,6 +24,7 @@ function processDataCheckLocality(returnedData) {
         item ["name"] = name;
         localityArray.push(item);
     });
+    NProgress.done();
 }
 
 function getLocality(){
@@ -65,6 +67,22 @@ function getLocalityPref(localityPrefList) {
     return localityString;
 }
 
+function getInYearMonthFormat(d){
+    if(d == null) {
+        return "NA";
+    } else if(d == 0 ){
+        return "0 Month";
+    } else {
+        var yr = Math.floor((parseInt(d)/12)).toString();
+        var month =  parseInt(d)%12;
+        if(yr == 0){
+            return month +" Month";
+        } else {
+            return yr + " Year " + month +" Month";
+        }
+    }
+}
+
 function getLanguageKnown(languageKnownList){
     var languageString = [];
     try {
@@ -76,6 +94,15 @@ function getLanguageKnown(languageKnownList){
         });
     }catch (err){}
     return languageString;
+}
+
+function getCurrentSalary(salary) {
+    if(salary == null){
+        return "NA";
+    } else {
+        return salary.candidateCurrentSalary;
+    }
+
 }
 
 function renderSearchResult(returnedData) {
@@ -98,11 +125,12 @@ function renderSearchResult(returnedData) {
                 'candidateName' : newCandidate.candidateName,
                 'candidateMobile' : newCandidate.candidateMobile,
                 'candidateHomeLocality' : locality,
+                'candidateCurrentSalary' : getCurrentSalary(newCandidate.candidateCurrentJobDetail),
                 'candidateJobPref' :  getJobPref(newCandidate.jobPreferencesList),
                 'candidateLocalityPref'  :getLocalityPref(newCandidate.localityPreferenceList),
                 'candidateLanguage' : getLanguageKnown(newCandidate.languageKnownList),
                 'candidateTimeShiftPref' : timeShiftPref,
-                'candidateExperience' :  newCandidate.candidateTotalExperience,
+                'candidateExperience' :  getInYearMonthFormat(newCandidate.candidateTotalExperience),
                 'candidateIsAssessmentComplete' : function(){
                     if(newCandidate.candidateIsAssessed == '0') {
                         return "No";
@@ -120,6 +148,7 @@ function renderSearchResult(returnedData) {
                 { "data": "candidateName" },
                 { "data": "candidateMobile" },
                 { "data": "candidateHomeLocality" },
+                { "data": "candidateCurrentSalary" },
                 { "data": "candidateJobPref" },
                 { "data": "candidateLocalityPref" },
                 { "data": "candidateLanguage" },
@@ -131,11 +160,13 @@ function renderSearchResult(returnedData) {
             "language": {
                 "emptyTable": "No data available"
             },
-            "destroy": true
+            "destroy": true,
+            "paging": false
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+    NProgress.done();
 }
 
 
@@ -147,6 +178,7 @@ function searchForm(){
         candidateLocality: $('#candidateLocalityPref').val(),
         candidateJobInterest: $('#candidateJobPref').val()
     };
+    NProgress.start();
     try {
         $.ajax({
             type: "POST",
@@ -161,7 +193,20 @@ function searchForm(){
 }
 
 $(function() {
+    $("#filterColumn").click(function() {
+        if ( $.fn.dataTable.isDataTable( 'table#candidateSearchResultTable' ) ) {
+            var aTable = $('table#candidateSearchResultTable').DataTable();
+            if ($("#filterColumn").is(":checked")) {
+                aTable.filter(function ( value, index ) {
+                });
+            } else {
+                aTable.filter(function ( value, index ) {
+                });
+            }
+        }
+    });
     /* ajax commands to fetch all localities and jobs*/
+    NProgress.start();
     try {
         $.ajax({
             type: "GET",
@@ -187,6 +232,10 @@ $(function() {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+    $("#candidateSearchForm").change(function(eventObj) {
+        eventObj.preventDefault();
+        searchForm();
+    }); // end of auto search
 
     $("#candidateSearchForm").submit(function(eventObj) {
         eventObj.preventDefault();

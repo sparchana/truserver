@@ -69,9 +69,19 @@
                     </div>
                 </div>
                 <br>
+
                 <button type="submit" id="searchBtn" class="btn btn-primary">Search</button>
             </form>
             <div style="margin-top: 16px"></div>
+            <div class='dtable_custom_controls'>
+                <div class='dataTables_wrapper'>
+                    <div class='ui-toolbar'>
+                        <div class='dataTables_length'>
+                            <input type="checkbox" value="+919019672209" id="filterColumn" name="filterColumn"> testNumber
+                        </div>
+                    </div>
+                </div>
+            </div>
             <table id="candidateSearchResultTable" class="table table-striped table-bordered" style="margin-top: 16px" cellspacing="0" width="100%">
                 <thead>
                     <tr>
@@ -79,12 +89,13 @@
                         <th>Name</th>
                         <th>Mobile</th>
                         <th>Home Locality</th>
+                        <th>Current Salary</th>
                         <th>JobRole Pref</th>
                         <th>Locality Pref</th>
                         <th>Language Known</th>
                         <th>TimeShift Pref</th>
                         <th>Experience</th>
-                        <th>isAssessmentComplete?</th>
+                        <th>isAssessed?</th>
                     </tr>
                 </thead>
                 <tbody>

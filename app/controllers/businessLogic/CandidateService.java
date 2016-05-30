@@ -521,7 +521,6 @@ public class CandidateService {
         // locality || job || localityAndJob
         // name may return list || mobile will always return unique result
         // name first name + last name
-        List<Candidate> candidateList = Candidate.find.all();
         List<String> jobInterestIdList = Arrays.asList(searchCandidateRequest.candidateJobInterest.split("\\s*,\\s*"));
         List<String> localityPreferenceIdList = Arrays.asList(searchCandidateRequest.candidateLocality.split("\\s*,\\s*"));
         List<Candidate> candidateResponseList = new ArrayList<>();
@@ -529,12 +528,11 @@ public class CandidateService {
         List<Candidate> candidateFilteredByLocalityPreference = new ArrayList<>();
 
         if(jobInterestIdList != null && jobInterestIdList.get(0) != ""){
-            candidateFilteredByJobInterest = getJobInterestFilteredSearchResult(candidateList, jobInterestIdList);
+            candidateFilteredByJobInterest = getJobInterestFilteredSearchResult(jobInterestIdList);
             candidateResponseList.addAll(candidateFilteredByJobInterest);
         }
         if(localityPreferenceIdList != null && localityPreferenceIdList.get(0) != ""){
-            candidateFilteredByLocalityPreference = getLocalityPreferenceFilteredSearchResult(candidateList, localityPreferenceIdList);
-            Logger.info("candidateCount:" + candidateFilteredByLocalityPreference.size());
+            candidateFilteredByLocalityPreference = getLocalityPreferenceFilteredSearchResult(localityPreferenceIdList);
             candidateResponseList.addAll(candidateFilteredByLocalityPreference);
         }
         if(jobInterestIdList != null && jobInterestIdList.get(0) != "" && localityPreferenceIdList != null && localityPreferenceIdList.get(0) != ""){
@@ -543,6 +541,7 @@ public class CandidateService {
             candidateResponseList.addAll(candidateFilteredByJobInterest);
         }
         // match mobile no
+
         if(searchCandidateRequest.getCandidateMobile() != null) {
             Candidate candidate = Candidate.find.where().eq("candidateMobile",
                     "+91"+searchCandidateRequest.getCandidateMobile()).findUnique();
@@ -554,59 +553,32 @@ public class CandidateService {
         return candidateResponseList;
     }
 
-    private static List<Candidate> getLocalityPreferenceFilteredSearchResult(List<Candidate> candidateList, List<String> localityPreferenceIdList) {
+    private static List<Candidate> getLocalityPreferenceFilteredSearchResult(List<String> localityPreferenceIdList) {
         List<Candidate> candidateResponseList = new ArrayList<>();
         if(localityPreferenceIdList == null) {
             return candidateResponseList;
         }
-        for(Candidate eachCandidate : candidateList) {
-            // match localities
-            if (!localityPreferenceIdList.isEmpty()) {
-                for (LocalityPreference localityPreference : eachCandidate.localityPreferenceList) {
-                    if(localityPreference == null){
-                        continue;
-                    }
-                    for (String localityId : localityPreferenceIdList) {
-                        try {
-                            if (localityPreference !=null && localityPreference.locality.localityId == Long.parseLong(localityId) && !candidateResponseList.contains(eachCandidate)) {
-                                Logger.info("Adding each candidate for localitymatch : " + eachCandidate.candidateName + " && parsedVal : " + Long.parseLong(localityId));
-                                candidateResponseList.add(eachCandidate);
-                            }
-                        } catch (NumberFormatException n) {
-                        } catch (NullPointerException np){
-                            np.printStackTrace();
-                            continue;
-                        }
-                    }
-                }
-            }
+        for(String localityId : localityPreferenceIdList){
+            List<Candidate> personOfInterest = Candidate.find.select("*")
+                    .fetch("localityPreferenceList")
+                    .where()
+                    .eq("localityPreferenceList.locality.localityId", localityId)
+                    .findList();
+            candidateResponseList.addAll(personOfInterest);
         }
         return candidateResponseList;
     }
 
-    private static List<Candidate> getJobInterestFilteredSearchResult(List<Candidate> candidateList, List<String> jobInterestIdList) {
+    private static List<Candidate> getJobInterestFilteredSearchResult(List<String> jobInterestIdList) {
         List<Candidate> candidateResponseList = new ArrayList<>();
         // match jobInterests
-        for(Candidate eachCandidate : candidateList){
-            if(!jobInterestIdList.isEmpty()){
-                for(JobPreference jobPreference: eachCandidate.jobPreferencesList){
-                    if(jobPreference == null){
-                         continue;
-                    }
-                    for(String jobId : jobInterestIdList){
-                        try{
-                            if(jobPreference.jobRole.jobRoleId == Long.parseLong(jobId) && !candidateResponseList.contains(eachCandidate)){
-                                Logger.info("Adding each candidate for job role match : "+ eachCandidate.candidateName + " && parsedval " + Long.parseLong(jobId));
-                                candidateResponseList.add(eachCandidate);
-                            }
-                        } catch (NumberFormatException n){
-                        } catch (NullPointerException np){
-                            np.printStackTrace();
-                            continue;
-                        }
-                    }
-                }
-            }
+        for(String jobId : jobInterestIdList){
+            List<Candidate> personOfInterest = Candidate.find.select("*")
+                    .fetch("jobPreferencesList")
+                    .where()
+                    .eq("jobPreferencesList.jobRole.jobRoleId", jobId)
+                    .findList();
+            candidateResponseList.addAll(personOfInterest);
         }
         return candidateResponseList;
     }
