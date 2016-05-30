@@ -146,7 +146,7 @@ function myHandler (mobile, id) {
     var s = {
         api_key: "dae93473-50a6-11e5-bbe8-067cf20e9301",
         agent_number: "+919980303169",
-        phone_number: "+"+mobile,
+        phone_number: "+",
         sr_number: "+918880007799"
     };
 

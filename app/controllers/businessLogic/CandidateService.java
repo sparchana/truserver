@@ -534,6 +534,7 @@ public class CandidateService {
         }
         if(localityPreferenceIdList != null && localityPreferenceIdList.get(0) != ""){
             candidateFilteredByLocalityPreference = getLocalityPreferenceFilteredSearchResult(candidateList, localityPreferenceIdList);
+            Logger.info("candidateCount:" + candidateFilteredByLocalityPreference.size());
             candidateResponseList.addAll(candidateFilteredByLocalityPreference);
         }
         if(jobInterestIdList != null && jobInterestIdList.get(0) != "" && localityPreferenceIdList != null && localityPreferenceIdList.get(0) != ""){
@@ -555,17 +556,26 @@ public class CandidateService {
 
     private static List<Candidate> getLocalityPreferenceFilteredSearchResult(List<Candidate> candidateList, List<String> localityPreferenceIdList) {
         List<Candidate> candidateResponseList = new ArrayList<>();
+        if(localityPreferenceIdList == null) {
+            return candidateResponseList;
+        }
         for(Candidate eachCandidate : candidateList) {
             // match localities
             if (!localityPreferenceIdList.isEmpty()) {
                 for (LocalityPreference localityPreference : eachCandidate.localityPreferenceList) {
+                    if(localityPreference == null){
+                        continue;
+                    }
                     for (String localityId : localityPreferenceIdList) {
                         try {
-                            if (localityPreference.locality.localityId == Long.parseLong(localityId) && !candidateResponseList.contains(eachCandidate)) {
+                            if (localityPreference !=null && localityPreference.locality.localityId == Long.parseLong(localityId) && !candidateResponseList.contains(eachCandidate)) {
                                 Logger.info("Adding each candidate for localitymatch : " + eachCandidate.candidateName + " && parsedVal : " + Long.parseLong(localityId));
                                 candidateResponseList.add(eachCandidate);
                             }
                         } catch (NumberFormatException n) {
+                        } catch (NullPointerException np){
+                            np.printStackTrace();
+                            continue;
                         }
                     }
                 }
@@ -580,6 +590,9 @@ public class CandidateService {
         for(Candidate eachCandidate : candidateList){
             if(!jobInterestIdList.isEmpty()){
                 for(JobPreference jobPreference: eachCandidate.jobPreferencesList){
+                    if(jobPreference == null){
+                         continue;
+                    }
                     for(String jobId : jobInterestIdList){
                         try{
                             if(jobPreference.jobRole.jobRoleId == Long.parseLong(jobId) && !candidateResponseList.contains(eachCandidate)){
@@ -587,6 +600,9 @@ public class CandidateService {
                                 candidateResponseList.add(eachCandidate);
                             }
                         } catch (NumberFormatException n){
+                        } catch (NullPointerException np){
+                            np.printStackTrace();
+                            continue;
                         }
                     }
                 }
