@@ -12,6 +12,7 @@
         <link rel="stylesheet" href="/assets/support/css/jquery.dataTables.min.css">
         <link rel="stylesheet" href="/assets/support/css/nprogress.css">
         <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
+        <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.2.1/css/buttons.dataTables.min.css">
         <style>
         tfoot input {
             width: 100%;
@@ -36,7 +37,7 @@
                 <div class="row" style="margin-top: 4px">
                     <div class="col-sm-3"><h6>Candidate Mobile:</h6></div>
                     <div class="col-sm-9">
-                        <input id="candidateMobile" placeholder="Mobile no.?" name="candidateMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" class="form-control input-md">
+                        <input id="candidateMobile" placeholder="Mobile no.?" name="candidateMobile" pattern="[0-9$,.]*" type="text" maxlength="10" class="form-control input-md">
                     </div>
                 </div>
 
@@ -75,6 +76,19 @@
               </script>
                     </div>
                 </div>
+                <div class="row" style="margin-top: 4px">
+                    <div class="col-sm-3"><h6>From Date:</h6></div>
+                    <div class="col-sm-9">
+                        <input id="fromThisDate" name="fromThisDate" type="date" class="form-control input-md"  data-date-inline-picker="true"/>
+                    </div>
+                </div>
+                <div class="row" style="margin-top: 4px">
+                    <div class="col-sm-3"><h6>To Date:</h6></div>
+                    <div class="col-sm-9">
+                        <input id="toThisDate" name="toThisDate" type="date" class="form-control input-md"  data-date-inline-picker="true"/>
+                    </div>
+                </div>
+
                 <br>
                 <button type="submit" id="searchBtn" class="btn btn-primary">Search</button>
             </form>
@@ -93,75 +107,27 @@
                         <td>Maximum Salary:</td>
                         <td><input type="text" id="maxSal" name="maxSal"></td>
                     </tr>
-                    <tr>
-                        <td>Is Assessed:</td>
-                        <td>
-                            <select id="isAssessed">
-                                <option value="All"></option>
-                                <option value="No">No</option>
-                                <option value="Yes">Yes</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Gender:</td>
-                        <td>
-                            <select id="gender">
-                                <option value="All">All</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Is Employed:</td>
-                        <td>
-                            <select id="employed">
-                                <option value="All"></option>
-                                <option value="Yes">Yes</option>
-                                <option value="No">No</option>
-                            </select>
-                        </td>
-                    </tr>
                 </tbody>
             </table>
-            <table id="candidateSearchResultTable" class="table table-striped table-bordered" style="margin-top: 16px" cellspacing="0" width="100%">
+            <table id="candidateSearchResultTable" class="table table-striped table-bordered" style="margin-top: 16px;" cellspacing="0" width="100%">
                 <thead>
                     <tr>
                         <th>CLID</th>
                         <th>Name</th>
                         <th>Mobile</th>
-                        <th>Home Locality</th>
-                        <th>Current Salary</th>
                         <th>JobRole Pref</th>
                         <th>Locality Pref</th>
+                        <th>Exp (Months)</th>
+                        <th>isEmployed</th>
+                        <th>Current Salary</th>
                         <th>Language Known</th>
                         <th>Education</th>
-                        <th>TimeShift Pref</th>
-                        <th>Exp (Months)</th>
-                        <th>isAssessed?</th>
                         <th>Gender</th>
-                        <th>isEmployed</th>
+                        <th>isAssessed?</th>
+                        <th>TimeShift Pref</th>
+                        <th>Created On</th>
                     </tr>
                 </thead>
-                <tfoot>
-                    <tr>
-                        <th>CLID</th>
-                        <th>Name</th>
-                        <th>Mobile</th>
-                        <th>Home Locality</th>
-                        <th>Current Salary</th>
-                        <th>JobRole Pref</th>
-                        <th>Locality Pref</th>
-                        <th>Language Known</th>
-                        <th>Education</th>
-                        <th>TimeShift Pref</th>
-                        <th>Exp (Months)</th>
-                        <th>isAssessed?</th>
-                        <th>Gender</th>
-                        <th>isEmployed</th>
-                    </tr>
-                </tfoot>
                 <tbody>
 
                 </tbody>
@@ -173,5 +139,11 @@
         <script type="text/javascript" src="/assets/support/js/nprogress.js"></script>
         <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
         <script type="text/javascript" src="/assets/support/js/searchController.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.1/js/dataTables.buttons.min.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.1/js/buttons.flash.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+        <script type="text/javascript" src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
+        <script type="text/javascript" src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
+        <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.1/js/buttons.html5.min.js"></script>
     </body>
 </html>

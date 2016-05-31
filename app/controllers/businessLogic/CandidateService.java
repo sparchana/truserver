@@ -2,6 +2,7 @@ package controllers.businessLogic;
 
 import api.ServerConstants;
 import api.http.*;
+import com.avaje.ebean.Query;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
 import models.entity.Auth;
 import models.entity.Candidate;
@@ -517,69 +518,47 @@ public class CandidateService {
 
     public static List<Candidate> searchCandidateBySupport(SearchCandidateRequest searchCandidateRequest) {
         // TODO:check searchCandidateRequest member variable for special char, null value
-        // name || mobile || nameAndMobile - single
-        // locality || job || localityAndJob
-        // name may return list || mobile will always return unique result
-        // name first name + last name
         List<String> jobInterestIdList = Arrays.asList(searchCandidateRequest.candidateJobInterest.split("\\s*,\\s*"));
         List<String> localityPreferenceIdList = Arrays.asList(searchCandidateRequest.candidateLocality.split("\\s*,\\s*"));
-        List<Candidate> candidateResponseList = new ArrayList<>();
-        List<Candidate> candidateFilteredByJobInterest =  new ArrayList<>();
-        List<Candidate> candidateFilteredByLocalityPreference = new ArrayList<>();
 
-        if(jobInterestIdList != null && jobInterestIdList.get(0) != ""){
-            candidateFilteredByJobInterest = getJobInterestFilteredSearchResult(jobInterestIdList);
-            candidateResponseList.addAll(candidateFilteredByJobInterest);
-        }
-        if(localityPreferenceIdList != null && localityPreferenceIdList.get(0) != ""){
-            candidateFilteredByLocalityPreference = getLocalityPreferenceFilteredSearchResult(localityPreferenceIdList);
-            candidateResponseList.addAll(candidateFilteredByLocalityPreference);
-        }
-        if(jobInterestIdList != null && jobInterestIdList.get(0) != "" && localityPreferenceIdList != null && localityPreferenceIdList.get(0) != ""){
-            candidateResponseList.clear();
-            candidateFilteredByJobInterest.retainAll(candidateFilteredByLocalityPreference);
-            candidateResponseList.addAll(candidateFilteredByJobInterest);
-        }
-        // match mobile no
+       // Logger.info("fromdate :" + searchCandidateRequest.getFromThisDate().getTime() + "-" + " toThisDate" + searchCandidateRequest.getToThisDate().getTime());
+        Query<Candidate> query = Candidate.find.query();
 
-        if(searchCandidateRequest.getCandidateMobile() != null) {
-            Candidate candidate = Candidate.find.where().eq("candidateMobile",
-                    "+91"+searchCandidateRequest.getCandidateMobile()).findUnique();
-            if(candidate != null){
-                candidateResponseList.clear();
-                candidateResponseList.add(candidate);
-            }
-        }
-        return candidateResponseList;
-    }
-
-    private static List<Candidate> getLocalityPreferenceFilteredSearchResult(List<String> localityPreferenceIdList) {
-        List<Candidate> candidateResponseList = new ArrayList<>();
-        if(localityPreferenceIdList == null) {
-            return candidateResponseList;
-        }
-        for(String localityId : localityPreferenceIdList){
-            List<Candidate> personOfInterest = Candidate.find.select("*")
-                    .fetch("localityPreferenceList")
+        if(jobInterestIdList != null && jobInterestIdList.get(0) != "") {
+           query = query.select("*").fetch("jobPreferencesList")
                     .where()
-                    .eq("localityPreferenceList.locality.localityId", localityId)
-                    .findList();
-            candidateResponseList.addAll(personOfInterest);
+                    .in("jobPreferencesList.jobRole.jobRoleId", jobInterestIdList)
+                    .query();
         }
-        return candidateResponseList;
-    }
-
-    private static List<Candidate> getJobInterestFilteredSearchResult(List<String> jobInterestIdList) {
-        List<Candidate> candidateResponseList = new ArrayList<>();
-        // match jobInterests
-        for(String jobId : jobInterestIdList){
-            List<Candidate> personOfInterest = Candidate.find.select("*")
-                    .fetch("jobPreferencesList")
+        if(localityPreferenceIdList != null && localityPreferenceIdList.get(0) != "") {
+            query = query.select("*").fetch("localityPreferenceList")
                     .where()
-                    .eq("jobPreferencesList.jobRole.jobRoleId", jobId)
-                    .findList();
-            candidateResponseList.addAll(personOfInterest);
+                    .in("localityPreferenceList.locality.localityId", localityPreferenceIdList)
+                    .query();
         }
+        if(searchCandidateRequest.getCandidateName() != null && !searchCandidateRequest.getCandidateName().isEmpty()) {
+            query = query.where().like("candidateName",
+                    "%" + searchCandidateRequest.getCandidateName() + "%").query();
+        }
+
+        if(searchCandidateRequest.getCandidateMobile() != null && !searchCandidateRequest.getCandidateMobile().isEmpty()) {
+            query = query.where().like("candidateMobile",
+                    "%" + searchCandidateRequest.getCandidateMobile() + "%").query();
+        }
+        if(searchCandidateRequest.getFromThisDate() != null) {
+            Logger.info("fromDate" + searchCandidateRequest.getFromThisDate());
+            query = query.where()
+                    .ge("candidateCreateTimestamp", searchCandidateRequest.getFromThisDate())
+                    .query();
+        }
+        if(searchCandidateRequest.getToThisDate() != null) {
+            Logger.info("toDate" + searchCandidateRequest.getToThisDate());
+            query = query.where()
+                    .le("candidateCreateTimestamp", searchCandidateRequest.getToThisDate())
+                    .query();
+        }
+        Logger.info("qs" + query.toString());
+        List<Candidate> candidateResponseList = query.findList();
         return candidateResponseList;
     }
 }

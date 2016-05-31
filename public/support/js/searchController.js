@@ -154,7 +154,6 @@ function renderSearchResult(returnedData) {
                 'cLID': '<a href="/candidateSignupSupport/'+newCandidate.lead.leadId+'">'+newCandidate.lead.leadId+'</a>',
                 'candidateName' : newCandidate.candidateName,
                 'candidateMobile' : newCandidate.candidateMobile,
-                'candidateHomeLocality' : locality,
                 'candidateCurrentSalary' : getCurrentSalary(newCandidate.candidateCurrentJobDetail),
                 'candidateJobPref' :  getJobPref(newCandidate.jobPreferencesList),
                 'candidateLocalityPref'  :getLocalityPref(newCandidate.localityPreferenceList),
@@ -170,44 +169,45 @@ function renderSearchResult(returnedData) {
                     }
                 },
                 'candidateGender' : getGender(newCandidate.candidateGender),
-                'candidateIsEmployed' : getEmploymentStatus(newCandidate.candidateIsEmployed)
+                'candidateIsEmployed' : getEmploymentStatus(newCandidate.candidateIsEmployed),
+                'candidateCreateTimestamp' : new Date(newCandidate.candidateCreateTimestamp)
             })
         });
 
         var table = $('table#candidateSearchResultTable').DataTable({
             "data": returnedDataArray,
+            "ordering": false,
             "columns": [
                 { "data": "cLID" },
                 { "data": "candidateName" },
                 { "data": "candidateMobile" },
-                { "data": "candidateHomeLocality" },
-                { "data": "candidateCurrentSalary" },
                 { "data": "candidateJobPref" },
                 { "data": "candidateLocalityPref" },
+                { "data": "candidateExperience" },
+                { "data": "candidateIsEmployed" },
+                { "data": "candidateCurrentSalary" },
                 { "data": "candidateLanguage" },
                 { "data": "candidateEducation" },
-                { "data": "candidateTimeShiftPref" },
-                { "data": "candidateExperience" },
-                { "data": "candidateIsAssessmentComplete" },
                 { "data": "candidateGender" },
-                { "data": "candidateIsEmployed" }
+                { "data": "candidateIsAssessmentComplete" },
+                { "data": "candidateTimeShiftPref" },
+                { "data": "candidateCreateTimestamp" }
             ],
             "deferRender": true,
             "language": {
                 "emptyTable": "No data available"
             },
-            "destroy": true
+            "destroy": true,
+            "dom": 'Bfrtip',
+            "buttons": [
+                'copy', 'csv', 'excel', 'pdf'
+            ]
         });
-        // Setup - add a text input to each footer cell
-        $('#candidateSearchResultTable tfoot th').each( function () {
-            var title = $(this).text();
-            $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
-        } );
 
         // Apply the search
         table.columns().every( function () {
             var that = this;
-            $( 'input', this.footer() ).on( 'keyup change', function () {
+            $( 'input', this.header() ).on( 'keyup change', function () {
                 if ( that.search() !== this.value ) {
                     that
                         .search( this.value )
@@ -215,6 +215,16 @@ function renderSearchResult(returnedData) {
                 }
             } );
         } );
+
+
+        /* Initialise datatables */
+        var oTable = $('#candidateSearchResultTable').dataTable();
+
+        /* Add event listeners to the two range filtering inputs */
+        $('#minExp').keyup( function() { oTable.fnDraw(); } );
+        $('#maxExp').keyup( function() { oTable.fnDraw(); } );
+        $('#minSal').keyup( function() { oTable.fnDraw(); } );
+        $('#maxSal').keyup( function() { oTable.fnDraw(); } );
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
@@ -228,7 +238,9 @@ function searchForm(){
         candidateName: $('#candidateName').val(),
         candidateMobile: $('#candidateMobile').val(),
         candidateLocality: $('#candidateLocalityPref').val(),
-        candidateJobInterest: $('#candidateJobPref').val()
+        candidateJobInterest: $('#candidateJobPref').val(),
+        fromThisDate: $('#fromThisDate').val(),
+        toThisDate: $('#toThisDate').val()
     };
     NProgress.start();
     try {
@@ -248,7 +260,7 @@ $.fn.dataTableExt.afnFiltering.push(
     function( oSettings, aData, iDataIndex ) {
         var iMinExp = document.getElementById('minExp').value * 1;
         var iMaxExp = document.getElementById('maxExp').value * 1;
-        var iExpColumnVal = aData[10] == "-" ? 0 : aData[10]*1;
+        var iExpColumnVal = aData[5] == "-" ? 0 : aData[5]*1;
         if ( iMinExp == "" && iMaxExp == "" )
         {
             return true;
@@ -270,7 +282,7 @@ $.fn.dataTableExt.afnFiltering.push(
     function( oSettings, aData, iDataIndex ) {
         var iMinSalary = document.getElementById('minSal').value * 1;
         var iMaxSalary = document.getElementById('maxSal').value * 1;
-        var iSalaryColumnVal = aData[4] == "-" ? 0 : aData[4]*1;
+        var iSalaryColumnVal = aData[7] == "-" ? 0 : aData[7]*1;
         if ( iMinSalary == "" && iMaxSalary == "" )
         {
             return true;
@@ -288,77 +300,15 @@ $.fn.dataTableExt.afnFiltering.push(
             return true;
         }
         return false;
-    },
-    function( oSettings, aData, iDataIndex ) {
-        var isAssessed = $('#isAssessed').val();
-        if($('#isAssessed').val() == "All") {
-            return true;
-        }
-        var iAssessedColumnVal = aData[11];
-        if ( isAssessed == "" && iAssessedColumnVal == "" )
-        {
-            return true;
-        }
-        else if ( isAssessed == iAssessedColumnVal)
-        {
-            return true;
-        }
-        return false;
-    },
-    function( oSettings, aData, iDataIndex ) {
-        var iGender = $('#gender').val();
-        var iGenderColumnVal = aData[12];
-        if($('#gender').val() == "All") {
-            return true;
-        }
-        if ( iGender == "" && iGenderColumnVal == "" )
-        {
-            return true;
-        }
-        else if ( iGender == iGenderColumnVal)
-        {
-            return true;
-        }
-        return false;
-    },
-    function( oSettings, aData, iDataIndex ) {
-        var iEmployed = $('#employed').val();
-        var iEmployedColumnVal = aData[13];
-        if($('#employed').val() == "All") {
-            return true;
-        }
-        if ( iEmployed == "" && iEmployedColumnVal  == "" )
-        {
-            return true;
-        }
-        else if ( iEmployed == iEmployedColumnVal )
-        {
-            return true;
-        }
-        return false;
     }
 );
 
 $(function() {
-    /* Initialise datatables */
-    var oTable = $('#candidateSearchResultTable').dataTable();
-
-    /* Add event listeners to the two range filtering inputs */
-    $('#minExp').keyup( function() { oTable.fnDraw(); } );
-    $('#maxExp').keyup( function() { oTable.fnDraw(); } );
-    $('#minSal').keyup( function() { oTable.fnDraw(); } );
-    $('#maxSal').keyup( function() { oTable.fnDraw(); } );
-    $('#isAssessed').on('change', function() {
-        oTable.fnDraw();
-    });
-    $('#gender').on('change', function() {
-            oTable.fnDraw();
-    });    
-    $('#employed').on('change', function() {
-            oTable.fnDraw();
-    });
-
-
+    // Setup - add a text input to each footer cell
+    $('#candidateSearchResultTable thead th').each( function () {
+        var title = $(this).text();
+        $(this).html( '<input type="text" placeholder="'+title+'" />' );
+    } );
 
     /* ajax commands to fetch all localities and jobs*/
     NProgress.start();
@@ -387,10 +337,6 @@ $(function() {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-    $("#candidateSearchForm").change(function(eventObj) {
-        eventObj.preventDefault();
-        searchForm();
-    }); // end of auto search
 
     $("#candidateSearchForm").submit(function(eventObj) {
         eventObj.preventDefault();
