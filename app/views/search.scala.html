@@ -12,6 +12,13 @@
         <link rel="stylesheet" href="/assets/support/css/jquery.dataTables.min.css">
         <link rel="stylesheet" href="/assets/support/css/nprogress.css">
         <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
+        <style>
+        tfoot input {
+            width: 100%;
+            padding: 3px;
+            box-sizing: border-box;
+        }
+        </style>
 
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
 
@@ -90,6 +97,7 @@
                         <td>Is Assessed:</td>
                         <td>
                             <select id="isAssessed">
+                                <option value="All"></option>
                                 <option value="No">No</option>
                                 <option value="Yes">Yes</option>
                             </select>
@@ -102,6 +110,16 @@
                                 <option value="All">All</option>
                                 <option value="Male">Male</option>
                                 <option value="Female">Female</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Is Employed:</td>
+                        <td>
+                            <select id="employed">
+                                <option value="All"></option>
+                                <option value="Yes">Yes</option>
+                                <option value="No">No</option>
                             </select>
                         </td>
                     </tr>
@@ -118,12 +136,32 @@
                         <th>JobRole Pref</th>
                         <th>Locality Pref</th>
                         <th>Language Known</th>
+                        <th>Education</th>
                         <th>TimeShift Pref</th>
                         <th>Exp (Months)</th>
                         <th>isAssessed?</th>
                         <th>Gender</th>
+                        <th>isEmployed</th>
                     </tr>
                 </thead>
+                <tfoot>
+                    <tr>
+                        <th>CLID</th>
+                        <th>Name</th>
+                        <th>Mobile</th>
+                        <th>Home Locality</th>
+                        <th>Current Salary</th>
+                        <th>JobRole Pref</th>
+                        <th>Locality Pref</th>
+                        <th>Language Known</th>
+                        <th>Education</th>
+                        <th>TimeShift Pref</th>
+                        <th>Exp (Months)</th>
+                        <th>isAssessed?</th>
+                        <th>Gender</th>
+                        <th>isEmployed</th>
+                    </tr>
+                </tfoot>
                 <tbody>
 
                 </tbody>

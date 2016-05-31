@@ -114,6 +114,27 @@ function getGender(gender) {
     }
 }
 
+function getEducation(candidateEducation) {
+    if(candidateEducation != null){
+        if(candidateEducation.education != null){
+            return candidateEducation.education.educationName;
+        }
+    }
+    return "-";
+}
+
+function getEmploymentStatus(candidateEmploymentStatus) {
+    if(candidateEmploymentStatus != null){
+        if(candidateEmploymentStatus == "0"){
+            return "No";
+        }
+         else if(candidateEmploymentStatus == "1"){
+            return "Yes";
+        }
+    }
+    return "-";
+}
+
 function renderSearchResult(returnedData) {
     var returnedDataArray = new Array();
     try {
@@ -138,6 +159,7 @@ function renderSearchResult(returnedData) {
                 'candidateJobPref' :  getJobPref(newCandidate.jobPreferencesList),
                 'candidateLocalityPref'  :getLocalityPref(newCandidate.localityPreferenceList),
                 'candidateLanguage' : getLanguageKnown(newCandidate.languageKnownList),
+                'candidateEducation' : getEducation(newCandidate.candidateEducation),
                 'candidateTimeShiftPref' : timeShiftPref,
                 'candidateExperience' :  getInYearMonthFormat(newCandidate.candidateTotalExperience),
                 'candidateIsAssessmentComplete' : function(){
@@ -147,7 +169,8 @@ function renderSearchResult(returnedData) {
                         return "yes";
                     }
                 },
-                'candidateGender' : getGender(newCandidate.candidateGender)
+                'candidateGender' : getGender(newCandidate.candidateGender),
+                'candidateIsEmployed' : getEmploymentStatus(newCandidate.candidateIsEmployed)
             })
         });
 
@@ -162,10 +185,12 @@ function renderSearchResult(returnedData) {
                 { "data": "candidateJobPref" },
                 { "data": "candidateLocalityPref" },
                 { "data": "candidateLanguage" },
+                { "data": "candidateEducation" },
                 { "data": "candidateTimeShiftPref" },
                 { "data": "candidateExperience" },
                 { "data": "candidateIsAssessmentComplete" },
-                { "data": "candidateGender" }
+                { "data": "candidateGender" },
+                { "data": "candidateIsEmployed" }
             ],
             "deferRender": true,
             "language": {
@@ -173,6 +198,23 @@ function renderSearchResult(returnedData) {
             },
             "destroy": true
         });
+        // Setup - add a text input to each footer cell
+        $('#candidateSearchResultTable tfoot th').each( function () {
+            var title = $(this).text();
+            $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+        } );
+
+        // Apply the search
+        table.columns().every( function () {
+            var that = this;
+            $( 'input', this.footer() ).on( 'keyup change', function () {
+                if ( that.search() !== this.value ) {
+                    that
+                        .search( this.value )
+                        .draw();
+                }
+            } );
+        } );
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
@@ -206,7 +248,7 @@ $.fn.dataTableExt.afnFiltering.push(
     function( oSettings, aData, iDataIndex ) {
         var iMinExp = document.getElementById('minExp').value * 1;
         var iMaxExp = document.getElementById('maxExp').value * 1;
-        var iExpColumnVal = aData[9] == "-" ? 0 : aData[9]*1;
+        var iExpColumnVal = aData[10] == "-" ? 0 : aData[10]*1;
         if ( iMinExp == "" && iMaxExp == "" )
         {
             return true;
@@ -249,7 +291,10 @@ $.fn.dataTableExt.afnFiltering.push(
     },
     function( oSettings, aData, iDataIndex ) {
         var isAssessed = $('#isAssessed').val();
-        var iAssessedColumnVal = aData[10];
+        if($('#isAssessed').val() == "All") {
+            return true;
+        }
+        var iAssessedColumnVal = aData[11];
         if ( isAssessed == "" && iAssessedColumnVal == "" )
         {
             return true;
@@ -262,7 +307,7 @@ $.fn.dataTableExt.afnFiltering.push(
     },
     function( oSettings, aData, iDataIndex ) {
         var iGender = $('#gender').val();
-        var iGenderColumnVal = aData[11];
+        var iGenderColumnVal = aData[12];
         if($('#gender').val() == "All") {
             return true;
         }
@@ -271,6 +316,22 @@ $.fn.dataTableExt.afnFiltering.push(
             return true;
         }
         else if ( iGender == iGenderColumnVal)
+        {
+            return true;
+        }
+        return false;
+    },
+    function( oSettings, aData, iDataIndex ) {
+        var iEmployed = $('#employed').val();
+        var iEmployedColumnVal = aData[13];
+        if($('#employed').val() == "All") {
+            return true;
+        }
+        if ( iEmployed == "" && iEmployedColumnVal  == "" )
+        {
+            return true;
+        }
+        else if ( iEmployed == iEmployedColumnVal )
         {
             return true;
         }
@@ -292,30 +353,11 @@ $(function() {
     });
     $('#gender').on('change', function() {
             oTable.fnDraw();
+    });    
+    $('#employed').on('change', function() {
+            oTable.fnDraw();
     });
 
-
-   /* // Setup - add a text input to each footer cell
-    $('#candidateSearchResultTable tfoot th').each( function () {
-        var title = $(this).text();
-        console.log(title);
-        $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
-    } );
-    // DataTable
-    var table = $('#candidateSearchResultTable').DataTable();
-    console.log(table);
-    // Apply the search
-    table.columns().every( function () {
-        var that = this;
-
-        $( 'input', this.footer() ).on( 'keyup change', function () {
-            if ( that.search() !== this.value ) {
-                that
-                    .search( this.value )
-                    .draw();
-            }
-        } );
-    } );*/
 
 
     /* ajax commands to fetch all localities and jobs*/
