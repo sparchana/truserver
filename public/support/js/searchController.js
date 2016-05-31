@@ -69,17 +69,16 @@ function getLocalityPref(localityPrefList) {
 
 function getInYearMonthFormat(d){
     if(d == null) {
-        return "NA";
-    } else if(d == 0 ){
-        return "0 Month";
+        return "-";
     } else {
-        var yr = Math.floor((parseInt(d)/12)).toString();
+        /*var yr = Math.floor((parseInt(d)/12)).toString();
         var month =  parseInt(d)%12;
         if(yr == 0){
             return month +" Month";
         } else {
             return yr + " Year " + month +" Month";
-        }
+        }*/
+        return d;
     }
 }
 
@@ -87,7 +86,7 @@ function getLanguageKnown(languageKnownList){
     var languageString = [];
     try {
         if(languageKnownList == null){
-            return "NA";
+            return "-";
         }
         languageKnownList.forEach(function (languageKnown) {
             languageString.push(" " + languageKnown.language.languageName);
@@ -98,11 +97,21 @@ function getLanguageKnown(languageKnownList){
 
 function getCurrentSalary(salary) {
     if(salary == null){
-        return "NA";
+        return "-";
     } else {
         return salary.candidateCurrentSalary;
     }
 
+}
+
+function getGender(gender) {
+    if(gender == null){
+        return "-";
+    } else if(gender == "0"){
+        return "Male";
+    } else if(gender == "1"){
+        return "Female";
+    }
 }
 
 function renderSearchResult(returnedData) {
@@ -137,7 +146,8 @@ function renderSearchResult(returnedData) {
                     } else {
                         return "yes";
                     }
-                }
+                },
+                'candidateGender' : getGender(newCandidate.candidateGender)
             })
         });
 
@@ -154,14 +164,14 @@ function renderSearchResult(returnedData) {
                 { "data": "candidateLanguage" },
                 { "data": "candidateTimeShiftPref" },
                 { "data": "candidateExperience" },
-                { "data": "candidateIsAssessmentComplete" }
+                { "data": "candidateIsAssessmentComplete" },
+                { "data": "candidateGender" }
             ],
             "deferRender": true,
             "language": {
                 "emptyTable": "No data available"
             },
-            "destroy": true,
-            "paging": false
+            "destroy": true
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
@@ -191,20 +201,123 @@ function searchForm(){
         console.log("exception occured!!" + exception);
     }
 }
+/* Custom filtering function which will filter data in column */
+$.fn.dataTableExt.afnFiltering.push(
+    function( oSettings, aData, iDataIndex ) {
+        var iMinExp = document.getElementById('minExp').value * 1;
+        var iMaxExp = document.getElementById('maxExp').value * 1;
+        var iExpColumnVal = aData[9] == "-" ? 0 : aData[9]*1;
+        if ( iMinExp == "" && iMaxExp == "" )
+        {
+            return true;
+        }
+        else if ( iMinExp == "" && iExpColumnVal <= iMaxExp )
+        {
+            return true;
+        }
+        else if ( iMinExp <= iExpColumnVal && "" == iMaxExp )
+        {
+            return true;
+        }
+        else if ( iMinExp <= iExpColumnVal && iExpColumnVal <= iMaxExp )
+        {
+            return true;
+        }
+        return false;
+    },
+    function( oSettings, aData, iDataIndex ) {
+        var iMinSalary = document.getElementById('minSal').value * 1;
+        var iMaxSalary = document.getElementById('maxSal').value * 1;
+        var iSalaryColumnVal = aData[4] == "-" ? 0 : aData[4]*1;
+        if ( iMinSalary == "" && iMaxSalary == "" )
+        {
+            return true;
+        }
+        else if ( iMinSalary == "" && iSalaryColumnVal <= iMaxSalary )
+        {
+            return true;
+        }
+        else if ( iMinSalary <= iSalaryColumnVal && "" == iMaxSalary )
+        {
+            return true;
+        }
+        else if ( iMinSalary <= iSalaryColumnVal && iSalaryColumnVal <= iMaxSalary )
+        {
+            return true;
+        }
+        return false;
+    },
+    function( oSettings, aData, iDataIndex ) {
+        var isAssessed = $('#isAssessed').val();
+        var iAssessedColumnVal = aData[10];
+        if ( isAssessed == "" && iAssessedColumnVal == "" )
+        {
+            return true;
+        }
+        else if ( isAssessed == iAssessedColumnVal)
+        {
+            return true;
+        }
+        return false;
+    },
+    function( oSettings, aData, iDataIndex ) {
+        var iGender = $('#gender').val();
+        var iGenderColumnVal = aData[11];
+        if($('#gender').val() == "All") {
+            return true;
+        }
+        if ( iGender == "" && iGenderColumnVal == "" )
+        {
+            return true;
+        }
+        else if ( iGender == iGenderColumnVal)
+        {
+            return true;
+        }
+        return false;
+    }
+);
 
 $(function() {
-    $("#filterColumn").click(function() {
-        if ( $.fn.dataTable.isDataTable( 'table#candidateSearchResultTable' ) ) {
-            var aTable = $('table#candidateSearchResultTable').DataTable();
-            if ($("#filterColumn").is(":checked")) {
-                aTable.filter(function ( value, index ) {
-                });
-            } else {
-                aTable.filter(function ( value, index ) {
-                });
-            }
-        }
+    /* Initialise datatables */
+    var oTable = $('#candidateSearchResultTable').dataTable();
+
+    /* Add event listeners to the two range filtering inputs */
+    $('#minExp').keyup( function() { oTable.fnDraw(); } );
+    $('#maxExp').keyup( function() { oTable.fnDraw(); } );
+    $('#minSal').keyup( function() { oTable.fnDraw(); } );
+    $('#maxSal').keyup( function() { oTable.fnDraw(); } );
+    $('#isAssessed').on('change', function() {
+        oTable.fnDraw();
     });
+    $('#gender').on('change', function() {
+            oTable.fnDraw();
+    });
+
+
+   /* // Setup - add a text input to each footer cell
+    $('#candidateSearchResultTable tfoot th').each( function () {
+        var title = $(this).text();
+        console.log(title);
+        $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
+    } );
+    // DataTable
+    var table = $('#candidateSearchResultTable').DataTable();
+    console.log(table);
+    // Apply the search
+    table.columns().every( function () {
+        var that = this;
+
+        $( 'input', this.footer() ).on( 'keyup change', function () {
+            if ( that.search() !== this.value ) {
+                that
+                    .search( this.value )
+                    .draw();
+            }
+        } );
+    } );*/
+
+
     /* ajax commands to fetch all localities and jobs*/
     NProgress.start();
     try {
