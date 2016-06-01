@@ -10,6 +10,7 @@
         <link rel="stylesheet" href="/assets/support/css/bootstrap.min.css">
         <link rel="stylesheet" href="/assets/support/css/dataTables.bootstrap.min.css">
         <link rel="stylesheet" href="/assets/support/css/jquery.dataTables.min.css">
+        <link rel="stylesheet" href="/assets/support/css/search.css">
         <link rel="stylesheet" href="/assets/support/css/nprogress.css">
         <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
         <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.2.1/css/buttons.dataTables.min.css">
@@ -25,27 +26,55 @@
 
     </head>
     <body>
-        <div class="container">
-            <form id="candidateSearchForm">
-                <div class="row">
-                    <div class="col-sm-3"><h6>Candidate Name:</h6></div>
-                    <div class="col-sm-9">
-                        <input id="candidateName" name="candidateName" placeholder="Name?" type="text" class="form-control input-md">
-                    </div>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="/support">Dashboard</a>
                 </div>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                        @*<li class="active"><a href="#">Dashboard<span class="sr-only">(current)</span></a></li>*@
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Settings <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Action</a></li>
+                                <li><a href="#">Another action</a></li>
+                                <li><a href="#">Something else here</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="#">Separated link</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="#">One more separated link</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div><!-- /.navbar-collapse -->
+            </div><!-- /.container-fluid -->
+        </nav>
+        <div id="searchPane">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Search Options</div>
+                <div class="panel-body">
+                    <form id="candidateSearchForm">
+                        <div class="row">
+                            <div class="col-sm-3"><h6>Candidate Name:</h6></div>
+                            <div class="col-sm-9">
+                                <input id="candidateName" name="candidateName" placeholder="Name?" type="text" class="form-control input-md">
+                            </div>
+                        </div>
 
-                <div class="row" style="margin-top: 4px">
-                    <div class="col-sm-3"><h6>Candidate Mobile:</h6></div>
-                    <div class="col-sm-9">
-                        <input id="candidateMobile" placeholder="Mobile no.?" name="candidateMobile" pattern="[0-9$,.]*" type="text" maxlength="10" class="form-control input-md">
-                    </div>
-                </div>
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h6>Candidate Mobile:</h6></div>
+                            <div class="col-sm-9">
+                                <input id="candidateMobile" placeholder="Mobile no.?" name="candidateMobile" pattern="[0-9$,.]*" type="text" maxlength="10" class="form-control input-md">
+                            </div>
+                        </div>
 
-                <div class="row" style="margin-top: 4px">
-                    <div class="col-sm-3"><h6>Job Role Preference:</h6></div>
-                    <div class="col-sm-9">
-                        <input type="text" id="candidateJobPref" >
-                        <script type="text/javascript">
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h6>Job Role Preference:</h6></div>
+                            <div class="col-sm-9">
+                                <input type="text" id="candidateJobPref" >
+                                <script type="text/javascript">
                   $(document).ready(function() {
                       $("#candidateJobPref").tokenInput(getJob(), {
                           theme: "facebook",
@@ -56,14 +85,14 @@
                       });
                   });
               </script>
-                    </div>
-                </div>
+                            </div>
+                        </div>
 
-                <div class="row" style="margin-top: 4px">
-                    <div class="col-sm-3"><h6>Locality Preference:</h6></div>
-                    <div class="col-sm-9">
-                        <input type="text" id="candidateLocalityPref" placeholder="Where do you want to work?">
-                        <script type="text/javascript">
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h6>Locality Preference:</h6></div>
+                            <div class="col-sm-9">
+                                <input type="text" id="candidateLocalityPref" placeholder="Where do you want to work?">
+                                <script type="text/javascript">
                       $(document).ready(function() {
                           $("#candidateLocalityPref").tokenInput(getLocality(), {
                               theme: "facebook",
@@ -74,42 +103,49 @@
                           });
                       });
               </script>
-                    </div>
-                </div>
-                <div class="row" style="margin-top: 4px">
-                    <div class="col-sm-3"><h6>From Date:</h6></div>
-                    <div class="col-sm-9">
-                        <input id="fromThisDate" name="fromThisDate" type="date" class="form-control input-md"  data-date-inline-picker="true"/>
-                    </div>
-                </div>
-                <div class="row" style="margin-top: 4px">
-                    <div class="col-sm-3"><h6>To Date:</h6></div>
-                    <div class="col-sm-9">
-                        <input id="toThisDate" name="toThisDate" type="date" class="form-control input-md"  data-date-inline-picker="true"/>
-                    </div>
-                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h6>From Date:</h6></div>
+                            <div class="col-sm-9">
+                                <input id="fromThisDate" name="fromThisDate" type="date" class="form-control input-md"  data-date-inline-picker="true"/>
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h6>To Date:</h6></div>
+                            <div class="col-sm-9">
+                                <input id="toThisDate" name="toThisDate" type="date" class="form-control input-md"  data-date-inline-picker="true"/>
+                            </div>
+                        </div>
 
-                <br>
-                <button type="submit" id="searchBtn" class="btn btn-primary">Search</button>
-            </form>
-            <div style="margin-top: 16px"></div>
-            <table border="0" cellspacing="5" cellpadding="5">
-                <tbody>
-                    <tr>
-                        <td>Minimum Exp:</td>
-                        <td><input type="text" id="minExp" name="minExp"></td>
-                        <td>Maximum Exp:</td>
-                        <td><input type="text" id="maxExp" name="maxExp"></td>
-                    </tr>
-                    <tr>
-                        <td>Minimum Salary:</td>
-                        <td><input type="text" id="minSal" name="minSal"></td>
-                        <td>Maximum Salary:</td>
-                        <td><input type="text" id="maxSal" name="maxSal"></td>
-                    </tr>
-                </tbody>
-            </table>
-            <table id="candidateSearchResultTable" class="table table-striped table-bordered" style="margin-top: 16px;" cellspacing="0" width="100%">
+                        <br>
+                        <button type="submit" id="searchBtn" class="btn btn-primary">Search</button>
+                    </form>
+                    <div style="margin-top: 16px"></div>
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Filter Options</div>
+                        <div class="panel-body">
+                            <table border="0" cellspacing="5" cellpadding="5" id="filterTable">
+                                    <tbody>
+                                        <tr>
+                                            <td>Minimum Exp:</td>
+                                            <td><input type="text" id="minExp" name="minExp"></td>
+                                            <td>Maximum Exp:</td>
+                                            <td><input type="text" id="maxExp" name="maxExp"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Minimum Salary:</td>
+                                            <td><input type="text" id="minSal" name="minSal"></td>
+                                            <td>Maximum Salary:</td>
+                                            <td><input type="text" id="maxSal" name="maxSal"></td>
+                                        </tr>
+                                    </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <table id="candidateSearchResultTable" class="table table-striped table-bordered" style="margin-top: 16px; table-layout: fixed; overflow-x:scroll;" cellspacing="0" width="100%">
                 <thead>
                     <tr>
                         <th>CLID</th>
@@ -118,10 +154,11 @@
                         <th>JobRole Pref</th>
                         <th>Locality Pref</th>
                         <th>Exp (Months)</th>
-                        <th>isEmployed</th>
+                        <th>isEmployed?</th>
                         <th>Current Salary</th>
                         <th>Language Known</th>
                         <th>Education</th>
+                        <th>Skills</th>
                         <th>Gender</th>
                         <th>isAssessed?</th>
                         <th>TimeShift Pref</th>
@@ -129,7 +166,6 @@
                     </tr>
                 </thead>
                 <tbody>
-
                 </tbody>
             </table>
         </div>
@@ -138,12 +174,12 @@
         <script type="text/javascript" src="/assets/support/js/jquery.dataTables.min.js"></script>
         <script type="text/javascript" src="/assets/support/js/nprogress.js"></script>
         <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
+        <script type="text/javascript" src="/assets/support/js/btnExport/dataTables.buttons.min.js"></script>
+        <script type="text/javascript" src="/assets/support/js/btnExport/buttons.flash.min.js"></script>
+        <script type="text/javascript" src="/assets/support/js/btnExport/jszip.min.js"></script>
+        <script type="text/javascript" src="/assets/support/js/btnExport/pdfmake.min.js"></script>
+        <script type="text/javascript" src="/assets/support/js/btnExport/vfs_fonts.js"></script>
+        <script type="text/javascript" src="/assets/support/js/btnExport/buttons.html5.min.js"></script>
         <script type="text/javascript" src="/assets/support/js/searchController.js"></script>
-        <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.1/js/dataTables.buttons.min.js"></script>
-        <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.1/js/buttons.flash.min.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
-        <script type="text/javascript" src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js"></script>
-        <script type="text/javascript" src="https://cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js"></script>
-        <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.1/js/buttons.html5.min.js"></script>
     </body>
 </html>

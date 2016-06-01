@@ -135,6 +135,27 @@ function getEmploymentStatus(candidateEmploymentStatus) {
     return "-";
 }
 
+function getSkills(skillList) {
+    var skills = [];
+    if(skillList != null){
+        skillList.forEach(function(candidateSkill)
+        {
+            if(candidateSkill != null) {
+
+                if(candidateSkill.skillQualifier != null) {
+                    if(candidateSkill.skillQualifier.qualifier == "Yes"){
+                        if(candidateSkill.skill != null) {
+                            skills.push(" " + candidateSkill.skill.skillName);
+                        }
+                    }
+                }
+            }
+        });
+        return skills;
+    }
+    return "-";
+}
+
 function renderSearchResult(returnedData) {
     var returnedDataArray = new Array();
     try {
@@ -159,6 +180,7 @@ function renderSearchResult(returnedData) {
                 'candidateLocalityPref'  :getLocalityPref(newCandidate.localityPreferenceList),
                 'candidateLanguage' : getLanguageKnown(newCandidate.languageKnownList),
                 'candidateEducation' : getEducation(newCandidate.candidateEducation),
+                'candidateSkillList' : getSkills(newCandidate.candidateSkillList),
                 'candidateTimeShiftPref' : timeShiftPref,
                 'candidateExperience' :  getInYearMonthFormat(newCandidate.candidateTotalExperience),
                 'candidateIsAssessmentComplete' : function(){
@@ -177,6 +199,8 @@ function renderSearchResult(returnedData) {
         var table = $('table#candidateSearchResultTable').DataTable({
             "data": returnedDataArray,
             "ordering": false,
+            "scrollX": true,
+            "paging": false,
             "columns": [
                 { "data": "cLID" },
                 { "data": "candidateName" },
@@ -188,10 +212,19 @@ function renderSearchResult(returnedData) {
                 { "data": "candidateCurrentSalary" },
                 { "data": "candidateLanguage" },
                 { "data": "candidateEducation" },
+                { "data": "candidateSkillList" },
                 { "data": "candidateGender" },
                 { "data": "candidateIsAssessmentComplete" },
                 { "data": "candidateTimeShiftPref" },
                 { "data": "candidateCreateTimestamp" }
+            ],
+            "columnDefs": [
+                { "width": "90px", "targets": 0 },
+                { "width": "90px", "targets": 5 },
+                { "width": "90px", "targets": 6 },
+                { "width": "100px", "targets": 10 },
+                { "width": "90px", "targets": 11 },
+                { "width": "90px", "targets": 12 }
             ],
             "deferRender": true,
             "language": {
