@@ -3,12 +3,15 @@
  */
 var candidateMobile;
 function processDataLogin(returnedData) {
-    console.log("returedData :" + returnedData.status + returnedData.candidateName + returnedData.accountStatus);
+    console.log(returnedData);
     if(returnedData.status == 1) {
         // Store
         localStorage.setItem("mobile", "+91" + candidateMobile);
         localStorage.setItem("name", returnedData.candidateName);
+        localStorage.setItem("lastName", returnedData.candidateLastName);
         localStorage.setItem("id", returnedData.candidateId);
+        localStorage.setItem("leadId", returnedData.leadId);
+        localStorage.setItem("assessed", returnedData.isAssessed);
         window.location = "/dashboard";
     }
 

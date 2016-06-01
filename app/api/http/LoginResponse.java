@@ -10,22 +10,30 @@ public class LoginResponse {
     public static final int STATUS_WRONG_PASSWORD = 4;
 
     public int status;
-    public long accountStatus;
+    public int isAssessed;
     public long candidateId;
+    public long leadId;
     public String candidateName;
+    public String candidateLastName;
     public String candidateEmail;
 
     public void setStatus(int status) {
         this.status = status;
     }
-    public void setAccountStatus(long accountStatus) {
-        this.status = status;
+    public void setIsAssessed(int isAssessed) {
+        this.isAssessed = isAssessed;
     }
     public void setCandidateId(long candidateId) {
         this.candidateId = candidateId;
     }
+    public void setLeadId(long leadId) {
+        this.leadId = leadId;
+    }
     public void setCandidateName(String candidateName) {
         this.candidateName = candidateName;
+    }
+    public void setCandidateLastName(String candidateLastName) {
+        this.candidateLastName = candidateLastName;
     }
     public void setCandidateEmail(String candidateEmail) {
         this.candidateEmail = candidateEmail;

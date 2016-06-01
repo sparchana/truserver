@@ -52,7 +52,7 @@ public class CandidateService {
         Lead existingLead = isLeadExists(candidate.candidateMobile);
         try {
             if(existingCandidate == null) {
-                Logger.info("inside !existingCandidate of createCandidate");
+                Logger.info("inside! existingCandidate of createCandidate");
                 // if no candidate exists
                 if(existingLead == null){
                     LeadService.createLead(getLeadFromCandidate(candidate), isSupport);
@@ -129,13 +129,14 @@ public class CandidateService {
         return candidateSignUpResponse;
     }
 
-    public static CandidateSignUpResponse createCandidateBySupport(AddSupportCandidateRequest request){
+    public static CandidateSignUpResponse createCandidateBySupport(AddCandidateRequest request, boolean isSupport, int flag){
         CandidateSignUpResponse response = new CandidateSignUpResponse();
         // get candidateBasic obj from req
         // Handle jobPrefList and any other list with , as break point at application only
-        boolean isSupport = true;
+        Logger.info("inside create candidate " + request.candidateMobile);
         Candidate candidate = isCandidateExists(request.candidateMobile);
         if(candidate == null){
+            Logger.info("No existing candidate | New Candidate");
             candidate = new Candidate();
             candidate.candidateId = Util.randomLong();
             candidate.candidateUUId = UUID.randomUUID().toString();
@@ -152,7 +153,7 @@ public class CandidateService {
             Logger.info(" reqJobPref: " + request.candidateJobInterest);
             candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(Arrays.asList(request.candidateLocality.split("\\s*,\\s*")), candidate);
             candidate.jobPreferencesList = getCandidateJobPreferenceList(Arrays.asList(request.candidateJobInterest.split("\\s*,\\s*")), candidate);
-            // lead is getting updated inside createCandidate 
+            // lead is getting updated inside createCandidate
             CandidateSignUpResponse candidateSignUpResponse = createCandidate(candidate, isSupport);
 
             // 1st call to basic createCandidate
@@ -162,10 +163,19 @@ public class CandidateService {
                 return response;
             }
         } else{
+            Logger.info("Candidate Exists | Existing Candidate");
             Lead existingLead = isLeadExists(candidate.candidateMobile);
             Logger.info(" reqJobPref: " + request.candidateJobInterest);
-            candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(Arrays.asList(request.candidateLocality.split("\\s*,\\s*")), candidate);
-            candidate.jobPreferencesList = getCandidateJobPreferenceList(Arrays.asList(request.candidateJobInterest.split("\\s*,\\s*")), candidate);
+            try{
+                candidate.localityPreferenceList = getCandidateLocalityPreferenceList(Arrays.asList(request.candidateLocality.split("\\s*,\\s*")), candidate);
+            } catch(Exception e){
+                Logger.info(" try catch exception = " + e);
+            }
+            try{
+                candidate.jobPreferencesList = getCandidateJobPreferenceList(Arrays.asList(request.candidateJobInterest.split("\\s*,\\s*")), candidate);
+            } catch(Exception e){
+                Logger.info(" try catch exception = " + e);
+            }
             Logger.info("CandidateExists: " + candidate.candidateId + " | LeadExists: " + existingLead.leadId);
             existingLead.setLeadType(ServerConstants.TYPE_CANDIDATE);
             existingLead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
@@ -173,30 +183,145 @@ public class CandidateService {
             candidate.setCandidateLastName(request.getCandidateSecondName());
             candidate.setLead(existingLead);
         }
-        candidate.setCandidateName(request.candidateFirstName);
-        candidate.setCandidateLastName(request.candidateSecondName);
-        candidate.setCandidateUpdateTimestamp(new Timestamp(System.currentTimeMillis()));
-        candidate.setCandidatePhoneType(request.getCandidatePhoneType());
-        candidate.setCandidateTotalExperience(request.getCandidateTotalExperience());
-        candidate.setCandidateDOB(request.getCandidateDob()); // age gets calc inside this method
-        candidate.setCandidateEmail(request.getCandidateEmail());
-        candidate.setCandidateGender(request.getCandidateGender());
-        candidate.setCandidateIsEmployed(request.getCandidateIsEmployed());
-        candidate.setCandidateAppointmentLetter(request.getCandidateAppointmentLetter());
-        candidate.setCandidateSalarySlip(request.getCandidateSalarySlip());
-        candidate.setCandidateMaritalStatus(request.getCandidateMaritalStatus());
-        candidate.setLocality(Locality.find.where().eq("localityId", request.getCandidateHomeLocality()).findUnique());
-        candidate.setMotherTongue(Language.find.where().eq("languageId", request.getCandidateMotherTongue()).findUnique());
 
-        CandidateCurrentJobDetail candidateCurrentJobDetail = getCandidateCurrentJobDetailFromAddSupportCandidate(request, candidate);
-        candidate.candidateCurrentJobDetail = candidateCurrentJobDetail;
-        candidate.timeShiftPreference = getTimeShiftPrefFromAddSupportCandidate(request, candidate);
-        candidate.jobHistoryList = getJobHistoryListFromAddSupportCandidate(request, candidate);
-        candidate.idProofReferenceList = getCandidateIdProofListFromAddSupportCandidate(Arrays.asList(request.candidateIdProof.split("\\s*,\\s*")), candidate);
-        candidate.candidateSkillList = getCandidateSkillListFromAddSupportCandidate(request, candidate);
-        candidate.candidateEducation = getCandidateEducationFromAddSupportCandidate(request, candidate);
-        candidate.languageKnownList = getCandidateLanguageFromSupportCandidate(request, candidate);
+        if(flag == ServerConstants.UPDATE_BASIC_PROFILE || flag == ServerConstants.UPDATE_ALL_BY_SUPPORT){
+            Logger.info("Inside Basic profile update");
+            /* Basic Profile Section Starts */
+            candidate.setCandidateName(request.candidateFirstName);
+            candidate.setCandidateLastName(request.candidateSecondName);
+            candidate.setCandidateUpdateTimestamp(new Timestamp(System.currentTimeMillis()));
 
+            try{
+                if(request.getCandidateDob() != null)
+                    candidate.setCandidateDOB(request.getCandidateDob()); // age gets calc inside this method
+            } catch(Exception e){
+                Logger.info(" try catch exception = " + e);
+            }
+
+            try{
+                candidate.setCandidateGender(request.getCandidateGender());
+            } catch(Exception e){
+                Logger.info(" try catch exception = " + e);
+            }
+
+            try{
+                candidate.timeShiftPreference = getTimeShiftPrefFromAddSupportCandidate(request, candidate);
+            } catch(Exception e){
+                Logger.info(" try catch exception = " + e);
+            }
+            Logger.info("Added Basic Profile details");
+
+            /* Basic Profile Section ends */
+        }
+
+        if(flag == ServerConstants.UPDATE_SKILLS_PROFILE || flag == ServerConstants.UPDATE_ALL_BY_SUPPORT){
+        /* Experience Section starts */
+            Logger.info("Inside Skills profile update");
+            try{
+                AddCandidateExperienceRequest addCandidateExperienceRequest = (AddCandidateExperienceRequest) request;
+                try{
+                    candidate.setCandidateTotalExperience(addCandidateExperienceRequest.getCandidateTotalExperience());
+                } catch(Exception e){
+                    Logger.info(" try catch exception = " + e);
+                }
+
+                try{
+                    candidate.setCandidateIsEmployed(addCandidateExperienceRequest.getCandidateIsEmployed());
+                } catch(Exception e){
+                    Logger.info(" try catch exception = " + e);
+                }
+
+                try{
+                    candidate.setMotherTongue(Language.find.where().eq("languageId", addCandidateExperienceRequest.getCandidateMotherTongue()).findUnique());
+                } catch(Exception e){
+                    Logger.info(" try catch exception = " + e);
+                }
+
+                try{
+                    CandidateCurrentJobDetail candidateCurrentJobDetail = getCandidateCurrentJobDetailFromAddSupportCandidate(addCandidateExperienceRequest, candidate);
+                    candidate.candidateCurrentJobDetail = candidateCurrentJobDetail;
+                } catch(Exception e){
+                    Logger.info(" try catch exception Current job = " + e);
+                }
+                try{
+                    candidate.candidateSkillList = getCandidateSkillListFromAddSupportCandidate(addCandidateExperienceRequest, candidate);
+                } catch(Exception e){
+                    Logger.info(" try catch exception = " + e);
+                }
+
+                try{
+                    candidate.languageKnownList = getCandidateLanguageFromSupportCandidate(addCandidateExperienceRequest, candidate);
+                } catch(Exception e){
+                    Logger.info(" try catch exception = " + e);
+                }
+            } catch(Exception e){
+                Logger.info(" try catch exception = " + e);
+            }
+        }
+
+        if(flag == ServerConstants.UPDATE_EDUCATION_PROFILE || flag == ServerConstants.UPDATE_ALL_BY_SUPPORT){
+            Logger.info("Inside Education profile update");
+            try{
+                AddCandidateEducationRequest addCandidateEducationRequest = (AddCandidateEducationRequest) request;
+                try{
+                    candidate.candidateEducation = getCandidateEducationFromAddSupportCandidate(addCandidateEducationRequest, candidate);
+                } catch(Exception e){
+                    Logger.info(" try catch exception = " + e);
+                }
+            } catch (Exception e){
+                Logger.info("Try Catch Exception Main = " + e);
+            }
+        }
+
+
+
+        Logger.info("Checking if support");
+        if(isSupport){
+            Logger.info("Is a support request");
+            /* full support profile */
+            AddSupportCandidateRequest supportCandidateRequest = (AddSupportCandidateRequest) request;
+            candidate.setLocality(Locality.find.where().eq("localityId", supportCandidateRequest.getCandidateHomeLocality()).findUnique());
+            try{
+                candidate.setCandidatePhoneType(supportCandidateRequest.getCandidatePhoneType());
+            } catch(Exception e){
+                Logger.info(" try catch exception = " + e);
+            }
+            try{
+                if(supportCandidateRequest.getCandidateEmail() != null)
+                    candidate.setCandidateEmail(supportCandidateRequest.getCandidateEmail());
+            } catch(Exception e){
+                Logger.info(" try catch exception = " + e);
+            }
+            try{
+                candidate.setCandidateAppointmentLetter(supportCandidateRequest.getCandidateAppointmentLetter());
+            } catch(Exception e){
+                Logger.info(" try catch exception = " + e);
+            }
+            try{
+                candidate.setCandidateSalarySlip(supportCandidateRequest.getCandidateSalarySlip());
+            } catch(Exception e){
+                Logger.info(" try catch exception = " + e);
+            }
+/*
+            try{
+                CandidateCurrentJobDetail candidateCurrentJobDetail = getCandidateCurrentJobDetailFromAddSupportCandidate(supportCandidateRequest, candidate);
+                candidate.candidateCurrentJobDetail = candidateCurrentJobDetail;
+            } catch(Exception e){
+                Logger.info(" try catch exception = " + e);
+            }
+*/
+
+            try{
+                candidate.jobHistoryList = getJobHistoryListFromAddSupportCandidate(supportCandidateRequest, candidate);
+            } catch(Exception e){
+                Logger.info(" try catch exception = " + e);
+            }
+            try{
+                candidate.idProofReferenceList = getCandidateIdProofListFromAddSupportCandidate(Arrays.asList(supportCandidateRequest.candidateIdProof.split("\\s*,\\s*")), candidate);
+            } catch(Exception e){
+                Logger.info(" try catch exception = " + e);
+            }
+        }
         Interaction interaction = new Interaction();
         Auth auth = Auth.find.where().eq("CandidateId", candidate.candidateId).findUnique();
         if (auth == null) {
@@ -218,7 +343,7 @@ public class CandidateService {
         return response;
     }
 
-    private static List<LanguageKnown> getCandidateLanguageFromSupportCandidate(AddSupportCandidateRequest request, Candidate candidate) {
+    private static List<LanguageKnown> getCandidateLanguageFromSupportCandidate(AddCandidateExperienceRequest request, Candidate candidate) {
         List<LanguageKnown> languageKnownList = new ArrayList<>();
         for(LanguageClass languageClass: request.candidateLanguageKnown){
             LanguageKnown languageKnown = new LanguageKnown();
@@ -264,7 +389,7 @@ public class CandidateService {
         return response;
     }
 
-    private static CandidateEducation getCandidateEducationFromAddSupportCandidate(AddSupportCandidateRequest request, Candidate candidate) {
+    private static CandidateEducation getCandidateEducationFromAddSupportCandidate(AddCandidateEducationRequest request, Candidate candidate) {
         CandidateEducation response  = CandidateEducation.find.where().eq("candidateId", candidate.candidateId).findUnique();
         Education education = Education.find.where().eq("educationId", request.getCandidateEducationLevel()).findUnique();
         Degree degree = Degree.find.where().eq("degreeId", request.getCandidateDegree()).findUnique();
@@ -283,7 +408,7 @@ public class CandidateService {
         return response;
     }
 
-    private static List<CandidateSkill> getCandidateSkillListFromAddSupportCandidate(AddSupportCandidateRequest request, Candidate candidate) {
+    private static List<CandidateSkill> getCandidateSkillListFromAddSupportCandidate(AddCandidateExperienceRequest request, Candidate candidate) {
         List<CandidateSkill> response = new ArrayList<>();
         for(SkillMapClass item: request.candidateSkills){
             item.getQualifier();
@@ -331,7 +456,7 @@ public class CandidateService {
         return response;
     }
 
-    private static TimeShiftPreference getTimeShiftPrefFromAddSupportCandidate(AddSupportCandidateRequest request, Candidate candidate) {
+    private static TimeShiftPreference getTimeShiftPrefFromAddSupportCandidate(AddCandidateRequest request, Candidate candidate) {
         TimeShiftPreference response = TimeShiftPreference.find.where().eq("candidateId",candidate.candidateId).findUnique();
         if(response == null){
             response = new TimeShiftPreference();
@@ -347,31 +472,39 @@ public class CandidateService {
         return response;
     }
 
-    private static CandidateCurrentJobDetail getCandidateCurrentJobDetailFromAddSupportCandidate(AddSupportCandidateRequest request, Candidate candidate) {
+    private static CandidateCurrentJobDetail getCandidateCurrentJobDetailFromAddSupportCandidate(AddCandidateExperienceRequest request, Candidate candidate) {
         CandidateCurrentJobDetail response =  CandidateCurrentJobDetail.find.where().eq("candidateId", candidate.candidateId).findUnique();
         if(response == null){
             response = new CandidateCurrentJobDetail();
             response.setCandidate( candidate);
         }
-        response.setUpdateTimeStamp( new Timestamp(System.currentTimeMillis()));
-        response.setCandidateCurrentCompany( request.getCandidateCurrentCompany());
-        response.setCandidateCurrentDesignation( request.getCandidateCurrentJobDesignation());
-        response.setCandidateCurrentSalary(request.getCandidateCurrentSalary());
-        response.setCandidateCurrentJobDuration(request.getCandidateCurrentJobDuration());
-        response.setCandidateCurrentEmployerRefMobile("na");
-        response.setCandidateCurrentEmployerRefName("na");
+        Logger.info("inserting current Job details");
+        try{
+            response.setUpdateTimeStamp( new Timestamp(System.currentTimeMillis()));
+            response.setCandidateCurrentCompany( request.getCandidateCurrentCompany());
+            response.setCandidateCurrentSalary(request.getCandidateCurrentSalary());
 
-        TransportationMode transportationMode = TransportationMode.find.where().eq("transportationModeId", request.getCandidateTransportation()).findUnique();
-        TimeShift timeShift = TimeShift.find.where().eq("timeShiftId", request.getCandidateCurrentWorkShift()).findUnique();
-        JobRole jobRole = JobRole.find.where().eq("jobRoleId",request.getCandidateCurrentJobRole()).findUnique();
-        Locality locality = Locality.find.where().eq("localityId", request.getCandidateCurrentJobLocation()).findUnique();
-        if(timeShift == null || jobRole == null || locality == null){
-            // do nothing let it save without these entity
+   /*             AddSupportCandidateRequest supportCandidateRequest = (AddSupportCandidateRequest) request;*/
+            response.setCandidateCurrentDesignation(request.getCandidateCurrentJobDesignation());
+            response.setCandidateCurrentJobDuration(request.getCandidateCurrentJobDuration());
+            response.setCandidateCurrentEmployerRefMobile("na");
+            response.setCandidateCurrentEmployerRefName("na");
+
+            TransportationMode transportationMode = TransportationMode.find.where().eq("transportationModeId", request.getCandidateTransportation()).findUnique();
+            TimeShift timeShift = TimeShift.find.where().eq("timeShiftId", request.getCandidateCurrentWorkShift()).findUnique();
+            JobRole jobRole = JobRole.find.where().eq("jobRoleId",request.getCandidateCurrentJobRole()).findUnique();
+            Locality locality = Locality.find.where().eq("localityId", request.getCandidateCurrentJobLocation()).findUnique();
+            if(timeShift == null || jobRole == null || locality == null){
+                // do nothing let it save without these entity
+            }
+            response.setCandidateTransportationMode(transportationMode);
+            response.setCandidateCurrentWorkShift(timeShift);
+            response.setCandidateCurrentJobLocation(locality);
+            response.setJobRole(jobRole);
+        } catch(Exception e){
+            Logger.info(" Try catch exception while inserting current job detail");
         }
-        response.setCandidateTransportationMode(transportationMode);
-        response.setCandidateCurrentWorkShift(timeShift);
-        response.setCandidateCurrentJobLocation(locality);
-        response.setJobRole(jobRole);
+        Logger.info("done insertion current Job details");
         return response;
     }
 
@@ -390,12 +523,10 @@ public class CandidateService {
                 if ((existingAuth.passwordMd5.equals(Util.md5(loginPassword + existingAuth.passwordSalt)))) {
                     Logger.info(existingCandidate.candidateName + " " + existingCandidate.candidateprofilestatus.profileStatusId);
                     loginResponse.setCandidateId(existingCandidate.candidateId);
-                    if(existingCandidate.candidateLastName == null || existingCandidate.candidateLastName == ""){
-                        loginResponse.setCandidateName(existingCandidate.candidateName);
-                    }else{
-                        loginResponse.setCandidateName(existingCandidate.candidateName + " " + existingCandidate.candidateLastName);
-                    }
-                    loginResponse.setAccountStatus(existingCandidate.candidateprofilestatus.profileStatusId);
+                    loginResponse.setCandidateName(existingCandidate.candidateName);
+                    loginResponse.setCandidateLastName(existingCandidate.candidateLastName);
+                    loginResponse.setIsAssessed(existingCandidate.candidateIsAssessed);
+                    loginResponse.setLeadId(existingCandidate.lead.leadId);
                     loginResponse.setStatus(loginResponse.STATUS_SUCCESS);
 
                     existingAuth.authSessionId = UUID.randomUUID().toString();

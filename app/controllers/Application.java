@@ -146,7 +146,48 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(CandidateService.createCandidateBySupport(addSupportCandidateRequest)));
+        boolean isSupport = true;
+        return ok(toJson(CandidateService.createCandidateBySupport(addSupportCandidateRequest, isSupport, ServerConstants.UPDATE_ALL_BY_SUPPORT)));
+    }
+
+    public static Result candidateUpdateBasicProfile() {
+        JsonNode req = request().body().asJson();
+        AddCandidateRequest addCandidateRequest = new AddCandidateRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addCandidateRequest = newMapper.readValue(req.toString(), AddCandidateRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        boolean isSupport = false;
+        return ok(toJson(CandidateService.createCandidateBySupport(addCandidateRequest, isSupport, ServerConstants.UPDATE_BASIC_PROFILE)));
+    }
+
+    public static Result candidateUpdateExperienceDetails() {
+        JsonNode req = request().body().asJson();
+        Logger.info(" == " + req);
+        AddCandidateExperienceRequest addCandidateExperienceRequest = new AddCandidateExperienceRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addCandidateExperienceRequest = newMapper.readValue(req.toString(), AddCandidateExperienceRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        boolean isSupport = false;
+        return ok(toJson(CandidateService.createCandidateBySupport(addCandidateExperienceRequest, isSupport, ServerConstants.UPDATE_SKILLS_PROFILE)));
+    }
+
+    public static Result candidateUpdateEducationDetails() {
+        JsonNode req = request().body().asJson();
+        AddCandidateEducationRequest addCandidateEducationRequest = new AddCandidateEducationRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addCandidateEducationRequest = newMapper.readValue(req.toString(), AddCandidateEducationRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        boolean isSupport = false;
+        return ok(toJson(CandidateService.createCandidateBySupport(addCandidateEducationRequest, isSupport, ServerConstants.UPDATE_EDUCATION_PROFILE)));
     }
 
     public static Result addPassword() {
@@ -172,6 +213,22 @@ public class Application extends Controller {
     public static Result dashboard() {
         return ok(views.html.candidate_home.render());
     }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result editProfileBasic() {
+        return ok(views.html.edit_profile_basic.render());
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result editProfileSkill() {
+        return ok(views.html.edit_profile_skill.render());
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result editProfileEducation() {
+        return ok(views.html.edit_profile_education.render());
+    }
+
 
     public static Result findUserAndSendOtp() {
         Form<ResetPasswordResquest> checkCandidate = Form.form(ResetPasswordResquest.class);
@@ -372,6 +429,22 @@ public class Application extends Controller {
             return badRequest("Account Doesn't exists!!");
         }
         return redirect(routes.Application.supportAuth());
+    }
+
+    public static Result updateIsAssessedToAssessed(long candidateId) {
+        try{
+            Candidate existingCandidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
+            try{
+                existingCandidate.setCandidateIsAssessed(ServerConstants.CANDIDATE_ASSESSED);
+                existingCandidate.update();
+                return ok(toJson(ServerConstants.CANDIDATE_ASSESSED));
+            } catch (NullPointerException n) {
+                n.printStackTrace();
+            }
+        } catch (NullPointerException n) {
+            n.printStackTrace();
+        }
+        return badRequest();
     }
 
     public static Result updateLeadType(long leadId, long newType) {

@@ -18,11 +18,23 @@ POST     /signUp                                                  controllers.Ap
 
 POST     /signUpSupport                                           controllers.Application.signUpSupport()
 
+POST     /candidateUpdateBasicProfile                             controllers.Application.candidateUpdateBasicProfile()
+
+POST     /candidateUpdateExperienceDetails                        controllers.Application.candidateUpdateExperienceDetails()
+
+POST     /candidateUpdateEducationDetails                         controllers.Application.candidateUpdateEducationDetails()
+
 POST     /addPassword                                             controllers.Application.addPassword()
 
 POST     /processCsv                                              controllers.Application.processcsv()
 
 GET      /dashboard                                               controllers.Application.dashboard()
+
+GET      /dashboard/editProfile/basic                             controllers.Application.editProfileBasic()
+
+GET      /dashboard/editProfile/skill                             controllers.Application.editProfileSkill()
+
+GET      /dashboard/editProfile/education                         controllers.Application.editProfileEducation()
 
 POST     /loginSubmit                                             controllers.Application.loginSubmit()
 
@@ -59,6 +71,8 @@ GET      /getCandidateJob/:id                                     controllers.Ap
 GET      /getAllSkills/:id                                        controllers.Application.getAllSkills(id : String)
 
 GET      /updateLeadType/:leadId/:newStatus                       controllers.Application.updateLeadType(leadId: Long, newStatus: Long)
+
+GET      /updateIsAssessedToAssessed/:leadId                      controllers.Application.updateIsAssessedToAssessed(leadId: Long)
 
 GET      /updateLeadStatus/:leadId/:leadStatus/:res               controllers.Application.updateLeadStatus(leadId: Long, leadStatus: Integer,res: String)
 

@@ -25,14 +25,17 @@ var candidateIdProofArray = [];
 var candidateSkill = [];
 
 $(document).ready(function(){
-
     var pathname = window.location.pathname; // Returns path only
     var leadId = pathname.split('/');
     leadId = leadId[(leadId.length)-1];
+    if(leadId == "basic" || leadId == "skill" || leadId == "education" || leadId == "dashboard"){
+        leadId = localStorage.getItem("leadId");
+    }
 
     $("#candidateSignUpSupportForm input").prop("disabled", true);
-    $("#saveBtn").prop("disabled", true);
-    $("#cancelBtn").prop("disabled", true);
+    $("#totalWorkExperience").hide();
+    $("#educationalInstitute").hide();
+    $("#isEmployedForm").hide();
 
     /* ajax commands to fetch leads Info */
     try {
@@ -175,18 +178,6 @@ function getIdProofs(){
     return idProofArray;
 }
 
-function getJobName(id){
-    var jobArray = getJob();
-    var returnJobName;
-    jobArray.forEach(function (job) {
-        if(job.id == id){
-            returnJobName = job.name;
-            return true;
-        }
-    });
-    return returnJobName;
-}
-
 function processDataCheckUserMobile(returnedData) {
     $("#candidateMobile").val(returnedData.substring(3,13));
 }
@@ -321,6 +312,10 @@ function processDataAndFillAllFields(returnedData) {
             var month = ('0' + parseInt(new Date(date).getMonth() + 1)).slice(-2);
             var d = ('0' + new Date(date).getDate()).slice(-2);
             $("#candidateDob").val(yr + "-" + month + "-" + d);
+            $("#dob_day").val(d);
+            $("#dob_month").val(month);
+            console.log("year = " + yr);
+            $("#dob_year").val(yr);
         }
     } catch(err){
         console.log(err);
@@ -335,8 +330,14 @@ function processDataAndFillAllFields(returnedData) {
     try {
         if (returnedData.candidateGender != null) {
             if (returnedData.candidateGender == 0) {
+                document.getElementById("genderMale").checked = true;
+                $('#genderMale').parent().addClass('active').siblings().removeClass('active');
+                /* for support */
                 $('input[id=genderMale]').attr('checked', true);
             } else {
+                document.getElementById("genderFemale").checked = true;
+                $('#genderFemale').parent().addClass('active').siblings().removeClass('active');
+                /* for support */
                 $('input[id=genderFemale]').attr('checked', true);
             }
         }
@@ -362,8 +363,17 @@ function processDataAndFillAllFields(returnedData) {
             if (returnedData.candidateIsEmployed == 1) {
                 $('input[id=employed]').attr('checked', true);
                 $('#employedForm').show();
+                /* candidate dashboard */
+                document.getElementById("isEmployedYes").checked = true;
+                $("#isEmployedForm").show();
+                $('#isEmployedYes').parent().addClass('active').siblings().removeClass('active');
+
             } else {
                 $('input[id=employedNot]').attr('checked', true);
+                /* candidate dashboard */
+                document.getElementById("isEmployedNo").checked = true;
+                $("#isEmployedForm").hide();
+                $('#isEmployedNo').parent().addClass('active').siblings().removeClass('active');
             }
         }
     } catch(err){
@@ -406,9 +416,25 @@ function processDataAndFillAllFields(returnedData) {
             $("#candidateTimeShiftPref").val(returnedData.timeShiftPreference.timeShift.timeShiftId);
         }
         if(returnedData.candidateTotalExperience != null){
-            var totalExperience = parseInt(returnedData.candidateTotalExperience);
-            $("#candidateTotalExperienceYear").val(parseInt((totalExperience / 12)).toString()); // years
-            $("#candidateTotalExperienceMonth").val(totalExperience % 12); // years
+            if(returnedData.candidateTotalExperience == 0){
+                document.getElementById("fresher").checked = true;
+                $('#fresher').parent().addClass('active').siblings().removeClass('active');
+            } else{
+                var totalExperience = parseInt(returnedData.candidateTotalExperience);
+                try{
+                    $("#candidateTotalExperienceYear").val(parseInt((totalExperience / 12)).toString()); // years
+                    $("#candidateTotalExperienceMonth").val(totalExperience % 12); // years
+                } catch (err){
+                    console.log("try catch");
+                }
+                try{
+                    $("#totalWorkExperience").show();
+                    document.getElementById("experienced").checked = true;
+                    $('#experienced').parent().addClass('active').siblings().removeClass('active');
+                } catch (err){
+                    console.log("try catch");
+                }
+            }
         }
     } catch(err){
         console.log(err);
@@ -418,6 +444,11 @@ function processDataAndFillAllFields(returnedData) {
         if(returnedData.candidateEducation != null){
             if(returnedData.candidateEducation.education != null){
                 $("#candidateHighestEducation").val(returnedData.candidateEducation.education.educationId);
+                /* user dashboard */
+                if(returnedData.candidateEducation.education.educationId == 4 || returnedData.candidateEducation.education.educationId == 5){
+                    $("#educationalInstitute").show();
+                }
+                
             }
             if(returnedData.candidateEducation.degree != null){
                 $("#candidateHighestDegree").val(returnedData.candidateEducation.degree.degreeId);
@@ -479,10 +510,13 @@ function prefillLanguageTable(languageKnownList) {
                 if(x.id == languageKnown.language.languageId){
                     if(languageKnown.verbalAbility == "1" && x.name == "s") {
                         x.checked = true;
+                        $(x).parent().addClass('active').siblings().removeClass('active');
                     } else if (languageKnown.readingAbility == "1" && x.name == "r") {
                         x.checked = true;
+                        $(x).parent().addClass('active').siblings().removeClass('active');
                     } else if(languageKnown.writingAbility == "1" && x.name == "w") {
                         x.checked = true;
+                        $(x).parent().addClass('active').siblings().removeClass('active');
                     }
                 }
             });
@@ -637,12 +671,13 @@ function populateLanguages(l, lId) {
             var cell2 = row.insertCell(1);
             var cell3 = row.insertCell(2);
             var cell4 = row.insertCell(3);
+            var cell5 = row.insertCell(4);
 
             cell1.innerHTML = l[i];
-            cell2.innerHTML = "<input id=" + lId[i] + " type=\"checkbox\" name=\"r\" value=0 >";
-            cell3.innerHTML = "<input id=" + lId[i] + " type=\"checkbox\" name=\"w\" value=0 >";
-            cell4.innerHTML = "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >";
-
+            cell2.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;";
+            cell3.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"r\" value=0 >Read</label></div>";
+            cell4.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"w\" value=0 >Write</label></div>";
+            cell5.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >Speak</label></div>";
         }
     }
 
@@ -725,7 +760,7 @@ function processDataCheckSkills(returnedData) {
     returnedData.forEach(function (singleSkill) {
         var q = document.createElement("h5");
 
-        var question = singleSkill.skill.skillQuestion;
+        var question = singleSkill.skill.skillName;
         q.textContent = question + "       ";
         head.appendChild(q);
 
@@ -770,7 +805,7 @@ function processDataCheckSkills(returnedData) {
 
 function generateSkills(){
     var myNode = document.getElementById("skill_details");
-    myNode.innerHTML = '';
+    /*myNode.innerHTML = '';*/
     var selectedJobPref = $('#candidateJobPref').val();
         try {
             $.ajax({
@@ -806,6 +841,9 @@ function prefillAll() {
     var pathname = window.location.pathname; // Returns path only
     var leadId = pathname.split('/');
     leadId = leadId[(leadId.length)-1];
+    if(leadId == "basic" || leadId == "skill" || leadId == "education" || leadId == "dashboard"){
+        leadId = localStorage.getItem("leadId");
+    }
 
     try {
         $.ajax({

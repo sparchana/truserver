@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Trujobs - Trusted Employers - Verified Candidates</title>
+    <meta name="keywords" content="freshers jobs, driver jobs, delivery boy jobs, field sales agent,call center jobs, BPO jobs, data entry jobs, back office jobs, receptionist jobs, beautician jobs, waiter jobs, cook jobs, restaurant jobs, cashier jobs, experienced jobs, jobs in Bangalore, driver jobs, delivery boy jobs, field sales agent,call center jobs, BPO jobs, data entry jobs, back office jobs, receptionist jobs, beautician jobs, waiter jobs, cook jobs, restaurant jobs, cashier jobs, full time jobs, part time jobs, entry level jobs, plumber jobs, electrician jobs">
+    <meta name="description" content="TruJobs helps you find the right job! Give a missed call at 8880007799 for Best Jobs. We pre-screen, match and schedule interviews for Jobs" />
+    <title>Profile - Trujobs</title>
+
+      <!-- Bootstrap Core CSS -->
+    <link rel="icon" type="image/png" href="/assets/img/icon.png">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lato" />
+
+    <link href="/assets/dashboard/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+      <!-- Custom CSS -->
+    <link href="/assets/dashboard/css/dashboard.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
+    <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
+    <script type="text/javascript" src="//www.google.com/jsapi"></script>
+    <script type="text/javascript" src="/assets/support/js/sign_up_support.js"></script>
+    <script type="text/javascript" src="/assets/js/user_dashboard.js"></script>
+    <link rel="stylesheet" type="text/css" href="/assets/new/css/myStyle.css">
+
+    <script type="text/javascript">
+      var userMobile = localStorage.getItem("mobile");
+      if(userMobile == null){
+        logoutUser();
+        window.location = "/";
+      }
+
+      google.load('visualization', '1', {packages: ['table']});
+
+      function logoutUser() {
+        localStorage.clear();
+        window.location = "/";
+        try {
+          $.ajax({
+            type: "GET",
+            url: "/logoutUser",
+            data: false,
+            contentType: false,
+            processData: false,
+          });
+        } catch (exception) {
+          console.log("exception occured!!" + exception);
+        }
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id="table" style="display: none;"></div>
+    <div id="wrapper">
+
+        <!-- Sidebar -->
+      <div id="sidebar-wrapper">
+        <ul class="sidebar-nav">
+          <li class="sidebar-brand">
+            <a href="#">
+              <img id="navLogo" src="/assets/dashboard/img/logo-main.gif" height="42px">
+            </a>
+          </li>
+          <li>
+            <center>
+              <div style="padding-top: 8%; padding-bottom: 3%">
+                <img src="/assets/dashboard/img/user.png" height="124px">
+              </div>
+            </center>
+          </li>
+          <li>
+            <center>
+              <h4><font color="white"><div id="helloMsg">Hello Adarsh</div></font></h4>
+            </center>
+          </li>
+          <li>
+            <div class="sideNav">
+              <a href="/dashboard">Dashboard</a>
+            </div>
+          </li>
+          <li>
+            <div class="sideNav">
+                <a href="/dashboard/editProfile/basic">Profile</a>
+            </div>
+          </li>
+          <li>
+            <div class="sideNav">
+                <a href="/dashboard#hotJobs">Hot Jobs</a>
+            </div>
+          </li>
+          <li>
+            <div class="sideNav">
+              <a href="#" onclick="logoutUser()">Log Out</a>
+            </div>
+          </li>
+          <li>
+            <div class="sideNav">
+              <a href="#">Help</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+        <!-- /#sidebar-wrapper -->
+
+        <!-- Page Content -->
+      <div id="page-content-wrapper">
+        <a href="#menu-toggle" class="visible-xs btn btn-default" style="width: 30%" id="menu-toggle">Show Menu</a>
+        <div class="container-fluid">
+          <div class="row">
+              <h2>Edit Profile</h2>
+              <hr>
+              <center class="visible-lg">
+                  <div id="editProfileSteps">
+                      <img src="/assets/dashboard/img/basic.png" height="40px">
+                      <h5>Basic Information</h5>
+                  </div>
+
+                  <div style="display: inline-block; width: 12%;"></div>
+
+                  <div id="editProfileStepsActive">
+                      <img src="/assets/dashboard/img/skills.png" height="40px">
+                      <h5>Experience & Skills</h5>
+                  </div>
+
+                  <div style="display: inline-block; width: 12%; height: 5px;"></div>
+
+                  <div id="editProfileSteps">
+                      <img src="/assets/dashboard/img/education.png" height="40px">
+                      <h5>Education Details</h5>
+                  </div>
+               </center>
+              <br>
+              <h3>Language and Skills</h3>
+              <h5>Fill up the details to get best of Jobs!</h5>
+              <form id="candidateUpdateLanguageAndSkills" method="post">
+                <div class=profileBody>
+                    <h4>Work Experience</h4>
+                    <hr>
+
+                  <div id="language_details">
+
+                      <div class="row">
+                          <div class="col-sm-3"><h5>Your Work Experience:</h5></div>
+                          <div class="col-sm-5">
+                              <div class="btn-group" data-toggle="buttons">
+                                  <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickFresher()">
+                                      <input type="radio" name="workExperience" id="fresher" value="0">Fresher
+                                  </label>
+                                  <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickExperienced()">
+                                      <input type="radio" name="workExperience" id="experienced" value="0">Experienced
+                                  </label>
+                              </div>
+                          </div>
+                      </div>
+
+                      <div class="row" id="totalWorkExperience" style="margin-top: 8px">
+                          <div class="col-sm-3"><h5>Total Work Experience:</h5></div>
+                          <div class="col-sm-5">
+                              <select class="selectDropdown" style="width: 136px" id="candidateTotalExperienceYear" required>
+                                  <option>Years</option>
+                                  <option value="0">0 year</option>
+                                  <option value="1">1 year</option>
+                                  <option value="2">2 years</option>
+                                  <option value="3">3 years</option>
+                                  <option value="4">4 years</option>
+                                  <option value="5">5 years</option>
+                                  <option value="6">6 years</option>
+                                  <option value="7">7 years</option>
+                                  <option value="8">8 years</option>
+                                  <option value="9">9 years</option>
+                                  <option value="10">10 years</option>
+                                  <option value="11">11 years</option>
+                                  <option value="12">12 years</option>
+                                  <option value="13">13 years</option>
+                                  <option value="14">14 years</option>
+                                  <option value="15">15 years</option>
+                                  <option value="16">16 years</option>
+                                  <option value="17">17 years</option>
+                                  <option value="18">18 years</option>
+                                  <option value="19">19 years</option>
+                                  <option value="20">20 years</option>
+                              </select>
+                              <select id="candidateTotalExperienceMonth" style="width: 136px" class="selectDropdown">
+                                  <option>Months</option>
+                                  <option value="1">1 month</option>
+                                  <option value="2">2 months</option>
+                                  <option value="3">3 months</option>
+                                  <option value="4">4 months</option>
+                                  <option value="5">5 months</option>
+                                  <option value="6">6 months</option>
+                                  <option value="7">7 months</option>
+                                  <option value="8">8 months</option>
+                                  <option value="9">9 months</option>
+                                  <option value="10">10 months</option>
+                                  <option value="11">11 months</option>
+                              </select>
+                          </div>
+                      </div>
+
+                      <div class="row" style="margin-top: 8px">
+                          <div class="col-sm-3"><h5>Are you currently working?</h5></div>
+                          <div class="col-sm-5">
+                              <div class="btn-group" data-toggle="buttons" style="margin-top: 4px">
+                                  <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickWorkingYes()">
+                                      <input type="radio" name="isEmployed" id="isEmployedYes" value="1" required>&nbsp;Yes&nbsp;&nbsp;
+                                  </label>
+                                  <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickWorkingNo()">
+                                      <input type="radio" name="isEmployed" id="isEmployedNo" value="0">&nbsp;No&nbsp;&nbsp;
+                                  </label>
+                              </div>
+                          </div>
+                      </div>
+
+                      <div id="isEmployedForm" class="subSectionBody" style="margin-top: 8px;">
+                          <h4>Tell us about your current Company</h4>
+                          <hr>
+                          <div class="row" >
+                              <div class="col-sm-3"><h5>Current Company:</h5></div>
+                              <div class="col-sm-5">
+                                  <input id="candidateCurrentCompany" placeholder="What is your Company name?" style="width: 275px" type="text" class="form-control input-md">
+                              </div>
+                          </div>
+
+                          <div class="row" style="margin-top: 8px">
+                              <div class="col-sm-3"><h5>Current Job Salary:</h5></div>
+                              <div class="col-sm-2">
+                                  <input id="candidateCurrentJobSalary" placeholder="Salary" type="number" class="form-control input-md">
+                              </div>
+                              <div class="col-sm-2" style="margin-top: 8px">₹/month</div>
+                          </div>
+
+                          <div class="row" style="margin-top: 4px">
+                              <div class="col-sm-3"><h5>Current Job Duration:</h5></div>
+                              <div class="col-sm-9">
+                                  <input id="candidateCurrentJobDurationYear" value="0" style="width: 15%; display: inline-block" placeholder="Years" type="number" class="form-control input-md">&nbsp;Years&nbsp;&nbsp;
+                                  <input id="candidateCurrentJobDurationMonth"  value="0" style="width: 15%; display: inline-block"  type="number" min="0" max="11" step="1" placeholder="Months" class="form-control input-md" >&nbsp; Months
+                              </div>
+                          </div>
+
+                          <div class="row" style="margin-top: 4px">
+                              <div class="col-sm-3"><h5>Mode of Transport:</h5></div>
+                              <div class="col-sm-9" style="margin-top: 8px">
+                                  <select id="selectTransportation">
+
+                  </select>
+                              </div>
+                          </div>
+
+                          <div class="row" style="margin-top: 4px">
+                              <div class="col-sm-3"><h5>Current work shift?: </h5></div>
+                              <div class="col-sm-9" style="margin-top: 8px">
+                                  <select id="currentWorkShift">
+
+                  </select>
+                              </div>
+                          </div>
+
+                          <div class="row" style="margin-top: 8px">
+                              <div class="col-sm-3"><h5>Current Job Location:</h5></div>
+                              <div class="col-sm-9">
+                                  <input type="text" id="candidateCurrentJobLocation" >
+                                  <script type="text/javascript">
+                  $(document).ready(function() {
+                      $("#candidateCurrentJobLocation").tokenInput(getLocality(), {
+                          theme: "facebook",
+                          placeholder: "Office Location",
+                          minChars: 0,
+                          prePopulate: currentJobLocationArray,
+                          tokenLimit: 1,
+                          preventDuplicates: true
+                      });
+                  });
+                  </script>
+                              </div>
+                          </div>
+
+                          <div class="row" style="margin-top: 4px">
+                              <div class="col-sm-3"><h5>Current Job Role:</h5></div>
+                              <div class="col-sm-9">
+                                  <input type="text" id="candidateCurrentJobRole" >
+                                  <script type="text/javascript">
+                          $(document).ready(function() {
+                              $("#candidateCurrentJobRole").tokenInput(getJob(), {
+                                  theme: "facebook",
+                                  placeholder: "Current Jobrole?",
+                                  minChars: 0,
+                                  tokenLimit: 1,
+                                  prePopulate: currentJobRoleArray,
+                                  preventDuplicates: true
+                              });
+                          });
+                  </script>
+                              </div>
+                          </div>
+
+                          <div class="row" style="margin-top: 4px">
+                              <div class="col-sm-3"><h5>Current Job Designation:</h5></div>
+                              <div class="col-sm-9">
+                                  <input id="candidateCurrentJobDesignation" placeholder="What is your Designation?" type="text" class="form-control input-md">
+                              </div>
+                          </div>
+
+                      </div>
+                  </div>
+                  <hr>
+                    <br>
+                    <h4>Language Details</h4>
+                    <hr>
+                    <div class="row">
+                        <div class="col-sm-3"><h5>Mother Tongue?: </h5></div>
+                        <div class="col-sm-9">
+                            <select class="selectDropdown" style="width: 137.5px" id="candidateMotherTongue">
+                        </select>
+                        </div>
+                    </div>
+                    <div style="display: none">
+                        <input type="text" id="candidateJobPref">
+                        <script type="text/javascript">
+                                    $(document).ready(function() {
+                                        $("#candidateJobPref").tokenInput([], {
+                                            theme: "facebook",
+                                            placeholder: "What job roles are you interested?",
+                                            hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                                            minChars: 0,
+                                            prePopulate: jobPrefArray,
+                                            preventDuplicates: true
+                                        });
+                                    });
+                                </script>
+                    </div>
+                    <!-- new Design
+                    <div class="row" style="margin-top: 8px">
+                        <div class="col-sm-3"><h5 style="margin-top: 4px">Languages (Speaks well)</h5></div>
+                        <div class="col-sm-9" style="margin-top: 2px;">
+                            <div class="btn-group" data-toggle="buttons">
+                                <label class="btn btn-custom-check" style="width: 110px">
+                                    <input type="checkbox" name="edu" value="1">Hindi
+                                </label>
+                                <label class="btn btn-custom-check" style="width: 110px">
+                                    <input type="checkbox" name="edu" value="2">English
+                                </label>
+                                <label class="btn btn-custom-check" style="width: 110px">
+                                    <input type="checkbox" name="edu" value="3">Kannada
+                                </label>
+                                <label class="btn btn-custom-check" style="width: 110px">
+                                    <input type="checkbox" name="edu" value="4">Telugu
+                                </label>
+                                <label class="btn btn-custom-check" style="width: 110px">
+                                    <input type="checkbox" name="edu" value="5">Tamil
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                     -->
+                    <br>
+
+                    <table id="languageTable" class="table table-striped" cellspacing="0" width="100%">
+                    <h5>Mention your Language Proficiency</h5>
+                        <thead>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <hr>
+                        <div class="row">
+                            <div class="col-sm-3"><h4>Skills:</h4></div>
+                            <div class="col-sm-9">
+                                <div id="skill_details">
+                                    <div id="noSkillQues"></div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                  <hr>
+
+                <!-- next/save btn -->
+                  <button type="submit" id="saveBtn" class="btn btn-primary" style="margin: 2px; float: right">
+                      <div style="display: inline-block">Next</div>
+                      <div style="margin-left: 8px; display: inline-block">
+                          <img src="/assets/dashboard/img/next_arrow.png" height="28px">
+                      </div>
+                  </button>
+                  <a href="/dashboard/editProfile/basic">
+                      <div class="btn btn-primary" style="margin: 2px; float: right">
+                          <div style="display: inline-block">
+                              <img src="/assets/dashboard/img/back_arrow.png" height="28px">
+                          </div>
+                          <div style="margin-left: 8px; display: inline-block">Back</div>
+                      </div>
+                  </a>
+              </form>
+          </div>
+        </div>
+      </div>
+        <!-- /#page-content-wrapper -->
+    </div>
+
+      <!-- Including Bootstrap -->
+      <script src="/assets/dashboard/js/jquery.js"></script>
+      <script src="/assets/dashboard/js/bootstrap.min.js"></script>
+      <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
+        <!-- Menu Toggle Script -->
+      <script>
+          window.addEventListener("load", function(){
+              generateSkills();
+          });
+          $("#menu-toggle").click(function(e) {
+            e.preventDefault();
+            $("#wrapper").toggleClass("toggled");
+          });
+      </script>
+      <script>
+          function clickFresher(){
+              $("#totalWorkExperience").hide();
+          }
+          function clickExperienced(){
+              $("#totalWorkExperience").show();
+          }
+
+          function clickWorkingYes() {
+              $("#isEmployedForm").show();
+          }
+
+          function clickWorkingNo() {
+              $("#isEmployedForm").hide();
+          }
+      </script>
+
+
+
+  </body>
+</html>

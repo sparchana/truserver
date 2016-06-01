@@ -1,0 +1,192 @@
+.navbar-default{
+	box-shadow: 0px 3px 2px 0px #5096c7;
+	border-radius: 0;
+}
+#nav_signup_pro{
+	font-size:14px;
+	color: #88898c;
+}
+#bar_pro{
+	margin-top:5px; 
+}
+#signup_pro a{
+	color: #88898c;
+	text-decoration: none;
+}
+#signup_pro{
+		font-size:15px;
+		margin-top:16px;
+}
+#grey{
+	position:absolute;
+	margin-top:145px;
+	z-index: -1;
+	width: 100%;
+	height: 700px;
+	border:2px solid #efedee;
+	background-color:#efedee; 
+}
+#margin_head{
+		margin-right: auto;
+	margin-left: auto;
+}
+#header_pro{
+	height: 102px;
+	margin-top: 43px;
+	border:1px #2a80b9 solid;
+	background-color: #2a80b9;
+	box-shadow: 0px 1px 10px 0px #979797;
+}
+
+#body_pro{
+	height: 600px;
+	margin-top:0px;
+	border:1px white solid;
+	background-color: white;
+	box-shadow: 0px 1px 10px 0px #979797;
+}
+#dp_pro{
+	margin-top: 20px;
+	font-family: futura;
+	font-size: 36px;
+	color: white;
+}
+#small_dp_info{
+	background-color:#2a80b9; 
+	padding: 3px;
+	margin-top: 9px;
+	font-size: 20px;
+	color: white;
+	font-family: arial;
+	letter-spacing: 1px;
+}
+#dp_pro img{ 
+	width: 70px;
+	border-radius:100%;
+	height: 70px;
+}
+
+#pro_info{	
+	margin-top: 35px;
+	margin-left:30px;
+	font-size: 23px;
+	font-family: arial;
+	color: #2a80b9;
+	letter-spacing: 1px;
+}
+.pro_info_box{	
+	margin: 30px 0px 0px 95px;	
+
+}
+.pro_info_box dl dt{
+	margin: 0px 0px 10px 0px;	
+}
+.pro_info_box dl{	
+	font-size: 16px;
+	color: #282828;
+	letter-spacing: 1px;
+}
+
+#pro_info img{
+	margin-left: 35px;
+}
+#skill_info{
+	margin-top: 35px;
+	margin-left:30px;
+	font-size: 23px;
+	font-family: arial;
+	color: #2a80b9;
+	letter-spacing: 1px;
+}
+#small_skill_info{
+	background-color:#2a80b9; 
+	padding: 3px;
+	margin-top: 9px;
+	font-size: 20px;
+	color: white;
+	font-family: arial;
+	letter-spacing: 1px;	
+}
+#skill_info img{
+	margin-left: 51px;
+}
+#skill_head{
+	margin-top: 80px;
+	background-color:#2a80b9;
+	margin-bottom: 2px;
+	color:white; 
+	font-size: 18px;
+	font-family: futura;
+	padding: 7px;
+	letter-spacing: 1px;
+	text-align: center;
+}
+#small_skill_head{
+	margin-bottom: 2px; 
+	font-size: 18px;
+	font-family: futura;
+	padding: 7px;
+	letter-spacing: 1px;
+	text-align: center;
+}
+#skill_body{
+	padding: 7px;
+	font-family: futura;
+	font-size: 18px;
+	color:#2a80b9;
+	border:1px #2a80b9 solid;
+	letter-spacing:1px;
+}
+#skill_body img{
+	margin-left: 25px;
+}
+.footer_jobs_pro{
+	margin: 0px 0px 28px 0px;
+	color: black;
+	text-align: center;
+	font-size:30px;
+	font-family: futura;
+	letter-spacing: 1px;
+}
+#main_hot_jobs_box{
+	box-shadow: 0px 1px 20px 1px  #5096c7;
+}
+#profile_box{
+	margin-bottom: 100px;
+}
+.hot_jobs_pro{
+	margin: 35px 0px 2px 0px;
+	color: black;
+	text-align: center;
+	font-size:30px;
+	font-family: futura;
+	letter-spacing: 1px;
+}
+.know_pro{
+	margin: 35px 0px 2px 0px;
+	text-align: center;
+	color: white;
+	font-size:30px;
+	font-family: futura;
+	letter-spacing: 1px;
+}
+#know_box{
+	background-color: #2a80b9;
+}
+#footer_pro{
+	margin-top: 1px;
+	padding: 2px;
+	text-align: center;
+	background-color:#2a80b9;
+	font-family: futura;
+	color: white;
+	letter-spacing: 1px; 
+	font-weight: bold;
+}
+#small_reg_button{	
+	background-color: #043f64;
+	color: white;
+	font-size:16px;
+	padding:4px;
+	border-radius:0px;
+}
