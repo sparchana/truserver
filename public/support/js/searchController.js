@@ -71,14 +71,16 @@ function getInYearMonthFormat(d){
     if(d == null) {
         return "-";
     } else {
+        var totalYear = Math.round((parseInt(d)/12)*100)/100;
         /*var yr = Math.floor((parseInt(d)/12)).toString();
         var month =  parseInt(d)%12;
         if(yr == 0){
+
             return month +" Month";
         } else {
             return yr + " Year " + month +" Month";
         }*/
-        return d;
+        return totalYear;
     }
 }
 
@@ -108,9 +110,9 @@ function getGender(gender) {
     if(gender == null){
         return "-";
     } else if(gender == "0"){
-        return "Male";
+        return "M";
     } else if(gender == "1"){
-        return "Female";
+        return "F";
     }
 }
 
@@ -156,6 +158,19 @@ function getSkills(skillList) {
     return "-";
 }
 
+function getHomeLocality(locality) {
+    if(locality != null){
+        return locality.localityName;
+    } else {
+        return "-";
+    }
+}
+
+function getDateTime(value) {
+    var dateTime = new Date(value).toLocaleDateString() +" "+ new Date(value).getHours() +":"+new Date(value).getMinutes()+":"+new Date(value).getSeconds();
+    return dateTime;
+}
+
 function renderSearchResult(returnedData) {
     var returnedDataArray = new Array();
     try {
@@ -172,12 +187,13 @@ function renderSearchResult(returnedData) {
             }
 
             returnedDataArray.push({
-                'cLID': '<a href="/candidateSignupSupport/'+newCandidate.lead.leadId+'">'+newCandidate.lead.leadId+'</a>',
+                'cLID': '<a href="/candidateSignupSupport/'+newCandidate.lead.leadId+'" target="_blank">'+newCandidate.lead.leadId+'</a>',
                 'candidateName' : newCandidate.candidateName,
                 'candidateMobile' : newCandidate.candidateMobile,
                 'candidateCurrentSalary' : getCurrentSalary(newCandidate.candidateCurrentJobDetail),
                 'candidateJobPref' :  getJobPref(newCandidate.jobPreferencesList),
                 'candidateLocalityPref'  :getLocalityPref(newCandidate.localityPreferenceList),
+                'locality'  :getHomeLocality(newCandidate.locality),
                 'candidateLanguage' : getLanguageKnown(newCandidate.languageKnownList),
                 'candidateEducation' : getEducation(newCandidate.candidateEducation),
                 'candidateSkillList' : getSkills(newCandidate.candidateSkillList),
@@ -192,7 +208,7 @@ function renderSearchResult(returnedData) {
                 },
                 'candidateGender' : getGender(newCandidate.candidateGender),
                 'candidateIsEmployed' : getEmploymentStatus(newCandidate.candidateIsEmployed),
-                'candidateCreateTimestamp' : new Date(newCandidate.candidateCreateTimestamp)
+                'candidateCreateTimestamp' : getDateTime(newCandidate.candidateCreateTimestamp)
             })
         });
 
@@ -200,13 +216,13 @@ function renderSearchResult(returnedData) {
             "data": returnedDataArray,
             "ordering": false,
             "scrollX": true,
-            "paging": false,
             "columns": [
                 { "data": "cLID" },
                 { "data": "candidateName" },
                 { "data": "candidateMobile" },
                 { "data": "candidateJobPref" },
                 { "data": "candidateLocalityPref" },
+                { "data": "locality" },
                 { "data": "candidateExperience" },
                 { "data": "candidateIsEmployed" },
                 { "data": "candidateCurrentSalary" },
@@ -220,24 +236,25 @@ function renderSearchResult(returnedData) {
             ],
             "columnDefs": [
                 { "width": "90px", "targets": 0 },
-                { "width": "90px", "targets": 5 },
                 { "width": "90px", "targets": 6 },
-                { "width": "100px", "targets": 10 },
-                { "width": "90px", "targets": 11 },
-                { "width": "90px", "targets": 12 }
+                { "width": "90px", "targets": 7 },
+                { "width": "90px", "targets": 10 },
+                { "width": "90px", "targets": 12 },
+                { "width": "90px", "targets": 13 }
             ],
             "deferRender": true,
+            "scroller": true,
             "language": {
                 "emptyTable": "No data available"
             },
             "destroy": true,
             "dom": 'Bfrtip',
             "buttons": [
-                'copy', 'csv', 'excel', 'pdf'
+                'copy', 'csv', 'excel'
             ]
         });
 
-        // Apply the search
+        // Apply the filter
         table.columns().every( function () {
             var that = this;
             $( 'input', this.header() ).on( 'keyup change', function () {
@@ -293,7 +310,7 @@ $.fn.dataTableExt.afnFiltering.push(
     function( oSettings, aData, iDataIndex ) {
         var iMinExp = document.getElementById('minExp').value * 1;
         var iMaxExp = document.getElementById('maxExp').value * 1;
-        var iExpColumnVal = aData[5] == "-" ? 0 : aData[5]*1;
+        var iExpColumnVal = aData[6] == "-" ? 0 : aData[6]*1;
         if ( iMinExp == "" && iMaxExp == "" )
         {
             return true;
@@ -315,7 +332,7 @@ $.fn.dataTableExt.afnFiltering.push(
     function( oSettings, aData, iDataIndex ) {
         var iMinSalary = document.getElementById('minSal').value * 1;
         var iMaxSalary = document.getElementById('maxSal').value * 1;
-        var iSalaryColumnVal = aData[7] == "-" ? 0 : aData[7]*1;
+        var iSalaryColumnVal = aData[8] == "-" ? 0 : aData[8]*1;
         if ( iMinSalary == "" && iMaxSalary == "" )
         {
             return true;
@@ -340,7 +357,8 @@ $(function() {
     // Setup - add a text input to each footer cell
     $('#candidateSearchResultTable thead th').each( function () {
         var title = $(this).text();
-        $(this).html( '<input type="text" placeholder="'+title+'" />' );
+        $(this).html( '<label for="'+title+'">'+title+'</label>' +
+            '<input type="text" name="'+title+'"  id="'+title+'" placeholder="'+title+'" />' );
     } );
 
     /* ajax commands to fetch all localities and jobs*/

@@ -35,10 +35,10 @@
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="nav navbar-nav navbar-right">
                         @*<li class="active"><a href="#">Dashboard<span class="sr-only">(current)</span></a></li>*@
-                        <li class="dropdown">
+                        @*<li class="dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Settings <span class="caret"></span></a>
                             <ul class="dropdown-menu">
-                                <li><a href="#">Action</a></li>
+                                <li><a href="#">Future </a></li>
                                 <li><a href="#">Another action</a></li>
                                 <li><a href="#">Something else here</a></li>
                                 <li role="separator" class="divider"></li>
@@ -46,7 +46,7 @@
                                 <li role="separator" class="divider"></li>
                                 <li><a href="#">One more separated link</a></li>
                             </ul>
-                        </li>
+                        </li>*@
                     </ul>
                 </div><!-- /.navbar-collapse -->
             </div><!-- /.container-fluid -->
@@ -57,87 +57,79 @@
                 <div class="panel-body">
                     <form id="candidateSearchForm">
                         <div class="row">
-                            <div class="col-sm-3"><h6>Candidate Name:</h6></div>
-                            <div class="col-sm-9">
+                            <div class="col-sm-1"><h6>Candidate Name:</h6></div>
+                            <div class="col-sm-5">
                                 <input id="candidateName" name="candidateName" placeholder="Name?" type="text" class="form-control input-md">
                             </div>
-                        </div>
-
-                        <div class="row" style="margin-top: 4px">
-                            <div class="col-sm-3"><h6>Candidate Mobile:</h6></div>
-                            <div class="col-sm-9">
+                            <div class="col-sm-1"><h6>Candidate Mobile:</h6></div>
+                            <div class="col-sm-5">
                                 <input id="candidateMobile" placeholder="Mobile no.?" name="candidateMobile" pattern="[0-9$,.]*" type="text" maxlength="10" class="form-control input-md">
                             </div>
                         </div>
 
                         <div class="row" style="margin-top: 4px">
-                            <div class="col-sm-3"><h6>Job Role Preference:</h6></div>
-                            <div class="col-sm-9">
+                            <div class="col-sm-1"><h6>Job Role Preference:</h6></div>
+                            <div class="col-sm-5">
                                 <input type="text" id="candidateJobPref" >
                                 <script type="text/javascript">
-                  $(document).ready(function() {
-                      $("#candidateJobPref").tokenInput(getJob(), {
-                          theme: "facebook",
-                          placeholder: "What job roles are you interested?",
-                          hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-                          minChars: 0,
-                          preventDuplicates: true
-                      });
-                  });
-              </script>
+                                    $(document).ready(function () {
+                                        $("#candidateJobPref").tokenInput(getJob(), {
+                                            theme: "facebook",
+                                            placeholder: "Please Mention JobRoles for Search....",
+                                            hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                                            minChars: 0,
+                                            preventDuplicates: true
+                                        });
+                                    });
+                                </script>
+                            </div>
+                            <div class="col-sm-1"><h6>Locality Preference:</h6></div>
+                            <div class="col-sm-5">
+                                <input type="text" id="candidateLocalityPref" placeholder="Where do you want to work?">
+                                <script type="text/javascript">
+                                    $(document).ready(function () {
+                                        $("#candidateLocalityPref").tokenInput(getLocality(), {
+                                            theme: "facebook",
+                                            placeholder: "Please Mention Locality for Search ...",
+                                            hintText: "Start typing Area (eg. BTM Layout, Bellandur..)",
+                                            minChars: 0,
+                                            preventDuplicates: true
+                                        });
+                                    });
+                                </script>
                             </div>
                         </div>
 
                         <div class="row" style="margin-top: 4px">
-                            <div class="col-sm-3"><h6>Locality Preference:</h6></div>
-                            <div class="col-sm-9">
-                                <input type="text" id="candidateLocalityPref" placeholder="Where do you want to work?">
-                                <script type="text/javascript">
-                      $(document).ready(function() {
-                          $("#candidateLocalityPref").tokenInput(getLocality(), {
-                              theme: "facebook",
-                              placeholder: "Where do you want to work?",
-                              hintText: "Start typing Area (eg. BTM Layout, Bellandur..)",
-                              minChars: 0,
-                              preventDuplicates: true
-                          });
-                      });
-              </script>
-                            </div>
-                        </div>
-                        <div class="row" style="margin-top: 4px">
-                            <div class="col-sm-3"><h6>From Date:</h6></div>
-                            <div class="col-sm-9">
+                            <div class="col-sm-1"><h6>From Date:</h6></div>
+                            <div class="col-sm-5">
                                 <input id="fromThisDate" name="fromThisDate" type="date" class="form-control input-md"  data-date-inline-picker="true"/>
                             </div>
-                        </div>
-                        <div class="row" style="margin-top: 4px">
-                            <div class="col-sm-3"><h6>To Date:</h6></div>
-                            <div class="col-sm-9">
+                            <div class="col-sm-1"><h6>To Date:</h6></div>
+                            <div class="col-sm-5">
                                 <input id="toThisDate" name="toThisDate" type="date" class="form-control input-md"  data-date-inline-picker="true"/>
                             </div>
                         </div>
-
                         <br>
-                        <button type="submit" id="searchBtn" class="btn btn-primary">Search</button>
+                        <button type="submit" id="searchBtn" class="btn btn-primary ">Search</button>
                     </form>
                     <div style="margin-top: 16px"></div>
                     <div class="panel panel-default">
-                        <div class="panel-heading">Filter Options</div>
-                        <div class="panel-body">
+                        <div class="panel-heading"  data-toggle="collapse" data-target="#panel-filter-body" style="cursor: pointer;">Filter Options</div>
+                        <div class="panel-body collapse" id="panel-filter-body">
                             <table border="0" cellspacing="5" cellpadding="5" id="filterTable">
                                     <tbody>
                                         <tr>
                                             <td>Minimum Exp:</td>
-                                            <td><input type="text" id="minExp" name="minExp"></td>
+                                            <td><input type="text" id="minExp" placeholder="Min Experience (Year)" name="minExp"></td>
                                             <td>Maximum Exp:</td>
-                                            <td><input type="text" id="maxExp" name="maxExp"></td>
+                                            <td><input type="text" id="maxExp" placeholder="Max Experience (Year)" name="maxExp"></td>
                                         </tr>
                                         <tr>
                                             <td>Minimum Salary:</td>
-                                            <td><input type="text" id="minSal" name="minSal"></td>
+                                            <td><input type="text" id="minSal" placeholder="Min Salary" name="minSal"></td>
                                             <td>Maximum Salary:</td>
-                                            <td><input type="text" id="maxSal" name="maxSal"></td>
+                                            <td><input type="text" id="maxSal" placeholder="Max Salary" name="maxSal"></td>
                                         </tr>
                                     </tbody>
                             </table>
@@ -153,7 +145,8 @@
                         <th>Mobile</th>
                         <th>JobRole Pref</th>
                         <th>Locality Pref</th>
-                        <th>Exp (Months)</th>
+                        <th>Home Location</th>
+                        <th>Exp (Year)</th>
                         <th>isEmployed?</th>
                         <th>Current Salary</th>
                         <th>Language Known</th>

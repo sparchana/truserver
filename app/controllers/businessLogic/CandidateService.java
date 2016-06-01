@@ -538,7 +538,7 @@ public class CandidateService {
         }
         if(searchCandidateRequest.getCandidateName() != null && !searchCandidateRequest.getCandidateName().isEmpty()) {
             query = query.where().like("candidateName",
-                    "%" + searchCandidateRequest.getCandidateName() + "%").query();
+                    searchCandidateRequest.getCandidateName() + "%").query();
         }
 
         if(searchCandidateRequest.getCandidateMobile() != null && !searchCandidateRequest.getCandidateMobile().isEmpty()) {
@@ -557,7 +557,6 @@ public class CandidateService {
                     .le("candidateCreateTimestamp", searchCandidateRequest.getToThisDate())
                     .query();
         }
-        Logger.info("qs" + query.toString());
         List<Candidate> candidateResponseList = query.findList();
         return candidateResponseList;
     }
