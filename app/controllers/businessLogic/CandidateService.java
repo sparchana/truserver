@@ -546,13 +546,11 @@ public class CandidateService {
                     "%" + searchCandidateRequest.getCandidateMobile() + "%").query();
         }
         if(searchCandidateRequest.getFromThisDate() != null) {
-            Logger.info("fromDate" + searchCandidateRequest.getFromThisDate());
             query = query.where()
                     .ge("candidateCreateTimestamp", searchCandidateRequest.getFromThisDate())
                     .query();
         }
         if(searchCandidateRequest.getToThisDate() != null) {
-            Logger.info("toDate" + searchCandidateRequest.getToThisDate());
             query = query.where()
                     .le("candidateCreateTimestamp", searchCandidateRequest.getToThisDate())
                     .query();
