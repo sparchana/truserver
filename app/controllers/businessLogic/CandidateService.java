@@ -238,7 +238,7 @@ public class CandidateService {
                 }
 
                 try{
-                    CandidateCurrentJobDetail candidateCurrentJobDetail = getCandidateCurrentJobDetailFromAddSupportCandidate(addCandidateExperienceRequest, candidate);
+                    CandidateCurrentJobDetail candidateCurrentJobDetail = getCandidateCurrentJobDetailFromAddSupportCandidate(addCandidateExperienceRequest, candidate, isSupport);
                     candidate.candidateCurrentJobDetail = candidateCurrentJobDetail;
                 } catch(Exception e){
                     Logger.info(" try catch exception Current job = " + e);
@@ -472,7 +472,7 @@ public class CandidateService {
         return response;
     }
 
-    private static CandidateCurrentJobDetail getCandidateCurrentJobDetailFromAddSupportCandidate(AddCandidateExperienceRequest request, Candidate candidate) {
+    private static CandidateCurrentJobDetail getCandidateCurrentJobDetailFromAddSupportCandidate(AddCandidateExperienceRequest request, Candidate candidate, boolean isSupport) {
         CandidateCurrentJobDetail response =  CandidateCurrentJobDetail.find.where().eq("candidateId", candidate.candidateId).findUnique();
         if(response == null){
             response = new CandidateCurrentJobDetail();
@@ -484,23 +484,25 @@ public class CandidateService {
             response.setCandidateCurrentCompany( request.getCandidateCurrentCompany());
             response.setCandidateCurrentSalary(request.getCandidateCurrentSalary());
 
-   /*             AddSupportCandidateRequest supportCandidateRequest = (AddSupportCandidateRequest) request;*/
-            response.setCandidateCurrentDesignation(request.getCandidateCurrentJobDesignation());
-            response.setCandidateCurrentJobDuration(request.getCandidateCurrentJobDuration());
-            response.setCandidateCurrentEmployerRefMobile("na");
-            response.setCandidateCurrentEmployerRefName("na");
+            if(isSupport) {
+                AddSupportCandidateRequest supportCandidateRequest = (AddSupportCandidateRequest) request;
+                response.setCandidateCurrentDesignation(supportCandidateRequest.getCandidateCurrentJobDesignation());
+                response.setCandidateCurrentJobDuration(supportCandidateRequest.getCandidateCurrentJobDuration());
+                response.setCandidateCurrentEmployerRefMobile("na");
+                response.setCandidateCurrentEmployerRefName("na");
 
-            TransportationMode transportationMode = TransportationMode.find.where().eq("transportationModeId", request.getCandidateTransportation()).findUnique();
-            TimeShift timeShift = TimeShift.find.where().eq("timeShiftId", request.getCandidateCurrentWorkShift()).findUnique();
-            JobRole jobRole = JobRole.find.where().eq("jobRoleId",request.getCandidateCurrentJobRole()).findUnique();
-            Locality locality = Locality.find.where().eq("localityId", request.getCandidateCurrentJobLocation()).findUnique();
-            if(timeShift == null || jobRole == null || locality == null){
-                // do nothing let it save without these entity
+                TransportationMode transportationMode = TransportationMode.find.where().eq("transportationModeId", supportCandidateRequest.getCandidateTransportation()).findUnique();
+                TimeShift timeShift = TimeShift.find.where().eq("timeShiftId", supportCandidateRequest.getCandidateCurrentWorkShift()).findUnique();
+                JobRole jobRole = JobRole.find.where().eq("jobRoleId",supportCandidateRequest.getCandidateCurrentJobRole()).findUnique();
+                Locality locality = Locality.find.where().eq("localityId", supportCandidateRequest.getCandidateCurrentJobLocation()).findUnique();
+                if(timeShift == null || jobRole == null || locality == null){
+                    // do nothing let it save without these entity
+                }
+                response.setCandidateTransportationMode(transportationMode);
+                response.setCandidateCurrentWorkShift(timeShift);
+                response.setCandidateCurrentJobLocation(locality);
+                response.setJobRole(jobRole);
             }
-            response.setCandidateTransportationMode(transportationMode);
-            response.setCandidateCurrentWorkShift(timeShift);
-            response.setCandidateCurrentJobLocation(locality);
-            response.setJobRole(jobRole);
         } catch(Exception e){
             Logger.info(" Try catch exception while inserting current job detail");
         }

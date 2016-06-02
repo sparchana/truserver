@@ -358,13 +358,6 @@ $(document).ready(function(){
                     candidateIsEmployed: $('input:radio[name="isEmployed"]:checked').val(),
                     candidateCurrentCompany: candidateCurrentCompanyVal,
                     candidateCurrentSalary: candidateCurrentSalaryVal,
-                    candidateCurrentJobLocation: $('#candidateCurrentJobLocation').val(),
-                    candidateTransportation: ($('#selectTransportation').val()),
-                    candidateCurrentWorkShift: $('#currentWorkShift').val(),
-                    candidateCurrentJobRole: $('#candidateCurrentJobRole').val(),
-                    candidateCurrentJobDesignation: $('#candidateCurrentJobDesignation').val(),
-                    candidateCurrentJobDuration: currentJobDuration,
-
 
                     candidateMotherTongue: ($('#candidateMotherTongue').val()),
                     candidateLanguageKnown: languageMap,
