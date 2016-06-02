@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static controllers.businessLogic.CandidateService.getCandidateJobPreferenceList;
 import static controllers.businessLogic.CandidateService.getCandidateLocalityPreferenceList;
@@ -212,17 +213,16 @@ public class Application extends Controller {
                 break;
         }
 
-
-//        List<Interaction> allInteractions = Interaction.find.all();
-//        List<Lead> allNewLeads = Lead.find.where()
-//                .eq("leadType", ServerConstants.TYPE_LEAD)
-//                .ne("leadStatus", ServerConstants.LEAD_STATUS_WON)
-//                .eq("leadStatus", ServerConstants.LEAD_STATUS_NEW).findList();
         ArrayList<SupportDashboardElementResponse> responses = new ArrayList<>();
 
         SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT);
 
-        for(Lead l : allLead){
+        //getting leadUUID from allLead
+        List<String> leadUUIDList = allLead.stream().map(Lead::getLeadUUId).collect(Collectors.toList());
+
+        List<Interaction> interactionsOfLead = Interaction.find.where().in("objectAUUId", leadUUIDList).findList();
+
+        for(Lead l : allLead) {
             SupportDashboardElementResponse response = new SupportDashboardElementResponse();
 
             response.setLeadCreationTimestamp(sfd.format(l.getLeadCreationTimestamp()));
@@ -248,13 +248,14 @@ public class Application extends Controller {
                 case 1: response.setLeadChannel("Knowlarity"); break;
             }
             int mTotalInteraction=0;
-            List<Interaction> interactionsOfLead = Interaction.find.where().eq("objectAUUId", l.leadUUId).findList();
             Timestamp mostRecent = l.leadCreationTimestamp;
-            for(Interaction i: interactionsOfLead){
-                if(i.getInteractionType() == 1 || i.getInteractionType() == 5) {
-                    mTotalInteraction++;
-                    if(mostRecent.getTime() <= i.creationTimestamp.getTime()){
-                        mostRecent = i.creationTimestamp;
+            for(Interaction i: interactionsOfLead) {
+                if(i.objectAUUId.equals(l.getLeadUUId())){
+                    if(i.getInteractionType() == 1 || i.getInteractionType() == 5) {
+                        mTotalInteraction++;
+                        if(mostRecent.getTime() <= i.creationTimestamp.getTime()){
+                            mostRecent = i.creationTimestamp;
+                        }
                     }
                 }
             }
