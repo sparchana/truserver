@@ -54,9 +54,6 @@ function renderKWResponse(returnedData) {
     console.log(returnedData.error.message);
 
 }
-function showInteraction(x) {
-    window.location = "/candidateInteraction/" + x.id;
-}
 
 function getCandidateInfo(id) {
     clearModal();
@@ -88,7 +85,7 @@ function renderDashboard(viewType) {
                         'leadType' : newLead.leadType,
                         'leadStatus' : newLead.leadStatus,
                         'leadCreationTimestamp' : newLead.leadCreationTimestamp,
-                        'totalInBounds' :  '<a id="'+newLead.leadId+'" style="cursor:pointer;" onclick="showInteraction(this);">'+newLead.totalInBounds+'</a>',
+                        'totalInBounds' :  '<a href="'+"/candidateInteraction/"+newLead.leadId+'" id="'+newLead.leadId+'" style="cursor:pointer;" target="_blank">'+newLead.totalInBounds+'</a>',
                         'lastIncomingCallTimestamp'  :  newLead.lastIncomingCallTimestamp,
                         'leadChannel' : newLead.leadChannel,
                         'leadMobile' : newLead.leadMobile,
