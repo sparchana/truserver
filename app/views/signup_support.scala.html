@@ -11,6 +11,7 @@
       <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
       <link rel="stylesheet" href="/assets/support/css/style.css">
       <link rel="stylesheet" type="text/css" href="/assets/new/css/myStyle.css">
+      <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/dashboard.css">
       <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lato" />
       <link rel="stylesheet" href="/assets/support/css/nprogress.css">
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -29,7 +30,7 @@
 
       <div id="callNoClass" style="display: none">
         <h5>Reason?:
-          <select id="callResponse">
+          <select id="callResponse" class="selectDropdown" >
             <option value="busy">Busy</option>
             <option value="not_reachable">Not Reachable</option>
             <option value="not_answering">Not Answering</option>
@@ -255,7 +256,7 @@
               <div class="row" style="margin-top: 4px">
                 <div class="col-sm-3"><h5>Mode of Transport:</h5></div>
                 <div class="col-sm-9" style="margin-top: 8px">
-                  <select id="selectTransportation">
+                  <select id="selectTransportation" class="selectDropdown" >
 
                   </select>
                 </div>
@@ -264,7 +265,7 @@
               <div class="row" style="margin-top: 4px">
                 <div class="col-sm-3"><h5>Current work shift?: </h5></div>
                 <div class="col-sm-9" style="margin-top: 8px">
-                  <select id="currentWorkShift">
+                  <select id="currentWorkShift" class="selectDropdown" >
 
                   </select>
                 </div>
@@ -351,7 +352,7 @@
             <div class="row">
               <div class="col-sm-3" style="margin-top: 5px"><h5 style="margin-top: 4px">Preferred work shift?: </h5></div>
                 <div class="col-sm-9" style="margin-top: 6px;">
-                    <select id="candidateTimeShiftPref" size="5">
+                    <select class="selectDropdown"  id="candidateTimeShiftPref" size="5">
                 </select>
                 </div>
             </div>
@@ -364,7 +365,7 @@
             <div class="row" style="margin-top: 4px">
               <div class="col-sm-3"><h5>Mother Tongue?: </h5></div>
               <div class="col-sm-9" style="margin-top: 8px">
-                <select id="candidateMotherTongue">
+                <select id="candidateMotherTongue" class="selectDropdown" >
                 </select>
               </div>
             </div>
