@@ -46,11 +46,15 @@ input::-webkit-inner-spin-button {
 		width: 96%;
 	}
 
-	#candidateSecondName {
+	.candidateSecondNameMain {
 		width: 96%;
 		margin-top: 8px;
 		margin-left: 12px;
 	}
+
+    .candidateSecondNameDashboard {
+        margin-top: 8px;
+    }
 }
 
 .materialDash{
