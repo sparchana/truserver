@@ -318,92 +318,108 @@ $(document).ready(function(){
     }
 
     function saveCandidateExperienceDetails(){
-            document.getElementById("saveBtn").disabled = true;
-            try {
-                 var languageKnown = $('#languageTable input:checked').map(function() {
-                 var check=0;
-                 var id = this.id;
-                 var name = this.name;
-                 var item = {};
-                 var pos;
 
-                 for(var i in languageMap){
-                     if(languageMap[i].id == id){
-                        pos=i;
-                        check=1;
-                        break;
-                     }
-                 }
-                 if(check==0){
-                     item["id"] = id;
-                     item["r"] = 0;
-                     item["w"] = 0;
-                     item["s"] = 0;
-                     if(name == "r")
-                        item["r"] = 1;
-                     else if(name == "w")
-                        item["w"] = 1;
-                     else
-                        item["s"] = 1;
-                     languageMap.push(item);
-                 }
-                 else{
-                     if(name == "r")
-                         languageMap[pos].r = 1;
-                     else if(name == "w")
-                         languageMap[pos].w = 1;
-                     else
-                         languageMap[pos].s = 1;
-                     }
-                 }).get();
+        var experienceStatus = $('input:radio[name="workExperience"]:checked').val();
+        if(experienceStatus == null){
+            alert("Please Select your work experience");
+        }
+        else{
+            if(experienceStatus == 1 && (($("#candidateTotalExperienceMonth").val() == -1) || ($("#candidateTotalExperienceYear").val() == -1))){
+                alert("Select Total Years of Experience");
+            }
+            else if($('input:radio[name="isEmployed"]:checked').val() == null){
+                alert("Select Current Employment Status");
+            }
+            else{
+                document.getElementById("saveBtn").disabled = true;
+                try {
+                    var languageKnown = $('#languageTable input:checked').map(function() {
+                        var check=0;
+                        var id = this.id;
+                        var name = this.name;
+                        var item = {};
+                        var pos;
 
-                /* calculate total experience in months */
-                var expMonth = parseInt($('#candidateTotalExperienceMonth').val());
-                var expYear = parseInt($('#candidateTotalExperienceYear').val());
-                var totalExp = expMonth + (12*expYear);
+                        for(var i in languageMap){
+                            if(languageMap[i].id == id){
+                                pos=i;
+                                check=1;
+                                break;
+                            }
+                        }
+                        if(check==0){
+                            item["id"] = id;
+                            item["r"] = 0;
+                            item["w"] = 0;
+                            item["s"] = 0;
+                            if(name == "r")
+                                item["r"] = 1;
+                            else if(name == "w")
+                                item["w"] = 1;
+                            else
+                                item["s"] = 1;
+                            languageMap.push(item);
+                        }
+                        else{
+                            if(name == "r")
+                                languageMap[pos].r = 1;
+                            else if(name == "w")
+                                languageMap[pos].w = 1;
+                            else
+                                languageMap[pos].s = 1;
+                        }
+                    }).get();
 
-                var candidateCurrentCompanyVal = "";
-                var candidateCurrentSalaryVal = "";
+                    /* calculate total experience in months */
+                    var expMonth = parseInt($('#candidateTotalExperienceMonth').val());
+                    var expYear = parseInt($('#candidateTotalExperienceYear').val());
+                    var totalExp = expMonth + (12*expYear);
 
-                if($('input:radio[name="isEmployed"]:checked').val() == 0){
-                    candidateCurrentCompanyVal = null;
-                    candidateCurrentSalaryVal = null;
+                    var candidateCurrentCompanyVal = "";
+                    var candidateCurrentSalaryVal = "";
+
+                    if($('input:radio[name="isEmployed"]:checked').val() == 0){
+                        candidateCurrentCompanyVal = null;
+                        candidateCurrentSalaryVal = null;
+                    }
+                    else{
+                        candidateCurrentCompanyVal = $('#candidateCurrentCompany').val();
+                        candidateCurrentSalaryVal = $('#candidateCurrentJobSalary').val();
+                    }
+
+                    /* calculate current job duration in months */
+                    var currentJobMonth = parseInt($('#candidateCurrentJobDurationMonth').val());
+                    var currentJobYear = parseInt($('#candidateCurrentJobDurationYear').val());
+                    var currentJobDuration = currentJobMonth + (12 * currentJobYear);
+
+                    var d = {
+                        candidateMobile: localStorage.getItem("mobile"),
+                        candidateFirstName: localStorage.getItem("name"),
+                        candidateSecondName: localStorage.getItem("lastName"),
+
+                        candidateTotalExperience: totalExp,
+                        candidateIsEmployed: $('input:radio[name="isEmployed"]:checked').val(),
+                        candidateCurrentCompany: candidateCurrentCompanyVal,
+                        candidateCurrentSalary: candidateCurrentSalaryVal,
+
+                        candidateMotherTongue: ($('#candidateMotherTongue').val()),
+                        candidateLanguageKnown: languageMap,
+
+                        candidateSkills: skillMap
+                    };
+
+                    $.ajax({
+                        type: "POST",
+                        url: "/candidateUpdateExperienceDetails",
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(d),
+                        success: processDataCandidateExperienceUpdate
+                    });
+                } catch (exception) {
+                    console.log("exception occured!!" + exception);
                 }
-                else{
-                    candidateCurrentCompanyVal = $('#candidateCurrentCompany').val();
-                    candidateCurrentSalaryVal = $('#candidateCurrentJobSalary').val();
-                }
+            }
 
-                /* calculate current job duration in months */
-                var currentJobMonth = parseInt($('#candidateCurrentJobDurationMonth').val());
-                var currentJobYear = parseInt($('#candidateCurrentJobDurationYear').val());
-                var currentJobDuration = currentJobMonth + (12 * currentJobYear);
-
-                var d = {
-                    candidateMobile: localStorage.getItem("mobile"),
-                    candidateFirstName: localStorage.getItem("name"),
-                    candidateSecondName: localStorage.getItem("lastName"),
-
-                    candidateTotalExperience: totalExp,
-                    candidateIsEmployed: $('input:radio[name="isEmployed"]:checked').val(),
-                    candidateCurrentCompany: candidateCurrentCompanyVal,
-                    candidateCurrentSalary: candidateCurrentSalaryVal,
-
-                    candidateMotherTongue: ($('#candidateMotherTongue').val()),
-                    candidateLanguageKnown: languageMap,
-
-                    candidateSkills: skillMap
-                };
-
-                $.ajax({
-                    type: "POST",
-                    url: "/candidateUpdateExperienceDetails",
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify(d),
-                    success: processDataCandidateExperienceUpdate
-                });
-            } catch (exception) {
-                console.log("exception occured!!" + exception);
         }
     }
 

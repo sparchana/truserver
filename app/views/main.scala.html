@@ -162,32 +162,44 @@
         </script>
         <script>
         $(document).ready(function(){
+            var w = window.innerWidth;
+            if(w < 440){
+                $(".navbar-default").css('background-color', 'white');
+            }
             $(window).scroll(function() {
                 if ($(document).scrollTop() > 50) {
-                    $(".navbar-fixed-top").removeClass('fade-transparent').addClass("fade-background"); // if yes, then change the color of class "navbar-fixed-top" to white (#f8f8f8)
-                    $("#navItem1").css('color', '#747474');
-                    $("#navItem2").css('color', '#747474');
-                    $("#navItem3").css('color', '#747474');
-                    $("#navItem4").css('color', '#747474');
-                    $("#navItem5").css('color', '#747474');
-                    var image = document.getElementById('navLogo');
-                    image.src = "/assets/new/img/logo-color.gif";
-                } else {
-                    $(".navbar-fixed-top").removeClass("fade-background").addClass('fade-transparent'); // if not, change it back to transparent
-                    $("#navItem1").css('color', '#ffffff');
-                    $("#navItem2").css('color', '#ffffff');
-                    $("#navItem3").css('color', '#ffffff');
-                    $("#navItem4").css('color', '#ffffff');
-                    $("#navItem5").css('color', '#ffffff');
-                    var image = document.getElementById('navLogo');
-                    image.src = "/assets/new/img/logo-main.gif";
+                    $("#fixed-menu").css('background-color', '#2980b9');
                     var w = window.innerWidth;
-                    if (w < 440) {
+                    if(w > 440){
+                        $(".navbar-fixed-top").removeClass('fade-transparent').addClass("fade-background"); // if yes, then change the color of class "navbar-fixed-top" to white (#f8f8f8)
                         $("#navItem1").css('color', '#747474');
                         $("#navItem2").css('color', '#747474');
                         $("#navItem3").css('color', '#747474');
                         $("#navItem4").css('color', '#747474');
                         $("#navItem5").css('color', '#747474');
+                        var image = document.getElementById('navLogo');
+                        image.src = "/assets/new/img/logo-color.gif";
+                    }
+                } else {
+                    $("#fixed-menu").css('background-color', 'transparent');
+                    var w = window.innerWidth;
+                    if(w > 440){
+                        $(".navbar-fixed-top").removeClass("fade-background").addClass('fade-transparent'); // if not, change it back to transparent
+                        $("#navItem1").css('color', '#ffffff');
+                        $("#navItem2").css('color', '#ffffff');
+                        $("#navItem3").css('color', '#ffffff');
+                        $("#navItem4").css('color', '#ffffff');
+                        $("#navItem5").css('color', '#ffffff');
+                        var image = document.getElementById('navLogo');
+                        image.src = "/assets/new/img/logo-main.gif";
+                        var w = window.innerWidth;
+                        if (w < 440) {
+                            $("#navItem1").css('color', '#747474');
+                            $("#navItem2").css('color', '#747474');
+                            $("#navItem3").css('color', '#747474');
+                            $("#navItem4").css('color', '#747474');
+                            $("#navItem5").css('color', '#747474');
+                        }
                     }
                 }
             });
@@ -337,8 +349,8 @@
             <div id="sectionOne">
                 <div id="fixed-menu" align="center">
                     <div style="display: inline-block">Find a job and earn upto 30,000. Reach Us &nbsp;</div>
-                    <div style="display: inline-block"><input style="color: black" id="addLeadMobile" pattern="[7-9]{1}[0-9]{9}" maxlength="10" class="form-control input-md" type="text" placeholder="Mobile: (8880007799)"></div>
-                    <div style="display: inline-block"><button type="button" class="btn btn-add-lead" onclick="addLead()">Call Me!</button></div>
+                    <div style="display: inline-block"><input style="color: black; height: 26px" id="addLeadMobile" pattern="[7-9]{1}[0-9]{9}" maxlength="10" class="form-control input-md" type="text" placeholder="Mobile: (8880007799)"></div>
+                    <div style="display: inline-block"><button type="button" style=" height: 26px" class="btn btn-add-lead" onclick="addLead()">Call Me!</button></div>
 
                 </div>
                 <font color="white">

@@ -113,7 +113,7 @@
                       <div id="editProfileSteps">
                           <img src="/assets/dashboard/img/basic.png" height="30px">
                       </div>
-                      <h6>Basic Information</h6>
+                      <h6>1 Basic Information</h6>
                   </div>
 
                   <div style="display: inline-block">
@@ -124,7 +124,7 @@
                       <div id="editProfileStepsActive">
                           <img src="/assets/dashboard/img/skills.png" height="30px">
                       </div>
-                      <h6>Experience & Skills</h6>
+                      <h6>2 Experience & Skills</h6>
                   </div>
 
                   <div style="display: inline-block">
@@ -135,7 +135,7 @@
                       <div id="editProfileSteps">
                           <img src="/assets/dashboard/img/education.png" height="30px">
                       </div>
-                      <h6>Education Details</h6>
+                      <h6>3 Education Details</h6>
                   </div>
               </center>
               <br>
@@ -153,7 +153,7 @@
                                           <input type="radio" name="workExperience" id="fresher" value="0">Fresher
                                       </label>
                                       <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickExperienced()">
-                                          <input type="radio" name="workExperience" id="experienced" value="0">Experienced
+                                          <input type="radio" name="workExperience" id="experienced" value="1">Experienced
                                       </label>
                                   </div>
                               </div>
@@ -162,8 +162,8 @@
                           <div class="row" id="totalWorkExperience" style="margin-top: 8px">
                               <div class="col-sm-3"><h5>Total Work Experience:</h5></div>
                               <div class="col-sm-5">
-                                  <select class="selectDropdown" style="width: 136px" id="candidateTotalExperienceYear" required>
-                                      <option>Years</option>
+                                  <select class="selectDropdown" style="width: 136px" id="candidateTotalExperienceYear">
+                                      <option value="-1">Years</option>
                                       <option value="0">0 year</option>
                                       <option value="1">1 year</option>
                                       <option value="2">2 years</option>
@@ -187,7 +187,8 @@
                                       <option value="20">20 years</option>
                                   </select>
                                   <select id="candidateTotalExperienceMonth" style="width: 136px" class="selectDropdown">
-                                      <option>Months</option>
+                                      <option value="-1">Months</option>
+                                      <option value="0">0 month</option>
                                       <option value="1">1 month</option>
                                       <option value="2">2 months</option>
                                       <option value="3">3 months</option>
@@ -208,7 +209,7 @@
                               <div class="col-sm-5">
                                   <div class="btn-group" data-toggle="buttons" style="margin-top: 4px">
                                       <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickWorkingYes()">
-                                          <input type="radio" name="isEmployed" id="isEmployedYes" value="1" required>&nbsp;Yes&nbsp;&nbsp;
+                                          <input type="radio" name="isEmployed" id="isEmployedYes" value="1">&nbsp;Yes&nbsp;&nbsp;
                                       </label>
                                       <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickWorkingNo()">
                                           <input type="radio" name="isEmployed" id="isEmployedNo" value="0">&nbsp;No&nbsp;&nbsp;
@@ -273,13 +274,11 @@
                     </table>
                   </div>
                   <br>
-                  <div id="profileUpdateHeader"><h4>Language Details</h4></div>
+                  <div id="profileUpdateHeader"><h4>Skills</h4></div>
                   <div class=profileBody>
                       <div class="row">
-                          <div class="col-sm-3"><h4>Skills:</h4></div>
-                          <div class="col-sm-9">
+                          <div class="col-sm-12">
                               <div id="skill_details">
-                                  <div id="noSkillQues"></div>
                               </div>
                           </div>
                       </div>
@@ -338,7 +337,6 @@
           }
 
           function clickWorkingNo() {
-              $("#isEmployedSelect").hide();
               $("#isEmployedForm").hide();
           }
       </script>

@@ -42,7 +42,10 @@ input::-webkit-inner-spin-button {
 }
 
 @media only screen and (max-width: 768px) {
-	#candidateName {
+    #fixed-menu{
+        margin-top: 0px;
+    }
+    #candidateName {
 		width: 96%;
 	}
 
@@ -227,19 +230,21 @@ body{
 
 #fixed-menu
 {
+    margin-top: -33px;
     margin-left: -8%;
-    background: rgba(0, 0, 0, 0.4);
-    position: relative;
+    background: rgba(0, 0, 0, 0.175);
+    position: fixed;
     width: 113.5%;
     height: auto;
     color: #ffffff;
-    padding: 10px 10px;
+    padding: 8px;
     z-index: 999;
 }
 
 .btn-add-lead{
-    background: #2980b9;
+    background: #1a5178;
     border: none;
+    font-size: 10px;
     color: #ffffff;
 }
 
@@ -250,15 +255,12 @@ body{
 }
 
 @media screen and (max-width: 540px) {
-    .navbar-fixed-top, .navbar-fixed-bottom {
-        position: relative;
-    }
     #educationalInstitute{
         margin-top: 80px;
     }
     #sectionOne {
         background-size: 220%;
-        margin-top: -20px;
+        margin-top: 34px;
         padding-top: 12%;
     }
 
@@ -287,7 +289,7 @@ body{
     }
 
     .leadBox {
-        margin-top: 20px;
+        margin-top: 40px;
         margin-right: 8%;
         margin-left: 8%;
     }

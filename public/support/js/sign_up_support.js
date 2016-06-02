@@ -431,8 +431,10 @@ function processDataAndFillAllFields(returnedData) {
                 }
                 try{
                     $("#totalWorkExperience").show();
+                    $("#isEmployedSelect").show();
                     document.getElementById("experienced").checked = true;
                     $('#experienced').parent().addClass('active').siblings().removeClass('active');
+
                 } catch (err){
                     console.log("try catch");
                 }
@@ -763,7 +765,6 @@ function employedNo(){
 }
 
 function processDataCheckSkills(returnedData) {
-   // var jobName = getJobName(selectedJobPref_array[check++]);
     var parent = $('#skill_details');
 
     var skillParent = $("#skillName");
