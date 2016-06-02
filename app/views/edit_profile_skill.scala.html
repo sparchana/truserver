@@ -97,11 +97,6 @@
               <a href="#" onclick="logoutUser()">Log Out</a>
             </div>
           </li>
-          <li>
-            <div class="sideNav">
-              <a href="#">Help</a>
-            </div>
-          </li>
         </ul>
       </div>
         <!-- /#sidebar-wrapper -->
@@ -114,25 +109,35 @@
               <h2>Edit Profile</h2>
               <hr>
               <center class="visible-lg">
-                  <div id="editProfileSteps">
-                      <img src="/assets/dashboard/img/basic.png" height="40px">
-                      <h5>Basic Information</h5>
+                  <div style="display: inline-block">
+                      <div id="editProfileSteps">
+                          <img src="/assets/dashboard/img/basic.png" height="30px">
+                      </div>
+                      <h6>Basic Information</h6>
                   </div>
 
-                  <div style="display: inline-block; width: 12%;"></div>
-
-                  <div id="editProfileStepsActive">
-                      <img src="/assets/dashboard/img/skills.png" height="40px">
-                      <h5>Experience & Skills</h5>
+                  <div style="display: inline-block">
+                      <div style="display: inline-block; width: 80px;"></div>
                   </div>
 
-                  <div style="display: inline-block; width: 12%; height: 5px;"></div>
-
-                  <div id="editProfileSteps">
-                      <img src="/assets/dashboard/img/education.png" height="40px">
-                      <h5>Education Details</h5>
+                  <div style="display: inline-block">
+                      <div id="editProfileStepsActive">
+                          <img src="/assets/dashboard/img/skills.png" height="30px">
+                      </div>
+                      <h6>Experience & Skills</h6>
                   </div>
-               </center>
+
+                  <div style="display: inline-block">
+                      <div style="display: inline-block; width: 80px; height: 5px;"></div>
+                  </div>
+
+                  <div style="display: inline-block">
+                      <div id="editProfileSteps">
+                          <img src="/assets/dashboard/img/education.png" height="30px">
+                      </div>
+                      <h6>Education Details</h6>
+                  </div>
+              </center>
               <br>
               <h3>Language and Skills</h3>
               <h5>Fill up the details to get best of Jobs!</h5>
@@ -261,32 +266,7 @@
                                     });
                                 </script>
                     </div>
-                    <!-- new Design
-                    <div class="row" style="margin-top: 8px">
-                        <div class="col-sm-3"><h5 style="margin-top: 4px">Languages (Speaks well)</h5></div>
-                        <div class="col-sm-9" style="margin-top: 2px;">
-                            <div class="btn-group" data-toggle="buttons">
-                                <label class="btn btn-custom-check" style="width: 110px">
-                                    <input type="checkbox" name="edu" value="1">Hindi
-                                </label>
-                                <label class="btn btn-custom-check" style="width: 110px">
-                                    <input type="checkbox" name="edu" value="2">English
-                                </label>
-                                <label class="btn btn-custom-check" style="width: 110px">
-                                    <input type="checkbox" name="edu" value="3">Kannada
-                                </label>
-                                <label class="btn btn-custom-check" style="width: 110px">
-                                    <input type="checkbox" name="edu" value="4">Telugu
-                                </label>
-                                <label class="btn btn-custom-check" style="width: 110px">
-                                    <input type="checkbox" name="edu" value="5">Tamil
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                     -->
                     <br>
-
                     <table id="languageTable" class="table table-striped" cellspacing="0" width="100%">
                     <h5>Mention your Language Proficiency</h5>
                         <thead>

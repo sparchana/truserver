@@ -337,6 +337,15 @@ public class CandidateService {
         interaction.setNote(ServerConstants.INTERACTION_NOTE_CALL_OUT_OF_BOUNDS);
         InteractionService.createInteraction(interaction);
 
+        /* check Min Profile */
+        if(candidate.candidateName != null && candidate.candidateLastName != null && candidate.candidateMobile != null && candidate.candidateDOB != null &&
+                candidate.candidateGender != null && candidate.candidateTotalExperience != null && candidate.candidateEducation != null &&
+                candidate.timeShiftPreference != null && candidate.candidateSkillList != null && candidate.languageKnownList != null){
+            candidate.setIsMinProfileComplete(ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE);
+        }
+        else{
+            candidate.setIsMinProfileComplete(ServerConstants.CANDIDATE_MIN_PROFILE_NOT_COMPLETE);
+        }
         candidate.update();
         response.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 

@@ -70,15 +70,14 @@ input::-webkit-inner-spin-button {
     color: #ffffff;
     display: inline-block;
     border-radius: 100px;
-    padding: 2%;
-    width: 120px;
-    height: 120px;
-    background: #ffcb5c;
+    padding: 6%;
+    background: #c2c4b8;
 }
 
 #profileStatus{
     border-radius: 25px;
-    background: #FFC300;
+    background: #c2c4b8;
+    background-size: 40px 40px;
     display: inline-block;
     width: 40px;
     height: 40px;
@@ -101,7 +100,8 @@ input::-webkit-inner-spin-button {
 
 #assessedStatus{
     border-radius: 25px;
-    background: #ff7d01;
+    background: #c2c4b8;
+    background-size: 40px 40px;
     display: inline-block;
     width: 40px;
     height: 40px;
@@ -129,9 +129,7 @@ input::-webkit-inner-spin-button {
 #editProfileSteps{
     display: inline-block;
     border-radius: 100px;
-    padding: 2%;
-    width: 120px;
-    height: 120px;
+    padding: 6%;
     background: #dddddd;
 }
 

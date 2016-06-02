@@ -68,6 +68,8 @@ GET      /getCandidateLocality/:id                                controllers.Ap
 
 GET      /getCandidateJob/:id                                     controllers.Application.getCandidateJob(id : Long)
 
+GET      /checkMinProfile/:id                                     controllers.Application.checkMinProfile(id : Long)
+
 GET      /getAllSkills/:id                                        controllers.Application.getAllSkills(id : String)
 
 GET      /updateLeadType/:leadId/:newStatus                       controllers.Application.updateLeadType(leadId: Long, newStatus: Long)

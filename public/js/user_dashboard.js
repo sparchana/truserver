@@ -8,7 +8,6 @@ $(document).ready(function(){
     var jobArray = [];
     var candidateJobArray = []; //candidate preferred Job roles
 
-
     try {
         $.ajax({
             type: "GET",
@@ -21,6 +20,7 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+
     try {
         $.ajax({
             type: "GET",
@@ -33,6 +33,21 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/checkMinProfile/" + localStorage.getItem("id"),
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckMinProfile
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
     try {
         $.ajax({
             type: "GET",
@@ -46,6 +61,7 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+    
     try {
         $.ajax({
             type: "GET",
@@ -88,6 +104,17 @@ $(document).ready(function(){
         });
     }
 
+    function processDataCheckMinProfile(returnedData) {
+        if(returnedData == 0){ // profile not complete
+            document.getElementById("profileStatusResult").innerHTML = '<a href="/dashboard/editProfile/basic" ><font size="1" color="#000000">(Complete Profile Now)</font></a>';
+            $("#profileStatusIcon").attr('src', '/assets/dashboard/img/wrong.png');
+        }
+        else{
+            document.getElementById("profileStatusResult").innerHTML = " ";
+            $("#profileStatusIcon").attr('src', '/assets/dashboard/img/right.png');
+        }
+    }
+
     function processDataGetCandidateJobRoles(returnedData) {
         var parent = $('.preferredJobs')[0];
         returnedData.forEach(function (job) {
@@ -127,8 +154,6 @@ $(document).ready(function(){
         });
     }
 
-    $('#profileStatusResult').text("Profile Incomplete");
-
     var options = {'showRowNumber': true};
     var data;
     var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1HwEWPzZD4BFCyeRf5HO_KqNXyaMporxYQfg5lhOoA2g/edit#gid=496359801');
@@ -156,9 +181,8 @@ $(document).ready(function(){
         new google.visualization.Table(document.getElementById('table')).draw(data, options);
         var data2 = document.getElementsByClassName('google-visualization-table-td google-visualization-table-td-number').length;
         if(data2>0) {
-            document.getElementById("assessedStatusResult").innerHTML = "Assessed";
-            $("#assessedStatus").css("background","#137d00");
-            $("#assessedStatus").css("color","#ffffff");
+            document.getElementById("assessedStatusResult").innerHTML = " ";
+            $("#assessedIcon").attr('src', '/assets/dashboard/img/right.png');
             // update isAssessed status to '1'
             $.ajax({
                 type: "GET",
@@ -168,9 +192,8 @@ $(document).ready(function(){
             });
         }
         else{
-            document.getElementById("assessedStatusResult").innerHTML = "Not Assessed ";
-            $("#assessedStatus").css("background","#F77526");
-            $("#assessedStatus").css("color","#ffffff");
+            document.getElementById("assessedStatusResult").innerHTML = '<a href="http://bit.ly/trujobstest" target="_blank"><font size="1" color="#000000">(Take assessment)</font></a>';
+            $("#assessedIcon").attr('src', '/assets/dashboard/img/wrong.png');
         }
     }
 
@@ -179,9 +202,8 @@ $(document).ready(function(){
     }
     else{
         try{
-            document.getElementById("assessedStatusResult").innerHTML = "Assessed";
-            $("#assessedStatus").css("background","#137d00");
-            $("#assessedStatus").css("color","#ffffff");
+            document.getElementById("assessedStatusResult").innerHTML = " ";
+            $("#assessedIcon").attr('src', '/assets/dashboard/img/right.png');
         } catch(err){
             console.log("try catch exception");
         }

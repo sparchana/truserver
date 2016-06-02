@@ -23,9 +23,13 @@ function processDataResetCheckUser(returnedData) {
 function processDataPostReset(returnedData) {
     console.log("returedData :" + returnedData.status);
     if(returnedData.status == 1) {
+
         localStorage.setItem("mobile", "+91" + candidateMobile);
         localStorage.setItem("name", returnedData.candidateName);
+        localStorage.setItem("lastName", returnedData.candidateLastName);
         localStorage.setItem("id", returnedData.candidateId);
+        localStorage.setItem("leadId", returnedData.leadId);
+        localStorage.setItem("assessed", returnedData.isAssessed);
         window.location = "/dashboard";
     }
 

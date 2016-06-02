@@ -28,8 +28,6 @@
 
         <script type="text/javascript">
           function showEditProfile(){
-              /*          $("#editProfileDashboard").show();
-               generateSkills();*/
               window.location = "/dashboard/editProfile/basic";
           }
 
@@ -103,11 +101,6 @@
                             <a href="#" onclick="logoutUser()">Log Out</a>
                         </div>
                     </li>
-                    <li>
-                        <div class="sideNav">
-                            <a href="#">Help</a>
-                        </div>
-                    </li>
                 </ul>
             </div>
                 <!-- /#sidebar-wrapper -->
@@ -119,13 +112,35 @@
                     <div class="row">
                         <div class="col-lg-12">
                             <h2>Welcome to Trujobs</h2>
-                            <div id="profileStatus"></div><div id="profileStatusResult">---</div>
-                            <div id="assessedStatus"></div><div id="assessedStatusResult">---</div>
                             <hr>
+                            <div style="display: inline-block">
+                                <div style="display: inline-block">
+                                    <center>
+                                        <div id="profileStatus"><img id="profileStatusIcon" src="" width="40px"></div>
+                                        <div><font size="2" color="#000000">Profile Status</font></div>
+                                        <div id="profileStatusResult"></div>
+                                    </center>
+                                </div>
+
+                                <div style="display: inline-block">
+                                    <div style="display: inline-block; width: 40px;"></div>
+                                </div>
+
+                                <div style="display: inline-block">
+                                    <center>
+                                        <div id="assessedStatus"><img id="assessedIcon" src="" width="40px"></div>
+                                        <div><font size="2" color="#000000">Assessment Status</font></div>
+                                        <div id="assessedStatusResult"></div>
+                                    </center>
+                                </div>
+                            </div>
+
+@*                            <div id="profileStatus"></div><div id="profileStatusResult">---</div>
+                            <div id="assessedStatus"></div><div id="assessedStatusResult">---</div>*@
 
                                 <!-- start hot job -->
                             <div class="company_class" id="hotJobs">
-                Hot Jobs
+                                Hot Jobs
                             </div>
                             <center>
                                 <div class="materialDash"></div>
@@ -140,14 +155,14 @@
                                             <div id="hot_job" class="carousel slide" data-ride="carousel">
                                                 <div class="carousel-inner" role="listbox">
                                                     <div class="item active">
-                                                        <div class="col-lg-4">
+                                                        <div class="col-lg-4 visible-lg" style="padding: 4%">
                                                             <div class="panel" id="hot_box">
                                                                 <div class="panel-heading" id="hot_box_head">
-                                                                    <img class="img-responsive" src="/assets/new/img/company5.jpg">
+                                                                    <img class="img-responsive" src="/assets/new/img/company4.jpg">
                                                                 </div>
                                                                 <div class="panel-body" id="hot_box_body">
                                                                     <div class="hot_body_role">
-                                                    Delivery Executive at Dominos
+                                                    Delivery Executive
                                                                     </div>
                                                                     <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
                                                                     <div class="hot_body_salary">
@@ -157,21 +172,45 @@
                                                                     </div>
                                                                     <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
                                                                     <div class="hot_body_location">
-
                                                     Indiranagar<br><br>
-                                                                        <div class="btn btn-primary" id="modalBtn" style="width: 92%">Call 8880007799 to Apply</div>
+                                                        <div class="btn btn-primary" id="modalBtn" style="width: 92%">
+                                                            <font size="1">Call 8880007799 to Apply</font></div>
                                                         </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="col-lg-4" id="hot_box_padding">
+                                                        <div class="col-sm-4" style="padding: 4%">
                                                             <div class="panel" id="hot_box">
                                                                 <div class="panel-heading" id="hot_box_head">
-                                                                    <img  class="img-responsive" src="/assets/new/img/company4.jpg">
+                                                                    <img class="img-responsive" src="/assets/new/img/company1.jpg">
                                                                 </div>
                                                                 <div class="panel-body" id="hot_box_body">
                                                                     <div class="hot_body_role">
-                                                    Customer Care Executive at AEGIS
+                                                    Delivery Executive
+                                                                    </div>
+                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
+                                                                    <div class="hot_body_salary">
+                                                    16,000 - 18,000 Monthly
+                                                                        <br>
+                                                                        Experience : 2 yrs
+                                                                    </div>
+                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
+                                                                    <div class="hot_body_location">
+                                                    HSR Layout<br><br>
+                                                        <div class="btn btn-primary" id="modalBtn" style="width: 92%">
+                                                            <font size="1">Call 8880007799 to Apply</font></div>
+                                                        </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-4 visible-lg" id="hot_box_padding" style="padding: 4%">
+                                                            <div class="panel" id="hot_box">
+                                                                <div class="panel-heading" id="hot_box_head">
+                                                                    <img  class="img-responsive" src="/assets/new/img/company2.jpg">
+                                                                </div>
+                                                                <div class="panel-body" id="hot_box_body">
+                                                                    <div class="hot_body_role">
+                                                    Customer Care Executive
                                                                     </div>
                                                                     <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
                                                                     <div class="hot_body_salary">
@@ -182,30 +221,8 @@
                                                                     <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
                                                                     <div class="hot_body_location">
                                                     St Johns Road<br><br>
-                                                                        <div class="btn btn-primary" id="modalBtn" style="width: 92%">Call 8880007799 to Apply</div>
-                                                        </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-lg-4" id="hot_box_padding">
-                                                            <div class="panel" id="hot_box">
-                                                                <div class="panel-heading" id="hot_box_head">
-                                                                    <img  class="img-responsive" src="/assets/new/img/company1.jpg">
-                                                                </div>
-                                                                <div class="panel-body" id="hot_box_body">
-                                                                    <div class="hot_body_role">
-                                                    Delivery Executive at Vito
-                                                                    </div>
-                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
-                                                                    <div class="hot_body_salary">
-                                                    16,000 - 18,000 Monthly
-                                                                        <br>
-                                                                        Experience : 2 yrs
-                                                                    </div>
-                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
-                                                                    <div class="hot_body_location">
-                                                    Koramangala<br><br>
-                                                                        <div class="btn btn-primary" id="modalBtn" style="width: 92%">Call 8880007799 to Apply</div>
+                                                        <div class="btn btn-primary" id="modalBtn" style="width: 92%">
+                                                            <font size="1">Call 8880007799 to Apply</font></div>
                                                         </div>
                                                                 </div>
                                                             </div>
@@ -213,14 +230,14 @@
                                                     </div>
                                                         <!--add-->
                                                     <div class="item">
-                                                        <div class="col-lg-4">
+                                                        <div class="col-lg-4" style="padding: 4%">
                                                             <div class="panel" id="hot_box">
                                                                 <div class="panel-heading" id="hot_box_head">
-                                                                    <img class="img-responsive" src="/assets/new/img/company5.jpg">
+                                                                    <img class="img-responsive" src="/assets/new/img/company4.jpg">
                                                                 </div>
                                                                 <div class="panel-body" id="hot_box_body">
                                                                     <div class="hot_body_role">
-                                                    Delivery Executive at Dominos
+                                                    Delivery Executive
                                                                     </div>
                                                                     <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
                                                                     <div class="hot_body_salary">
@@ -231,19 +248,20 @@
                                                                     <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
                                                                     <div class="hot_body_location">
                                                     Indiranagar<br><br>
-                                                                        <div class="btn btn-primary" id="modalBtn" style="width: 92%">Call 8880007799 to Apply</div>
+                                                        <div class="btn btn-primary" id="modalBtn" style="width: 92%">
+                                                            <font size="1">Call 8880007799 to Apply</font></div>
                                                         </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="col-lg-4" id="hot_box_padding">
+                                                        <div class="col-sm-4 visible-lg" style="padding: 4%">
                                                             <div class="panel" id="hot_box">
                                                                 <div class="panel-heading" id="hot_box_head">
-                                                                    <img  class="img-responsive" src="/assets/new/img/company4.jpg">
+                                                                    <img class="img-responsive" src="/assets/new/img/company1.jpg">
                                                                 </div>
                                                                 <div class="panel-body" id="hot_box_body">
                                                                     <div class="hot_body_role">
-                                                    Customer Care Executive at AEGIS
+                                                    Delivery Executive
                                                                     </div>
                                                                     <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
                                                                     <div class="hot_body_salary">
@@ -253,20 +271,21 @@
                                                                     </div>
                                                                     <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
                                                                     <div class="hot_body_location">
-                                                    St Johns Road<br><br>
-                                                                        <div class="btn btn-primary" id="modalBtn" style="width: 92%">Call 8880007799 to Apply</div>
+                                                    HSR Layout<br><br>
+                                                        <div class="btn btn-primary" id="modalBtn" style="width: 92%">
+                                                            <font size="1">Call 8880007799 to Apply</font></div>
                                                         </div>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="col-lg-4" id="hot_box_padding">
+                                                        <div class="col-lg-4 visible-lg" id="hot_box_padding" style="padding: 4%">
                                                             <div class="panel" id="hot_box">
                                                                 <div class="panel-heading" id="hot_box_head">
-                                                                    <img  class="img-responsive" src="/assets/new/img/company1.jpg">
+                                                                    <img  class="img-responsive" src="/assets/new/img/company2.jpg">
                                                                 </div>
                                                                 <div class="panel-body" id="hot_box_body">
                                                                     <div class="hot_body_role">
-                                                    Delivery Executive at Vito
+                                                    Customer Care Executive
                                                                     </div>
                                                                     <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
                                                                     <div class="hot_body_salary">
@@ -276,14 +295,14 @@
                                                                     </div>
                                                                     <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
                                                                     <div class="hot_body_location">
-                                                    Koramangala<br><br>
-                                                                        <div class="btn btn-primary" id="modalBtn" style="width: 92%">Call 8880007799 to Apply</div>
-                                                        </div>
+                                                                        St Johns Road<br><br>
+                                                                        <div class="btn btn-primary" id="modalBtn" style="width: 92%">
+                                                                        <font size="1">Call 8880007799 to Apply</font></div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-
                                                         <!-- end add -->
                                                 </div>
                                             </div>

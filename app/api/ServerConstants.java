@@ -36,11 +36,13 @@ public class ServerConstants {
     public static final int CANDIDATE_NOT_ASSESSED = 0;
     public static final int CANDIDATE_ASSESSED= 1;
 
+    public static final int CANDIDATE_MIN_PROFILE_NOT_COMPLETE = 0;
+    public static final int CANDIDATE_MIN_PROFILE_COMPLETE = 1;
+
     public static final int UPDATE_BASIC_PROFILE = 0;
     public static final int UPDATE_SKILLS_PROFILE = 1;
     public static final int UPDATE_EDUCATION_PROFILE = 2;
     public static final int UPDATE_ALL_BY_SUPPORT = 3;
-
 
     public static final int OBJECT_TYPE_LEAD= 1;
     public static final int OBJECT_TYPE_CANDIDATE= 4;

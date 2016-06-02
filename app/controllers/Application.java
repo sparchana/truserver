@@ -357,6 +357,11 @@ public class Application extends Controller {
         return ok(toJson(candidateJobs));
     }
 
+    public static Result checkMinProfile(long id) {
+        Candidate existingCandidate = Candidate.find.where().eq("candidateId", id).findUnique();
+        return ok(toJson(existingCandidate.IsMinProfileComplete));
+    }
+
     public static Result getAllSkills(String ids) {
         List<String> jobPrefIdList = Arrays.asList(ids.split("\\s*,\\s*"));
         List<JobToSkill> response = new ArrayList<>();
