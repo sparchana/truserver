@@ -139,111 +139,108 @@
                   </div>
               </center>
               <br>
-              <h3>Language and Skills</h3>
-              <h5>Fill up the details to get best of Jobs!</h5>
+              <h3>Experience and Skills</h3>
+              <h5>Let us know about your Work Experience</h5>
               <form id="candidateUpdateLanguageAndSkills" method="post">
-                <div class=profileBody>
-                    <h4>Work Experience</h4>
-                    <hr>
-
-                  <div id="language_details">
-
-                      <div class="row">
-                          <div class="col-sm-3"><h5>Your Work Experience:</h5></div>
-                          <div class="col-sm-5">
-                              <div class="btn-group" data-toggle="buttons">
-                                  <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickFresher()">
-                                      <input type="radio" name="workExperience" id="fresher" value="0">Fresher
-                                  </label>
-                                  <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickExperienced()">
-                                      <input type="radio" name="workExperience" id="experienced" value="0">Experienced
-                                  </label>
-                              </div>
-                          </div>
-                      </div>
-
-                      <div class="row" id="totalWorkExperience" style="margin-top: 8px">
-                          <div class="col-sm-3"><h5>Total Work Experience:</h5></div>
-                          <div class="col-sm-5">
-                              <select class="selectDropdown" style="width: 136px" id="candidateTotalExperienceYear" required>
-                                  <option>Years</option>
-                                  <option value="0">0 year</option>
-                                  <option value="1">1 year</option>
-                                  <option value="2">2 years</option>
-                                  <option value="3">3 years</option>
-                                  <option value="4">4 years</option>
-                                  <option value="5">5 years</option>
-                                  <option value="6">6 years</option>
-                                  <option value="7">7 years</option>
-                                  <option value="8">8 years</option>
-                                  <option value="9">9 years</option>
-                                  <option value="10">10 years</option>
-                                  <option value="11">11 years</option>
-                                  <option value="12">12 years</option>
-                                  <option value="13">13 years</option>
-                                  <option value="14">14 years</option>
-                                  <option value="15">15 years</option>
-                                  <option value="16">16 years</option>
-                                  <option value="17">17 years</option>
-                                  <option value="18">18 years</option>
-                                  <option value="19">19 years</option>
-                                  <option value="20">20 years</option>
-                              </select>
-                              <select id="candidateTotalExperienceMonth" style="width: 136px" class="selectDropdown">
-                                  <option>Months</option>
-                                  <option value="1">1 month</option>
-                                  <option value="2">2 months</option>
-                                  <option value="3">3 months</option>
-                                  <option value="4">4 months</option>
-                                  <option value="5">5 months</option>
-                                  <option value="6">6 months</option>
-                                  <option value="7">7 months</option>
-                                  <option value="8">8 months</option>
-                                  <option value="9">9 months</option>
-                                  <option value="10">10 months</option>
-                                  <option value="11">11 months</option>
-                              </select>
-                          </div>
-                      </div>
-
-                      <div class="row" style="margin-top: 8px">
-                          <div class="col-sm-3"><h5>Are you currently working?</h5></div>
-                          <div class="col-sm-5">
-                              <div class="btn-group" data-toggle="buttons" style="margin-top: 4px">
-                                  <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickWorkingYes()">
-                                      <input type="radio" name="isEmployed" id="isEmployedYes" value="1" required>&nbsp;Yes&nbsp;&nbsp;
-                                  </label>
-                                  <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickWorkingNo()">
-                                      <input type="radio" name="isEmployed" id="isEmployedNo" value="0">&nbsp;No&nbsp;&nbsp;
-                                  </label>
-                              </div>
-                          </div>
-                      </div>
-
-                      <div id="isEmployedForm" class="subSectionBody" style="margin-top: 8px;">
-                          <h4>Tell us about your current Company</h4>
-                          <hr>
-                          <div class="row" >
-                              <div class="col-sm-3"><h5>Current Company:</h5></div>
+                  <div id="profileUpdateHeader"><h4>Work Experience</h4></div>
+                  <div class=profileBody>
+                      <div id="language_details">
+                          <div class="row">
+                              <div class="col-sm-3"><h5>Your Work Experience:</h5></div>
                               <div class="col-sm-5">
-                                  <input id="candidateCurrentCompany" placeholder="What is your Company name?" style="width: 275px" type="text" class="form-control input-md">
+                                  <div class="btn-group" data-toggle="buttons">
+                                      <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickFresher()">
+                                          <input type="radio" name="workExperience" id="fresher" value="0">Fresher
+                                      </label>
+                                      <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickExperienced()">
+                                          <input type="radio" name="workExperience" id="experienced" value="0">Experienced
+                                      </label>
+                                  </div>
                               </div>
                           </div>
 
-                          <div class="row" style="margin-top: 8px">
-                              <div class="col-sm-3"><h5>Current Job Salary:</h5></div>
-                              <div class="col-sm-2">
-                                  <input id="candidateCurrentJobSalary" placeholder="Salary" type="number" class="form-control input-md">
+                          <div class="row" id="totalWorkExperience" style="margin-top: 8px">
+                              <div class="col-sm-3"><h5>Total Work Experience:</h5></div>
+                              <div class="col-sm-5">
+                                  <select class="selectDropdown" style="width: 136px" id="candidateTotalExperienceYear" required>
+                                      <option>Years</option>
+                                      <option value="0">0 year</option>
+                                      <option value="1">1 year</option>
+                                      <option value="2">2 years</option>
+                                      <option value="3">3 years</option>
+                                      <option value="4">4 years</option>
+                                      <option value="5">5 years</option>
+                                      <option value="6">6 years</option>
+                                      <option value="7">7 years</option>
+                                      <option value="8">8 years</option>
+                                      <option value="9">9 years</option>
+                                      <option value="10">10 years</option>
+                                      <option value="11">11 years</option>
+                                      <option value="12">12 years</option>
+                                      <option value="13">13 years</option>
+                                      <option value="14">14 years</option>
+                                      <option value="15">15 years</option>
+                                      <option value="16">16 years</option>
+                                      <option value="17">17 years</option>
+                                      <option value="18">18 years</option>
+                                      <option value="19">19 years</option>
+                                      <option value="20">20 years</option>
+                                  </select>
+                                  <select id="candidateTotalExperienceMonth" style="width: 136px" class="selectDropdown">
+                                      <option>Months</option>
+                                      <option value="1">1 month</option>
+                                      <option value="2">2 months</option>
+                                      <option value="3">3 months</option>
+                                      <option value="4">4 months</option>
+                                      <option value="5">5 months</option>
+                                      <option value="6">6 months</option>
+                                      <option value="7">7 months</option>
+                                      <option value="8">8 months</option>
+                                      <option value="9">9 months</option>
+                                      <option value="10">10 months</option>
+                                      <option value="11">11 months</option>
+                                  </select>
                               </div>
-                              <div class="col-sm-2" style="margin-top: 8px">₹/month</div>
                           </div>
 
+                          <div id="isEmployedSelect" class="row" style="margin-top: 8px">
+                              <div class="col-sm-3"><h5>Are you currently working?</h5></div>
+                              <div class="col-sm-5">
+                                  <div class="btn-group" data-toggle="buttons" style="margin-top: 4px">
+                                      <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickWorkingYes()">
+                                          <input type="radio" name="isEmployed" id="isEmployedYes" value="1" required>&nbsp;Yes&nbsp;&nbsp;
+                                      </label>
+                                      <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickWorkingNo()">
+                                          <input type="radio" name="isEmployed" id="isEmployedNo" value="0">&nbsp;No&nbsp;&nbsp;
+                                      </label>
+                                  </div>
+                              </div>
+                          </div>
+
+                          <div id="isEmployedForm" class="subSectionBody" style="margin-top: 8px;">
+                              <h4>Tell us about your current Company</h4>
+                              <hr>
+                              <div class="row" >
+                                  <div class="col-sm-3"><h5>Current Company:</h5></div>
+                                  <div class="col-sm-5">
+                                      <input id="candidateCurrentCompany" placeholder="What is your Company name?" style="width: 275px" type="text" class="form-control input-md">
+                                  </div>
+                              </div>
+
+                              <div class="row" style="margin-top: 8px">
+                                  <div class="col-sm-3"><h5>Current Job Salary:</h5></div>
+                                  <div class="col-sm-2">
+                                      <input id="candidateCurrentJobSalary" placeholder="Salary" type="number" class="form-control input-md">
+                                  </div>
+                                  <div class="col-sm-2" style="margin-top: 8px">₹/month</div>
+                              </div>
+
+                          </div>
                       </div>
                   </div>
-                  <hr>
-                    <br>
-                    <h4>Language Details</h4>
-                    <hr>
+                  <br>
+                  <div id="profileUpdateHeader"><h4>Language Details</h4></div>
+                  <div class=profileBody>
                     <div class="row">
                         <div class="col-sm-3"><h5>Mother Tongue?: </h5></div>
                         <div class="col-sm-9">
@@ -274,16 +271,19 @@
                         <tbody>
                         </tbody>
                     </table>
-                    <hr>
-                        <div class="row">
-                            <div class="col-sm-3"><h4>Skills:</h4></div>
-                            <div class="col-sm-9">
-                                <div id="skill_details">
-                                    <div id="noSkillQues"></div>
-                                </div>
-                            </div>
-                        </div>
-                </div>
+                  </div>
+                  <br>
+                  <div id="profileUpdateHeader"><h4>Language Details</h4></div>
+                  <div class=profileBody>
+                      <div class="row">
+                          <div class="col-sm-3"><h4>Skills:</h4></div>
+                          <div class="col-sm-9">
+                              <div id="skill_details">
+                                  <div id="noSkillQues"></div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
                   <hr>
 
                 <!-- next/save btn -->
@@ -325,21 +325,22 @@
       <script>
           function clickFresher(){
               $("#totalWorkExperience").hide();
+              $("#isEmployedSelect").hide();
           }
           function clickExperienced(){
               $("#totalWorkExperience").show();
+              $("#isEmployedSelect").show();
           }
 
           function clickWorkingYes() {
+              $("#isEmployedSelect").show();
               $("#isEmployedForm").show();
           }
 
           function clickWorkingNo() {
+              $("#isEmployedSelect").hide();
               $("#isEmployedForm").hide();
           }
       </script>
-
-
-
   </body>
 </html>

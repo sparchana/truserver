@@ -36,6 +36,7 @@ $(document).ready(function(){
     $("#totalWorkExperience").hide();
     $("#educationalInstitute").hide();
     $("#isEmployedForm").hide();
+    $("#isEmployedSelect").hide();
 
     /* ajax commands to fetch leads Info */
     try {
@@ -361,6 +362,7 @@ function processDataAndFillAllFields(returnedData) {
     try {
         if(returnedData.candidateIsEmployed != null){
             if (returnedData.candidateIsEmployed == 1) {
+                $("#isEmployedSelect").show();
                 $('input[id=employed]').attr('checked', true);
                 $('#employedForm').show();
                 /* candidate dashboard */

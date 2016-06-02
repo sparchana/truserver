@@ -106,11 +106,13 @@ $(document).ready(function(){
 
     function processDataCheckMinProfile(returnedData) {
         if(returnedData == 0){ // profile not complete
-            document.getElementById("profileStatusResult").innerHTML = '<a href="/dashboard/editProfile/basic" ><font size="1" color="#000000">(Complete Profile Now)</font></a>';
+            document.getElementById("profileStatusResult").innerHTML = '<font color="#FF7214">Incomplete</font>';
+            document.getElementById("profileStatusAction").innerHTML = '<a href="/dashboard/editProfile/basic" ><font size="2" color="#c74f00">(Complete Profile Now)</font></a>';
             $("#profileStatusIcon").attr('src', '/assets/dashboard/img/wrong.png');
         }
         else{
-            document.getElementById("profileStatusResult").innerHTML = " ";
+            document.getElementById("profileStatusResult").innerHTML = '<font color="#36A008">Complete</font>';
+            document.getElementById("profileStatusAction").innerText = "-";
             $("#profileStatusIcon").attr('src', '/assets/dashboard/img/right.png');
         }
     }
@@ -181,7 +183,8 @@ $(document).ready(function(){
         new google.visualization.Table(document.getElementById('table')).draw(data, options);
         var data2 = document.getElementsByClassName('google-visualization-table-td google-visualization-table-td-number').length;
         if(data2>0) {
-            document.getElementById("assessedStatusResult").innerHTML = " ";
+            document.getElementById("assessedStatusResult").innerHTML = '<font color="#36A008">Complete</font>';
+            document.getElementById("assessedStatusAction").innerHTML = ' ';
             $("#assessedIcon").attr('src', '/assets/dashboard/img/right.png');
             // update isAssessed status to '1'
             $.ajax({
@@ -192,7 +195,8 @@ $(document).ready(function(){
             });
         }
         else{
-            document.getElementById("assessedStatusResult").innerHTML = '<a href="http://bit.ly/trujobstest" target="_blank"><font size="1" color="#000000">(Take assessment)</font></a>';
+            document.getElementById("assessedStatusResult").innerHTML = '<font color="#FF7214">Incomplete</font>';
+            document.getElementById("assessedStatusAction").innerHTML = '<a href="http://bit.ly/trujobstest" target="_blank"><font size="2" color="#c74f00">(Take assessment)</font></a>';
             $("#assessedIcon").attr('src', '/assets/dashboard/img/wrong.png');
         }
     }
@@ -202,7 +206,8 @@ $(document).ready(function(){
     }
     else{
         try{
-            document.getElementById("assessedStatusResult").innerHTML = " ";
+            document.getElementById("assessedStatusResult").innerHTML = '<font color="#36A008">Complete</font>';
+            document.getElementById("assessedStatusAction").innerHTML = '-';
             $("#assessedIcon").attr('src', '/assets/dashboard/img/right.png');
         } catch(err){
             console.log("try catch exception");

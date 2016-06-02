@@ -109,7 +109,7 @@ body{
     background-size: 100%;
     color: #ffffff;
     font-weight: bold;
-    padding: 6% 8% 8%;
+    padding: 6% 5% 4%;
     text-align: center;
 }
 
@@ -119,6 +119,7 @@ body{
     color: #0B4063;
     background: rgba(255, 255, 255, 0.6);
     padding: 1%;
+    margin-top: 20px;
     margin-right: 0;
     margin-left: 0;
 }
@@ -222,11 +223,13 @@ body{
 
 #fixed-menu
 {
+    margin-left: -8%;
+    background: rgba(0, 0, 0, 0.4);
     position: relative;
-    width: 100%;
+    width: 113.5%;
     height: auto;
     color: #ffffff;
-    padding: 10px;
+    padding: 10px 10px;
     z-index: 999;
 }
 
@@ -246,9 +249,12 @@ body{
     .navbar-fixed-top, .navbar-fixed-bottom {
         position: relative;
     }
+    #educationalInstitute{
+        margin-top: 80px;
+    }
     #sectionOne {
         background-size: 220%;
-        margin-top: -72px;
+        margin-top: -20px;
         padding-top: 12%;
     }
 
@@ -285,6 +291,10 @@ body{
     #headingMain{
         display: none;
     }
+}
+
+#headingMain {
+    margin-top: 20px;
 }
 
 @media (min-width: 768px) {
