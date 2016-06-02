@@ -23,7 +23,7 @@ public class LeadService {
             interaction.objectAUUId = lead.leadUUId;
             interaction.objectAType = lead.getLeadType();
         }
-        else{
+        else {
             // lead exists
             interaction.result = "Existing lead made contact through website";
             interaction.objectAUUId = existingLead.leadUUId;

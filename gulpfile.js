@@ -26,7 +26,6 @@ jsOrder = {
     btnDt: paths.supportJs+"btnExport/dataTables.buttons.min.js",
     btnFlash: paths.supportJs+"btnExport/buttons.flash.min.js",
     jsZip: paths.supportJs+"btnExport/jszip.min.js",
-    pdfMake: paths.supportJs+"btnExport/pdfmake.min.js",
     vfsFonts: paths.supportJs+"btnExport/vfs_fonts.js",
     btnHtml5: paths.supportJs+"btnExport/buttons.html5.min.js",
     searchController: paths.supportJs+"searchController.js",
@@ -68,7 +67,7 @@ gulp.task('styles', function() {
 
 // JS concat, strip debugging and minify
 gulp.task('supportScripts', function() {
-    gulp.src([jsOrder.bootstrap, jsOrder.jquery, jsOrder.jqDt, jsOrder.npProgress, jsOrder.tokenInput, jsOrder.btnDt, jsOrder.btnFlash, jsOrder.jsZip, jsOrder.pdfMake, jsOrder.vfsFonts, jsOrder.btnHtml5, jsOrder.searchController])
+    gulp.src([jsOrder.bootstrap, jsOrder.jquery, jsOrder.jqDt, jsOrder.npProgress, jsOrder.tokenInput, jsOrder.btnDt, jsOrder.btnFlash, jsOrder.jsZip, jsOrder.vfsFonts, jsOrder.btnHtml5, jsOrder.searchController])
         .pipe(uglify())
         .pipe(concat('sapp.min.js'))
         .pipe(stripDebug())
