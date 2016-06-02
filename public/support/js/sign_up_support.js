@@ -443,12 +443,11 @@ function processDataAndFillAllFields(returnedData) {
     try {
         if(returnedData.candidateEducation != null){
             if(returnedData.candidateEducation.education != null){
-                $("#candidateHighestEducation").val(returnedData.candidateEducation.education.educationId);
-                /* user dashboard */
+                document.getElementById(returnedData.candidateEducation.education.educationId).checked = true;
+                $("#" + returnedData.candidateEducation.education.educationId).parent().addClass('active').siblings().removeClass('active');
                 if(returnedData.candidateEducation.education.educationId == 4 || returnedData.candidateEducation.education.educationId == 5){
                     $("#educationalInstitute").show();
                 }
-                
             }
             if(returnedData.candidateEducation.degree != null){
                 $("#candidateHighestDegree").val(returnedData.candidateEducation.degree.degreeId);
@@ -604,6 +603,16 @@ function processDataCheckShift(returnedData) {
     }
 }
 
+function checkInstitute() {
+    var selecetdEducation = $('input:radio[name="highestEducation"]:checked').val();
+    if(selecetdEducation == 4 || selecetdEducation == 5){
+        $("#educationalInstitute").show();
+    }
+    else{
+        $("#educationalInstitute").hide();
+    }
+}
+
 function processDataCheckTransportation(returnedData) {
     if(returnedData != null){
         var defaultOption=$('<option value="-1"></option>').text("Select");
@@ -623,8 +632,6 @@ function processDataCheckTransportation(returnedData) {
 }
 
 function processDataCheckEducation(returnedData) {
-    var defaultOption=$('<option value="-1" selected></option>').text("Select");
-    $('#candidateHighestEducation').append(defaultOption);
     returnedData.forEach(function(education)
     {
         var id = education.educationId;
@@ -632,11 +639,12 @@ function processDataCheckEducation(returnedData) {
         var item = {};
         item ["id"] = id;
         item ["name"] = name;
-        var option=$('<option value=' + id + '></option>').text(name);
+        var option ='<label class="btn btn-custom-check" onchange="checkInstitute()" style=\"width: 124px\"><input type="radio" name="highestEducation" id=\"' + id + '\" value=\"' + id + '\" required>' + name + '</label>';
         $('#candidateHighestEducation').append(option);
         educationArray.push(item);
     });
 }
+
 
 function processDataCheckLanguage(returnedData) {
     var arrayLang =[];
@@ -752,9 +760,14 @@ function employedNo(){
 function processDataCheckSkills(returnedData) {
    // var jobName = getJobName(selectedJobPref_array[check++]);
     var parent = $('#skill_details');
+
+    var skillParent = $("#skillName");
+    var skillQualifierParent = $("#skillQualifiers");
+
     var head = document.createElement("label");
     head.style.display = "block";
     // head.innerHTML = "<br>Skills for " + jobName;
+    skillParent.append(head);
     parent.append(head);
 
     returnedData.forEach(function (singleSkill) {
@@ -927,7 +940,7 @@ function saveProfileForm(){
                 motherTongue = $('#candidateMotherTongue').val();
             }
             if(($('#candidateHighestEducation').val()) != -1){
-                higherEducation = $('#candidateHighestEducation').val();
+                higherEducation = $('input:radio[name="highestEducation"]:checked').val();
             }
             if(($('#currentWorkShift').val()) != -1){
                 workShift = $('#currentWorkShift').val();

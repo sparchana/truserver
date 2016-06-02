@@ -393,7 +393,7 @@ $(document).ready(function(){
                 candidateFirstName: localStorage.getItem("name"),
                 candidateSecondName: localStorage.getItem("lastName"),
 
-                candidateEducationLevel: ($('#candidateHighestEducation').val()),
+                candidateEducationLevel: ($('input:radio[name="highestEducation"]:checked').val()),
                 candidateDegree: ($('#candidateHighestDegree').val()),
                 candidateEducationInstitute: $('#candidateEducationInstitute').val(),
             };
