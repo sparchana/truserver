@@ -269,12 +269,15 @@ $(document).ready(function(){
         var jobSelected = $('#candidateJobPref').val();
         var isEmployed = $("#isEmployed").val();
         var currentSalary = $("#candidateCurrentJobSalary").val();
+
         if (localitySelected == "") {
             alert("Please Enter your Job Localities");
         } else if (jobSelected == "") {
             alert("Please Enter the Jobs you are Interested");
         } else if(isEmployed == "1" && currentSalary == ""){
             alert("Please Enter your Current Salary");
+        } else if($('#candidateTimeShiftPref').val() == -1){
+            alert("Please Enter Your Preferred Work Shift");
         }
         else{
             document.getElementById("saveBtn").disabled = true;
@@ -400,28 +403,32 @@ $(document).ready(function(){
     }
 
     function saveCandidateEducationDetails(){
-        document.getElementById("saveBtn").disabled = true;
-        try {
+        if($('#candidateHighestDegree').val() == -1){
+            alert("Select a Degree");
+        }
+        else{
+            document.getElementById("saveBtn").disabled = true;
+            try {
+                var d = {
+                    candidateMobile: localStorage.getItem("mobile"),
+                    candidateFirstName: localStorage.getItem("name"),
+                    candidateSecondName: localStorage.getItem("lastName"),
 
-            var d = {
-                candidateMobile: localStorage.getItem("mobile"),
-                candidateFirstName: localStorage.getItem("name"),
-                candidateSecondName: localStorage.getItem("lastName"),
+                    candidateEducationLevel: $('input:radio[name="highestEducation"]:checked').val(),
+                    candidateDegree: $('#candidateHighestDegree').val(),
+                    candidateEducationInstitute: $('#candidateEducationInstitute').val(),
+                };
 
-                candidateEducationLevel: ($('input:radio[name="highestEducation"]:checked').val()),
-                candidateDegree: ($('#candidateHighestDegree').val()),
-                candidateEducationInstitute: $('#candidateEducationInstitute').val(),
-            };
-
-            $.ajax({
-                type: "POST",
-                url: "/candidateUpdateEducationDetails",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(d),
-                success: processDataCandidateEducationUpdate
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
+                $.ajax({
+                    type: "POST",
+                    url: "/candidateUpdateEducationDetails",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
+                    success: processDataCandidateEducationUpdate
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
         }
     }
 });

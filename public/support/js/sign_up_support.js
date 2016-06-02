@@ -564,6 +564,8 @@ function processDataCheckIdProofs(returnedData) {
 }
 
 function processDataCheckDegree(returnedData) {
+    var defaultOption=$('<option value="-1"></option>').text("Select Degree");
+    $('#candidateHighestDegree').append(defaultOption);
     returnedData.forEach(function(degree)
     {
         var id = degree.degreeId;
@@ -587,8 +589,9 @@ function processDataCheckJobs(returnedData) {
 
 function processDataCheckShift(returnedData) {
     if(returnedData != null ){
-        var defaultOption=$('<option value="-1"></option>').text("Select");
+        var defaultOption=$('<option value="-1"></option>').text("Select Preferred Shift");
         $('#currentWorkShift').append(defaultOption);
+        $('#candidateTimeShiftPref').append(defaultOption);
         returnedData.forEach(function(timeshift)
         {
             var id = timeshift.timeShiftId;
@@ -876,10 +879,13 @@ function prefillAll() {
 function saveProfileForm(){
     var localitySelected = $('#candidateLocalityPref').val();
     var jobSelected = $('#candidateJobPref').val();
+
     if (localitySelected == "") {
         alert("Please Enter your Job Localities");
     } else if (jobSelected == "") {
         alert("Please Enter the Jobs you are Interested");
+    } else if($('#candidateHighestDegree').val() == -1){
+        alert("Select a Degree");
     }
     else{
         var languageKnown = $('#languageTable input:checked').map(function() {

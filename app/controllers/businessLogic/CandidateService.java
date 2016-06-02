@@ -340,7 +340,7 @@ public class CandidateService {
         /* check Min Profile */
         if(candidate.candidateName != null && candidate.candidateLastName != null && candidate.candidateMobile != null && candidate.candidateDOB != null &&
                 candidate.candidateGender != null && candidate.candidateTotalExperience != null && candidate.candidateEducation != null &&
-                candidate.timeShiftPreference != null && candidate.candidateSkillList != null && candidate.languageKnownList != null){
+                candidate.timeShiftPreference != null && candidate.candidateSkillList.size() > 0 && candidate.languageKnownList.size() > 0){
             candidate.setIsMinProfileComplete(ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE);
         }
         else{
