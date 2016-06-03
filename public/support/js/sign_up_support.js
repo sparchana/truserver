@@ -709,7 +709,7 @@ function activateEdit() {
 
 function onCallYes(leadId){
     activateEdit();
-    var value = "Out Bound Call Successfuly got connected";
+    var value = "Out Bound Call Successfully got connected";
     //update leadStatus to TTC
     NProgress.start();
     $.ajax({
@@ -732,10 +732,11 @@ function onCallNo(leadId){
     $("#candidateSignUpSupportForm input").prop("disabled", true);
     $('#callYesClass').hide();
     $('#callNoClass').show();
+    // also saveResponse gets trigger after selecting No and clicking on SaveBtn
 }
 
 function saveResponse(id) {
-    var value = $('#callResponse').val();
+    var value = "Out Bound Call UnSuccessful : Callee is " + $('#callResponse').val();
 
     // update status and interaction
     $.ajax({

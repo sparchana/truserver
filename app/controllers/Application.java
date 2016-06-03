@@ -7,10 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.AuthService;
 import controllers.businessLogic.CandidateService;
 import controllers.businessLogic.LeadService;
-import models.entity.Candidate;
-import models.entity.Developer;
-import models.entity.Interaction;
-import models.entity.Lead;
+import models.entity.*;
 import models.entity.OM.*;
 import models.entity.OO.TimeShiftPreference;
 import models.entity.Static.*;
@@ -380,24 +377,37 @@ public class Application extends Controller {
     }
     @Security.Authenticated(Secured.class)
     public static Result updateLeadType(long leadId, long newType) {
+        //TODO: Not using this api anymore
         try{
             Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
             if(lead != null){
-                lead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
-                lead.setLeadType((int) newType);
-                lead.update();
+                if(lead.leadStatus < ServerConstants.LEAD_STATUS_WON) {
+                    lead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
+                    lead.setLeadType((int) newType);
+                    lead.update();
 
-                // TODO: interaction type to be defined
-                Interaction interaction = new Interaction(
-                        lead.getLeadUUId(),
-                        lead.getLeadType(),
-                        ServerConstants.INTERACTION_TYPE_CALL_OUT,
-                        ServerConstants.INTERACTION_NOTE_LEAD_TYPE_CHANGED,
-                        ServerConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
-                        session().get("sessionUsername")
-                );
-                interaction.save();
-
+                    // TODO: interaction type to be defined
+                    Interaction interaction = new Interaction(
+                            lead.getLeadUUId(),
+                            lead.getLeadType(),
+                            ServerConstants.INTERACTION_TYPE_CALL_OUT,
+                            ServerConstants.INTERACTION_NOTE_LEAD_TYPE_CHANGED,
+                            ServerConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
+                            session().get("sessionUsername")
+                    );
+                    interaction.save();
+                } else {
+                    // TODO: interaction type to be defined
+                    Interaction interaction = new Interaction(
+                            lead.getLeadUUId(),
+                            lead.getLeadType(),
+                            ServerConstants.INTERACTION_TYPE_CALL_OUT,
+                            ServerConstants.INTERACTION_NOTE_LEAD_TYPE_CHANGED,
+                            ServerConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
+                            session().get("sessionUsername")
+                    );
+                    interaction.save();
+                }
                 return ok(toJson(newType));
             }
         } catch (NullPointerException n) {
@@ -411,29 +421,39 @@ public class Application extends Controller {
             Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
             // A value is for overriding leadStatus is also there in Lead Model setLeadStatus
             if(lead != null){
-                if(lead.leadStatus <= leadStatus){
+                if(lead.leadStatus < leadStatus){
                     switch (leadStatus) {
                         case 1: lead.setLeadStatus(ServerConstants.LEAD_STATUS_TTC);
                             break;
                         case 2: lead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
+                            lead.setLeadType(ServerConstants.TYPE_CANDIDATE);
                             break;
                         case 3: lead.setLeadStatus(ServerConstants.LEAD_STATUS_LOST);
                             break;
                     }
                     Logger.info("updateLeadStatus invoked leadId:"+leadId+" status:" + leadStatus);
                     lead.update();
+                    Interaction interaction = new Interaction(
+                            lead.getLeadUUId(),
+                            lead.getLeadType(),
+                            ServerConstants.INTERACTION_TYPE_CALL_OUT,
+                            ServerConstants.INTERACTION_NOTE_LEAD_STATUS_CHANGED,
+                            interactionResult,
+                            session().get("sessionUsername")
+                    );
+                    interaction.save();
+                } else {
+                    Interaction interaction = new Interaction(
+                            lead.getLeadUUId(),
+                            lead.getLeadType(),
+                            ServerConstants.INTERACTION_TYPE_CALL_OUT,
+                            ServerConstants.INTERACTION_NOTE_CALL_OUTBOUNDS,
+                            interactionResult,
+                            session().get("sessionUsername")
+                    );
+                    interaction.save();
                 }
 
-                /* TODO: SEPERATE THIS INOT A METHOD */
-                Interaction interaction = new Interaction(
-                        lead.getLeadUUId(),
-                        lead.getLeadType(),
-                        ServerConstants.INTERACTION_TYPE_CALL_OUT,
-                        ServerConstants.INTERACTION_NOTE_LEAD_STATUS_CHANGED,
-                        ServerConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADSTATUS + leadStatus,
-                        session().get("sessionUsername")
-                );
-                interaction.save();
                 return ok(toJson(lead.leadStatus));
             }
         } catch (NullPointerException n) {
@@ -819,7 +839,15 @@ public class Application extends Controller {
     }
     @Security.Authenticated(Secured.class)
     public static Result getAllLeadSource() {
-        List<LeadSource> leadSources = LeadSource.find.findList();
+        List<LeadSource> leadSources = LeadSource.find.all();
         return ok(toJson(leadSources));
+    }
+    @Security.Authenticated(Secured.class)
+    public static Result getSupportAgent() {
+        String agentMobile = "+91" + session().get("sessionUserId");
+        if(agentMobile.length() == 13){
+            return ok(toJson(agentMobile));
+        }
+        return ok("0");
     }
 }

@@ -42,7 +42,9 @@ GET      /getAllTransportation                                    controllers.Ap
 
 GET      /getAllEducation                                         controllers.Application.getAllEducation()
 
-GET      /getAllLeadSource                                         controllers.Application.getAllLeadSource()
+GET      /getAllLeadSource                                        controllers.Application.getAllLeadSource()
+
+GET      /getSupportAgent                                         controllers.Application.getSupportAgent()
 
 GET      /getAllLanguage                                          controllers.Application.getAllLanguage()
 
