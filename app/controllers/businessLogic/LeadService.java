@@ -5,6 +5,8 @@ import models.entity.Interaction;
 import models.entity.Lead;
 import play.Logger;
 
+import static play.mvc.Controller.session;
+
 /**
  * Created by batcoder1 on 5/5/16.
  */
@@ -16,11 +18,12 @@ public class LeadService {
         String note = "";
         int interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
         int objectAType;
-        String createdBy = "System";
+        String createdBy;
         if(!isSupport) {
             createdBy = ServerConstants.INTERACTION_CREATED_SELF;
         } else {
             interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT; //TODO: Call Out/In need to be distinguished
+            createdBy = session().get("sessionUsername");
         }
         if(existingLead == null){
             //if lead does not exists
@@ -44,7 +47,7 @@ public class LeadService {
                 result,
                 createdBy
         );
-
+        Logger.info("Interaction CreatedBy : " + createdBy);
         InteractionService.createInteraction(interaction);
     }
 }

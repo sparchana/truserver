@@ -11,6 +11,7 @@ public class ServerConstants {
     public static final String INTERACTION_RESULT_CANDIDATE_UPDATED_LOCALITY_JOBS = "Candidate updated jobPref and locality pref";
     public static final String INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM = "Candidate Info got updated by System";
     public static final String INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE = "System Updated LeadType to ";
+    public static final String INTERACTION_RESULT_SYSTEM_UPDATED_LEADSTATUS = "System Updated LeadStatus to ";
     public static final String INTERACTION_RESULT_EXISTING_CANDIDATE_SIGNUP = "Existing Candidate Tried to Signup";
     public static final String INTERACTION_RESULT_EXISTING_CANDIDATE_VERIFICATION = "Existing Candidate trying to complete self signup";
     public static final String INTERACTION_RESULT_EXISTING_LEAD = "Existing lead made contact through website";
@@ -23,6 +24,7 @@ public class ServerConstants {
     public static final String INTERACTION_NOTE_SELF_PASSWORD_CHANGED = "Candidate Self Updated Password";
     public static final String INTERACTION_NOTE_CALL_OUTBOUNDS = "Out Bound Call";
     public static final String INTERACTION_NOTE_LEAD_TYPE_CHANGED = "Lead Type Changed";
+    public static final String INTERACTION_NOTE_LEAD_STATUS_CHANGED = "Lead Status Changed";
     public static final String INTERACTION_NOTE_SELF_SIGNEDUP = "Candidate Self Signed Up";
 
     public static final int TYPE_LEAD = 1;

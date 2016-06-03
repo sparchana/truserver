@@ -48,7 +48,6 @@ public class CandidateService {
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
         String result = "";
         String objectAUUId = "";
-        String note = "";
         Logger.info("Checking this mobile : " + candidate.candidateMobile );
         Candidate existingCandidate = isCandidateExists(candidate.candidateMobile);
         Lead existingLead = isLeadExists(candidate.candidateMobile);
@@ -226,7 +225,7 @@ public class CandidateService {
                 ServerConstants.INTERACTION_TYPE_CALL_OUT,
                 interactionNote,
                 ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM,
-                ServerConstants.INTERACTION_CREATED_SYSTEM
+                session().get("sessionUsername")
         );
 
         InteractionService.createInteraction(interaction);

@@ -290,14 +290,14 @@ public class Application extends Controller {
             }
         return ok("0");
     }
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(SecuredUser.class)
     public static Result getCandidateLocality(long candidateId) {
         List<LocalityPreference> candidateLocalities = LocalityPreference.find.where().eq("candidateId", candidateId).findList();
         if(candidateLocalities == null)
             return ok("0");
         return ok(toJson(candidateLocalities));
     }
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(SecuredUser.class)
     public static Result getCandidateJob(long id) {
         List<JobPreference> candidateJobs = JobPreference.find.where().eq("CandidateId", id).findList();
         return ok(toJson(candidateJobs));
@@ -363,6 +363,8 @@ public class Application extends Controller {
                 developer.setDeveloperSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
                 developer.update();
                 session("sessionId", developer.developerSessionId);
+                session("sessionUsername", developer.developerName);
+                session("sessionUserId", "" + developer.developerId);
                 session("sessionExpiry", String.valueOf(developer.developerSessionIdExpiryMillis));
                 if(developer.developerAccessLevel == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE){
                     return redirect(routes.Application.support());
@@ -392,7 +394,7 @@ public class Application extends Controller {
                         ServerConstants.INTERACTION_TYPE_CALL_OUT,
                         ServerConstants.INTERACTION_NOTE_LEAD_TYPE_CHANGED,
                         ServerConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
-                        ServerConstants.INTERACTION_CREATED_SYSTEM
+                        session().get("sessionUsername")
                 );
                 interaction.save();
 
@@ -423,14 +425,14 @@ public class Application extends Controller {
                 }
 
                 /* TODO: SEPERATE THIS INOT A METHOD */
-                Interaction interaction = new Interaction();
-                interaction.setObjectAUUId(lead.getLeadUUId());
-                interaction.setObjectAType(lead.getLeadType());
-                interaction.setInteractionType(ServerConstants.INTERACTION_TYPE_CALL_OUT);
-                interaction.setNote(interactionResult);
-                interaction.setResult("System Updated LeadStatus to " + leadStatus);
-                interaction.setCreatedBy("System");
-                interaction.setCreationTimestamp(new Timestamp(System.currentTimeMillis()));
+                Interaction interaction = new Interaction(
+                        lead.getLeadUUId(),
+                        lead.getLeadType(),
+                        ServerConstants.INTERACTION_TYPE_CALL_OUT,
+                        ServerConstants.INTERACTION_NOTE_LEAD_STATUS_CHANGED,
+                        ServerConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADSTATUS + leadStatus,
+                        session().get("sessionUsername")
+                );
                 interaction.save();
                 return ok(toJson(lead.leadStatus));
             }
@@ -778,6 +780,11 @@ public class Application extends Controller {
             case 14:
                 List<LeadSource> leadSourceList = LeadSource.find.all();
                 return  ok(toJson(leadSourceList));
+            case 15:
+                String password = "Enter Password";
+                int salt =  Util.randomInt();
+                String md5Password = Util.md5(salt + password);
+                return ok("Password: " + password + " salt: " + salt + " : md5 = " + md5Password);
         }
         return ok("");
     }

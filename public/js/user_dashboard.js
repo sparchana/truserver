@@ -57,7 +57,6 @@ $(document).ready(function(){
         console.log("exception occured!!" + exception);
     }
 
-
     var userMobile = localStorage.getItem("mobile");
     var userName = localStorage.getItem("name");
 
@@ -76,34 +75,38 @@ $(document).ready(function(){
 
     function processDataGetCandidateLocality(returnedData) {
         var parent = $('.preferredLocation')[0];
-        returnedData.forEach(function (locality) {
-            var l = document.createElement("li");
-            l.textContent = locality.locality.localityName;
-            parent.appendChild(l);
+        if(returnedData != null) {
+            returnedData.forEach(function (locality) {
+                var l = document.createElement("li");
+                l.textContent = locality.locality.localityName;
+                parent.appendChild(l);
 
-            var id = locality.localityId;
-            var name = locality.locality.localityName;
-            var item = {}
-            item ["id"] = id;
-            item ["name"] = name;
-            candidateLocalityArray.push(item);
-        });
+                var id = locality.localityId;
+                var name = locality.locality.localityName;
+                var item = {}
+                item ["id"] = id;
+                item ["name"] = name;
+                candidateLocalityArray.push(item);
+            });
+        }
     }
 
     function processDataGetCandidateJobRoles(returnedData) {
         var parent = $('.preferredJobs')[0];
-        returnedData.forEach(function (job) {
-            var l = document.createElement("li");
-            l.textContent = job.jobRole.jobName;
-            parent.appendChild(l);
+        if(returnedData != null){
+            returnedData.forEach(function (job) {
+                var l = document.createElement("li");
+                l.textContent = job.jobRole.jobName;
+                parent.appendChild(l);
 
-            var id = job.jobRole.jobRoleId;
-            var name = job.jobRole.jobName;
-            var item = {}
-            item ["id"] = id;
-            item ["name"] = name;
-            candidateJobArray.push(item);
-        });
+                var id = job.jobRole.jobRoleId;
+                var name = job.jobRole.jobName;
+                var item = {}
+                item ["id"] = id;
+                item ["name"] = name;
+                candidateJobArray.push(item);
+            });
+        }
     }
 
     function processDataCheckAllLocalies(returnedData) {
