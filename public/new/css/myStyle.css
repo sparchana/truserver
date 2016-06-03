@@ -75,10 +75,11 @@ body{
     border: 1px solid #eaeaea;
     color: #4d4f4e;
 }
-.btn-custom-check {
+.btn-custom-check, .btn-check {
     background: #ececec;
     border: 1px solid #e0e0e0;
 }
+
 .btn-custom-check.active {
     background: #2980b9;
     border: 1px solid #2870a3;

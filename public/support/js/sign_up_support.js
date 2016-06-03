@@ -529,7 +529,7 @@ function prefillLanguageTable(languageKnownList) {
 
 
 function prefillSkills(candidateSkillList){
-    $('#skill_details h5 input').each(function() {
+    $('#skillAnswer input').each(function() {
         var skillResponse = document.createElement("INPUT");
         skillResponse= $(this).get(0);
         candidateSkillList.forEach(function (skillElement) {
@@ -611,8 +611,8 @@ function processDataCheckShift(returnedData) {
 }
 
 function checkInstitute() {
-    var selecetdEducation = $('input:radio[name="highestEducation"]:checked').val();
-    if(selecetdEducation == 4 || selecetdEducation == 5){
+    var selectedEducation = $('input:radio[name="highestEducation"]:checked').val();
+    if(selectedEducation == 4 || selectedEducation == 5){
         $("#educationalInstitute").show();
     }
     else{
@@ -646,7 +646,7 @@ function processDataCheckEducation(returnedData) {
         var item = {};
         item ["id"] = id;
         item ["name"] = name;
-        var option ='<label class="btn btn-custom-check" onchange="checkInstitute()" style=\"width: 124px\"><input type="radio" name="highestEducation" id=\"' + id + '\" value=\"' + id + '\" required>' + name + '</label>';
+        var option ='<label class="btn btn-custom-check" onchange="checkInstitute()" style=\"width: 124px\"><input type="radio" name="highestEducation" id=\"' + id + '\" value=\"' + id + '\" checked required>' + name + '</label>';
         $('#candidateHighestEducation').append(option);
         educationArray.push(item);
     });
@@ -765,27 +765,28 @@ function employedNo(){
 }
 
 function processDataCheckSkills(returnedData) {
-    var parent = $('#skill_details');
-
-    var skillParent = $("#skillName");
-    var skillQualifierParent = $("#skillQualifiers");
-
-    var head = document.createElement("label");
-    head.style.display = "block";
-    // head.innerHTML = "<br>Skills for " + jobName;
-    skillParent.append(head);
-    parent.append(head);
+    var skillParent = $("#skillQuestion");
+    var skillQualifierParent = $("#skillAnswer");
 
     returnedData.forEach(function (singleSkill) {
         var q = document.createElement("h5");
-
+        q.style = "padding: 5px";
         var question = singleSkill.skill.skillName;
         q.textContent = question + "       ";
-        head.appendChild(q);
+        skillParent.append(q);
 
         var object = singleSkill.skill.skillQualifierList;
 
+        var lbl = document.createElement("div");
+        lbl.className = "btn-group";
+        skillQualifierParent.append(lbl);
+
         object.forEach(function (x) {
+            var headLbl = document.createElement("label");
+            headLbl.className = "btn btn-custom-check";
+            headLbl.textContent = x.qualifier;
+            lbl.appendChild(headLbl);
+
             var o = document.createElement("input");
             o.type = "radio";
             o.name = singleSkill.skill.skillName;
@@ -811,13 +812,10 @@ function processDataCheckSkills(returnedData) {
                 else
                     skillMap[pos] = item;
             };
-
-            var op = document.createElement("label");
-            op.innerHTML = "&nbsp;" + x.qualifier + "  &nbsp;&nbsp;&nbsp";
-
-            q.appendChild(o);
-            q.appendChild(op);
+            headLbl.appendChild(o);
         });
+        var br = document.createElement("br");
+        skillQualifierParent.append(br);
     });
     prefillSkills(candidateSkill);
 }
