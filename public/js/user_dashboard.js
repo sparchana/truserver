@@ -195,7 +195,7 @@ $(document).ready(function(){
         var data2 = document.getElementsByClassName('google-visualization-table-td google-visualization-table-td-number').length;
         if(data2>0) {
             document.getElementById("assessedStatusResult").innerHTML = '<font color="#46AB49">Complete</font>';
-            document.getElementById("assessedStatusAction").innerHTML = ' ';
+            document.getElementById("assessedStatusAction").innerHTML = '-';
             $("#assessedIcon").attr('src', '/assets/dashboard/img/right.png');
             // update isAssessed status to '1'
             $.ajax({
