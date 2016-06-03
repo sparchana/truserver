@@ -183,6 +183,9 @@ public class CandidateService {
             existingLead.setLeadType(ServerConstants.TYPE_CANDIDATE);
             existingLead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
             existingLead.setLeadSource(getLeadSourceFromLeadSourceId(request.leadSource));
+            if(existingLead.getLeadName().trim().equals("")){
+                existingLead.setLeadName(candidate.candidateName + " " + candidate.candidateLastName);
+            }
             candidate.setCandidateName(request.getCandidateFirstName());
             candidate.setCandidateLastName(request.getCandidateSecondName());
             candidate.setLead(existingLead);
