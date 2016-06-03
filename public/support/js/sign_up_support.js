@@ -312,11 +312,18 @@ function processDataAndFillAllFields(returnedData) {
             var yr = new Date(date).getFullYear();
             var month = ('0' + parseInt(new Date(date).getMonth() + 1)).slice(-2);
             var d = ('0' + new Date(date).getDate()).slice(-2);
-            $("#candidateDob").val(yr + "-" + month + "-" + d);
-            $("#dob_day").val(d);
-            $("#dob_month").val(month);
-            console.log("year = " + yr);
-            $("#dob_year").val(yr);
+            try{
+                $("#candidateDob").val(yr + "-" + month + "-" + d);
+                $("#dob_day").val(d);
+                $("#dob_month").val(month);
+                $("#dob_year").val(yr);
+
+            } catch(err){
+            }
+            try{
+                document.getElementById("userDob").innerHTML = d + "/" + month + "/" + yr;
+            } catch(err){
+            }
         }
     } catch(err){
         console.log(err);
@@ -444,7 +451,7 @@ function processDataAndFillAllFields(returnedData) {
         }
         if(returnedData.candidateTotalExperience != null){
             if(returnedData.candidateTotalExperience == 0){
-                document.getElementById("userTotalExperience").innerHTML = "0";
+                document.getElementById("userTotalExperience").innerHTML = "Fresher";
                 document.getElementById("fresher").checked = true;
                 $('#fresher').parent().addClass('active').siblings().removeClass('active');
             } else{
@@ -478,10 +485,19 @@ function processDataAndFillAllFields(returnedData) {
     try {
         if(returnedData.candidateEducation != null){
             if(returnedData.candidateEducation.education != null){
+                try{
+                    document.getElementById("userEducationLevel").innerHTML = returnedData.candidateEducation.education.educationName;
+                } catch(err){
+                }
                 document.getElementById(returnedData.candidateEducation.education.educationId).checked = true;
                 $("#" + returnedData.candidateEducation.education.educationId).parent().addClass('active').siblings().removeClass('active');
                 if(returnedData.candidateEducation.education.educationId == 4 || returnedData.candidateEducation.education.educationId == 5){
                     $("#educationalInstitute").show();
+                }
+            } else{
+                try{
+                    document.getElementById("userEducationLevel").innerHTML = "NA";
+                } catch(err){
                 }
             }
             if(returnedData.candidateEducation.degree != null){

@@ -83,7 +83,12 @@ $(document).ready(function(){
     if(userMobile != null){
         document.getElementById("helloMsg").innerHTML = "Hello " + userName + "!";
         try{
-            document.getElementById("userName").innerHTML = userName + " " + userLastName;
+            if(userLastName == null){
+                document.getElementById("userName").innerHTML = userName;
+            } else{
+                document.getElementById("userName").innerHTML = userName + " " + userLastName;
+            }
+
             document.getElementById("userMobile").innerHTML = userMobile;
         } catch(err){
         }
@@ -118,7 +123,7 @@ $(document).ready(function(){
             $("#profileStatusIcon").attr('src', '/assets/dashboard/img/wrong.png');
         }
         else{
-            document.getElementById("profileStatusResult").innerHTML = '<font color="#36A008">Complete</font>';
+            document.getElementById("profileStatusResult").innerHTML = '<font color="#24CD34">Complete</font>';
             document.getElementById("profileStatusAction").innerText = "-";
             $("#profileStatusIcon").attr('src', '/assets/dashboard/img/right.png');
         }
@@ -190,7 +195,7 @@ $(document).ready(function(){
         new google.visualization.Table(document.getElementById('table')).draw(data, options);
         var data2 = document.getElementsByClassName('google-visualization-table-td google-visualization-table-td-number').length;
         if(data2>0) {
-            document.getElementById("assessedStatusResult").innerHTML = '<font color="#36A008">Complete</font>';
+            document.getElementById("assessedStatusResult").innerHTML = '<font color="#24CD34">Complete</font>';
             document.getElementById("assessedStatusAction").innerHTML = ' ';
             $("#assessedIcon").attr('src', '/assets/dashboard/img/right.png');
             // update isAssessed status to '1'
@@ -213,7 +218,7 @@ $(document).ready(function(){
     }
     else{
         try{
-            document.getElementById("assessedStatusResult").innerHTML = '<font color="#36A008">Complete</font>';
+            document.getElementById("assessedStatusResult").innerHTML = '<font color="#24CD34">Complete</font>';
             document.getElementById("assessedStatusAction").innerHTML = '-';
             $("#assessedIcon").attr('src', '/assets/dashboard/img/right.png');
         } catch(err){

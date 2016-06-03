@@ -293,6 +293,12 @@ public class CandidateService {
                 Logger.info(" try catch exception = " + e);
             }
             try{
+                if(supportCandidateRequest.getCandidateMaritalStatus() != null)
+                    candidate.setCandidateMaritalStatus(supportCandidateRequest.getCandidateMaritalStatus());
+            } catch(Exception e){
+                Logger.info(" try catch exception = " + e);
+            }
+            try{
                 candidate.setCandidateAppointmentLetter(supportCandidateRequest.getCandidateAppointmentLetter());
             } catch(Exception e){
                 Logger.info(" try catch exception = " + e);
