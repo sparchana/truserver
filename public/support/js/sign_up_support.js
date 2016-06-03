@@ -642,6 +642,7 @@ function prefillSkills(candidateSkillList){
             if(skillResponse.name == skillElement.skillName && skillResponse.value == skillElement.skillResponse){
                 skillResponse.checked = true;
                 skillResponse.click();
+                console.log(skillResponse);
             }
         });
     });
@@ -877,7 +878,7 @@ function processDataCheckSkills(returnedData) {
     returnedData.forEach(function (singleSkill) {
         var q = document.createElement("h5");
         q.style = "padding: 5px";
-        var question = singleSkill.skill.skillName;
+        var question = singleSkill.skill.skillQuestion;
         q.textContent = question + "       ";
         skillParent.append(q);
 
@@ -895,6 +896,7 @@ function processDataCheckSkills(returnedData) {
 
             var o = document.createElement("input");
             o.type = "radio";
+            o.style = "display: inline-block";
             o.name = singleSkill.skill.skillName;
             o.value = x.qualifier;
             o.onclick = function () {
@@ -920,7 +922,8 @@ function processDataCheckSkills(returnedData) {
             };
             headLbl.appendChild(o);
         });
-        var br = document.createElement("br");
+        var br = document.createElement("div");
+        br.id = "skillBreak";
         skillQualifierParent.append(br);
     });
     prefillSkills(candidateSkill);

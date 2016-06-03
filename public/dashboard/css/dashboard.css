@@ -265,6 +265,10 @@ input::-webkit-inner-spin-button {
 }
 
 @media(max-width:768px) {
+    #skillBreak{
+        padding-top: 48px;
+        height: 32px;
+    }
     #assessmentPanel{
         display: inline-block;
         width: 110%;
