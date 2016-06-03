@@ -15,7 +15,6 @@ public class Secured extends Security.Authenticator {
     @Override
     public String getUsername(Context ctx) {
         String sessionId = ctx.session().get("sessionId");
-        Logger.info("User LoggedIn:"+sessionId);
         Developer developer = Developer.find.where().eq("developersessionid", sessionId).findUnique();
         if(developer!= null && developer.developerSessionId.equals(sessionId)){
             return ctx.session().get("sessionId");
