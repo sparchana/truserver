@@ -136,44 +136,93 @@
                                     </center>
                                 </div>
                             </div>
-                            <div class="row" style="margin-top: 2%">
-                                <div class="col-md-6 col-sm-6 col-xs-6">
-                                    <font size="5">Your Profile</font>
-                                </div>
-                                <div class="col-md-6 col-sm-6 col-xs-6">
-                                    <div style="float: right; cursor: pointer" onclick="showEditProfile()"><img src="/assets/dashboard/img/edit.png" width="24px">&nbsp;Edit Profile</div>
+                            <div id="profileUpdateHeader" style="margin-top: 2%">
+                                <div class="row" >
+                                    <div class="col-md-6 col-sm-6 col-xs-6">
+                                        <font size="5">Your Profile</font>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 col-xs-6">
+                                        <div style="float: right; margin: 4px; cursor: pointer" onclick="showEditProfile()"><img src="/assets/dashboard/img/edit.png" width="24px">&nbsp;Edit</div>
+                                    </div>
                                 </div>
                             </div>
-                            <hr>
-                            <div class="row sectionDashboard" style="margin-top: -3%">
-                                    <div class="col-sm-4">
-                                        <div style="display : inline-block; margin: 4px;">
-                                            <img src="/assets/img/user.png" height="30px;">
-                                        </div>
+                            <div class="profileBody">
+                                <div class="row sectionDashboard" style="margin-top: -2%">
+                                    <div class="col-sm-12">
                                         <div style="margin-left: 4px; display: inline-block">
-                                            <div id="userName"></div>
+                                            <h4 style="display : inline-block ;" id="userName"></h4>
+                                            <h4 style="display : inline-block ;">,&nbsp;</h4>
+                                            <h4 style="display : inline-block ;" id="userGender"></h4>
+                                            <h4 style="display : inline-block ;">,&nbsp;</h4>
+                                            <h4 style="display : inline-block ;" id="userAge">21</h4>
                                         </div>
                                     </div>
+                                </div>
 
+                                <div class="row sectionDashboard" style="margin-top: -4%">
                                     <div class="col-sm-4">
                                         <div style="display : inline-block; margin: 4px;">
                                             <img src="/assets/img/phone.png" height="30px;">
                                         </div>
-                                        <div style="margin-left: 4px; display: inline-block">
-                                            <div id="userMobile"></div>
+                                        <div id="userMobile" style="margin-left: 4px; display: inline-block">
                                         </div>
                                     </div>
-                            </div>
 
-                            <div class="row sectionDashboard" style="margin-top: -5%">
-                                <div class="row>">
+                                    <div class="col-sm-4">
+                                        <div style="display : inline-block; margin: 4px;">
+                                            <img src="/assets/img/location.png" height="30px;">
+                                        </div>
+                                        <div style="margin: 4px; display: inline-block">
+                                            Bangalore
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+
+                                    </div>
+                                </div>
+
+                                    <div class="row">
+
+                                        <div class="col-sm-5 subSectionBody">
+                                            <h5>Preferences</h5><hr>
+                                            <div class="row">
+                                                <div class="col-sm-4">
+                                                    <div style="display : inline-block; margin: 4px;">
+                                                        <img src="/assets/img/job.png" height="30px;">
+                                                    </div>
+                                                    <div class="sectionHeaderBody" style="display : inline-block; margin: 4px;">
+                                                        <ul class="preferredJobs" style="margin-left: 20px"></ul>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-4">
+                                                    <div style="display : inline-block; margin: 4px;">
+                                                        <img src="/assets/img/location.png" height="30px;">
+                                                    </div>
+                                                    <div class="sectionHeaderBody" style="display : inline-block; margin: 4px;">
+                                                        <ul class="preferredLocation" style="margin-left: 20px"></ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-sm-1">
+                                        </div>
+
+                                        <div class="col-sm-5 subSectionBody">
+                                            <h5>Experience & Education</h5><hr>
+                                        </div>
+                                    </div>
+
+@*
+                                <div class="row sectionDashboard" style="margin-top: -5%">
                                     <div class="col-sm-4">
                                         <div style="display : inline-block; margin: 4px;">
                                             <img src="/assets/img/user.png" height="30px;">
                                         </div>
                                         <div style="display : inline-block; margin-left: 4px;">Gender: </div>
                                         <div id="userGender" style="margin-left: 4px; display: inline-block">
-                                        </div>
+                                    </div>
                                     </div>
 
                                     <div class="col-sm-4">
@@ -182,23 +231,21 @@
                                         </div>
                                         <div style="display : inline-block;  margin: 4px;">Total Experience: </div>
                                         <div id="userTotalExperience" style="margin: 4px; display: inline-block">
-                                        </div>
+                                    </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="row sectionDashboard" style="margin-top: -5%">
-                                <div class="row>">
+                                <div class="row sectionDashboard" style="margin-top: -5%">
                                     <div class="col-sm-4">
                                         <div style="display : inline-block; margin: 4px;">
                                             <img src="/assets/img/job.png" height="30px;">
                                         </div>
                                         <div style="margin-left: 4px; display: inline-block">
-                                            Preferred Job Role:
+                                        Preferred Job Role:
                                         </div>
                                         <div class="sectionHeaderBody">
                                             <ul class="preferredJobs" style="margin-left: 20px">
-                                        </ul>
+                                    </ul>
                                         </div>
                                     </div>
 
@@ -207,26 +254,24 @@
                                             <img src="/assets/img/location.png" height="30px;">
                                         </div>
                                         <div style="margin-left: 4px; display: inline-block">
-                                            Preferred Location:
+                                        Preferred Location:
                                         </div>
                                         <div class="sectionHeaderBody">
                                             <ul class="preferredLocation" style="margin-left: 20px">
-                                        </ul>
+                                    </ul>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
 
-                            <div class="row sectionDashboard" style="margin-top: -5%">
-                                <div class="row>">
+                                <div class="row sectionDashboard" style="margin-top: -5%">
                                     <div class="col-sm-4">
                                         <div style="display : inline-block; margin: 4px;">
                                             <img src="/assets/img/user.png" height="30px;">
                                         </div>
                                         <div style="display : inline-block; margin-left: 4px;">Date of Birth: </div>
                                         <div id="userDob" style="margin-left: 4px; display: inline-block">
-                                        </div>
+                                    </div>
                                     </div>
 
                                     <div class="col-sm-4">
@@ -238,11 +283,8 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
 
-
-                            <div class="row sectionDashboard" style="margin-top: -5%">
-                                <div class="row>">
+                                <div class="row sectionDashboard" style="margin-top: -5%">
                                     <div class="col-sm-4">
                                         <div style="display : inline-block; margin: 4px;">
                                             <img src="/assets/img/company.png" height="30px;">
@@ -260,7 +302,8 @@
                                         <div id="userCurrentSalary" style="margin-left: 4px; display: inline-block">
                                         </div>
                                     </div>
-                                </div>
+                                </div>*@
+
                             </div>
 
                                 <!-- start hot job -->
