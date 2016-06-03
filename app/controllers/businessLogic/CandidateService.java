@@ -526,7 +526,7 @@ public class CandidateService {
         authToken.passwordSalt = Util.randomInt();
         authToken.passwordMd5 = Util.md5(dummyPassword + authToken.passwordSalt);
         authToken.save();
-        String msg = "Welcome to Trujobs.in! Your login details are Username: " + candidate.candidateMobile + " and password: " +dummyPassword+ ". Use this to login at trujobs.in !!";
+        String msg = "Welcome to Trujobs.in! Your login details are Username: " + candidate.candidateMobile.substring(3, 13) + " and password: " +dummyPassword+ ". Use this to login at trujobs.in !!";
         SendOtpService.sendSms(candidate.candidateMobile, msg);
         Logger.info("Dummy auth created + otp triggered + auth saved");
     }
