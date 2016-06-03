@@ -101,11 +101,10 @@ $(document).ready(function(){
     }
 
     function processDataGetCandidateLocality(returnedData) {
-        var parent = $('.preferredLocation')[0];
+        var localities ="";
         returnedData.forEach(function (locality) {
-            var l = document.createElement("li");
-            l.textContent = locality.locality.localityName;
-            parent.appendChild(l);
+            localities += locality.locality.localityName;
+            localities += ", ";
 
             var id = locality.localityId;
             var name = locality.locality.localityName;
@@ -114,6 +113,7 @@ $(document).ready(function(){
             item ["name"] = name;
             candidateLocalityArray.push(item);
         });
+        document.getElementById("userLocality").innerHTML = localities;
     }
 
     function processDataCheckMinProfile(returnedData) {
@@ -130,11 +130,10 @@ $(document).ready(function(){
     }
 
     function processDataGetCandidateJobRoles(returnedData) {
-        var parent = $('.preferredJobs')[0];
+        var jobRoles = "";
         returnedData.forEach(function (job) {
-            var l = document.createElement("li");
-            l.textContent = job.jobRole.jobName;
-            parent.appendChild(l);
+            jobRoles += job.jobRole.jobName;
+            jobRoles += ", ";
 
             var id = job.jobRole.jobRoleId;
             var name = job.jobRole.jobName;
@@ -143,6 +142,7 @@ $(document).ready(function(){
             item ["name"] = name;
             candidateJobArray.push(item);
         });
+        document.getElementById("userJobs").innerHTML = jobRoles;
     }
 
     function processDataCheckAllLocalies(returnedData) {
@@ -336,11 +336,16 @@ $(document).ready(function(){
             alert("Please Select your work experience");
         }
         else{
-            if(experienceStatus == 1 && (($("#candidateTotalExperienceMonth").val() == -1) || ($("#candidateTotalExperienceYear").val() == -1))){
-                alert("Select Total Years of Experience");
-            }
-            else if($('input:radio[name="isEmployed"]:checked').val() == null){
+            /* calculate total experience in months */
+            var expMonth = parseInt($('#candidateTotalExperienceMonth').val());
+            var expYear = parseInt($('#candidateTotalExperienceYear').val());
+            var totalExp = expMonth + (12*expYear);
+
+            if($('input:radio[name="isEmployed"]:checked').val() == null){
                 alert("Select Current Employment Status");
+            }
+                else if(totalExp == 0){
+                    alert("Select Total Years of Experience");
             }
             else{
                 document.getElementById("saveBtn").disabled = true;
@@ -382,11 +387,6 @@ $(document).ready(function(){
                         }
                     }).get();
 
-                    /* calculate total experience in months */
-                    var expMonth = parseInt($('#candidateTotalExperienceMonth').val());
-                    var expYear = parseInt($('#candidateTotalExperienceYear').val());
-                    var totalExp = expMonth + (12*expYear);
-
                     var candidateCurrentCompanyVal = "";
                     var candidateCurrentSalaryVal = "";
 
@@ -398,12 +398,7 @@ $(document).ready(function(){
                         candidateCurrentCompanyVal = $('#candidateCurrentCompany').val();
                         candidateCurrentSalaryVal = $('#candidateCurrentJobSalary').val();
                     }
-
-                    /* calculate current job duration in months */
-                    var currentJobMonth = parseInt($('#candidateCurrentJobDurationMonth').val());
-                    var currentJobYear = parseInt($('#candidateCurrentJobDurationYear').val());
-                    var currentJobDuration = currentJobMonth + (12 * currentJobYear);
-
+                    
                     var d = {
                         candidateMobile: localStorage.getItem("mobile"),
                         candidateFirstName: localStorage.getItem("name"),

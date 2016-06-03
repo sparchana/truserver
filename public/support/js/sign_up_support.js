@@ -306,26 +306,35 @@ function processDataAndFillAllFields(returnedData) {
         console.log(err);
     }
 
+    var dob;
     try {
-        if(returnedData.candidateDOB != null){
+        if (returnedData.candidateDOB != null) {
             var date = JSON.parse(returnedData.candidateDOB);
             var yr = new Date(date).getFullYear();
             var month = ('0' + parseInt(new Date(date).getMonth() + 1)).slice(-2);
             var d = ('0' + new Date(date).getDate()).slice(-2);
-            try{
+            try {
                 $("#candidateDob").val(yr + "-" + month + "-" + d);
                 $("#dob_day").val(d);
                 $("#dob_month").val(month);
                 $("#dob_year").val(yr);
 
-            } catch(err){
+            } catch (err) {
             }
-            try{
-                document.getElementById("userDob").innerHTML = d + "/" + month + "/" + yr;
-            } catch(err){
+            try {
+                var today = new Date();
+                var birthDate = new Date(yr + "-" + month + "-" + d);
+                var age = today.getFullYear() - birthDate.getFullYear();
+                var m = today.getMonth() - birthDate.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate()))
+                {
+                    age--;
+                }
+                document.getElementById("userAge").innerHTML = age + " years";
+            } catch (err) {
             }
         }
-    } catch(err){
+    } catch (err) {
         console.log(err);
     }
 
@@ -448,6 +457,16 @@ function processDataAndFillAllFields(returnedData) {
         }
         if(returnedData.timeShiftPreference != null){
             $("#candidateTimeShiftPref").val(returnedData.timeShiftPreference.timeShift.timeShiftId);
+            try{
+                document.getElementById("userShift").innerHTML = returnedData.timeShiftPreference.timeShift.timeShiftName;
+            } catch(err){
+            }
+        }
+        else{
+            try{
+                document.getElementById("userShift").innerHTML = "NA";
+            } catch(err){
+            }
         }
         if(returnedData.candidateTotalExperience != null){
             if(returnedData.candidateTotalExperience == 0){
