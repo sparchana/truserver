@@ -61,11 +61,11 @@ input::-webkit-inner-spin-button {
 }
 
 #profileUpdateHeader{
-    padding: 8px;
+    padding: 1px 1px 1px 12px;
     color: #ffffff;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
-    background: #6a6a7b;
+    background: #2980b9;
 }
 
 .profileBody{
@@ -74,13 +74,25 @@ input::-webkit-inner-spin-button {
     background: #fafafa;
     padding: 2%;
 }
+.profileSectionOne{
+    width: 47.8%;
+    display: inline-block;
+}
+
+#dashboardProfileBody{
+    margin: 1%;
+    background: white;
+    border: 1px solid #e5e7db;
+    border-radius: 8px;
+    border-radius: 8px;
+}
 
 #editProfileStepsActive{
     color: #ffffff;
     display: inline-block;
     border-radius: 100px;
     padding: 6%;
-    background: #c2c4b8;
+    background: rgba(0, 0, 0, 0);
 }
 
 #profileStatus{
@@ -253,6 +265,21 @@ input::-webkit-inner-spin-button {
 }
 
 @media(max-width:768px) {
+    #assessmentPanel{
+        display: inline-block;
+        width: 110%;
+        margin-left: -5%;
+    }
+
+    #educationHr{
+        margin-top: 25%;
+    }
+
+    .profileSectionOne{
+        display: block;
+        width: 98%;
+    }
+
     .sectionDashboard{
         margin-top: 8%;
         padding: 3%;

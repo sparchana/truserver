@@ -181,7 +181,7 @@
                         image.src = "/assets/new/img/logo-color.gif";
                     }
                 } else {
-                    $("#fixed-menu").css('background-color', 'transparent');
+                    $("#fixed-menu").css('background-color', 'rgba(0, 0, 0, 0.175)');
                     var w = window.innerWidth;
                     if(w > 440){
                         $(".navbar-fixed-top").removeClass("fade-background").addClass('fade-transparent'); // if not, change it back to transparent
@@ -194,6 +194,7 @@
                         image.src = "/assets/new/img/logo-main.gif";
                         var w = window.innerWidth;
                         if (w < 440) {
+                            $("#fixed-menu").css('background-color', 'transparent');
                             $("#navItem1").css('color', '#747474');
                             $("#navItem2").css('color', '#747474');
                             $("#navItem3").css('color', '#747474');
@@ -350,7 +351,7 @@
                 <div id="fixed-menu" align="center">
                     <div style="display: inline-block">Find a job and earn upto 30,000. Reach Us &nbsp;</div>
                     <div style="display: inline-block"><input style="color: black; height: 26px" id="addLeadMobile" pattern="[7-9]{1}[0-9]{9}" maxlength="10" class="form-control input-md" type="text" placeholder="Mobile: (8880007799)"></div>
-                    <div style="display: inline-block"><button type="button" style=" height: 26px" class="btn btn-add-lead" onclick="addLead()">Call Me!</button></div>
+                    <div style="display: inline-block"><button type="button" style=" height: 30px" class="btn btn-add-lead" onclick="addLead()">Call Me!</button></div>
 
                 </div>
                 <font color="white">

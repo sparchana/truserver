@@ -74,7 +74,7 @@
           </li>
           <li>
             <center>
-              <h4><font color="white"><div id="helloMsg">Hello Adarsh</div></font></h4>
+              <h4><font color="white"><div id="helloMsg"></div></font></h4>
             </center>
           </li>
           <li>
@@ -106,41 +106,37 @@
         <a href="#menu-toggle" class="visible-xs btn btn-default" style="width: 30%" id="menu-toggle">Show Menu</a>
         <div class="container-fluid">
           <div class="row">
-              <h2>Edit Profile</h2>
-              <hr>
-              <center class="visible-lg">
-                  <div style="display: inline-block">
-                      <div id="editProfileStepsActive">
-                          <img src="/assets/dashboard/img/basic.png" height="30px">
+              <div style="display: inline-block">
+                  <h2>Edit Profile</h2>
+              </div>
+              <div style="display: inline-block; margin-left: 12%">
+                  <center class="visible-lg">
+                      <div style="display: inline-block">
+                          <img src="/assets/dashboard/img/basic_enable.png" height="42px">
+                          <h5><b>1</b> Basic Information</h5>
                       </div>
-                      <h6>1 Basic Information</h6>
-                  </div>
 
-                  <div style="display: inline-block">
-                      <div style="display: inline-block; width: 80px;"></div>
-                  </div>
-
-                  <div style="display: inline-block">
-                      <div id="editProfileSteps">
-                          <img src="/assets/dashboard/img/skills.png" height="30px">
+                      <div style="display: inline-block">
+                          <div style="display: inline-block; width: 80px;"></div>
                       </div>
-                      <h6>2 Experience & Skills</h6>
-                  </div>
 
-                  <div style="display: inline-block">
-                      <div style="display: inline-block; width: 80px; height: 5px;"></div>
-                  </div>
-
-                  <div style="display: inline-block">
-                      <div id="editProfileSteps">
-                          <img src="/assets/dashboard/img/education.png" height="30px">
+                      <div style="display: inline-block">
+                          <img src="/assets/dashboard/img/skills_disable.png" height="42px">
+                          <h5><b>2</b> Experience & Skills</h5>
                       </div>
-                      <h6>3 Education Details</h6>
-                  </div>
-              </center>
-                <br>
-                <h3>Hello There!</h3>
-                <h5>Let’s create your Profile in 3 easy steps!</h5>
+
+                      <div style="display: inline-block">
+                          <div style="display: inline-block; width: 80px; height: 5px;"></div>
+                      </div>
+
+                      <div style="display: inline-block">
+                          <img src="/assets/dashboard/img/education_disable.png" height="42px">
+                          <h5><b>3</b> Education Details</h5>
+                      </div>
+                  </center>
+              </div>
+              <hr style="margin-top: 10px">
+                <h5>Let’s create your profile in 3 easy steps!</h5>
                 <form id="candidateUpdateBasicProfile" method="post">
                         <div id="profileUpdateHeader"><h4>Basic Details</h4></div>
                         <div class=profileBody>
@@ -166,7 +162,7 @@
                             </div>
 
                             <div class="row" style="margin-top: 8px">
-                                <div class="col-sm-3"><h5>Job Role Preference:</h5></div>
+                                <div class="col-sm-3"><h5>Job Role Preference(s):</h5></div>
                                 <div class="col-sm-5">
                                     <input type="text" id="candidateJobPref" >
                                     <script type="text/javascript">
@@ -176,6 +172,7 @@
                                             placeholder: "What job roles are you interested?",
                                             hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
                                             minChars: 0,
+                                            tokenLimit: 3,
                                             prePopulate: jobPrefArray,
                                             preventDuplicates: true
                                         });
@@ -185,7 +182,7 @@
                             </div>
 
                             <div class="row" style="margin-top: 8px">
-                                <div class="col-sm-3"><h5>Locality Preference:</h5></div>
+                                <div class="col-sm-3"><h5>Locality Preference(s):</h5></div>
                                 <div class="col-sm-5">
                                     <input type="text" id="candidateLocalityPref" placeholder="Where do you want to work?">
                                     <script type="text/javascript">
@@ -195,6 +192,7 @@
                                               placeholder: "Where do you want to work?",
                                               hintText: "Start typing Area (eg. BTM Layout, Bellandur..)",
                                               minChars: 0,
+                                              tokenLimit: 3,
                                               prePopulate: localityPrefArray,
                                               preventDuplicates: true
                                           });
@@ -362,7 +360,6 @@
                                 </div>
                             </div>
                         </div>
-                    <hr>
                     <!-- next/save btn -->
                     <button type="submit" id="saveBtn" class="btn btn-primary" style="float: right">
                         <div style="display: inline-block">Next</div>

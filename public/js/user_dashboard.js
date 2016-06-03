@@ -83,12 +83,11 @@ $(document).ready(function(){
     if(userMobile != null){
         document.getElementById("helloMsg").innerHTML = "Hello " + userName + "!";
         try{
-            if(userLastName == null){
+            if(userLastName == "null" || userLastName == null){
                 document.getElementById("userName").innerHTML = userName;
             } else{
                 document.getElementById("userName").innerHTML = userName + " " + userLastName;
             }
-
             document.getElementById("userMobile").innerHTML = userMobile;
         } catch(err){
         }
@@ -118,12 +117,12 @@ $(document).ready(function(){
 
     function processDataCheckMinProfile(returnedData) {
         if(returnedData == 0){ // profile not complete
-            document.getElementById("profileStatusResult").innerHTML = '<font color="#FF7214">Incomplete</font>';
-            document.getElementById("profileStatusAction").innerHTML = '<a href="/dashboard/editProfile/basic" ><font size="2" color="#c74f00">(Complete Profile Now)</font></a>';
+            document.getElementById("profileStatusResult").innerHTML = '<font color="#F26522">Incomplete</font>';
+            document.getElementById("profileStatusAction").innerHTML = '<a href="/dashboard/editProfile/basic" ><font size="2" color="#F26522">(Complete Profile Now)</font></a>';
             $("#profileStatusIcon").attr('src', '/assets/dashboard/img/wrong.png');
         }
         else{
-            document.getElementById("profileStatusResult").innerHTML = '<font color="#24CD34">Complete</font>';
+            document.getElementById("profileStatusResult").innerHTML = '<font color="#46AB49">Complete</font>';
             document.getElementById("profileStatusAction").innerText = "-";
             $("#profileStatusIcon").attr('src', '/assets/dashboard/img/right.png');
         }
@@ -195,7 +194,7 @@ $(document).ready(function(){
         new google.visualization.Table(document.getElementById('table')).draw(data, options);
         var data2 = document.getElementsByClassName('google-visualization-table-td google-visualization-table-td-number').length;
         if(data2>0) {
-            document.getElementById("assessedStatusResult").innerHTML = '<font color="#24CD34">Complete</font>';
+            document.getElementById("assessedStatusResult").innerHTML = '<font color="#46AB49">Complete</font>';
             document.getElementById("assessedStatusAction").innerHTML = ' ';
             $("#assessedIcon").attr('src', '/assets/dashboard/img/right.png');
             // update isAssessed status to '1'
@@ -207,9 +206,14 @@ $(document).ready(function(){
             });
         }
         else{
-            document.getElementById("assessedStatusResult").innerHTML = '<font color="#FF7214">Incomplete</font>';
-            document.getElementById("assessedStatusAction").innerHTML = '<a href="http://bit.ly/trujobstest" target="_blank"><font size="2" color="#c74f00">(Take assessment)</font></a>';
-            $("#assessedIcon").attr('src', '/assets/dashboard/img/wrong.png');
+            try{
+                document.getElementById("assessedStatusResult").innerHTML = '<font color="#F26522">Incomplete</font>';
+                document.getElementById("assessedStatusAction").innerHTML = '<a href="http://bit.ly/trujobstest" target="_blank"><font size="2" color="#F26522">(Take assessment)</font></a>';
+                $("#assessedIcon").attr('src', '/assets/dashboard/img/wrong.png');
+
+            }
+            catch(err){
+            }
         }
     }
 
@@ -218,7 +222,7 @@ $(document).ready(function(){
     }
     else{
         try{
-            document.getElementById("assessedStatusResult").innerHTML = '<font color="#24CD34">Complete</font>';
+            document.getElementById("assessedStatusResult").innerHTML = '<font color="#46AB49">Complete</font>';
             document.getElementById("assessedStatusAction").innerHTML = '-';
             $("#assessedIcon").attr('src', '/assets/dashboard/img/right.png');
         } catch(err){
@@ -341,10 +345,10 @@ $(document).ready(function(){
             var expYear = parseInt($('#candidateTotalExperienceYear').val());
             var totalExp = expMonth + (12*expYear);
 
-            if($('input:radio[name="isEmployed"]:checked').val() == null){
+            if(experienceStatus == 1 && $('input:radio[name="isEmployed"]:checked').val() == null){
                 alert("Select Current Employment Status");
             }
-                else if(totalExp == 0){
+            else if(experienceStatus == 1 && totalExp == 0){
                     alert("Select Total Years of Experience");
             }
             else{
@@ -435,27 +439,32 @@ $(document).ready(function(){
             alert("Select a Degree");
         }
         else{
-            document.getElementById("saveBtn").disabled = true;
-            try {
-                var d = {
-                    candidateMobile: localStorage.getItem("mobile"),
-                    candidateFirstName: localStorage.getItem("name"),
-                    candidateSecondName: localStorage.getItem("lastName"),
+            if($('#candidateHighestDegree').val() == -1){
+                alert("Please select your Highest Degree");
+            }
+            else{
+                document.getElementById("saveBtn").disabled = true;
+                try {
+                    var d = {
+                        candidateMobile: localStorage.getItem("mobile"),
+                        candidateFirstName: localStorage.getItem("name"),
+                        candidateSecondName: localStorage.getItem("lastName"),
 
-                    candidateEducationLevel: $('input:radio[name="highestEducation"]:checked').val(),
-                    candidateDegree: $('#candidateHighestDegree').val(),
-                    candidateEducationInstitute: $('#candidateEducationInstitute').val(),
-                };
+                        candidateEducationLevel: $('input:radio[name="highestEducation"]:checked').val(),
+                        candidateDegree: $('#candidateHighestDegree').val(),
+                        candidateEducationInstitute: $('#candidateEducationInstitute').val(),
+                    };
 
-                $.ajax({
-                    type: "POST",
-                    url: "/candidateUpdateEducationDetails",
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify(d),
-                    success: processDataCandidateEducationUpdate
-                });
-            } catch (exception) {
-                console.log("exception occured!!" + exception);
+                    $.ajax({
+                        type: "POST",
+                        url: "/candidateUpdateEducationDetails",
+                        contentType: "application/json; charset=utf-8",
+                        data: JSON.stringify(d),
+                        success: processDataCandidateEducationUpdate
+                    });
+                } catch (exception) {
+                    console.log("exception occured!!" + exception);
+                }
             }
         }
     }

@@ -74,7 +74,7 @@
           </li>
           <li>
             <center>
-              <h4><font color="white"><div id="helloMsg">Hello Adarsh</div></font></h4>
+              <h4><font color="white"><div id="helloMsg"></div></font></h4>
             </center>
           </li>
           <li>
@@ -106,43 +106,41 @@
         <a href="#menu-toggle" class="visible-xs btn btn-default" style="width: 30%" id="menu-toggle">Show Menu</a>
         <div class="container-fluid">
           <div class="row">
-              <h2>Edit Profile</h2>
-              <hr>
-              <center class="visible-lg">
-                  <div style="display: inline-block">
-                      <div id="editProfileSteps">
-                          <img src="/assets/dashboard/img/basic.png" height="30px">
+              <div style="display: inline-block">
+                  <h2>Edit Profile</h2>
+              </div>
+              <div style="display: inline-block; margin-left: 12%">
+                  <center class="visible-lg">
+                      <div style="display: inline-block">
+                          <img src="/assets/dashboard/img/basic_disable.png" height="42px">
+                          <h5><b>1</b> Basic Information</h5>
                       </div>
-                      <h6>1 Basic Information</h6>
-                  </div>
 
-                  <div style="display: inline-block">
-                      <div style="display: inline-block; width: 80px;"></div>
-                  </div>
-
-                  <div style="display: inline-block">
-                      <div id="editProfileSteps">
-                          <img src="/assets/dashboard/img/skills.png" height="30px">
+                      <div style="display: inline-block">
+                          <div style="display: inline-block; width: 80px;"></div>
                       </div>
-                      <h6>2 Experience & Skills</h6>
-                  </div>
 
-                  <div style="display: inline-block">
-                      <div style="display: inline-block; width: 80px; height: 5px;"></div>
-                  </div>
-
-                  <div style="display: inline-block">
-                      <div id="editProfileStepsActive">
-                          <img src="/assets/dashboard/img/education.png" height="30px">
+                      <div style="display: inline-block">
+                          <img src="/assets/dashboard/img/skills_disable.png" height="42px">
+                          <h5><b>2</b> Experience & Skills</h5>
                       </div>
-                      <h6>3 Education Details</h6>
-                  </div>
-              </center>
+
+                      <div style="display: inline-block">
+                          <div style="display: inline-block; width: 80px; height: 5px;"></div>
+                      </div>
+
+                      <div style="display: inline-block">
+                          <img src="/assets/dashboard/img/education_enable.png" height="42px">
+                          <h5><b>3</b> Education Details</h5>
+                      </div>
+                  </center>
+              </div>
+              <hr style="margin-top: 10px">
               <h3>Education Details</h3>
-              <h5>Tell us something about your educational background!</h5>
+              <h5>Tell us about your educational background!</h5>
               <form id="candidateUpdateEducationDetails" method="post">
                 <div class=profileBody>
-                    <h4>Your Education</h4>
+                    <div id="profileUpdateHeader"><h4>Your Education</h4></div>
                     <hr>
 
                     <div class="row" style="margin-top: 4px">
@@ -162,7 +160,7 @@
                             </div>
                         </div>
                         <div class="row" style="margin-top: 4px">
-                            <div class="col-sm-3"><h5>Last attended Education Institute?</h5></div>
+                            <div class="col-sm-3"><h5>Last Attended Education Institute?</h5></div>
                             <div class="col-sm-5">
                                 <input id="candidateEducationInstitute" style="width: 326px" placeholder="Which was the last college u went to?" type="text" class="form-control input-md">
                             </div>
@@ -170,7 +168,7 @@
                     </div>
 
                 </div>
-                <hr>
+                <hr id="educationHr">
                 <!-- next/save btn -->
                 <button type="submit" id="saveBtn" class="btn btn-primary" style="margin: 2px; float: right">
                     <div style="display: inline-block">Save</div>

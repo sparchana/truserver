@@ -185,7 +185,11 @@ function processDataCheckUserMobile(returnedData) {
 
 function processDataAndFillAllFields(returnedData) {
     $("#candidateFirstName").val(returnedData.candidateName);
-    $("#candidateSecondName").val(returnedData.candidateLastName);
+    if(returnedData.candidateLastName == "null" || returnedData.candidateLastName == null){
+        $("#candidateSecondName").val("");
+    } else{
+        $("#candidateSecondName").val(returnedData.candidateLastName);
+    }
     $("#candidateMobile").val(returnedData.candidateMobile.substring(3,13));
 
     /* get Candidate's job preference */
@@ -330,7 +334,7 @@ function processDataAndFillAllFields(returnedData) {
                 {
                     age--;
                 }
-                document.getElementById("userAge").innerHTML = age + " years";
+                document.getElementById("userAge").innerHTML = ", " + age + " years";
             } catch (err) {
             }
         }
@@ -348,7 +352,7 @@ function processDataAndFillAllFields(returnedData) {
         if (returnedData.candidateGender != null) {
             if (returnedData.candidateGender == 0) {
                 try{
-                    document.getElementById("userGender").innerHTML = "Male";
+                    document.getElementById("userGender").innerHTML = ", Male";
                 } catch(err){
                 }
                 document.getElementById("genderMale").checked = true;
@@ -356,7 +360,10 @@ function processDataAndFillAllFields(returnedData) {
                 /* for support */
                 $('input[id=genderMale]').attr('checked', true);
             } else {
-                document.getElementById("userGender").innerHTML = "Female";
+                try{
+                    document.getElementById("userGender").innerHTML = ", Female";
+                } catch(err){
+                }
                 document.getElementById("genderFemale").checked = true;
                 $('#genderFemale').parent().addClass('active').siblings().removeClass('active');
                 /* for support */
@@ -405,8 +412,12 @@ function processDataAndFillAllFields(returnedData) {
 
     try {
         if(returnedData.candidateCurrentJobDetail != null){
-            if(returnedData.candidateCurrentJobDetail.candidateCurrentCompany != null){
-                $("#candidateCurrentCompany").val(returnedData.candidateCurrentJobDetail.candidateCurrentCompany);
+            if(returnedData.candidateCurrentJobDetail.candidateCurrentCompany != null && returnedData.candidateCurrentJobDetail.candidateCurrentCompany != ""){
+                try{
+                    $("#candidateCurrentCompany").val(returnedData.candidateCurrentJobDetail.candidateCurrentCompany);
+                } catch(err){
+                    console.log(err);
+                }
                 try{
                     document.getElementById("userCurrentCompany").innerHTML = returnedData.candidateCurrentJobDetail.candidateCurrentCompany;
                 } catch(err){
@@ -414,7 +425,7 @@ function processDataAndFillAllFields(returnedData) {
             }
             else{
                 try{
-                    document.getElementById("userCurrentCompany").innerHTML = "NA";
+                    document.getElementById("userCurrentCompany").innerHTML = "Not Specified";
                 } catch(err){
                 }
             }
@@ -423,14 +434,22 @@ function processDataAndFillAllFields(returnedData) {
             }
             if(returnedData.candidateCurrentJobDetail.candidateCurrentSalary != null){
                 try{
-                    document.getElementById("userCurrentSalary").innerHTML = returnedData.candidateCurrentJobDetail.candidateCurrentSalary + "/month";
+                    if(returnedData.candidateCurrentJobDetail.candidateCurrentSalary == "0"){
+                        document.getElementById("userCurrentSalary").innerHTML = "Fresher";
+                    } else{
+                        document.getElementById("userCurrentSalary").innerHTML = returnedData.candidateCurrentJobDetail.candidateCurrentSalary + "/month";
+                    }
                 } catch(err){
                 }
-                $("#candidateCurrentJobSalary").val(returnedData.candidateCurrentJobDetail.candidateCurrentSalary);
+                try{
+                    $("#candidateCurrentJobSalary").val(returnedData.candidateCurrentJobDetail.candidateCurrentSalary);
+                } catch(err){
+                    console.log(err);
+                }
             }
             else{
                 try{
-                    document.getElementById("userCurrentSalary").innerHTML = "NA";
+                    document.getElementById("userCurrentSalary").innerHTML = "Not Specified";
                 } catch(err){
                 }
             }
@@ -459,18 +478,25 @@ function processDataAndFillAllFields(returnedData) {
             $("#candidateTimeShiftPref").val(returnedData.timeShiftPreference.timeShift.timeShiftId);
             try{
                 document.getElementById("userShift").innerHTML = returnedData.timeShiftPreference.timeShift.timeShiftName;
+                if(returnedData.timeShiftPreference.timeShift.timeShiftId == 5){
+                    document.getElementById("userShift").innerHTML = returnedData.timeShiftPreference.timeShift.timeShiftName + " Shift";
+                }
             } catch(err){
             }
         }
         else{
             try{
-                document.getElementById("userShift").innerHTML = "NA";
+                document.getElementById("userShift").innerHTML = "Not Specified";
             } catch(err){
             }
         }
         if(returnedData.candidateTotalExperience != null){
             if(returnedData.candidateTotalExperience == 0){
-                document.getElementById("userTotalExperience").innerHTML = "Fresher";
+                try{
+                    document.getElementById("userTotalExperience").innerHTML = "Fresher";
+                } catch(err){
+                }
+
                 document.getElementById("fresher").checked = true;
                 $('#fresher').parent().addClass('active').siblings().removeClass('active');
             } else{
@@ -482,7 +508,7 @@ function processDataAndFillAllFields(returnedData) {
                     console.log("try catch");
                 }
                 try {
-                    document.getElementById("userTotalExperience").innerHTML = parseInt((totalExperience / 12)).toString() + " years and " + totalExperience % 12 + " months";
+                    document.getElementById("userTotalExperience").innerHTML = parseInt((totalExperience / 12)).toString() + " yrs and " + totalExperience % 12 + " mths";
                 } catch (err){
                     console.log("try catch");
                 }
@@ -515,7 +541,7 @@ function processDataAndFillAllFields(returnedData) {
                 }
             } else{
                 try{
-                    document.getElementById("userEducationLevel").innerHTML = "NA";
+                    document.getElementById("userEducationLevel").innerHTML = "Not Specified";
                 } catch(err){
                 }
             }
@@ -528,11 +554,25 @@ function processDataAndFillAllFields(returnedData) {
             if(returnedData.motherTongue != null){
                 $("#candidateMotherTongue").val(returnedData.motherTongue.languageId);
             }
+            else{
+                $("#candidateMotherTongue").val(-1);
+            }
         }
     } catch(err){
         console.log(err);
     }
 
+    try{
+        if(returnedData.motherTongue != null){
+            $("#candidateMotherTongue").val(returnedData.motherTongue.languageId);
+        }
+        else{
+            $("#candidateMotherTongue").val(-1);
+        }
+    }
+    catch(err){
+        console.log(err);
+    }
     try {
         if (returnedData.candidateSalarySlip != null) {
             if(returnedData.candidateSalarySlip == '1'){
@@ -712,7 +752,7 @@ function processDataCheckEducation(returnedData) {
         var item = {};
         item ["id"] = id;
         item ["name"] = name;
-        var option ='<label class="btn btn-custom-check" onchange="checkInstitute()" style=\"width: 124px\"><input type="radio" name="highestEducation" id=\"' + id + '\" value=\"' + id + '\" checked required>' + name + '</label>';
+        var option ='<label class="btn btn-custom-check" onchange="checkInstitute()" style=\"width: 124px\"><input type="radio" name="highestEducation" id=\"' + id + '\" value=\"' + id + '\" checked>' + name + '</label>';
         $('#candidateHighestEducation').append(option);
         educationArray.push(item);
     });

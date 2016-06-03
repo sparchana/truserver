@@ -42,7 +42,7 @@ public class Application extends Controller {
     public static Result index() {
         String sessionId = session().get("sessionId");
         if(sessionId != null){
-            return ok(views.html.candidate_home.render());
+            return redirect("/dashboard");
         }
         return ok(views.html.index.render());
     }
