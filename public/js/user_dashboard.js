@@ -78,9 +78,16 @@ $(document).ready(function(){
 
     var userMobile = localStorage.getItem("mobile");
     var userName = localStorage.getItem("name");
+    var userLastName = localStorage.getItem("lastName");
 
     if(userMobile != null){
         document.getElementById("helloMsg").innerHTML = "Hello " + userName + "!";
+        try{
+            document.getElementById("userName").innerHTML = userName + " " + userLastName;
+            document.getElementById("userMobile").innerHTML = userMobile;
+        } catch(err){
+        }
+
         $('#userExist').show();
     }
     else{

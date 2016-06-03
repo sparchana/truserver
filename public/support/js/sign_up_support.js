@@ -331,11 +331,16 @@ function processDataAndFillAllFields(returnedData) {
     try {
         if (returnedData.candidateGender != null) {
             if (returnedData.candidateGender == 0) {
+                try{
+                    document.getElementById("userGender").innerHTML = "Male";
+                } catch(err){
+                }
                 document.getElementById("genderMale").checked = true;
                 $('#genderMale').parent().addClass('active').siblings().removeClass('active');
                 /* for support */
                 $('input[id=genderMale]').attr('checked', true);
             } else {
+                document.getElementById("userGender").innerHTML = "Female";
                 document.getElementById("genderFemale").checked = true;
                 $('#genderFemale').parent().addClass('active').siblings().removeClass('active');
                 /* for support */
@@ -386,12 +391,32 @@ function processDataAndFillAllFields(returnedData) {
         if(returnedData.candidateCurrentJobDetail != null){
             if(returnedData.candidateCurrentJobDetail.candidateCurrentCompany != null){
                 $("#candidateCurrentCompany").val(returnedData.candidateCurrentJobDetail.candidateCurrentCompany);
+                try{
+                    document.getElementById("userCurrentCompany").innerHTML = returnedData.candidateCurrentJobDetail.candidateCurrentCompany;
+                } catch(err){
+                }
+            }
+            else{
+                try{
+                    document.getElementById("userCurrentCompany").innerHTML = "NA";
+                } catch(err){
+                }
             }
             if(returnedData.candidateCurrentJobDetail.candidateCurrentDesignation != null){
                 $("#candidateCurrentJobDesignation").val(returnedData.candidateCurrentJobDetail.candidateCurrentDesignation);
             }
             if(returnedData.candidateCurrentJobDetail.candidateCurrentSalary != null){
+                try{
+                    document.getElementById("userCurrentSalary").innerHTML = returnedData.candidateCurrentJobDetail.candidateCurrentSalary + "/month";
+                } catch(err){
+                }
                 $("#candidateCurrentJobSalary").val(returnedData.candidateCurrentJobDetail.candidateCurrentSalary);
+            }
+            else{
+                try{
+                    document.getElementById("userCurrentSalary").innerHTML = "NA";
+                } catch(err){
+                }
             }
             if(returnedData.candidateCurrentJobDetail.candidateCurrentJobDuration != null){
                 var currentJobDuration = parseInt(returnedData.candidateCurrentJobDetail.candidateCurrentJobDuration);
@@ -419,6 +444,7 @@ function processDataAndFillAllFields(returnedData) {
         }
         if(returnedData.candidateTotalExperience != null){
             if(returnedData.candidateTotalExperience == 0){
+                document.getElementById("userTotalExperience").innerHTML = "0";
                 document.getElementById("fresher").checked = true;
                 $('#fresher').parent().addClass('active').siblings().removeClass('active');
             } else{
@@ -426,6 +452,11 @@ function processDataAndFillAllFields(returnedData) {
                 try{
                     $("#candidateTotalExperienceYear").val(parseInt((totalExperience / 12)).toString()); // years
                     $("#candidateTotalExperienceMonth").val(totalExperience % 12); // years
+                } catch (err){
+                    console.log("try catch");
+                }
+                try {
+                    document.getElementById("userTotalExperience").innerHTML = parseInt((totalExperience / 12)).toString() + " years and " + totalExperience % 12 + " months";
                 } catch (err){
                     console.log("try catch");
                 }

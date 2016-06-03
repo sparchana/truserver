@@ -136,10 +136,39 @@
                                     </center>
                                 </div>
                             </div>
-                            <div class="row sectionDashboard">
+                            <div class="row" style="margin-top: 2%">
+                                <div class="col-md-6 col-sm-6 col-xs-6">
+                                    <font size="5">User Details</font>
+                                </div>
+                                <div class="col-md-6 col-sm-6 col-xs-6">
+                                    <div style="float: right; cursor: pointer" onclick="showEditProfile()"><img src="/assets/dashboard/img/edit.png" width="24px">&nbsp;Edit Profile</div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row sectionDashboard" style="margin-top: -3%">
+                                    <div class="col-sm-4">
+                                        <div style="display : inline-block; margin: 4px;">
+                                            <img src="/assets/img/user.png" height="30px;">
+                                        </div>
+                                        <div style="margin-left: 4px; display: inline-block">
+                                            <div id="userName"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-4">
+                                        <div style="display : inline-block; margin: 4px;">
+                                            <img src="/assets/img/phone.png" height="30px;">
+                                        </div>
+                                        <div style="margin-left: 4px; display: inline-block">
+                                            <div id="userMobile"></div>
+                                        </div>
+                                    </div>
+                            </div>
+
+                            <div class="row sectionDashboard" style="margin-top: -5%">
                                 <div class="row>">
                                     <div class="col-sm-4">
-                                        <div style="display : inline-block">
+                                        <div style="display : inline-block; margin: 4px;">
                                             <img src="/assets/img/job.png" height="30px;">
                                         </div>
                                         <div style="margin-left: 4px; display: inline-block">
@@ -152,7 +181,7 @@
                                     </div>
 
                                     <div class="col-sm-4">
-                                        <div style="display : inline-block">
+                                        <div style="display : inline-block; margin: 4px;">
                                             <img src="/assets/img/location.png" height="30px;">
                                         </div>
                                         <div style="margin-left: 4px; display: inline-block">
@@ -163,11 +192,53 @@
                                         </ul>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+
+                            <div class="row sectionDashboard" style="margin-top: -5%">
+                                <div class="row>">
                                     <div class="col-sm-4">
-                                        <div style="float: right; cursor: pointer" onclick="showEditProfile()"><img src="/assets/dashboard/img/edit.png" width="24px">&nbsp;Edit Profile</div>
+                                        <div style="display : inline-block; margin: 4px;">
+                                            <img src="/assets/img/user.png" height="30px;">
+                                        </div>
+                                        <div style="display : inline-block; margin-left: 4px;">Gender: </div>
+                                        <div id="userGender" style="margin-left: 4px; display: inline-block">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-4">
+                                        <div style="display : inline-block; margin: 4px;">
+                                            <img src="/assets/img/workExp.png" height="30px;">
+                                        </div>
+                                        <div style="display : inline-block;  margin: 4px;">Total Experience: </div>
+                                        <div id="userTotalExperience" style="margin: 4px; display: inline-block">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="row sectionDashboard" style="margin-top: -5%">
+                                <div class="row>">
+                                    <div class="col-sm-4">
+                                        <div style="display : inline-block; margin: 4px;">
+                                            <img src="/assets/img/company.png" height="30px;">
+                                        </div>
+                                        <div style="display : inline-block; margin-left: 4px;">Current Company: </div>
+                                        <div id="userCurrentCompany" style="margin-left: 4px; display: inline-block">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-4">
+                                        <div style="display : inline-block; margin: 4px;">
+                                            <img src="/assets/img/salary.png" height="30px;">
+                                        </div>
+                                        <div style="display : inline-block;  margin-left: 4px;">Current Company: </div>
+                                        <div id="userCurrentSalary" style="margin-left: 4px; display: inline-block">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                                 <!-- start hot job -->
                             <div class="company_class" id="hotJobs">
                                 Hot Jobs
