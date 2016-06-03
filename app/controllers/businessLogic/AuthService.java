@@ -62,11 +62,14 @@ public class AuthService {
 
                 Logger.info("Password saved");
 
-                Interaction interaction = new Interaction();
-                interaction.objectAUUId = existingCandidate.candidateUUId;
-                interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
-                interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
-                interaction.result = "New Candidate Added";
+                Interaction interaction = new Interaction(
+                        existingCandidate.candidateUUId,
+                        ServerConstants.OBJECT_TYPE_CANDIDATE,
+                        ServerConstants.INTERACTION_TYPE_WEBSITE,
+                        ServerConstants.INTERACTION_NOTE_SELF_PASSWORD_CHANGED,
+                        ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE,
+                        ServerConstants.INTERACTION_CREATED_SELF
+                );
                 InteractionService.createInteraction(interaction);
                 try {
                     existingCandidate.candidateprofilestatus = CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_NEW).findUnique();

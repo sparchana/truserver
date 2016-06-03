@@ -42,6 +42,8 @@ GET      /getAllTransportation                                    controllers.Ap
 
 GET      /getAllEducation                                         controllers.Application.getAllEducation()
 
+GET      /getAllLeadSource                                         controllers.Application.getAllLeadSource()
+
 GET      /getAllLanguage                                          controllers.Application.getAllLanguage()
 
 GET      /getAllIdProof                                           controllers.Application.getAllIdProof()

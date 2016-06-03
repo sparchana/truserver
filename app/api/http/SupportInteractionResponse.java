@@ -4,12 +4,13 @@ package api.http;
  * Created by batcoder1 on 13/5/16.
  */
 public class SupportInteractionResponse {
-    public long userId;
+    public long interactionId;
     public String userName;
     public String userInteractionTimestamp;
     public String userInteractionType;
     public String userNote;
     public String userResults;
+    public String userCreatedBy;
 
     public void setUserInteractionType(String userInteractionType) {
         this.userInteractionType = userInteractionType;
@@ -19,12 +20,12 @@ public class SupportInteractionResponse {
         this.userResults = userResults;
     }
 
-    public long getUserId() {
-        return userId;
+    public long getInteractionId() {
+        return interactionId;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setInteractionId(long interactionId) {
+        this.interactionId = interactionId;
     }
 
     public String getUserName() {
@@ -50,6 +51,16 @@ public class SupportInteractionResponse {
     public void setUserNote(String userNote) {
         this.userNote = userNote;
     }
+
+
+    public String getUserCreatedBy() {
+        return userCreatedBy;
+    }
+
+    public void setUserCreatedBy(String userCreatedBy) {
+        this.userCreatedBy = userCreatedBy;
+    }
+
 
 
 }

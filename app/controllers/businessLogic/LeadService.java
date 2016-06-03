@@ -11,26 +11,40 @@ import play.Logger;
 public class LeadService {
     public static void createLead(Lead lead, boolean isSupport){
         Lead existingLead = Lead.find.where().eq("leadMobile",lead.leadMobile).findUnique();
-        Interaction interaction = new Interaction();
-        if(!isSupport){
-            interaction.setCreatedBy("Website");
+        String objectAUUId;
+        String result;
+        String note = "";
+        int interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+        int objectAType;
+        String createdBy = "System";
+        if(!isSupport) {
+            createdBy = ServerConstants.INTERACTION_CREATED_SELF;
+        } else {
+            interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT; //TODO: Call Out/In need to be distinguished
         }
         if(existingLead == null){
             //if lead does not exists
             Lead.addLead(lead);
-            interaction.result = "New lead Added";
+            result = ServerConstants.INTERACTION_RESULT_NEW_LEAD;
             Logger.info("Lead added");
-            interaction.objectAUUId = lead.leadUUId;
-            interaction.objectAType = lead.getLeadType();
-        }
-        else {
+            objectAUUId = lead.leadUUId;
+            objectAType = lead.getLeadType();
+        } else {
             // lead exists
-            interaction.result = "Existing lead made contact through website";
-            interaction.objectAUUId = existingLead.leadUUId;
-            interaction.objectAType = existingLead.getLeadType();
+            result = ServerConstants.INTERACTION_RESULT_EXISTING_LEAD;
+            objectAUUId = existingLead.leadUUId;
+            objectAType = existingLead.getLeadType();
         }
 
-        interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+        Interaction interaction = new Interaction(
+                objectAUUId,
+                objectAType,
+                interactionType,
+                note,
+                result,
+                createdBy
+        );
+
         InteractionService.createInteraction(interaction);
     }
 }

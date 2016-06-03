@@ -9,14 +9,14 @@ function processDataForSupportInteraction(returnedData) {
     });
     //DoTheDue Here
     returnedData.forEach(function (interaction) {
-        if(interaction.userId != null){
+        if(interaction.interactionId != null){
             t.row.add( [
                 interaction.userInteractionTimestamp,
-                interaction.userId,
-                interaction.userName,
+                interaction.interactionId,
                 interaction.userInteractionType,
                 interaction.userNote,
                 interaction.userResults,
+                interaction.userCreatedBy,
             ] ).draw( false );
         } else {
             console.log("Null obj encountered");

@@ -50,6 +50,8 @@ public class AddSupportCandidateRequest {
     public Integer candidateSalarySlip ;
     public Integer candidateAppointmentLetter ;
 
+    public Integer leadSource;
+
     public List<SkillMapClass> candidateSkills;
 
     public void setCandidateLanguageKnown(List<LanguageClass> candidateLanguageKnown) {
@@ -281,6 +283,10 @@ public class AddSupportCandidateRequest {
     }
     public Integer getCandidateAppointmentLetter() {
         return candidateAppointmentLetter;
+    }
+
+    public void setLeadSource(Integer leadSource) {
+        this.leadSource = leadSource;
     }
 
 }
