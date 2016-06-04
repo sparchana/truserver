@@ -52,15 +52,13 @@ public class AuthService {
 
             else{
                 Auth auth = new Auth();
-                auth.authId =  (int)(Math.random()*9000)+100000;
+                auth.authId =  Util.randomLong();
                 auth.candidateId = existingCandidate.candidateId;
                 setNewPassword(auth,password);
                 auth.authStatus = ServerConstants.CANDIDATE_STATUS_VERIFIED;
                 Auth.savePassword(auth);
 
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-
-                Logger.info("Password saved");
 
                 Interaction interaction = new Interaction(
                         existingCandidate.candidateUUId,

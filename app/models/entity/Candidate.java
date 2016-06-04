@@ -138,12 +138,12 @@ public class Candidate extends Model {
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
     public void registerCandidate() {
-        Logger.info("inside signup method" );
+        Logger.info("inside registerCandidate(), Candidate registered/saved" );
         this.save();
     }
 
     public void candidateUpdate() {
-        Logger.info("inside Candidate Update method" );
+        Logger.info("inside CandidateUpdate(), Candidate updated" );
         this.update();
     }
 

@@ -61,8 +61,8 @@ public class CandidateService {
                     existingLead.setLeadType(ServerConstants.TYPE_CANDIDATE);
                     existingLead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
                     existingLead.setLeadSource(getLeadSourceFromLeadSourceId(leadSourceId));
-                    if(existingLead.getLeadName() == null || existingLead.getLeadName().equals("")){
-                        existingLead.setLeadName(existingCandidate.candidateName);
+                    if(existingLead.getLeadName().trim().isEmpty()){
+                        existingLead.setLeadName(candidate.candidateName + " " + candidate.candidateLastName);
                     }
                     candidate.setLead(existingLead);
                     Logger.info("Check mobile no " + existingLead.leadMobile);
@@ -70,11 +70,8 @@ public class CandidateService {
                 CandidateProfileStatus candidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_NEW).findUnique();
                 if(candidateProfileStatus != null){
                     candidate.setCandidateprofilestatus(candidateProfileStatus);
-                    Logger.info("Candidate successfully registered " + candidate);
                     candidate.registerCandidate();
-                    if(Candidate.find.where().eq("candidateId", candidate.candidateId).findUnique() != null){
-                        Logger.info("stupid break");
-                    }
+                    Logger.info("Candidate successfully registered " + candidate);
                 } else {
                     candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
                 }
@@ -183,9 +180,6 @@ public class CandidateService {
             existingLead.setLeadType(ServerConstants.TYPE_CANDIDATE);
             existingLead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
             existingLead.setLeadSource(getLeadSourceFromLeadSourceId(request.leadSource));
-            if(existingLead.getLeadName().trim().equals("")){
-                existingLead.setLeadName(candidate.candidateName + " " + candidate.candidateLastName);
-            }
             candidate.setCandidateName(request.getCandidateFirstName());
             candidate.setCandidateLastName(request.getCandidateSecondName());
             candidate.setLead(existingLead);
@@ -234,6 +228,7 @@ public class CandidateService {
         InteractionService.createInteraction(interaction);
 
         candidate.update();
+        Logger.info("candidate CreatedBySupportSuccessfully " + candidate.candidateMobile);
         response.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
         return response;
@@ -292,9 +287,17 @@ public class CandidateService {
         if(response == null){
             response = new CandidateEducation();
             response.setCandidate(candidate);
-        } if(education != null){
+        }
+
+        if (education == null && degree == null) {
+            return null;
+        }
+
+        if(education != null){
             response.setEducation(education);
-        } if(degree != null){
+        }
+
+        if(degree != null){
             response.setDegree(degree);
         }
         response.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
@@ -374,6 +377,17 @@ public class CandidateService {
             response = new CandidateCurrentJobDetail();
             response.setCandidate( candidate);
         }
+
+        TransportationMode transportationMode = TransportationMode.find.where().eq("transportationModeId", request.getCandidateTransportation()).findUnique();
+        TimeShift timeShift = TimeShift.find.where().eq("timeShiftId", request.getCandidateCurrentWorkShift()).findUnique();
+        JobRole jobRole = JobRole.find.where().eq("jobRoleId",request.getCandidateCurrentJobRole()).findUnique();
+        Locality locality = Locality.find.where().eq("localityId", request.getCandidateCurrentJobLocation()).findUnique();
+        if(timeShift == null && jobRole == null && locality == null && request.getCandidateCurrentSalary() == null &&
+                (request.getCandidateCurrentCompany() == null || request.getCandidateCurrentCompany().trim().isEmpty()))
+        {
+            return null;
+        }
+
         response.setUpdateTimeStamp( new Timestamp(System.currentTimeMillis()));
         response.setCandidateCurrentCompany( request.getCandidateCurrentCompany());
         response.setCandidateCurrentDesignation( request.getCandidateCurrentJobDesignation());
@@ -382,13 +396,7 @@ public class CandidateService {
         response.setCandidateCurrentEmployerRefMobile("na");
         response.setCandidateCurrentEmployerRefName("na");
 
-        TransportationMode transportationMode = TransportationMode.find.where().eq("transportationModeId", request.getCandidateTransportation()).findUnique();
-        TimeShift timeShift = TimeShift.find.where().eq("timeShiftId", request.getCandidateCurrentWorkShift()).findUnique();
-        JobRole jobRole = JobRole.find.where().eq("jobRoleId",request.getCandidateCurrentJobRole()).findUnique();
-        Locality locality = Locality.find.where().eq("localityId", request.getCandidateCurrentJobLocation()).findUnique();
-        if(timeShift == null || jobRole == null || locality == null){
-            // do nothing let it save without these entity
-        }
+
         response.setCandidateTransportationMode(transportationMode);
         response.setCandidateCurrentWorkShift(timeShift);
         response.setCandidateCurrentJobLocation(locality);

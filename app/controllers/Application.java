@@ -667,8 +667,8 @@ public class Application extends Controller {
                     candidateJobHistory2.setCandidate(candidate8);
                     candidateJobHistory.setCandidatePastCompany("AGS");
                     candidateJobHistory2.setCandidatePastCompany("Microtek");
-                    candidateJobHistory.setCandidatePastSalary(15000);
-                    candidateJobHistory2.setCandidatePastSalary(20500);
+                    candidateJobHistory.setCandidatePastSalary((long) 15000);
+                    candidateJobHistory2.setCandidatePastSalary((long) 20500);
                     // TODO: since requres db query hence find a way
                     JobRole jobRole = JobRole.find.where().eq("jobRoleId", 1).findUnique();
                     JobRole jobRole2 = JobRole.find.where().eq("jobRoleId", 2).findUnique();
@@ -805,6 +805,22 @@ public class Application extends Controller {
                 int salt =  Util.randomInt();
                 String md5Password = Util.md5(salt + password);
                 return ok("Password: " + password + " salt: " + salt + " : md5 = " + md5Password);
+            case 16:
+                // json to candidate save test api
+                String jsonToSave = "{\"candidateFirstName\":\"Ramya\",\"candidateSecondName\":\"D\",\"candidateMobile\":\"9738357414\",\"candidateLocality\":\"275,210\",\"candidateJobInterest\":\"3,5\",\"leadSource\":\"5\",\"candidateDob\":\"1998-02-17\",\"candidatePhoneType\":\"Smart Phone\",\"candidateGender\":\"1\",\"candidateHomeLocality\":\"275\",\"candidateMaritalStatus\":\"1\",\"candidateEmail\":\"ramya.dolly.008@gmail.com\",\"candidateTotalExperience\":0,\"candidateCurrentCompany\":\"\",\"candidateCurrentJobLocation\":\"\",\"candidateTransportation\":\"-1\",\"candidateCurrentWorkShift\":\"\",\"candidateCurrentJobRole\":\"\",\"candidateCurrentJobDesignation\":\"\",\"candidateCurrentSalary\":\"\",\"candidateCurrentJobDuration\":0,\"candidatePastJobCompany\":\"\",\"candidatePastJobRole\":\"\",\"candidatePastJobSalary\":\"\",\"candidateEducationLevel\":\"3\",\"candidateDegree\":null,\"candidateEducationInstitute\":\"Bangalore University\",\"candidateTimeShiftPref\":\"2\",\"candidateMotherTongue\":\"5\",\"candidateLanguageKnown\":[{\"id\":\"1\",\"r\":1,\"w\":1,\"s\":1},{\"id\":\"2\",\"r\":0,\"w\":0,\"s\":1},{\"id\":\"3\",\"r\":1,\"w\":1,\"s\":1},{\"id\":\"4\",\"r\":0,\"w\":0,\"s\":1},{\"id\":\"5\",\"r\":1,\"w\":1,\"s\":1}],\"candidateSkills\":[{\"id\":7,\"qualifier\":\"Yes\"},{\"id\":8,\"qualifier\":\"Yes\"},{\"id\":9,\"qualifier\":\"Yes\"},{\"id\":10,\"qualifier\":\"Yes\"}],\"candidateIdProof\":\"3\",\"candidateSalarySlip\":\"0\",\"candidateAppointmentLetter\":\"0\"}";
+                if(jsonToSave.isEmpty()){
+                    Logger.info("Please mention jsonString to save as candiate");
+                }
+
+                AddSupportCandidateRequest addSupportCandidateRequest = new AddSupportCandidateRequest();
+                ObjectMapper newMapper = new ObjectMapper();
+                try {
+                    addSupportCandidateRequest = newMapper.readValue(jsonToSave, AddSupportCandidateRequest.class);
+                    Logger.info("json" + jsonToSave.toString());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return ok(toJson(CandidateService.createCandidateBySupport(addSupportCandidateRequest)));
         }
         return ok("");
     }

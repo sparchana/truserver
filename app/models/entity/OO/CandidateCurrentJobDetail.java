@@ -29,10 +29,10 @@ public class CandidateCurrentJobDetail extends Model{
     public String candidateCurrentDesignation;
 
     @Column(name = "CandidateCurrentSalary", columnDefinition = "bigint signed null")
-    public long candidateCurrentSalary;
+    public Long candidateCurrentSalary;
 
     @Column(name = "CandidateCurrentJobDuration", columnDefinition = "int signed null")
-    public int candidateCurrentJobDuration;
+    public Integer candidateCurrentJobDuration;
 
     @Column(name = "CandidateCurrentEmployerRefName", columnDefinition = "varchar(100) null")
     public String candidateCurrentEmployerRefName;
@@ -90,11 +90,11 @@ public class CandidateCurrentJobDetail extends Model{
         this.candidateCurrentDesignation = candidateCurrentDesignation;
     }
 
-    public void setCandidateCurrentSalary(long candidateCurrentSalary) {
+    public void setCandidateCurrentSalary(Long candidateCurrentSalary) {
         this.candidateCurrentSalary = candidateCurrentSalary;
     }
 
-    public void setCandidateCurrentJobDuration(int candidateCurrentJobDuration) {
+    public void setCandidateCurrentJobDuration(Integer candidateCurrentJobDuration) {
         this.candidateCurrentJobDuration = candidateCurrentJobDuration;
     }
 

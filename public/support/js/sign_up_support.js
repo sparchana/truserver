@@ -264,6 +264,7 @@ function processDataAndFillAllFields(returnedData) {
             }
         }
 
+        // populate past company and past sal fields
         try {
             var jobHistory = returnedData.jobHistoryList;
             jobHistory.forEach(function (historyItem){
@@ -305,7 +306,7 @@ function processDataAndFillAllFields(returnedData) {
         }
 
 
-
+        // populate and select past job role within the token input field
         if(returnedData.jobHistoryList != null){
             /* get Candidate's past job role */
             try {
