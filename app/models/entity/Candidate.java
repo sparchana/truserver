@@ -168,7 +168,7 @@ public class Candidate extends Model {
         this.candidateLastName = candidateLastName;
     }
 
-    public void setCandidateGender(int candidateGender) {
+    public void setCandidateGender(Integer candidateGender) {
         this.candidateGender = candidateGender;
     }
 
@@ -180,7 +180,7 @@ public class Candidate extends Model {
         this.candidatePhoneType = candidatePhoneType;
     }
 
-    public void setCandidateMaritalStatus(int candidateMaritalStatus) {
+    public void setCandidateMaritalStatus(Integer candidateMaritalStatus) {
         this.candidateMaritalStatus = candidateMaritalStatus;
     }
 
@@ -188,15 +188,15 @@ public class Candidate extends Model {
         this.candidateEmail = candidateEmail;
     }
 
-    public void setCandidateIsEmployed(int candidateIsEmployed) {
+    public void setCandidateIsEmployed(Integer candidateIsEmployed) {
         this.candidateIsEmployed = candidateIsEmployed;
     }
 
-    public void setCandidateTotalExperience(int candidateTotalExperience) {
+    public void setCandidateTotalExperience(Integer candidateTotalExperience) {
         this.candidateTotalExperience = candidateTotalExperience;
     }
 
-    public void setCandidateAge(int candidateAge) {
+    public void setCandidateAge(Integer candidateAge) {
         this.candidateAge = candidateAge;
     }
 
@@ -208,19 +208,19 @@ public class Candidate extends Model {
         this.candidateUpdateTimestamp = candidateUpdateTimestamp;
     }
 
-    public void setCandidateIsAssessed(int candidateIsAssessed) {
+    public void setCandidateIsAssessed(Integer candidateIsAssessed) {
         this.candidateIsAssessed = candidateIsAssessed;
     }
 
-    public void setCandidateSalarySlip(int candidateSalarySlip) {
+    public void setCandidateSalarySlip(Integer candidateSalarySlip) {
         this.candidateSalarySlip = candidateSalarySlip;
     }
 
-    public void setCandidateAppointmentLetter(int candidateAppointmentLetter) {
+    public void setCandidateAppointmentLetter(Integer candidateAppointmentLetter) {
         this.candidateAppointmentLetter = candidateAppointmentLetter;
     }
 
-    public void setIsMinProfileComplete(int isMinProfileComplete) {
+    public void setIsMinProfileComplete(Integer isMinProfileComplete) {
         IsMinProfileComplete = isMinProfileComplete;
     }
 
