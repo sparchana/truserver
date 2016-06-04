@@ -246,7 +246,7 @@ body{
 }
 
 .btn-add-lead{
-    background: #1a5178;
+    background: #0065a4;
     border: none;
     font-size: 12px;
     color: #ffffff;
@@ -569,6 +569,8 @@ padding: 0px;
 	margin: auto;
 }
 .hot_body_role{
+    font-size: 14px;
+    font-weight: bold;
 	margin:16px 0px 16px 0px;
 }
 .hot_body_salary{

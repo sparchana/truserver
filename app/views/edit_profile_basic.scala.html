@@ -32,31 +32,13 @@
           logoutUser();
           window.location = "/";
       }
-
       google.load('visualization', '1', {packages: ['table']});
-
-      function logoutUser() {
-          localStorage.clear();
-          window.location = "/";
-          try {
-              $.ajax({
-                  type: "GET",
-                  url: "/logoutUser",
-                  data: false,
-                  contentType: false,
-                  processData: false,
-              });
-          } catch (exception) {
-              console.log("exception occured!!" + exception);
-          }
-      }
       </script>
   </head>
 
   <body>
       <div id="table" style="display: none;"></div>
       <div id="wrapper">
-
       <!-- Sidebar -->
       <div id="sidebar-wrapper">
         <ul class="sidebar-nav">

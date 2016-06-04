@@ -11,32 +11,6 @@ $(document).ready(function(){
     try {
         $.ajax({
             type: "GET",
-            url: "/getAllLocality",
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataCheckAllLocalies
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/getAllJobs",
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataCheckAllJobRoles
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-
-    try {
-        $.ajax({
-            type: "GET",
             url: "/checkMinProfile/" + localStorage.getItem("id"),
             data: false,
             async: false,
@@ -99,11 +73,31 @@ $(document).ready(function(){
         window.location = "/new";
     }
 
+    function logoutUser() {
+        localStorage.clear();
+        window.location = "/";
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/logoutUser",
+                data: false,
+                contentType: false,
+                processData: false,
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+
     function processDataGetCandidateLocality(returnedData) {
-        var localities ="";
+        var localities = "";
+        var count = 0;
         returnedData.forEach(function (locality) {
+            count ++;
             localities += locality.locality.localityName;
-            localities += ", ";
+            if(count < Object.keys(returnedData).length){
+                localities += ", ";
+            }
 
             var id = locality.localityId;
             var name = locality.locality.localityName;
@@ -118,7 +112,10 @@ $(document).ready(function(){
     function processDataCheckMinProfile(returnedData) {
         if(returnedData == 0){ // profile not complete
             document.getElementById("profileStatusResult").innerHTML = '<font color="#F26522">Incomplete</font>';
-            document.getElementById("profileStatusAction").innerHTML = '<a href="/dashboard/editProfile/basic" ><font size="2" color="#F26522">(Complete Profile Now)</font></a>';
+            document.getElementById("profileStatusAction").innerHTML = '<font size="2" color="#F26522">(Complete Profile Now)</font>';
+            var profileStatusParent = document.getElementById("profileStatusParent");
+            profileStatusParent.style = "cursor: pointer";
+            profileStatusParent.onclick = "window.location = '/dashboard/editProfile/basic';";
             $("#profileStatusIcon").attr('src', '/assets/dashboard/img/wrong.png');
         }
         else{
@@ -128,11 +125,19 @@ $(document).ready(function(){
         }
     }
 
+    function completeProfile() {
+        window.open("http://bit.ly/trujobstest");
+    }
+
     function processDataGetCandidateJobRoles(returnedData) {
         var jobRoles = "";
+        var count = 0;
         returnedData.forEach(function (job) {
+            count++;
             jobRoles += job.jobRole.jobName;
-            jobRoles += ", ";
+            if(count < Object.keys(returnedData).length){
+                jobRoles += ", ";
+            }
 
             var id = job.jobRole.jobRoleId;
             var name = job.jobRole.jobName;
@@ -208,7 +213,10 @@ $(document).ready(function(){
         else{
             try{
                 document.getElementById("assessedStatusResult").innerHTML = '<font color="#F26522">Incomplete</font>';
-                document.getElementById("assessedStatusAction").innerHTML = '<a href="http://bit.ly/trujobstest" target="_blank"><font size="2" color="#F26522">(Take assessment)</font></a>';
+                document.getElementById("assessedStatusAction").innerHTML = '<font size="2" color="#F26522">(Take assessment)</font></a>';
+                var assessedStatusParent = document.getElementById("assessedStatusParent");
+                assessedStatusParent.addEventListener("click", completeProfile);
+                assessedStatusParent.style = "cursor: pointer";
                 $("#assessedIcon").attr('src', '/assets/dashboard/img/wrong.png');
 
             }
@@ -435,11 +443,11 @@ $(document).ready(function(){
     }
 
     function saveCandidateEducationDetails(){
-        if($('#candidateHighestDegree').val() == -1){
+        if($('#candidateHighestEducation').val() == -1){
             alert("Select a Degree");
         }
         else{
-            if($('#candidateHighestDegree').val() == -1){
+            if((($('#candidateHighestEducation').val() == 4) || ($('#candidateHighestEducation').val() == 5)) && $('#candidateHighestDegree').val() == -1){
                 alert("Please select your Highest Degree");
             }
             else{

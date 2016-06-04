@@ -1,5 +1,6 @@
 /*custom */
 body{
+    text-decoration: none;
     font-family: lato;
 }
 ::-webkit-scrollbar
