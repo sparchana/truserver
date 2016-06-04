@@ -33,6 +33,22 @@
           window.location = "/";
       }
       google.load('visualization', '1', {packages: ['table']});
+
+      function logoutUser() {
+          localStorage.clear();
+          window.location = "/";
+          try {
+              $.ajax({
+                  type: "GET",
+                  url: "/logoutUser",
+                  data: false,
+                  contentType: false,
+                  processData: false,
+              });
+          } catch (exception) {
+              console.log("exception occured!!" + exception);
+          }
+      }
       </script>
   </head>
 
@@ -75,9 +91,9 @@
               </div>
           </li>
           <li>
-            <div class="sideNav">
-              <a href="#" onclick="logoutUser()">Log Out</a>
-            </div>
+              <div class="sideNav">
+                  <a href="#" onclick="logoutUser()">Log Out</a>
+              </div>
           </li>
         </ul>
       </div>
@@ -93,27 +109,46 @@
               </div>
               <div style="display: inline-block; margin-left: 12%">
                   <center class="visible-lg">
-                      <div style="display: inline-block">
-                          <img src="/assets/dashboard/img/basic_enable.png" height="42px">
-                          <h5><b>1</b> Basic Information</h5>
-                      </div>
+                      <div>
+                          <div style="display: inline-block" >
+                              <img src="/assets/dashboard/img/basic_enable.png" height="42px">
+                          </div>
 
-                      <div style="display: inline-block">
-                          <div style="display: inline-block; width: 80px;"></div>
-                      </div>
+                          <div style="display: inline-block; height: 0px; width: 152px">
+                              <img src="/assets/new/img/arrow_right_hot.png">
+                          </div>
 
-                      <div style="display: inline-block">
-                          <img src="/assets/dashboard/img/skills_disable.png" height="42px">
-                          <h5><b>2</b> Experience & Skills</h5>
-                      </div>
+                          <div style="display: inline-block">
+                              <img src="/assets/dashboard/img/skills_disable.png" height="42px">
+                          </div>
 
-                      <div style="display: inline-block">
-                          <div style="display: inline-block; width: 80px; height: 5px;"></div>
-                      </div>
+                          <div style="display: inline-block; height: 0px; width: 152px">
+                              <img src="/assets/new/img/arrow_right_hot.png">
+                          </div>
 
-                      <div style="display: inline-block">
-                          <img src="/assets/dashboard/img/education_disable.png" height="42px">
-                          <h5><b>3</b> Education Details</h5>
+                          <div style="display: inline-block">
+                              <img src="/assets/dashboard/img/education_disable.png" height="42px">
+                          </div>
+                      </div>
+                      <!-- Heading -->
+
+                      <div style="margin-top: -24px">
+                          <div style="display: inline-block">
+                              <h5 style="color: #2980b9">Basic Information</h5>
+                          </div>
+
+                          <div style="display: inline-block; height: 0px; width: 84px">
+                          </div>
+
+                          <div style="display: inline-block">
+                              <h5 style="color: #9f9f9f">Experience & Skills</h5>
+                          </div>
+
+                          <div style="display: inline-block; height: 42px; width: 84px"></div>
+
+                          <div style="display: inline-block">
+                              <h5 style="color: #9f9f9f">Education Details</h5>
+                          </div>
                       </div>
                   </center>
               </div>
@@ -123,7 +158,7 @@
                         <div id="profileUpdateHeader"><h4>Basic Details</h4></div>
                         <div class=profileBody>
                             <div class="row">
-                                <div class="col-sm-3" ><h5>Name:</h5></div>
+                                <div class="col-sm-3" ><h5>Name<font color="red">*</font></h5></div>
                                 <div class="col-sm-5">
                                     <div class="row">
                                         <div class="col-sm-6">
@@ -137,14 +172,14 @@
                             </div>
 
                             <div class="row" style="margin-top: 8px">
-                                <div class="col-sm-3"><h5>Mobile No.:</h5></div>
+                                <div class="col-sm-3"><h5>Mobile No.<font color="red">*</font></h5></div>
                                 <div class="col-sm-5">
                                     <input id="candidateMobile" placeholder="What is your mobile no.?" name="candidateMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" class="form-control input-md" required>
                                 </div>
                             </div>
 
                             <div class="row" style="margin-top: 8px">
-                                <div class="col-sm-3"><h5>Job Role Preference(s):</h5></div>
+                                <div class="col-sm-3"><h5>Job Role Preference(s)<font color="red">*</font></h5></div>
                                 <div class="col-sm-5">
                                     <input type="text" id="candidateJobPref" >
                                     <script type="text/javascript">
@@ -164,7 +199,7 @@
                             </div>
 
                             <div class="row" style="margin-top: 8px">
-                                <div class="col-sm-3"><h5>Locality Preference(s):</h5></div>
+                                <div class="col-sm-3"><h5>Locality Preference(s)<font color="red">*</font></h5></div>
                                 <div class="col-sm-5">
                                     <input type="text" id="candidateLocalityPref" placeholder="Where do you want to work?">
                                     <script type="text/javascript">
@@ -184,7 +219,7 @@
                             </div>
 
                             <div class="row" style="margin-top: 8px">
-                                <div class="col-sm-3" style="margin-top: 5px"><h5 style="margin-top: 4px">Preferred work shift?: </h5></div>
+                                <div class="col-sm-3" style="margin-top: 5px"><h5 style="margin-top: 4px">Preferred work shift<font color="red">*</font></h5></div>
                                 <div class="col-sm-9">
                                     <select id="candidateTimeShiftPref" class="selectDropdown" style="width: 206px; height: 34px;">
                                     </select>
@@ -192,7 +227,7 @@
                             </div>
 
                             <div class="row" style="margin-top: 8px">
-                                <div class="col-sm-3"><h5>Date of Birth:</h5></div>
+                                <div class="col-sm-3"><h5>Date of Birth<font color="red">*</font></h5></div>
                                 <div class="col-sm-5">
                                     <select id="dob_day" class="selectDropdown" required>
                                         <option value="">Day</option>
@@ -329,7 +364,7 @@
                             </div>
 
                             <div class="row" style="margin-top: 8px">
-                                <div class="col-sm-3"><h5>Gender:</h5></div>
+                                <div class="col-sm-3"><h5>Gender<font color="red">*</font></h5></div>
                                 <div class="col-sm-5" style="margin-top: 4px">
                                     <div style="width: 100%; height: 34px;" class="btn-group" data-toggle="buttons">
                                         <label class="btn btn-custom-check" style="width: 103px">

@@ -111,27 +111,46 @@
               </div>
               <div style="display: inline-block; margin-left: 12%">
                   <center class="visible-lg">
-                      <div style="display: inline-block">
-                          <img src="/assets/dashboard/img/basic_disable.png" height="42px">
-                          <h5><b>1</b> Basic Information</h5>
-                      </div>
+                      <div>
+                          <div style="display: inline-block" >
+                              <img src="/assets/dashboard/img/basic_disable.png" height="42px">
+                          </div>
 
-                      <div style="display: inline-block">
-                          <div style="display: inline-block; width: 80px;"></div>
-                      </div>
+                          <div style="display: inline-block; height: 0px; width: 152px">
+                              <img src="/assets/new/img/arrow_right_hot.png">
+                          </div>
 
-                      <div style="display: inline-block">
-                          <img src="/assets/dashboard/img/skills_disable.png" height="42px">
-                          <h5><b>2</b> Experience & Skills</h5>
-                      </div>
+                          <div style="display: inline-block">
+                              <img src="/assets/dashboard/img/skills_disable.png" height="42px">
+                          </div>
 
-                      <div style="display: inline-block">
-                          <div style="display: inline-block; width: 80px; height: 5px;"></div>
-                      </div>
+                          <div style="display: inline-block; height: 0px; width: 152px">
+                              <img src="/assets/new/img/arrow_right_hot.png">
+                          </div>
 
-                      <div style="display: inline-block">
-                          <img src="/assets/dashboard/img/education_enable.png" height="42px">
-                          <h5><b>3</b> Education Details</h5>
+                          <div style="display: inline-block">
+                              <img src="/assets/dashboard/img/education_enable.png" height="42px">
+                          </div>
+                      </div>
+                          <!-- Heading -->
+
+                      <div style="margin-top: -24px">
+                          <div style="display: inline-block">
+                              <h5 style="color: #9f9f9f">Basic Information</h5>
+                          </div>
+
+                          <div style="display: inline-block; height: 0px; width: 84px">
+                          </div>
+
+                          <div style="display: inline-block">
+                              <h5 style="color: #9f9f9f">Experience & Skills</h5>
+                          </div>
+
+                          <div style="display: inline-block; height: 42px; width: 84px"></div>
+
+                          <div style="display: inline-block">
+                              <h5 style="color: #2980b9">Education Details</h5>
+                          </div>
                       </div>
                   </center>
               </div>
@@ -144,7 +163,7 @@
                     <hr>
 
                     <div class="row" style="margin-top: 4px">
-                        <div class="col-sm-3"><h5>Highest Education Qualification?</h5></div>
+                        <div class="col-sm-3"><h5>Highest Education Qualification?<div style="color : #9f9f9f; font-size: 12px">(optional)</div></h5></div>
                         <div class="col-sm-9">
                         <div style="width: 100%; height: 34px;" id="candidateHighestEducation"  class="btn-group" data-toggle="buttons">
                         </div>
@@ -153,14 +172,14 @@
 
                     <div id="educationalInstitute" style="display: none">
                         <div class="row" style="margin-top: 4px">
-                            <div class="col-sm-3"><h5>Highest Education Degree?:</h5></div>
+                            <div class="col-sm-3"><h5>Highest Education Degree?<font color="red">*</font></h5></div>
                             <div class="col-sm-5">
                                 <select class="selectDropdown" id="candidateHighestDegree" style="width: 326px">
                                         </select>
                             </div>
                         </div>
                         <div class="row" style="margin-top: 4px">
-                            <div class="col-sm-3"><h5>Last Attended Education Institute?</h5></div>
+                            <div class="col-sm-3"><h5>Last Attended Education Institute?<div style="color : #9f9f9f; font-size: 12px">(optional)</div></h5></div>
                             <div class="col-sm-5">
                                 <input id="candidateEducationInstitute" style="width: 326px" placeholder="Which was the last college u went to?" type="text" class="form-control input-md">
                             </div>
