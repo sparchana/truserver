@@ -114,8 +114,8 @@ $(document).ready(function(){
             document.getElementById("profileStatusResult").innerHTML = '<font color="#F26522">Incomplete</font>';
             document.getElementById("profileStatusAction").innerHTML = '<font size="2" color="#F26522">(Complete Profile Now)</font>';
             var profileStatusParent = document.getElementById("profileStatusParent");
+            profileStatusParent.addEventListener("click", completeProfile);
             profileStatusParent.style = "cursor: pointer";
-            profileStatusParent.onclick = "window.location = '/dashboard/editProfile/basic';";
             $("#profileStatusIcon").attr('src', '/assets/dashboard/img/wrong.png');
         }
         else{
@@ -125,8 +125,12 @@ $(document).ready(function(){
         }
     }
 
-    function completeProfile() {
+    function completeAssessment() {
         window.open("http://bit.ly/trujobstest");
+    }
+
+    function completeProfile() {
+        window.open("/dashboard/editProfile/basic");
     }
 
     function processDataGetCandidateJobRoles(returnedData) {
@@ -215,7 +219,7 @@ $(document).ready(function(){
                 document.getElementById("assessedStatusResult").innerHTML = '<font color="#F26522">Incomplete</font>';
                 document.getElementById("assessedStatusAction").innerHTML = '<font size="2" color="#F26522">(Take assessment)</font></a>';
                 var assessedStatusParent = document.getElementById("assessedStatusParent");
-                assessedStatusParent.addEventListener("click", completeProfile);
+                assessedStatusParent.addEventListener("click", completeAssessment);
                 assessedStatusParent.style = "cursor: pointer";
                 $("#assessedIcon").attr('src', '/assets/dashboard/img/wrong.png');
 
