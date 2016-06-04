@@ -98,7 +98,7 @@ input::-webkit-inner-spin-button {
 
 #profileStatus{
     border-radius: 25px;
-    background: #c2c4b8;
+    background: #ffffff;
     background-size: 40px 40px;
     display: inline-block;
     width: 40px;
@@ -124,7 +124,7 @@ input::-webkit-inner-spin-button {
 #assessedStatus{
     margin: 8%;
     border-radius: 25px;
-    background: #c2c4b8;
+    background: #ffffff;
     background-size: 40px 40px;
     display: inline-block;
     width: 40px;

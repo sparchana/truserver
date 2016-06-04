@@ -30,6 +30,8 @@ POST     /processCsv                                              controllers.Ap
 
 GET      /dashboard                                               controllers.Application.dashboard()
 
+GET      /newEditProfile                                          controllers.Application.newEdit()
+
 GET      /dashboard/editProfile/basic                             controllers.Application.editProfileBasic()
 
 GET      /dashboard/editProfile/skill                             controllers.Application.editProfileSkill()

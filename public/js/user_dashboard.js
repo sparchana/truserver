@@ -346,7 +346,6 @@ $(document).ready(function(){
     }
 
     function saveCandidateExperienceDetails(){
-
         var experienceStatus = $('input:radio[name="workExperience"]:checked').val();
         if(experienceStatus == null){
             alert("Please Select your work experience");

@@ -801,7 +801,6 @@ function populateLanguages(l, lId) {
             cell5.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >Speak</label></div>";
         }
     }
-
 }
 
 function processLeadUpdate(returnedData) {
@@ -988,7 +987,6 @@ function prefillAll() {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-
 }
 function saveProfileForm(){
     var localitySelected = $('#candidateLocalityPref').val();
