@@ -280,5 +280,5 @@ function completeAssessment() {
 }
 
 function completeProfile() {
-    window.open("/dashboard/editProfile/basic");
+    window.open("/dashboard/editProfile");
 }
