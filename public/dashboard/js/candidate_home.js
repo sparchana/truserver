@@ -164,7 +164,7 @@ function processDataAndFillMinProfile(returnedData) {
             count++;
             var name = individualLocality.locality.localityName;
             localities += name;
-            if(count < Object.keys(returnedData).length){
+            if(count < Object.keys(localityPref).length){
                 localities += ", ";
             }
         });
@@ -188,7 +188,8 @@ function processDataAndFillMinProfile(returnedData) {
         } else{
             document.getElementById("userCurrentSalary").innerHTML = returnedData.candidateCurrentJobDetail.candidateCurrentSalary + "/month";
         }
-        document.getElementById("userCurrentCompany").innerHTML = returnedData.candidateCurrentJobDetail.candidateCurrentCompany;
+        if(returnedData.candidateCurrentJobDetail.candidateCurrentCompany != null || returnedData.candidateCurrentJobDetail.candidateCurrentCompany != "")
+            document.getElementById("userCurrentCompany").innerHTML = returnedData.candidateCurrentJobDetail.candidateCurrentCompany;
     }
 
     /* candidate Education */
