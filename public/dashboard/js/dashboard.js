@@ -26,6 +26,11 @@ var endPoint;
 /* candidate Data returned JSON */
 var candidateInformation;
 
+var leadId = localStorage.getItem("leadId");
+var userMobile = localStorage.getItem("mobile");
+var userName = localStorage.getItem("name");
+var userLastName = localStorage.getItem("lastName");
+
 $(document).ready(function(){
     /* Section Disable */
     $("#basicProfileSection").show();
@@ -37,14 +42,17 @@ $(document).ready(function(){
     $("#isEmployedForm").hide();
     $("#isEmployedSelect").hide();
 
-    var pathname = window.location.pathname; // Returns path only
-    var leadId = pathname.split('/');
-    leadId = leadId[(leadId.length)-1];
-    endPoint = leadId;
-    if(leadId == "basic" || leadId == "skill" || leadId == "education" || leadId == "dashboard" || leadId == "newEditProfile"){
-        leadId = localStorage.getItem("leadId");
+    document.getElementById("helloMsg").innerHTML = "Hello " + userName + "!";
+    try{
+        if(userLastName == "null" || userLastName == null){
+            document.getElementById("userName").innerHTML = userName;
+        } else{
+            document.getElementById("userName").innerHTML = userName + " " + userLastName;
+        }
+        document.getElementById("userMobile").innerHTML = userMobile;
+    } catch(err){
     }
-
+    
     /* ajax commands to fetch all localities and jobs*/
     try {
         $.ajax({
@@ -89,8 +97,6 @@ $(document).ready(function(){
     }
 
 });
-
-leadId = "96337872";
 
 try {
     $.ajax({
@@ -363,7 +369,7 @@ function processDataCheckEducation(returnedData) {
         var item = {};
         item ["id"] = id;
         item ["name"] = name;
-        var option ='<label class="btn btn-custom-check" onchange="checkInstitute()" style=\"width: 124px\"><input type="radio" name="highestEducation" id=\"' + id + '\" value=\"' + id + '\">' + name + '</label>';
+        var option ='<label class="btn btn-custom-check" onchange="checkInstitute()" style=\"width: 124px\"><input type="radio" name="highestEducation" id=\"highestEducation' + id + '\" value=\"' + id + '\">' + name + '</label>';
         $('#candidateHighestEducation').append(option);
         educationArray.push(item);
     });
@@ -417,7 +423,6 @@ function processDataAndFillAllFields(returnedData) {
         console.log("getCandidateLocalityPref error"+err);
     }
 }
-
 /* end prefill*/
 
 function getLocality(){

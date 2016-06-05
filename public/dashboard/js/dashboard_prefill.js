@@ -207,6 +207,70 @@ function prefillSkillProfile(){
 }
 /* end of skill prefill */
 
+$("#editBasic").click(function(){
+    document.getElementById("saveBtn").disabled = false;
+
+    var heading = document.getElementById('basicHeading');
+    heading.style.color = '#2980b9';
+    heading = document.getElementById('skillsHeading');
+    heading.style.color = '#9f9f9f';
+    heading = document.getElementById('educationHeading');
+    heading.style.color = '#9f9f9f';
+
+    document.getElementById('basicImg').src = "/assets/dashboard/img/basic_enable.png";
+    document.getElementById('skillImg').src = "/assets/dashboard/img/skills_disable.png";
+    document.getElementById('educationImg').src = "/assets/dashboard/img/education_disable.png";
+
+    $("#skillProfileSection").hide();
+    $("#educationProfileSection").hide();
+    $("#basicProfileSection").show();
+});
+
+$("#editSkills").click(function(){
+    document.getElementById("saveBtn").disabled = false;
+
+    var heading = document.getElementById('basicHeading');
+    heading.style.color = '#9f9f9f';
+    heading = document.getElementById('skillsHeading');
+    heading.style.color = '#2980b9';
+    heading = document.getElementById('educationHeading');
+    heading.style.color = '#9f9f9f';
+
+    document.getElementById('basicImg').src = "/assets/dashboard/img/basic_disable.png";
+    document.getElementById('skillImg').src = "/assets/dashboard/img/skills_enable.png";
+    document.getElementById('educationImg').src = "/assets/dashboard/img/education_disable.png";
+
+    $("#basicProfileSection").hide();
+    $("#educationProfileSection").hide();
+    $("#skillProfileSection").show();
+
+    fetchSkillAjaxApis();
+    prefillSkillProfile();
+});
+
+$("#editEducation").click(function(){
+    document.getElementById("saveBtn").disabled = false;
+
+    var heading = document.getElementById('basicHeading');
+    heading.style.color = '#9f9f9f';
+    heading = document.getElementById('skillsHeading');
+    heading.style.color = '#9f9f9f';
+    heading = document.getElementById('educationHeading');
+    heading.style.color = '#2980b9';
+
+    document.getElementById('basicImg').src = "/assets/dashboard/img/basic_disable.png";
+    document.getElementById('skillImg').src = "/assets/dashboard/img/skills_disable.png";
+    document.getElementById('educationImg').src = "/assets/dashboard/img/education_enable.png";
+
+    $("#skillProfileSection").hide();
+    $("#basicProfileSection").hide();
+    $("#educationProfileSection").show();
+
+    fetchEducationAjaxApis();
+    prefillEducationProfile();
+});
+
+
 $("#educationBack").click(function(){
     document.getElementById("saveBtn").disabled = false;
 
@@ -246,8 +310,8 @@ $("#skillBack").click(function(){
 function prefillEducationProfile(){
     try {
             if(candidateInformation.candidateEducation.education != null){
-                document.getElementById(candidateInformation.candidateEducation.education.educationId).checked = true;
-                $("#" + candidateInformation.candidateEducation.education.educationId).parent().addClass('active').siblings().removeClass('active');
+                document.getElementById("highestEducation" + candidateInformation.candidateEducation.education.educationId).checked = true;
+                $("#highestEducation" + candidateInformation.candidateEducation.education.educationId).parent().addClass('active').siblings().removeClass('active');
                 if(candidateInformation.candidateEducation.education.educationId == 4 || candidateInformation.candidateEducation.education.educationId == 5){
                     $("#educationalInstitute").show();
                 }

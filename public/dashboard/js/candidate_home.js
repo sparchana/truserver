@@ -96,8 +96,6 @@ $(document).ready(function(){
     }
 });
 
-
-
 function processDataAndFillMinProfile(returnedData) {
     if(returnedData.IsMinProfileComplete == 0){ // profile not complete
         document.getElementById("profileStatusResult").innerHTML = '<font color="#F26522">Incomplete</font>';

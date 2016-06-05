@@ -214,25 +214,10 @@ public class Application extends Controller {
         return ok(views.html.candidate_home.render());
     }
 
-    public static Result newEdit() {
-        return ok(views.html.test.render());
-    }
-
     @Security.Authenticated(SecuredUser.class)
-    public static Result editProfileBasic() {
-        return ok(views.html.edit_profile_basic.render());
+    public static Result editProfile() {
+        return ok(views.html.edit_profile.render());
     }
-
-    @Security.Authenticated(SecuredUser.class)
-    public static Result editProfileSkill() {
-        return ok(views.html.edit_profile_skill.render());
-    }
-
-    @Security.Authenticated(SecuredUser.class)
-    public static Result editProfileEducation() {
-        return ok(views.html.edit_profile_education.render());
-    }
-
 
     public static Result findUserAndSendOtp() {
         Form<ResetPasswordResquest> checkCandidate = Form.form(ResetPasswordResquest.class);
