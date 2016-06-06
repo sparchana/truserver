@@ -172,7 +172,7 @@
                   <div class="row" style="margin-top: 8px">
                     <div class="col-sm-3"><h5>Mobile No.<font color="red">*</font></h5></div>
                     <div class="col-sm-5">
-                      <input id="candidateMobile" placeholder="What is your mobile no.?" name="candidateMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" class="form-control input-md" required>
+                      <input id="candidateMobile" placeholder="What is your mobile no.?" name="candidateMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" class="form-control input-md" disabled>
                     </div>
                   </div>
 
@@ -207,7 +207,6 @@
                                           placeholder: "Where do you want to work?",
                                           hintText: "Start typing Area (eg. BTM Layout, Bellandur..)",
                                           minChars: 0,
-                                          tokenLimit: 3,
                                           prePopulate: localityPrefArray,
                                           preventDuplicates: true
                                         });
@@ -219,8 +218,7 @@
                   <div class="row" style="margin-top: 8px">
                     <div class="col-sm-3" style="margin-top: 5px"><h5 style="margin-top: 4px">Preferred work shift<font color="red">*</font></h5></div>
                     <div class="col-sm-9">
-                      <select id="candidateTimeShiftPref" class="selectDropdown" style="width: 206px; height: 34px;">
-                                    </select>
+                      <select id="candidateTimeShiftPref" class="selectDropdown" style="width: 206px; height: 34px;"></select>
                     </div>
                   </div>
 
@@ -475,7 +473,7 @@
                       <div class="row" style="margin-top: 8px">
                         <div class="col-sm-3"><h5>Current Job Salary<font color="red">*</font></h5></div>
                         <div class="col-sm-2">
-                          <input id="candidateCurrentJobSalary" placeholder="Salary" type="number" class="form-control input-md">
+                          <input id="candidateCurrentJobSalary" placeholder="Salary" type="number" max="99999" class="form-control input-md">
                         </div>
                         <div class="col-sm-2" style="margin-top: 8px">₹/month</div>
                       </div>

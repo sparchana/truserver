@@ -28,6 +28,7 @@ function processDataCandidateSaveBasicProfile(returnedData) {
 
     fetchSkillAjaxApis();
     prefillSkillProfile();
+    checkBasicFormSaved = 1;
 }
 
 function processDataCandidateExperienceUpdate(returnedData) {
@@ -48,10 +49,12 @@ function processDataCandidateExperienceUpdate(returnedData) {
 
     fetchEducationAjaxApis();
     prefillEducationProfile();
+    checkExperienceFormSaved = 1;
 }
 
 function processDataCandidateEducationUpdate(returnedData) {
     window.location = "/dashboard";
+    checkEducationFormSaved = 1;
 }
 
 function prefillBasicProfile() {
@@ -211,7 +214,6 @@ function prefillSkillProfile(){
 
 $("#editBasic").click(function(){
     document.getElementById("saveBtn").disabled = false;
-
     var heading = document.getElementById('basicHeading');
     heading.style.color = '#2980b9';
     heading = document.getElementById('skillsHeading');
@@ -242,8 +244,11 @@ $("#editSkills").click(function(){
     document.getElementById('skillImg').src = "/assets/dashboard/img/skills_enable.png";
     document.getElementById('educationImg').src = "/assets/dashboard/img/education_disable.png";
 
+    $("#basicProfileSection").hide();
     $("#educationProfileSection").hide();
     $("#skillProfileSection").show();
+    fetchSkillAjaxApis();
+    prefillSkillProfile();
 });
 
 $("#editEducation").click(function(){
@@ -382,6 +387,7 @@ function saveCandidateBasicProfile(){
         alert("Please Enter Your Preferred Work Shift");
     }
     else{
+        checkBasicFormSaved = 0;
         document.getElementById("saveBtn").disabled = true;
         try {
             var selectedDob = $('#dob_year').val() + "-" + $('#dob_month').val() + "-" + $('#dob_day').val();
@@ -420,6 +426,7 @@ function saveCandidateExperienceDetails(){
         alert("Please Select your work experience");
     }
     else{
+        checkExperienceFormSaved = 0;
         /* calculate total experience in months */
         var expMonth = parseInt($('#candidateTotalExperienceMonth').val());
         var expYear = parseInt($('#candidateTotalExperienceYear').val());
@@ -523,6 +530,7 @@ function saveCandidateEducationDetails(){
             alert("Please select your Highest Degree");
         }
         else{
+            checkEducationFormSaved = 0;
             document.getElementById("saveBtn").disabled = true;
             try {
                 var d = {

@@ -266,9 +266,16 @@ input::-webkit-inner-spin-button {
     background: none;
 }
 
+#skillAnswer{
+    margin-left: -36px;
+}
+
 @media(max-width:768px) {
+    #skillAnswer{
+        margin-left: 0px;
+    }
     #skillBreak{
-        padding-top: 48px;
+        padding-top: 28px;
         height: 32px;
     }
     #assessmentPanel{

@@ -350,7 +350,7 @@
             <div id="sectionOne">
                 <div id="fixed-menu" align="center">
                     <div style="display: inline-block">Find a job and earn upto 30,000. Reach Us &nbsp;</div>
-                    <div style="display: inline-block"><input style="color: black; height: 26px" id="addLeadMobile" pattern="[7-9]{1}[0-9]{9}" maxlength="10" class="form-control input-md" type="text" placeholder="Mobile: (8880007799)"></div>
+                    <div style="display: inline-block"><input style="color: black; height: 26px" id="addLeadMobile" pattern="[7-9]{1}[0-9]{9}" maxlength="10" class="form-control input-md" type="text" placeholder="Enter mobile no."></div>
                     <div style="display: inline-block"><button type="button" style=" height: 30px" class="btn btn-add-lead" onclick="addLead()">Request Call Back</button></div>
 
                 </div>
@@ -380,31 +380,32 @@
                                     <div style="margin-top: 8px">
                                         <input type="text" id="candidateJobPref" placeholder="What jobs you are Interested in?">
                                         <script type="text/javascript">
-                        $(document).ready(function() {
-                            $("#candidateJobPref").tokenInput(getJob(), {
-                                theme: "facebook",
-                                placeholder: "What jobs you are Interested in?",
-                                hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-                                minChars: 0,
-                                preventDuplicates: true
-                            });
-                        });
-                        </script>
+                                            $(document).ready(function() {
+                                                $("#candidateJobPref").tokenInput(getJob(), {
+                                                    theme: "facebook",
+                                                    placeholder: "What jobs you are Interested in?",
+                                                    hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                                                    minChars: 0,
+                                                    tokenLimit: 3,
+                                                    preventDuplicates: true
+                                                });
+                                            });
+                                            </script>
                                     </div>
 
                                     <div style="margin-top: 8px">
                                         <input type="text" id="candidateLocality" style="margin-top: 4px">
                                         <script type="text/javascript">
-                        $(document).ready(function() {
-                            $("#candidateLocality").tokenInput(getLocality(), {
-                                theme: "facebook",
-                                placeholder: "Where do you want to Work?",
-                                minChars: 3,
-                                hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
-                                preventDuplicates: true
-                            });
-                        });
-                        </script>
+                                            $(document).ready(function() {
+                                                $("#candidateLocality").tokenInput(getLocality(), {
+                                                    theme: "facebook",
+                                                    placeholder: "Where do you want to Work?",
+                                                    minChars: 3,
+                                                    hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
+                                                    preventDuplicates: true
+                                                });
+                                            });
+                                            </script>
                                     </div>
 
                                     <button type="submit" id="registerBtn" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
@@ -1060,7 +1061,7 @@
                     <div class="col-sm-8" id="steps" style="margin-top: 8px"><h5>Conduct interviews and make Offers!</h5></div>
                 </div>
                 <br>
-                <button id="registerBtn" id="steps" class="btn btn-primary" style="padding: 2%" data-toggle="modal" data-target="#regmodal">Register for Free</button>
+                <button id="registerBtn" id="steps" class="btn btn-primary" style="padding: 2%" data-toggle="modal" data-target="#regmodal">Register for FREE</button>
             </div>
         </div>
         </div>
