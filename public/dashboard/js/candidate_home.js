@@ -188,13 +188,20 @@ function processDataAndFillMinProfile(returnedData) {
         } else{
             document.getElementById("userCurrentSalary").innerHTML = returnedData.candidateCurrentJobDetail.candidateCurrentSalary + "/month";
         }
-        if(returnedData.candidateCurrentJobDetail.candidateCurrentCompany != null || returnedData.candidateCurrentJobDetail.candidateCurrentCompany != "")
-            document.getElementById("userCurrentCompany").innerHTML = returnedData.candidateCurrentJobDetail.candidateCurrentCompany;
+        if(returnedData.candidateCurrentJobDetail.candidateCurrentCompany != null){
+            if(returnedData.candidateCurrentJobDetail.candidateCurrentCompany != ""){
+                document.getElementById("userCurrentCompany").innerHTML = returnedData.candidateCurrentJobDetail.candidateCurrentCompany;
+            }
+        }
     }
 
     /* candidate Education */
-    if(returnedData.candidateEducation.education != null) {
-        document.getElementById("userEducationLevel").innerHTML = returnedData.candidateEducation.education.educationName;
+    try{
+        if(returnedData.candidateEducation.education != null) {
+            document.getElementById("userEducationLevel").innerHTML = returnedData.candidateEducation.education.educationName;
+        }
+    } catch(err){
+        console.log("education is null");
     }
 
     /* Work Experience */
