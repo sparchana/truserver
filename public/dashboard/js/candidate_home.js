@@ -183,10 +183,12 @@ function processDataAndFillMinProfile(returnedData) {
 
     /* Current Company and Salary */
     if (returnedData.candidateCurrentJobDetail != null) {
-        if(returnedData.candidateCurrentJobDetail.candidateCurrentSalary == "0"){
-            document.getElementById("userCurrentSalary").innerHTML = "Fresher";
-        } else{
-            document.getElementById("userCurrentSalary").innerHTML = "&#x20B9;" + returnedData.candidateCurrentJobDetail.candidateCurrentSalary + "/month";
+        if(returnedData.candidateCurrentJobDetail.candidateCurrentSalary != null){
+            if(returnedData.candidateCurrentJobDetail.candidateCurrentSalary == "0"){
+                document.getElementById("userCurrentSalary").innerHTML = "Fresher";
+            } else{
+                document.getElementById("userCurrentSalary").innerHTML = "&#x20B9;" + returnedData.candidateCurrentJobDetail.candidateCurrentSalary + "/month";
+            }
         }
         if(returnedData.candidateCurrentJobDetail.candidateCurrentCompany != null){
             if(returnedData.candidateCurrentJobDetail.candidateCurrentCompany != ""){

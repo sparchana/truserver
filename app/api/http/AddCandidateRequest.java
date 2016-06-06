@@ -1,5 +1,6 @@
 package api.http;
 
+import api.ServerConstants;
 import play.Logger;
 
 import java.util.Date;
@@ -14,8 +15,14 @@ public class AddCandidateRequest {
     public String candidateLocality;
 
     public Date candidateDob = new Date();
-    public int candidateGender ;
+    public Integer candidateGender ;
     public String candidateTimeShiftPref;
+
+    public Integer leadSource= ServerConstants.LEAD_SOURCE_UNKNOWN;
+
+    public Integer getLeadSource() {
+        return leadSource;
+    }
 
     /* Mandatory */
     public void setCandidateFirstName(String candidateFirstName) {
@@ -57,7 +64,7 @@ public class AddCandidateRequest {
         return candidateDob;
     }
 
-    public int getCandidateGender() {
+    public Integer getCandidateGender() {
         return candidateGender;
     }
 

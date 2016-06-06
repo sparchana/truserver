@@ -90,6 +90,7 @@ $(document).ready(function(){
     }
 
     function processDataGetCandidateLocality(returnedData) {
+<<<<<<< HEAD
         var localities = "";
         var count = 0;
         returnedData.forEach(function (locality) {
@@ -151,6 +152,41 @@ $(document).ready(function(){
             candidateJobArray.push(item);
         });
         document.getElementById("userJobs").innerHTML = jobRoles;
+=======
+        var parent = $('.preferredLocation')[0];
+        if(returnedData != null) {
+            returnedData.forEach(function (locality) {
+                var l = document.createElement("li");
+                l.textContent = locality.locality.localityName;
+                parent.appendChild(l);
+
+                var id = locality.localityId;
+                var name = locality.locality.localityName;
+                var item = {}
+                item ["id"] = id;
+                item ["name"] = name;
+                candidateLocalityArray.push(item);
+            });
+        }
+    }
+
+    function processDataGetCandidateJobRoles(returnedData) {
+        var parent = $('.preferredJobs')[0];
+        if(returnedData != null){
+            returnedData.forEach(function (job) {
+                var l = document.createElement("li");
+                l.textContent = job.jobRole.jobName;
+                parent.appendChild(l);
+
+                var id = job.jobRole.jobRoleId;
+                var name = job.jobRole.jobName;
+                var item = {}
+                item ["id"] = id;
+                item ["name"] = name;
+                candidateJobArray.push(item);
+            });
+        }
+>>>>>>> 6f43baa3431c873ef2da8f3c89747699672090f7
     }
 
     function processDataCheckAllLocalies(returnedData) {

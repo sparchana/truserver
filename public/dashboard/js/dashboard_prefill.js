@@ -28,7 +28,6 @@ function processDataCandidateSaveBasicProfile(returnedData) {
 
     fetchSkillAjaxApis();
     prefillSkillProfile();
-    checkBasicFormSaved = 1;
 }
 
 function processDataCandidateExperienceUpdate(returnedData) {
@@ -49,12 +48,10 @@ function processDataCandidateExperienceUpdate(returnedData) {
 
     fetchEducationAjaxApis();
     prefillEducationProfile();
-    checkExperienceFormSaved = 1;
 }
 
 function processDataCandidateEducationUpdate(returnedData) {
     window.location = "/dashboard";
-    checkEducationFormSaved = 1;
 }
 
 function prefillBasicProfile() {
@@ -387,7 +384,6 @@ function saveCandidateBasicProfile(){
         alert("Please Enter Your Preferred Work Shift");
     }
     else{
-        checkBasicFormSaved = 0;
         document.getElementById("saveBtn").disabled = true;
         try {
             var selectedDob = $('#dob_year').val() + "-" + $('#dob_month').val() + "-" + $('#dob_day').val();
@@ -426,7 +422,6 @@ function saveCandidateExperienceDetails(){
         alert("Please Select your work experience");
     }
     else{
-        checkExperienceFormSaved = 0;
         /* calculate total experience in months */
         var expMonth = parseInt($('#candidateTotalExperienceMonth').val());
         var expYear = parseInt($('#candidateTotalExperienceYear').val());
@@ -523,14 +518,13 @@ function saveCandidateExperienceDetails(){
 
 function saveCandidateEducationDetails(){
     if($('#candidateHighestEducation').val() == -1){
-        alert("Select a Degree");
+        alert("Select an Education");
     }
     else{
         if((($('#candidateHighestEducation').val() == 4) || ($('#candidateHighestEducation').val() == 5)) && $('#candidateHighestDegree').val() == -1){
-            alert("Please select your Highest Degree");
+            alert("Please select your Degree");
         }
         else{
-            checkEducationFormSaved = 0;
             document.getElementById("saveBtn").disabled = true;
             try {
                 var d = {

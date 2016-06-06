@@ -1,3 +1,6 @@
+# --- Created by Ebean DDL
+# To stop Ebean DDL generation, remove this comment and start using Evolutions
+
 # --- !Ups
 
 create table auth (
@@ -18,20 +21,20 @@ create table candidate (
   candidateuuid                 varchar(255) not null not null,
   candidatename                 varchar(50) not null,
   candidatelastname             varchar(50) null,
-  candidategender               int(1) null default 0,
+  candidategender               int(1) null,
   candidatedob                  date null,
   candidatemobile               varchar(13) not null,
   candidatephonetype            varchar(100) null,
   candidatemaritalstatus        int null,
   candidateemail                varchar(255) null,
-  candidateisemployed           int not null,
-  candidatetotalexperience      int signed null default 0.00,
-  candidateage                  int signed not null default 0,
+  candidateisemployed           int null,
+  candidatetotalexperience      int signed null,
+  candidateage                  int signed null,
   candidatecreatetimestamp      timestamp default current_timestamp not null,
   candidateupdatetimestamp      timestamp null,
   candidateisassessed           int signed not null default 0,
-  candidatesalaryslip           int signed not null default 0,
-  candidateappointmentletter    int signed not null default 0,
+  candidatesalaryslip           int signed null,
+  candidateappointmentletter    int signed null,
   isminprofilecomplete          int signed not null default 0,
   lead_leadid                   bigint signed null,
   candidatemothertongue         int signed null,
@@ -204,8 +207,15 @@ create table lead (
   leadtype                      int signed not null not null,
   leadinterest                  varchar(30),
   leadcreationtimestamp         timestamp default current_timestamp not null not null,
+  leadsourceid                  int signed null,
   constraint uq_lead_leaduuid unique (leaduuid),
   constraint pk_lead primary key (leadid)
+);
+
+create table leadsource (
+  leadsourceid                  int signed null auto_increment not null,
+  leadsourcename                varchar(255) null,
+  constraint pk_leadsource primary key (leadsourceid)
 );
 
 create table locality (
@@ -334,6 +344,9 @@ create index ix_languageknown_languageid on languageknown (languageid);
 alter table languageknown add constraint fk_languageknown_candidateid foreign key (candidateid) references candidate (candidateid) on delete restrict on update restrict;
 create index ix_languageknown_candidateid on languageknown (candidateid);
 
+alter table lead add constraint fk_lead_leadsourceid foreign key (leadsourceid) references leadsource (leadsourceid) on delete restrict on update restrict;
+create index ix_lead_leadsourceid on lead (leadsourceid);
+
 alter table localitypreference add constraint fk_localitypreference_localityid foreign key (localityid) references locality (localityid) on delete restrict on update restrict;
 create index ix_localitypreference_localityid on localitypreference (localityid);
 
@@ -423,6 +436,9 @@ drop index ix_languageknown_languageid on languageknown;
 alter table languageknown drop foreign key fk_languageknown_candidateid;
 drop index ix_languageknown_candidateid on languageknown;
 
+alter table lead drop foreign key fk_lead_leadsourceid;
+drop index ix_lead_leadsourceid on lead;
+
 alter table localitypreference drop foreign key fk_localitypreference_localityid;
 drop index ix_localitypreference_localityid on localitypreference;
 
@@ -476,6 +492,8 @@ drop table if exists language;
 drop table if exists languageknown;
 
 drop table if exists lead;
+
+drop table if exists leadsource;
 
 drop table if exists locality;
 

@@ -6,12 +6,12 @@ import java.util.List;
  * Created by batcoder1 on 31/5/16.
  */
 public class AddCandidateExperienceRequest extends AddCandidateRequest {
-    public int candidateTotalExperience ;
+    public Integer candidateTotalExperience ;
     public Integer candidateIsEmployed ;
     public String candidateCurrentCompany;
-    public long candidateCurrentSalary;
+    public Long candidateCurrentSalary;
 
-    public int candidateMotherTongue ;
+    public Integer candidateMotherTongue ;
     public List<SkillMapClass> candidateSkills;
     public List<LanguageClass> candidateLanguageKnown;
 
@@ -26,7 +26,7 @@ public class AddCandidateExperienceRequest extends AddCandidateRequest {
         return candidateIsEmployed;
     }
 
-    public long getCandidateCurrentSalary() {
+    public Long getCandidateCurrentSalary() {
         return candidateCurrentSalary;
     }
 
@@ -37,11 +37,11 @@ public class AddCandidateExperienceRequest extends AddCandidateRequest {
         this.candidateSkills = candidateSkills;
     }
 
-    public int getCandidateTotalExperience() {
+    public Integer getCandidateTotalExperience() {
         return candidateTotalExperience;
     }
 
-    public int getCandidateMotherTongue() {
+    public Integer getCandidateMotherTongue() {
         return candidateMotherTongue;
     }
 

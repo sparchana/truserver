@@ -234,14 +234,6 @@ function renderSearchResult(returnedData) {
                 { "data": "candidateTimeShiftPref" },
                 { "data": "candidateCreateTimestamp" }
             ],
-            "columnDefs": [
-                { "width": "90px", "targets": 0 },
-                { "width": "90px", "targets": 6 },
-                { "width": "90px", "targets": 7 },
-                { "width": "90px", "targets": 10 },
-                { "width": "90px", "targets": 12 },
-                { "width": "90px", "targets": 13 }
-            ],
             "deferRender": true,
             "scroller": true,
             "language": {

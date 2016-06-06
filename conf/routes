@@ -50,6 +50,10 @@ GET      /getAllTransportation                                    controllers.Ap
 
 GET      /getAllEducation                                         controllers.Application.getAllEducation()
 
+GET      /getAllLeadSource                                        controllers.Application.getAllLeadSource()
+
+GET      /getSupportAgent                                         controllers.Application.getSupportAgent()
+
 GET      /getAllLanguage                                          controllers.Application.getAllLanguage()
 
 GET      /getAllIdProof                                           controllers.Application.getAllIdProof()
@@ -82,7 +86,7 @@ GET      /logout                                                  controllers.Ap
 
 GET      /logoutUser                                              controllers.Application.logoutUser()
 
-# GET      /test/:id                                                controllers.Application.test(id: Integer)
+#GET    /test/:id                                                controllers.Application.test(id: Integer)
 
 POST     /api/kw/cdr                                              controllers.Application.kwCdrInput()
 

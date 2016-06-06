@@ -48,6 +48,20 @@ public class Interaction extends Model {
 
     public static Finder<String, Interaction> find = new Finder(Interaction.class);
 
+    public Interaction(){
+
+    }
+    // single object constructor
+    public Interaction(String objectAUUId, int objectAType, int interactionType, String note, String result, String createdBy){
+        // no need to set creationTimestamp, It is set By - default
+        this.objectAUUId = objectAUUId;
+        this.objectAType = objectAType;
+        this.interactionType = interactionType;
+        this.note = note;
+        this.result = result;
+        this.createdBy = createdBy;
+    }
+
     public static void addInteraction(Interaction interaction){
         interaction.save();
     }

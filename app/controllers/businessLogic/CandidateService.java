@@ -44,9 +44,10 @@ public class CandidateService {
         } else {return null;}
     }
 
-    public static CandidateSignUpResponse createCandidate(Candidate candidate, boolean isSupport){
+    public static CandidateSignUpResponse createCandidate(Candidate candidate, boolean isSupport, int leadSourceId){
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
-        Interaction interaction = new Interaction();
+        String result = "";
+        String objectAUUId = "";
         Logger.info("Checking this mobile : " + candidate.candidateMobile );
         Candidate existingCandidate = isCandidateExists(candidate.candidateMobile);
         Lead existingLead = isLeadExists(candidate.candidateMobile);
@@ -55,73 +56,78 @@ public class CandidateService {
                 Logger.info("inside! existingCandidate of createCandidate");
                 // if no candidate exists
                 if(existingLead == null){
-                    LeadService.createLead(getLeadFromCandidate(candidate), isSupport);
+                    LeadService.createLead(getLeadFromCandidate(candidate, leadSourceId, isSupport), isSupport);
                 }
                 else {
                     existingLead.setLeadType(ServerConstants.TYPE_CANDIDATE);
                     existingLead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
+                    existingLead.setLeadSource(getLeadSourceFromLeadSourceId(leadSourceId));
+                    if(existingLead.getLeadName().trim().isEmpty()){
+                        existingLead.setLeadName(candidate.candidateName + " " + candidate.candidateLastName);
+                    }
                     candidate.setLead(existingLead);
                     Logger.info("Check mobile no " + existingLead.leadMobile);
                 }
                 CandidateProfileStatus candidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_NEW).findUnique();
                 if(candidateProfileStatus != null){
                     candidate.setCandidateprofilestatus(candidateProfileStatus);
-                    Logger.info("Candidate successfully registered " + candidate);
                     candidate.registerCandidate();
-                    if(Candidate.find.where().eq("candidateId", candidate.candidateId).findUnique() != null){
-                        Logger.info("stupid break");
-                    }
+                    Logger.info("Candidate successfully registered " + candidate);
                 } else {
                     candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
                 }
-                interaction.result = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE;
                 if(!isSupport){
+                    // triggers when candidate is self created
                     triggerOtp(candidate, candidateSignUpResponse);
-                    interaction.result = "New Candidate Added by support";
+                    result = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE;
+                    objectAUUId = candidate.candidateUUId;
                 }
-
-                interaction.objectAUUId = candidate.candidateUUId;
-                interaction.objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
-                interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
-                InteractionService.createInteraction(interaction);
-
             } else {
                 Logger.info("CandidateExists: " + existingCandidate.candidateId + " | LeadExists: " + existingLead.leadId);
                 existingLead.setLeadType(ServerConstants.TYPE_CANDIDATE);
                 existingLead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
+                existingLead.setLeadName(existingCandidate.candidateName);
+                // TODO: need to check if already leadSource is set or not and accordingly set
+                existingLead.setLeadSource(getLeadSourceFromLeadSourceId(leadSourceId));
                 existingCandidate.setLead(existingLead);
                 Auth auth = Auth.find.where().eq("CandidateId", existingCandidate.candidateId).findUnique();
-                if(auth == null ){
-                    Logger.info("auth doesn't exists for this canidate");
+                if(auth == null ) {
+                    Logger.info("auth doesn't exists for this candidate");
                     existingCandidate.setCandidateName(candidate.candidateName);
                     existingCandidate.setCandidateLastName(candidate.candidateLastName);
                     resetLocalityAndJobPref(existingCandidate, candidate.localityPreferenceList, candidate.jobPreferencesList);
                     if(!isSupport){
-                        existingCandidate.setCandidateName(candidate.candidateName);
-                        existingCandidate.setCandidateLastName(candidate.candidateLastName);
                         triggerOtp(candidate, candidateSignUpResponse);
                         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-                        interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
-                        interaction.setCreatedBy(ServerConstants.INTERACTION_CREATED_SELF);
-                    } else {
-                        createAndSaveDummpyAuthFor(candidate);
+                        result = ServerConstants.INTERACTION_RESULT_EXISTING_CANDIDATE_VERIFICATION;
+                        objectAUUId = existingCandidate.candidateUUId;
+
+                    } else {//TODO: will never come to this point, hence to be removed
+                        createAndSaveDummyAuthFor(candidate);
                         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
-                        interaction.interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
-                        interaction.setNote(ServerConstants.INTERACTION_NOTE_DUMMY_PASSWORD_CREATED);
-                        interaction.setCreatedBy(ServerConstants.INTERACTION_CREATED_SYSTEM);
+                        result = ServerConstants.INTERACTION_RESULT_EXISTING_CANDIDATE_VERIFICATION;
                     }
                 } else{
                     candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
+                    result = ServerConstants.INTERACTION_RESULT_EXISTING_CANDIDATE_SIGNUP;
                 }
-
-                interaction.setObjectAUUId(existingCandidate.candidateUUId);
-                interaction.setObjectAType(ServerConstants.OBJECT_TYPE_CANDIDATE);
-                interaction.result = ServerConstants.INTERACTION_RESULT_CANDIDATE_UPDATED_LOCALITY_JOBS;
-                interaction.setCreationTimestamp(new Timestamp(System.currentTimeMillis()));
-                InteractionService.createInteraction(interaction);
 
                 existingCandidate.candidateUpdate();
             }
+
+            // Insert Interaction only for self sign up as interaction for sign up support will be handled in createCandidateBySupport
+            if(!isSupport){
+                Interaction interaction = new Interaction(
+                        objectAUUId,
+                        ServerConstants.OBJECT_TYPE_CANDIDATE,
+                        ServerConstants.INTERACTION_TYPE_WEBSITE,
+                        ServerConstants.INTERACTION_NOTE_SELF_SIGNEDUP,
+                        result,
+                        ServerConstants.INTERACTION_CREATED_SELF
+                );
+                InteractionService.createInteraction(interaction);
+            }
+
         } catch (NullPointerException n){
             n.printStackTrace();
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
@@ -135,6 +141,7 @@ public class CandidateService {
         // Handle jobPrefList and any other list with , as break point at application only
         Logger.info("inside create candidate " + request.candidateMobile);
         Candidate candidate = isCandidateExists(request.candidateMobile);
+
         if(candidate == null){
             Logger.info("No existing candidate | New Candidate");
             candidate = new Candidate();
@@ -154,10 +161,11 @@ public class CandidateService {
             candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(Arrays.asList(request.candidateLocality.split("\\s*,\\s*")), candidate);
             candidate.jobPreferencesList = getCandidateJobPreferenceList(Arrays.asList(request.candidateJobInterest.split("\\s*,\\s*")), candidate);
             // lead is getting updated inside createCandidate
-            CandidateSignUpResponse candidateSignUpResponse = createCandidate(candidate, isSupport);
+
+            CandidateSignUpResponse candidateSignUpResponse = createCandidate(candidate, isSupport, request.leadSource);
 
             // 1st call to basic createCandidate
-            if(candidateSignUpResponse == null) {
+            if(candidateSignUpResponse.equals(CandidateSignUpResponse.STATUS_FAILURE)) {
                 Logger.info("error while creating candidate with basic info");
                 response.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
                 return response;
@@ -165,6 +173,11 @@ public class CandidateService {
         } else{
             Logger.info("Candidate Exists | Existing Candidate");
             Lead existingLead = isLeadExists(candidate.candidateMobile);
+            if(existingLead == null){
+                Logger.info("Candidate Found but no corresponding Lead Found !!!");
+                response.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
+                return response;
+            }
             Logger.info(" reqJobPref: " + request.candidateJobInterest);
             try{
                 candidate.localityPreferenceList = getCandidateLocalityPreferenceList(Arrays.asList(request.candidateLocality.split("\\s*,\\s*")), candidate);
@@ -179,6 +192,7 @@ public class CandidateService {
             Logger.info("CandidateExists: " + candidate.candidateId + " | LeadExists: " + existingLead.leadId);
             existingLead.setLeadType(ServerConstants.TYPE_CANDIDATE);
             existingLead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
+            existingLead.setLeadSource(getLeadSourceFromLeadSourceId(request.leadSource));
             candidate.setCandidateName(request.getCandidateFirstName());
             candidate.setCandidateLastName(request.getCandidateSecondName());
             candidate.setLead(existingLead);
@@ -328,19 +342,34 @@ public class CandidateService {
                 Logger.info(" try catch exception = " + e);
             }
         }
-        Interaction interaction = new Interaction();
+        String interactionNote = ServerConstants.INTERACTION_NOTE_SELF_PROFILE_CREATION;
         Auth auth = Auth.find.where().eq("CandidateId", candidate.candidateId).findUnique();
         if (auth == null) {
-            createAndSaveDummpyAuthFor(candidate);
-            interaction.setNote("Candidate got Registered with dummy password by system");
-            interaction.setCreatedBy("System");
+            if(isSupport){
+                // TODO: differentiate between in/out call
+                createAndSaveDummyAuthFor(candidate);
+                interactionNote = ServerConstants.INTERACTION_NOTE_DUMMY_PASSWORD_CREATED;
+            }
         }
 
-        interaction.interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT;
-        interaction.setObjectAUUId(candidate.candidateUUId);
-        interaction.setObjectAType(ServerConstants.OBJECT_TYPE_CANDIDATE);
-        interaction.setResult(ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM);
-        interaction.setNote(ServerConstants.INTERACTION_NOTE_CALL_OUT_OF_BOUNDS);
+        String createdBy = ServerConstants.INTERACTION_CREATED_SELF;
+        Integer interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+        String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SELF;
+        if(isSupport){
+            createdBy = session().get("sessionUsername");
+            interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM;
+            interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT;
+            interactionNote = ServerConstants.INTERACTION_NOTE_CALL_OUTBOUNDS;
+        }
+        Interaction interaction = new Interaction(
+                candidate.candidateUUId,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                interactionType,
+                interactionNote,
+                interactionResult,
+                createdBy
+        );
+
         InteractionService.createInteraction(interaction);
 
         /* check Min Profile */
@@ -353,6 +382,7 @@ public class CandidateService {
             candidate.setIsMinProfileComplete(ServerConstants.CANDIDATE_MIN_PROFILE_NOT_COMPLETE);
         }
         candidate.update();
+        Logger.info("candidate CreatedBySupportSuccessfully " + candidate.candidateMobile);
         response.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
         return response;
@@ -411,9 +441,17 @@ public class CandidateService {
         if(response == null){
             response = new CandidateEducation();
             response.setCandidate(candidate);
-        } if(education != null){
+        }
+
+        if (education == null && degree == null) {
+            return null;
+        }
+
+        if(education != null){
             response.setEducation(education);
-        } if(degree != null){
+        }
+
+        if(degree != null){
             response.setDegree(degree);
         }
         response.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
@@ -510,9 +548,12 @@ public class CandidateService {
                 TimeShift timeShift = TimeShift.find.where().eq("timeShiftId", supportCandidateRequest.getCandidateCurrentWorkShift()).findUnique();
                 JobRole jobRole = JobRole.find.where().eq("jobRoleId",supportCandidateRequest.getCandidateCurrentJobRole()).findUnique();
                 Locality locality = Locality.find.where().eq("localityId", supportCandidateRequest.getCandidateCurrentJobLocation()).findUnique();
-                if(timeShift == null || jobRole == null || locality == null){
-                    // do nothing let it save without these entity
+                if(timeShift == null && jobRole == null && locality == null && request.getCandidateCurrentSalary() == null &&
+                        (request.getCandidateCurrentCompany() == null || request.getCandidateCurrentCompany().trim().isEmpty()))
+                {
+                    return null;
                 }
+
                 response.setCandidateTransportationMode(transportationMode);
                 response.setCandidateCurrentWorkShift(timeShift);
                 response.setCandidateCurrentJobLocation(locality);
@@ -619,21 +660,33 @@ public class CandidateService {
     }
 
     // extract lead features from candidate obj and returns a lead object
-    private static Lead getLeadFromCandidate(Candidate candidate) {
-        // call this fuction only to create new lead
-        Lead lead = new Lead();
-        lead.leadId = Util.randomLong();
-        lead.leadUUId = UUID.randomUUID().toString();
-        lead.leadName = candidate.candidateName;
-        lead.leadMobile = candidate.candidateMobile;
-        lead.leadChannel = ServerConstants.LEAD_CHANNEL_WEBSITE;
-        lead.leadType = ServerConstants.TYPE_CANDIDATE;
-        lead.leadStatus = ServerConstants.LEAD_STATUS_WON;
+    private static Lead getLeadFromCandidate(Candidate candidate, int leadSourceId, boolean isSupport) {
+        // call this function only to create new lead
+        int leadChannel = ServerConstants.LEAD_CHANNEL_WEBSITE;
+        if(isSupport){
+            leadChannel = ServerConstants.LEAD_CHANNEL_SUPPORT;
+        }
+        Lead lead = new Lead(
+                candidate.candidateName,
+                candidate.candidateMobile,
+                leadChannel,
+                ServerConstants.TYPE_CANDIDATE,
+                leadSourceId
+        );
+        lead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
         candidate.lead = lead;
         return lead;
     }
 
-    private static void createAndSaveDummpyAuthFor(Candidate candidate) {
+    private static LeadSource getLeadSourceFromLeadSourceId(int leadSourceId) {
+        LeadSource leadSource = LeadSource.find.where().eq("leadSourceId", leadSourceId).findUnique();
+        if(leadSource == null){
+            Logger.info(" Static table Leadsource doesn't have entry for leadSourceId: " + leadSourceId);
+        }
+        return leadSource;
+    }
+
+    private static void createAndSaveDummyAuthFor(Candidate candidate) {
         // create dummy auth
         Auth authToken = new Auth();
         String dummyPassword = String.valueOf(Util.randomLong());
@@ -644,7 +697,7 @@ public class CandidateService {
         authToken.passwordSalt = Util.randomInt();
         authToken.passwordMd5 = Util.md5(dummyPassword + authToken.passwordSalt);
         authToken.save();
-        String msg = "Welcome to Trujobs.in! Your login details are Username: " + candidate.candidateMobile + " and password: " +dummyPassword+ ". Use this to login at trujobs.in !!";
+        String msg = "Welcome to Trujobs.in! Your login details are Username: " + candidate.candidateMobile.substring(3, 13) + " and password: " +dummyPassword+ ". Use this to login at trujobs.in !!";
         SendOtpService.sendSms(candidate.candidateMobile, msg);
         Logger.info("Dummy auth created + otp triggered + auth saved");
     }
@@ -694,13 +747,11 @@ public class CandidateService {
                     "%" + searchCandidateRequest.getCandidateMobile() + "%").query();
         }
         if(searchCandidateRequest.getFromThisDate() != null) {
-            Logger.info("fromDate" + searchCandidateRequest.getFromThisDate());
             query = query.where()
                     .ge("candidateCreateTimestamp", searchCandidateRequest.getFromThisDate())
                     .query();
         }
         if(searchCandidateRequest.getToThisDate() != null) {
-            Logger.info("toDate" + searchCandidateRequest.getToThisDate());
             query = query.where()
                     .le("candidateCreateTimestamp", searchCandidateRequest.getToThisDate())
                     .query();

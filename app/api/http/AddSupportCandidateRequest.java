@@ -11,17 +11,14 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
     public String candidateEmail;
     public String candidatePastJobCompany;
     public String candidatePastJobRole;
-    public long candidatePastJobSalary ;
-
+    public Long candidatePastJobSalary ;
     public String candidateCurrentJobLocation;
     public Integer candidateTransportation ;
     public Integer candidateCurrentWorkShift ;
     public String candidateCurrentJobRole;
     public String candidateCurrentJobDesignation;
     public Integer candidateCurrentJobDuration ;
-
     public String candidateIdProof;
-
     public Integer candidateSalarySlip ;
     public Integer candidateAppointmentLetter ;
 
@@ -66,6 +63,7 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
         return candidateCurrentJobDesignation;
     }
 
+
     public Integer getCandidateCurrentJobDuration() {
         return candidateCurrentJobDuration;
     }
@@ -78,7 +76,7 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
         return candidatePastJobCompany;
     }
 
-    public long getCandidatePastJobSalary() {
+    public Long getCandidatePastJobSalary() {
         return candidatePastJobSalary;
     }
 
@@ -97,4 +95,5 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
     public Integer getCandidateAppointmentLetter() {
         return candidateAppointmentLetter;
     }
+
 }

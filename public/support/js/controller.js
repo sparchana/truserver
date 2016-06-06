@@ -1,3 +1,6 @@
+
+var globalAgentNumber;
+
 function cleaModalBackDrop() {
     $('#newLeadEntryModal').modal('hide');
     $('body').removeClass('modal-open');
@@ -50,13 +53,6 @@ function reportCandidateRegError(returnedData) {
     alert(returnedData);
 
 }
-function renderKWResponse(returnedData) {
-    console.log(returnedData.error.message);
-
-}
-function showInteraction(x) {
-    window.location = "/candidateInteraction/" + x.id;
-}
 
 function getCandidateInfo(id) {
     clearModal();
@@ -88,7 +84,7 @@ function renderDashboard(viewType) {
                         'leadType' : newLead.leadType,
                         'leadStatus' : newLead.leadStatus,
                         'leadCreationTimestamp' : newLead.leadCreationTimestamp,
-                        'totalInBounds' :  '<a id="'+newLead.leadId+'" style="cursor:pointer;" onclick="showInteraction(this);">'+newLead.totalInBounds+'</a>',
+                        'totalInBounds' :  '<a href="'+"/candidateInteraction/"+newLead.leadId+'" id="'+newLead.leadId+'" style="cursor:pointer;" target="_blank">'+newLead.totalInBounds+'</a>',
                         'lastIncomingCallTimestamp'  :  newLead.lastIncomingCallTimestamp,
                         'leadChannel' : newLead.leadChannel,
                         'leadMobile' : newLead.leadMobile,
@@ -139,82 +135,64 @@ function getThis(viewType){
 }
 
 
-function myHandler (mobile, id) {
-    $("#leadId").val(id);
-    $("#leadMobileNumber").val("+"+mobile);
-    var s = {
-        api_key: "dae93473-50a6-11e5-bbe8-067cf20e9301",
-        agent_number: "+919980303169",
-        phone_number: "+"+mobile,
-        sr_number: "+918880007799"
-    };
-
-    try {
-        $.ajax({
-            url: "https://sr.knowlarity.com/vr/api/click2call/",
-            async: false,
-            type: "POST",
-            data: s,
-            contentType: "jsonp",
-            dataType: 'jsonp',
-            cache: !1,
-            success: renderKWResponse,
-            error: false
-        });
-        openCreateCandidate(id);
-    } catch (exception) {
-
+function processSupportAgentData(returnedData) {
+    if(returnedData != null){
+        globalAgentNumber = returnedData;
     }
 }
 
-$(function(){
-    $("#callResponseForm").submit(function(eventObj) {
-        eventObj.preventDefault();
+function myHandler (mobile, id) {
+    if(globalAgentNumber != '0'){
+        console.log("Call Initiated for " +"+"+ mobile + " by " + globalAgentNumber);
+        var s = {
+            api_key: "dae93473-50a6-11e5-bbe8-067cf20e9301",
+            agent_number: globalAgentNumber,
+            phone_number: "+"+mobile,
+            sr_number: "+918880007799"
+        };
+
         try {
-            var leadId = $("#leadId").val();
-            var answer = document.querySelector('input[name="answer"]:checked').value;
-            var updateType = "";
-            var doSend = "no";
-            if(answer == 'candidate') {
-                updateType = '4';
-                doSend = "yes";
-            } else if (answer == 'recruiter'){
-                updateType = '5';
-                doSend = "yes";
-            } else if (answer == 'lost'){
-                NProgress.start();
-                $.ajax({
-                    type: "GET",
-                    url: "/updateLeadStatus/"+leadId+"/"+"3",
-                    processData: false,
-                    success: processLeadUpdate
-                });
-                NProgress.done();
-
-            } else {
-                doSend = "no";
-            }
-
-            if(doSend == "yes") {
-                NProgress.start();
-                $.ajax({
-                    type: "GET",
-                    url: "/updateLeadType/"+leadId+"/"+updateType,
-                    processData: false,
-                    success: processLeadUpdate
-                });
-                $.ajax({
-                    type: "GET",
-                    url: "/updateLeadStatus/"+leadId+"/"+"2",
-                    processData: false,
-                    success: processLeadUpdate
-                });
-                NProgress.done();
-            }
+            $.ajax({
+                url: "https://sr.knowlarity.com/vr/api/click2call/",
+                async: false,
+                type: "POST",
+                data: s,
+                contentType: "jsonp",
+                dataType: 'jsonp',
+                cache: !1,
+                success: function (returnedData) {
+                    console.log("KW Response : " + JSON.stringify(returnedData));
+                    openCreateCandidate(id);
+                },
+                error: function (error) {
+                    JSON.stringify(error);
+                    console.log("Response E: " + JSON.stringify(error));
+                    openCreateCandidate(id);
+                }
+            });
         } catch (exception) {
         }
+    } else {
+        openCreateCandidate(id);
+    }
 
-    }); // end of submit
+}
+
+$(function(){
+    /* ajax commands to fetch supportAgent Info */
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/getSupportAgent",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processSupportAgentData
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
 
     getThis(1);
     $('#showAll').click(function() {

@@ -23,7 +23,7 @@ public class JobHistory extends Model {
     public String candidatePastCompany = "";
 
     @Column(name = "CandidatePastSalary", columnDefinition = "bigint signed null")
-    public long candidatePastSalary = 0;
+    public Long candidatePastSalary;
 
     @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp default current_timestamp null")
     public Timestamp updateTimeStamp;
@@ -68,11 +68,11 @@ public class JobHistory extends Model {
         this.candidatePastCompany = candidatePastCompany;
     }
 
-    public long getCandidatePastSalary() {
+    public Long getCandidatePastSalary() {
         return candidatePastSalary;
     }
 
-    public void setCandidatePastSalary(long candidatePastSalary) {
+    public void setCandidatePastSalary(Long candidatePastSalary) {
         this.candidatePastSalary = candidatePastSalary;
     }
 }
