@@ -164,6 +164,7 @@ function generateSkills(){
     var myNode = document.getElementById("skill_details");
     /*myNode.innerHTML = '';*/
     var selectedJobPref = $('#candidateJobPref').val();
+    $("#skillAnswer").html('');
     try {
         $.ajax({
             type: "GET",
@@ -204,12 +205,18 @@ function processDataCheckSkills(returnedData) {
             var headLbl = document.createElement("label");
             headLbl.className = "btn btn-custom-check";
             headLbl.textContent = x.qualifier;
+            headLbl.onclick = function () {
+                document.getElementById(s[0] + "_" + s[1] + "_" + x.qualifier).checked = true;
+                document.getElementById(s[0] + "_" + s[1] + "_" + x.qualifier).click();
+            };
             lbl.appendChild(headLbl);
 
             var o = document.createElement("input");
             o.type = "radio";
             o.style = "display: inline-block";
             o.name = singleSkill.skill.skillName;
+            var s = singleSkill.skill.skillName.split(" ");
+            o.id = s[0] + "_" + s[1] + "_" + x.qualifier;
             o.value = x.qualifier;
             o.onclick = function () {
                 check=0;

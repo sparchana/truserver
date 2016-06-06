@@ -203,6 +203,8 @@ function prefillSkillProfile(){
             candidateSkill.push(obj);
         });
     }
+    $(".btn-group").attr("data-toggle", "buttons");
+    $(".btn-group").removeClass('active');
     prefillSkills(candidateSkill);
 }
 /* end of skill prefill */
@@ -240,12 +242,8 @@ $("#editSkills").click(function(){
     document.getElementById('skillImg').src = "/assets/dashboard/img/skills_enable.png";
     document.getElementById('educationImg').src = "/assets/dashboard/img/education_disable.png";
 
-    $("#basicProfileSection").hide();
     $("#educationProfileSection").hide();
     $("#skillProfileSection").show();
-
-    fetchSkillAjaxApis();
-    prefillSkillProfile();
 });
 
 $("#editEducation").click(function(){
