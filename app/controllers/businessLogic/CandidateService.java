@@ -48,7 +48,7 @@ public class CandidateService {
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
         String result = "";
         String objectAUUId = "";
-        Logger.info("Checking this mobile : " + candidate.candidateMobile );
+        Logger.info("Checking for mobile number: " + candidate.candidateMobile );
         Candidate existingCandidate = isCandidateExists(candidate.candidateMobile);
         Lead existingLead = isLeadExists(candidate.candidateMobile);
         try {
