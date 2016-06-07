@@ -21,13 +21,6 @@ function processDataSignUpSubmit(returnedData) {
     else if(returnedData.status == 3){
         alert("User already exists! Please login to continue");
         window.location = "/";
-/*        document.getElementById("registerBtn").disabled = false;
-        $('.token-input-delete-token-facebook').click();
-        $('#alreadyMsgCandidate').show();
-        $('#candidateName').val('');
-        $('#candidateMobile').val('');
-        $('#candidateEmail').val('');*/
-
     }
     else {
         $('#errorMsg').show();
@@ -43,7 +36,10 @@ function processDataAddAuth(returnedData) {
         // Store
         localStorage.setItem("mobile", "+91" + candidateMobile);
         localStorage.setItem("name", returnedData.candidateName);
+        localStorage.setItem("lastName", returnedData.candidateLastName);
         localStorage.setItem("id", returnedData.candidateId);
+        localStorage.setItem("leadId", returnedData.leadId);
+        localStorage.setItem("assessed", returnedData.isAssessed);
         console.log(returnedData.candidateId);
         window.location = "/dashboard";
     }
@@ -119,6 +115,12 @@ $(function() {
 $(function() {
     $("#form_auth").submit(function(eventObj) {
         eventObj.preventDefault();
+        if(($('#candidatePassword').val()).length < 6){
+            alert("Minimum 6 characters password required");
+        }
+        else{
+
+        }
         document.getElementById("btnSubmit").disabled = true;
         try {
             var authPassword = $('#candidatePassword').val();

@@ -23,9 +23,13 @@ function processDataResetCheckUser(returnedData) {
 function processDataPostReset(returnedData) {
     console.log("returedData :" + returnedData.status);
     if(returnedData.status == 1) {
+
         localStorage.setItem("mobile", "+91" + candidateMobile);
         localStorage.setItem("name", returnedData.candidateName);
+        localStorage.setItem("lastName", returnedData.candidateLastName);
         localStorage.setItem("id", returnedData.candidateId);
+        localStorage.setItem("leadId", returnedData.leadId);
+        localStorage.setItem("assessed", returnedData.isAssessed);
         window.location = "/dashboard";
     }
 
@@ -80,25 +84,29 @@ $(function() {
 
     $("#form_password_reset_new").submit(function(eventObj) {
         eventObj.preventDefault();
-        document.getElementById("resetNewPasswordBtn").disabled = true;
-        try {
-            var phone = candidateMobile;
-            var password = $('#candidateNewPassword').val();
-            console.log("phone: " + phone);
-            var s = {
-                candidatePassword : password,
-                candidateAuthMobile : phone,
-            };
-            $.ajax({
-                type: "POST",
-                url: "/addPassword",
-                data: s,
-                success: processDataPostReset
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
+        if(($('#candidateNewPassword').val()).length < 6){
+            alert("Minimum 6 characters password required");
         }
-
+        else{
+            document.getElementById("resetNewPasswordBtn").disabled = true;
+            try {
+                var phone = candidateMobile;
+                var password = $('#candidateNewPassword').val();
+                console.log("phone: " + phone);
+                var s = {
+                    candidatePassword : password,
+                    candidateAuthMobile : phone,
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/addPassword",
+                    data: s,
+                    success: processDataPostReset
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
+        }
     }); // end of submit
 }); // end of function
 

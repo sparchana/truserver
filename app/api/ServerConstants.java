@@ -10,15 +10,16 @@ public class ServerConstants {
     public static final String INTERACTION_RESULT_NEW_CANDIDATE = "New Candidate Added";
     public static final String INTERACTION_RESULT_CANDIDATE_UPDATED_LOCALITY_JOBS = "Candidate updated jobPref and locality pref";
     public static final String INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM = "Candidate Info got updated by System";
+    public static final String INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SELF = "Candidate Info got updated by Self";
     public static final String INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE = "System Updated LeadType to ";
     public static final String INTERACTION_RESULT_SYSTEM_UPDATED_LEADSTATUS = "System Updated LeadStatus to ";
     public static final String INTERACTION_RESULT_EXISTING_CANDIDATE_SIGNUP = "Existing Candidate Tried to Signup";
     public static final String INTERACTION_RESULT_EXISTING_CANDIDATE_VERIFICATION = "Existing Candidate trying to complete self signup";
     public static final String INTERACTION_RESULT_EXISTING_LEAD = "Existing lead made contact through website";
 
-
     public static final String INTERACTION_CREATED_SELF = "Self";
     public static final String INTERACTION_CREATED_SYSTEM = "System";
+    public static final String INTERACTION_CREATED_ERROR = "Error";
 
     public static final String INTERACTION_NOTE_DUMMY_PASSWORD_CREATED = "Candidate got Registered with Mandatory Info and dummy password by system";
     public static final String INTERACTION_NOTE_SELF_PASSWORD_CHANGED = "Candidate Self Updated Password";
@@ -26,6 +27,8 @@ public class ServerConstants {
     public static final String INTERACTION_NOTE_LEAD_TYPE_CHANGED = "Lead Type Changed";
     public static final String INTERACTION_NOTE_LEAD_STATUS_CHANGED = "Lead Status Changed";
     public static final String INTERACTION_NOTE_SELF_SIGNEDUP = "Candidate Self Signed Up";
+    public static final String INTERACTION_NOTE_CREATED_BY_ERROR = "Session Username is null";
+    public static final String INTERACTION_NOTE_SELF_PROFILE_CREATION = "Candidate self updated profile details";
 
     public static final int TYPE_LEAD = 1;
     public static final int TYPE_POTENTIAL_CANDIDATE = 2;
@@ -45,6 +48,17 @@ public class ServerConstants {
     public static final int CANDIDATE_STATUS_NOT_VERIFIED = 0;
     public static final int CANDIDATE_STATUS_VERIFIED= 1;
 
+    public static final int CANDIDATE_NOT_ASSESSED = 0;
+    public static final int CANDIDATE_ASSESSED= 1;
+
+    public static final int CANDIDATE_MIN_PROFILE_NOT_COMPLETE = 0;
+    public static final int CANDIDATE_MIN_PROFILE_COMPLETE = 1;
+
+    public static final int UPDATE_BASIC_PROFILE = 0;
+    public static final int UPDATE_SKILLS_PROFILE = 1;
+    public static final int UPDATE_EDUCATION_PROFILE = 2;
+    public static final int UPDATE_ALL_BY_SUPPORT = 3;
+
     public static final int OBJECT_TYPE_LEAD= 1;
     public static final int OBJECT_TYPE_CANDIDATE= 4;
     public static final int OBJECT_TYPE_RECRUTER= 5;
@@ -55,7 +69,7 @@ public class ServerConstants {
     public static final int INTERACTION_TYPE_SMS_OUT= 4;
     public static final int INTERACTION_TYPE_WEBSITE= 5;
 
-    public static final int LEAD_SOURCE_UNKNOWN = 0; // 0 is unknown
+    public static final int LEAD_SOURCE_UNKNOWN = 1; // 1 is unknown
 
 
     public static final String LEAD_INTEREST_UNKNOWN = "Unknown";

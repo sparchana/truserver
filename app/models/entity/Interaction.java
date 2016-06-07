@@ -1,5 +1,6 @@
 package models.entity;
 
+import api.ServerConstants;
 import com.avaje.ebean.Model;
 
 import javax.persistence.Column;
@@ -57,9 +58,9 @@ public class Interaction extends Model {
         this.objectAUUId = objectAUUId;
         this.objectAType = objectAType;
         this.interactionType = interactionType;
-        this.note = note;
+        this.note = (createdBy == null) ? ServerConstants.INTERACTION_NOTE_CREATED_BY_ERROR : note;
         this.result = result;
-        this.createdBy = createdBy;
+        this.createdBy = (createdBy == null) ? ServerConstants.INTERACTION_CREATED_ERROR : createdBy;
     }
 
     public static void addInteraction(Interaction interaction){

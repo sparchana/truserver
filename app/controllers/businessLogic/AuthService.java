@@ -45,9 +45,12 @@ public class AuthService {
                 setNewPassword(existingAuth, password);
                 Auth.savePassword(existingAuth);
 
-                candidateSignUpResponse.setCandidateName(existingCandidate.candidateName + " " + existingCandidate.candidateLastName);
+                candidateSignUpResponse.setCandidateName(existingCandidate.candidateName);
+                candidateSignUpResponse.setCandidateLastName(existingCandidate.candidateLastName);
                 candidateSignUpResponse.setCandidateId(existingCandidate.candidateId);
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+                candidateSignUpResponse.setIsAssessed(existingCandidate.candidateIsAssessed);
+                candidateSignUpResponse.setLeadId(existingCandidate.lead.leadId);
             }
 
             else{
@@ -89,8 +92,12 @@ public class AuthService {
                         "! Welcome to Trujobs.in. Login and complete our skill assessment today and find your right job.";
                 SmsUtil.sendSms(existingCandidate.candidateMobile,msg);
 
+                candidateSignUpResponse.setCandidateName(existingCandidate.candidateName);
+                candidateSignUpResponse.setCandidateLastName(existingCandidate.candidateLastName);
                 candidateSignUpResponse.setCandidateId(existingCandidate.candidateId);
-                candidateSignUpResponse.setCandidateName(existingCandidate.candidateName + " " + existingCandidate.candidateLastName);
+                candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+                candidateSignUpResponse.setIsAssessed(existingCandidate.candidateIsAssessed);
+                candidateSignUpResponse.setLeadId(existingCandidate.lead.leadId);
             }
             Logger.info("Auth Save Successful");
         }

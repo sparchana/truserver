@@ -40,7 +40,7 @@ public class Application extends Controller {
     public static Result index() {
         String sessionId = session().get("sessionId");
         if(sessionId != null){
-            return ok(views.html.candidate_home.render());
+            return redirect("/dashboard");
         }
         return ok(views.html.index.render());
     }
@@ -133,7 +133,7 @@ public class Application extends Controller {
         candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(localityList, candidate);
         candidate.jobPreferencesList = getCandidateJobPreferenceList(jobsList, candidate);
 
-        return ok(toJson(CandidateService.createCandidate(candidate, isSupport, ServerConstants.LEAD_SOURCE_UNKNOWN)));
+        return ok(toJson(CandidateService.signUpCandidate(candidate, isSupport, ServerConstants.LEAD_SOURCE_UNKNOWN)));
     }
     @Security.Authenticated(Secured.class)
     public static Result signUpSupport() {
@@ -146,7 +146,48 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(CandidateService.createCandidateBySupport(addSupportCandidateRequest)));
+        boolean isSupport = true;
+        return ok(toJson(CandidateService.createCandidateProfile(addSupportCandidateRequest, isSupport, ServerConstants.UPDATE_ALL_BY_SUPPORT)));
+    }
+
+    public static Result candidateUpdateBasicProfile() {
+        JsonNode req = request().body().asJson();
+        AddCandidateRequest addCandidateRequest = new AddCandidateRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addCandidateRequest = newMapper.readValue(req.toString(), AddCandidateRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        boolean isSupport = false;
+        return ok(toJson(CandidateService.createCandidateProfile(addCandidateRequest, isSupport, ServerConstants.UPDATE_BASIC_PROFILE)));
+    }
+
+    public static Result candidateUpdateExperienceDetails() {
+        JsonNode req = request().body().asJson();
+        Logger.info(" == " + req);
+        AddCandidateExperienceRequest addCandidateExperienceRequest = new AddCandidateExperienceRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addCandidateExperienceRequest = newMapper.readValue(req.toString(), AddCandidateExperienceRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        boolean isSupport = false;
+        return ok(toJson(CandidateService.createCandidateProfile(addCandidateExperienceRequest, isSupport, ServerConstants.UPDATE_SKILLS_PROFILE)));
+    }
+
+    public static Result candidateUpdateEducationDetails() {
+        JsonNode req = request().body().asJson();
+        AddCandidateEducationRequest addCandidateEducationRequest = new AddCandidateEducationRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addCandidateEducationRequest = newMapper.readValue(req.toString(), AddCandidateEducationRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        boolean isSupport = false;
+        return ok(toJson(CandidateService.createCandidateProfile(addCandidateEducationRequest, isSupport, ServerConstants.UPDATE_EDUCATION_PROFILE)));
     }
 
     public static Result addPassword() {
@@ -171,6 +212,11 @@ public class Application extends Controller {
     @Security.Authenticated(SecuredUser.class)
     public static Result dashboard() {
         return ok(views.html.candidate_home.render());
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result editProfile() {
+        return ok(views.html.edit_profile.render());
     }
 
     public static Result findUserAndSendOtp() {
@@ -299,6 +345,12 @@ public class Application extends Controller {
         List<JobPreference> candidateJobs = JobPreference.find.where().eq("CandidateId", id).findList();
         return ok(toJson(candidateJobs));
     }
+
+    public static Result checkMinProfile(long id) {
+        Candidate existingCandidate = Candidate.find.where().eq("candidateId", id).findUnique();
+        return ok(toJson(existingCandidate.IsMinProfileComplete));
+    }
+
     @Security.Authenticated(Secured.class)
     public static Result getAllSkills(String ids) {
         List<String> jobPrefIdList = Arrays.asList(ids.split("\\s*,\\s*"));
@@ -375,6 +427,23 @@ public class Application extends Controller {
         }
         return redirect(routes.Application.supportAuth());
     }
+
+    public static Result updateIsAssessedToAssessed(long candidateId) {
+        try{
+            Candidate existingCandidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
+            try{
+                existingCandidate.setCandidateIsAssessed(ServerConstants.CANDIDATE_ASSESSED);
+                existingCandidate.update();
+                return ok(toJson(ServerConstants.CANDIDATE_ASSESSED));
+            } catch (NullPointerException n) {
+                n.printStackTrace();
+            }
+        } catch (NullPointerException n) {
+            n.printStackTrace();
+        }
+        return badRequest();
+    }
+
     @Security.Authenticated(Secured.class)
     public static Result updateLeadType(long leadId, long newType) {
         //TODO: Not using this api anymore
@@ -805,22 +874,6 @@ public class Application extends Controller {
                 int salt =  Util.randomInt();
                 String md5Password = Util.md5(salt + password);
                 return ok("Password: " + password + " salt: " + salt + " : md5 = " + md5Password);
-            case 16:
-                // json to candidate save test api
-                String jsonToSave = "{\"candidateFirstName\":\"Ramya\",\"candidateSecondName\":\"D\",\"candidateMobile\":\"9738357414\",\"candidateLocality\":\"275,210\",\"candidateJobInterest\":\"3,5\",\"leadSource\":\"5\",\"candidateDob\":\"1998-02-17\",\"candidatePhoneType\":\"Smart Phone\",\"candidateGender\":\"1\",\"candidateHomeLocality\":\"275\",\"candidateMaritalStatus\":\"1\",\"candidateEmail\":\"ramya.dolly.008@gmail.com\",\"candidateTotalExperience\":0,\"candidateCurrentCompany\":\"\",\"candidateCurrentJobLocation\":\"\",\"candidateTransportation\":\"-1\",\"candidateCurrentWorkShift\":\"\",\"candidateCurrentJobRole\":\"\",\"candidateCurrentJobDesignation\":\"\",\"candidateCurrentSalary\":\"\",\"candidateCurrentJobDuration\":0,\"candidatePastJobCompany\":\"\",\"candidatePastJobRole\":\"\",\"candidatePastJobSalary\":\"\",\"candidateEducationLevel\":\"3\",\"candidateDegree\":null,\"candidateEducationInstitute\":\"Bangalore University\",\"candidateTimeShiftPref\":\"2\",\"candidateMotherTongue\":\"5\",\"candidateLanguageKnown\":[{\"id\":\"1\",\"r\":1,\"w\":1,\"s\":1},{\"id\":\"2\",\"r\":0,\"w\":0,\"s\":1},{\"id\":\"3\",\"r\":1,\"w\":1,\"s\":1},{\"id\":\"4\",\"r\":0,\"w\":0,\"s\":1},{\"id\":\"5\",\"r\":1,\"w\":1,\"s\":1}],\"candidateSkills\":[{\"id\":7,\"qualifier\":\"Yes\"},{\"id\":8,\"qualifier\":\"Yes\"},{\"id\":9,\"qualifier\":\"Yes\"},{\"id\":10,\"qualifier\":\"Yes\"}],\"candidateIdProof\":\"3\",\"candidateSalarySlip\":\"0\",\"candidateAppointmentLetter\":\"0\"}";
-                if(jsonToSave.isEmpty()){
-                    Logger.info("Please mention jsonString to save as candiate");
-                }
-
-                AddSupportCandidateRequest addSupportCandidateRequest = new AddSupportCandidateRequest();
-                ObjectMapper newMapper = new ObjectMapper();
-                try {
-                    addSupportCandidateRequest = newMapper.readValue(jsonToSave, AddSupportCandidateRequest.class);
-                    Logger.info("json" + jsonToSave.toString());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return ok(toJson(CandidateService.createCandidateBySupport(addSupportCandidateRequest)));
         }
         return ok("");
     }

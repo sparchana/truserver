@@ -1,178 +1,604 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Dashboard - Trujobs.in</title>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <meta name="keywords" content="freshers jobs, driver jobs, delivery boy jobs, field sales agent,call center jobs, BPO jobs, data entry jobs, back office jobs, receptionist jobs, beautician jobs, waiter jobs, cook jobs, restaurant jobs, cashier jobs">
+        <title>Trujobs - Trusted Employers - Verified Candidates</title>
+        <meta name="keywords" content="freshers jobs, driver jobs, delivery boy jobs, field sales agent,call center jobs, BPO jobs, data entry jobs, back office jobs, receptionist jobs, beautician jobs, waiter jobs, cook jobs, restaurant jobs, cashier jobs, experienced jobs, jobs in Bangalore, driver jobs, delivery boy jobs, field sales agent,call center jobs, BPO jobs, data entry jobs, back office jobs, receptionist jobs, beautician jobs, waiter jobs, cook jobs, restaurant jobs, cashier jobs, full time jobs, part time jobs, entry level jobs, plumber jobs, electrician jobs">
+        <meta name="description" content="TruJobs helps you find the right job! Give a missed call at 8880007799 for Best Jobs. We pre-screen, match and schedule interviews for Jobs" />
+        <title>Dashboard - Trujobs</title>
 
-        <!-- Bootstrap Core CSS -->
-    <link href="http://sbootstrap.startbootstrapc.netdna-cdn.com/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+            <!-- Bootstrap Core CSS -->
+        <link rel="icon" type="image/png" href="/assets/img/icon.png">
+        <link href='https://fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
 
-        <!-- Start Bootstrap Custom CSS -->
+        <link href="/assets/dashboard/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
-    <link href="http://sbootstrap.startbootstrapc.netdna-cdn.com/assets/css/startbootstrap.css" rel="stylesheet" type="text/css">
-    <link rel="icon" type="image/png" href="/assets/img/icon.png">
-    <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
-    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lato" />
-    <link rel="stylesheet" type="text/css" href="/assets/css/style.css">
+            <!-- Custom CSS -->
+        <link href="/assets/dashboard/css/dashboard.css" rel="stylesheet">
+        <script type="text/javascript" src="//www.google.com/jsapi"></script>
+        <script type="text/javascript" src="/assets/dashboard/js/candidate_home.js"></script>
+        <link rel="stylesheet" type="text/css" href="/assets/new/css/myStyle.css">
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="/assets/css/token-input.css" type="text/css" />
-    <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
-    <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
-    <script type="text/javascript" src="//www.google.com/jsapi"></script>
-    <script type="text/javascript" src="/assets/js/user_dashboard.js"></script>
-
-    <script type="text/javascript">
-      google.load('visualization', '1', {packages: ['table']});
-      function logoutUser() {
-          localStorage.clear();
-          try {
-              $.ajax({
-                  type: "GET",
-                  url: "/logoutUser",
-                  data: false,
-                  contentType: false,
-                  processData: false,
-              });
-          } catch (exception) {
-              console.log("exception occured!!" + exception);
+        <script type="text/javascript">
+          function showEditProfile(){
+              window.location = "/dashboard/editProfile";
           }
-          window.location = "/";
-      }
 
+          var userMobile = localStorage.getItem("mobile");
+          if(userMobile == null){
+              logoutUser();
+              window.location = "/";
+          }
+
+          google.load('visualization', '1', {packages: ['table']});
+
+          function logoutUser() {
+              localStorage.clear();
+              window.location = "/";
+              try {
+                  $.ajax({
+                      type: "GET",
+                      url: "/logoutUser",
+                      data: false,
+                      contentType: false,
+                      processData: false,
+                  });
+              } catch (exception) {
+                  console.log("exception occured!!" + exception);
+              }
+          }
     </script>
-</head>
-<body>
-    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigationbar">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
+    </head>
 
-                </button> <a class="navbar-brand" href="#"><img src="/assets/img/logo.png" height="40px" style="margin-top: -8px;"></a>
-            </div>
+    <body>
+        <div id="table" style="display: none;"></div>
+        <div id="wrapper">
 
-            <div class="collapse navbar-collapse" id="navigationbar">
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="tel:+918880007799">JOB HOTLINE 8880007799</a></li>
-                    <li><a><div id="helloMsg"></div></a></li>
-                    <li style="cursor: hand" onclick="logoutUser()"><a>Logout</a></li>
+                <!-- Sidebar -->
+            <div id="sidebar-wrapper">
+                <ul class="sidebar-nav">
+                    <li class="sidebar-brand">
+                        <a href="#">
+                            <img id="navLogo" src="/assets/dashboard/img/logo-main.gif" height="42px">
+                        </a>
+                    </li>
+                    <li>
+                        <center>
+                            <div style="padding-top: 8%; padding-bottom: 3%">
+                                <img id="userGenderIcon" src="" height="124px">
+                            </div>
+                        </center>
+                    </li>
+                    <li>
+                        <center>
+                            <h4><font color="white"><div id="helloMsg">Hello Adarsh</div></font></h4>
+                        </center>
+                    </li>
+                    <li>
+                        <div class="sideNav">
+                            <a href="/dashboard">Dashboard</a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="sideNav">
+                            <a href="#editProfileDashboard" onclick="showEditProfile()">Profile</a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="sideNav">
+                            <a href="#hotJobs">Hot Jobs</a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="sideNav">
+                            <a href="#" onclick="logoutUser()">Log Out</a>
+                        </div>
+                    </li>
                 </ul>
             </div>
-        </div>
-    </nav>
+                <!-- /#sidebar-wrapper -->
 
-    <div id="table" style="display: none;"></div>
+                <!-- Page Content -->
+            <div id="page-content-wrapper">
+                <a href="#menu-toggle" class="visible-xs btn btn-default" style="width: 30%" id="menu-toggle">Show Menu</a>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h2>Welcome to Trujobs</h2>
+                            <hr>
+                            <div id="assessmentPanel">
+                                <div style="display: inline-block">
+                                    <center>
+                                        <div><font size="2" color="#000000">Profile Status</font></div>
+                                        <div id="profileStatusParent">
+                                            <div id="profileStatus"><img id="profileStatusIcon" src="" width="40px"></div>
+                                            <div id="profileStatusResult"></div>
+                                            <div id="profileStatusAction"></div>
+                                        </div>
+                                    </center>
+                                </div>
 
-    <div class="sectionDashboard" style="text-align: left" id="userExist">
-        <div class="row" style="text-align: center">
-            <h3>Welcome to Trujobs!<br></h3>
-        </div>
-        <br>
-        <div class="material_grid">
-            <div class="dashboardHeader">
-                <h3>PROFILE INFORMATION</h3 >
-            </div>
-            <br>
+                                <div style="display: inline-block">
+                                    <div style="display: inline-block; width: 24px;"></div>
+                                </div>
 
-            <div class="row" style="margin-left: 12%; margin-right: 12%; padding-top: 4%">
-                <div class="col-sm-5">
-                    <div class="row" style="padding-left: 5%">
-                        <div style="display : inline-block"><img src="/assets/img/user.png" height="30px;"></div>
-                        <div style="margin-left: 4px; display: inline-block" id="userName"></div>
-                    </div>
-                </div>
-                <div class="col-sm-2">
-                        &nbsp;
-                </div>
-                <div class="col-sm-5">
-                    <div class="row" style="padding-left: 5%">
-                        <div style="display : inline-block"><img src="/assets/img/phone.png" height="30px;"></div>
-                        <div style="margin-left: 4px; display: inline-block" id="userMobile"></div>
-                    </div>
-                </div>
-            </div>
-            <br>
-            <div class="row" style="margin-left: 12%; margin-right: 12%; padding-bottom: 4%;">
-                <div class="col-sm-5">
-                    <div class="row" style="padding-left: 5%">
-                        <div style="display : inline-block"><img src="/assets/img/job.png" height="30px;"></div>
-                        <div style="margin-left: 4px; display: inline-block" >Interested Jobs:</div>
+                                <div style="display: inline-block">
+                                    <center>
+                                        <div id="assessmentHeader" style="color: #ffffff"><font size="2">Assessment Status</font></div>
+                                        <div id="assessedStatusParent">
+                                            <div id="assessedStatus"><img id="assessedIcon" src="" width="40px"></div>
+                                            <div id="assessedStatusResult"></div>
+                                            <div id="assessedStatusAction"></div>
+                                        </div>
+                                    </center>
+                                </div>
+                            </div>
+                            <div id="profileUpdateHeader" style="margin-top: 2%">
+                                <div class="row" >
+                                    <div class="col-md-6 col-sm-6 col-xs-6" style="margin-top: 4px">
+                                        <font size="4">Your Profile</font>
+                                    </div>
+                                    <div class="col-md-6 col-sm-6 col-xs-6">
+                                        <div style="float: right; margin : 8px 8px 4px 4px ; font-size : 12px; cursor: pointer" onclick="showEditProfile()"><img src="/assets/dashboard/img/edit.png" width="18px">&nbsp;Edit</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="profileBody">
+                                <div id="dashboardProfileBody">
+                                    <div class="row sectionDashboard" style="margin-top: -2%">
+                                        <div class="col-sm-12" >
+                                            <div style="margin-left: 4px; display: inline-block">
+                                                <h4 style="display : inline-block ;" id="userName"></h4>
+                                                <h4 style="display : inline-block ;" id="userGender"></h4>
+                                                <h4 style="display : inline-block ;" id="userAge"></h4>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                    </div>
-                    <ul class="preferredJobs" style="margin-left: 20px">
-                    </ul>
+                                    <div class="row sectionDashboard" style="margin-top: -4%">
+                                        <div class="col-sm-4">
+                                            <div style="display : inline-block; margin: 4px;">
+                                                <img src="/assets/img/phone.svg" height="24px;" style="margin-top: -4px">
+                                            </div>
+                                            <div id="userMobile" style="margin-left: 4px; display: inline-block">
+                                        </div>
+                                        </div>
 
-                </div>
-                <div class="col-sm-2">
-                </div>
-                <div class="col-sm-5">
-                    <div class="row" style="padding-left: 5%">
-                        <div style="display : inline-block"><img src="/assets/img/location.png" height="30px;"></div>
-                        <div style="margin-left: 4px; display: inline-block">Preferred Location:
+                                        <div class="col-sm-4">
+                                            <div style="display : inline-block; margin: 4px;">
+                                                <img src="/assets/img/location.svg" height="24px;" style="margin-top: -4px">
+                                            </div>
+                                            <div style="margin: 4px; display: inline-block">
+                                                Bangalore
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4"></div>
+                                    </div>
+                                </div>
+
+                                <div class="profileSectionOne" id="dashboardProfileBody" style="padding: 2%">
+                                    <font size="4">Preferences</font><hr style="margin: 8px">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div style="display : inline-block; margin: 4px;top:0">
+                                                <img src="/assets/img/job.svg" height="24px;" style="margin-top: -4px">
+                                            </div>
+                                            <div style="display: inline-block;">
+                                                <div style="margin-left: 4px; color : #9f9f9f; font-size: 12px">Preferred Job Role(s)</div>
+                                                <div id="userJobs" style="margin-left: 4px; display: inline-block"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div style="display : inline-block; margin: 4px;">
+                                                <img src="/assets/img/location.svg" height="24px;" style="margin-top: -4px">
+                                            </div>
+                                            <div style="display: inline-block; margin-top: 4px">
+                                                <div style="margin-left: 4px; color : #9f9f9f; font-size: 12px">Preferred Job Location(s)</div>
+                                                <div id="userLocality" style="margin-left: 4px; display: inline-block"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div style="display : inline-block; margin: 4px;">
+                                                <img src="/assets/img/workExp.svg" height="24px;" style="margin-top: -4px">
+                                            </div>
+                                            <div style="display: inline-block; margin-top: 4px">
+                                                <div style="margin-left: 4px; color : #9f9f9f; font-size: 12px">Preferred Work Shift</div>
+                                                <div id="userShift" style="margin-left: 4px; display: inline-block">Not Specified</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="profileSectionOne" id="dashboardProfileBody" style="padding: 2%;">
+                                    <font size="4">Experience & Education</font><hr style="margin: 8px">
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div style="display : inline-block; margin: 4px;">
+                                                <img src="/assets/img/office.svg" height="24px;" style="margin-top: -4px">
+                                            </div>
+                                            <div style="display: inline-block;">
+                                                <div style="margin-left: 4px; color : #9f9f9f; font-size: 12px">Current Company</div>
+                                                <div id="userCurrentCompany" style="margin-left: 4px; display: inline-block">Not Specified</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                            <div style="display : inline-block; margin: 4px;">
+                                                <img src="/assets/img/salary.svg" height="24px;" style="margin-top: -4px">
+                                            </div>
+                                            <div style="display: inline-block; margin-top: 4px">
+                                                <div style="margin-left: 4px; color : #9f9f9f; font-size: 12px">Current Salary</div>
+                                                <div id="userCurrentSalary" style="margin-left: 4px; display: inline-block">Not Specified</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            <div style="display : inline-block; margin: 4px;">
+                                                <img src="/assets/img/education.svg" height="24px;" style="margin-top: -4px">
+                                            </div>
+                                            <div style="display: inline-block; margin-top: 4px">
+                                                <div style="margin-left: 4px; color : #9f9f9f; font-size: 12px">Highest Education</div>
+                                                <div id="userEducationLevel" style="margin: 4px; display: inline-block">Not Specified</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <div style="display : inline-block; margin: 4px;">
+                                                <img src="/assets/img/workExp.svg" height="24px;" style="margin-top: -4px">
+                                            </div>
+                                            <div style="display: inline-block; margin-top: 4px">
+                                                <div style="margin-left: 4px; color : #9f9f9f; font-size: 12px">Total Work Experience</div>
+                                                <div id="userTotalExperience" style="margin: 4px; display: inline-block">Not Specified</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div style="display : inline-block; margin-top: 3px; height: 32px">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                                <!-- start hot job -->
+                            <div class="company_class" id="hotJobs">
+                                Hot Jobs
+                            </div>
+                            <center>
+                                <div class="materialDash"></div>
+                                <div class="container-fluid" id="company_box">
+                                    <div class="row">
+                                        <div class="col-lg-1 visible-lg" id="arrow_left_hot">
+                                            <a class="right carousel-control" href="#hot_job" role="button" data-slide="prev">
+                                                <img class="img-responsive" src="/assets/new/img/arrow_left_hot.png">
+                                            </a>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <div id="hot_job" class="carousel slide" data-ride="carousel">
+                                                <div class="carousel-inner" role="listbox">
+                                                    <div class="item active">
+                                                        <div class="col-lg-4 visible-lg" style="padding: 1%">
+                                                            <div class="panel" id="hot_box">
+                                                                <div class="panel-heading" id="hot_box_head">
+                                                                    <img class="img-responsive" src="/assets/new/img/company4.jpg">
+                                                                </div>
+                                                                <div class="panel-body" id="hot_box_body">
+                                                                    <div class="hot_body_role">
+                                                                      Customer Support Executive
+                                                                    </div>
+                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
+                                                                    <div class="hot_body_salary">
+                                                                        10,000 - 20,000 Monthly
+                                                                        <br>
+                                                                        Experience : 6 months +
+                                                                    </div>
+                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
+                                                                    <div class="hot_body_location">
+                                                                        St. John's Road<br><br>
+                                                                        <a href="tel:+918880007799">
+                                                                            <div class="btn btn-primary" id="modalBtn" style="width: 92%">
+                                                                                <font size="2">Call 8880007799 to Apply</font>
+                                                                            </div>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4" style="padding: 1%">
+                                                            <div class="panel" id="hot_box">
+                                                                <div class="panel-heading" id="hot_box_head">
+                                                                    <img class="img-responsive" src="/assets/new/img/company1.jpg">
+                                                                </div>
+                                                                <div class="panel-body" id="hot_box_body">
+                                                                    <div class="hot_body_role">
+                                                                        Office Accountant
+                                                                    </div>
+                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
+                                                                    <div class="hot_body_salary">
+                                                                        15,000 - 20,000 Monthly
+                                                                        <br>
+                                                                        Experience : 1 yr
+                                                                    </div>
+                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
+                                                                    <div class="hot_body_location">
+                                                                        MICO Gate, Bannerghatta Road<br><br>
+                                                                        <a href="tel:+918880007799">
+                                                                            <div class="btn btn-primary" id="modalBtn" style="width: 92%">
+                                                                                <font size="2">Call 8880007799 to Apply</font>
+                                                                            </div>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4" style="padding: 1%">
+                                                            <div class="panel" id="hot_box">
+                                                                <div class="panel-heading" id="hot_box_head">
+                                                                    <img class="img-responsive" src="/assets/new/img/company1.jpg">
+                                                                </div>
+                                                                <div class="panel-body" id="hot_box_body">
+                                                                    <div class="hot_body_role">
+                                                                        Marketing Executive
+                                                                    </div>
+                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
+                                                                    <div class="hot_body_salary">
+                                                                        20,000 - 25,000 Monthly
+                                                                        <br>
+                                                                        Experience : 2 yrs
+                                                                    </div>
+                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
+                                                                    <div class="hot_body_location">
+                                                                        MICO Gate, Bannerghatta Road<br><br>
+                                                                        <a href="tel:+918880007799">
+                                                                            <div class="btn btn-primary" id="modalBtn" style="width: 92%">
+                                                                                <font size="2">Call 8880007799 to Apply</font>
+                                                                            </div>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                        <!--add-->
+                                                    <div class="item">
+                                                        <div class="col-sm-4" style="padding: 1%">
+                                                            <div class="panel" id="hot_box">
+                                                                <div class="panel-heading" id="hot_box_head">
+                                                                    <img class="img-responsive" src="/assets/new/img/company1.jpg">
+                                                                </div>
+                                                                <div class="panel-body" id="hot_box_body">
+                                                                    <div class="hot_body_role">
+                                                                        Receptionist
+                                                                    </div>
+                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
+                                                                    <div class="hot_body_salary">
+                                                                        15,000 - 20,000 Monthly
+                                                                        <br>
+                                                                        Experience : Any
+                                                                    </div>
+                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
+                                                                    <div class="hot_body_location">
+                                                                        MICO Gate, Bannerghatta Road<br><br>
+                                                                        <a href="tel:+918880007799">
+                                                                            <div class="btn btn-primary" id="modalBtn" style="width: 92%">
+                                                                                <font size="2">Call 8880007799 to Apply</font>
+                                                                            </div>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                            <!-- pebbles pre school -->
+                                                        <div class="col-sm-4 visible-lg" style="padding: 1%">
+                                                            <div class="panel" id="hot_box">
+                                                                <div class="panel-heading" id="hot_box_head">
+                                                                    <img class="img-responsive" src="/assets/new/img/logo_pebbles.png">
+                                                                </div>
+                                                                <div class="panel-body" id="hot_box_body">
+                                                                    <div class="hot_body_role">
+                                                                        Teacher
+                                                                    </div>
+                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
+                                                                    <div class="hot_body_salary">
+                                                                        9,000 - 11,000 Monthly
+                                                                        <br>
+                                                                        Experience : Any
+                                                                    </div>
+                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
+                                                                    <div class="hot_body_location">
+                                                                        Kadugodi<br><br>
+                                                                        <a href="tel:+918880007799">
+                                                                            <div class="btn btn-primary" id="modalBtn" style="width: 92%">
+                                                                                <font size="2">Call 8880007799 to Apply</font>
+                                                                            </div>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                            <!-- online systemsm indiranagar -->
+                                                        <div class="col-lg-4 visible-lg" id="hot_box_padding" style="padding: 1%">
+                                                            <div class="panel" id="hot_box">
+                                                                <div class="panel-heading" id="hot_box_head">
+                                                                    <img  class="img-responsive" src="/assets/new/img/logo_online_systems.png">
+                                                                </div>
+                                                                <div class="panel-body" id="hot_box_body">
+                                                                    <div class="hot_body_role">
+                                                                        Sales Executive
+                                                                    </div>
+                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
+                                                                    <div class="hot_body_salary">
+                                                                        15,000 - 20,000 Monthly
+                                                                        <br>
+                                                                        Experience : 6 Months +
+                                                                    </div>
+                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
+                                                                    <div class="hot_body_location">
+                                                                        Indiranagar<br><br>
+                                                                        <a href="tel:+918880007799">
+                                                                            <div class="btn btn-primary" id="modalBtn" style="width: 92%">
+                                                                                <font size="2">Call 8880007799 to Apply</font>
+                                                                            </div>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                        <!-- end add -->
+                                                        <!--add-->
+                                                    <div class="item">
+                                                        @*online systems*@
+                                                        <div class="col-sm-4" style="padding: 1%">
+                                                            <div class="panel" id="hot_box">
+                                                                <div class="panel-heading" id="hot_box_head">
+                                                                    <img class="img-responsive" src="/assets/new/img/company1.jpg">
+                                                                </div>
+                                                                <div class="panel-body" id="hot_box_body">
+                                                                    <div class="hot_body_role">
+                                                                        Office Assistant
+                                                                    </div>
+                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
+                                                                    <div class="hot_body_salary">
+                                                                        10,000 - 15,000 Monthly
+                                                                        <br>
+                                                                        Experience : 6 Months +
+                                                                    </div>
+                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
+                                                                    <div class="hot_body_location">
+                                                                        Indiranagar<br><br>
+                                                                        <a href="tel:+918880007799">
+                                                                            <div class="btn btn-primary" id="modalBtn" style="width: 92%">
+                                                                                <font size="2">Call 8880007799 to Apply</font>
+                                                                            </div>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        @* online Systems*@
+                                                        <div class="col-sm-4 visible-lg" style="padding: 1%">
+                                                            <div class="panel" id="hot_box">
+                                                                <div class="panel-heading" id="hot_box_head">
+                                                                    <img class="img-responsive" src="/assets/new/img/company1.jpg">
+                                                                </div>
+                                                                <div class="panel-body" id="hot_box_body">
+                                                                    <div class="hot_body_role">
+                                                                        Telemarketing Executive
+                                                                    </div>
+                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
+                                                                    <div class="hot_body_salary">
+                                                                        15,000 Monthly
+                                                                        <br>
+                                                                        Experience : 6 Months +
+                                                                    </div>
+                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
+                                                                    <div class="hot_body_location">
+                                                                        Indiranagar<br><br>
+                                                                        <a href="tel:+918880007799">
+                                                                            <div class="btn btn-primary" id="modalBtn" style="width: 92%">
+                                                                                <font size="2">Call 8880007799 to Apply</font>
+                                                                            </div>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-4 visible-lg" id="hot_box_padding" style="padding: 1%">
+                                                            <div class="panel" id="hot_box">
+                                                                <div class="panel-heading" id="hot_box_head">
+                                                                    <img  class="img-responsive" src="/assets/new/img/logo_vlokal.png">
+                                                                </div>
+                                                                <div class="panel-body" id="hot_box_body">
+                                                                    <div class="hot_body_role">
+                                                                        Delivery Executive
+                                                                    </div>
+                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
+                                                                    <div class="hot_body_salary">
+                                                                        15,000 Monthly
+                                                                        <br>
+                                                                        Experience : Any
+                                                                    </div>
+                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
+                                                                    <div class="hot_body_location">
+                                                                        Marathahalli<br><br>
+                                                                        <a href="tel:+918880007799">
+                                                                            <div class="btn btn-primary" id="modalBtn" style="width: 92%">
+                                                                                <font size="2">Call 8880007799 to Apply</font>
+                                                                            </div>
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                        <!-- end add -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-1 visible-lg" id="arrow_right_hot">
+                                            <a class="right carousel-control" href="#hot_job" role="button" data-slide="next">
+                                                <img class="img-responsive" src="/assets/new/img/arrow_right_hot.png">
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </center>
+                            <hr>
                         </div>
                     </div>
-                    <ul class="preferredLocation" style="margin-left: 20px">
-                  </ul>
-
                 </div>
             </div>
+                <!-- /#page-content-wrapper -->
         </div>
-        <br>
-        <div class="material_grid">
-            <div class="dashboardHeader">
-                <h3>SKILL ASSESSMENT</h3 >
-            </div>
-            <div class="dashboardBody">
-                <div id="takeAssessment" style="padding: 4%; display: none">
-                    <a href="https://docs.google.com/forms/d/1BmjmKBmTh1KcOmOJ0Le_d9Y1o75hEI-waRNPRXnX8MI/viewform" target="_blank" style="color: #0B4063" >
-                        <h3 style="text-align : center;">Complete our skill assessment today and find your right job. Start Assessment!</h3>
-                    </a>
-                </div>
-                <div id="doneAssessment" style="padding: 4%; display: none">
-                    <center>
+        <script>
+          function clickFresher(){
+              $("#totalWorkExperience").hide();
+          }
+          function clickExperienced(){
+              $("#totalWorkExperience").show();
+          }
 
-                        <img style="text-align: center" src="/assets/img/tick.png" height="60px;">
-                    </center>
-                    <h3 style="text-align : center;">You have successfully completed your assessment. You will receive matching job details via SMS/email.</h3>
-                    <h4 style="text-align : center;">Call +91 888 000 7799 for any queries.</h4>
-                </div>
-            </div>
-        </div>
-        <br>
-        <div class="material_grid">
-            <div class="dashboardHeader">
-                <h3>KNOWLEDGE ZONE</h3>
-            </div>
-            <div class="row" style="text-align: center; padding: 4%;">
-                <div class="col-sm-4">
-                    <iframe onclick="_gaq.push(['_trackEvent', 'video', 'clicked', 'contact us', 'true'])" frameborder="0" src="https://www.youtube.com/embed/OjBMvx0e3zQ?hl=en&amp;cc_load_policy=0&amp;loop=0&amp;iv_load_policy=1&amp;fs=1&amp;showinfo=1">
-                    </iframe>
-                </div>
-                <div class="col-sm-4">
-                    <iframe onclick="_gaq.push(['_trackEvent', 'video', 'clicked', 'contact us', 'true'])" frameborder="0" src="https://www.youtube.com/embed/gnqzM6FWgTE?hl=en&amp;cc_load_policy=0&amp;loop=0&amp;iv_load_policy=1&amp;fs=1&amp;showinfo=1">
-                    </iframe>
-                </div>
-                <div class="col-sm-4">
-                    <iframe onclick="_gaq.push(['_trackEvent', 'video', 'clicked', 'contact us', 'true'])" frameborder="0" src="https://www.youtube.com/embed/H3cH2wEQiSw?hl=en&amp;cc_load_policy=0&amp;loop=0&amp;iv_load_policy=1&amp;fs=1&amp;showinfo=1">
-                    </iframe>
-                </div>
+          function clickWorkingYes() {
+              $("#isEmployedForm").show();
+          }
 
-            </div>
-        </div>
-    </div>
-        <!-- Including Bootstrap -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
+          function clickWorkingNo() {
+              $("#isEmployedForm").hide();
+          }
 
-</body>
+          function showInstitute() {
+              $("#educationalInstitute").show();
+          }
+
+          function hideInstitute() {
+              $("#educationalInstitute").hide();
+          }
+      </script>
+
+            <!-- Including Bootstrap -->
+        <script src="/assets/dashboard/js/jquery.js"></script>
+        <script src="/assets/dashboard/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
+            <!-- Menu Toggle Script -->
+        <script>
+          $("#menu-toggle").click(function(e) {
+              e.preventDefault();
+              $("#wrapper").toggleClass("toggled");
+          });
+      </script>
+
+    </body>
 </html>
