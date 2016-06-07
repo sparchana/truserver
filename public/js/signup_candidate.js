@@ -118,26 +118,25 @@ $(function() {
         if(($('#candidatePassword').val()).length < 6){
             alert("Minimum 6 characters password required");
         }
-        else{
-
-        }
-        document.getElementById("btnSubmit").disabled = true;
-        try {
-            var authPassword = $('#candidatePassword').val();
-            var authMobile = candidateMobile;
-            var d = {
-                candidatePassword : authPassword,
-                candidateAuthMobile : authMobile
+        else {
+            document.getElementById("btnSubmit").disabled = true;
+            try {
+                var authPassword = $('#candidatePassword').val();
+                var authMobile = candidateMobile;
+                var d = {
+                    candidatePassword: authPassword,
+                    candidateAuthMobile: authMobile
+                }
+                console.log("userMobile: " + authMobile);
+                $.ajax({
+                    type: "POST",
+                    url: "/addPassword",
+                    data: d,
+                    success: processDataAddAuth
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
             }
-            console.log("userMobile: " + authMobile);
-            $.ajax({
-                type: "POST",
-                url: "/addPassword",
-                data: d,
-                success: processDataAddAuth
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
         }
 
     }); // end of submit
