@@ -44,7 +44,7 @@ public class CandidateService {
         } else {return null;}
     }
 
-    public static CandidateSignUpResponse createCandidate(Candidate candidate, boolean isSupport, int leadSourceId){
+    public static CandidateSignUpResponse signUpCandidate(Candidate candidate, boolean isSupport, int leadSourceId){
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
         String result = "";
         String objectAUUId = "";
@@ -53,7 +53,7 @@ public class CandidateService {
         Lead existingLead = isLeadExists(candidate.candidateMobile);
         try {
             if(existingCandidate == null) {
-                Logger.info("inside! existingCandidate of createCandidate");
+                Logger.info("inside! existingCandidate of signUpCandidate");
                 // if no candidate exists
                 if(existingLead == null){
                     LeadService.createLead(getLeadFromCandidate(candidate, leadSourceId, isSupport), isSupport);
@@ -115,7 +115,7 @@ public class CandidateService {
                 existingCandidate.candidateUpdate();
             }
 
-            // Insert Interaction only for self sign up as interaction for sign up support will be handled in createCandidateBySupport
+            // Insert Interaction only for self sign up as interaction for sign up support will be handled in createCandidateProfile
             if(!isSupport){
                 Interaction interaction = new Interaction(
                         objectAUUId,
@@ -135,7 +135,7 @@ public class CandidateService {
         return candidateSignUpResponse;
     }
 
-    public static CandidateSignUpResponse createCandidateBySupport(AddCandidateRequest request, boolean isSupport, int flag){
+    public static CandidateSignUpResponse createCandidateProfile(AddCandidateRequest request, boolean isSupport, int flag){
         CandidateSignUpResponse response = new CandidateSignUpResponse();
         // get candidateBasic obj from req
         // Handle jobPrefList and any other list with , as break point at application only
@@ -160,11 +160,11 @@ public class CandidateService {
             Logger.info(" reqJobPref: " + request.candidateJobInterest);
             candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(Arrays.asList(request.candidateLocality.split("\\s*,\\s*")), candidate);
             candidate.jobPreferencesList = getCandidateJobPreferenceList(Arrays.asList(request.candidateJobInterest.split("\\s*,\\s*")), candidate);
-            // lead is getting updated inside createCandidate
+            // lead is getting updated inside signUpCandidate
 
-            CandidateSignUpResponse candidateSignUpResponse = createCandidate(candidate, isSupport, request.leadSource);
+            CandidateSignUpResponse candidateSignUpResponse = signUpCandidate(candidate, isSupport, request.leadSource);
 
-            // 1st call to basic createCandidate
+            // 1st call to basic signUpCandidate
             if(candidateSignUpResponse.equals(CandidateSignUpResponse.STATUS_FAILURE)) {
                 Logger.info("error while creating candidate with basic info");
                 response.setStatus(CandidateSignUpResponse.STATUS_FAILURE);

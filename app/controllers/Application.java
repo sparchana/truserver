@@ -133,7 +133,7 @@ public class Application extends Controller {
         candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(localityList, candidate);
         candidate.jobPreferencesList = getCandidateJobPreferenceList(jobsList, candidate);
 
-        return ok(toJson(CandidateService.createCandidate(candidate, isSupport, ServerConstants.LEAD_SOURCE_UNKNOWN)));
+        return ok(toJson(CandidateService.signUpCandidate(candidate, isSupport, ServerConstants.LEAD_SOURCE_UNKNOWN)));
     }
     @Security.Authenticated(Secured.class)
     public static Result signUpSupport() {
@@ -147,7 +147,7 @@ public class Application extends Controller {
             e.printStackTrace();
         }
         boolean isSupport = true;
-        return ok(toJson(CandidateService.createCandidateBySupport(addSupportCandidateRequest, isSupport, ServerConstants.UPDATE_ALL_BY_SUPPORT)));
+        return ok(toJson(CandidateService.createCandidateProfile(addSupportCandidateRequest, isSupport, ServerConstants.UPDATE_ALL_BY_SUPPORT)));
     }
 
     public static Result candidateUpdateBasicProfile() {
@@ -160,7 +160,7 @@ public class Application extends Controller {
             e.printStackTrace();
         }
         boolean isSupport = false;
-        return ok(toJson(CandidateService.createCandidateBySupport(addCandidateRequest, isSupport, ServerConstants.UPDATE_BASIC_PROFILE)));
+        return ok(toJson(CandidateService.createCandidateProfile(addCandidateRequest, isSupport, ServerConstants.UPDATE_BASIC_PROFILE)));
     }
 
     public static Result candidateUpdateExperienceDetails() {
@@ -174,7 +174,7 @@ public class Application extends Controller {
             e.printStackTrace();
         }
         boolean isSupport = false;
-        return ok(toJson(CandidateService.createCandidateBySupport(addCandidateExperienceRequest, isSupport, ServerConstants.UPDATE_SKILLS_PROFILE)));
+        return ok(toJson(CandidateService.createCandidateProfile(addCandidateExperienceRequest, isSupport, ServerConstants.UPDATE_SKILLS_PROFILE)));
     }
 
     public static Result candidateUpdateEducationDetails() {
@@ -187,7 +187,7 @@ public class Application extends Controller {
             e.printStackTrace();
         }
         boolean isSupport = false;
-        return ok(toJson(CandidateService.createCandidateBySupport(addCandidateEducationRequest, isSupport, ServerConstants.UPDATE_EDUCATION_PROFILE)));
+        return ok(toJson(CandidateService.createCandidateProfile(addCandidateEducationRequest, isSupport, ServerConstants.UPDATE_EDUCATION_PROFILE)));
     }
 
     public static Result addPassword() {

@@ -111,6 +111,10 @@ body{
 	margin:1px 0px 0px 0px;
 }
 
+#leadFormText{
+    margin-left: -420px;
+}
+
 #sectionOne {
     background: linear-gradient(
             rgba(24, 26, 45, 0.4),
@@ -258,12 +262,15 @@ body{
 }
 
 @media screen and (max-width: 540px) {
+    #leadFormText{
+        margin-left: -20px
+    }
     #educationalInstitute{
         margin-top: 80px;
     }
     #sectionOne {
         background-size: 220%;
-        margin-top: 34px;
+        margin-top: 38px;
         padding-top: 12%;
     }
 

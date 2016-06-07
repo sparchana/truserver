@@ -270,13 +270,20 @@ input::-webkit-inner-spin-button {
     margin-left: -36px;
 }
 
+.skillBtn{
+    width: 80px;
+}
+
 @media(max-width:768px) {
+    .skillBtn{
+        width: 56px;
+    }
     #skillAnswer{
         margin-left: 0px;
     }
     #skillBreak{
-        padding-top: 28px;
-        height: 32px;
+        padding-top: 18px;
+        height: 26px;
     }
     #assessmentPanel{
         display: inline-block;

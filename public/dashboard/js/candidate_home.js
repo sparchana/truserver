@@ -114,14 +114,22 @@ function processDataAndFillMinProfile(returnedData) {
         if (returnedData.candidateGender == 0) {
             try{
                 document.getElementById("userGender").innerHTML = ", Male";
+                $("#userGenderIcon").attr('src', '/assets/dashboard/img/male.png');
             } catch(err){
             }
-        } else {
+        } else if(returnedData.candidateGender == 1) {
             try{
                 document.getElementById("userGender").innerHTML = ", Female";
+                $("#userGenderIcon").attr('src', '/assets/dashboard/img/female.png');
+            } catch(err){
+            }
+        } else{
+            try{
+                $("#userGenderIcon").attr('src', '');
             } catch(err){
             }
         }
+        
     }
     if (returnedData.candidateDOB != null) {
         var date = JSON.parse(returnedData.candidateDOB);
@@ -213,7 +221,16 @@ function processDataAndFillMinProfile(returnedData) {
         }
         else {
             var totalExperience = parseInt(returnedData.candidateTotalExperience);
-            document.getElementById("userTotalExperience").innerHTML = parseInt((totalExperience / 12)).toString() + " yrs and " + totalExperience % 12 + " mths";
+            var yrs = parseInt((totalExperience / 12)).toString();
+            var month = totalExperience % 12;
+            if(yrs == 0 && month != 0){
+                document.getElementById("userTotalExperience").innerHTML = month + " months";
+            } else if(month == 0 && yrs != 0){
+                document.getElementById("userTotalExperience").innerHTML = yrs + " years";
+
+            } else{
+                document.getElementById("userTotalExperience").innerHTML = yrs + " yrs and " + month + " mnths";
+            }
         }
     }
 

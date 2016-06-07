@@ -203,8 +203,7 @@ function processDataCheckSkills(returnedData) {
 
         object.forEach(function (x) {
             var headLbl = document.createElement("label");
-            headLbl.className = "btn btn-custom-check";
-            headLbl.style = "width: 80px";
+            headLbl.className = "btn btn-custom-check skillBtn";
             headLbl.textContent = x.qualifier;
             headLbl.onclick = function () {
                 document.getElementById(s[0] + "_" + s[1] + "_" + x.qualifier).checked = true;

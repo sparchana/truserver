@@ -19,6 +19,7 @@
         <link rel="stylesheet" type="text/css" href="/assets/new/css/myStyle.css">
 
         <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
+        <script type="text/javascript" src="/assets/js/home_page.js"></script>
         <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
 
         <script>
@@ -29,183 +30,7 @@
 
           ga('create', 'UA-77156203-1', 'auto');
           ga('send', 'pageview');
-
         </script>
-
-        <script>
-            var localityArray = [];
-            var jobArray = [];
-
-            function getLocality(){
-                return localityArray;
-            }
-
-            function getJob(){
-                return jobArray;
-            }
-
-            function processDataCheckLocality(returnedData) {
-                returnedData.forEach(function(locality)
-                {
-                    var id = locality.localityId;
-                    var name = locality.localityName;
-                    var item = {};
-                    item ["id"] = id;
-                    item ["name"] = name;
-                    localityArray.push(item);
-                });
-            }
-
-            function processDataCheckJobs(returnedData) {
-                returnedData.forEach(function(job)
-                {
-                    var id = job.jobRoleId;
-                    var name = job.jobName;
-                    var item = {};
-                    item ["id"] = id;
-                    item ["name"] = name;
-                    jobArray.push(item);
-                });
-            }
-
-            $(function () {
-                $('#myRegistrationModal').on('hidden.bs.modal', function () {
-                    document.getElementById("registerBtn").disabled = false;
-                    $('#form_signup_candidate').trigger("reset");
-                })
-            });
-            $(document).ready(function(){
-                try {
-                    $.ajax({
-                        type: "GET",
-                        url: "/getAllLocality",
-                        data: false,
-                        async: false,
-                        contentType: false,
-                        processData: false,
-                        success: processDataCheckLocality
-                    });
-                } catch (exception) {
-                    console.log("exception occured!!" + exception);
-                }
-
-                try {
-                    $.ajax({
-                        type: "GET",
-                        url: "/getAllJobs",
-                        data: false,
-                        async: false,
-                        contentType: false,
-                        processData: false,
-                        success: processDataCheckJobs
-                    });
-                } catch (exception) {
-                    console.log("exception occured!!" + exception);
-                }
-            });
-        </script>
-
-            <!-- Hide radio button on job category box -->
-        <script>
-            function processCheckLeadStatus() {
-                alert("Thanks! We will get back soon!");
-                $("#addLeadMobile").val('');
-
-            }
-            function addLead() {
-                var phone = $('#addLeadMobile').val();
-                var validPhone = /^[7-9]{1}[0-9]{9}$/i;
-                if (phone.length > 0 && validPhone.test(phone) === false) {
-                    alert("Please enter valid 10 digit mobile number");
-                } else if (phone.length == 0) {
-                    alert("Please enter your mobile number");
-                }
-                else{
-                    try {
-                        var d = {
-                            leadName : " ",
-                            leadMobile : $("#addLeadMobile").val(),
-                            leadChannel : 0,
-                            leadType : 1,
-                            leadInterest : "General Registration"
-                        };
-                        $.ajax({
-                            type: "POST",
-                            url: "/addLead",
-                            data: d,
-                            success: processCheckLeadStatus
-                        });
-                    } catch (exception) {
-                        console.log("exception occured!!" + exception);
-                    }
-                }
-            }
-
-            function openLogin() {
-                document.getElementById("resetCheckUserBtn").disabled = false;
-                document.getElementById("resetNewPasswordBtn").disabled = false;
-                $('#form_login_candidate').show();
-                $('#noUserLogin').hide();
-                $('#incorrectMsgLogin').hide();
-                $('#form_forgot_password').hide();
-                $('#errorMsgReset').hide();
-                $('#form_password_reset_otp').hide();
-                $('#form_password_reset_new').hide();
-            }
-
-            function resetPassword() {
-                $('#noUserLogin').hide();
-                $('#incorrectMsgLogin').hide();
-                $('#form_login_candidate').hide();
-                $('#form_forgot_password').show();
-            }
-        </script>
-        <script>
-        $(document).ready(function(){
-            var w = window.innerWidth;
-            if(w < 440){
-                $(".navbar-default").css('background-color', 'white');
-            }
-            $(window).scroll(function() {
-                if ($(document).scrollTop() > 50) {
-                    $("#fixed-menu").css('background-color', '#2980b9');
-                    var w = window.innerWidth;
-                    if(w > 440){
-                        $(".navbar-fixed-top").removeClass('fade-transparent').addClass("fade-background"); // if yes, then change the color of class "navbar-fixed-top" to white (#f8f8f8)
-                        $("#navItem1").css('color', '#747474');
-                        $("#navItem2").css('color', '#747474');
-                        $("#navItem3").css('color', '#747474');
-                        $("#navItem4").css('color', '#747474');
-                        $("#navItem5").css('color', '#747474');
-                        var image = document.getElementById('navLogo');
-                        image.src = "/assets/new/img/logo-color.gif";
-                    }
-                } else {
-                    $("#fixed-menu").css('background-color', 'rgba(0, 0, 0, 0.175)');
-                    var w = window.innerWidth;
-                    if(w > 440){
-                        $(".navbar-fixed-top").removeClass("fade-background").addClass('fade-transparent'); // if not, change it back to transparent
-                        $("#navItem1").css('color', '#ffffff');
-                        $("#navItem2").css('color', '#ffffff');
-                        $("#navItem3").css('color', '#ffffff');
-                        $("#navItem4").css('color', '#ffffff');
-                        $("#navItem5").css('color', '#ffffff');
-                        var image = document.getElementById('navLogo');
-                        image.src = "/assets/new/img/logo-main.gif";
-                        var w = window.innerWidth;
-                        if (w < 440) {
-                            $("#fixed-menu").css('background-color', 'transparent');
-                            $("#navItem1").css('color', '#747474');
-                            $("#navItem2").css('color', '#747474');
-                            $("#navItem3").css('color', '#747474');
-                            $("#navItem4").css('color', '#747474');
-                            $("#navItem5").css('color', '#747474');
-                        }
-                    }
-                }
-            });
-        });
-    </script>
     </head>
     <body>
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -349,7 +174,7 @@
         <div>
             <div id="sectionOne">
                 <div id="fixed-menu" align="center">
-                    <div style="display: inline-block">Find a job and earn upto 30,000. Reach Us &nbsp;</div>
+                    <div id="leadFormText" style="display: inline-block">Find a job now. Reach Us &nbsp;</div>
                     <div style="display: inline-block"><input style="color: black; height: 26px" id="addLeadMobile" pattern="[7-9]{1}[0-9]{9}" maxlength="10" class="form-control input-md" type="text" placeholder="Enter mobile no."></div>
                     <div style="display: inline-block"><button type="button" style=" height: 30px" class="btn btn-add-lead" onclick="addLead()">Request Call Back</button></div>
 
@@ -368,10 +193,10 @@
                                     <h4 style="font-weight: bold">Job Seeker Registration</h4>
                                     <div class="row" id="firstNameLastName">
                                         <div class="col-sm-6" style="padding: 0 4px 0 16px">
-                                            <input id="candidateName" placeholder="First name" type="text" class="form-control input-md" required>
+                                            <input id="candidateName" placeholder="First name" type="text" maxLength="49" class="form-control input-md" required>
                                         </div>
                                         <div class="col-sm-6" style="padding: 0 16px 0 4px">
-                                            <input id="candidateSecondName" placeholder="Last name" type="text" class="form-control input-md candidateSecondNameMain" required>
+                                            <input id="candidateSecondName" placeholder="Last name" type="text" maxLength="49" class="form-control input-md candidateSecondNameMain" required>
                                         </div>
                                     </div>
 
@@ -383,7 +208,7 @@
                                             $(document).ready(function() {
                                                 $("#candidateJobPref").tokenInput(getJob(), {
                                                     theme: "facebook",
-                                                    placeholder: "What jobs you are Interested in?",
+                                                    placeholder: "What jobs you are Interested? (Max: 3)",
                                                     hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
                                                     minChars: 0,
                                                     tokenLimit: 3,
@@ -836,8 +661,25 @@
             </div>
         </center>
 
+        <div class="sectionStats">
+            <div class="row">
+                <div class="col-sm-4">
+                    <p><img class="hov" src="/assets/img/job_seeker.svg" width="80px"></p>
+                    <h3><b>3000+</b> Job Seekers</h3>
+                </div>
+                <div id="stats" class="col-sm-4">
+                    <p><img class="hov" src="/assets/img/recruiter.svg" width="80px"></p>
+                    <h3><b>50+</b> Employers</h3>
+                </div>
+                <div id="stats" class="col-sm-4">
+                    <p><img class="hov" src="/assets/img/rupee.svg" width="80px"></p>
+                    <h3>Find a job and earn upto <b>30k</b>!</h3>
+                </div>
+            </div>
+        </div>
+
         <div class="sectionTwo" id="jobs">
-            <h3 id="jobVacancyHead">1000+ Job Vacancies for Freshers and Experienced Candidates in: Bengaluru</h3>
+            <h3 id="jobVacancyHead">Jobs</h3>
             <center>
                 <div class="materialDash"></div>
             </center><br>
@@ -845,42 +687,42 @@
             <div class="row">
                 <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
                     <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img id="jobRoleIcon" src="/assets/new/img/icons/d_executive.png">
+                        <img id="jobRoleIcon" src="/assets/new/img/icons/d_executive.svg" width="50px">
                         <br><div style="margin-top: 6px">Delivery Executive</div>
                     </div>
                 </div>
 
                 <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
                     <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/cashier.png">
+                        <img src="/assets/new/img/icons/cashier.svg" width="50px">
                         <br><div style="margin-top: 6px">Cashier</div>
                     </div>
                 </div>
 
                 <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
                     <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/store_manager.png">
+                        <img src="/assets/new/img/icons/store_manager.svg" width="50px">
                         <br><div style="margin-top: 6px">Store Manager</div>
                     </div>
                 </div>
 
                 <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
                     <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/data_entry.png">
+                        <img src="/assets/new/img/icons/data_entry.svg" width="50px">
                         <br><div style="margin-top: 6px">Data Entry</div>
                     </div>
                 </div>
 
                 <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
                     <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/chef.png">
+                        <img src="/assets/new/img/icons/chef.svg" width="50px">
                         <br><div style="margin-top: 6px">Cook</div>
                     </div>
                 </div>
 
                 <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
                     <div id="jobRoleBottom" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/beautician.png">
+                        <img src="/assets/new/img/icons/beautician.svg" width="50px">
                         <br><div style="margin-top: 6px">Beautician</div>
                     </div>
                 </div>
@@ -890,43 +732,43 @@
             <div class="row">
                 <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
                     <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/driver.png">
+                        <img src="/assets/new/img/icons/driver.svg" width="50px">
                         <br><div style="margin-top: 6px">Driver</div>
                     </div>
                 </div>
 
                 <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
                     <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/field_sales.png">
+                        <img src="/assets/new/img/icons/field_sales.svg" width="50px">
                         <br><div style="margin-top: 6px">Field Sales</div>
                     </div>
                 </div>
 
                 <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
                     <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/accountant.png">
+                        <img src="/assets/new/img/icons/accountant.svg" width="50px">
                         <br><div style="margin-top: 6px">Accountant</div>
                     </div>
                 </div>
 
                 <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
                     <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/receptionist.png">
+                        <img src="/assets/new/img/icons/receptionist.svg" width="50px">
                         <br><div style="margin-top: 6px">Receptionist</div>
                     </div>
                 </div>
 
                 <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
                     <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/office_admin.png">
+                        <img src="/assets/new/img/icons/office_admin.svg" width="50px">
                         <br><div style="margin-top: 6px">Office Admin</div>
                     </div>
                 </div>
 
                 <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
                     <div id="jobRoleBottom" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/telecaller.png">
-                        <br><div style="margin-top: 6px">telecaller</div>
+                        <img src="/assets/new/img/icons/telecaller.svg" width="50px">
+                        <br><div style="margin-top: 6px">Telecaller</div>
                     </div>
                 </div>
             </div>
@@ -934,61 +776,44 @@
             <div class="row">
                 <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
                     <div id="jobRoleRight" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/waiter.png">
+                        <img src="/assets/new/img/icons/waiter.svg" width="50px">
                         <br><div style="margin-top: 6px">Waiter</div>
                     </div>
                 </div>
 
                 <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
                     <div id="jobRoleRight" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/electrician.png">
+                        <img src="/assets/new/img/icons/electrician.svg" width="50px">
                         <br><div style="margin-top: 6px">Electrician</div>
                     </div>
                 </div>
 
                 <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
                     <div id="jobRoleRight" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/carpenter.png">
+                        <img src="/assets/new/img/icons/carpenter.svg" width="50px">
                         <br><div style="margin-top: 6px">Carpenter</div>
                     </div>
                 </div>
 
                 <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
                     <div id="jobRoleRight" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/bpo.png">
+                        <img src="/assets/new/img/icons/bpo.svg" width="50px">
                         <br><div style="margin-top: 6px">BPO - Voice</div>
                     </div>
                 </div>
 
                 <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
                     <div id="jobRoleRight" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/bpo.png">
+                        <img src="/assets/new/img/icons/bpo.svg" width="50px">
                         <br><div style="margin-top: 6px">BPO - Non Voice</div>
                     </div>
                 </div>
 
                 <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
                     <div id="jobRoleNoBorder" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/plumber.png">
+                        <img src="/assets/new/img/icons/plumber.svg" width="50px">
                         <br><div style="margin-top: 6px">Plumber</div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="sectionStats">
-            <div class="row">
-                <div class="col-sm-4">
-                    <p><img class="hov" src="/assets/img/jobseeker.png" width="80px"></p>
-                    <h3><b>3000+</b> Job Seekers</h3>
-                </div>
-                <div id="stats" class="col-sm-4">
-                    <p><img class="hov" src="/assets/img/recruiter.png" width="80px"></p>
-                    <h3><b>50+</b> Employers</h3>
-                </div>
-                <div id="stats" class="col-sm-4">
-                    <p><img class="hov" src="/assets/img/rupee.png" width="80px"></p>
-                    <h3>Find a job and earn upto <b>30k</b>!</h3>
                 </div>
             </div>
         </div>
@@ -1002,7 +827,7 @@
                         <div class="row">
                             <div class="col-sm-2"></div>
                             <div class="col-sm-1">
-                                <img src="/assets/new/img/circle_1.png">
+                                <img src="/assets/new/img/circle_1.svg" width="52px">
                             </div>
                             <div class="col-sm-1"></div>
                             <div class="col-sm-8" id="steps" style="margin-top: 8px"><h5>Give a missed call to 8880007799</h5></div>
@@ -1011,7 +836,7 @@
                         <div class="row">
                             <div class="col-sm-2"></div>
                             <div class="col-sm-1">
-                                <img src="/assets/new/img/circle_2.png">
+                                <img src="/assets/new/img/circle_2.svg" width="52px">
                             </div>
                             <div class="col-sm-1"></div>
                             <div class="col-sm-8" id="steps" style="margin-top: 8px"><h5>Create your Online Profile</h5></div>
@@ -1020,7 +845,7 @@
                         <div class="row">
                             <div class="col-sm-2"></div>
                             <div class="col-sm-1">
-                                <img src="/assets/new/img/circle_3.png">
+                                <img src="/assets/new/img/circle_3.svg" width="52px">
                             </div>
                             <div class="col-sm-1"></div>
                             <div class="col-sm-8" id="steps" style="margin-top: 8px"><h5>Attend interviews and get job offers!</h5></div>
@@ -1037,7 +862,7 @@
                     <div class="row">
                         <div class="col-sm-2"></div>
                         <div class="col-sm-1">
-                            <img src="/assets/new/img/circle_2_3.png">
+                            <img src="/assets/new/img/circle_2_3.svg" width="52px">
                         </div>
                         <div class="col-sm-1"></div>
                         <div class="col-sm-8" id="steps" style="margin-top: 8px"><h5>Call 8880007799 to specify requirement</h5></div>
@@ -1046,7 +871,7 @@
                     <div class="row">
                         <div class="col-sm-2"></div>
                         <div class="col-sm-1">
-                            <img src="/assets/new/img/circle_2_2.png">
+                            <img src="/assets/new/img/circle_2_2.svg" width="52px">
                         </div>
                         <div class="col-sm-1"></div>
                         <div class="col-sm-8" id="steps" style="margin-top: 8px"><h5>We will schedule interviews for you with pre-screened Candidates</h5></div>
@@ -1055,7 +880,7 @@
                 <div class="row">
                     <div class="col-sm-2"></div>
                     <div class="col-sm-1">
-                        <img src="/assets/new/img/circle_2_1.png">
+                        <img src="/assets/new/img/circle_2_1.svg" width="52px">
                     </div>
                     <div class="col-sm-1"></div>
                     <div class="col-sm-8" id="steps" style="margin-top: 8px"><h5>Conduct interviews and make Offers!</h5></div>
@@ -1073,7 +898,7 @@
                     <form id="form_recruiter" class="form-horizontal" role="form" name="form_candidate" >
                         <label>Register for FREE</label>
                         <div class="reg_input">
-                            <input type="text" class="form-control" id="leadName" placeholder="Name(eg: Manjunath)" required>
+                            <input type="text" class="form-control" id="leadName" maxLength="49" placeholder="Name(eg: Manjunath)" required>
                         </div>
                         <div class="reg_input">
                             <input type="text" class="form-control" id="leadMobile" placeholder="Mobile(eg: 8880007799)" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10"  required>

@@ -96,9 +96,11 @@ function prefillBasicProfile() {
             if (candidateInformation.candidateGender == 0) {
                 document.getElementById("genderMale").checked = true;
                 $('#genderMale').parent().addClass('active').siblings().removeClass('active');
+                $("#userGenderIcon").attr('src', '/assets/dashboard/img/male.png');
             } else {
                 document.getElementById("genderFemale").checked = true;
                 $('#genderFemale').parent().addClass('active').siblings().removeClass('active');
+                $("#userGenderIcon").attr('src', '/assets/dashboard/img/female.png');
             }
         }
     } catch(err){
@@ -517,11 +519,12 @@ function saveCandidateExperienceDetails(){
 }
 
 function saveCandidateEducationDetails(){
-    if($('#candidateHighestEducation').val() == -1){
-        alert("Select an Education");
+    var highestEducation = $('input:radio[name="highestEducation"]:checked').val();
+    if(highestEducation == -1){
+        alert("Select your Highest Education");
     }
     else{
-        if((($('#candidateHighestEducation').val() == 4) || ($('#candidateHighestEducation').val() == 5)) && $('#candidateHighestDegree').val() == -1){
+        if(((highestEducation == 4) || (hi == 5)) && $('#candidateHighestDegree').val() == -1){
             alert("Please select your Degree");
         }
         else{
