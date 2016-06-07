@@ -847,6 +847,8 @@ function generateSkills(){
     /*myNode.innerHTML = '';*/
     var selectedJobPref = $('#candidateJobPref').val();
     if(selectedJobPref != null && selectedJobPref !== ''){
+        $("#skillQuestion").html('');
+        $("#skillAnswer").html('');
         try {
             $.ajax({
                 type: "GET",
