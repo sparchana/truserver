@@ -115,6 +115,12 @@ $(function() {
 $(function() {
     $("#form_auth").submit(function(eventObj) {
         eventObj.preventDefault();
+        if(($('#candidatePassword').val()).length < 6){
+            alert("Minimum 6 characters password required");
+        }
+        else{
+
+        }
         document.getElementById("btnSubmit").disabled = true;
         try {
             var authPassword = $('#candidatePassword').val();

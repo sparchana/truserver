@@ -84,25 +84,29 @@ $(function() {
 
     $("#form_password_reset_new").submit(function(eventObj) {
         eventObj.preventDefault();
-        document.getElementById("resetNewPasswordBtn").disabled = true;
-        try {
-            var phone = candidateMobile;
-            var password = $('#candidateNewPassword').val();
-            console.log("phone: " + phone);
-            var s = {
-                candidatePassword : password,
-                candidateAuthMobile : phone,
-            };
-            $.ajax({
-                type: "POST",
-                url: "/addPassword",
-                data: s,
-                success: processDataPostReset
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
+        if(($('#candidateNewPassword').val()).length < 6){
+            alert("Minimum 6 characters password required");
         }
-
+        else{
+            document.getElementById("resetNewPasswordBtn").disabled = true;
+            try {
+                var phone = candidateMobile;
+                var password = $('#candidateNewPassword').val();
+                console.log("phone: " + phone);
+                var s = {
+                    candidatePassword : password,
+                    candidateAuthMobile : phone,
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/addPassword",
+                    data: s,
+                    success: processDataPostReset
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
+        }
     }); // end of submit
 }); // end of function
 
