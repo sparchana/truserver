@@ -447,12 +447,13 @@ function processDataAndFillAllFields(returnedData) {
                 if(returnedData.candidateEducation != null){
                     $("#candidateEducationInstitute").val(returnedData.candidateEducation.candidateLastInstitute);
                 }
-                if(returnedData.motherTongue != null){
-                    $("#candidateMotherTongue").val(returnedData.motherTongue.languageId);
-                }
             }
         } catch(err){
             console.log(err);
+        }
+
+        if(returnedData.motherTongue != null){
+            $("#candidateMotherTongue").val(returnedData.motherTongue.languageId);
         }
 
         try {
