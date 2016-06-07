@@ -440,9 +440,6 @@ function processDataAndFillAllFields(returnedData) {
                 if(returnedData.candidateEducation.education != null){
                     document.getElementById("highestEducation" + returnedData.candidateEducation.education.educationId).checked = true;
                     $("#highestEducation" + returnedData.candidateEducation.education.educationId).parent().addClass('active').siblings().removeClass('active');
-                    if(returnedData.candidateEducation.education.educationId == 4 || returnedData.candidateEducation.education.educationId == 5){
-                        $("#educationalInstitute").show();
-                    }
                 }
                 if(returnedData.candidateEducation.degree != null){
                     $("#candidateHighestDegree").val(returnedData.candidateEducation.degree.degreeId);
@@ -601,16 +598,6 @@ function processDataCheckShift(returnedData) {
     }
 }
 
-function checkInstitute() {
-    var selectedEducation = $('input:radio[name="highestEducation"]:checked').val();
-    if(selectedEducation == 4 || selectedEducation == 5){
-        $("#educationalInstitute").show();
-    }
-    else{
-        $("#educationalInstitute").hide();
-    }
-}
-
 function processDataCheckTransportation(returnedData) {
     if(returnedData != null){
         var defaultOption=$('<option value="-1"></option>').text("Select");
@@ -652,7 +639,7 @@ function processDataCheckEducation(returnedData) {
         var item = {};
         item ["id"] = id;
         item ["name"] = name;
-        var option ='<label class="btn btn-custom-check" onchange="checkInstitute()" style=\"width: 124px\"><input type="radio" name="highestEducation" id=\"highestEducation' + id + '\" value=\"' + id + '\">' + name + '</label>';
+        var option ='<label class="btn btn-custom-check" style=\"width: 124px\"><input type="radio" name="highestEducation" id=\"highestEducation' + id + '\" value=\"' + id + '\">' + name + '</label>';
         $('#candidateHighestEducation').append(option);
         educationArray.push(item);
     });
@@ -847,6 +834,8 @@ function generateSkills(){
     /*myNode.innerHTML = '';*/
     var selectedJobPref = $('#candidateJobPref').val();
     if(selectedJobPref != null && selectedJobPref !== ''){
+        $("#skillQuestion").html('');
+        $("#skillAnswer").html('');
         try {
             $.ajax({
                 type: "GET",
