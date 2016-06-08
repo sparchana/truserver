@@ -21,13 +21,13 @@ public class Lead extends Model {
 
     @Id
     @Column(name = "LeadId", columnDefinition = "bigint signed null", nullable = false, unique = true)
-    public long leadId = 0;
+    public Long leadId;
 
     @Column(name = "LeadUUId", columnDefinition = "varchar(255) not null", nullable = false, unique = true)
     public String leadUUId = "";
 
     @Column(name = "LeadStatus", columnDefinition = "int signed not null", nullable = false)
-    public int leadStatus = 0; // new, TryingToConvert
+    public Integer leadStatus; // new, TryingToConvert
 
     @Column(name = "LeadName", columnDefinition = "varchar(50) not null", nullable = false)
     public String leadName = "";
@@ -36,10 +36,10 @@ public class Lead extends Model {
     public String leadMobile = "";
 
     @Column(name = "LeadChannel", columnDefinition = "int signed not null", nullable = false)
-    public int leadChannel = 0;
+    public Integer leadChannel;
 
     @Column(name = "LeadType", columnDefinition = "int signed not null", nullable = false)
-    public int leadType = 0; // recruter, candidate
+    public Integer leadType; // recruiter, candidate
 
     @Column(name = "LeadInterest", columnDefinition = "varchar(30)")
     public String leadInterest = "";

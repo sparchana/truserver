@@ -6,8 +6,8 @@ package api.http;
 public class AddLeadRequest {
     protected String leadName = " ";
     protected String leadMobile = " ";
-    protected int leadType = 0;
-    protected int leadChannel = 0;
+    protected Integer leadType = 0;
+    protected Integer leadChannel = 0;
     protected String leadInterest = " ";
 
     public void setLeadName(String leadName) {
@@ -30,7 +30,7 @@ public class AddLeadRequest {
         this.leadType = leadType;
     }
 
-    public int getLeadType() {
+    public Integer getLeadType() {
         return leadType;
     }
 
@@ -38,7 +38,7 @@ public class AddLeadRequest {
         this.leadChannel = leadChannel;
     }
 
-    public int getLeadChannel() {
+    public Integer getLeadChannel() {
         return leadChannel;
     }
 

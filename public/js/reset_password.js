@@ -60,7 +60,8 @@ $(function() {
             $.ajax({
                 type: "POST",
                 url: "/findUserAndSendOtp",
-                data: s,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(s),
                 success: processDataResetCheckUser
             });
         } catch (exception) {
@@ -100,7 +101,8 @@ $(function() {
                 $.ajax({
                     type: "POST",
                     url: "/addPassword",
-                    data: s,
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(s),
                     success: processDataPostReset
                 });
             } catch (exception) {
