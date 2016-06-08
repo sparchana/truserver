@@ -4,11 +4,11 @@ package api.http.httpRequest;
  * Created by zero on 23/4/16.
  */
 public class AddLeadRequest {
-    protected String leadName = " ";
-    protected String leadMobile = " ";
-    protected Integer leadType = 0;
-    protected Integer leadChannel = 0;
-    protected String leadInterest = " ";
+    protected String leadName;
+    protected String leadMobile;
+    protected Integer leadType;
+    protected Integer leadChannel;
+    protected String leadInterest;
 
     public void setLeadName(String leadName) {
         this.leadName = leadName;
