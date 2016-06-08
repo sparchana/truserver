@@ -42,7 +42,8 @@ $(function() {
             $.ajax({
                 type: "POST",
                 url: "/loginSubmit",
-                data: s,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(s),
                 success: processDataLogin
             });
         } catch (exception) {

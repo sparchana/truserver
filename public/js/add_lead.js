@@ -14,7 +14,7 @@ $(function() {
     $("#form_recruiter").submit(function(eventObj) {
         eventObj.preventDefault();
         try {
-            var name  = $('#leadName').val();
+            var name = $('#leadName').val();
             var phone = $('#leadMobile').val();
             var channel = $('#leadChannel').val();
             var type = $('#leadType').val();
@@ -26,11 +26,12 @@ $(function() {
                 leadChannel: channel,
                 leadType: type,
                 leadInterest: interested
-            }
+            };
             $.ajax({
                 type: "POST",
                 url: "/addLead",
-                data: d,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
                 success: processDataRecruiter
             });
         } catch (exception) {

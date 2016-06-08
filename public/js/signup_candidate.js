@@ -79,7 +79,8 @@ $(function() {
                 $.ajax({
                     type: "POST",
                     url: "/signUp",
-                    data: d,
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
                     success: processDataSignUpSubmit
                 });
             } catch (exception) {
@@ -100,7 +101,6 @@ $(function() {
                     $('#form_auth').show();
                     $('#errorMsg').hide();
                     $('#incorrectMsg').hide();
-
                 }
                 else {
                     $('#incorrectOtpMsg').show();
@@ -131,7 +131,8 @@ $(function() {
                 $.ajax({
                     type: "POST",
                     url: "/addPassword",
-                    data: d,
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
                     success: processDataAddAuth
                 });
             } catch (exception) {

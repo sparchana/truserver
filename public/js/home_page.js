@@ -142,7 +142,7 @@ function addLead() {
     else{
         try {
             var d = {
-                leadName : " ",
+                leadName : "",
                 leadMobile : $("#addLeadMobile").val(),
                 leadChannel : 0,
                 leadType : 1,
@@ -151,7 +151,8 @@ function addLead() {
             $.ajax({
                 type: "POST",
                 url: "/addLead",
-                data: d,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
                 success: processCheckLeadStatus
             });
         } catch (exception) {
