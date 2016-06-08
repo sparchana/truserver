@@ -13,7 +13,7 @@ public class AddCandidateRequest {
     public String candidateMobile;
     public String candidateJobInterest;
     public String candidateLocality;
-    public Date candidateDob = new Date();
+    public Date candidateDob;
     public Integer candidateGender ;
     public String candidateTimeShiftPref;
     public Integer leadSource= ServerConstants.LEAD_SOURCE_UNKNOWN;

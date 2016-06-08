@@ -2,11 +2,9 @@ package Controller;
 
 import api.ServerConstants;
 import api.http.AddCandidateRequest;
-import com.avaje.ebean.annotation.Transactional;
 import common.TestConstants;
 import controllers.businessLogic.CandidateService;
 import models.entity.Candidate;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -64,9 +62,6 @@ public class CandidateServiceTest {
     @Before
     public void setUp() {
         req = new AddCandidateRequest();
-        if(CandidateService.isCandidateExists(TestConstants.testCandidateMobile) != null){
-            cleanTestCreateCandidateBySupportMess();
-        }
         req.setCandidateFirstName(TestConstants.testCandidateName);
         req.setCandidateSecondName(TestConstants.testCandidateLastName);
         req.setCandidateMobile(TestConstants.testCandidateMobile);
@@ -88,14 +83,6 @@ public class CandidateServiceTest {
             assertEquals(candidate.candidateLastName, TestConstants.testCandidateLastName);
             assertEquals(candidate.candidateMobile, TestConstants.testCandidateMobile);
         });
-    }
-
-    @After
-    @Transactional
-    public void cleanTestCreateCandidateBySupportMess() {
-        Candidate candidateToDelete = CandidateService.isCandidateExists(TestConstants.testCandidateMobile);
-        candidateToDelete.delete();
-        Logger.info("Candidate Deleted");
     }
 
 }
