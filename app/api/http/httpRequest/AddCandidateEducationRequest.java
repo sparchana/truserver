@@ -1,4 +1,4 @@
-package api.http;
+package api.http.httpRequest;
 
 /**
  * Created by batcoder1 on 31/5/16.
