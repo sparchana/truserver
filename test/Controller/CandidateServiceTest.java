@@ -2,6 +2,7 @@ package Controller;
 
 import api.ServerConstants;
 import api.http.AddCandidateRequest;
+import com.avaje.ebean.annotation.Transactional;
 import common.TestConstants;
 import controllers.businessLogic.CandidateService;
 import models.entity.Candidate;
@@ -20,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static play.test.Helpers.*;
@@ -32,7 +34,7 @@ public class CandidateServiceTest {
     @InjectMocks
     private CandidateServiceTest candidateServiceTest;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CandidateServiceTest.class.getName());
+    private static final Logger Logger = LoggerFactory.getLogger(CandidateServiceTest.class.getName());
 
     private Application fakeApp;
 
@@ -62,6 +64,9 @@ public class CandidateServiceTest {
     @Before
     public void setUp() {
         req = new AddCandidateRequest();
+        if(CandidateService.isCandidateExists(TestConstants.testCandidateMobile) != null){
+            cleanTestCreateCandidateBySupportMess();
+        }
         req.setCandidateFirstName(TestConstants.testCandidateName);
         req.setCandidateSecondName(TestConstants.testCandidateLastName);
         req.setCandidateMobile(TestConstants.testCandidateMobile);
@@ -79,12 +84,18 @@ public class CandidateServiceTest {
             CandidateService.createCandidateProfile(req, false, ServerConstants.UPDATE_BASIC_PROFILE);
             Candidate candidate = CandidateService.isCandidateExists(TestConstants.testCandidateMobile);
             assertTrue(candidate != null);
+            assertEquals(candidate.candidateName, TestConstants.testCandidateName);
+            assertEquals(candidate.candidateLastName, TestConstants.testCandidateLastName);
+            assertEquals(candidate.candidateMobile, TestConstants.testCandidateMobile);
         });
     }
 
     @After
+    @Transactional
     public void cleanTestCreateCandidateBySupportMess() {
-
+        Candidate candidateToDelete = CandidateService.isCandidateExists(TestConstants.testCandidateMobile);
+        candidateToDelete.delete();
+        Logger.info("Candidate Deleted");
     }
 
 }

@@ -13,7 +13,7 @@ public class TestConstants {
     public static final String  testCandidateUUId = "4079cb54-34b1-4b68-a479-ede86c6f9c58";
     public static final String  testCandidateName= "TEST CANDIDATE";
     public static final String  testCandidateLastName = "LAST NAME";
-    public static final String  testCandidateMobile = "+919876543219";
+    public static final String  testCandidateMobile = "+91"+ (Math.floor(Math.random() * 9000000000L) + 1000000000L);
     public static final String  testCandidatePhoneType = "TESTPhoneType";
     public static final String  testCandidateEmail = "test@localhost.com";
     public static final Integer testCandidateGender = 1;
