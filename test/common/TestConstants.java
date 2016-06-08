@@ -1,5 +1,7 @@
 package common;
 
+import java.util.Date;
+
 /**
  * Created by zero on 7/6/16.
  */
@@ -28,4 +30,5 @@ public class TestConstants {
     public static final String  testAdminId = "2209";
     public static final String  testAdminPassword = "TruJobs7";
 
+    public static final Date testCandidateDob = new Date("1998-03-19");
 }

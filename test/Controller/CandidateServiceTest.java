@@ -68,6 +68,7 @@ public class CandidateServiceTest {
         req.setCandidateJobInterest(TestConstants.testCandidateJobInterest );
         req.setCandidateLocality(TestConstants.testCandidateLocalityPreference);
         req.setLeadSource(TestConstants.testLeadSource);
+        req.setCandidateDob(TestConstants.testCandidateDob);
 
         fakeApp = fakeApplication();
     }
