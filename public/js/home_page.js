@@ -58,8 +58,6 @@ $(document).ready(function(){
             $("#fixed-menu").css('background-color', '#2980b9');
             var w = window.innerWidth;
             if(w > 440){
-                $("#leadFormText").css('margin-left', '-420px');
-
                 $(".navbar-fixed-top").removeClass('fade-transparent').addClass("fade-background"); // if yes, then change the color of class "navbar-fixed-top" to white (#f8f8f8)
                 $("#navItem1").css('color', '#747474');
                 $("#navItem2").css('color', '#747474');
@@ -74,7 +72,6 @@ $(document).ready(function(){
             $("#fixed-menu").css('background-color', 'rgba(0, 0, 0, 0.175)');
             var w = window.innerWidth;
             if(w > 480){
-                $("#leadFormText").css('margin-left', '-420px');
 
                 $(".navbar-fixed-top").removeClass("fade-background").addClass('fade-transparent'); // if not, change it back to transparent
                 $("#navItem1").css('color', '#ffffff');

@@ -274,7 +274,21 @@ input::-webkit-inner-spin-button {
     width: 80px;
 }
 
+#languageBtn{
+    width: 110px;
+}
+
 @media(max-width:768px) {
+    #languageBtn{
+        width: 60px;
+    }
+    #skillOption{
+        margin-left: -60%;
+        width: 180%;
+    }
+    #skillQues{
+        width: 80%;
+    }
     .skillBtn{
         width: 56px;
     }
