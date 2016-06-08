@@ -1,4 +1,4 @@
-package api.http;
+package api.http.httpRequest;
 
 import java.util.Date;
 

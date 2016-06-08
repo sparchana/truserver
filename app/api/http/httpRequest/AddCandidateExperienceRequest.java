@@ -1,4 +1,7 @@
-package api.http;
+package api.http.httpRequest;
+
+import api.http.LanguageClass;
+import api.http.SkillMapClass;
 
 import java.util.List;
 
