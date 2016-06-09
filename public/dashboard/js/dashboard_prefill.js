@@ -375,6 +375,7 @@ function saveCandidateBasicProfile(){
     var jobSelected = $('#candidateJobPref').val();
     var isEmployed = $("#isEmployed").val();
     var currentSalary = $("#candidateCurrentJobSalary").val();
+    var selectedGender = $('input:radio[name="gender"]:checked').val();
 
     if (localitySelected == "") {
         alert("Please Enter your Job Localities");
@@ -384,6 +385,14 @@ function saveCandidateBasicProfile(){
         alert("Please Enter your Current Salary");
     } else if($('#candidateTimeShiftPref').val() == -1){
         alert("Please Enter Your Preferred Work Shift");
+    } else if($('#dob_day').val() == ""){
+        alert("Please Select your Birth day");
+    } else if($('#dob_month').val() == ""){
+        alert("Please Select your Birth month");
+    } else if($('#dob_year').val() == ""){
+        alert("Please Select your Birth year");
+    } else if(selectedGender == undefined) {
+        alert("Please Select your Gender");
     }
     else{
         document.getElementById("saveBtn").disabled = true;

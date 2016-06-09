@@ -447,12 +447,13 @@ function processDataAndFillAllFields(returnedData) {
                 if(returnedData.candidateEducation != null){
                     $("#candidateEducationInstitute").val(returnedData.candidateEducation.candidateLastInstitute);
                 }
-                if(returnedData.motherTongue != null){
-                    $("#candidateMotherTongue").val(returnedData.motherTongue.languageId);
-                }
             }
         } catch(err){
             console.log(err);
+        }
+
+        if(returnedData.motherTongue != null){
+            $("#candidateMotherTongue").val(returnedData.motherTongue.languageId);
         }
 
         try {
@@ -515,16 +516,18 @@ function prefillLanguageTable(languageKnownList) {
     });
 }
 
-
 function prefillSkills(candidateSkillList){
-    $('#skillAnswer input').each(function() {
-        var skillResponse = document.createElement("INPUT");
-        skillResponse= $(this).get(0);
-        candidateSkillList.forEach(function (skillElement) {
-            if(skillResponse.name == skillElement.skillName && skillResponse.value == skillElement.skillResponse){
-                skillResponse.checked = true;
-                skillResponse.click();
-            }
+    $('table#skillTable tr').each(function(){
+        $(this).find('input').each(function(){
+            //do your stuff, you can use $(this) to get current cell
+            var skillResponse = document.createElement("INPUT");
+            skillResponse= $(this).get(0);
+            candidateSkillList.forEach(function (skillElement) {
+                if(skillResponse.name == skillElement.skillName && skillResponse.value == skillElement.skillResponse){
+                    skillResponse.checked = true;
+                    skillResponse.click();
+                }
+            });
         });
     });
 }
@@ -758,34 +761,32 @@ function employedNo(){
 }
 
 function processDataCheckSkills(returnedData) {
-    var skillParent = $("#skillQuestion");
-    var skillQualifierParent = $("#skillAnswer");
 
     var count =0;
+    var table = document.getElementById("skillTable");
+    $('#skillTable').empty();
     returnedData.forEach(function (singleSkill) {
         count++;
-        var q = document.createElement("h5");
-        q.style = "padding: 5px";
-        var question = singleSkill.skill.skillQuestion;
-        q.textContent = question + "       ";
-        skillParent.append(q);
+        var row = table.insertRow(0);
 
-        var object = singleSkill.skill.skillQualifierList;
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
 
         var lbl = document.createElement("div");
         lbl.className = "btn-group";
-        skillQualifierParent.append(lbl);
 
+        cell1.innerHTML = singleSkill.skill.skillQuestion;
+        cell2.appendChild(lbl);
+
+        var object = singleSkill.skill.skillQualifierList;
         object.forEach(function (x) {
             var headLbl = document.createElement("label");
-            headLbl.className = "btn btn-custom-check";
-            headLbl.style = "width: 80px";
+            headLbl.className = "btn btn-custom-check skillBtn";
             headLbl.textContent = x.qualifier;
             headLbl.onclick = function () {
                 document.getElementById(s[0] + "_" + s[1] + "_" + x.qualifier).checked = true;
                 document.getElementById(s[0] + "_" + s[1] + "_" + x.qualifier).click();
             };
-            lbl.appendChild(headLbl);
 
             var o = document.createElement("input");
             o.type = "radio";
@@ -816,10 +817,8 @@ function processDataCheckSkills(returnedData) {
                     skillMap[pos] = item;
             };
             headLbl.appendChild(o);
+            lbl.appendChild(headLbl);
         });
-        var br = document.createElement("div");
-        br.id = "skillBreak";
-        skillQualifierParent.append(br);
     });
     if(count == 0){
         $(".skillSection").hide();

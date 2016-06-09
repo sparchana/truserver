@@ -1,4 +1,4 @@
-package api.http;
+package api.http.httpRequest;
 
 /**
  * Created by zero on 29/4/16.

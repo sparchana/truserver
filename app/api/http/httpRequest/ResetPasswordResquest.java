@@ -1,4 +1,4 @@
-package api.http;
+package api.http.httpRequest;
 
 /**
  * Created by batcoder1 on 28/4/16.
@@ -6,7 +6,6 @@ package api.http;
 public class ResetPasswordResquest {
     protected String resetPasswordMobile;
     protected String candidateForgotMobile;
-    protected int candidateForgotOtp;
 
     protected String candidateNewPassword;
     protected String forgotPasswordNewMobile;
@@ -25,14 +24,6 @@ public class ResetPasswordResquest {
 
     public String getCandidateForgotMobile() {
         return candidateForgotMobile;
-    }
-
-    public void setCandidateForgotOtp(int candidateForgotOtp) {
-        this.candidateForgotOtp = candidateForgotOtp;
-    }
-
-    public int getCandidateForgotOtp() {
-        return candidateForgotOtp;
     }
 
     public void setCandidateNewPassword(String candidateNewPassword) {

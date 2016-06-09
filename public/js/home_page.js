@@ -58,12 +58,6 @@ $(document).ready(function(){
             $("#fixed-menu").css('background-color', '#2980b9');
             var w = window.innerWidth;
             if(w > 440){
-                $("#leadFormText").css('margin-left', '0px');
-                $("#leadFormText").css('transition','all 1.0s ease-in-out');
-                $("#leadFormText").css('-webkit-transition','all 1.0s ease-in-out');
-                $("#leadFormText").css('-moz-transition','all 1.0s ease-in-out');
-                $("#leadFormText").css('-o-transition','all 1.0s ease-in-out');
-
                 $(".navbar-fixed-top").removeClass('fade-transparent').addClass("fade-background"); // if yes, then change the color of class "navbar-fixed-top" to white (#f8f8f8)
                 $("#navItem1").css('color', '#747474');
                 $("#navItem2").css('color', '#747474');
@@ -78,11 +72,6 @@ $(document).ready(function(){
             $("#fixed-menu").css('background-color', 'rgba(0, 0, 0, 0.175)');
             var w = window.innerWidth;
             if(w > 480){
-                $("#leadFormText").css('margin-left', '-420px');
-                $("#leadFormText").css('transition','all 1.0s ease-in-out');
-                $("#leadFormText").css('-webkit-transition','all 1.0s ease-in-out');
-                $("#leadFormText").css('-moz-transition','all 1.0s ease-in-out');
-                $("#leadFormText").css('-o-transition','all 1.0s ease-in-out');
 
                 $(".navbar-fixed-top").removeClass("fade-background").addClass('fade-transparent'); // if not, change it back to transparent
                 $("#navItem1").css('color', '#ffffff');
@@ -150,7 +139,7 @@ function addLead() {
     else{
         try {
             var d = {
-                leadName : " ",
+                leadName : "",
                 leadMobile : $("#addLeadMobile").val(),
                 leadChannel : 0,
                 leadType : 1,
@@ -159,7 +148,8 @@ function addLead() {
             $.ajax({
                 type: "POST",
                 url: "/addLead",
-                data: d,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
                 success: processCheckLeadStatus
             });
         } catch (exception) {
