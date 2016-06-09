@@ -136,8 +136,8 @@ public class Application extends Controller {
         }
         Logger.info("JSON req: " + req);
 
-        List<String> localityList = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
-        List<String> jobsList = Arrays.asList(candidateSignUpRequest.getCandidateJobPref().split("\\s*,\\s*"));
+        List<Integer> localityList = candidateSignUpRequest.getCandidateLocality();
+        List<Integer> jobsList = candidateSignUpRequest.getCandidateJobPref();
         boolean isSupport = false;
         Candidate candidate = new Candidate();
         candidate.candidateId = Util.randomLong();
@@ -146,8 +146,8 @@ public class Application extends Controller {
         candidate.candidateLastName = candidateSignUpRequest.getCandidateSecondName();
         candidate.candidateMobile = "+91" + candidateSignUpRequest.getCandidateMobile();
 
-        CandidateProfileStatus newcandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 1).findUnique();
-        candidate.candidateprofilestatus = newcandidateProfileStatus;
+        CandidateProfileStatus newCandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 1).findUnique();
+        candidate.candidateprofilestatus = newCandidateProfileStatus;
         candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(localityList, candidate);
         candidate.jobPreferencesList = getCandidateJobPreferenceList(jobsList, candidate);
 

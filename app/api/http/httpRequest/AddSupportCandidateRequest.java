@@ -1,24 +1,26 @@
 package api.http.httpRequest;
 
+import java.util.List;
+
 /**
  * Created by batcoder1 on 10/5/16.
  */
 public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
     public Integer candidateAge ;
     public String candidatePhoneType;
-    public String candidateHomeLocality;
+    public Integer candidateHomeLocality;
     public Integer candidateMaritalStatus ;
     public String candidateEmail;
     public String candidatePastJobCompany;
-    public String candidatePastJobRole;
+    public Integer candidatePastJobRole;
     public Long candidatePastJobSalary ;
-    public String candidateCurrentJobLocation;
+    public Integer candidateCurrentJobLocation;
     public Integer candidateTransportation ;
     public Integer candidateCurrentWorkShift ;
-    public String candidateCurrentJobRole;
+    public Integer candidateCurrentJobRole;
     public String candidateCurrentJobDesignation;
     public Integer candidateCurrentJobDuration ;
-    public String candidateIdProof;
+    public List<Integer> candidateIdProof;
     public Integer candidateSalarySlip ;
     public Integer candidateAppointmentLetter ;
 
@@ -27,7 +29,7 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
         return candidateAge;
     }
 
-    public String getCandidateHomeLocality() {
+    public Integer getCandidateHomeLocality() {
         return candidateHomeLocality;
     }
 
@@ -43,7 +45,7 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
         return candidateEmail;
     }
 
-    public String getCandidateCurrentJobLocation() {
+    public Integer getCandidateCurrentJobLocation() {
         return candidateCurrentJobLocation;
     }
 
@@ -55,7 +57,7 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
         return candidateCurrentWorkShift;
     }
 
-    public String getCandidateCurrentJobRole() {
+    public Integer getCandidateCurrentJobRole() {
         return candidateCurrentJobRole;
     }
 
@@ -68,7 +70,7 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
         return candidateCurrentJobDuration;
     }
 
-    public String getCandidatePastJobRole() {
+    public Integer getCandidatePastJobRole() {
         return candidatePastJobRole;
     }
 
@@ -84,7 +86,7 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
         return candidateTimeShiftPref;
     }
 
-    public String getCandidateIdProof() {
+    public List<Integer> getCandidateIdProof() {
         return candidateIdProof;
     }
 

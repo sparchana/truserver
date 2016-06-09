@@ -964,36 +964,61 @@ function saveProfileForm(){
                 workShift = $('#currentWorkShift').val();
             }
 
+            var candidatePreferredJob = [];
+            var candidatePreferredLocality = [];
+
+            var jobPref = $('#candidateJobPref').val().split(",");
+            var localityPref = $('#candidateLocalityPref').val().split(",");
+
+            var i;
+            
+            /* Candidate job role preferences  */
+            for(i=0;i<jobPref.length; i++){
+                candidatePreferredJob.push(parseInt(jobPref[i]));
+            }
+            
+            /* Candidate locality Preferences */
+            for(i=0;i<localityPref.length; i++){
+                candidatePreferredLocality.push(parseInt(localityPref[i]));
+            }
+            
+            /* Candidate ID proof */
+            var candidateIdProofArray = [];
+            var candidateIdProof = $('#candidateIdProof').val().split(",");
+            for(i=0;i<candidateIdProof.length; i++){
+                candidateIdProofArray.push(parseInt(candidateIdProof[i]));
+            }
+
             var d = {
                 //mandatory fields
                 candidateFirstName: $('#candidateFirstName').val(),
                 candidateSecondName: $('#candidateSecondName').val(),
                 candidateMobile: $('#candidateMobile').val(),
-                candidateLocality: $('#candidateLocalityPref').val(),
-                candidateJobInterest: $('#candidateJobPref').val(),
+                candidateLocality: candidatePreferredLocality,
+                candidateJobInterest: candidatePreferredJob,
 
                 leadSource: $('#leadSource').val(),
                 //others
                 candidateDob: c_dob,
                 candidatePhoneType: $('#candidatePhoneType').val(),
                 candidateGender: ($('input:radio[name="gender"]:checked').val()),
-                candidateHomeLocality: $('#candidateHomeLocality').val(),
+                candidateHomeLocality: parseInt($('#candidateHomeLocality').val()),
                 candidateMaritalStatus: ($('input:radio[name="married"]:checked').val()),
                 candidateEmail: $('#candidateEmail').val(),
                 candidateIsEmployed: ($('input:radio[name="employed"]:checked').val()),
                 candidateTotalExperience: totalExp,
 
                 candidateCurrentCompany: $('#candidateCurrentCompany').val(),
-                candidateCurrentJobLocation: $('#candidateCurrentJobLocation').val(),
+                candidateCurrentJobLocation: parseInt($('#candidateCurrentJobLocation').val()),
                 candidateTransportation: ($('#selectTransportation').val()),
                 candidateCurrentWorkShift: workShift,
-                candidateCurrentJobRole: $('#candidateCurrentJobRole').val(),
+                candidateCurrentJobRole: parseInt($('#candidateCurrentJobRole').val()),
                 candidateCurrentJobDesignation: $('#candidateCurrentJobDesignation').val(),
                 candidateCurrentSalary: ($('#candidateCurrentJobSalary').val()),
                 candidateCurrentJobDuration: currentJobDuration,
 
                 candidatePastJobCompany: $('#candidatePastCompany').val(),
-                candidatePastJobRole: $('#candidatePastJobRole').val(),
+                candidatePastJobRole: parseInt($('#candidatePastJobRole').val()),
                 candidatePastJobSalary: ($('#candidatePastJobSalary').val()),
 
                 candidateEducationLevel: higherEducation,
@@ -1007,7 +1032,7 @@ function saveProfileForm(){
 
                 candidateSkills: skillMap,
 
-                candidateIdProof: $('#candidateIdProof').val(),
+                candidateIdProof: candidateIdProofArray,
                 candidateSalarySlip: ($('input:radio[name="payslip"]:checked').val()),
                 candidateAppointmentLetter: ($('input:radio[name="appointmentLetter"]:checked').val())
             };

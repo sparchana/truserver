@@ -67,13 +67,29 @@ $(function() {
                 var secondName  = $('#candidateSecondName').val();
                 var phone = $('#candidateMobile').val();
                 candidateMobile = phone;
+
+                var candidatePreferredJob = [];
+                var candidatePreferredLocality = [];
+
+                var jobPref = $('#candidateJobPref').val().split(",");
+                var localityPref = $('#candidateLocality').val().split(",");
+
+                var i;
+                for(i=0;i<jobPref.length; i++){
+                    candidatePreferredJob.push(parseInt(jobPref[i]));
+                }
+
+                for(i=0;i<localityPref.length; i++){
+                    candidatePreferredLocality.push(parseInt(localityPref[i]));
+                }
+
                 $('#alreadyMsgCandidate').hide();
                 var d = {
                     candidateName : name,
                     candidateSecondName : secondName,
                     candidateMobile : phone,
-                    candidateLocality : $('#candidateLocality').val(),
-                    candidateJobPref : $('#candidateJobPref').val()
+                    candidateLocality : candidatePreferredLocality,
+                    candidateJobPref : candidatePreferredJob
                 };
 
                 $.ajax({
