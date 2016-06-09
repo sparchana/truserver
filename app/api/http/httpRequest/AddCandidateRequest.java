@@ -14,7 +14,7 @@ public class AddCandidateRequest {
     public String candidateJobInterest;
     public String candidateLocality;
 
-    public Date candidateDob = new Date();
+    public Date candidateDob;
     public Integer candidateGender ;
     public String candidateTimeShiftPref;
 
