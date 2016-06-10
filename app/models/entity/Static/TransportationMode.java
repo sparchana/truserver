@@ -2,10 +2,7 @@ package models.entity.Static;
 
 import com.avaje.ebean.Model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Created by zero on 4/5/16.
@@ -14,12 +11,28 @@ import javax.persistence.Table;
 @Table(name = "transportationmodes")
 public class TransportationMode extends Model{
     @Id
-    @Column(name = "TransportationModeId", columnDefinition = "int signed null", unique = true)
-    public int transportationModeId = 0;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "TransportationModeId", columnDefinition = "int signed", unique = true)
+    private int transportationModeId;
 
     @Column(name = "TransportationModeName", columnDefinition = "varchar(255) null")
-    public String transportationModeName = "";
+    private String transportationModeName;
 
     public static Finder<String, TransportationMode> find = new Finder(TransportationMode.class);
 
+    public int getTransportationModeId() {
+        return transportationModeId;
+    }
+
+    public void setTransportationModeId(int transportationModeId) {
+        this.transportationModeId = transportationModeId;
+    }
+
+    public String getTransportationModeName() {
+        return transportationModeName;
+    }
+
+    public void setTransportationModeName(String transportationModeName) {
+        this.transportationModeName = transportationModeName;
+    }
 }

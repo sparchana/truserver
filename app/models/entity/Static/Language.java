@@ -2,7 +2,6 @@ package models.entity.Static;
 
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import models.entity.Candidate;
 import models.entity.OM.LanguageKnown;
 
 import javax.persistence.*;
@@ -16,19 +15,40 @@ import java.util.List;
 @Table(name = "language")
 public class Language extends Model {
     @Id
-    @Column(name = "LanguageId", columnDefinition = "int signed null", unique = true)
-    public int languageId = 0;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "LanguageId", columnDefinition = "int signed", unique = true)
+    private int languageId;
 
     @Column(name = "LanguageName", columnDefinition = "varchar(255) null")
-    public String languageName = "";
-
-    @JsonBackReference
-    @OneToMany(mappedBy = "motherTongue")
-    public Candidate candidate;
+    private String languageName;
 
     @JsonBackReference
     @OneToMany(mappedBy = "language", cascade = CascadeType.REMOVE)
-    public List<LanguageKnown> languageKnownList;
+    private List<LanguageKnown> languageKnownList;
 
     public static Finder<String, Language> find = new Finder(Language.class);
+
+    public int getLanguageId() {
+        return languageId;
+    }
+
+    public void setLanguageId(int languageId) {
+        this.languageId = languageId;
+    }
+
+    public String getLanguageName() {
+        return languageName;
+    }
+
+    public void setLanguageName(String languageName) {
+        this.languageName = languageName;
+    }
+
+    public List<LanguageKnown> getLanguageKnownList() {
+        return languageKnownList;
+    }
+
+    public void setLanguageKnownList(List<LanguageKnown> languageKnownList) {
+        this.languageKnownList = languageKnownList;
+    }
 }

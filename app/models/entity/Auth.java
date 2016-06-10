@@ -1,13 +1,12 @@
 package models.entity;
 
 import com.avaje.ebean.Model;
+import models.util.Util;
 import play.Logger;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 /**
  * Created by batcoder1 on 26/4/16.
@@ -17,34 +16,42 @@ import java.sql.Timestamp;
 @Table(name = "auth")
 public class Auth extends Model {
     @Id
-    @Column(name = "AuthId", columnDefinition = "bigint signed not null")
-    public long authId = 0;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "AuthId", columnDefinition = "bigint signed")
+    private long authId;
 
     @Column(name = "CandidateId", columnDefinition = "bigint signed not null")
-    public long candidateId = 0;
+    private long candidateId;
 
     @Column(name = "AuthStatus", columnDefinition = "int signed not null", nullable = false)
-    public int authStatus = 0; // verified, Not-Yet-Verified
+    private int authStatus; // verified, Not-Yet-Verified
 
     @Column(name = "PasswordMd5", columnDefinition = "char(60) not null")
-    public String passwordMd5 = "";
+    private String passwordMd5;
 
     @Column(name = "PasswordSalt", columnDefinition = "bigint signed not null")
-    public long passwordSalt = 0;
+    private long passwordSalt;
 
-    @Column(name = "AuthSessionId", columnDefinition = "varchar(50) not null", nullable = false)
-    public String authSessionId = "";
+    @Column(name = "AuthSessionId", columnDefinition = "varchar(50)", nullable = false)
+    private String authSessionId ;
 
-    @Column(name = "AuthSessionIdExpiryMillis", columnDefinition = "bigint signed not null", nullable = false)
-    public long authSessionIdExpiryMillis = 0;
+    @Column(name = "AuthSessionIdExpiryMillis", columnDefinition = "bigint signed", nullable = false)
+    private long authSessionIdExpiryMillis;
 
-    @Column(name = "authCreateTimestamp", columnDefinition = "timestamp default current_timestamp not null")
-    public Timestamp authCreateTimestamp = new Timestamp(System.currentTimeMillis());
+    @Column(name = "authCreateTimestamp", columnDefinition = "timestamp not null")
+    private Timestamp authCreateTimestamp;
 
     @Column(name = "authUpdateTimestamp", columnDefinition = "timestamp null")
-    public Timestamp authUpdateTimestamp;
+    private Timestamp authUpdateTimestamp;
 
     public static Model.Finder<String, Auth> find = new Model.Finder(Auth.class);
+
+    public Auth(){
+        this.authCreateTimestamp = new Timestamp(System.currentTimeMillis());
+        this.authUpdateTimestamp = new Timestamp(System.currentTimeMillis());
+        this.authSessionId = UUID.randomUUID().toString();
+        this.passwordSalt = Util.randomInt();
+    }
 
     public static void savePassword(Auth auth) {
         auth.save();
@@ -55,5 +62,77 @@ public class Auth extends Model {
     public static void updatePassword(Auth auth) {
         Logger.info("inside Auth Update method" );
         auth.update();
+    }
+
+    public long getAuthId() {
+        return authId;
+    }
+
+    public void setAuthId(long authId) {
+        this.authId = authId;
+    }
+
+    public long getCandidateId() {
+        return candidateId;
+    }
+
+    public void setCandidateId(long candidateId) {
+        this.candidateId = candidateId;
+    }
+
+    public int getAuthStatus() {
+        return authStatus;
+    }
+
+    public void setAuthStatus(int authStatus) {
+        this.authStatus = authStatus;
+    }
+
+    public String getPasswordMd5() {
+        return passwordMd5;
+    }
+
+    public void setPasswordMd5(String passwordMd5) {
+        this.passwordMd5 = passwordMd5;
+    }
+
+    public long getPasswordSalt() {
+        return passwordSalt;
+    }
+
+    public void setPasswordSalt(long passwordSalt) {
+        this.passwordSalt = passwordSalt;
+    }
+
+    public String getAuthSessionId() {
+        return authSessionId;
+    }
+
+    public void setAuthSessionId(String authSessionId) {
+        this.authSessionId = authSessionId;
+    }
+
+    public long getAuthSessionIdExpiryMillis() {
+        return authSessionIdExpiryMillis;
+    }
+
+    public void setAuthSessionIdExpiryMillis(long authSessionIdExpiryMillis) {
+        this.authSessionIdExpiryMillis = authSessionIdExpiryMillis;
+    }
+
+    public Timestamp getAuthCreateTimestamp() {
+        return authCreateTimestamp;
+    }
+
+    public void setAuthCreateTimestamp(Timestamp authCreateTimestamp) {
+        this.authCreateTimestamp = authCreateTimestamp;
+    }
+
+    public Timestamp getAuthUpdateTimestamp() {
+        return authUpdateTimestamp;
+    }
+
+    public void setAuthUpdateTimestamp(Timestamp authUpdateTimestamp) {
+        this.authUpdateTimestamp = authUpdateTimestamp;
     }
 }

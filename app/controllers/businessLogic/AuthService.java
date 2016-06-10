@@ -11,9 +11,6 @@ import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
 
-import java.util.Random;
-import java.util.UUID;
-
 import static play.mvc.Controller.session;
 
 /**
@@ -21,13 +18,10 @@ import static play.mvc.Controller.session;
  */
 public class AuthService {
     public static void setNewPassword(Auth auth, String password){
-        int passwordSalt = (new Random()).nextInt();
-        auth.passwordMd5 = Util.md5(password + passwordSalt);
-        auth.passwordSalt = passwordSalt;
-        auth.authSessionId = UUID.randomUUID().toString();
-        auth.authSessionIdExpiryMillis = System.currentTimeMillis() + 24 * 60 * 60 * 1000;
-        session("sessionId", auth.authSessionId);
-        session("sessionExpiry", String.valueOf(auth.authSessionIdExpiryMillis));
+        auth.setPasswordMd5(Util.md5(password + auth.getPasswordSalt()));
+        auth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
+        session("sessionId", auth.getAuthSessionId());
+        session("sessionExpiry", String.valueOf(auth.getAuthSessionIdExpiryMillis()));
 
     }
     public static CandidateSignUpResponse savePassword(String mobile, String password){
@@ -38,33 +32,32 @@ public class AuthService {
 
         if(existingCandidate != null) {
             // If candidate exists
-            Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.candidateId).findUnique();
+            Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
             if(existingAuth != null){
                 // If candidate exists and has a password, reset the old password
                 Logger.info("Resetting password");
                 setNewPassword(existingAuth, password);
                 Auth.savePassword(existingAuth);
 
-                candidateSignUpResponse.setCandidateName(existingCandidate.candidateName);
-                candidateSignUpResponse.setCandidateLastName(existingCandidate.candidateLastName);
-                candidateSignUpResponse.setCandidateId(existingCandidate.candidateId);
+                candidateSignUpResponse.setCandidateName(existingCandidate.getCandidateName());
+                candidateSignUpResponse.setCandidateLastName(existingCandidate.getCandidateLastName());
+                candidateSignUpResponse.setCandidateId(existingCandidate.getCandidateId());
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-                candidateSignUpResponse.setIsAssessed(existingCandidate.candidateIsAssessed);
-                candidateSignUpResponse.setLeadId(existingCandidate.lead.leadId);
+                candidateSignUpResponse.setIsAssessed(existingCandidate.getCandidateIsAssessed());
+                candidateSignUpResponse.setLeadId(existingCandidate.getLead().getLeadId());
             }
 
             else{
                 Auth auth = new Auth();
-                auth.authId =  Util.randomLong();
-                auth.candidateId = existingCandidate.candidateId;
+                auth.setCandidateId(existingCandidate.getCandidateId());
                 setNewPassword(auth,password);
-                auth.authStatus = ServerConstants.CANDIDATE_STATUS_VERIFIED;
+                auth.setAuthStatus(ServerConstants.CANDIDATE_STATUS_VERIFIED);
                 Auth.savePassword(auth);
 
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
                 Interaction interaction = new Interaction(
-                        existingCandidate.candidateUUId,
+                        existingCandidate.getCandidateUUId(),
                         ServerConstants.OBJECT_TYPE_CANDIDATE,
                         ServerConstants.INTERACTION_TYPE_WEBSITE,
                         ServerConstants.INTERACTION_NOTE_SELF_PASSWORD_CHANGED,
@@ -73,7 +66,7 @@ public class AuthService {
                 );
                 InteractionService.createInteraction(interaction);
                 try {
-                    existingCandidate.candidateprofilestatus = CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_NEW).findUnique();
+                    existingCandidate.setCandidateprofilestatus(CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_NEW).findUnique());
                     candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
                 }catch (NullPointerException n) {
                     Logger.info("Oops ProfileStatusId"+ " doesnot exists");
@@ -83,21 +76,21 @@ public class AuthService {
                 existingCandidate.update();
                 Logger.info("candidate status confirmed");
 
-                Lead existingLead = Lead.find.where().eq("leadId", existingCandidate.lead.leadId).findUnique();
+                Lead existingLead = Lead.find.where().eq("leadId", existingCandidate.getLead().getLeadId()).findUnique();
                 existingLead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
                 existingLead.update();
                 Logger.info("Lead converted in candidate");
 
-                String msg = "Hey " + existingCandidate.candidateName +
+                String msg = "Hey " + existingCandidate.getCandidateName()+
                         "! Welcome to Trujobs.in. Login and complete our skill assessment today and find your right job.";
-                SmsUtil.sendSms(existingCandidate.candidateMobile,msg);
+                SmsUtil.sendSms(existingCandidate.getCandidateMobile(),msg);
 
-                candidateSignUpResponse.setCandidateName(existingCandidate.candidateName);
-                candidateSignUpResponse.setCandidateLastName(existingCandidate.candidateLastName);
-                candidateSignUpResponse.setCandidateId(existingCandidate.candidateId);
+                candidateSignUpResponse.setCandidateName(existingCandidate.getCandidateName());
+                candidateSignUpResponse.setCandidateLastName(existingCandidate.getCandidateLastName());
+                candidateSignUpResponse.setCandidateId(existingCandidate.getCandidateId());
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-                candidateSignUpResponse.setIsAssessed(existingCandidate.candidateIsAssessed);
-                candidateSignUpResponse.setLeadId(existingCandidate.lead.leadId);
+                candidateSignUpResponse.setIsAssessed(existingCandidate.getCandidateIsAssessed());
+                candidateSignUpResponse.setLeadId(existingCandidate.getLead().getLeadId());
             }
             Logger.info("Auth Save Successful");
         }

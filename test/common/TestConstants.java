@@ -1,5 +1,6 @@
 package common;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -29,6 +30,7 @@ public class TestConstants {
     public static final Integer testLeadSource = 1;
     public static final String  testAdminId = "2209";
     public static final String  testAdminPassword = "TruJobs7";
+    public static final String  testCandidateTimeShiftPref = "1, 2";
 
-    public static final Date testCandidateDob = new Date("1998-03-19");
+    public static final Date testCandidateDob = Calendar.getInstance().getTime();
 }

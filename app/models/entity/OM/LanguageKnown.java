@@ -16,31 +16,41 @@ import java.sql.Timestamp;
 @Table(name = "languageknown")
 public class LanguageKnown extends Model {
     @Id
-    @Column(name = "LanguageKnownId", columnDefinition = "int signed not null", unique = true)
-    public int languageKnownId = 0;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "LanguageKnownId", columnDefinition = "int signed", unique = true)
+    private int languageKnownId;
 
     @Column(name = "VerbalAbility", columnDefinition = "int signed null")
-    public int verbalAbility = 0; // 0/1
+    private Integer verbalAbility;
 
     @Column(name = "ReadingAbility", columnDefinition = "int signed null")
-    public int readingAbility = 0; // 0/1
+    private Integer readingAbility;
 
     @Column(name = "WritingAbility", columnDefinition = "int signed null")
-    public int writingAbility = 0; // 0/1
+    private Integer writingAbility;
 
-    @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp default current_timestamp null")
-    public Timestamp updateTimeStamp;
+    @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp null")
+    private Timestamp updateTimeStamp = new Timestamp(System.currentTimeMillis());
 
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "LanguageId", referencedColumnName = "LanguageId")
-    public Language language;
+    private Language language;
 
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "CandidateId", referencedColumnName= "CandidateId")
-    public Candidate candidate;
+    private Candidate candidate;
 
+    public static Finder<String, LanguageKnown> find = new Finder(LanguageKnown.class);
+
+    public int getLanguageKnownId() {
+        return languageKnownId;
+    }
+
+    public void setLanguageKnownId(int languageKnownId) {
+        this.languageKnownId = languageKnownId;
+    }
 
     public int getVerbalAbility() {
         return verbalAbility;
@@ -82,6 +92,11 @@ public class LanguageKnown extends Model {
         this.language = language;
     }
 
-    public static Finder<String, LanguageKnown> find = new Finder(LanguageKnown.class);
+    public Candidate getCandidate() {
+        return candidate;
+    }
 
+    public void setCandidate(Candidate candidate) {
+        this.candidate = candidate;
+    }
 }

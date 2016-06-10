@@ -1,99 +1,102 @@
+# --- Created by Ebean DDL
+# To stop Ebean DDL generation, remove this comment and start using Evolutions
+
 # --- !Ups
 
 create table auth (
-  authid                        bigint signed not null auto_increment not null,
+  authid                        bigint signed auto_increment not null,
   candidateid                   bigint signed not null,
   authstatus                    int signed not null not null,
   passwordmd5                   char(60) not null,
   passwordsalt                  bigint signed not null,
-  authsessionid                 varchar(50) not null not null,
-  authsessionidexpirymillis     bigint signed not null not null,
-  authcreatetimestamp           timestamp default current_timestamp not null,
+  authsessionid                 varchar(50) not null,
+  authsessionidexpirymillis     bigint signed not null,
+  authcreatetimestamp           timestamp not null,
   authupdatetimestamp           timestamp null,
   constraint pk_auth primary key (authid)
 );
 
 create table candidate (
-  candidateid                   bigint signed null auto_increment not null,
+  candidateid                   bigint signed auto_increment not null,
   candidateuuid                 varchar(255) not null not null,
   candidatename                 varchar(50) not null,
   candidatelastname             varchar(50) null,
-  candidategender               int(1) null default 0,
+  candidategender               int(1) null,
   candidatedob                  date null,
   candidatemobile               varchar(13) not null,
   candidatephonetype            varchar(100) null,
   candidatemaritalstatus        int null,
   candidateemail                varchar(255) null,
-  candidateisemployed           int not null,
-  candidatetotalexperience      int signed null default 0.00,
-  candidateage                  int signed not null default 0,
-  candidatecreatetimestamp      timestamp default current_timestamp not null,
+  candidateisemployed           int null,
+  candidatetotalexperience      int signed null,
+  candidateage                  int signed null,
+  candidatecreatetimestamp      timestamp not null,
   candidateupdatetimestamp      timestamp null,
   candidateisassessed           int signed not null default 0,
-  candidatesalaryslip           int signed not null default 0,
-  candidateappointmentletter    int signed not null default 0,
+  candidatesalaryslip           int signed null,
+  candidateappointmentletter    int signed null,
   isminprofilecomplete          int signed not null default 0,
-  lead_leadid                   bigint signed null,
-  candidatemothertongue         int signed null,
-  candidatehomelocality         bigint signed null,
-  candidatestatusid             int signed null,
+  candidatecurrentjobid         bigint signed,
+  lead_leadid                   bigint signed,
+  candidatemothertongue         int signed,
+  candidatehomelocality         bigint signed,
+  candidatestatusid             int signed,
   constraint uq_candidate_candidateuuid unique (candidateuuid),
+  constraint uq_candidate_candidatecurrentjobid unique (candidatecurrentjobid),
   constraint uq_candidate_lead_leadid unique (lead_leadid),
   constraint pk_candidate primary key (candidateid)
 );
 
 create table candidateprofilestatus (
-  profilestatusid               int signed null auto_increment not null,
+  profilestatusid               int signed auto_increment not null,
   profilestatusname             varchar(255) null,
   constraint pk_candidateprofilestatus primary key (profilestatusid)
 );
 
 create table candidatecurrentjobdetail (
-  candidatecurrentjobid         bigint signed not null auto_increment not null,
+  candidatecurrentjobid         bigint signed auto_increment not null,
   candidatecurrentcompany       varchar(100) null,
   candidatecurrentdesignation   varchar(255) null,
   candidatecurrentsalary        bigint signed null,
   candidatecurrentjobduration   int signed null,
   candidatecurrentemployerrefname varchar(100) null,
   candidatecurrentemployerrefmobile varchar(13) null,
-  updatetimestamp               timestamp default current_timestamp null,
-  candidateid                   bigint signed null,
-  jobroleid                     bigint signed null,
-  localityid                    bigint signed null,
-  transportationmodeid          int signed null,
+  updatetimestamp               timestamp null,
+  jobroleid                     bigint signed,
+  localityid                    bigint signed,
+  transportationmodeid          int signed,
   timeshiftid                   int signed,
-  constraint uq_candidatecurrentjobdetail_candidateid unique (candidateid),
   constraint pk_candidatecurrentjobdetail primary key (candidatecurrentjobid)
 );
 
 create table candidateeducation (
-  candidateeducationid          int signed not null auto_increment not null,
-  updatetimestamp               timestamp default current_timestamp null,
+  candidateeducationid          int signed auto_increment not null,
+  updatetimestamp               timestamp null,
   candidatelastinstitute        varchar(256) null,
-  candidateid                   bigint signed null,
-  educationid                   int signed null,
-  degreeid                      int signed null,
+  candidateid                   bigint signed,
+  educationid                   int signed,
+  degreeid                      int signed,
   constraint uq_candidateeducation_candidateid unique (candidateid),
   constraint pk_candidateeducation primary key (candidateeducationid)
 );
 
 create table candidateskill (
   candidateskillid              int signed not null auto_increment not null,
-  updatetimestamp               timestamp default current_timestamp null,
-  candidateid                   bigint signed null,
-  skillid                       int signed not null,
+  updatetimestamp               timestamp null,
+  candidateid                   bigint signed,
+  skillid                       int signed,
   skillqualifierid              int signed,
   constraint pk_candidateskill primary key (candidateskillid)
 );
 
 create table channels (
-  channelid                     int signed not null auto_increment not null,
+  channelid                     int signed auto_increment not null,
   channelname                   varchar(50) not null default 0 not null,
   constraint pk_channels primary key (channelid)
 );
 
 create table degree (
-  degreeid                      int signed null auto_increment not null,
+  degreeid                      int signed auto_increment not null,
   degreename                    varchar(100) null,
   constraint pk_degree primary key (degreeid)
 );
@@ -104,98 +107,98 @@ create table developer (
   developeraccesslevel          int not null not null,
   developerpasswordsalt         bigint signed not null not null,
   developerpasswordmd5          char(32) not null not null,
-  developersessionid            varchar(50) not null not null,
-  developersessionidexpirymillis bigint signed not null not null,
+  developersessionid            varchar(50) null,
+  developersessionidexpirymillis bigint signed,
   developerapikey               varchar(255) not null not null,
   constraint uq_developer_developerapikey unique (developerapikey),
   constraint pk_developer primary key (developerid)
 );
 
 create table education (
-  educationid                   int signed null auto_increment not null,
+  educationid                   int signed auto_increment not null,
   educationname                 varchar(255) null,
   constraint pk_education primary key (educationid)
 );
 
 create table idproof (
-  idproofid                     int signed null auto_increment not null,
+  idproofid                     int signed auto_increment not null,
   idproofname                   varchar(255) null,
   constraint pk_idproof primary key (idproofid)
 );
 
 create table idproofreference (
-  idproofreferenceid            int signed not null auto_increment not null,
-  updatetimestamp               timestamp default current_timestamp null,
-  candidateid                   bigint signed null,
-  idproofid                     int signed null,
+  idproofreferenceid            int signed auto_increment not null,
+  updatetimestamp               timestamp null,
+  candidateid                   bigint signed,
+  idproofid                     int signed,
   constraint pk_idproofreference primary key (idproofreferenceid)
 );
 
 create table interaction (
-  rowid                         int signed not null auto_increment not null,
+  rowid                         int signed auto_increment not null,
   objectauuid                   varchar(255) not null not null,
   objectatype                   int signed not null not null,
   objectbuuid                   varchar(255) not null,
   objectbtype                   int signed null,
-  interactiontype               int signed not null not null,
+  interactiontype               int signed null,
   note                          varchar(255) null,
   result                        varchar(255) null,
   creationtimestamp             timestamp default current_timestamp not null not null,
-  createdby                     varchar(255) not null default 'system' not null,
+  createdby                     varchar(255) not null default 'System' not null,
   constraint pk_interaction primary key (rowid)
 );
 
 create table jobhistory (
-  jobhistoryid                  bigint signed not null auto_increment not null,
+  jobhistoryid                  bigint signed auto_increment not null,
   candidatepastcompany          varchar(255) null,
   candidatepastsalary           bigint signed null,
-  updatetimestamp               timestamp default current_timestamp null,
-  jobroleid                     bigint signed null,
-  candidateid                   bigint signed null,
+  updatetimestamp               timestamp null,
+  jobroleid                     bigint signed,
+  candidateid                   bigint signed,
   constraint pk_jobhistory primary key (jobhistoryid)
 );
 
 create table jobpreference (
   jobpreferenceid               int signed auto_increment not null,
-  updatetimestamp               timestamp default current_timestamp null,
-  jobroleid                     bigint signed null,
-  candidateid                   bigint signed null,
+  updatetimestamp               timestamp null,
+  jobroleid                     bigint signed,
+  candidateid                   bigint signed,
   constraint pk_jobpreference primary key (jobpreferenceid)
 );
 
 create table jobrole (
-  jobroleid                     bigint signed null auto_increment not null,
+  jobroleid                     bigint signed auto_increment not null,
   jobname                       varchar(255) null,
   constraint pk_jobrole primary key (jobroleid)
 );
 
 create table jobtoskill (
-  jobtoskillid                  int signed not null auto_increment not null,
-  updatetimestamp               timestamp default current_timestamp null,
-  jobroleid                     bigint signed null,
-  skillid                       int signed not null,
+  jobtoskillid                  int signed auto_increment not null,
+  updatetimestamp               timestamp null,
+  jobroleid                     bigint signed,
+  skillid                       int signed,
   constraint pk_jobtoskill primary key (jobtoskillid)
 );
 
 create table language (
-  languageid                    int signed null auto_increment not null,
+  languageid                    int signed auto_increment not null,
   languagename                  varchar(255) null,
   constraint pk_language primary key (languageid)
 );
 
 create table languageknown (
-  languageknownid               int signed not null auto_increment not null,
+  languageknownid               int signed auto_increment not null,
   verbalability                 int signed null,
   readingability                int signed null,
   writingability                int signed null,
-  updatetimestamp               timestamp default current_timestamp null,
-  languageid                    int signed null,
-  candidateid                   bigint signed null,
+  updatetimestamp               timestamp null,
+  languageid                    int signed,
+  candidateid                   bigint signed,
   constraint pk_languageknown primary key (languageknownid)
 );
 
 create table lead (
-  leadid                        bigint signed null auto_increment not null,
+  leadid                        bigint signed auto_increment not null,
   leaduuid                      varchar(255) not null not null,
   leadstatus                    int signed not null not null,
   leadname                      varchar(50) not null not null,
@@ -203,13 +206,20 @@ create table lead (
   leadchannel                   int signed not null not null,
   leadtype                      int signed not null not null,
   leadinterest                  varchar(30),
-  leadcreationtimestamp         timestamp default current_timestamp not null not null,
+  leadcreationtimestamp         timestamp not null not null,
+  leadsourceid                  int signed,
   constraint uq_lead_leaduuid unique (leaduuid),
   constraint pk_lead primary key (leadid)
 );
 
+create table leadsource (
+  leadsourceid                  int signed auto_increment not null,
+  leadsourcename                varchar(255) null,
+  constraint pk_leadsource primary key (leadsourceid)
+);
+
 create table locality (
-  localityid                    bigint signed null auto_increment not null,
+  localityid                    bigint signed auto_increment not null,
   localityname                  varchar(255) null,
   city                          varchar(255) null,
   state                         varchar(255) null,
@@ -221,14 +231,14 @@ create table locality (
 
 create table localitypreference (
   localitypreferenceid          bigint signed not null auto_increment not null,
-  updatetimestamp               timestamp default current_timestamp null,
-  localityid                    bigint signed null,
-  candidateid                   bigint signed null,
+  updatetimestamp               timestamp null,
+  localityid                    bigint signed,
+  candidateid                   bigint signed,
   constraint pk_localitypreference primary key (localitypreferenceid)
 );
 
 create table skill (
-  skillid                       int signed not null auto_increment not null,
+  skillid                       int signed auto_increment not null,
   skillname                     varchar(100) null,
   skillquestion                 varchar(255) null,
   constraint pk_skill primary key (skillid)
@@ -237,30 +247,32 @@ create table skill (
 create table skillqualifier (
   skillqualifierid              int signed auto_increment not null,
   qualifier                     varchar(100) null,
-  skillid                       int signed not null,
+  skillid                       int signed,
   constraint pk_skillqualifier primary key (skillqualifierid)
 );
 
 create table timeshift (
   timeshiftid                   int signed auto_increment not null,
-  timeshiftname                 varchar(50) not null,
+  timeshiftname                 varchar(50) null,
   constraint pk_timeshift primary key (timeshiftid)
 );
 
 create table timeshiftpreference (
   timeshiftpreferenceid         int signed auto_increment not null,
-  updatetimestamp               timestamp default current_timestamp null,
-  candidateid                   bigint signed null,
+  updatetimestamp               timestamp null,
+  candidateid                   bigint signed,
   timeshiftid                   int signed,
   constraint uq_timeshiftpreference_candidateid unique (candidateid),
   constraint pk_timeshiftpreference primary key (timeshiftpreferenceid)
 );
 
 create table transportationmodes (
-  transportationmodeid          int signed null auto_increment not null,
+  transportationmodeid          int signed auto_increment not null,
   transportationmodename        varchar(255) null,
   constraint pk_transportationmodes primary key (transportationmodeid)
 );
+
+alter table candidate add constraint fk_candidate_candidatecurrentjobid foreign key (candidatecurrentjobid) references candidatecurrentjobdetail (candidatecurrentjobid) on delete restrict on update restrict;
 
 alter table candidate add constraint fk_candidate_lead_leadid foreign key (lead_leadid) references lead (leadid) on delete restrict on update restrict;
 
@@ -272,8 +284,6 @@ create index ix_candidate_candidatehomelocality on candidate (candidatehomelocal
 
 alter table candidate add constraint fk_candidate_candidatestatusid foreign key (candidatestatusid) references candidateprofilestatus (profilestatusid) on delete restrict on update restrict;
 create index ix_candidate_candidatestatusid on candidate (candidatestatusid);
-
-alter table candidatecurrentjobdetail add constraint fk_candidatecurrentjobdetail_candidateid foreign key (candidateid) references candidate (candidateid) on delete restrict on update restrict;
 
 alter table candidatecurrentjobdetail add constraint fk_candidatecurrentjobdetail_jobroleid foreign key (jobroleid) references jobrole (jobroleid) on delete restrict on update restrict;
 create index ix_candidatecurrentjobdetail_jobroleid on candidatecurrentjobdetail (jobroleid);
@@ -334,6 +344,9 @@ create index ix_languageknown_languageid on languageknown (languageid);
 alter table languageknown add constraint fk_languageknown_candidateid foreign key (candidateid) references candidate (candidateid) on delete restrict on update restrict;
 create index ix_languageknown_candidateid on languageknown (candidateid);
 
+alter table lead add constraint fk_lead_leadsourceid foreign key (leadsourceid) references leadsource (leadsourceid) on delete restrict on update restrict;
+create index ix_lead_leadsourceid on lead (leadsourceid);
+
 alter table localitypreference add constraint fk_localitypreference_localityid foreign key (localityid) references locality (localityid) on delete restrict on update restrict;
 create index ix_localitypreference_localityid on localitypreference (localityid);
 
@@ -351,6 +364,8 @@ create index ix_timeshiftpreference_timeshiftid on timeshiftpreference (timeshif
 
 # --- !Downs
 
+alter table candidate drop foreign key fk_candidate_candidatecurrentjobid;
+
 alter table candidate drop foreign key fk_candidate_lead_leadid;
 
 alter table candidate drop foreign key fk_candidate_candidatemothertongue;
@@ -361,8 +376,6 @@ drop index ix_candidate_candidatehomelocality on candidate;
 
 alter table candidate drop foreign key fk_candidate_candidatestatusid;
 drop index ix_candidate_candidatestatusid on candidate;
-
-alter table candidatecurrentjobdetail drop foreign key fk_candidatecurrentjobdetail_candidateid;
 
 alter table candidatecurrentjobdetail drop foreign key fk_candidatecurrentjobdetail_jobroleid;
 drop index ix_candidatecurrentjobdetail_jobroleid on candidatecurrentjobdetail;
@@ -423,6 +436,9 @@ drop index ix_languageknown_languageid on languageknown;
 alter table languageknown drop foreign key fk_languageknown_candidateid;
 drop index ix_languageknown_candidateid on languageknown;
 
+alter table lead drop foreign key fk_lead_leadsourceid;
+drop index ix_lead_leadsourceid on lead;
+
 alter table localitypreference drop foreign key fk_localitypreference_localityid;
 drop index ix_localitypreference_localityid on localitypreference;
 
@@ -476,6 +492,8 @@ drop table if exists language;
 drop table if exists languageknown;
 
 drop table if exists lead;
+
+drop table if exists leadsource;
 
 drop table if exists locality;
 

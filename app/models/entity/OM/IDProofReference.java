@@ -16,21 +16,24 @@ import java.sql.Timestamp;
 @Table(name = "idproofreference")
 public class IDProofReference extends Model {
     @Id
-    @Column(name = "IDProofReferenceId", columnDefinition = "int signed not null", unique = true)
-    public int idProofReferenceId = 0;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "IDProofReferenceId", columnDefinition = "int signed", unique = true)
+    private int idProofReferenceId;
 
-    @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp default current_timestamp null")
-    public Timestamp updateTimeStamp;
+    @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp null")
+    private Timestamp updateTimeStamp = new Timestamp(System.currentTimeMillis());
 
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "CandidateId", referencedColumnName = "candidateId")
-    public Candidate candidate;
+    private Candidate candidate;
 
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "IdProofId", referencedColumnName = "idProofId")
-    public IdProof idProof;
+    private IdProof idProof;
+
+    public static Finder<String, IDProofReference> find = new Finder(IDProofReference.class);
 
     public void setUpdateTimeStamp(Timestamp updateTimeStamp) {
         this.updateTimeStamp = updateTimeStamp;
@@ -44,5 +47,23 @@ public class IDProofReference extends Model {
         this.idProof = idProof;
     }
 
-    public static Finder<String, IDProofReference> find = new Finder(IDProofReference.class);
+    public int getIdProofReferenceId() {
+        return idProofReferenceId;
+    }
+
+    public void setIdProofReferenceId(int idProofReferenceId) {
+        this.idProofReferenceId = idProofReferenceId;
+    }
+
+    public Timestamp getUpdateTimeStamp() {
+        return updateTimeStamp;
+    }
+
+    public Candidate getCandidate() {
+        return candidate;
+    }
+
+    public IdProof getIdProof() {
+        return idProof;
+    }
 }

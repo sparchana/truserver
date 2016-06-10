@@ -1,8 +1,6 @@
 package models.entity.Static;
 
 import com.avaje.ebean.Model;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import models.entity.OO.TimeShiftPreference;
 
 import javax.persistence.*;
 
@@ -14,16 +12,29 @@ import javax.persistence.*;
 @Table(name = "timeshift")
 public class TimeShift extends Model{
     @Id
-    @Column(name = "TimeShiftId", columnDefinition = "int signed", nullable = false, unique = true)
-    public int timeShiftId = 0;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "TimeShiftId", columnDefinition = "int signed", unique = true)
+    private int timeShiftId;
 
-    @Column(name = "TimeShiftName", columnDefinition = "varchar(50) not null")
-    public String timeShiftName = "";
-
-    @JsonBackReference
-    @OneToMany(mappedBy = "timeShift", cascade = CascadeType.REMOVE)
-    public TimeShiftPreference timeShiftPreference;
+    @Column(name = "TimeShiftName", columnDefinition = "varchar(50) null")
+    private String timeShiftName;
 
     public static Finder<String, TimeShift> find = new Finder(TimeShift.class);
+
+    public int getTimeShiftId() {
+        return timeShiftId;
+    }
+
+    public void setTimeShiftId(int timeShiftId) {
+        this.timeShiftId = timeShiftId;
+    }
+
+    public String getTimeShiftName() {
+        return timeShiftName;
+    }
+
+    public void setTimeShiftName(String timeShiftName) {
+        this.timeShiftName = timeShiftName;
+    }
 
 }

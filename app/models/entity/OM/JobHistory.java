@@ -16,27 +16,30 @@ import java.sql.Timestamp;
 @Table(name = "jobhistory")
 public class JobHistory extends Model {
     @Id
-    @Column(name = "JobHistoryId", columnDefinition = "bigint signed not null", unique = true)
-    public long jobHistoryId = 0;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "JobHistoryId", columnDefinition = "bigint signed", unique = true)
+    private long jobHistoryId = 0;
 
     @Column(name = "CandidatePastCompany", columnDefinition = "varchar(255) null")
-    public String candidatePastCompany = "";
+    private String candidatePastCompany = "";
 
     @Column(name = "CandidatePastSalary", columnDefinition = "bigint signed null")
-    public Long candidatePastSalary;
+    private Long candidatePastSalary;
 
-    @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp default current_timestamp null")
-    public Timestamp updateTimeStamp;
+    @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp null")
+    private Timestamp updateTimeStamp = new Timestamp(System.currentTimeMillis());
 
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "JobRoleId", referencedColumnName = "JobRoleId")
-    public JobRole jobRole;
+    private JobRole jobRole;
 
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "CandidateId", referencedColumnName = "CandidateId")
-    public Candidate candidate;
+    private Candidate candidate;
+
+    public static Finder<String, JobHistory> find = new Finder(JobHistory.class);
 
     public JobRole getJobRole() {
         return jobRole;
@@ -53,8 +56,6 @@ public class JobHistory extends Model {
     public void setCandidate(Candidate candidate) {
         this.candidate = candidate;
     }
-
-    public static Finder<String, JobHistory> find = new Finder(JobHistory.class);
 
     public void setUpdateTimeStamp(Timestamp updateTimeStamp) {
         this.updateTimeStamp = updateTimeStamp;

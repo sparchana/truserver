@@ -17,21 +17,22 @@ import java.sql.Timestamp;
 @Table(name = "localitypreference")
 public class LocalityPreference extends Model {
     @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "LocalityPreferenceId", columnDefinition = "bigint signed not null", unique = true)
-    public long localityPreferenceId = 0;
+    private long localityPreferenceId;
 
-    @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp default current_timestamp null")
-    public Timestamp updateTimeStamp;
+    @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp null")
+    private Timestamp updateTimeStamp = new Timestamp(System.currentTimeMillis());
 
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "LocalityId", referencedColumnName = "LocalityId")
-    public Locality locality;
+    private Locality locality;
 
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "CandidateId", referencedColumnName= "CandidateId")
-    public Candidate candidate;
+    private Candidate candidate;
 
     public static Finder<String, LocalityPreference> find = new Finder(LocalityPreference.class);
 
@@ -49,5 +50,21 @@ public class LocalityPreference extends Model {
 
     public void setUpdateTimeStamp(Timestamp updateTimeStamp) {
         this.updateTimeStamp = updateTimeStamp;
+    }
+
+    public Locality getLocality() {
+        return locality;
+    }
+
+    public void setLocality(Locality locality) {
+        this.locality = locality;
+    }
+
+    public Candidate getCandidate() {
+        return candidate;
+    }
+
+    public void setCandidate(Candidate candidate) {
+        this.candidate = candidate;
     }
 }
