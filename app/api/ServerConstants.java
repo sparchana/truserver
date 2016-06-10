@@ -19,6 +19,7 @@ public class ServerConstants {
 
     public static final String INTERACTION_CREATED_SELF = "Self";
     public static final String INTERACTION_CREATED_SYSTEM = "System";
+    public static final String INTERACTION_CREATED_SYSTEM_KNOWLARITY = "System - Knowlarity";
     public static final String INTERACTION_CREATED_ERROR = "Error";
 
     public static final String INTERACTION_NOTE_DUMMY_PASSWORD_CREATED = "Candidate got Registered with Mandatory Info and dummy password by system";
@@ -29,6 +30,7 @@ public class ServerConstants {
     public static final String INTERACTION_NOTE_SELF_SIGNEDUP = "Candidate Self Signed Up";
     public static final String INTERACTION_NOTE_CREATED_BY_ERROR = "Session Username is null";
     public static final String INTERACTION_NOTE_SELF_PROFILE_CREATION = "Candidate self updated profile details";
+    public static final String INTERACTION_NOTE_EXISTING_LEAD_CALLED_BACK = "Existing Lead Called Back";
 
     public static final int TYPE_LEAD = 1;
     public static final int TYPE_POTENTIAL_CANDIDATE = 2;

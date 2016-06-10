@@ -19,54 +19,54 @@ import java.sql.Timestamp;
 @Table(name = "candidatecurrentjobdetail")
 public class CandidateCurrentJobDetail extends Model{
     @Id
-    @Column(name = "CandidateCurrentJobId", columnDefinition = "bigint signed not null", unique = true)
-    public long candidateCurrentJobId = 0;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "CandidateCurrentJobId", columnDefinition = "bigint signed")
+    private long candidateCurrentJobId;
 
     @Column(name = "CandidateCurrentCompany", columnDefinition = "varchar(100) null")
-    public String candidateCurrentCompany;
+    private String candidateCurrentCompany;
 
     @Column(name = "CandidateCurrentDesignation", columnDefinition = "varchar(255) null")
-    public String candidateCurrentDesignation;
+    private String candidateCurrentDesignation;
 
     @Column(name = "CandidateCurrentSalary", columnDefinition = "bigint signed null")
-    public Long candidateCurrentSalary;
+    private Long candidateCurrentSalary;
 
     @Column(name = "CandidateCurrentJobDuration", columnDefinition = "int signed null")
-    public Integer candidateCurrentJobDuration;
+    private Integer candidateCurrentJobDuration;
 
     @Column(name = "CandidateCurrentEmployerRefName", columnDefinition = "varchar(100) null")
-    public String candidateCurrentEmployerRefName;
+    private String candidateCurrentEmployerRefName;
 
     @Column(name = "CandidateCurrentEmployerRefMobile", columnDefinition = "varchar(13) null")
-    public String candidateCurrentEmployerRefMobile;
+    private String candidateCurrentEmployerRefMobile;
 
-    @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp default current_timestamp null")
-    public Timestamp updateTimeStamp;
+    @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp null")
+    private Timestamp updateTimeStamp = new Timestamp(System.currentTimeMillis());
 
-    @OneToOne
     @JsonBackReference
-    @JoinColumn(name = "CandidateId", referencedColumnName = "CandidateId")
-    public Candidate candidate;
+    @OneToOne(mappedBy = "candidateCurrentJobDetail")
+    private Candidate candidate;
 
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "JobRoleId", referencedColumnName = "JobRoleId")
-    public JobRole jobRole;
+    private JobRole jobRole;
 
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "LocalityId", referencedColumnName = "LocalityId")
-    public Locality candidateCurrentJobLocation;
+    private Locality candidateCurrentJobLocation;
 
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "TransportationModeId", referencedColumnName = "TransportationModeId")
-    public TransportationMode candidateTransportationMode;
+    private TransportationMode candidateTransportationMode;
 
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "TimeShiftId", referencedColumnName = "TimeShiftId")
-    public TimeShift candidateCurrentWorkShift;
+    private TimeShift candidateCurrentWorkShift;
 
     public static Finder<String, CandidateCurrentJobDetail> find = new Finder(CandidateCurrentJobDetail.class);
 

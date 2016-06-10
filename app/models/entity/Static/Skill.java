@@ -15,22 +15,23 @@ import java.util.List;
 @Table(name = "skill")
 public class Skill extends Model{
     @Id
-    @Column(name = "SkillId", columnDefinition = "int signed not null", unique = true)
-    public int skillId = 0;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "SkillId", columnDefinition = "int signed", unique = true)
+    private int skillId;
 
     @Column(name = "skillName", columnDefinition = "varchar(100) null")
-    public String skillName;
+    private String skillName;
 
     @Column(name = "skillQuestion", columnDefinition = "varchar(255) null")
-    public String skillQuestion;
+    private String skillQuestion;
 
     @JsonBackReference
     @OneToMany(mappedBy = "skill", cascade = CascadeType.REMOVE)
-    public List<JobToSkill> jobToSkillList;
+    private List<JobToSkill> jobToSkillList;
 
     @JsonManagedReference
     @OneToMany(mappedBy = "skill", cascade = CascadeType.REMOVE)
-    public List<SkillQualifier> skillQualifierList;
+    private List<SkillQualifier> skillQualifierList;
 
     public String getSkillName() {
         return skillName;
@@ -49,6 +50,26 @@ public class Skill extends Model{
     }
 
     public static Model.Finder<String, Skill> find = new Model.Finder(Skill.class);
+
+    public void setSkillId(int skillId) {
+        this.skillId = skillId;
+    }
+
+    public String getSkillQuestion() {
+        return skillQuestion;
+    }
+
+    public void setSkillQuestion(String skillQuestion) {
+        this.skillQuestion = skillQuestion;
+    }
+
+    public List<SkillQualifier> getSkillQualifierList() {
+        return skillQualifierList;
+    }
+
+    public void setSkillQualifierList(List<SkillQualifier> skillQualifierList) {
+        this.skillQualifierList = skillQualifierList;
+    }
 
     public int getSkillId() {
         return skillId;

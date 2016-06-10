@@ -1,8 +1,6 @@
 package models.entity.Static;
 
 import com.avaje.ebean.Model;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import models.entity.OO.CandidateEducation;
 
 import javax.persistence.*;
 
@@ -13,16 +11,29 @@ import javax.persistence.*;
 @Table(name = "education")
 public class Education extends Model {
     @Id
-    @Column(name = "EducationId", columnDefinition = "int signed null", unique = true)
-    public int educationId = 0;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "EducationId", columnDefinition = "int signed", unique = true)
+    private int educationId = 0;
 
     @Column(name = "EducationName", columnDefinition = "varchar(255) null")
-    public String educationName = "";
-
-    @JsonBackReference
-    @OneToMany(mappedBy = "education", cascade = CascadeType.REMOVE)
-    public CandidateEducation candidateEducation;
+    private String educationName = "";
 
     public static Model.Finder<String, Education> find = new Model.Finder(Education.class);
+
+    public int getEducationId() {
+        return educationId;
+    }
+
+    public void setEducationId(int educationId) {
+        this.educationId = educationId;
+    }
+
+    public String getEducationName() {
+        return educationName;
+    }
+
+    public void setEducationName(String educationName) {
+        this.educationName = educationName;
+    }
 
 }

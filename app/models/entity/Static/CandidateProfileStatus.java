@@ -14,15 +14,16 @@ import java.util.List;
 @Table(name = "candidateprofilestatus")
 public class CandidateProfileStatus  extends Model {
     @Id
-    @Column(name = "ProfileStatusId", columnDefinition = "int signed null", unique = true)
-    public int  profileStatusId = 0;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "ProfileStatusId", columnDefinition = "int signed", unique = true)
+    private int  profileStatusId;
 
     @Column(name = "ProfileStatusName", columnDefinition = "varchar(255) null")
-    public String profileStatusName = "";
+    private String profileStatusName;
 
     @JsonBackReference
     @OneToMany(mappedBy = "candidateprofilestatus")
-    public List<Candidate> candidateList;
+    private List<Candidate> candidateList;
 
     public void setProfileStatusId(int profileStatusId) {
         this.profileStatusId = profileStatusId;
@@ -33,4 +34,20 @@ public class CandidateProfileStatus  extends Model {
     }
 
     public static Model.Finder<String, CandidateProfileStatus> find = new Model.Finder(CandidateProfileStatus.class);
+
+    public int getProfileStatusId() {
+        return profileStatusId;
+    }
+
+    public String getProfileStatusName() {
+        return profileStatusName;
+    }
+
+    public List<Candidate> getCandidateList() {
+        return candidateList;
+    }
+
+    public void setCandidateList(List<Candidate> candidateList) {
+        this.candidateList = candidateList;
+    }
 }

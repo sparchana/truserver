@@ -12,17 +12,41 @@ import javax.persistence.*;
 @Table(name = "skillqualifier")
 public class SkillQualifier extends Model {
     @Id
-    @Column(name = "skillqualifierId", columnDefinition = "int signed", nullable = false, unique = true)
-    public int skillqualifierId = 0;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "skillqualifierId", columnDefinition = "int signed", unique = true)
+    private int skillqualifierId = 0;
 
     @Column(name = "Qualifier", columnDefinition = "varchar(100) null")
-    public String qualifier;
+    private String qualifier;
 
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "SkillId", referencedColumnName = "SkillId")
-    public Skill skill;
+    private Skill skill;
 
     public static Finder<String, SkillQualifier> find = new Finder(SkillQualifier.class);
 
+    public int getSkillqualifierId() {
+        return skillqualifierId;
+    }
+
+    public void setSkillqualifierId(int skillqualifierId) {
+        this.skillqualifierId = skillqualifierId;
+    }
+
+    public String getQualifier() {
+        return qualifier;
+    }
+
+    public void setQualifier(String qualifier) {
+        this.qualifier = qualifier;
+    }
+
+    public Skill getSkill() {
+        return skill;
+    }
+
+    public void setSkill(Skill skill) {
+        this.skill = skill;
+    }
 }

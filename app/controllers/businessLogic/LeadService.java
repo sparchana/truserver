@@ -12,7 +12,7 @@ import static play.mvc.Controller.session;
  */
 public class LeadService {
     public static void createLead(Lead lead, boolean isSupport){
-        Lead existingLead = Lead.find.where().eq("leadMobile",lead.leadMobile).findUnique();
+        Lead existingLead = Lead.find.where().eq("leadMobile",lead.getLeadMobile()).findUnique();
         String objectAUUId;
         String result;
         String note = "";
@@ -30,12 +30,12 @@ public class LeadService {
             Lead.addLead(lead);
             result = ServerConstants.INTERACTION_RESULT_NEW_LEAD;
             Logger.info("Lead added");
-            objectAUUId = lead.leadUUId;
+            objectAUUId = lead.getLeadUUId();
             objectAType = lead.getLeadType();
         } else {
             // lead exists
             result = ServerConstants.INTERACTION_RESULT_EXISTING_LEAD;
-            objectAUUId = existingLead.leadUUId;
+            objectAUUId = existingLead.getLeadUUId();
             objectAType = existingLead.getLeadType();
         }
 

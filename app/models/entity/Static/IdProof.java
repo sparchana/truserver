@@ -14,15 +14,40 @@ import java.util.List;
 @Table(name = "idproof")
 public class IdProof extends Model {
     @Id
-    @Column(name = "IdProofId", columnDefinition = "int signed null", unique = true)
-    public int idProofId = 0;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "IdProofId", columnDefinition = "int signed", unique = true)
+    private int idProofId;
 
     @Column(name = "IdProofName", columnDefinition = "varchar(255) null")
-    public String idProofName = "";
+    private String idProofName;
 
     @JsonBackReference
     @OneToMany(mappedBy = "idProof", cascade = CascadeType.REMOVE)
-    public List<IDProofReference> idProofReferenceList;
+    private List<IDProofReference> idProofReferenceList;
 
     public static Model.Finder<String, IdProof> find = new Model.Finder(IdProof.class);
+
+    public int getIdProofId() {
+        return idProofId;
+    }
+
+    public void setIdProofId(int idProofId) {
+        this.idProofId = idProofId;
+    }
+
+    public String getIdProofName() {
+        return idProofName;
+    }
+
+    public void setIdProofName(String idProofName) {
+        this.idProofName = idProofName;
+    }
+
+    public List<IDProofReference> getIdProofReferenceList() {
+        return idProofReferenceList;
+    }
+
+    public void setIdProofReferenceList(List<IDProofReference> idProofReferenceList) {
+        this.idProofReferenceList = idProofReferenceList;
+    }
 }

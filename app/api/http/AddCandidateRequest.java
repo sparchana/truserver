@@ -13,11 +13,9 @@ public class AddCandidateRequest {
     public String candidateMobile;
     public String candidateJobInterest;
     public String candidateLocality;
-
-    public Date candidateDob = new Date();
+    public Date candidateDob;
     public Integer candidateGender ;
     public String candidateTimeShiftPref;
-
     public Integer leadSource= ServerConstants.LEAD_SOURCE_UNKNOWN;
 
     public Integer getLeadSource() {
@@ -72,4 +70,27 @@ public class AddCandidateRequest {
         return candidateTimeShiftPref;
     }
 
+    public void setCandidateJobInterest(String candidateJobInterest) {
+        this.candidateJobInterest = candidateJobInterest;
+    }
+
+    public void setCandidateLocality(String candidateLocality) {
+        this.candidateLocality = candidateLocality;
+    }
+
+    public void setCandidateDob(Date candidateDob) {
+        this.candidateDob = candidateDob;
+    }
+
+    public void setCandidateGender(Integer candidateGender) {
+        this.candidateGender = candidateGender;
+    }
+
+    public void setCandidateTimeShiftPref(String candidateTimeShiftPref) {
+        this.candidateTimeShiftPref = candidateTimeShiftPref;
+    }
+
+    public void setLeadSource(Integer leadSource) {
+        this.leadSource = leadSource;
+    }
 }

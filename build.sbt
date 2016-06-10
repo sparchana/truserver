@@ -29,4 +29,6 @@ libraryDependencies += "com.typesafe.play" % "play-json_2.11" % "2.5.0"
 
 libraryDependencies += "com.google.code.gson" % "gson" % "2.5"
 
+libraryDependencies += "org.mockito" % "mockito-core" % "1.10.19"
+
 libraryDependencies += evolutions

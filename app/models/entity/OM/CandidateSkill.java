@@ -17,31 +17,33 @@ import java.sql.Timestamp;
 @Table(name = "candidateskill")
 public class CandidateSkill extends Model {
     @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "candidateSkillId", columnDefinition = "int signed not null", unique = true)
-    public int candidateSkillId = 0;
+    private int candidateSkillId;
 
-    @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp default current_timestamp null")
-    public Timestamp updateTimeStamp;
+    @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp null")
+    private Timestamp updateTimeStamp = new Timestamp(System.currentTimeMillis());
 
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "CandidateId", referencedColumnName = "CandidateId")
-    public Candidate candidate;
+    private Candidate candidate;
 
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "SkillId", referencedColumnName = "SkillId")
-    public Skill skill;
+    private Skill skill;
 
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "SkillQualifierId", referencedColumnName = "skillqualifierId")
-    public SkillQualifier skillQualifier;
+    private SkillQualifier skillQualifier;
+
+    public static Model.Finder<String, CandidateSkill> find = new Model.Finder(CandidateSkill.class);
 
     public int getCandidateSkillId() {
         return candidateSkillId;
     }
-
 
     public void setSkill(Skill skill) {
         this.skill = skill;
@@ -66,7 +68,5 @@ public class CandidateSkill extends Model {
     public void setSkillQualifier(SkillQualifier skillQualifier) {
         this.skillQualifier = skillQualifier;
     }
-
-    public static Model.Finder<String, CandidateSkill> find = new Model.Finder(CandidateSkill.class);
 
 }
