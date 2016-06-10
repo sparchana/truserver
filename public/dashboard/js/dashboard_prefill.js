@@ -537,7 +537,6 @@ function saveCandidateExperienceDetails(){
                 console.log("exception occured!!" + exception);
             }
         }
-
     }
 }
 
@@ -547,10 +546,11 @@ function saveCandidateEducationDetails(){
         alert("Select your Highest Education");
     }
     else{
-        if(((highestEducation == 4) || (hi == 5)) && $('#candidateHighestDegree').val() == -1){
+        if(((highestEducation == 4) || (highestEducation == 5)) && $('#candidateHighestDegree').val() == -1){
             alert("Please select your Degree");
         }
         else{
+            var selectedDegree = $('#candidateHighestDegree').val();
             document.getElementById("saveBtn").disabled = true;
             try {
                 var d = {
@@ -559,7 +559,7 @@ function saveCandidateEducationDetails(){
                     candidateSecondName: localStorage.getItem("lastName"),
 
                     candidateEducationLevel: $('input:radio[name="highestEducation"]:checked').val(),
-                    candidateDegree: $('#candidateHighestDegree').val(),
+                    candidateDegree: selectedDegree,
                     candidateEducationInstitute: $('#candidateEducationInstitute').val(),
                 };
 

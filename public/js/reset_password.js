@@ -50,24 +50,29 @@ function processDataPostReset(returnedData) {
 $(function() {
     $("#form_forgot_password").submit(function(eventObj) {
         eventObj.preventDefault();
-        document.getElementById("resetCheckUserBtn").disabled = true;
-        try {
-            var phone = $('#resetPasswordMobile').val();
-            candidateMobile = phone;
-            var s = {
-                resetPasswordMobile : phone
-            };
-            $.ajax({
-                type: "POST",
-                url: "/findUserAndSendOtp",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(s),
-                success: processDataResetCheckUser
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
+        var phone = $('#resetPasswordMobile').val();
+        if(phone == null || phone == ""){
+            alert("Enter your Mobile Number");
         }
+        else{
+            document.getElementById("resetCheckUserBtn").disabled = true;
+            try {
 
+                candidateMobile = phone;
+                var s = {
+                    resetPasswordMobile : phone
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/findUserAndSendOtp",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(s),
+                    success: processDataResetCheckUser
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
+        }
     }); // end of submit
 
     $("#form_password_reset_otp").submit(function(eventObj) {

@@ -894,6 +894,15 @@ function saveProfileForm(){
     var localitySelected = $('#candidateLocalityPref').val();
     var jobSelected = $('#candidateJobPref').val();
 
+    if($('#candidateFirstName').val() == "" || $('#candidateFirstName').val() == null){
+        alert("Please Enter First Name");
+    }
+    if($('#candidateSecondName').val() == "" || $('#candidateSecondName').val() == null){
+        alert("Please Enter your Last Name");
+    }
+    if($('#candidateMobile').val() == "" || $('#candidateMobile').val() == null){
+        alert("Please Enter your Mobile No.");
+    }
     if (localitySelected == "") {
         alert("Please Enter your Job Localities");
     } else if (jobSelected == "") {

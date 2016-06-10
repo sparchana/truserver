@@ -30,26 +30,34 @@ function processDataLogin(returnedData) {
 $(function() {
     $("#form_login_candidate").submit(function(eventObj) {
         eventObj.preventDefault();
-        try {
-            var phone  = $('#candidateLoginMobile').val();
-            var password = $('#candidateLoginPassword').val();
-            candidateMobile = phone;
-            console.log("phone: " + phone);
-            var s = {
-                candidateLoginMobile: phone,
-                candidateLoginPassword : password 
-            };
-            $.ajax({
-                type: "POST",
-                url: "/loginSubmit",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(s),
-                success: processDataLogin
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
+        var phone  = $('#candidateLoginMobile').val();
+        var password = $('#candidateLoginPassword').val();
+        console.log(phone + " " + password);
+        if(phone == null || phone == ""){
+            alert("Enter your Phone Number");
+        } else if(password == null || password == ""){
+            alert("Enter your Password");
         }
+        else{
+            try {
 
+                candidateMobile = phone;
+                console.log("phone: " + phone);
+                var s = {
+                    candidateLoginMobile: phone,
+                    candidateLoginPassword : password
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/loginSubmit",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(s),
+                    success: processDataLogin
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
+        }
     }); // end of submit
 }); // end of function
 
