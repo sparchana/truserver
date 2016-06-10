@@ -33,7 +33,8 @@ $(document).ready(function(){
         leadId = localStorage.getItem("leadId");
     }
 
-    $("#candidateSignUpSupportForm input").prop("disabled", true);
+    $("#candidateSignUpSupportForm *").prop("disabled", true);
+
     /* ajax commands to fetch leads Info */
     try {
         $.ajax({
@@ -706,7 +707,7 @@ function processLeadUpdate(returnedData) {
 function activateEdit() {
     $("#saveBtn").prop("disabled", false);
     $("#cancelBtn").prop("disabled", false);
-    $("#candidateSignUpSupportForm input").prop("disabled", false);
+    $("#candidateSignUpSupportForm *").prop("disabled", false);
     $('#callNoClass').hide();
     $('#callYesClass').show();
 }
@@ -733,7 +734,7 @@ function cancelAndRedirect() {
 function onCallNo(leadId){
     $("#saveBtn").prop("disabled", true);
     $("#cancelBtn").prop("disabled", true);
-    $("#candidateSignUpSupportForm input").prop("disabled", true);
+    $("#candidateSignUpSupportForm *").prop("disabled", true);
     $('#callYesClass').hide();
     $('#callNoClass').show();
     // also saveResponse gets trigger after selecting No and clicking on SaveBtn

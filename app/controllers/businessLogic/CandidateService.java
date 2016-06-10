@@ -1,8 +1,8 @@
 package controllers.businessLogic;
 
 import api.ServerConstants;
-import api.http.LanguageClass;
-import api.http.SkillMapClass;
+import api.http.CandidateKnownLanguage;
+import api.http.CandidateSkills;
 import api.http.httpRequest.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
@@ -396,18 +396,18 @@ public class CandidateService {
 
     private static List<LanguageKnown> getCandidateLanguageFromSupportCandidate(AddCandidateExperienceRequest request, Candidate candidate) {
         List<LanguageKnown> languageKnownList = new ArrayList<>();
-        for(LanguageClass languageClass: request.candidateLanguageKnown){
+        for(CandidateKnownLanguage candidateKnownLanguage : request.candidateLanguageKnown){
             LanguageKnown languageKnown = new LanguageKnown();
-            Language language = Language.find.where().eq("LanguageId", languageClass.getId()).findUnique();
+            Language language = Language.find.where().eq("LanguageId", candidateKnownLanguage.getId()).findUnique();
             if(language == null) {
-                Logger.info("Language static table is empty for:" + languageClass.getId());
+                Logger.info("Language static table is empty for:" + candidateKnownLanguage.getId());
                 return null;
             }
             languageKnown.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
             languageKnown.setLanguage(language);
-            languageKnown.setReadingAbility(languageClass.getR());
-            languageKnown.setWritingAbility(languageClass.getW());
-            languageKnown.setVerbalAbility(languageClass.getS());
+            languageKnown.setReadingAbility(candidateKnownLanguage.getR());
+            languageKnown.setWritingAbility(candidateKnownLanguage.getW());
+            languageKnown.setVerbalAbility(candidateKnownLanguage.getS());
             languageKnownList.add(languageKnown);
         }
         return languageKnownList;
@@ -469,7 +469,7 @@ public class CandidateService {
 
     private static List<CandidateSkill> getCandidateSkillListFromAddSupportCandidate(AddCandidateExperienceRequest request, Candidate candidate) {
         List<CandidateSkill> response = new ArrayList<>();
-        for(SkillMapClass item: request.candidateSkills){
+        for(CandidateSkills item: request.candidateSkills){
             item.getQualifier();
             CandidateSkill candidateSkill = new CandidateSkill();
             Skill skill = Skill.find.where().eq("skillId", item.getId()).findUnique();

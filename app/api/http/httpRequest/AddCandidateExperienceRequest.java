@@ -1,7 +1,7 @@
 package api.http.httpRequest;
 
-import api.http.LanguageClass;
-import api.http.SkillMapClass;
+import api.http.CandidateKnownLanguage;
+import api.http.CandidateSkills;
 
 import java.util.List;
 
@@ -15,8 +15,8 @@ public class AddCandidateExperienceRequest extends AddCandidateRequest {
     public Long candidateCurrentSalary;
 
     public Integer candidateMotherTongue ;
-    public List<SkillMapClass> candidateSkills;
-    public List<LanguageClass> candidateLanguageKnown;
+    public List<CandidateSkills> candidateSkills;
+    public List<CandidateKnownLanguage> candidateLanguageKnown;
 
 
     /* setters and getters */
@@ -33,10 +33,10 @@ public class AddCandidateExperienceRequest extends AddCandidateRequest {
         return candidateCurrentSalary;
     }
 
-    public void setCandidateLanguageKnown(List<LanguageClass> candidateLanguageKnown) {
+    public void setCandidateLanguageKnown(List<CandidateKnownLanguage> candidateLanguageKnown) {
         this.candidateLanguageKnown = candidateLanguageKnown;
     }
-    public void setCandidateSkills(List<SkillMapClass> candidateSkills) {
+    public void setCandidateSkills(List<CandidateSkills> candidateSkills) {
         this.candidateSkills = candidateSkills;
     }
 
