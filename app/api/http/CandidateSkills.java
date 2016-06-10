@@ -3,7 +3,7 @@ package api.http;
 /**
  * Created by zero on 13/5/16.
  */
-public class SkillMapClass {
+public class CandidateSkills {
     public String id;
     public String qualifier;
 
