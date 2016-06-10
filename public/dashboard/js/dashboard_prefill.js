@@ -524,7 +524,7 @@ function saveCandidateEducationDetails(){
         alert("Select your Highest Education");
     }
     else{
-        if(((highestEducation == 4) || (hi == 5)) && $('#candidateHighestDegree').val() == -1){
+        if(((highestEducation == 4) || (highestEducation == 5)) && $('#candidateHighestDegree').val() == -1){
             alert("Please select your Degree");
         }
         else{
