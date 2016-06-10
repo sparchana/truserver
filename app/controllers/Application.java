@@ -438,7 +438,7 @@ public class Application extends Controller {
     public static Result auth() {
         Form<DevLoginRequest> userForm = Form.form(DevLoginRequest.class);
         DevLoginRequest request = userForm.bindFromRequest().get();
-        Logger.info("inside support" + request.toString());
+        Logger.info("inside support AdminId: " + request.getAdminid() + " AdminPass: " + request.getAdminpass());
         Developer developer = Developer.find.where().eq("developerId", request.getAdminid()).findUnique();
         if(developer!=null){
             Logger.info(Util.md5(request.getAdminpass() + developer.getDeveloperPasswordSalt()));

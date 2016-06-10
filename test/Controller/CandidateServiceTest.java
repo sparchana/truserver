@@ -99,7 +99,6 @@ public class CandidateServiceTest {
         });
     }
 
-
     @Test
     public void testSignUpSupportMandatoryFields() {
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
@@ -108,6 +107,10 @@ public class CandidateServiceTest {
             CandidateService.createCandidateProfile(supportCandidateRequest, true, ServerConstants.UPDATE_ALL_BY_SUPPORT);
             CandidateMandatoryCheck(true);
         });
+    }
+
+    public void cleanup(){
+        cleanDB();
     }
 
     // helper methods
