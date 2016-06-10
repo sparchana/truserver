@@ -3,7 +3,7 @@ package api.http;
 /**
  * Created by zero on 13/5/16.
  */
-public class LanguageClass {
+public class CandidateKnownLanguage {
     public String id;
     public int s;
     public int r;

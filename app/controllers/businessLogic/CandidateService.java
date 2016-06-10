@@ -1,7 +1,8 @@
 package controllers.businessLogic;
 
 import api.ServerConstants;
-import api.http.*;
+import api.http.CandidateKnownLanguage;
+import api.http.CandidateSkills;
 import api.http.httpRequest.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
@@ -22,7 +23,6 @@ import play.Logger;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -154,16 +154,16 @@ public class CandidateService {
             candidate.candidateName = request.getCandidateFirstName();
             candidate.candidateLastName = request.getCandidateSecondName();
             candidate.candidateMobile = request.getCandidateMobile();
-            CandidateProfileStatus newcandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 1).findUnique();
-            if(newcandidateProfileStatus != null){
-                candidate.candidateprofilestatus = newcandidateProfileStatus;
+            CandidateProfileStatus newCandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 1).findUnique();
+            if(newCandidateProfileStatus != null){
+                candidate.candidateprofilestatus = newCandidateProfileStatus;
             } else {
                 Logger.info("Profile status static Table is empty");
                 response.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
             }
             Logger.info(" reqJobPref: " + request.candidateJobInterest);
-            candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(Arrays.asList(request.candidateLocality.split("\\s*,\\s*")), candidate);
-            candidate.jobPreferencesList = getCandidateJobPreferenceList(Arrays.asList(request.candidateJobInterest.split("\\s*,\\s*")), candidate);
+            candidate.localityPreferenceList  = getCandidateLocalityPreferenceList(request.candidateLocality, candidate);
+            candidate.jobPreferencesList = getCandidateJobPreferenceList(request.candidateJobInterest, candidate);
             // lead is getting updated inside signUpCandidate
 
             CandidateSignUpResponse candidateSignUpResponse = signUpCandidate(candidate, isSupport, request.leadSource);
@@ -184,12 +184,12 @@ public class CandidateService {
             }
             Logger.info(" reqJobPref: " + request.candidateJobInterest);
             try{
-                candidate.localityPreferenceList = getCandidateLocalityPreferenceList(Arrays.asList(request.candidateLocality.split("\\s*,\\s*")), candidate);
+                candidate.localityPreferenceList = getCandidateLocalityPreferenceList(request.candidateLocality, candidate);
             } catch(Exception e){
                 Logger.info(" try catch exception = " + e);
             }
             try{
-                candidate.jobPreferencesList = getCandidateJobPreferenceList(Arrays.asList(request.candidateJobInterest.split("\\s*,\\s*")), candidate);
+                candidate.jobPreferencesList = getCandidateJobPreferenceList(request.candidateJobInterest, candidate);
             } catch(Exception e){
                 Logger.info(" try catch exception = " + e);
             }
@@ -291,14 +291,16 @@ public class CandidateService {
             }
         }
 
-
-
         Logger.info("Checking if support");
         if(isSupport){
             Logger.info("Is a support request");
             /* full support profile */
             AddSupportCandidateRequest supportCandidateRequest = (AddSupportCandidateRequest) request;
-            candidate.setLocality(Locality.find.where().eq("localityId", supportCandidateRequest.getCandidateHomeLocality()).findUnique());
+            try{
+                candidate.setLocality(Locality.find.where().eq("localityId", supportCandidateRequest.getCandidateHomeLocality()).findUnique());
+            } catch(Exception e){
+                Logger.info(" try catch exception = " + e);
+            }
             try{
                 candidate.setCandidatePhoneType(supportCandidateRequest.getCandidatePhoneType());
             } catch(Exception e){
@@ -341,7 +343,7 @@ public class CandidateService {
                 Logger.info(" try catch exception = " + e);
             }
             try{
-                candidate.idProofReferenceList = getCandidateIdProofListFromAddSupportCandidate(Arrays.asList(supportCandidateRequest.candidateIdProof.split("\\s*,\\s*")), candidate);
+                candidate.idProofReferenceList = getCandidateIdProofListFromAddSupportCandidate(supportCandidateRequest.candidateIdProof, candidate);
             } catch(Exception e){
                 Logger.info(" try catch exception = " + e);
             }
@@ -394,18 +396,18 @@ public class CandidateService {
 
     private static List<LanguageKnown> getCandidateLanguageFromSupportCandidate(AddCandidateExperienceRequest request, Candidate candidate) {
         List<LanguageKnown> languageKnownList = new ArrayList<>();
-        for(LanguageClass languageClass: request.candidateLanguageKnown){
+        for(CandidateKnownLanguage candidateKnownLanguage : request.candidateLanguageKnown){
             LanguageKnown languageKnown = new LanguageKnown();
-            Language language = Language.find.where().eq("LanguageId", languageClass.getId()).findUnique();
+            Language language = Language.find.where().eq("LanguageId", candidateKnownLanguage.getId()).findUnique();
             if(language == null) {
-                Logger.info("Language static table is empty for:" + languageClass.getId());
+                Logger.info("Language static table is empty for:" + candidateKnownLanguage.getId());
                 return null;
             }
             languageKnown.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
             languageKnown.setLanguage(language);
-            languageKnown.setReadingAbility(languageClass.getR());
-            languageKnown.setWritingAbility(languageClass.getW());
-            languageKnown.setVerbalAbility(languageClass.getS());
+            languageKnown.setReadingAbility(candidateKnownLanguage.getR());
+            languageKnown.setWritingAbility(candidateKnownLanguage.getW());
+            languageKnown.setVerbalAbility(candidateKnownLanguage.getS());
             languageKnownList.add(languageKnown);
         }
         return languageKnownList;
@@ -422,9 +424,9 @@ public class CandidateService {
         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
     }
 
-    private static List<IDProofReference> getCandidateIdProofListFromAddSupportCandidate(List<String> idProofList, Candidate candidate) {
+    private static List<IDProofReference> getCandidateIdProofListFromAddSupportCandidate(List<Integer> idProofList, Candidate candidate) {
         ArrayList<IDProofReference> response = new ArrayList<>();
-        for(String  idProofId : idProofList) {
+        for(Integer idProofId : idProofList) {
             IDProofReference idProofReference = new IDProofReference();
             IdProof idProof= IdProof.find.where().eq("idProofId", idProofId).findUnique();
             if(idProof == null) {
@@ -467,7 +469,7 @@ public class CandidateService {
 
     private static List<CandidateSkill> getCandidateSkillListFromAddSupportCandidate(AddCandidateExperienceRequest request, Candidate candidate) {
         List<CandidateSkill> response = new ArrayList<>();
-        for(SkillMapClass item: request.candidateSkills){
+        for(CandidateSkills item: request.candidateSkills){
             item.getQualifier();
             CandidateSkill candidateSkill = new CandidateSkill();
             Skill skill = Skill.find.where().eq("skillId", item.getId()).findUnique();
@@ -635,9 +637,9 @@ public class CandidateService {
         return resetPasswordResponse;
     }
 
-    public static List<JobPreference> getCandidateJobPreferenceList(List<String> jobsList, Candidate candidate) {
+    public static List<JobPreference> getCandidateJobPreferenceList(List<Integer> jobsList, Candidate candidate) {
         List<JobPreference> candidateJobPreferences = new ArrayList<>();
-        for(String  s : jobsList) {
+        for(Integer  s : jobsList) {
             JobPreference candidateJobPreference = new JobPreference();
             candidateJobPreference.candidate = candidate;
             candidateJobPreference.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
@@ -648,9 +650,9 @@ public class CandidateService {
         return candidateJobPreferences;
     }
 
-    public static List<LocalityPreference> getCandidateLocalityPreferenceList(List<String> localityList, Candidate candidate) {
+    public static List<LocalityPreference> getCandidateLocalityPreferenceList(List<Integer> localityList, Candidate candidate) {
         List<LocalityPreference> candidateLocalityPreferenceList = new ArrayList<>();
-        for(String  localityId : localityList) {
+        for(Integer  localityId : localityList) {
             LocalityPreference candidateLocalityPreference = new LocalityPreference();
             candidateLocalityPreference.candidate= candidate;
             candidateLocalityPreference.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
@@ -723,19 +725,19 @@ public class CandidateService {
 
     public static List<Candidate> searchCandidateBySupport(SearchCandidateRequest searchCandidateRequest) {
         // TODO:check searchCandidateRequest member variable for special char, null value
-        List<String> jobInterestIdList = Arrays.asList(searchCandidateRequest.candidateJobInterest.split("\\s*,\\s*"));
-        List<String> localityPreferenceIdList = Arrays.asList(searchCandidateRequest.candidateLocality.split("\\s*,\\s*"));
+        List<Integer> jobInterestIdList = searchCandidateRequest.candidateJobInterest;
+        List<Integer> localityPreferenceIdList = searchCandidateRequest.candidateLocality;
 
        // Logger.info("fromdate :" + searchCandidateRequest.getFromThisDate().getTime() + "-" + " toThisDate" + searchCandidateRequest.getToThisDate().getTime());
         Query<Candidate> query = Candidate.find.query();
 
-        if(jobInterestIdList != null && jobInterestIdList.get(0) != "") {
+        if(jobInterestIdList != null && jobInterestIdList.get(0) != null) {
            query = query.select("*").fetch("jobPreferencesList")
                     .where()
                     .in("jobPreferencesList.jobRole.jobRoleId", jobInterestIdList)
                     .query();
         }
-        if(localityPreferenceIdList != null && localityPreferenceIdList.get(0) != "") {
+        if(localityPreferenceIdList != null && localityPreferenceIdList.get(0) != null) {
             query = query.select("*").fetch("localityPreferenceList")
                     .where()
                     .in("localityPreferenceList.locality.localityId", localityPreferenceIdList)

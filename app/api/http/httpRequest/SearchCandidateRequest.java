@@ -1,6 +1,7 @@
 package api.http.httpRequest;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by zero on 23/5/16.
@@ -8,8 +9,8 @@ import java.util.Date;
 public class SearchCandidateRequest {
     public String candidateName;
     public String candidateMobile;
-    public String candidateJobInterest; // ',' separated jobRoleId values
-    public String candidateLocality; // ',' separated candidateLocalityId values
+    public List<Integer> candidateJobInterest; // ',' separated jobRoleId values
+    public List<Integer> candidateLocality; // ',' separated candidateLocalityId values
     public Date fromThisDate;
     public Date toThisDate;
 
@@ -45,11 +46,11 @@ public class SearchCandidateRequest {
         this.candidateMobile = candidateMobile;
     }
 
-    public void setCandidateJobInterest(String candidateJobInterest) {
+    public void setCandidateJobInterest(List<Integer> candidateJobInterest) {
         this.candidateJobInterest = candidateJobInterest;
     }
 
-    public void setCandidateLocality(String candidateLocality) {
+    public void setCandidateLocality(List<Integer> candidateLocality) {
         this.candidateLocality = candidateLocality;
     }
 }

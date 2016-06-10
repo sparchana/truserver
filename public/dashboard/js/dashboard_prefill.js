@@ -396,6 +396,20 @@ function saveCandidateBasicProfile(){
     }
     else{
         document.getElementById("saveBtn").disabled = true;
+        var candidatePreferredJob = [];
+        var candidatePreferredLocality = [];
+
+        var jobPref = $('#candidateJobPref').val().split(",");
+        var localityPref = $('#candidateLocalityPref').val().split(",");
+
+        var i;
+        for(i=0;i<jobPref.length; i++){
+            candidatePreferredJob.push(parseInt(jobPref[i]));
+        }
+
+        for(i=0;i<localityPref.length; i++){
+            candidatePreferredLocality.push(parseInt(localityPref[i]));
+        }
         try {
             var selectedDob = $('#dob_year').val() + "-" + $('#dob_month').val() + "-" + $('#dob_day').val();
             var c_dob = String(selectedDob);
@@ -405,8 +419,8 @@ function saveCandidateBasicProfile(){
                 candidateFirstName: $('#candidateFirstName').val(),
                 candidateSecondName: $('#candidateSecondName').val(),
                 candidateMobile: $('#candidateMobile').val(),
-                candidateLocality: $('#candidateLocalityPref').val(),
-                candidateJobInterest: $('#candidateJobPref').val(),
+                candidateLocality: candidatePreferredLocality,
+                candidateJobInterest: candidatePreferredJob,
 
                 //others
                 candidateDob: c_dob,
