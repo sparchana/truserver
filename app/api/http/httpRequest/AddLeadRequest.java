@@ -1,5 +1,7 @@
 package api.http.httpRequest;
 
+import static models.util.Validator.indianMobilePattern;
+
 /**
  * Created by zero on 23/4/16.
  */
@@ -19,7 +21,7 @@ public class AddLeadRequest {
     }
 
     public void setLeadMobile(String leadMobile) {
-        this.leadMobile = leadMobile;
+        this.leadMobile = indianMobilePattern(leadMobile);
     }
 
     public String getLeadMobile() {

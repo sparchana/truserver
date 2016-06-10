@@ -24,4 +24,10 @@ public class Validator {
         Matcher m = p.matcher(email);
         return m.matches();
     }
+    public static String indianMobilePattern(String phoneNo){
+        if(phoneNo.length() == 10){
+            phoneNo = "+91" + phoneNo;
+        }
+        return phoneNo;
+    }
 }

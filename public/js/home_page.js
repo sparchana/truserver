@@ -130,11 +130,11 @@ function processCheckLeadStatus() {
 }
 function addLead() {
     var phone = $('#addLeadMobile').val();
-    var validPhone = /^[7-9]{1}[0-9]{9}$/i;
-    if (phone.length > 0 && validPhone.test(phone) === false) {
-        alert("Please enter valid 10 digit mobile number");
-    } else if (phone.length == 0) {
-        alert("Please enter your mobile number");
+    var res = validateMobile(phone);
+    if(res == 0){ // invalid mobile
+        alert("Enter a valid mobile number");
+    } else if(res == 1){ // mobile no. less than 1 digits
+        alert("Enter 10 digit mobile number");
     }
     else{
         try {

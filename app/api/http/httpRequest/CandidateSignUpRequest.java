@@ -1,5 +1,7 @@
 package api.http.httpRequest;
 
+import models.util.Validator;
+
 import java.util.List;
 
 /**
@@ -50,10 +52,10 @@ public class CandidateSignUpRequest {
     }
 
     public void setCandidateMobile(String candidateMobile) {
-        this.candidateMobile = candidateMobile;
+        this.candidateMobile = Validator.indianMobilePattern(candidateMobile);
     }
     public String getCandidateMobile() {
-        return candidateMobile;
+        return Validator.indianMobilePattern(candidateMobile);
     }
 
     public void setCandidatePassword(String candidatePassword) {
@@ -65,8 +67,8 @@ public class CandidateSignUpRequest {
     }
 
     public void setCandidateAuthMobile(String candidateAuthMobile) {
-        this.candidateAuthMobile = candidateAuthMobile;
+        this.candidateAuthMobile = Validator.indianMobilePattern(candidateAuthMobile);
     }
 
-    public String getCandidateAuthMobile() { return candidateAuthMobile; }
+    public String getCandidateAuthMobile() { return Validator.indianMobilePattern(candidateAuthMobile); }
 }

@@ -1,5 +1,7 @@
 package api.http.httpRequest;
 
+import models.util.Validator;
+
 /**
  * Created by batcoder1 on 28/4/16.
  */
@@ -11,19 +13,19 @@ public class ResetPasswordResquest {
     protected String forgotPasswordNewMobile;
 
     public void setResetPasswordMobile(String resetPasswordMobile) {
-        this.resetPasswordMobile = resetPasswordMobile;
+        this.resetPasswordMobile = Validator.indianMobilePattern(resetPasswordMobile);
     }
 
     public String getResetPasswordMobile() {
-        return resetPasswordMobile;
+        return Validator.indianMobilePattern(resetPasswordMobile);
     }
 
     public void setCandidateForgotMobile(String candidateForgotMobile) {
-        this.candidateForgotMobile = candidateForgotMobile;
+        this.candidateForgotMobile = Validator.indianMobilePattern(candidateForgotMobile);
     }
 
     public String getCandidateForgotMobile() {
-        return candidateForgotMobile;
+        return Validator.indianMobilePattern(candidateForgotMobile);
     }
 
     public void setCandidateNewPassword(String candidateNewPassword) {
@@ -35,10 +37,10 @@ public class ResetPasswordResquest {
     }
 
     public void setForgotPasswordNewMobile(String forgotPasswordNewMobile) {
-        this.forgotPasswordNewMobile = forgotPasswordNewMobile;
+        this.forgotPasswordNewMobile = Validator.indianMobilePattern(forgotPasswordNewMobile);
     }
 
     public String getForgotPasswordNewMobile() {
-        return forgotPasswordNewMobile;
+        return Validator.indianMobilePattern(forgotPasswordNewMobile);
     }
 }

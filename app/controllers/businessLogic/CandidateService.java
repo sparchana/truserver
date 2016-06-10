@@ -615,9 +615,9 @@ public class CandidateService {
 
     public static ResetPasswordResponse findUserAndSendOtp(String candidateMobile){
         ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
-        Candidate existingCandidate = isCandidateExists("+91"+candidateMobile);
+        Candidate existingCandidate = isCandidateExists(candidateMobile);
         if(existingCandidate != null){
-            Logger.info("CandidateExists");
+            Logger.info("CandidateExists: " + candidateMobile);
             Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.candidateId).findUnique();
             if(existingAuth == null){
                 resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
