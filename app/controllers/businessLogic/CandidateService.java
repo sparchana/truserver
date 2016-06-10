@@ -1,7 +1,8 @@
 package controllers.businessLogic;
 
 import api.ServerConstants;
-import api.http.*;
+import api.http.LanguageClass;
+import api.http.SkillMapClass;
 import api.http.httpRequest.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
@@ -22,7 +23,6 @@ import play.Logger;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -725,19 +725,19 @@ public class CandidateService {
 
     public static List<Candidate> searchCandidateBySupport(SearchCandidateRequest searchCandidateRequest) {
         // TODO:check searchCandidateRequest member variable for special char, null value
-        List<String> jobInterestIdList = Arrays.asList(searchCandidateRequest.candidateJobInterest.split("\\s*,\\s*"));
-        List<String> localityPreferenceIdList = Arrays.asList(searchCandidateRequest.candidateLocality.split("\\s*,\\s*"));
+        List<Integer> jobInterestIdList = searchCandidateRequest.candidateJobInterest;
+        List<Integer> localityPreferenceIdList = searchCandidateRequest.candidateLocality;
 
        // Logger.info("fromdate :" + searchCandidateRequest.getFromThisDate().getTime() + "-" + " toThisDate" + searchCandidateRequest.getToThisDate().getTime());
         Query<Candidate> query = Candidate.find.query();
 
-        if(jobInterestIdList != null && jobInterestIdList.get(0) != "") {
+        if(jobInterestIdList != null && jobInterestIdList.get(0) != null) {
            query = query.select("*").fetch("jobPreferencesList")
                     .where()
                     .in("jobPreferencesList.jobRole.jobRoleId", jobInterestIdList)
                     .query();
         }
-        if(localityPreferenceIdList != null && localityPreferenceIdList.get(0) != "") {
+        if(localityPreferenceIdList != null && localityPreferenceIdList.get(0) != null) {
             query = query.select("*").fetch("localityPreferenceList")
                     .where()
                     .in("localityPreferenceList.locality.localityId", localityPreferenceIdList)
