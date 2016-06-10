@@ -24,9 +24,8 @@ public class TimeShiftPreference extends Model {
     @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp null")
     private Timestamp updateTimeStamp = new Timestamp(System.currentTimeMillis());
 
-    @OneToOne
     @JsonBackReference
-    @JoinColumn(name = "CandidateId", referencedColumnName = "CandidateId")
+    @OneToOne(mappedBy = "timeShiftPreference")
     private Candidate candidate;
 
     @ManyToOne

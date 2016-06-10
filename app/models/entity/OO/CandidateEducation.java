@@ -27,9 +27,8 @@ public class CandidateEducation extends Model{
     @Column(name = "CandidateLastInstitute", columnDefinition = "varchar(256) null")
     private String candidateLastInstitute;
 
-    @OneToOne
     @JsonBackReference
-    @JoinColumn(name = "CandidateId", referencedColumnName = "CandidateId")
+    @OneToOne(mappedBy = "candidateEducation")
     private Candidate candidate;
 
     @ManyToOne

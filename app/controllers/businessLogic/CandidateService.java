@@ -438,7 +438,8 @@ public class CandidateService {
     }
 
     private static CandidateEducation getCandidateEducationFromAddSupportCandidate(AddCandidateEducationRequest request, Candidate candidate) {
-        CandidateEducation response  = CandidateEducation.find.where().eq("candidateId", candidate.getCandidateId()).findUnique();
+        Candidate existingEducationRecord = Candidate.find.where().eq("candidateId", candidate.getCandidateId()).findUnique();
+        CandidateEducation response  = existingEducationRecord.getCandidateEducation();
         Education education = Education.find.where().eq("educationId", request.getCandidateEducationLevel()).findUnique();
         Degree degree = Degree.find.where().eq("degreeId", request.getCandidateDegree()).findUnique();
         if(response == null){
@@ -497,6 +498,10 @@ public class CandidateService {
         // TODO: loop through the req and then store it in List
         JobHistory jobHistory = new JobHistory();
         jobHistory.setCandidate(candidate);
+        if((request.getCandidatePastJobSalary() == null) && (request.getCandidatePastJobCompany() == null || request.getCandidatePastJobCompany().isEmpty()) && request.getCandidatePastJobRole() == null ){
+            Logger.info("No info related to Candidate Past Job was Provided");
+            return null;
+        }
         jobHistory.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
         jobHistory.setCandidatePastSalary(request.getCandidatePastJobSalary());
         jobHistory.setCandidatePastCompany(request.getCandidatePastJobCompany());
@@ -513,13 +518,15 @@ public class CandidateService {
     }
 
     private static TimeShiftPreference getTimeShiftPrefFromAddSupportCandidate(AddCandidateRequest request, Candidate candidate) {
-        TimeShiftPreference response = TimeShiftPreference.find.where().eq("candidateId", candidate.getCandidateId()).findUnique();
+        Candidate existingTimeShiftPrefRecord = Candidate.find.where().eq("candidateId", candidate.getCandidateId()).findUnique();
+        TimeShiftPreference response = existingTimeShiftPrefRecord.getTimeShiftPreference();
         if(response == null){
             response = new TimeShiftPreference();
             response.setCandidate(candidate);
         }
         if(request.getCandidateTimeShiftPref() == null){
             Logger.info("timeshiftPref not provided");
+            return null;
         } else {
             TimeShift existingTimeShift = TimeShift.find.where().eq("timeShiftId", request.getCandidateTimeShiftPref()).findUnique();
             if(existingTimeShift == null) {
@@ -533,11 +540,13 @@ public class CandidateService {
     }
 
     private static CandidateCurrentJobDetail getCandidateCurrentJobDetailFromAddSupportCandidate(AddCandidateExperienceRequest request, Candidate candidate, boolean isSupport) {
-        CandidateCurrentJobDetail response =  CandidateCurrentJobDetail.find.where().eq("candidateId", candidate.getCandidateId()).findUnique();
+        Candidate existingJobRecord = Candidate.find.where().eq("candidateId", candidate.getCandidateId()).findUnique();
+        CandidateCurrentJobDetail response = existingJobRecord.getCandidateCurrentJobDetail();
         if(response == null){
             response = new CandidateCurrentJobDetail();
             response.setCandidate( candidate);
         }
+
         Logger.info("inserting current Job details");
         try{
             response.setUpdateTimeStamp( new Timestamp(System.currentTimeMillis()));
@@ -546,10 +555,25 @@ public class CandidateService {
 
             if(isSupport) {
                 AddSupportCandidateRequest supportCandidateRequest = (AddSupportCandidateRequest) request;
+
+                if(supportCandidateRequest.getCandidateCurrentJobDesignation() == null
+                    && supportCandidateRequest.getCandidateCurrentJobDuration() == null
+                    && supportCandidateRequest.getCandidateCurrentWorkShift() == null
+                    && supportCandidateRequest.getCandidateCurrentJobRole() == null
+                    && supportCandidateRequest.getCandidateCurrentJobLocation() == null
+                    && request.getCandidateCurrentSalary() == null
+                    && request.getCandidateCurrentCompany() == null
+                        ) {
+                    return null;
+
+                }
+
                 response.setCandidateCurrentDesignation(supportCandidateRequest.getCandidateCurrentJobDesignation());
                 response.setCandidateCurrentJobDuration(supportCandidateRequest.getCandidateCurrentJobDuration());
                 response.setCandidateCurrentEmployerRefMobile("na");
                 response.setCandidateCurrentEmployerRefName("na");
+
+
 
                 TransportationMode transportationMode = TransportationMode.find.where().eq("transportationModeId", supportCandidateRequest.getCandidateTransportation()).findUnique();
                 TimeShift timeShift = TimeShift.find.where().eq("timeShiftId", supportCandidateRequest.getCandidateCurrentWorkShift()).findUnique();

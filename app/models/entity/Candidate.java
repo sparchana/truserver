@@ -112,17 +112,22 @@ public class Candidate extends Model {
     private List<CandidateSkill> candidateSkillList;
 
     @JsonManagedReference
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Lead lead;
+
+    @JsonManagedReference
     @JoinColumn(name = "candidateCurrentJobId", referencedColumnName = "candidateCurrentJobId")
     @OneToOne(cascade = CascadeType.ALL)
     private CandidateCurrentJobDetail candidateCurrentJobDetail;
 
     @JsonManagedReference
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private Lead lead;
+    @JoinColumn(name = "candidateEducationId", referencedColumnName = "candidateEducationId")
+    @OneToOne(cascade = CascadeType.ALL)
+    private CandidateEducation candidateEducation;
 
     @JsonManagedReference
-    @PrivateOwned
-    @OneToOne(mappedBy = "candidate", cascade = CascadeType.ALL)
+    @JoinColumn(name = "timeShiftPreferenceId", referencedColumnName = "timeShiftPreferenceId")
+    @OneToOne(cascade = CascadeType.ALL)
     private TimeShiftPreference timeShiftPreference;
 
     @JsonManagedReference
@@ -140,8 +145,6 @@ public class Candidate extends Model {
     @JoinColumn(name = "CandidateStatusId", referencedColumnName = "profileStatusId")
     private CandidateProfileStatus candidateprofilestatus;
 
-    @OneToOne(mappedBy = "candidate", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private CandidateEducation candidateEducation;
 
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 

@@ -36,14 +36,18 @@ create table candidate (
   candidatesalaryslip           int signed null,
   candidateappointmentletter    int signed null,
   isminprofilecomplete          int signed not null default 0,
-  candidatecurrentjobid         bigint signed,
   lead_leadid                   bigint signed,
+  candidatecurrentjobid         bigint signed,
+  candidateeducationid          int signed,
+  timeshiftpreferenceid         int signed,
   candidatemothertongue         int signed,
   candidatehomelocality         bigint signed,
   candidatestatusid             int signed,
   constraint uq_candidate_candidateuuid unique (candidateuuid),
-  constraint uq_candidate_candidatecurrentjobid unique (candidatecurrentjobid),
   constraint uq_candidate_lead_leadid unique (lead_leadid),
+  constraint uq_candidate_candidatecurrentjobid unique (candidatecurrentjobid),
+  constraint uq_candidate_candidateeducationid unique (candidateeducationid),
+  constraint uq_candidate_timeshiftpreferenceid unique (timeshiftpreferenceid),
   constraint pk_candidate primary key (candidateid)
 );
 
@@ -73,10 +77,8 @@ create table candidateeducation (
   candidateeducationid          int signed auto_increment not null,
   updatetimestamp               timestamp null,
   candidatelastinstitute        varchar(256) null,
-  candidateid                   bigint signed,
   educationid                   int signed,
   degreeid                      int signed,
-  constraint uq_candidateeducation_candidateid unique (candidateid),
   constraint pk_candidateeducation primary key (candidateeducationid)
 );
 
@@ -260,9 +262,7 @@ create table timeshift (
 create table timeshiftpreference (
   timeshiftpreferenceid         int signed auto_increment not null,
   updatetimestamp               timestamp null,
-  candidateid                   bigint signed,
   timeshiftid                   int signed,
-  constraint uq_timeshiftpreference_candidateid unique (candidateid),
   constraint pk_timeshiftpreference primary key (timeshiftpreferenceid)
 );
 
@@ -272,9 +272,13 @@ create table transportationmodes (
   constraint pk_transportationmodes primary key (transportationmodeid)
 );
 
+alter table candidate add constraint fk_candidate_lead_leadid foreign key (lead_leadid) references lead (leadid) on delete restrict on update restrict;
+
 alter table candidate add constraint fk_candidate_candidatecurrentjobid foreign key (candidatecurrentjobid) references candidatecurrentjobdetail (candidatecurrentjobid) on delete restrict on update restrict;
 
-alter table candidate add constraint fk_candidate_lead_leadid foreign key (lead_leadid) references lead (leadid) on delete restrict on update restrict;
+alter table candidate add constraint fk_candidate_candidateeducationid foreign key (candidateeducationid) references candidateeducation (candidateeducationid) on delete restrict on update restrict;
+
+alter table candidate add constraint fk_candidate_timeshiftpreferenceid foreign key (timeshiftpreferenceid) references timeshiftpreference (timeshiftpreferenceid) on delete restrict on update restrict;
 
 alter table candidate add constraint fk_candidate_candidatemothertongue foreign key (candidatemothertongue) references language (languageid) on delete restrict on update restrict;
 create index ix_candidate_candidatemothertongue on candidate (candidatemothertongue);
@@ -296,8 +300,6 @@ create index ix_candidatecurrentjobdetail_transportationmodeid on candidatecurre
 
 alter table candidatecurrentjobdetail add constraint fk_candidatecurrentjobdetail_timeshiftid foreign key (timeshiftid) references timeshift (timeshiftid) on delete restrict on update restrict;
 create index ix_candidatecurrentjobdetail_timeshiftid on candidatecurrentjobdetail (timeshiftid);
-
-alter table candidateeducation add constraint fk_candidateeducation_candidateid foreign key (candidateid) references candidate (candidateid) on delete restrict on update restrict;
 
 alter table candidateeducation add constraint fk_candidateeducation_educationid foreign key (educationid) references education (educationid) on delete restrict on update restrict;
 create index ix_candidateeducation_educationid on candidateeducation (educationid);
@@ -356,17 +358,19 @@ create index ix_localitypreference_candidateid on localitypreference (candidatei
 alter table skillqualifier add constraint fk_skillqualifier_skillid foreign key (skillid) references skill (skillid) on delete restrict on update restrict;
 create index ix_skillqualifier_skillid on skillqualifier (skillid);
 
-alter table timeshiftpreference add constraint fk_timeshiftpreference_candidateid foreign key (candidateid) references candidate (candidateid) on delete restrict on update restrict;
-
 alter table timeshiftpreference add constraint fk_timeshiftpreference_timeshiftid foreign key (timeshiftid) references timeshift (timeshiftid) on delete restrict on update restrict;
 create index ix_timeshiftpreference_timeshiftid on timeshiftpreference (timeshiftid);
 
 
 # --- !Downs
 
+alter table candidate drop foreign key fk_candidate_lead_leadid;
+
 alter table candidate drop foreign key fk_candidate_candidatecurrentjobid;
 
-alter table candidate drop foreign key fk_candidate_lead_leadid;
+alter table candidate drop foreign key fk_candidate_candidateeducationid;
+
+alter table candidate drop foreign key fk_candidate_timeshiftpreferenceid;
 
 alter table candidate drop foreign key fk_candidate_candidatemothertongue;
 drop index ix_candidate_candidatemothertongue on candidate;
@@ -388,8 +392,6 @@ drop index ix_candidatecurrentjobdetail_transportationmodeid on candidatecurrent
 
 alter table candidatecurrentjobdetail drop foreign key fk_candidatecurrentjobdetail_timeshiftid;
 drop index ix_candidatecurrentjobdetail_timeshiftid on candidatecurrentjobdetail;
-
-alter table candidateeducation drop foreign key fk_candidateeducation_candidateid;
 
 alter table candidateeducation drop foreign key fk_candidateeducation_educationid;
 drop index ix_candidateeducation_educationid on candidateeducation;
@@ -447,8 +449,6 @@ drop index ix_localitypreference_candidateid on localitypreference;
 
 alter table skillqualifier drop foreign key fk_skillqualifier_skillid;
 drop index ix_skillqualifier_skillid on skillqualifier;
-
-alter table timeshiftpreference drop foreign key fk_timeshiftpreference_candidateid;
 
 alter table timeshiftpreference drop foreign key fk_timeshiftpreference_timeshiftid;
 drop index ix_timeshiftpreference_timeshiftid on timeshiftpreference;

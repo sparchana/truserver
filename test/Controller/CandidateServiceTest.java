@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static common.TestConstants.*;
+import static common.TestConstants.testCandidateLocalityPreference;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -89,6 +89,7 @@ public class CandidateServiceTest {
         fakeApp = fakeApplication();
 
     }
+
     @Test
     public void testSignUpWebsiteMandatoryFields() {
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);

@@ -31,14 +31,12 @@ public class LeadService {
             result = ServerConstants.INTERACTION_RESULT_NEW_LEAD;
             Logger.info("Lead added");
             objectAUUId = lead.getLeadUUId();
-            objectAType = lead.getLeadType();
         } else {
             // lead exists
             result = ServerConstants.INTERACTION_RESULT_EXISTING_LEAD;
             objectAUUId = existingLead.getLeadUUId();
-            objectAType = existingLead.getLeadType();
         }
-
+        objectAType = ServerConstants.OBJECT_TYPE_LEAD;
         Interaction interaction = new Interaction(
                 objectAUUId,
                 objectAType,
