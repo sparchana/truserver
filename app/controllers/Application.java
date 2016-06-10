@@ -1,7 +1,10 @@
 package controllers;
 
 import api.ServerConstants;
-import api.http.*;
+import api.http.httpRequest.*;
+import api.http.httpResponse.AddLeadResponse;
+import api.http.httpResponse.SupportDashboardElementResponse;
+import api.http.httpResponse.SupportInteractionResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.AuthService;
@@ -101,8 +104,15 @@ public class Application extends Controller {
     }
 
     public static Result addLead() {
-        Form<AddLeadRequest> userForm = Form.form(AddLeadRequest.class);
-        AddLeadRequest addLeadRequest = userForm.bindFromRequest().get();
+        JsonNode req = request().body().asJson();
+        AddLeadRequest addLeadRequest = new AddLeadRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addLeadRequest = newMapper.readValue(req.toString(), AddLeadRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Logger.info("JSON req: " + req);
 
         AddLeadResponse addLeadResponse = new AddLeadResponse();
         Lead lead = new Lead(addLeadRequest.getLeadName(),
@@ -118,14 +128,20 @@ public class Application extends Controller {
     }
 
     public static Result signUp() {
-        Form<CandidateSignUpRequest> candidateForm = Form.form(CandidateSignUpRequest.class);
-        CandidateSignUpRequest candidateSignUpRequest = candidateForm.bindFromRequest().get();
-        List<String> localityList = Arrays.asList(candidateSignUpRequest.getCandidateLocality().split("\\s*,\\s*"));
-        List<String> jobsList = Arrays.asList(candidateSignUpRequest.getCandidateJobPref().split("\\s*,\\s*"));
+        JsonNode req = request().body().asJson();
+        CandidateSignUpRequest candidateSignUpRequest = new CandidateSignUpRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            candidateSignUpRequest = newMapper.readValue(req.toString(), CandidateSignUpRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Logger.info("JSON req: " + req);
+
+        List<Integer> localityList = candidateSignUpRequest.getCandidateLocality();
+        List<Integer> jobsList = candidateSignUpRequest.getCandidateJobPref();
         boolean isSupport = false;
         Candidate candidate = new Candidate();
-        candidate.setCandidateId(Util.randomLong());
-        candidate.setCandidateUUId(UUID.randomUUID().toString());
         candidate.setCandidateName(candidateSignUpRequest.getCandidateName());
         candidate.setCandidateLastName(candidateSignUpRequest.getCandidateSecondName());
         candidate.setCandidateMobile("+91" + candidateSignUpRequest.getCandidateMobile());
@@ -193,8 +209,14 @@ public class Application extends Controller {
     }
 
     public static Result addPassword() {
-        Form<CandidateSignUpRequest> candidateForm = Form.form(CandidateSignUpRequest.class);
-        CandidateSignUpRequest candidateSignUpRequest = candidateForm.bindFromRequest().get();
+        JsonNode req = request().body().asJson();
+        CandidateSignUpRequest candidateSignUpRequest = new CandidateSignUpRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            candidateSignUpRequest = newMapper.readValue(req.toString(), CandidateSignUpRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         String userMobile = candidateSignUpRequest.getCandidateAuthMobile();
         String userPassword = candidateSignUpRequest.getCandidatePassword();
@@ -203,8 +225,14 @@ public class Application extends Controller {
     }
 
     public static Result loginSubmit() {
-        Form<LoginRequest> loginForm = Form.form(LoginRequest.class);
-        LoginRequest loginRequest = loginForm.bindFromRequest().get();
+        JsonNode req = request().body().asJson();
+        LoginRequest loginRequest = new LoginRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            loginRequest = newMapper.readValue(req.toString(), LoginRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         String loginMobile = loginRequest.getCandidateLoginMobile();
         String loginPassword = loginRequest.getCandidateLoginPassword();
 
@@ -222,9 +250,14 @@ public class Application extends Controller {
     }
 
     public static Result findUserAndSendOtp() {
-        Form<ResetPasswordResquest> checkCandidate = Form.form(ResetPasswordResquest.class);
-        ResetPasswordResquest resetPasswordResquest = checkCandidate.bindFromRequest().get();
-
+        JsonNode req = request().body().asJson();
+        ResetPasswordResquest resetPasswordResquest = new ResetPasswordResquest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            resetPasswordResquest = newMapper.readValue(req.toString(), ResetPasswordResquest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         String candidateMobile = resetPasswordResquest.getResetPasswordMobile();
         Logger.info("==> " + candidateMobile);
         return ok(toJson(CandidateService.findUserAndSendOtp(candidateMobile)));

@@ -1,4 +1,4 @@
-package api.http;
+package api.http.httpResponse;
 
 import models.entity.Candidate;
 

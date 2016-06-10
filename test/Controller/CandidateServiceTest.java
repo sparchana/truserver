@@ -1,8 +1,8 @@
 package Controller;
 
 import api.ServerConstants;
-import api.http.AddCandidateRequest;
-import api.http.AddSupportCandidateRequest;
+import api.http.httpRequest.AddCandidateRequest;
+import api.http.httpRequest.AddSupportCandidateRequest;
 import common.TestConstants;
 import controllers.businessLogic.CandidateService;
 import models.entity.Candidate;
@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static common.TestConstants.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -73,7 +74,7 @@ public class CandidateServiceTest {
         req.setCandidateSecondName(TestConstants.testCandidateLastName);
         req.setCandidateMobile(TestConstants.testCandidateMobile);
         req.setCandidateJobInterest(TestConstants.testCandidateJobInterest );
-        req.setCandidateLocality(TestConstants.testCandidateLocalityPreference);
+        req.setCandidateLocality(testCandidateLocalityPreference);
         fakeApp = fakeApplication();
 
     }
@@ -84,11 +85,11 @@ public class CandidateServiceTest {
         supportCandidateRequest.setCandidateSecondName(TestConstants.testCandidateLastName);
         supportCandidateRequest.setCandidateMobile(TestConstants.testCandidateMobile);
         supportCandidateRequest.setCandidateJobInterest(TestConstants.testCandidateJobInterest );
-        supportCandidateRequest.setCandidateLocality(TestConstants.testCandidateLocalityPreference);
+        supportCandidateRequest.setCandidateLocality(testCandidateLocalityPreference);
         fakeApp = fakeApplication();
 
     }
-
+    @Test
     public void testSignUpWebsiteMandatoryFields() {
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
         running(server, () -> {
@@ -97,6 +98,7 @@ public class CandidateServiceTest {
             CandidateMandatoryCheck(false);
         });
     }
+
 
     @Test
     public void testSignUpSupportMandatoryFields() {
@@ -118,7 +120,7 @@ public class CandidateServiceTest {
 
     private void CandidateMandatoryCheck(Boolean isSupport) {
         Lead lead  = Lead.find.where().eq("leadMobile", TestConstants.testCandidateMobile).findUnique();
-        Logger.info("Session Id: " + session().get("sessionId") + " sessionUsername" + session().get("sessionUsername"));
+        System.out.println("Session Id: " + session().get("sessionId") + " sessionUsername " + session().get("sessionUsername"));
 
         assertTrue(lead != null);
         assertEquals(lead.getLeadStatus(), ServerConstants.LEAD_STATUS_WON);
@@ -129,15 +131,34 @@ public class CandidateServiceTest {
         assertEquals(candidate.getCandidateName(), TestConstants.testCandidateName);
         assertEquals(candidate.getCandidateLastName(), TestConstants.testCandidateLastName);
         assertEquals(candidate.getCandidateMobile(), TestConstants.testCandidateMobile);
-        for(LocalityPreference localityPreference : candidate.getLocalityPreferenceList()){
-            assertTrue(TestConstants.testCandidateLocalityPreference.contains(String.valueOf(localityPreference.getLocality().getLocalityId())));
-        }
-        for(JobPreference jobPreference : candidate.getJobPreferencesList()){
-            assertTrue(TestConstants.testCandidateJobInterest.contains(String.valueOf(jobPreference.getJobRole().getJobRoleId())));
-        }
+
+        assertTrue(candidate.getLocalityPreferenceList()!= null);
+        assertEquals(candidate.getLocalityPreferenceList(), LocalityPreference.find.where().eq("candidateId", candidate.getCandidateId()).findList());
+
+        assertTrue(candidate.getJobPreferencesList()!= null);
+        assertEquals(candidate.getJobPreferencesList(),  JobPreference.find.where().eq("candidateId", candidate.getCandidateId()).findList());
+
+        // unset fields
+        assertTrue(candidate.getCandidateDOB() == null);
+        assertTrue(candidate.getCandidateGender() == null);
+        assertTrue(candidate.getCandidateMaritalStatus() == null);
+        assertTrue(candidate.getCandidateIsAssessed() == 0);  //No
+        assertTrue(candidate.getCandidateIsEmployed() == null);
+        assertTrue(candidate.getCandidateEmail() == null);
+        assertTrue(candidate.getCandidatePhoneType() == null);
+        assertTrue(candidate.getCandidateAge() == null);
+        assertTrue(candidate.getCandidateSalarySlip() == null);
+        assertTrue(candidate.getIsMinProfileComplete() == 0); //No
+        assertTrue(candidate.getCandidateprofilestatus().getProfileStatusId() == 1); //New
+        assertTrue(candidate.getLocality() == null);
+        assertTrue(candidate.getMotherTongue() == null);
+        assertTrue(candidate.getCandidateCurrentJobDetail() == null);
+        assertTrue(candidate.getCandidateCreateTimestamp() != null);
+        assertTrue(candidate.getCandidateUpdateTimestamp() != null);
 
         List<Interaction> interactionList = Interaction.find.where().eq("objectAUUId", candidate.getCandidateUUId()).findList();
         assertTrue(interactionList != null);
+
         if(isSupport){
             //assertEquals(interactionList.get(0).createdBy, ServerConstants.INTERACTION_CREATED_SYSTEM);
         } else {

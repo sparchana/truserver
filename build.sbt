@@ -6,6 +6,8 @@ scalaVersion := "2.11.7"
 
 routesGenerator := StaticRoutesGenerator
 
+testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a"))
+
 lazy val root = (project in file(".")).enablePlugins(PlayJava, PlayEbean)
 
 libraryDependencies ++= Seq(

@@ -1,9 +1,11 @@
-package api.http;
+package api.http.httpRequest;
 
 import api.ServerConstants;
 import play.Logger;
 
 import java.util.Date;
+import java.util.List;
+
 /**
  * Created by batcoder1 on 25/5/16.
  */
@@ -11,12 +13,14 @@ public class AddCandidateRequest {
     public String candidateFirstName;
     public String candidateSecondName;
     public String candidateMobile;
-    public String candidateJobInterest;
-    public String candidateLocality;
+    public List<Integer> candidateJobInterest;
+    public List<Integer> candidateLocality;
+
     public Date candidateDob;
     public Integer candidateGender ;
     public String candidateTimeShiftPref;
-    public Integer leadSource= ServerConstants.LEAD_SOURCE_UNKNOWN;
+
+    public Integer leadSource = ServerConstants.LEAD_SOURCE_UNKNOWN;
 
     public Integer getLeadSource() {
         return leadSource;
@@ -49,11 +53,11 @@ public class AddCandidateRequest {
         return candidateMobile;
     }
 
-    public String getCandidateJobInterest() {
+    public List<Integer> getCandidateJobInterest() {
         return candidateJobInterest;
     }
 
-    public String getCandidateLocality() {
+    public List<Integer> getCandidateLocality() {
         return candidateLocality;
     }
 
@@ -70,13 +74,6 @@ public class AddCandidateRequest {
         return candidateTimeShiftPref;
     }
 
-    public void setCandidateJobInterest(String candidateJobInterest) {
-        this.candidateJobInterest = candidateJobInterest;
-    }
-
-    public void setCandidateLocality(String candidateLocality) {
-        this.candidateLocality = candidateLocality;
-    }
 
     public void setCandidateDob(Date candidateDob) {
         this.candidateDob = candidateDob;
@@ -92,5 +89,13 @@ public class AddCandidateRequest {
 
     public void setLeadSource(Integer leadSource) {
         this.leadSource = leadSource;
+    }
+
+    public void setCandidateJobInterest(List<Integer> candidateJobInterest) {
+        this.candidateJobInterest = candidateJobInterest;
+    }
+
+    public void setCandidateLocality(List<Integer> candidateLocality) {
+        this.candidateLocality = candidateLocality;
     }
 }

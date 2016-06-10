@@ -1,4 +1,6 @@
-package api.http;
+package api.http.httpRequest;
+
+import java.util.List;
 
 /**
  * Created by batcoder1 on 25/4/16.
@@ -9,8 +11,8 @@ public class CandidateSignUpRequest {
     protected String candidateName;
     protected String candidateSecondName;
     protected String candidateMobile;
-    protected String candidateLocality;
-    protected String candidateJobPref;
+    protected List<Integer> candidateLocality;
+    protected List<Integer> candidateJobPref;
 
     protected String candidatePassword;
     protected String candidateAuthMobile;
@@ -31,19 +33,19 @@ public class CandidateSignUpRequest {
         return candidateSecondName;
     }
 
-    public void setCandidateLocality(String candidateLocality) {
+    public void setCandidateLocality(List<Integer> candidateLocality) {
         this.candidateLocality = candidateLocality;
     }
 
-    public String getCandidateLocality() {
+    public List<Integer> getCandidateLocality() {
         return candidateLocality;
     }
 
-    public void setCandidateJobPref(String candidateJobPref) {
+    public void setCandidateJobPref(List<Integer> candidateJobPref) {
         this.candidateJobPref = candidateJobPref;
     }
 
-    public String getCandidateJobPref() {
+    public List<Integer> getCandidateJobPref() {
         return candidateJobPref;
     }
 

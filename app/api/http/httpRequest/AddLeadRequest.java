@@ -1,14 +1,14 @@
-package api.http;
+package api.http.httpRequest;
 
 /**
  * Created by zero on 23/4/16.
  */
 public class AddLeadRequest {
-    protected String leadName = " ";
-    protected String leadMobile = " ";
-    protected int leadType = 0;
-    protected int leadChannel = 0;
-    protected String leadInterest = " ";
+    protected String leadName;
+    protected String leadMobile;
+    protected Integer leadType;
+    protected Integer leadChannel;
+    protected String leadInterest;
 
     public void setLeadName(String leadName) {
         this.leadName = leadName;
@@ -30,7 +30,7 @@ public class AddLeadRequest {
         this.leadType = leadType;
     }
 
-    public int getLeadType() {
+    public Integer getLeadType() {
         return leadType;
     }
 
@@ -38,7 +38,7 @@ public class AddLeadRequest {
         this.leadChannel = leadChannel;
     }
 
-    public int getLeadChannel() {
+    public Integer getLeadChannel() {
         return leadChannel;
     }
 

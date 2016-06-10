@@ -67,19 +67,36 @@ $(function() {
                 var secondName  = $('#candidateSecondName').val();
                 var phone = $('#candidateMobile').val();
                 candidateMobile = phone;
+
+                var candidatePreferredJob = [];
+                var candidatePreferredLocality = [];
+
+                var jobPref = $('#candidateJobPref').val().split(",");
+                var localityPref = $('#candidateLocality').val().split(",");
+
+                var i;
+                for(i=0;i<jobPref.length; i++){
+                    candidatePreferredJob.push(parseInt(jobPref[i]));
+                }
+
+                for(i=0;i<localityPref.length; i++){
+                    candidatePreferredLocality.push(parseInt(localityPref[i]));
+                }
+
                 $('#alreadyMsgCandidate').hide();
                 var d = {
                     candidateName : name,
                     candidateSecondName : secondName,
                     candidateMobile : phone,
-                    candidateLocality : $('#candidateLocality').val(),
-                    candidateJobPref : $('#candidateJobPref').val()
+                    candidateLocality : candidatePreferredLocality,
+                    candidateJobPref : candidatePreferredJob
                 };
 
                 $.ajax({
                     type: "POST",
                     url: "/signUp",
-                    data: d,
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
                     success: processDataSignUpSubmit
                 });
             } catch (exception) {
@@ -100,7 +117,6 @@ $(function() {
                     $('#form_auth').show();
                     $('#errorMsg').hide();
                     $('#incorrectMsg').hide();
-
                 }
                 else {
                     $('#incorrectOtpMsg').show();
@@ -131,7 +147,8 @@ $(function() {
                 $.ajax({
                     type: "POST",
                     url: "/addPassword",
-                    data: d,
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
                     success: processDataAddAuth
                 });
             } catch (exception) {

@@ -1,7 +1,7 @@
 package controllers.businessLogic;
 
 import api.ServerConstants;
-import api.http.CandidateSignUpResponse;
+import api.http.httpResponse.CandidateSignUpResponse;
 import models.entity.Auth;
 import models.entity.Candidate;
 import models.entity.Interaction;

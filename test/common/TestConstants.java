@@ -1,7 +1,9 @@
 package common;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by zero on 7/6/16.
@@ -25,8 +27,12 @@ public class TestConstants {
     public static final Integer testCandidateAge = 99;
     public static final Integer testCandidateSalarySlip = 1;
     public static final Integer testCandidateAppointmentLetter = 1;
-    public static final String  testCandidateJobInterest = "1, 2";
-    public static final String  testCandidateLocalityPreference = "20, 21";
+    public static final List<Integer> testCandidateJobInterest = new ArrayList<Integer>() {{
+        add(1);add(2);add(3);
+    }};
+    public static final List<Integer> testCandidateLocalityPreference = new ArrayList<Integer>() {{
+        add(3);add(2);add(1);
+    }};
     public static final Integer testLeadSource = 1;
     public static final String  testAdminId = "2209";
     public static final String  testAdminPassword = "TruJobs7";
