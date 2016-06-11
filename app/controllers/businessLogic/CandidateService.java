@@ -380,9 +380,17 @@ public class CandidateService {
                 candidate.getCandidateGender() != null && candidate.getCandidateTotalExperience() != null && candidate.getCandidateEducation() != null &&
                 candidate.getTimeShiftPreference() != null && candidate.getLanguageKnownList().size() > 0){
             if(candidate.getCandidateIsEmployed() != null) {
-                if(candidate.getCandidateIsEmployed() == 0 || candidate.getCandidateCurrentJobDetail().getCandidateCurrentSalary() != null) {
+                if(candidate.getCandidateIsEmployed() == 0) {
                     candidate.setIsMinProfileComplete(ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE);
                 }
+                else{
+                    if(candidate.getCandidateCurrentJobDetail().getCandidateCurrentSalary() != null){
+                        candidate.setIsMinProfileComplete(ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE);
+                    }
+                }
+            }
+            else{
+                candidate.setIsMinProfileComplete(ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE);
             }
         }
         candidate.update();
