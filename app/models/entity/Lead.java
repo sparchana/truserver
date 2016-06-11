@@ -4,7 +4,6 @@ import api.ServerConstants;
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Static.LeadSource;
-import models.util.Util;
 import play.Logger;
 
 import javax.persistence.*;
@@ -56,7 +55,6 @@ public class Lead extends Model {
     public static Finder<String, Lead> find = new Finder(Lead.class);
 
     public Lead(){
-        this.leadId = Util.randomLong();
         this.leadUUId = UUID.randomUUID().toString();
         this.leadStatus = ServerConstants.LEAD_STATUS_NEW;
         this.leadCreationTimestamp = new Timestamp(System.currentTimeMillis());
@@ -64,9 +62,9 @@ public class Lead extends Model {
 
     public Lead(String leadName, String leadMobile, int leadChannel, int leadType, int leadSourceId) {
         LeadSource leadSource = LeadSource.find.where().eq("leadSourceId", leadSourceId).findUnique();
-        this.leadId = Util.randomLong();
         this.leadUUId = UUID.randomUUID().toString();
         this.leadStatus = ServerConstants.LEAD_STATUS_NEW;
+        this.leadCreationTimestamp = new Timestamp(System.currentTimeMillis());
         this.leadInterest = ServerConstants.LEAD_INTEREST_UNKNOWN; // TODO: tobe Deprecated
         this.leadName = leadName;
         this.leadMobile = leadMobile;

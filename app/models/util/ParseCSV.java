@@ -14,7 +14,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by zero on 3/5/16.
@@ -48,9 +47,6 @@ public class ParseCSV {
                     Lead existingLead = Lead.find.where().eq("leadMobile", lead.getLeadMobile()).findUnique();
 
                     if (existingLead == null) {
-                        lead.setLeadUUId(UUID.randomUUID().toString());
-                        lead.setLeadId(Util.randomLong());
-                        lead.setLeadCreationTimestamp(new Timestamp(knowlarityInBoundDate.getTime()));
                         lead.setLeadType(ServerConstants.TYPE_LEAD);
                         lead.setLeadChannel(ServerConstants.LEAD_CHANNEL_KNOWLARITY);
                         lead.setLeadStatus(ServerConstants.LEAD_STATUS_NEW);

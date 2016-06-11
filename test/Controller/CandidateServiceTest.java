@@ -89,7 +89,6 @@ public class CandidateServiceTest {
         fakeApp = fakeApplication();
 
     }
-
     @Test
     public void testSignUpWebsiteMandatoryFields() {
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
@@ -118,7 +117,19 @@ public class CandidateServiceTest {
     private void cleanDB(){
         Candidate candidate = CandidateService.isCandidateExists(TestConstants.testCandidateMobile);
         if(candidate != null){
+            List<Interaction> interactionList = Interaction.find.where().eq("objectAUUId", candidate.getCandidateUUId()).findList();
+            for(Interaction interactionToDelete : interactionList){
+                interactionToDelete.delete();
+            }
             candidate.delete();
+        }
+        Lead lead = CandidateService.isLeadExists(TestConstants.testCandidateMobile);
+        if(lead != null){
+            List<Interaction> interactionList = Interaction.find.where().eq("objectAUUId", lead.getLeadUUId()).findList();
+            for(Interaction interactionToDelete : interactionList){
+                interactionToDelete.delete();
+            }
+            lead.delete();
         }
     }
 
