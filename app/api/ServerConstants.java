@@ -8,6 +8,7 @@ public class ServerConstants {
     // public static final int TYPE_UNKNOW = 0;
     public static final String INTERACTION_RESULT_NEW_LEAD = "New Lead Added";
     public static final String INTERACTION_RESULT_NEW_CANDIDATE = "New Candidate Added";
+    public static final String INTERACTION_RESULT_NEW_CANDIDATE_SUPPORT = "New Candidate Added by support";
     public static final String INTERACTION_RESULT_CANDIDATE_UPDATED_LOCALITY_JOBS = "Candidate updated jobPref and locality pref";
     public static final String INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM = "Candidate Info got updated by System";
     public static final String INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SELF = "Candidate Info got updated by Self";

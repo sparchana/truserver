@@ -28,7 +28,7 @@ public class AuthService {
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
 
         Logger.info("to check: " + mobile);
-        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", "+91" + mobile).findUnique();
+        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", mobile).findUnique();
 
         if(existingCandidate != null) {
             // If candidate exists
