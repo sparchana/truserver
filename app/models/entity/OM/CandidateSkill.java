@@ -69,4 +69,15 @@ public class CandidateSkill extends Model {
         this.skillQualifier = skillQualifier;
     }
 
+    public void setCandidateSkillId(int candidateSkillId) {
+        this.candidateSkillId = candidateSkillId;
+    }
+
+    public Skill getSkill() {
+        return skill;
+    }
+
+    public SkillQualifier getSkillQualifier() {
+        return skillQualifier;
+    }
 }

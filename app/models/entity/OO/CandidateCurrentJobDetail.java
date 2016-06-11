@@ -117,4 +117,60 @@ public class CandidateCurrentJobDetail extends Model{
     public void setJobRole(JobRole jobRole) {
         this.jobRole = jobRole;
     }
+
+    public long getCandidateCurrentJobId() {
+        return candidateCurrentJobId;
+    }
+
+    public void setCandidateCurrentJobId(long candidateCurrentJobId) {
+        this.candidateCurrentJobId = candidateCurrentJobId;
+    }
+
+    public String getCandidateCurrentCompany() {
+        return candidateCurrentCompany;
+    }
+
+    public String getCandidateCurrentDesignation() {
+        return candidateCurrentDesignation;
+    }
+
+    public Long getCandidateCurrentSalary() {
+        return candidateCurrentSalary;
+    }
+
+    public Integer getCandidateCurrentJobDuration() {
+        return candidateCurrentJobDuration;
+    }
+
+    public String getCandidateCurrentEmployerRefName() {
+        return candidateCurrentEmployerRefName;
+    }
+
+    public String getCandidateCurrentEmployerRefMobile() {
+        return candidateCurrentEmployerRefMobile;
+    }
+
+    public Timestamp getUpdateTimeStamp() {
+        return updateTimeStamp;
+    }
+
+    public Candidate getCandidate() {
+        return candidate;
+    }
+
+    public JobRole getJobRole() {
+        return jobRole;
+    }
+
+    public Locality getCandidateCurrentJobLocation() {
+        return candidateCurrentJobLocation;
+    }
+
+    public TransportationMode getCandidateTransportationMode() {
+        return candidateTransportationMode;
+    }
+
+    public TimeShift getCandidateCurrentWorkShift() {
+        return candidateCurrentWorkShift;
+    }
 }

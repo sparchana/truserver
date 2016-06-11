@@ -8,8 +8,6 @@ import controllers.businessLogic.CandidateService;
 import models.entity.Candidate;
 import models.entity.Interaction;
 import models.entity.Lead;
-import models.entity.OM.JobPreference;
-import models.entity.OM.LocalityPreference;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -25,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static common.TestConstants.testCandidateLocalityPreference;
+import static common.TestConstants.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -46,7 +44,7 @@ public class CandidateServiceTest {
 
     private AddCandidateRequest req;
 
-    private AddSupportCandidateRequest supportCandidateRequest;
+    private AddSupportCandidateRequest supportCandidateRequest = new AddSupportCandidateRequest();
 
     public static Http.Context context;
 
@@ -76,20 +74,54 @@ public class CandidateServiceTest {
         req.setCandidateJobInterest(TestConstants.testCandidateJobInterest );
         req.setCandidateLocality(testCandidateLocalityPreference);
         fakeApp = fakeApplication();
-
     }
+
     @Before
     public void setUpSignSupportMandatoryFields() {
-        supportCandidateRequest = new AddSupportCandidateRequest();
-        supportCandidateRequest.setCandidateFirstName(TestConstants.testCandidateName);
-        supportCandidateRequest.setCandidateSecondName(TestConstants.testCandidateLastName);
-        supportCandidateRequest.setCandidateMobile(TestConstants.testCandidateMobile);
-        supportCandidateRequest.setCandidateJobInterest(TestConstants.testCandidateJobInterest );
+        supportCandidateRequest.setCandidateFirstName(testCandidateName);
+        supportCandidateRequest.setCandidateSecondName(testCandidateLastName);
+        supportCandidateRequest.setCandidateMobile(testCandidateMobile);
+        supportCandidateRequest.setCandidateJobInterest(testCandidateJobInterest );
         supportCandidateRequest.setCandidateLocality(testCandidateLocalityPreference);
         fakeApp = fakeApplication();
-
     }
-    @Test
+    @Before
+    public void setUpCandidateBasicProfile() {
+        setUpSignUpWebsiteMandatoryFields();
+        supportCandidateRequest.setCandidateDob(testCandidateDob);
+        supportCandidateRequest.setCandidateGender(testCandidateGender);
+        supportCandidateRequest.setCandidateTimeShiftPref(testCandidateTimeShiftPref);
+        fakeApp = fakeApplication();
+    }
+    @Before
+    public void setUpCandidateSkillProfile() {
+        setUpCandidateBasicProfile();
+        supportCandidateRequest.setCandidateTotalExperience(testCandidateTotalExperience);
+        supportCandidateRequest.setCandidateIsEmployed(testCandidateIsEmployed);
+        supportCandidateRequest.setCandidateMotherTongue(testCandidateMotherTongue);
+
+        supportCandidateRequest.setCandidateCurrentJobDesignation(testCandidateCurrentJobDesignation);
+        supportCandidateRequest.setCandidateCurrentCompany(testCandidateCurrentCompany);
+        supportCandidateRequest.setCandidateCurrentSalary(testCandidateCurrentSalary);
+        supportCandidateRequest.setCandidateCurrentJobDuration(testCandidateCurrentJobDuration);
+        supportCandidateRequest.setCandidateCurrentWorkShift(testCandidateCurrentWorkShift);
+        supportCandidateRequest.setCandidateCurrentJobRole(testCandidateCurrentJobRole);
+        supportCandidateRequest.setCandidateCurrentJobLocation(testCandidateCurrentJobLocation);
+        supportCandidateRequest.setCandidateTransportation(testCandidateTransportation);
+
+        supportCandidateRequest.setCandidateSkills(testCandidateSkillList);
+        supportCandidateRequest.setCandidateLanguageKnown(testCandidateLanguageKnownList);
+        fakeApp = fakeApplication();
+    }
+    @Before
+    public void setUpCandidateEducationProfile() {
+        setUpCandidateSkillProfile();
+        supportCandidateRequest.setCandidateEducationInstitute(testCandidateEducationInstitute);
+        supportCandidateRequest.setCandidateDegree(testCandidateDegree);
+        supportCandidateRequest.setCandidateEducationLevel(testCandidateEducationLevel);
+        fakeApp = fakeApplication();
+    }
+
     public void testSignUpWebsiteMandatoryFields() {
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
         running(server, () -> {
@@ -105,9 +137,99 @@ public class CandidateServiceTest {
         running(server, () -> {
             cleanDB();
             CandidateService.createCandidateProfile(supportCandidateRequest, true, ServerConstants.UPDATE_ALL_BY_SUPPORT);
-            CandidateMandatoryCheck(true);
+            //CandidateMandatoryCheck(true);
+            checkCandidateBasicProfile();
+            checkCandidateSkillProfile();
+            checkCandidateEducationProfile();
         });
     }
+
+
+    public void checkCandidateBasicProfile() {
+        Lead lead  = Lead.find.where().eq("leadMobile", testCandidateMobile).findUnique();
+        System.out.println("Session Id: " + session().get("sessionId") + " sessionUsername " + session().get("sessionUsername"));
+
+        assertTrue(lead != null);
+        assertEquals(lead.getLeadStatus(), ServerConstants.LEAD_STATUS_WON);
+        assertEquals(lead.getLeadType(), ServerConstants.TYPE_CANDIDATE);
+
+        Candidate candidate = CandidateService.isCandidateExists(testCandidateMobile);
+        assertTrue(candidate != null);
+
+        assertEquals(candidate.getCandidateName(), testCandidateName);
+        assertEquals(candidate.getCandidateLastName(), testCandidateLastName);
+        assertEquals(candidate.getCandidateMobile(), testCandidateMobile);
+
+
+        assertTrue(candidate.getLocalityPreferenceList()!= null);
+        for(int i=0; i< candidate.getLocalityPreferenceList().size(); i++){
+            assertEquals(candidate.getLocalityPreferenceList().get(i).getLocality().getLocalityId(), (long) testCandidateLocalityPreference.get(i));
+        }
+
+        assertTrue(candidate.getJobPreferencesList()!= null);
+        for(int i=0; i< candidate.getJobPreferencesList().size(); i++){
+            assertEquals(candidate.getJobPreferencesList().get(i).getJobRole().getJobRoleId(), (long) testCandidateJobInterest.get(i));
+        }
+
+        assertTrue(candidate.getTimeShiftPreference()!= null);
+        assertEquals(candidate.getTimeShiftPreference().getTimeShift().getTimeShiftId(), Integer.parseInt(testCandidateTimeShiftPref));
+
+    }
+
+    public void checkCandidateSkillProfile() {
+        Lead lead  = Lead.find.where().eq("leadMobile", testCandidateMobile).findUnique();
+        System.out.println("Session Id: " + session().get("sessionId") + " sessionUsername " + session().get("sessionUsername"));
+
+        assertTrue(lead != null);
+        assertEquals(lead.getLeadStatus(), ServerConstants.LEAD_STATUS_WON);
+        assertEquals(lead.getLeadType(), ServerConstants.TYPE_CANDIDATE);
+
+        Candidate candidate = CandidateService.isCandidateExists(testCandidateMobile);
+        assertTrue(candidate != null);
+
+        assertEquals(candidate.getMotherTongue().getLanguageId(), (int) testCandidateMotherTongue);
+        assertEquals(candidate.getCandidateTotalExperience(), testCandidateTotalExperience);
+        assertEquals(candidate.getCandidateIsEmployed(), testCandidateIsEmployed);
+
+        assertTrue(candidate.getCandidateSkillList()!= null);
+        for(int i=0; i< candidate.getCandidateSkillList().size(); i++) {
+            assertEquals(candidate.getCandidateSkillList().get(i).getSkill().getSkillId(), Integer.parseInt(testCandidateSkillList.get(i).getId()));
+        }
+
+        assertTrue(candidate.getCandidateCurrentJobDetail()!= null);
+        assertEquals(candidate.getCandidateCurrentJobDetail().getCandidateCurrentDesignation(), testCandidateCurrentJobDesignation);
+        assertEquals(candidate.getCandidateCurrentJobDetail().getCandidateCurrentCompany(), testCandidateCurrentCompany);
+        assertEquals(candidate.getCandidateCurrentJobDetail().getCandidateCurrentSalary(), testCandidateCurrentSalary);
+        assertEquals(candidate.getCandidateCurrentJobDetail().getCandidateCurrentJobDuration(), testCandidateCurrentJobDuration);
+        assertEquals(candidate.getCandidateCurrentJobDetail().getCandidateCurrentWorkShift().getTimeShiftId(), (int) testCandidateCurrentWorkShift);
+        assertEquals(candidate.getCandidateCurrentJobDetail().getJobRole().getJobRoleId(), (int) testCandidateCurrentJobRole);
+        assertEquals(candidate.getCandidateCurrentJobDetail().getCandidateCurrentJobLocation().getLocalityId(), (long) testCandidateCurrentJobLocation);
+        assertEquals(candidate.getCandidateCurrentJobDetail().getCandidateTransportationMode().getTransportationModeId(), (int) testCandidateTransportation);
+
+        assertTrue(candidate.getLanguageKnownList()!= null);
+        for(int i=0; i< candidate.getLanguageKnownList().size(); i++){
+            assertEquals(candidate.getLanguageKnownList().get(i).getLanguage().getLanguageId(), Integer.parseInt(testCandidateLanguageKnownList.get(i).getId()));
+        }
+    }
+
+    public void checkCandidateEducationProfile() {
+        Lead lead  = Lead.find.where().eq("leadMobile", testCandidateMobile).findUnique();
+        System.out.println("Session Id: " + session().get("sessionId") + " sessionUsername " + session().get("sessionUsername"));
+
+        assertTrue(lead != null);
+        assertEquals(lead.getLeadStatus(), ServerConstants.LEAD_STATUS_WON);
+        assertEquals(lead.getLeadType(), ServerConstants.TYPE_CANDIDATE);
+
+        Candidate candidate = CandidateService.isCandidateExists(testCandidateMobile);
+        assertTrue(candidate != null);
+
+        assertTrue(candidate.getCandidateEducation()!= null);
+        assertEquals(candidate.getCandidateEducation().getCandidateLastInstitute(),  testCandidateEducationInstitute);
+        assertEquals(candidate.getCandidateEducation().getDegree().getDegreeId(), (int)  testCandidateDegree);
+        assertEquals(candidate.getCandidateEducation().getEducation().getEducationId(), (int) testCandidateEducationLevel);
+
+    }
+
 
     public void cleanup(){
         cleanDB();
@@ -148,11 +270,14 @@ public class CandidateServiceTest {
         assertEquals(candidate.getCandidateMobile(), TestConstants.testCandidateMobile);
 
         assertTrue(candidate.getLocalityPreferenceList()!= null);
-        assertEquals(candidate.getLocalityPreferenceList(), LocalityPreference.find.where().eq("candidateId", candidate.getCandidateId()).findList());
+        for(int i=0; i< candidate.getLocalityPreferenceList().size(); i++){
+            assertEquals(candidate.getLocalityPreferenceList().get(i).getLocality().getLocalityId(), (long) testCandidateLocalityPreference.get(i));
+        }
 
         assertTrue(candidate.getJobPreferencesList()!= null);
-        assertEquals(candidate.getJobPreferencesList(),  JobPreference.find.where().eq("candidateId", candidate.getCandidateId()).findList());
-
+        for(int i=0; i< candidate.getJobPreferencesList().size(); i++){
+            assertEquals(candidate.getJobPreferencesList().get(i).getJobRole().getJobRoleId(), (long) testCandidateJobInterest.get(i));
+        }
         // unset fields
         assertTrue(candidate.getCandidateDOB() == null);
         assertTrue(candidate.getCandidateGender() == null);

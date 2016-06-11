@@ -431,6 +431,7 @@ public class Candidate extends Model {
     public CandidateEducation getCandidateEducation() {
         return candidateEducation;
     }
+
 }
 
 

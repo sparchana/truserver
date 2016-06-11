@@ -98,4 +98,71 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
         return candidateAppointmentLetter;
     }
 
+    public void setCandidateAge(Integer candidateAge) {
+        this.candidateAge = candidateAge;
+    }
+
+    public void setCandidatePhoneType(String candidatePhoneType) {
+        this.candidatePhoneType = candidatePhoneType;
+    }
+
+    public void setCandidateHomeLocality(Integer candidateHomeLocality) {
+        this.candidateHomeLocality = candidateHomeLocality;
+    }
+
+    public void setCandidateMaritalStatus(Integer candidateMaritalStatus) {
+        this.candidateMaritalStatus = candidateMaritalStatus;
+    }
+
+    public void setCandidateEmail(String candidateEmail) {
+        this.candidateEmail = candidateEmail;
+    }
+
+    public void setCandidatePastJobCompany(String candidatePastJobCompany) {
+        this.candidatePastJobCompany = candidatePastJobCompany;
+    }
+
+    public void setCandidatePastJobRole(Integer candidatePastJobRole) {
+        this.candidatePastJobRole = candidatePastJobRole;
+    }
+
+    public void setCandidatePastJobSalary(Long candidatePastJobSalary) {
+        this.candidatePastJobSalary = candidatePastJobSalary;
+    }
+
+    public void setCandidateCurrentJobLocation(Integer candidateCurrentJobLocation) {
+        this.candidateCurrentJobLocation = candidateCurrentJobLocation;
+    }
+
+    public void setCandidateTransportation(Integer candidateTransportation) {
+        this.candidateTransportation = candidateTransportation;
+    }
+
+    public void setCandidateCurrentWorkShift(Integer candidateCurrentWorkShift) {
+        this.candidateCurrentWorkShift = candidateCurrentWorkShift;
+    }
+
+    public void setCandidateCurrentJobRole(Integer candidateCurrentJobRole) {
+        this.candidateCurrentJobRole = candidateCurrentJobRole;
+    }
+
+    public void setCandidateCurrentJobDesignation(String candidateCurrentJobDesignation) {
+        this.candidateCurrentJobDesignation = candidateCurrentJobDesignation;
+    }
+
+    public void setCandidateCurrentJobDuration(Integer candidateCurrentJobDuration) {
+        this.candidateCurrentJobDuration = candidateCurrentJobDuration;
+    }
+
+    public void setCandidateIdProof(List<Integer> candidateIdProof) {
+        this.candidateIdProof = candidateIdProof;
+    }
+
+    public void setCandidateSalarySlip(Integer candidateSalarySlip) {
+        this.candidateSalarySlip = candidateSalarySlip;
+    }
+
+    public void setCandidateAppointmentLetter(Integer candidateAppointmentLetter) {
+        this.candidateAppointmentLetter = candidateAppointmentLetter;
+    }
 }

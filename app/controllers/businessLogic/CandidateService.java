@@ -200,6 +200,7 @@ public class CandidateService {
             candidate.setLead(existingLead);
         }
 
+        // not just update but createOrUpdate
         if(flag == ServerConstants.UPDATE_BASIC_PROFILE || flag == ServerConstants.UPDATE_ALL_BY_SUPPORT){
             Logger.info("Inside Basic profile update");
             /* Basic Profile Section Starts */

@@ -1,5 +1,8 @@
 package common;
 
+import api.http.CandidateKnownLanguage;
+import api.http.CandidateSkills;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -22,8 +25,6 @@ public class TestConstants {
     public static final String  testCandidateEmail = "test@localhost.com";
     public static final Integer testCandidateGender = 1;
     public static final Integer testCandidateMaritalStatus = 1;
-    public static final Integer testCandidateIsEmployed = 1;
-    public static final Integer testCandidateTotalExperience = 1;  // data in months
     public static final Integer testCandidateAge = 99;
     public static final Integer testCandidateSalarySlip = 1;
     public static final Integer testCandidateAppointmentLetter = 1;
@@ -36,7 +37,52 @@ public class TestConstants {
     public static final Integer testLeadSource = 1;
     public static final String  testAdminId = "2209";
     public static final String  testAdminPassword = "TruJobs7";
-    public static final String  testCandidateTimeShiftPref = "1, 2";
-
+    public static final String  testCandidateTimeShiftPref = "1";
     public static final Date testCandidateDob = Calendar.getInstance().getTime();
+    public static final Integer testCandidateIsEmployed = 1;
+
+    // Skill Profile start
+    public static final Integer testCandidateTotalExperience = 1;  // data in months
+    public static final String testCandidateCurrentCompany = "Test Current Company";
+    public static final Integer testCandidateMotherTongue = 1;  //
+
+    //CurrentJobDetails
+    public static final String testCandidateCurrentJobDesignation = "TEST DESIGN";
+    public static final Long testCandidateCurrentSalary = 12500L;
+    public static final Integer testCandidateCurrentJobDuration = 1;
+    public static final Integer testCandidateCurrentWorkShift = 1;
+    public static final Integer testCandidateCurrentJobRole = 1;
+    public static final Integer testCandidateCurrentJobLocation = 1;
+    public static final Integer testCandidateTransportation = 1;
+
+    //Skills
+    public static final List<CandidateSkills> testCandidateSkillList = new ArrayList<CandidateSkills>() {{
+        CandidateSkills candidateSkill1 = new CandidateSkills();
+        candidateSkill1.setId("1");
+        candidateSkill1.setQualifier("Yes");
+
+        CandidateSkills candidateSkill2 = new CandidateSkills();
+        candidateSkill2.setId("2");
+        candidateSkill2.setQualifier("No");
+
+        add(candidateSkill1);
+        add(candidateSkill2);
+    }};
+
+    //Language Known
+    public static final List<CandidateKnownLanguage> testCandidateLanguageKnownList = new ArrayList<CandidateKnownLanguage>() {{
+        CandidateKnownLanguage candidateKnownLanguage1 = new CandidateKnownLanguage();
+        candidateKnownLanguage1.setId("1");
+        candidateKnownLanguage1.setR(1);
+        candidateKnownLanguage1.setS(1);
+        candidateKnownLanguage1.setW(1);
+
+        add(candidateKnownLanguage1);
+    }};
+
+    //education
+    public static final String testCandidateEducationInstitute = "Test Education Institute";
+    public static final Integer testCandidateDegree = 1;
+    public static final Integer testCandidateEducationLevel = 1;
+
 }

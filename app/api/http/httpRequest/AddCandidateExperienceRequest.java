@@ -48,4 +48,31 @@ public class AddCandidateExperienceRequest extends AddCandidateRequest {
         return candidateMotherTongue;
     }
 
+    public void setCandidateTotalExperience(Integer candidateTotalExperience) {
+        this.candidateTotalExperience = candidateTotalExperience;
+    }
+
+    public void setCandidateIsEmployed(Integer candidateIsEmployed) {
+        this.candidateIsEmployed = candidateIsEmployed;
+    }
+
+    public void setCandidateCurrentCompany(String candidateCurrentCompany) {
+        this.candidateCurrentCompany = candidateCurrentCompany;
+    }
+
+    public void setCandidateCurrentSalary(Long candidateCurrentSalary) {
+        this.candidateCurrentSalary = candidateCurrentSalary;
+    }
+
+    public void setCandidateMotherTongue(Integer candidateMotherTongue) {
+        this.candidateMotherTongue = candidateMotherTongue;
+    }
+
+    public List<CandidateSkills> getCandidateSkills() {
+        return candidateSkills;
+    }
+
+    public List<CandidateKnownLanguage> getCandidateLanguageKnown() {
+        return candidateLanguageKnown;
+    }
 }
