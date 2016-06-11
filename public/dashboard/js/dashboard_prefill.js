@@ -474,6 +474,8 @@ function saveCandidateExperienceDetails(){
     var experienceStatus = $('input:radio[name="workExperience"]:checked').val();
     if(experienceStatus == null){
         alert("Please Select your work experience");
+    } else if($('#candidateCurrentJobSalary').val() > 99999){
+        alert("Please Enter a valid Salary")
     }
     else{
         /* calculate total experience in months */
