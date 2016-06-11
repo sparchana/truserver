@@ -438,8 +438,7 @@ public class CandidateService {
     }
 
     private static CandidateEducation getCandidateEducationFromAddSupportCandidate(AddCandidateEducationRequest request, Candidate candidate) {
-        Candidate existingEducationRecord = Candidate.find.where().eq("candidateId", candidate.getCandidateId()).findUnique();
-        CandidateEducation response  = existingEducationRecord.getCandidateEducation();
+        CandidateEducation response  = candidate.getCandidateEducation();
         Education education = Education.find.where().eq("educationId", request.getCandidateEducationLevel()).findUnique();
         Degree degree = Degree.find.where().eq("degreeId", request.getCandidateDegree()).findUnique();
         if(response == null){
@@ -518,8 +517,7 @@ public class CandidateService {
     }
 
     private static TimeShiftPreference getTimeShiftPrefFromAddSupportCandidate(AddCandidateRequest request, Candidate candidate) {
-        Candidate existingTimeShiftPrefRecord = Candidate.find.where().eq("candidateId", candidate.getCandidateId()).findUnique();
-        TimeShiftPreference response = existingTimeShiftPrefRecord.getTimeShiftPreference();
+        TimeShiftPreference response = candidate.getTimeShiftPreference();
         if(response == null){
             response = new TimeShiftPreference();
             response.setCandidate(candidate);
@@ -540,8 +538,7 @@ public class CandidateService {
     }
 
     private static CandidateCurrentJobDetail getCandidateCurrentJobDetailFromAddSupportCandidate(AddCandidateExperienceRequest request, Candidate candidate, boolean isSupport) {
-        Candidate existingJobRecord = Candidate.find.where().eq("candidateId", candidate.getCandidateId()).findUnique();
-        CandidateCurrentJobDetail response = existingJobRecord.getCandidateCurrentJobDetail();
+        CandidateCurrentJobDetail response = candidate.getCandidateCurrentJobDetail();
         if(response == null){
             response = new CandidateCurrentJobDetail();
             response.setCandidate( candidate);

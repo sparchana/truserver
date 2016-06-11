@@ -44,7 +44,7 @@ public class Locality extends Model {
     private List<LocalityPreference> localityPreferenceList;
 
     @JsonBackReference
-    @OneToMany(mappedBy = "candidateCurrentJobLocation", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "candidateCurrentJobLocation", cascade = CascadeType.REMOVE)
     private List<CandidateCurrentJobDetail> currentJobDetailList;
 
     public static Finder<String, Locality> find = new Finder(Locality.class);

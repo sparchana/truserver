@@ -85,14 +85,17 @@ public class Candidate extends Model {
     private int IsMinProfileComplete = 0; // 0 - Not Complete
 
     @JsonManagedReference
+    @PrivateOwned
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
     private List<IDProofReference> idProofReferenceList;
 
     @JsonManagedReference
+    @PrivateOwned
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
     private List<JobHistory> jobHistoryList;
 
     @JsonManagedReference
+    @PrivateOwned
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
     private List<JobPreference> jobPreferencesList;
 
