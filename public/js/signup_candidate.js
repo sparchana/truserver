@@ -53,30 +53,44 @@ function processDataAddAuth(returnedData) {
 $(function() {
     $("#form_signup_candidate").submit(function(eventObj) {
         eventObj.preventDefault();
+        var statusCheck = 1;
+        var firstName = $('#candidateName').val();
+        var lastName = $('#candidateSecondName').val();
+        var phone = $('#candidateMobile').val();
+        var firstNameCheck = validateName(firstName);
+        var lastNameCheck = validateName(lastName);
+        var res = validateMobile(phone);
         var localitySelected = $('#candidateLocality').val();
         var jobSelected = $('#candidateJobPref').val();
-        if($('#candidateName').val() == "" || $('#candidateName').val() == null){
+        
+        if(firstNameCheck == 0){
             alert("Please Enter First Name");
-        }
-        if($('#candidateSecondName').val() == "" || $('#candidateSecondName').val() == null){
+            statusCheck=0;
+        } 
+        else if(lastNameCheck == 0){
             alert("Please Enter your Last Name");
+            statusCheck=0;
         }
-        if($('#candidateMobile').val() == "" || $('#candidateMobile').val() == null){
-            alert("Please Enter your Mobile No.");
+        else if(res == 0){ // invalid mobile
+            alert("Enter a valid mobile number");
+            statusCheck=0;
         }
-        if (localitySelected == "") {
+        else if(res == 1){ // mobile no. less than 1 digits
+            alert("Enter 10 digit mobile number");
+            statusCheck=0;
+        }
+        else if(localitySelected == "") {
             alert("Please Enter your Job Localities");
-        } else if (jobSelected == "") {
-            alert("Please Enter the Jobs you are Interested");
+            statusCheck=0;
         }
-        else{
+        else if(jobSelected == "") {
+            alert("Please Enter the Jobs you are Interested");
+            statusCheck=0;
+        }
+        if(statusCheck == 1){
+            candidateMobile = phone;
             document.getElementById("registerBtn").disabled = true;
             try {
-                var name  = $('#candidateName').val();
-                var secondName  = $('#candidateSecondName').val();
-                var phone = $('#candidateMobile').val();
-                candidateMobile = phone;
-
                 var candidatePreferredJob = [];
                 var candidatePreferredLocality = [];
 
@@ -94,8 +108,8 @@ $(function() {
 
                 $('#alreadyMsgCandidate').hide();
                 var d = {
-                    candidateName : name,
-                    candidateSecondName : secondName,
+                    candidateName : firstName,
+                    candidateSecondName : lastName,
                     candidateMobile : phone,
                     candidateLocality : candidatePreferredLocality,
                     candidateJobPref : candidatePreferredJob

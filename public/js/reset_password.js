@@ -51,14 +51,17 @@ $(function() {
     $("#form_forgot_password").submit(function(eventObj) {
         eventObj.preventDefault();
         var phone = $('#resetPasswordMobile').val();
-        if(phone == null || phone == ""){
-            alert("Enter your Mobile Number");
+        var phoneRes = validateMobile(phone);
+        if(phoneRes == 0){ // invalid mobile
+            alert("Enter a valid mobile number");
+        }
+        else if(phoneRes == 1){ // mobile no. less than 1 digits
+            alert("Enter 10 digit mobile number");
         }
         else{
+            candidateMobile = phone;
             document.getElementById("resetCheckUserBtn").disabled = true;
             try {
-
-                candidateMobile = phone;
                 var s = {
                     resetPasswordMobile : phone
                 };

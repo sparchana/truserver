@@ -1,5 +1,7 @@
 package api.http.httpRequest;
 
+import api.http.FormValidator;
+
 import java.util.Date;
 import java.util.List;
 
@@ -39,11 +41,11 @@ public class SearchCandidateRequest {
     }
 
     public String getCandidateMobile() {
-        return candidateMobile;
+        return FormValidator.indianMobilePattern(candidateMobile);
     }
 
     public void setCandidateMobile(String candidateMobile) {
-        this.candidateMobile = candidateMobile;
+        this.candidateMobile = FormValidator.indianMobilePattern(candidateMobile);
     }
 
     public void setCandidateJobInterest(List<Integer> candidateJobInterest) {

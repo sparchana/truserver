@@ -371,30 +371,59 @@ $("#candidateUpdateEducationDetails").submit(function(eventObj) {
 }); // end of submit
 
 function saveCandidateBasicProfile(){
-    var localitySelected = $('#candidateLocalityPref').val();
-    var jobSelected = $('#candidateJobPref').val();
-    var isEmployed = $("#isEmployed").val();
-    var currentSalary = $("#candidateCurrentJobSalary").val();
+    var statusCheck = 1;
+    var firstName = $('#candidateFirstName').val();
+    var lastName = $('#candidateSecondName').val();
+    var phone = $('#candidateMobile').val();
+    var firstNameCheck = validateName(firstName);
+    var lastNameCheck = validateName(lastName);
+    var res = validateMobile(phone);
     var selectedGender = $('input:radio[name="gender"]:checked').val();
 
-    if (localitySelected == "") {
+    var localitySelected = $('#candidateLocalityPref').val();
+    var jobSelected = $('#candidateJobPref').val();
+
+    if(firstNameCheck == 0){
+        alert("Please Enter First Name");
+        statusCheck=0;
+    }
+    else if(lastNameCheck == 0){
+        alert("Please Enter your Last Name");
+        statusCheck=0;
+    }
+    else if(res == 0){ // invalid mobile
+        alert("Enter a valid mobile number");
+        statusCheck=0;
+    }
+    else if(res == 1){ // mobile no. less than 1 digits
+        alert("Enter 10 digit mobile number");
+        statusCheck=0;
+    }
+    else if(localitySelected == "") {
         alert("Please Enter your Job Localities");
-    } else if (jobSelected == "") {
+        statusCheck=0;
+    }
+    else if(jobSelected == "") {
         alert("Please Enter the Jobs you are Interested");
-    } else if(isEmployed == "1" && currentSalary == ""){
-        alert("Please Enter your Current Salary");
+        statusCheck=0;
     } else if($('#candidateTimeShiftPref').val() == -1){
+        statusCheck=0;
         alert("Please Enter Your Preferred Work Shift");
     } else if($('#dob_day').val() == ""){
+        statusCheck=0;
         alert("Please Select your Birth day");
     } else if($('#dob_month').val() == ""){
+        statusCheck=0;
         alert("Please Select your Birth month");
     } else if($('#dob_year').val() == ""){
+        statusCheck=0;
         alert("Please Select your Birth year");
     } else if(selectedGender == undefined) {
+        statusCheck=0;
         alert("Please Select your Gender");
     }
-    else{
+
+    if(statusCheck == 1){
         document.getElementById("saveBtn").disabled = true;
         var candidatePreferredJob = [];
         var candidatePreferredLocality = [];
@@ -445,6 +474,8 @@ function saveCandidateExperienceDetails(){
     var experienceStatus = $('input:radio[name="workExperience"]:checked').val();
     if(experienceStatus == null){
         alert("Please Select your work experience");
+    } else if($('#candidateCurrentJobSalary').val() > 99999){
+        alert("Please Enter a valid Salary")
     }
     else{
         /* calculate total experience in months */
@@ -544,7 +575,7 @@ function saveCandidateExperienceDetails(){
 
 function saveCandidateEducationDetails(){
     var highestEducation = $('input:radio[name="highestEducation"]:checked').val();
-    if(highestEducation == -1){
+    if(highestEducation == undefined){
         alert("Select your Highest Education");
     }
     else{
