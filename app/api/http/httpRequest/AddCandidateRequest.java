@@ -1,21 +1,13 @@
 package api.http.httpRequest;
 
 import api.ServerConstants;
-import api.http.FormValidator;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by batcoder1 on 25/5/16.
  */
-public class AddCandidateRequest {
-    public String candidateFirstName;
-    public String candidateSecondName;
-    public String candidateMobile;
-    public List<Integer> candidateJobInterest;
-    public List<Integer> candidateLocality;
-
+public class AddCandidateRequest extends CandidateSignUpRequest{
     public Date candidateDob;
     public Integer candidateGender ;
     public String candidateTimeShiftPref;
@@ -27,34 +19,6 @@ public class AddCandidateRequest {
     }
 
     /* Mandatory */
-    public void setCandidateFirstName(String candidateFirstName) {
-        this.candidateFirstName = candidateFirstName;
-    }
-    public String getCandidateFirstName() {
-        return candidateFirstName;
-    }
-
-    public void setCandidateSecondName(String candidateSecondName) {
-        this.candidateSecondName = candidateSecondName;
-    }
-    public String getCandidateSecondName() {
-        return candidateSecondName;
-    }
-
-    public void setCandidateMobile(String candidateMobile) {
-            this.candidateMobile = FormValidator.convertToIndianMobileFormat(candidateMobile);
-    }
-    public String getCandidateMobile() {
-        return FormValidator.convertToIndianMobileFormat(candidateMobile);
-    }
-
-    public List<Integer> getCandidateJobInterest() {
-        return candidateJobInterest;
-    }
-
-    public List<Integer> getCandidateLocality() {
-        return candidateLocality;
-    }
 
     /* others */
     public Date getCandidateDob() {
@@ -84,13 +48,5 @@ public class AddCandidateRequest {
 
     public void setLeadSource(Integer leadSource) {
         this.leadSource = leadSource;
-    }
-
-    public void setCandidateJobInterest(List<Integer> candidateJobInterest) {
-        this.candidateJobInterest = candidateJobInterest;
-    }
-
-    public void setCandidateLocality(List<Integer> candidateLocality) {
-        this.candidateLocality = candidateLocality;
     }
 }

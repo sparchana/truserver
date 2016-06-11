@@ -5,6 +5,8 @@ import api.http.httpRequest.AddCandidateRequest;
 import api.http.httpRequest.AddSupportCandidateRequest;
 import common.TestConstants;
 import controllers.businessLogic.CandidateService;
+import controllers.businessLogic.LeadService;
+import models.entity.Auth;
 import models.entity.Candidate;
 import models.entity.Interaction;
 import models.entity.Lead;
@@ -68,7 +70,7 @@ public class CandidateServiceTest {
         req.setCandidateFirstName(testCandidateName);
         req.setCandidateSecondName(testCandidateLastName);
         req.setCandidateMobile(testCandidateMobile);
-        req.setCandidateJobInterest(testCandidateJobInterest);
+        req.setCandidateJobPref(testCandidateJobInterest);
         req.setCandidateLocality(testCandidateLocalityPreference);
         fakeApp = fakeApplication();
     }
@@ -77,7 +79,7 @@ public class CandidateServiceTest {
         supportCandidateRequest.setCandidateFirstName(testCandidateName);
         supportCandidateRequest.setCandidateSecondName(testCandidateLastName);
         supportCandidateRequest.setCandidateMobile(testCandidateMobile);
-        supportCandidateRequest.setCandidateJobInterest(testCandidateJobInterest );
+        supportCandidateRequest.setCandidateJobPref(testCandidateJobInterest );
         supportCandidateRequest.setCandidateLocality(testCandidateLocalityPreference);
         fakeApp = fakeApplication();
     }
@@ -294,13 +296,17 @@ public class CandidateServiceTest {
     private void cleanDB(){
         Candidate candidate = CandidateService.isCandidateExists(TestConstants.testCandidateMobile);
         if(candidate != null){
+            Auth auth = Auth.find.where().eq("candidateId", candidate.getCandidateId()).findUnique();
+            if(auth != null){
+                auth.delete();
+            }
             List<Interaction> interactionList = Interaction.find.where().eq("objectAUUId", candidate.getCandidateUUId()).findList();
             for(Interaction interactionToDelete : interactionList){
                 interactionToDelete.delete();
             }
             candidate.delete();
         }
-        Lead lead = CandidateService.isLeadExists(TestConstants.testCandidateMobile);
+        Lead lead = LeadService.isLeadExists(TestConstants.testCandidateMobile);
         if(lead != null){
             List<Interaction> interactionList = Interaction.find.where().eq("objectAUUId", lead.getLeadUUId()).findList();
             for(Interaction interactionToDelete : interactionList){

@@ -36,8 +36,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static controllers.businessLogic.CandidateService.getCandidateJobPreferenceList;
-import static controllers.businessLogic.CandidateService.getCandidateLocalityPreferenceList;
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {
@@ -138,20 +136,8 @@ public class Application extends Controller {
         }
         Logger.info("JSON req: " + req);
 
-        List<Integer> localityList = candidateSignUpRequest.getCandidateLocality();
-        List<Integer> jobsList = candidateSignUpRequest.getCandidateJobPref();
         boolean isSupport = false;
-        Candidate candidate = new Candidate();
-        candidate.setCandidateName(candidateSignUpRequest.getCandidateName());
-        candidate.setCandidateLastName(candidateSignUpRequest.getCandidateSecondName());
-        candidate.setCandidateMobile(candidateSignUpRequest.getCandidateMobile());
-
-        CandidateProfileStatus newcandidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", 1).findUnique();
-        candidate.setCandidateprofilestatus(newcandidateProfileStatus);
-        candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(localityList, candidate));
-        candidate.setJobPreferencesList(getCandidateJobPreferenceList(jobsList, candidate));
-
-        return ok(toJson(CandidateService.signUpCandidate(candidate, isSupport, ServerConstants.LEAD_SOURCE_UNKNOWN)));
+        return ok(toJson(CandidateService.signUpCandidate(candidateSignUpRequest, isSupport, ServerConstants.LEAD_SOURCE_UNKNOWN)));
     }
     @Security.Authenticated(Secured.class)
     public static Result signUpSupport() {

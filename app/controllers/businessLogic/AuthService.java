@@ -17,6 +17,10 @@ import static play.mvc.Controller.session;
  * Created by batcoder1 on 5/5/16.
  */
 public class AuthService {
+    public static Auth  isAuthExists(Long candidateId){
+       return Auth.find.where().eq("CandidateId", candidateId).findUnique();
+    }
+
     public static void setNewPassword(Auth auth, String password){
         auth.setPasswordMd5(Util.md5(password + auth.getPasswordSalt()));
         auth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
