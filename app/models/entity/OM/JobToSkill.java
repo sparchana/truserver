@@ -17,22 +17,25 @@ import java.sql.Timestamp;
 public class JobToSkill  extends Model {
     @Id
     @JsonBackReference
-    @Column(name = "jobToSkillId", columnDefinition = "int signed not null", unique = true)
-    public int jobToSkillId = 0;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "jobToSkillId", columnDefinition = "int signed", unique = true)
+    private int jobToSkillId;
 
     @JsonBackReference
-    @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp default current_timestamp null")
-    public Timestamp updateTimeStamp;
+    @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp null")
+    private Timestamp updateTimeStamp = new Timestamp(System.currentTimeMillis());
 
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "JobRoleId", referencedColumnName = "JobRoleId")
-    public JobRole jobRole;
+    private JobRole jobRole;
 
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "SkillId", referencedColumnName = "SkillId")
-    public Skill skill;
+    private Skill skill;
+
+    public static Model.Finder<String, JobToSkill> find = new Model.Finder(JobToSkill.class);
 
     public int getJobToSkillId() {
         return jobToSkillId;
@@ -65,6 +68,4 @@ public class JobToSkill  extends Model {
     public void setSkill(Skill skill) {
         this.skill = skill;
     }
-
-    public static Model.Finder<String, JobToSkill> find = new Model.Finder(JobToSkill.class);
 }

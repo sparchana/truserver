@@ -3,10 +3,7 @@ package models.entity;
 import api.ServerConstants;
 import com.avaje.ebean.Model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 /**
@@ -17,35 +14,36 @@ import java.sql.Timestamp;
 @Table(name = "interaction")
 public class Interaction extends Model {
     @Id
-    @Column(name = "rowId", columnDefinition = "int signed not null", nullable = false, unique = true)
-    public long id = 0;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "rowId", columnDefinition = "int signed", unique = true)
+    private long id;
 
     @Column(name = "ObjectAUUId", columnDefinition = "varchar(255) not null", nullable = false)
-    public String objectAUUId = ""; // UUID
+    private String objectAUUId = ""; // UUID
 
     @Column(name = "ObjectAType", columnDefinition = "int signed not null", nullable = false)
-    public int objectAType = 0; // Lead, Candidate, Recruiter
+    private int objectAType = 0; // Lead, Candidate, Recruiter
 
     @Column(name = "ObjectBUUId", columnDefinition = "varchar(255) not null")
-    public String objectBUUId = ""; // UUID
+    private String objectBUUId = ""; // UUID
 
     @Column(name = "ObjectBType", columnDefinition = "int signed null")
-    public int objectBType = 0; // Lead, Candidate, Recruiter
+    private Integer objectBType; // Lead, Candidate, Recruiter
 
-    @Column(name = "InteractionType", columnDefinition = "int signed not null", nullable = false)
-    public int interactionType = 0; // CallIn, CallOut, Sms
+    @Column(name = "InteractionType", columnDefinition = "int signed null")
+    private Integer interactionType; // CallIn, CallOut, Sms
 
     @Column(name = "Note", columnDefinition = "varchar(255) null")
-    public String note = "";
+    private String note;
 
     @Column(name = "Result", columnDefinition = "varchar(255) null")
-    public String result = "";
+    private String result;
 
     @Column(name = "CreationTimestamp", columnDefinition = "timestamp default current_timestamp not null", nullable = false)
-    public Timestamp creationTimestamp = new Timestamp(System.currentTimeMillis());
+    private Timestamp creationTimestamp = new Timestamp(System.currentTimeMillis());
 
-    @Column(name = "CreatedBy", columnDefinition = "varchar(255) not null default 'system'", nullable = false)
-    public String createdBy = "system"; // system-> website, Knowlarity Dump
+    @Column(name = "CreatedBy", columnDefinition = "varchar(255) not null default 'System'", nullable = false)
+    private String createdBy = ServerConstants.INTERACTION_CREATED_SYSTEM;
 
     public static Finder<String, Interaction> find = new Finder(Interaction.class);
 
@@ -75,7 +73,7 @@ public class Interaction extends Model {
         this.id = id;
     }
 
-    public String getObjectAId() {
+    public String getObjectAUUId() {
         return objectAUUId;
     }
 
@@ -91,7 +89,7 @@ public class Interaction extends Model {
         this.objectAType = objectAType;
     }
 
-    public String getObjectBId() {
+    public String getObjectBUUId() {
         return objectBUUId;
     }
 
@@ -99,19 +97,19 @@ public class Interaction extends Model {
         this.objectBUUId = objectBUUId;
     }
 
-    public int getObjectBType() {
+    public Integer getObjectBType() {
         return objectBType;
     }
 
-    public void setObjectBType(int objectBType) {
+    public void setObjectBType(Integer objectBType) {
         this.objectBType = objectBType;
     }
 
-    public int getInteractionType() {
+    public Integer getInteractionType() {
         return interactionType;
     }
 
-    public void setInteractionType(int interactionType) {
+    public void setInteractionType(Integer interactionType) {
         this.interactionType = interactionType;
     }
 

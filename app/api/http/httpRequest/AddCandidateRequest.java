@@ -69,4 +69,28 @@ public class AddCandidateRequest {
         return candidateTimeShiftPref;
     }
 
+
+    public void setCandidateDob(Date candidateDob) {
+        this.candidateDob = candidateDob;
+    }
+
+    public void setCandidateGender(Integer candidateGender) {
+        this.candidateGender = candidateGender;
+    }
+
+    public void setCandidateTimeShiftPref(String candidateTimeShiftPref) {
+        this.candidateTimeShiftPref = candidateTimeShiftPref;
+    }
+
+    public void setLeadSource(Integer leadSource) {
+        this.leadSource = leadSource;
+    }
+
+    public void setCandidateJobInterest(List<Integer> candidateJobInterest) {
+        this.candidateJobInterest = candidateJobInterest;
+    }
+
+    public void setCandidateLocality(List<Integer> candidateLocality) {
+        this.candidateLocality = candidateLocality;
+    }
 }

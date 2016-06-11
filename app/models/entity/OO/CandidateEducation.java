@@ -17,50 +17,77 @@ import java.sql.Timestamp;
 @Table(name = "candidateeducation")
 public class CandidateEducation extends Model{
     @Id
-    @Column(name = "candidateEducationId", columnDefinition = "int signed not null", unique = true)
-    public int candidateEducationId = 0;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "candidateEducationId", columnDefinition = "int signed", unique = true)
+    private int candidateEducationId;
 
-    @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp default current_timestamp null")
-    public Timestamp updateTimeStamp;
+    @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp null")
+    private Timestamp updateTimeStamp = new Timestamp(System.currentTimeMillis());
 
     @Column(name = "CandidateLastInstitute", columnDefinition = "varchar(256) null")
-    public String candidateLastInstitute;
+    private String candidateLastInstitute;
 
-    @OneToOne
     @JsonBackReference
-    @JoinColumn(name = "CandidateId", referencedColumnName = "CandidateId")
-    public Candidate candidate;
+    @OneToOne(mappedBy = "candidateEducation")
+    private Candidate candidate;
 
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "EducationId", referencedColumnName = "EducationId")
-    public Education education;
+    private Education education;
 
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "DegreeId", referencedColumnName = "DegreeId")
-    public Degree degree;
+    private Degree degree;
 
     public static Model.Finder<String, CandidateEducation> find = new Model.Finder(CandidateEducation.class);
 
-    public void setDegree(Degree degree) {
-        this.degree = degree;
+    public int getCandidateEducationId() {
+        return candidateEducationId;
+    }
+
+    public void setCandidateEducationId(int candidateEducationId) {
+        this.candidateEducationId = candidateEducationId;
+    }
+
+    public Timestamp getUpdateTimeStamp() {
+        return updateTimeStamp;
     }
 
     public void setUpdateTimeStamp(Timestamp updateTimeStamp) {
         this.updateTimeStamp = updateTimeStamp;
     }
 
-    public void setEducation(Education education) {
-        this.education = education;
-    }
-
-    public void setCandidate(Candidate candidate) {
-        this.candidate = candidate;
+    public String getCandidateLastInstitute() {
+        return candidateLastInstitute;
     }
 
     public void setCandidateLastInstitute(String candidateLastInstitute) {
         this.candidateLastInstitute = candidateLastInstitute;
     }
 
+    public Candidate getCandidate() {
+        return candidate;
+    }
+
+    public void setCandidate(Candidate candidate) {
+        this.candidate = candidate;
+    }
+
+    public Education getEducation() {
+        return education;
+    }
+
+    public void setEducation(Education education) {
+        this.education = education;
+    }
+
+    public Degree getDegree() {
+        return degree;
+    }
+
+    public void setDegree(Degree degree) {
+        this.degree = degree;
+    }
 }

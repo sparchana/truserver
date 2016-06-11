@@ -17,21 +17,21 @@ import java.sql.Timestamp;
 @Table(name = "timeshiftpreference")
 public class TimeShiftPreference extends Model {
     @Id
-    @Column(name = "TimeShiftPreferenceId", columnDefinition = "int signed", nullable = false, unique = true)
-    public int timeShiftPreferenceId = 0;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "TimeShiftPreferenceId", columnDefinition = "int signed", unique = true)
+    private int timeShiftPreferenceId;
 
-    @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp default current_timestamp null")
-    public Timestamp updateTimeStamp;
+    @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp null")
+    private Timestamp updateTimeStamp = new Timestamp(System.currentTimeMillis());
 
-    @OneToOne
     @JsonBackReference
-    @JoinColumn(name = "CandidateId", referencedColumnName = "CandidateId")
-    public Candidate candidate;
+    @OneToOne(mappedBy = "timeShiftPreference")
+    private Candidate candidate;
 
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "TimeShiftId", referencedColumnName = "TimeShiftId")
-    public TimeShift timeShift;
+    private TimeShift timeShift;
 
     public void setUpdateTimeStamp(Timestamp updateTimeStamp) {
         this.updateTimeStamp = updateTimeStamp;
@@ -43,4 +43,27 @@ public class TimeShiftPreference extends Model {
 
     public static Finder<String, TimeShiftPreference> find = new Finder(TimeShiftPreference.class);
 
+    public int getTimeShiftPreferenceId() {
+        return timeShiftPreferenceId;
+    }
+
+    public void setTimeShiftPreferenceId(int timeShiftPreferenceId) {
+        this.timeShiftPreferenceId = timeShiftPreferenceId;
+    }
+
+    public Timestamp getUpdateTimeStamp() {
+        return updateTimeStamp;
+    }
+
+    public Candidate getCandidate() {
+        return candidate;
+    }
+
+    public void setCandidate(Candidate candidate) {
+        this.candidate = candidate;
+    }
+
+    public TimeShift getTimeShift() {
+        return timeShift;
+    }
 }

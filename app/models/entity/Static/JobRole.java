@@ -17,30 +17,30 @@ import java.util.List;
 @Table(name = "jobrole")
 public class JobRole extends Model {
     @Id
-    @Column(name = "JobRoleId", columnDefinition = "bigint signed null", unique = true)
-    public long jobRoleId = 0;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "JobRoleId", columnDefinition = "bigint signed", unique = true)
+    private long jobRoleId;
 
     @Column(name = "JobName", columnDefinition = "varchar(255) null")
-    public String jobName = "";
+    private String jobName;
 
     @JsonBackReference
     @OneToMany(mappedBy = "jobRole")
-    public List<JobHistory> jobHistoryList;
+    private List<JobHistory> jobHistoryList;
 
     @JsonBackReference
     @OneToMany(mappedBy = "jobRole")
-    public List<JobPreference> jobPreferenceList;
+    private List<JobPreference> jobPreferenceList;
 
     @JsonBackReference
     @OneToMany(mappedBy = "jobRole")
-    public List<CandidateCurrentJobDetail> candidateCurrentJobDetailList;
+    private List<CandidateCurrentJobDetail> candidateCurrentJobDetailList;
 
     @JsonBackReference
     @OneToMany(mappedBy = "jobRole", cascade = CascadeType.REMOVE)
-    public List<JobToSkill> jobToSkillList;
+    private List<JobToSkill> jobToSkillList;
 
-    // static functions
-
+    public static Finder<String, JobRole> find = new Finder(JobRole.class);
 
     public long getJobRoleId() {
         return jobRoleId;
@@ -58,6 +58,35 @@ public class JobRole extends Model {
         this.jobName = jobName;
     }
 
-    public static Finder<String, JobRole> find = new Finder(JobRole.class);
+    public List<JobHistory> getJobHistoryList() {
+        return jobHistoryList;
+    }
 
+    public void setJobHistoryList(List<JobHistory> jobHistoryList) {
+        this.jobHistoryList = jobHistoryList;
+    }
+
+    public List<JobPreference> getJobPreferenceList() {
+        return jobPreferenceList;
+    }
+
+    public void setJobPreferenceList(List<JobPreference> jobPreferenceList) {
+        this.jobPreferenceList = jobPreferenceList;
+    }
+
+    public List<CandidateCurrentJobDetail> getCandidateCurrentJobDetailList() {
+        return candidateCurrentJobDetailList;
+    }
+
+    public void setCandidateCurrentJobDetailList(List<CandidateCurrentJobDetail> candidateCurrentJobDetailList) {
+        this.candidateCurrentJobDetailList = candidateCurrentJobDetailList;
+    }
+
+    public List<JobToSkill> getJobToSkillList() {
+        return jobToSkillList;
+    }
+
+    public void setJobToSkillList(List<JobToSkill> jobToSkillList) {
+        this.jobToSkillList = jobToSkillList;
+    }
 }

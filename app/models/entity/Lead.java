@@ -4,7 +4,6 @@ import api.ServerConstants;
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Static.LeadSource;
-import models.util.Util;
 import play.Logger;
 
 import javax.persistence.*;
@@ -20,51 +19,52 @@ import java.util.UUID;
 public class Lead extends Model {
 
     @Id
-    @Column(name = "LeadId", columnDefinition = "bigint signed null", nullable = false, unique = true)
-    public Long leadId;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "LeadId", columnDefinition = "bigint signed", unique = true)
+    private long leadId;
 
     @Column(name = "LeadUUId", columnDefinition = "varchar(255) not null", nullable = false, unique = true)
-    public String leadUUId = "";
+    private String leadUUId;
 
     @Column(name = "LeadStatus", columnDefinition = "int signed not null", nullable = false)
-    public Integer leadStatus; // new, TryingToConvert
+    private int leadStatus;
 
     @Column(name = "LeadName", columnDefinition = "varchar(50) not null", nullable = false)
-    public String leadName = "";
+    private String leadName;
 
     @Column(name = "LeadMobile", columnDefinition = "varchar(13) not null ", nullable = false)
-    public String leadMobile = "";
+    private String leadMobile;
 
     @Column(name = "LeadChannel", columnDefinition = "int signed not null", nullable = false)
-    public Integer leadChannel;
+    private int leadChannel;
 
     @Column(name = "LeadType", columnDefinition = "int signed not null", nullable = false)
-    public Integer leadType; // recruiter, candidate
+    private int leadType; // recruiter, candidate
 
     @Column(name = "LeadInterest", columnDefinition = "varchar(30)")
-    public String leadInterest = "";
+    private String leadInterest;
 
-    @Column(name = "LeadCreationTimestamp", columnDefinition = "timestamp default current_timestamp not null", nullable = false)
-    public Timestamp leadCreationTimestamp = new Timestamp(System.currentTimeMillis());
+    @Column(name = "LeadCreationTimestamp", columnDefinition = "timestamp not null", nullable = false)
+    private Timestamp leadCreationTimestamp;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonManagedReference
     @JoinColumn(name = "LeadSourceId", referencedColumnName = "leadSourceId")
-    public LeadSource leadSource;
+    private LeadSource leadSource;
 
     public static Finder<String, Lead> find = new Finder(Lead.class);
 
     public Lead(){
-        this.leadId = Util.randomLong();
         this.leadUUId = UUID.randomUUID().toString();
         this.leadStatus = ServerConstants.LEAD_STATUS_NEW;
+        this.leadCreationTimestamp = new Timestamp(System.currentTimeMillis());
     }
 
     public Lead(String leadName, String leadMobile, int leadChannel, int leadType, int leadSourceId) {
         LeadSource leadSource = LeadSource.find.where().eq("leadSourceId", leadSourceId).findUnique();
-        this.leadId = Util.randomLong();
         this.leadUUId = UUID.randomUUID().toString();
         this.leadStatus = ServerConstants.LEAD_STATUS_NEW;
+        this.leadCreationTimestamp = new Timestamp(System.currentTimeMillis());
         this.leadInterest = ServerConstants.LEAD_INTEREST_UNKNOWN; // TODO: tobe Deprecated
         this.leadName = leadName;
         this.leadMobile = leadMobile;
@@ -72,7 +72,7 @@ public class Lead extends Model {
         this.leadType = leadType;
         this.setLeadSource(leadSource);
         if(leadSource != null) {
-            Logger.info("LeadSourceId set to "+this.leadSource.leadSourceId);
+            Logger.info("LeadSourceId set to "+this.leadSource.getLeadSourceId());
         } else {
             // leadsouce saved is null
             Logger.info("LeadSource Static Table doesn't have entry for LeadSourceId: " + leadSourceId);
@@ -134,4 +134,31 @@ public class Lead extends Model {
         this.leadName = leadName;
     }
 
+    public void setLeadUUId(String leadUUId) {
+        this.leadUUId = leadUUId;
+    }
+
+    public int getLeadStatus() {
+        return leadStatus;
+    }
+
+    public int getLeadChannel() {
+        return leadChannel;
+    }
+
+    public void setLeadChannel(int leadChannel) {
+        this.leadChannel = leadChannel;
+    }
+
+    public String getLeadInterest() {
+        return leadInterest;
+    }
+
+    public void setLeadInterest(String leadInterest) {
+        this.leadInterest = leadInterest;
+    }
+
+    public LeadSource getLeadSource() {
+        return leadSource;
+    }
 }
