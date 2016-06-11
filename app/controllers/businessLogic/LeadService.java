@@ -25,12 +25,15 @@ public class LeadService {
                     leadSourceId
             );
             lead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
+            lead.setLeadType(ServerConstants.TYPE_CANDIDATE);
             LeadService.createLead(lead, isSupport);
             Logger.info("New Lead Created Successfully");
             return lead;
         }
         else {
             //TODO: No leadUpdateTimeStamp available though lead is updatable
+            existingLead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
+            existingLead.setLeadType(ServerConstants.TYPE_CANDIDATE);
             existingLead.setLeadSource(getLeadSourceFromLeadSourceId(leadSourceId));
             if(existingLead.getLeadName().trim().isEmpty()){
                 existingLead.setLeadName(leadName);
