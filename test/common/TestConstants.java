@@ -2,6 +2,8 @@ package common;
 
 import api.http.CandidateKnownLanguage;
 import api.http.CandidateSkills;
+import models.entity.Static.JobRole;
+import models.entity.Static.Locality;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -58,11 +60,11 @@ public class TestConstants {
     //Skills
     public static final List<CandidateSkills> testCandidateSkillList = new ArrayList<CandidateSkills>() {{
         CandidateSkills candidateSkill1 = new CandidateSkills();
-        candidateSkill1.setId("1");
+        candidateSkill1.setId("7");
         candidateSkill1.setQualifier("Yes");
 
         CandidateSkills candidateSkill2 = new CandidateSkills();
-        candidateSkill2.setId("2");
+        candidateSkill2.setId("8");
         candidateSkill2.setQualifier("No");
 
         add(candidateSkill1);
@@ -84,5 +86,37 @@ public class TestConstants {
     public static final String testCandidateEducationInstitute = "Test Education Institute";
     public static final Integer testCandidateDegree = 1;
     public static final Integer testCandidateEducationLevel = 1;
+    // other informations
+    public static final Integer testCandidateHomeLocality = 1;
+
+    //id proof preference
+    public static final List<Integer> testCandidateIdProof = new ArrayList<Integer>(){{
+        add(1); add(2);
+    }};
+    public static final String testCandidatePastCompany = "Test Past Company";
+    public static final Long testCandidatePastJobSalary = 11000L;
+    public static final Integer testCandidatePastJobRole = 1;
+
+    public static final List<JobRole> testCandidateJobInterestResult = new ArrayList<JobRole>() {{
+        JobRole jobRole = new JobRole();
+        jobRole.setJobRoleId(1);
+        jobRole.setJobName("TestA");
+        add(jobRole);
+        jobRole.setJobRoleId(2);
+        jobRole.setJobName("TestB");
+        jobRole.setJobRoleId(3);
+        jobRole.setJobName("TestC");
+        add(jobRole);
+        add(jobRole);
+    }};
+    public static final List<Locality> testCandidateLocalityPreferenceResult = new ArrayList<Locality>() {{
+        Locality locality = new Locality();
+        locality.setLocalityId(1);
+        add(locality);
+        locality.setLocalityId(2);
+        add(locality);
+        locality.setLocalityId(3);
+        add(locality);
+    }};
 
 }

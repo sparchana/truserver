@@ -8,12 +8,12 @@ import controllers.businessLogic.CandidateService;
 import models.entity.Candidate;
 import models.entity.Interaction;
 import models.entity.Lead;
+import models.entity.OM.JobHistory;
+import models.entity.Static.Locality;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.InjectMocks;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import play.Application;
 import play.api.mvc.RequestHeader;
 import play.mvc.Http;
@@ -37,8 +37,6 @@ public class CandidateServiceTest {
 
     @InjectMocks
     private CandidateServiceTest candidateServiceTest;
-
-    private static final Logger Logger = LoggerFactory.getLogger(CandidateServiceTest.class.getName());
 
     private Application fakeApp;
 
@@ -65,17 +63,15 @@ public class CandidateServiceTest {
         Http.Context.current.set(context);
     }
 
-    @Before
     public void setUpSignUpWebsiteMandatoryFields() {
         req = new AddCandidateRequest();
-        req.setCandidateFirstName(TestConstants.testCandidateName);
-        req.setCandidateSecondName(TestConstants.testCandidateLastName);
-        req.setCandidateMobile(TestConstants.testCandidateMobile);
-        req.setCandidateJobInterest(TestConstants.testCandidateJobInterest );
+        req.setCandidateFirstName(testCandidateName);
+        req.setCandidateSecondName(testCandidateLastName);
+        req.setCandidateMobile(testCandidateMobile);
+        req.setCandidateJobInterest(testCandidateJobInterest);
         req.setCandidateLocality(testCandidateLocalityPreference);
         fakeApp = fakeApplication();
     }
-
     @Before
     public void setUpSignSupportMandatoryFields() {
         supportCandidateRequest.setCandidateFirstName(testCandidateName);
@@ -122,6 +118,22 @@ public class CandidateServiceTest {
         fakeApp = fakeApplication();
     }
 
+    @Before
+    public void setUpCandidateOtherInformationOnlyBySupport(){
+        setUpCandidateEducationProfile();
+        supportCandidateRequest.setCandidateHomeLocality(testCandidateHomeLocality);
+        supportCandidateRequest.setCandidatePhoneType(testCandidatePhoneType);
+        supportCandidateRequest.setCandidateEmail(testCandidateEmail);
+        supportCandidateRequest.setCandidateMaritalStatus(testCandidateMaritalStatus);
+        supportCandidateRequest.setCandidateAppointmentLetter(testCandidateAppointmentLetter);
+        supportCandidateRequest.setCandidateSalarySlip(testCandidateSalarySlip);
+        supportCandidateRequest.setCandidateIdProof(testCandidateIdProof);
+        supportCandidateRequest.setCandidatePastJobCompany(testCandidatePastCompany);
+        supportCandidateRequest.setCandidatePastJobSalary(testCandidatePastJobSalary);
+        supportCandidateRequest.setCandidatePastJobRole(testCandidatePastJobRole);
+        fakeApp = fakeApplication();
+    }
+
     public void testSignUpWebsiteMandatoryFields() {
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
         running(server, () -> {
@@ -131,8 +143,17 @@ public class CandidateServiceTest {
         });
     }
 
-    @Test
     public void testSignUpSupportMandatoryFields() {
+        TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
+        running(server, () -> {
+            cleanDB();
+            CandidateService.createCandidateProfile(supportCandidateRequest, true, ServerConstants.UPDATE_ALL_BY_SUPPORT);
+            CandidateMandatoryCheck(true);
+        });
+    }
+
+    @Test
+    public void testSignUpSupportAllFields() {
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
         running(server, () -> {
             cleanDB();
@@ -141,9 +162,9 @@ public class CandidateServiceTest {
             checkCandidateBasicProfile();
             checkCandidateSkillProfile();
             checkCandidateEducationProfile();
+            checkCandidateOtherInformationOnlyBySupport();
         });
     }
-
 
     public void checkCandidateBasicProfile() {
         Lead lead  = Lead.find.where().eq("leadMobile", testCandidateMobile).findUnique();
@@ -230,6 +251,40 @@ public class CandidateServiceTest {
 
     }
 
+    public void checkCandidateOtherInformationOnlyBySupport(){
+        Locality homeLocality = new Locality();
+        homeLocality.setLocalityId(testCandidateHomeLocality);
+
+        Lead lead  = Lead.find.where().eq("leadMobile", testCandidateMobile).findUnique();
+        System.out.println("Session Id: " + session().get("sessionId") + " sessionUsername " + session().get("sessionUsername"));
+
+        assertTrue(lead != null);
+        assertEquals(lead.getLeadStatus(), ServerConstants.LEAD_STATUS_WON);
+        assertEquals(lead.getLeadType(), ServerConstants.TYPE_CANDIDATE);
+
+        Candidate candidate = CandidateService.isCandidateExists(testCandidateMobile);
+        assertTrue(candidate != null);
+
+        assertEquals(candidate.getLocality(), homeLocality);
+        assertEquals(candidate.getCandidatePhoneType(), testCandidatePhoneType);
+        assertEquals(candidate.getCandidateEmail(), testCandidateEmail);
+        assertEquals(candidate.getCandidateMaritalStatus(), testCandidateMaritalStatus);
+        assertEquals(candidate.getCandidateAppointmentLetter(), testCandidateAppointmentLetter);
+        assertEquals(candidate.getCandidateSalarySlip(), testCandidateSalarySlip);
+
+
+        for(JobHistory jobHistory: candidate.getJobHistoryList()){
+            assertEquals(jobHistory.getJobRole().getJobRoleId(), (long) testCandidatePastJobRole);
+            assertEquals(jobHistory.getCandidatePastCompany(), testCandidatePastCompany);
+            assertEquals(jobHistory.getCandidatePastSalary(), testCandidatePastJobSalary);
+        }
+
+        assertTrue(candidate.getIdProofReferenceList()!= null);
+        for(int i=0; i< candidate.getIdProofReferenceList().size(); i++) {
+            assertEquals(candidate.getIdProofReferenceList().get(i).getIdProof().getIdProofId(),(long) testCandidateIdProof.get(i));
+        }
+    }
+
 
     public void cleanup(){
         cleanDB();
@@ -271,7 +326,7 @@ public class CandidateServiceTest {
 
         assertTrue(candidate.getLocalityPreferenceList()!= null);
         for(int i=0; i< candidate.getLocalityPreferenceList().size(); i++){
-            assertEquals(candidate.getLocalityPreferenceList().get(i).getLocality().getLocalityId(), (long) testCandidateLocalityPreference.get(i));
+            assertEquals(candidate.getLocalityPreferenceList().get(i).getLocality().getLocalityId(),(long) testCandidateLocalityPreference.get(i));
         }
 
         assertTrue(candidate.getJobPreferencesList()!= null);
