@@ -41,11 +41,11 @@ public class SearchCandidateRequest {
     }
 
     public String getCandidateMobile() {
-        return FormValidator.indianMobilePattern(candidateMobile);
+        return FormValidator.convertToIndianMobileFormat(candidateMobile);
     }
 
     public void setCandidateMobile(String candidateMobile) {
-        this.candidateMobile = FormValidator.indianMobilePattern(candidateMobile);
+        this.candidateMobile = FormValidator.convertToIndianMobileFormat(candidateMobile);
     }
 
     public void setCandidateJobInterest(List<Integer> candidateJobInterest) {

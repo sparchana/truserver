@@ -13,19 +13,19 @@ public class ResetPasswordResquest {
     protected String forgotPasswordNewMobile;
 
     public void setResetPasswordMobile(String resetPasswordMobile) {
-        this.resetPasswordMobile = FormValidator.indianMobilePattern(resetPasswordMobile);
+        this.resetPasswordMobile = FormValidator.convertToIndianMobileFormat(resetPasswordMobile);
     }
 
     public String getResetPasswordMobile() {
-        return FormValidator.indianMobilePattern(resetPasswordMobile);
+        return FormValidator.convertToIndianMobileFormat(resetPasswordMobile);
     }
 
     public void setCandidateForgotMobile(String candidateForgotMobile) {
-        this.candidateForgotMobile = FormValidator.indianMobilePattern(candidateForgotMobile);
+        this.candidateForgotMobile = FormValidator.convertToIndianMobileFormat(candidateForgotMobile);
     }
 
     public String getCandidateForgotMobile() {
-        return FormValidator.indianMobilePattern(candidateForgotMobile);
+        return FormValidator.convertToIndianMobileFormat(candidateForgotMobile);
     }
 
     public void setCandidateNewPassword(String candidateNewPassword) {
@@ -37,10 +37,10 @@ public class ResetPasswordResquest {
     }
 
     public void setForgotPasswordNewMobile(String forgotPasswordNewMobile) {
-        this.forgotPasswordNewMobile = FormValidator.indianMobilePattern(forgotPasswordNewMobile);
+        this.forgotPasswordNewMobile = FormValidator.convertToIndianMobileFormat(forgotPasswordNewMobile);
     }
 
     public String getForgotPasswordNewMobile() {
-        return FormValidator.indianMobilePattern(forgotPasswordNewMobile);
+        return FormValidator.convertToIndianMobileFormat(forgotPasswordNewMobile);
     }
 }

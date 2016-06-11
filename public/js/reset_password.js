@@ -93,8 +93,12 @@ $(function() {
 
     $("#form_password_reset_new").submit(function(eventObj) {
         eventObj.preventDefault();
-        if(($('#candidateNewPassword').val()).length < 6){
+        var userPwd = $('#candidateNewPassword').val();
+        var passwordCheck = validatePassword(userPwd);
+        if(passwordCheck == 0){
             alert("Minimum 6 characters password required");
+        } else if(passwordCheck == 1){
+            alert("Enter a valid password");
         }
         else{
             document.getElementById("resetNewPasswordBtn").disabled = true;

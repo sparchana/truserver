@@ -154,10 +154,14 @@ $(function() {
 $(function() {
     $("#form_auth").submit(function(eventObj) {
         eventObj.preventDefault();
-        if(($('#candidatePassword').val()).length < 6){
+        var userPwd = $('#candidatePassword').val();
+        var passwordCheck = validatePassword(userPwd);
+        if(passwordCheck == 0){
             alert("Minimum 6 characters password required");
+        } else if(passwordCheck == 1){
+            alert("Enter a valid password");
         }
-        else {
+        else{
             document.getElementById("btnSubmit").disabled = true;
             try {
                 var authPassword = $('#candidatePassword').val();

@@ -52,10 +52,10 @@ public class CandidateSignUpRequest {
     }
 
     public void setCandidateMobile(String candidateMobile) {
-        this.candidateMobile = FormValidator.indianMobilePattern(candidateMobile);
+        this.candidateMobile = FormValidator.convertToIndianMobileFormat(candidateMobile);
     }
     public String getCandidateMobile() {
-        return FormValidator.indianMobilePattern(candidateMobile);
+        return FormValidator.convertToIndianMobileFormat(candidateMobile);
     }
 
     public void setCandidatePassword(String candidatePassword) {
@@ -67,8 +67,8 @@ public class CandidateSignUpRequest {
     }
 
     public void setCandidateAuthMobile(String candidateAuthMobile) {
-        this.candidateAuthMobile = FormValidator.indianMobilePattern(candidateAuthMobile);
+        this.candidateAuthMobile = FormValidator.convertToIndianMobileFormat(candidateAuthMobile);
     }
 
-    public String getCandidateAuthMobile() { return FormValidator.indianMobilePattern(candidateAuthMobile); }
+    public String getCandidateAuthMobile() { return FormValidator.convertToIndianMobileFormat(candidateAuthMobile); }
 }

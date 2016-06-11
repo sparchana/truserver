@@ -9,10 +9,10 @@ public class LoginRequest {
     protected String candidateLoginMobile;
     protected String candidateLoginPassword;
 
-    public void setCandidateLoginMobile(String candidateLoginMobile) { this.candidateLoginMobile = FormValidator.indianMobilePattern(candidateLoginMobile); }
+    public void setCandidateLoginMobile(String candidateLoginMobile) { this.candidateLoginMobile = FormValidator.convertToIndianMobileFormat(candidateLoginMobile); }
 
     public String getCandidateLoginMobile() {
-        return FormValidator.indianMobilePattern(candidateLoginMobile);
+        return FormValidator.convertToIndianMobileFormat(candidateLoginMobile);
     }
 
     public void setCandidateLoginPassword(String candidateLoginPassword) {

@@ -21,11 +21,11 @@ public class AddLeadRequest {
     }
 
     public void setLeadMobile(String leadMobile) {
-        this.leadMobile = FormValidator.indianMobilePattern(leadMobile);
+        this.leadMobile = FormValidator.convertToIndianMobileFormat(leadMobile);
     }
 
     public String getLeadMobile() {
-        return FormValidator.indianMobilePattern(leadMobile);
+        return FormValidator.convertToIndianMobileFormat(leadMobile);
     }
 
     public void setLeadType(int leadType) {

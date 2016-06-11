@@ -17,10 +17,23 @@ function validateMobile(mobile) {
 function validateName(name) {
     var validName = /^[a-zA-Z]+$/;
     if (!validName.test(name)) {
-        console.log("One down");
         return 0;
     }
     else{
         return 1;
+    }
+}
+
+function validatePassword(password) {
+    var inValidPassword = /^[ ]+$/;
+    if(password.length < 6){
+        return 0; // less than 6 characters
+    }
+    if (inValidPassword.test(password)) {
+        console.log("Password with blank spaces");
+        return 1; // password is of blank space(s)
+    }
+    else{
+        return 2; // valid password
     }
 }
