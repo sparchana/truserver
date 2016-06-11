@@ -575,7 +575,7 @@ public class CandidateService {
     public static LoginResponse login(String loginMobile, String loginPassword){
         LoginResponse loginResponse = new LoginResponse();
         Logger.info(" login mobile: " + loginMobile);
-        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", "+91" + loginMobile).findUnique();
+        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", loginMobile).findUnique();
         if(existingCandidate == null){
             loginResponse.setStatus(loginResponse.STATUS_NO_USER);
             Logger.info("User Does not Exists");

@@ -177,6 +177,7 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Logger.info("Req JSON : " + req);
         boolean isSupport = false;
         return ok(toJson(CandidateService.createCandidateProfile(addCandidateRequest, isSupport, ServerConstants.UPDATE_BASIC_PROFILE)));
     }
@@ -233,6 +234,7 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Logger.info("req JSON: " + req );
         String loginMobile = loginRequest.getCandidateLoginMobile();
         String loginPassword = loginRequest.getCandidateLoginPassword();
 

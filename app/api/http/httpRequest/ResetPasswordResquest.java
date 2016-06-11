@@ -1,6 +1,6 @@
 package api.http.httpRequest;
 
-import models.util.Validator;
+import api.http.FormValidator;
 
 /**
  * Created by batcoder1 on 28/4/16.
@@ -13,19 +13,19 @@ public class ResetPasswordResquest {
     protected String forgotPasswordNewMobile;
 
     public void setResetPasswordMobile(String resetPasswordMobile) {
-        this.resetPasswordMobile = Validator.indianMobilePattern(resetPasswordMobile);
+        this.resetPasswordMobile = FormValidator.indianMobilePattern(resetPasswordMobile);
     }
 
     public String getResetPasswordMobile() {
-        return Validator.indianMobilePattern(resetPasswordMobile);
+        return FormValidator.indianMobilePattern(resetPasswordMobile);
     }
 
     public void setCandidateForgotMobile(String candidateForgotMobile) {
-        this.candidateForgotMobile = Validator.indianMobilePattern(candidateForgotMobile);
+        this.candidateForgotMobile = FormValidator.indianMobilePattern(candidateForgotMobile);
     }
 
     public String getCandidateForgotMobile() {
-        return Validator.indianMobilePattern(candidateForgotMobile);
+        return FormValidator.indianMobilePattern(candidateForgotMobile);
     }
 
     public void setCandidateNewPassword(String candidateNewPassword) {
@@ -37,10 +37,10 @@ public class ResetPasswordResquest {
     }
 
     public void setForgotPasswordNewMobile(String forgotPasswordNewMobile) {
-        this.forgotPasswordNewMobile = Validator.indianMobilePattern(forgotPasswordNewMobile);
+        this.forgotPasswordNewMobile = FormValidator.indianMobilePattern(forgotPasswordNewMobile);
     }
 
     public String getForgotPasswordNewMobile() {
-        return Validator.indianMobilePattern(forgotPasswordNewMobile);
+        return FormValidator.indianMobilePattern(forgotPasswordNewMobile);
     }
 }

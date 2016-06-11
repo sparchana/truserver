@@ -17,6 +17,7 @@ function validateMobile(mobile) {
 function validateName(name) {
     var validName = /^[a-zA-Z]+$/;
     if (!validName.test(name)) {
+        console.log("One down");
         return 0;
     }
     else{
