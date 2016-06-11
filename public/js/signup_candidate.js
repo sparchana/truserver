@@ -157,9 +157,9 @@ $(function() {
         var userPwd = $('#candidatePassword').val();
         var passwordCheck = validatePassword(userPwd);
         if(passwordCheck == 0){
-            alert("Minimum 6 characters password required");
+            alert("Please set min 6 chars for password");
         } else if(passwordCheck == 1){
-            alert("Enter a valid password");
+            alert("Password cannot have blank spaces. Enter a valid password");
         }
         else{
             document.getElementById("btnSubmit").disabled = true;
