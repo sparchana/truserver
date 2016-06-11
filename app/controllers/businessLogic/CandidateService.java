@@ -179,9 +179,9 @@ public class CandidateService {
 
         if(flag == ServerConstants.UPDATE_BASIC_PROFILE || flag == ServerConstants.UPDATE_ALL_BY_SUPPORT){
             candidateSignUpResponse = updateBasicProfile(candidate, request, flag);
-            interactionResult = flag == ServerConstants.UPDATE_ALL_BY_SUPPORT ?
-                    ServerConstants.INTERACTION_RESULT_CANDIDATE_BASIC_PROFILE_INFO_UPDATED_SYSTEM:
-                    ServerConstants.INTERACTION_RESULT_CANDIDATE_BASIC_PROFILE_INFO_UPDATED_SELF;
+            if(flag == ServerConstants.UPDATE_BASIC_PROFILE){
+                interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_BASIC_PROFILE_INFO_UPDATED_SELF;
+            }
             if(candidateSignUpResponse.getStatus() != CandidateSignUpResponse.STATUS_SUCCESS){
                 return candidateSignUpResponse;
             }
@@ -189,9 +189,9 @@ public class CandidateService {
 
         if(flag == ServerConstants.UPDATE_SKILLS_PROFILE || flag == ServerConstants.UPDATE_ALL_BY_SUPPORT){
             candidateSignUpResponse = updateSkillProfile(candidate, (AddCandidateExperienceRequest) request, flag, isSupport);
-            interactionResult = flag == ServerConstants.UPDATE_ALL_BY_SUPPORT ?
-                    ServerConstants.INTERACTION_RESULT_CANDIDATE_SKILLS_PROFILE_INFO_UPDATED_SYSTEM:
-                    ServerConstants.INTERACTION_RESULT_CANDIDATE_SKILLS_PROFILE_INFO_UPDATED_SELF;
+            if(flag == ServerConstants.UPDATE_SKILLS_PROFILE){
+                interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_SKILLS_PROFILE_INFO_UPDATED_SELF;
+            }
             if(candidateSignUpResponse.getStatus() != CandidateSignUpResponse.STATUS_SUCCESS){
                 return candidateSignUpResponse;
             }
@@ -199,9 +199,9 @@ public class CandidateService {
 
         if(flag == ServerConstants.UPDATE_EDUCATION_PROFILE || flag == ServerConstants.UPDATE_ALL_BY_SUPPORT){
             candidateSignUpResponse = updateEducationProfile(candidate, (AddCandidateEducationRequest) request, flag);
-            interactionResult = flag == ServerConstants.UPDATE_ALL_BY_SUPPORT ?
-                    ServerConstants.INTERACTION_RESULT_CANDIDATE_EDUCATION_PROFILE_INFO_UPDATED_SYSTEM:
-                    ServerConstants.INTERACTION_RESULT_CANDIDATE_EDUCATION_PROFILE_INFO_UPDATED_SELF;
+            if(flag == ServerConstants.UPDATE_EDUCATION_PROFILE){
+                interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_EDUCATION_PROFILE_INFO_UPDATED_SELF;
+            }
             if(candidateSignUpResponse.getStatus() != CandidateSignUpResponse.STATUS_SUCCESS){
                 return candidateSignUpResponse;
             }
@@ -214,6 +214,7 @@ public class CandidateService {
             createdBy = session().get("sessionUsername");
             interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT;
             interactionNote = ServerConstants.INTERACTION_NOTE_CALL_OUTBOUNDS;
+            interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM;
         }
 
         Auth auth = AuthService.isAuthExists(candidate.getCandidateId());
