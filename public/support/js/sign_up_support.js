@@ -891,15 +891,42 @@ function prefillAll() {
     }
 }
 function saveProfileForm(){
+    var statusCheck = 1;
+    var firstName = $('#candidateFirstName').val();
+    var lastName = $('#candidateSecondName').val();
+    var phone = $('#candidateMobile').val();
+    var firstNameCheck = validateName(firstName);
+    var lastNameCheck = validateName(lastName);
+    var res = validateMobile(phone);
+
     var localitySelected = $('#candidateLocalityPref').val();
     var jobSelected = $('#candidateJobPref').val();
 
-    if (localitySelected == "") {
+    if(firstNameCheck == 0){
+        alert("Please Enter First Name");
+        statusCheck=0;
+    }
+    else if(lastNameCheck == 0){
+        alert("Please Enter your Last Name");
+        statusCheck=0;
+    }
+    else if(res == 0){ // invalid mobile
+        alert("Enter a valid mobile number");
+        statusCheck=0;
+    }
+    else if(res == 1){ // mobile no. less than 1 digits
+        alert("Enter 10 digit mobile number");
+        statusCheck=0;
+    }
+    else if(localitySelected == "") {
         alert("Please Enter your Job Localities");
-    } else if (jobSelected == "") {
+        statusCheck=0;
+    }
+    else if(jobSelected == "") {
         alert("Please Enter the Jobs you are Interested");
-    } 
-    else{
+        statusCheck=0;
+    }
+    if(statusCheck == 1){
         var languageKnown = $('#languageTable input:checked').map(function() {
             check=0;
             var id = this.id;

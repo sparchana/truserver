@@ -1,7 +1,7 @@
 package api.http.httpRequest;
 
 import api.ServerConstants;
-import play.Logger;
+import api.http.FormValidator;
 
 import java.util.Date;
 import java.util.List;
@@ -42,15 +42,10 @@ public class AddCandidateRequest {
     }
 
     public void setCandidateMobile(String candidateMobile) {
-        if(candidateMobile.length() == 10){
-            Logger.info("adding +91 to " + candidateMobile);
-            this.candidateMobile = "+91" + candidateMobile;
-        } else{
-            this.candidateMobile = candidateMobile;
-        }
+            this.candidateMobile = FormValidator.convertToIndianMobileFormat(candidateMobile);
     }
     public String getCandidateMobile() {
-        return candidateMobile;
+        return FormValidator.convertToIndianMobileFormat(candidateMobile);
     }
 
     public List<Integer> getCandidateJobInterest() {

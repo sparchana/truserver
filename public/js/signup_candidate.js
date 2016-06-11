@@ -53,21 +53,44 @@ function processDataAddAuth(returnedData) {
 $(function() {
     $("#form_signup_candidate").submit(function(eventObj) {
         eventObj.preventDefault();
+        var statusCheck = 1;
+        var firstName = $('#candidateName').val();
+        var lastName = $('#candidateSecondName').val();
+        var phone = $('#candidateMobile').val();
+        var firstNameCheck = validateName(firstName);
+        var lastNameCheck = validateName(lastName);
+        var res = validateMobile(phone);
         var localitySelected = $('#candidateLocality').val();
         var jobSelected = $('#candidateJobPref').val();
-        if (localitySelected == "") {
-            alert("Please Enter your Job Localities");
-        } else if (jobSelected == "") {
-            alert("Please Enter the Jobs you are Interested");
+        
+        if(firstNameCheck == 0){
+            alert("Please Enter First Name");
+            statusCheck=0;
+        } 
+        else if(lastNameCheck == 0){
+            alert("Please Enter your Last Name");
+            statusCheck=0;
         }
-        else{
+        else if(res == 0){ // invalid mobile
+            alert("Enter a valid mobile number");
+            statusCheck=0;
+        }
+        else if(res == 1){ // mobile no. less than 1 digits
+            alert("Enter 10 digit mobile number");
+            statusCheck=0;
+        }
+        else if(localitySelected == "") {
+            alert("Please Enter your Job Localities");
+            statusCheck=0;
+        }
+        else if(jobSelected == "") {
+            alert("Please Enter the Jobs you are Interested");
+            statusCheck=0;
+        }
+        if(statusCheck == 1){
+            candidateMobile = phone;
             document.getElementById("registerBtn").disabled = true;
             try {
-                var name  = $('#candidateName').val();
-                var secondName  = $('#candidateSecondName').val();
-                var phone = $('#candidateMobile').val();
-                candidateMobile = phone;
-
                 var candidatePreferredJob = [];
                 var candidatePreferredLocality = [];
 
@@ -85,8 +108,8 @@ $(function() {
 
                 $('#alreadyMsgCandidate').hide();
                 var d = {
-                    candidateName : name,
-                    candidateSecondName : secondName,
+                    candidateName : firstName,
+                    candidateSecondName : lastName,
                     candidateMobile : phone,
                     candidateLocality : candidatePreferredLocality,
                     candidateJobPref : candidatePreferredJob
@@ -131,10 +154,14 @@ $(function() {
 $(function() {
     $("#form_auth").submit(function(eventObj) {
         eventObj.preventDefault();
-        if(($('#candidatePassword').val()).length < 6){
-            alert("Minimum 6 characters password required");
+        var userPwd = $('#candidatePassword').val();
+        var passwordCheck = validatePassword(userPwd);
+        if(passwordCheck == 0){
+            alert("Please set min 6 chars for password");
+        } else if(passwordCheck == 1){
+            alert("Password cannot have blank spaces. Enter a valid password");
         }
-        else {
+        else{
             document.getElementById("btnSubmit").disabled = true;
             try {
                 var authPassword = $('#candidatePassword').val();

@@ -146,6 +146,17 @@ public class CandidateService {
         Logger.info("inside create candidate " + request.candidateMobile);
         Candidate candidate = isCandidateExists(request.candidateMobile);
 
+        String createdBy = ServerConstants.INTERACTION_CREATED_SELF;
+        String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SELF;
+        Integer interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+        String interactionNote = ServerConstants.INTERACTION_NOTE_SELF_PROFILE_CREATION;
+        if(isSupport){
+            createdBy = session().get("sessionUsername");
+            interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM;
+            interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT;
+            interactionNote = ServerConstants.INTERACTION_NOTE_CALL_OUTBOUNDS;
+        }
+
         if(candidate == null){
             Logger.info("No existing candidate | New Candidate");
             candidate = new Candidate();
@@ -167,6 +178,8 @@ public class CandidateService {
             // lead is getting updated inside signUpCandidate
 
             CandidateSignUpResponse candidateSignUpResponse = signUpCandidate(candidate, isSupport, request.leadSource);
+
+            interactionResult = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE_SUPPORT;
 
             // 1st call to basic signUpCandidate
             if(candidateSignUpResponse.equals(CandidateSignUpResponse.STATUS_FAILURE)) {
@@ -348,7 +361,6 @@ public class CandidateService {
                 Logger.info(" try catch exception = " + e);
             }
         }
-        String interactionNote = ServerConstants.INTERACTION_NOTE_SELF_PROFILE_CREATION;
         Auth auth = Auth.find.where().eq("CandidateId", candidate.candidateId).findUnique();
         if (auth == null) {
             if(isSupport){
@@ -358,15 +370,6 @@ public class CandidateService {
             }
         }
 
-        String createdBy = ServerConstants.INTERACTION_CREATED_SELF;
-        Integer interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
-        String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SELF;
-        if(isSupport){
-            createdBy = session().get("sessionUsername");
-            interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM;
-            interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT;
-            interactionNote = ServerConstants.INTERACTION_NOTE_CALL_OUTBOUNDS;
-        }
         Interaction interaction = new Interaction(
                 candidate.candidateUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
@@ -379,13 +382,17 @@ public class CandidateService {
         InteractionService.createInteraction(interaction);
 
         /* check Min Profile */
-        if(candidate.candidateName != null && candidate.candidateLastName != null && candidate.candidateMobile != null && candidate.candidateDOB != null &&
-                candidate.candidateGender != null && candidate.candidateTotalExperience != null && candidate.candidateEducation != null &&
-                candidate.timeShiftPreference != null && candidate.languageKnownList.size() > 0){
-            candidate.setIsMinProfileComplete(ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE);
-        }
-        else{
-            candidate.setIsMinProfileComplete(ServerConstants.CANDIDATE_MIN_PROFILE_NOT_COMPLETE);
+        candidate.setIsMinProfileComplete(ServerConstants.CANDIDATE_MIN_PROFILE_NOT_COMPLETE);
+        if(candidate.candidateName != null && candidate.candidateLastName != null && candidate.candidateMobile != null
+                && candidate.candidateDOB != null && candidate.candidateGender != null
+                && candidate.candidateTotalExperience != null && candidate.candidateEducation != null
+                && candidate.timeShiftPreference != null && candidate.languageKnownList.size() > 0){
+            if(candidate.candidateIsEmployed == 0) {
+                candidate.setIsMinProfileComplete(ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE);
+            }
+            else if(candidate.candidateCurrentJobDetail.candidateCurrentSalary != null) {
+                candidate.setIsMinProfileComplete(ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE);
+            }
         }
         candidate.update();
         Logger.info("candidate CreatedBySupportSuccessfully " + candidate.candidateMobile);
@@ -575,7 +582,7 @@ public class CandidateService {
     public static LoginResponse login(String loginMobile, String loginPassword){
         LoginResponse loginResponse = new LoginResponse();
         Logger.info(" login mobile: " + loginMobile);
-        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", "+91" + loginMobile).findUnique();
+        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", loginMobile).findUnique();
         if(existingCandidate == null){
             loginResponse.setStatus(loginResponse.STATUS_NO_USER);
             Logger.info("User Does not Exists");
@@ -615,9 +622,9 @@ public class CandidateService {
 
     public static ResetPasswordResponse findUserAndSendOtp(String candidateMobile){
         ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
-        Candidate existingCandidate = isCandidateExists("+91"+candidateMobile);
+        Candidate existingCandidate = isCandidateExists(candidateMobile);
         if(existingCandidate != null){
-            Logger.info("CandidateExists");
+            Logger.info("CandidateExists: " + candidateMobile);
             Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.candidateId).findUnique();
             if(existingAuth == null){
                 resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
