@@ -381,10 +381,10 @@ public class CandidateService {
         if(candidate.candidateName != null && candidate.candidateLastName != null && candidate.candidateMobile != null && candidate.candidateDOB != null &&
                 candidate.candidateGender != null && candidate.candidateTotalExperience != null && candidate.candidateEducation != null &&
                 candidate.timeShiftPreference != null && candidate.languageKnownList.size() > 0){
-            if(candidate.candidateIsEmployed == 0 && candidate.candidateCurrentJobDetail.candidateCurrentSalary == null) {
+            if(candidate.candidateIsEmployed == 0) {
                 candidate.setIsMinProfileComplete(ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE);
             }
-            if(candidate.candidateIsEmployed == 1 && candidate.candidateCurrentJobDetail.candidateCurrentSalary != null) {
+            else if(candidate.candidateCurrentJobDetail.candidateCurrentSalary != null) {
                 candidate.setIsMinProfileComplete(ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE);
             }
         }
