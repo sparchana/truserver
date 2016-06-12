@@ -188,7 +188,7 @@ function renderSearchResult(returnedData) {
 
             returnedDataArray.push({
                 'cLID': '<a href="/candidateSignupSupport/'+newCandidate.lead.leadId+'" target="_blank">'+newCandidate.lead.leadId+'</a>',
-                'candidateName' : newCandidate.candidateName,
+                "candidateFirstName" : newCandidate.candidateFirstName,
                 'candidateMobile' : newCandidate.candidateMobile,
                 'candidateCurrentSalary' : getCurrentSalary(newCandidate.candidateCurrentJobDetail),
                 'candidateJobPref' :  getJobPref(newCandidate.jobPreferencesList),
@@ -218,7 +218,7 @@ function renderSearchResult(returnedData) {
             "scrollX": true,
             "columns": [
                 { "data": "cLID" },
-                { "data": "candidateName" },
+                { "data": "candidateFirstName" },
                 { "data": "candidateMobile" },
                 { "data": "candidateJobPref" },
                 { "data": "candidateLocalityPref" },
@@ -291,7 +291,7 @@ function searchForm(){
     }
     /* ajax commands to fetch all localities and jobs*/
     var d = {
-        candidateName: $('#candidateName').val(),
+        candidateFirstName: $('#candidateFirstName').val(),
         candidateMobile: $('#candidateMobile').val(),
         candidateLocality: localityArray,
         candidateJobInterest: jobArray,

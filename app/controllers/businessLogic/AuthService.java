@@ -43,7 +43,7 @@ public class AuthService {
                 setNewPassword(existingAuth, password);
                 Auth.savePassword(existingAuth);
 
-                candidateSignUpResponse.setCandidateName(existingCandidate.getCandidateName());
+                candidateSignUpResponse.setCandidateFirstName(existingCandidate.getCandidateFirstName());
                 candidateSignUpResponse.setCandidateLastName(existingCandidate.getCandidateLastName());
                 candidateSignUpResponse.setCandidateId(existingCandidate.getCandidateId());
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
@@ -85,11 +85,11 @@ public class AuthService {
                 existingLead.update();
                 Logger.info("Lead converted in candidate");
 
-                String msg = "Hey " + existingCandidate.getCandidateName()+
+                String msg = "Hey " + existingCandidate.getCandidateFirstName()+
                         "! Welcome to Trujobs.in. Login and complete our skill assessment today and find your right job.";
                 SmsUtil.sendSms(existingCandidate.getCandidateMobile(),msg);
 
-                candidateSignUpResponse.setCandidateName(existingCandidate.getCandidateName());
+                candidateSignUpResponse.setCandidateFirstName(existingCandidate.getCandidateFirstName());
                 candidateSignUpResponse.setCandidateLastName(existingCandidate.getCandidateLastName());
                 candidateSignUpResponse.setCandidateId(existingCandidate.getCandidateId());
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);

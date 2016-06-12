@@ -179,7 +179,7 @@ public class CandidateServiceTest {
         Candidate candidate = CandidateService.isCandidateExists(testCandidateMobile);
         assertTrue(candidate != null);
 
-        assertEquals(candidate.getCandidateName(), testCandidateName);
+        assertEquals(candidate.getCandidateFirstName(), testCandidateName);
         assertEquals(candidate.getCandidateLastName(), testCandidateLastName);
         assertEquals(candidate.getCandidateMobile(), testCandidateMobile);
 
@@ -326,7 +326,7 @@ public class CandidateServiceTest {
 
         Candidate candidate = CandidateService.isCandidateExists(TestConstants.testCandidateMobile);
         assertTrue(candidate != null);
-        assertEquals(candidate.getCandidateName(), TestConstants.testCandidateName);
+        assertEquals(candidate.getCandidateFirstName(), TestConstants.testCandidateName);
         assertEquals(candidate.getCandidateLastName(), TestConstants.testCandidateLastName);
         assertEquals(candidate.getCandidateMobile(), TestConstants.testCandidateMobile);
 

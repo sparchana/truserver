@@ -9,7 +9,7 @@ function processDataSignUpSubmit(returnedData) {
         returnedOtp = returnedData.otp;
         $('#myRegistrationModal').modal('show');
         $('#authMobile').val($('#candidateMobile').val());
-        $('#candidateName').val('');
+        $('#candidateFirstName').val('');
         $('#candidateSecondName').val('');
         $('#candidateMobile').val('');
         $('#candidateEmail').val('');
@@ -24,7 +24,7 @@ function processDataSignUpSubmit(returnedData) {
     }
     else {
         $('#errorMsg').show();
-        $('#candidateName').val('');
+        $('#candidateFirstName').val('');
         $('#candidateMobile').val('');
         $('#candidateEmail').val('');
     }
@@ -35,7 +35,7 @@ function processDataAddAuth(returnedData) {
     if(returnedData.status == 1) {
         // Store
         localStorage.setItem("mobile", "+91" + candidateMobile);
-        localStorage.setItem("name", returnedData.candidateName);
+        localStorage.setItem("name", returnedData.candidateFirstName);
         localStorage.setItem("lastName", returnedData.candidateLastName);
         localStorage.setItem("id", returnedData.candidateId);
         localStorage.setItem("leadId", returnedData.leadId);
@@ -54,7 +54,7 @@ $(function() {
     $("#form_signup_candidate").submit(function(eventObj) {
         eventObj.preventDefault();
         var statusCheck = 1;
-        var firstName = $('#candidateName').val();
+        var firstName = $('#candidateFirstName').val();
         var lastName = $('#candidateSecondName').val();
         var phone = $('#candidateMobile').val();
         var firstNameCheck = validateName(firstName);
@@ -108,7 +108,7 @@ $(function() {
 
                 $('#alreadyMsgCandidate').hide();
                 var d = {
-                    candidateName : firstName,
+                    candidateFirstName : firstName,
                     candidateSecondName : lastName,
                     candidateMobile : phone,
                     candidateLocality : candidatePreferredLocality,
