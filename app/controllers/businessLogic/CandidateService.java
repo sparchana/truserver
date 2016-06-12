@@ -159,7 +159,7 @@ public class CandidateService {
                 candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(request.getCandidateLocality(), candidate));
             }
 
-            if(request.getCandidateFirstName()!= null || !request.getCandidateFirstName().trim().isEmpty()){
+            if(request.getCandidateFirstName()!= null && !request.getCandidateFirstName().trim().isEmpty()){
                 candidate.setCandidateName(request.getCandidateFirstName());
                 String lastName = request.getCandidateSecondName() != null ? request.getCandidateSecondName() : "";
                 candidate.setCandidateLastName(lastName);
