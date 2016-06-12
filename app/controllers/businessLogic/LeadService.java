@@ -13,7 +13,7 @@ import static play.mvc.Controller.session;
  */
 public class LeadService {
 
-    public static Lead createOrUpdate(String leadName, String leadMobile, int leadSourceId, boolean isSupport){
+    public static Lead createOrUpdateConvertedLead(String leadName, String leadMobile, int leadSourceId, boolean isSupport){
         Lead existingLead = isLeadExists(leadMobile);
         if(existingLead == null){
             int leadChannel = isSupport ? ServerConstants.LEAD_CHANNEL_SUPPORT : ServerConstants.LEAD_CHANNEL_WEBSITE;

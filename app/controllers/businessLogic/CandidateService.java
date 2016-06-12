@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static controllers.businessLogic.InteractionService.createInteractionForSignUpCandidate;
-import static controllers.businessLogic.LeadService.createOrUpdate;
+import static controllers.businessLogic.LeadService.createOrUpdateConvertedLead;
 import static models.util.Util.generateOtp;
 import static play.mvc.Controller.session;
 
@@ -67,7 +67,7 @@ public class CandidateService {
         Logger.info("Checking for mobile number: " + candidateSignUpRequest.getCandidateMobile());
         Candidate candidate = isCandidateExists(candidateSignUpRequest.getCandidateMobile());
         String leadName = candidateSignUpRequest.getCandidateFirstName()+ " " + candidateSignUpRequest.getCandidateSecondName();
-        Lead lead = LeadService.createOrUpdate(leadName, candidateSignUpRequest.getCandidateMobile(), leadSourceId, isSupport);
+        Lead lead = LeadService.createOrUpdateConvertedLead(leadName, candidateSignUpRequest.getCandidateMobile(), leadSourceId, isSupport);
         try {
             if(candidate == null) {
                 candidate = new Candidate();
@@ -161,19 +161,13 @@ public class CandidateService {
 
             if(request.getCandidateFirstName()!= null || !request.getCandidateFirstName().trim().isEmpty()){
                 candidate.setCandidateName(request.getCandidateFirstName());
-            }
-            if(request.getCandidateSecondName() != null){
-                candidate.setCandidateLastName(request.getCandidateSecondName());
-            }
-            if(request.getCandidateFirstName() != null && request.getCandidateMobile() != null){
-                Lead lead = createOrUpdate(request.getCandidateFirstName() +" " + request.getCandidateSecondName(), request.getCandidateMobile(), request.getLeadSource(), isSupport);
-                Logger.info("CandidateExists: " + candidate.getCandidateId() + " | LeadExists: " + lead.getLeadId());
-                if(lead == null){
-                    Logger.info("Candidate Found but no corresponding Lead Found !!!");
-                    candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
-                    return candidateSignUpResponse;
+                String lastName = request.getCandidateSecondName() != null ? request.getCandidateSecondName() : "";
+                candidate.setCandidateLastName(lastName);
+                if(request.getCandidateMobile() != null){
+                    Lead lead = createOrUpdateConvertedLead(request.getCandidateFirstName() +" " + lastName, request.getCandidateMobile(), request.getLeadSource(), isSupport);
+                    Logger.info("CandidateExists: " + candidate.getCandidateId() + " | LeadExists: " + lead.getLeadId());
+                    candidate.setLead(lead);
                 }
-                candidate.setLead(lead);
             }
         }
 
@@ -183,26 +177,29 @@ public class CandidateService {
                 interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_BASIC_PROFILE_INFO_UPDATED_SELF;
             }
             if(candidateSignUpResponse.getStatus() != CandidateSignUpResponse.STATUS_SUCCESS){
+                Logger.info("Error while updating basic profile");
                 return candidateSignUpResponse;
             }
         }
 
         if(flag == ServerConstants.UPDATE_SKILLS_PROFILE || flag == ServerConstants.UPDATE_ALL_BY_SUPPORT){
-            candidateSignUpResponse = updateSkillProfile(candidate, (AddCandidateExperienceRequest) request, flag, isSupport);
+            candidateSignUpResponse = updateSkillProfile(candidate, (AddCandidateExperienceRequest) request, isSupport);
             if(flag == ServerConstants.UPDATE_SKILLS_PROFILE){
                 interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_SKILLS_PROFILE_INFO_UPDATED_SELF;
             }
             if(candidateSignUpResponse.getStatus() != CandidateSignUpResponse.STATUS_SUCCESS){
+                Logger.info("Error while updating skills profile");
                 return candidateSignUpResponse;
             }
         }
 
         if(flag == ServerConstants.UPDATE_EDUCATION_PROFILE || flag == ServerConstants.UPDATE_ALL_BY_SUPPORT){
-            candidateSignUpResponse = updateEducationProfile(candidate, (AddCandidateEducationRequest) request, flag);
+            candidateSignUpResponse = updateEducationProfile(candidate, (AddCandidateEducationRequest) request);
             if(flag == ServerConstants.UPDATE_EDUCATION_PROFILE){
                 interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_EDUCATION_PROFILE_INFO_UPDATED_SELF;
             }
             if(candidateSignUpResponse.getStatus() != CandidateSignUpResponse.STATUS_SUCCESS){
+                Logger.info("Error while updating education profile");
                 return candidateSignUpResponse;
             }
         }
@@ -240,13 +237,20 @@ public class CandidateService {
     }
 
     private static int isMinProfileComplete(Candidate candidate) {
+
         if(candidate.getCandidateName() != null && candidate.getCandidateLastName() != null && candidate.getCandidateMobile() != null && candidate.getCandidateDOB() != null &&
                 candidate.getCandidateGender() != null && candidate.getCandidateTotalExperience() != null && candidate.getCandidateEducation() != null &&
                 candidate.getTimeShiftPreference() != null && candidate.getLanguageKnownList().size() > 0){
             if(candidate.getCandidateIsEmployed() != null) {
-                if(candidate.getCandidateIsEmployed() == 0 || candidate.getCandidateCurrentJobDetail().getCandidateCurrentSalary() != null) {
+                if(candidate.getCandidateIsEmployed() == 0 ) {
                     return ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE;
+                } else{
+                    if(candidate.getCandidateCurrentJobDetail().getCandidateCurrentSalary() != null){
+                        return ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE;
+                    }
                 }
+            } else{
+                return ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE;
             }
         }
         return ServerConstants.CANDIDATE_MIN_PROFILE_NOT_COMPLETE;
@@ -302,7 +306,7 @@ public class CandidateService {
 
     }
 
-    private static CandidateSignUpResponse updateEducationProfile(Candidate candidate, AddCandidateEducationRequest addCandidateEducationRequest, int flag) {
+    private static CandidateSignUpResponse updateEducationProfile(Candidate candidate, AddCandidateEducationRequest addCandidateEducationRequest) {
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
             Logger.info("Inside Education profile update");
             try{
@@ -320,7 +324,7 @@ public class CandidateService {
         return candidateSignUpResponse;
     }
 
-    private static CandidateSignUpResponse updateSkillProfile(Candidate candidate, AddCandidateExperienceRequest addCandidateExperienceRequest, int flag, boolean isSupport) {
+    private static CandidateSignUpResponse updateSkillProfile(Candidate candidate, AddCandidateExperienceRequest addCandidateExperienceRequest, boolean isSupport) {
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
         /* Experience Section starts */
             Logger.info("Inside Skills profile update");
@@ -371,10 +375,11 @@ public class CandidateService {
 
     private static CandidateSignUpResponse updateBasicProfile(Candidate candidate, AddCandidateRequest request, int flag) {
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
-        // not just update but createOrUpdate
+        // not just update but createOrUpdateConvertedLead
             Logger.info("Inside Basic profile update");
             /* Basic Profile Section Starts */
             candidate.setCandidateName(request.getCandidateFirstName());
+        Logger.info("candidateFirstName to be updated to " + request.getCandidateFirstName() + " candidateFirstName: " + candidate.getCandidateName());
             candidate.setCandidateLastName(request.getCandidateSecondName());
             candidate.setCandidateUpdateTimestamp(new Timestamp(System.currentTimeMillis()));
 

@@ -457,6 +457,9 @@ function saveCandidateBasicProfile(){
                 candidateGender: ($('input:radio[name="gender"]:checked').val())
             };
 
+            localStorage.setItem("name", d.candidateFirstName);
+            localStorage.setItem("lastName", d.candidateSecondName);
+
             $.ajax({
                 type: "POST",
                 url: "/candidateUpdateBasicProfile",
