@@ -56,7 +56,7 @@ function processDataCandidateEducationUpdate(returnedData) {
 
 function prefillBasicProfile() {
     /* candidate First and Last name */
-    $("#candidateFirstName").val(candidateInformation.candidateName);
+    $("#candidateFirstName").val(candidateInformation.candidateFirstName);
     if (candidateInformation.candidateLastName == "null" || candidateInformation.candidateLastName == null) {
         $("#candidateSecondName").val("");
     } else {

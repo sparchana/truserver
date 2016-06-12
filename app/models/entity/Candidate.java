@@ -34,7 +34,7 @@ public class Candidate extends Model {
     private String candidateUUId;
 
     @Column(name = "CandidateName", columnDefinition = "varchar(50) not null")
-    private String candidateName;
+    private String candidateFirstName;
 
     @Column(name = "CandidateLastName", columnDefinition = "varchar(50) null")
     private String candidateLastName;
@@ -180,8 +180,8 @@ public class Candidate extends Model {
         this.candidateId = candidateId;
     }
 
-    public void setCandidateName(String candidateName) {
-        this.candidateName = candidateName;
+    public void setCandidateFirstName(String candidateFirstName) {
+        this.candidateFirstName = candidateFirstName;
     }
 
     public void setCandidateLastName(String candidateLastName) {
@@ -304,8 +304,8 @@ public class Candidate extends Model {
         return candidateUUId;
     }
 
-    public String getCandidateName() {
-        return candidateName;
+    public String getCandidateFirstName() {
+        return candidateFirstName;
     }
 
     public String getCandidateLastName() {

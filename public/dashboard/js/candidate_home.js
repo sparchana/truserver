@@ -5,6 +5,7 @@ $(document).ready(function(){
     var userMobile = localStorage.getItem("mobile");
     var userName = localStorage.getItem("name");
     var userLastName = localStorage.getItem("lastName");
+    console.log("userName: " + userName + " mobile:" + userMobile);
 
     if(userMobile != null){
         document.getElementById("helloMsg").innerHTML = "Hello " + userName + "!";

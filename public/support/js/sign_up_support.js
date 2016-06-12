@@ -198,7 +198,7 @@ function processDataAndFillAllFields(returnedData) {
     if(returnedData == "0"){
     } else {
 
-        $("#candidateFirstName").val(returnedData.candidateName);
+        $("#candidateFirstName").val(returnedData.candidateFirstName);
         if(returnedData.candidateLastName == "null" || returnedData.candidateLastName == null){
             $("#candidateSecondName").val("");
         } else{

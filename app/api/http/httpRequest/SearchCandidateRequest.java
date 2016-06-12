@@ -9,7 +9,7 @@ import java.util.List;
  * Created by zero on 23/5/16.
  */
 public class SearchCandidateRequest {
-    public String candidateName;
+    public String candidateFirstName;
     public String candidateMobile;
     public List<Integer> candidateJobInterest; // ',' separated jobRoleId values
     public List<Integer> candidateLocality; // ',' separated candidateLocalityId values
@@ -32,12 +32,12 @@ public class SearchCandidateRequest {
         this.toThisDate = toThisDate;
     }
 
-    public String getCandidateName() {
-        return candidateName;
+    public String getCandidateFirstName() {
+        return candidateFirstName;
     }
 
-    public void setCandidateName(String candidateName) {
-        this.candidateName = candidateName;
+    public void setCandidateFirstName(String candidateFirstName) {
+        this.candidateFirstName = candidateFirstName;
     }
 
     public String getCandidateMobile() {

@@ -28,6 +28,7 @@ import java.util.UUID;
 import static controllers.businessLogic.InteractionService.createInteractionForSignUpCandidate;
 import static controllers.businessLogic.LeadService.createOrUpdateConvertedLead;
 import static models.util.Util.generateOtp;
+import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 
 /**
@@ -72,7 +73,7 @@ public class CandidateService {
             if(candidate == null) {
                 candidate = new Candidate();
                 Logger.info("creating new candidate");
-                candidate.setCandidateName(candidateSignUpRequest.getCandidateFirstName());
+                candidate.setCandidateFirstName(candidateSignUpRequest.getCandidateFirstName());
                 candidate.setCandidateLastName(candidateSignUpRequest.getCandidateSecondName());
                 candidate.setCandidateMobile(candidateSignUpRequest.getCandidateMobile());
                 candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(localityList, candidate));
@@ -88,7 +89,7 @@ public class CandidateService {
                 Auth auth = AuthService.isAuthExists(candidate.getCandidateId());
                 if(auth == null ) {
                     Logger.info("auth doesn't exists for this candidate");
-                    candidate.setCandidateName(candidateSignUpRequest.getCandidateFirstName());
+                    candidate.setCandidateFirstName(candidateSignUpRequest.getCandidateFirstName());
                     candidate.setCandidateLastName(candidateSignUpRequest.getCandidateSecondName());
 
                     resetLocalityAndJobPref(candidate, getCandidateLocalityPreferenceList(localityList, candidate), getCandidateJobPreferenceList(jobsList, candidate));
@@ -160,7 +161,7 @@ public class CandidateService {
             }
 
             if(request.getCandidateFirstName()!= null && !request.getCandidateFirstName().trim().isEmpty()){
-                candidate.setCandidateName(request.getCandidateFirstName());
+                candidate.setCandidateFirstName(request.getCandidateFirstName());
                 String lastName = request.getCandidateSecondName() != null ? request.getCandidateSecondName() : "";
                 candidate.setCandidateLastName(lastName);
                 if(request.getCandidateMobile() != null){
@@ -238,7 +239,7 @@ public class CandidateService {
 
     private static int isMinProfileComplete(Candidate candidate) {
 
-        if(candidate.getCandidateName() != null && candidate.getCandidateLastName() != null && candidate.getCandidateMobile() != null && candidate.getCandidateDOB() != null &&
+        if(candidate.getCandidateFirstName() != null && candidate.getCandidateLastName() != null && candidate.getCandidateMobile() != null && candidate.getCandidateDOB() != null &&
                 candidate.getCandidateGender() != null && candidate.getCandidateTotalExperience() != null && candidate.getCandidateEducation() != null &&
                 candidate.getTimeShiftPreference() != null && candidate.getLanguageKnownList().size() > 0){
             if(candidate.getCandidateIsEmployed() != null) {
@@ -378,8 +379,8 @@ public class CandidateService {
         // not just update but createOrUpdateConvertedLead
             Logger.info("Inside Basic profile update");
             /* Basic Profile Section Starts */
-            candidate.setCandidateName(request.getCandidateFirstName());
-        Logger.info("candidateFirstName to be updated to " + request.getCandidateFirstName() + " candidateFirstName: " + candidate.getCandidateName());
+            candidate.setCandidateFirstName(request.getCandidateFirstName());
+        Logger.info("candidateFirstName to be updated to " + request.getCandidateFirstName() + " candidateFirstName: " + candidate.getCandidateFirstName());
             candidate.setCandidateLastName(request.getCandidateSecondName());
             candidate.setCandidateUpdateTimestamp(new Timestamp(System.currentTimeMillis()));
 
@@ -433,7 +434,7 @@ public class CandidateService {
         SendOtpService.sendSms(candidate.getCandidateMobile(), msg);
 
         candidateSignUpResponse.setCandidateId(candidate.getCandidateId());
-        candidateSignUpResponse.setCandidateName(candidate.getCandidateName());
+        candidateSignUpResponse.setCandidateFirstName(candidate.getCandidateFirstName());
         candidateSignUpResponse.setOtp(randomPIN);
         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
     }
@@ -624,9 +625,9 @@ public class CandidateService {
             Auth existingAuth = Auth.find.where().eq("candidateId", candidateId).findUnique();
             if(existingAuth != null){
                 if ((existingAuth.getPasswordMd5().equals(Util.md5(loginPassword + existingAuth.getPasswordSalt())))) {
-                    Logger.info(existingCandidate.getCandidateName() + " " + existingCandidate.getCandidateprofilestatus().getProfileStatusId());
+                    Logger.info(existingCandidate.getCandidateFirstName() + " " + existingCandidate.getCandidateprofilestatus().getProfileStatusId());
                     loginResponse.setCandidateId(existingCandidate.getCandidateId());
-                    loginResponse.setCandidateName(existingCandidate.getCandidateName());
+                    loginResponse.setCandidateFirstName(existingCandidate.getCandidateFirstName());
                     loginResponse.setCandidateLastName(existingCandidate.getCandidateLastName());
                     loginResponse.setIsAssessed(existingCandidate.getCandidateIsAssessed());
                     loginResponse.setLeadId(existingCandidate.getLead().getLeadId());
@@ -649,6 +650,7 @@ public class CandidateService {
                 Logger.info("No User");
             }
         }
+        Logger.info(" LoginResponse Returned: " + toJson(loginResponse));
         return loginResponse;
     }
 
@@ -752,9 +754,9 @@ public class CandidateService {
                     .in("localityPreferenceList.locality.localityId", localityPreferenceIdList)
                     .query();
         }
-        if(searchCandidateRequest.getCandidateName() != null && !searchCandidateRequest.getCandidateName().isEmpty()) {
+        if(searchCandidateRequest.getCandidateFirstName() != null && !searchCandidateRequest.getCandidateFirstName().isEmpty()) {
             query = query.where().like("candidateFirstName",
-                    searchCandidateRequest.getCandidateName() + "%").query();
+                    searchCandidateRequest.getCandidateFirstName() + "%").query();
         }
 
         if(searchCandidateRequest.getCandidateMobile() != null && !searchCandidateRequest.getCandidateMobile().isEmpty()) {

@@ -13,7 +13,7 @@ public class LoginResponse {
     public int isAssessed;
     public long candidateId;
     public long leadId;
-    public String candidateName;
+    public String candidateFirstName;
     public String candidateLastName;
     public String candidateEmail;
 
@@ -29,8 +29,8 @@ public class LoginResponse {
     public void setLeadId(long leadId) {
         this.leadId = leadId;
     }
-    public void setCandidateName(String candidateName) {
-        this.candidateName = candidateName;
+    public void setCandidateFirstName(String candidateFirstName) {
+        this.candidateFirstName = candidateFirstName;
     }
     public void setCandidateLastName(String candidateLastName) {
         this.candidateLastName = candidateLastName;
