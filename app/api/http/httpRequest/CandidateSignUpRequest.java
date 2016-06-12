@@ -8,9 +8,9 @@ import java.util.List;
  * Created by batcoder1 on 25/4/16.
  */
 
-public class CandidateSignUpRequest {
+public class CandidateSignUpRequest{
 
-    protected String candidateName;
+    protected String candidateFirstName;
     protected String candidateSecondName;
     protected String candidateMobile;
     protected List<Integer> candidateLocality;
@@ -19,12 +19,12 @@ public class CandidateSignUpRequest {
     protected String candidatePassword;
     protected String candidateAuthMobile;
 
-    public void setCandidateName(String candidateName) {
-        this.candidateName = candidateName;
+    public void setCandidateFirstName(String candidateFirstName) {
+        this.candidateFirstName = candidateFirstName;
     }
 
-    public String getCandidateName() {
-        return candidateName;
+    public String getCandidateFirstName() {
+        return candidateFirstName;
     }
 
     public void setCandidateSecondName(String candidateSecondName) {

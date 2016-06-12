@@ -449,13 +449,16 @@ function saveCandidateBasicProfile(){
                 candidateSecondName: $('#candidateSecondName').val(),
                 candidateMobile: $('#candidateMobile').val(),
                 candidateLocality: candidatePreferredLocality,
-                candidateJobInterest: candidatePreferredJob,
+                candidateJobPref: candidatePreferredJob,
 
                 //others
                 candidateDob: c_dob,
                 candidateTimeShiftPref: $('#candidateTimeShiftPref').val(),
                 candidateGender: ($('input:radio[name="gender"]:checked').val())
             };
+
+            localStorage.setItem("name", d.candidateFirstName);
+            localStorage.setItem("lastName", d.candidateSecondName);
 
             $.ajax({
                 type: "POST",

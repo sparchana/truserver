@@ -46,4 +46,8 @@ public class CandidateSignUpResponse {
     public void setCandidateEmail(String candidateEmail) {
         this.candidateEmail = candidateEmail;
     }
+
+    public int getStatus() {
+        return status;
+    }
 }

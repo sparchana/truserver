@@ -1023,7 +1023,7 @@ function saveProfileForm(){
                 candidateSecondName: $('#candidateSecondName').val(),
                 candidateMobile: $('#candidateMobile').val(),
                 candidateLocality: candidatePreferredLocality,
-                candidateJobInterest: candidatePreferredJob,
+                candidateJobPref: candidatePreferredJob,
 
                 leadSource: $('#leadSource').val(),
                 //others
