@@ -16,11 +16,25 @@ function validateMobile(mobile) {
 
 function validateName(name) {
     var validName = /^[a-zA-Z]+$/;
-    if (!validName.test(name)) {
-        return 0;
-    }
-    else{
-        return 1;
+    var spacing = /^[ ]+$/;
+    var specialChars = /[^\w\s]/gi;
+    var numberChar = /^[a-zA-Z0-9]+$/;
+
+    if (validName.test(name)) {
+        return 1; //correct
+    } else if (numberChar.test(name)) {
+        return 0; //name contains integer
+    } else {
+        if(spacing.test(name)){
+            return 0; // blank spaces
+        }
+        else{
+            if(specialChars.test(name)) {
+                return 0; //name has special characters
+            } else{
+                return 1; // name valid with space in between
+            }
+        }
     }
 }
 

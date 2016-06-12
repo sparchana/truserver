@@ -93,7 +93,7 @@ $(document).ready(function(){
 });
 
 function processDataAndFillMinProfile(returnedData) {
-    if(returnedData.IsMinProfileComplete == 0){ // profile not complete
+    if(returnedData.isMinProfileComplete == 0){ // profile not complete
         document.getElementById("profileStatusResult").innerHTML = '<font color="#F26522">Incomplete</font>';
         document.getElementById("profileStatusAction").innerHTML = '<font size="2" color="#F26522">(Complete Profile)</font>';
         var profileStatusParent = document.getElementById("profileStatusParent");

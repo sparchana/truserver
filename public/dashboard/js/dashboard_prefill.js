@@ -112,7 +112,7 @@ function prefillBasicProfile() {
 function prefillSkillProfile(){
     /* total experience */
     if(candidateInformation.candidateTotalExperience != null){
-        if(candidateInformation.candidateTotalExperience == 0){
+        if(candidateInformation.candidateTotalExperience == 0 && candidateInformation.candidateIsEmployed != 1){
             document.getElementById("fresher").checked = true;
             $('#fresher').parent().addClass('active').siblings().removeClass('active');
         } else{
