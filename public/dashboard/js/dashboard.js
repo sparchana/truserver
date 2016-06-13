@@ -96,6 +96,41 @@ $(document).ready(function(){
         console.log("exception occured!!" + exception);
     }
 
+    var i;
+    for(i=1;i<=31;i++){
+        var option = document.createElement("option");
+        option.value = ('0' + i).slice(-2);
+        option.textContent = i;
+        $('#dob_day').append(option);
+    }
+
+    for(i=1;i<=12;i++){
+        option = document.createElement("option");
+        option.value = ('0' + i).slice(-2);
+        var monthName;
+        switch(i){
+            case 1: monthName = "January"; break;
+            case 2: monthName = "February"; break;
+            case 3: monthName = "March"; break;
+            case 4: monthName = "April"; break;
+            case 5: monthName = "May"; break;
+            case 6: monthName = "June"; break;
+            case 7: monthName = "July"; break;
+            case 8: monthName = "August"; break;
+            case 9: monthName = "September"; break;
+            case 10: monthName = "October"; break;
+            case 11: monthName = "November"; break;
+            case 12: monthName = "December"; break;
+        }
+        option.textContent = monthName;
+        $('#dob_month').append(option);
+    }
+    for(i=new Date().getFullYear();i>=1940;i--){
+        option = document.createElement("option");
+        option.value = i;
+        option.textContent = i;
+        $('#dob_year').append(option);
+    }
 });
 
 try {
@@ -113,6 +148,32 @@ try {
 }
 
 function fetchSkillAjaxApis() {
+    var i;
+    $('#candidateTotalExperienceYear, #candidateTotalExperienceMonth')
+        .find('option')
+        .remove();
+
+    for(i=0;i<=30;i++){
+        var option = document.createElement("option");
+        option.value = i;
+        if(i<2){
+            option.textContent = i + " year";
+        } else {
+            option.textContent = i + " years";
+        }
+        $('#candidateTotalExperienceYear').append(option);
+    }
+
+    for(i=0;i<=11;i++){
+        var option = document.createElement("option");
+        option.value = i;
+        if(i<2){
+            option.textContent = i + " month";
+        } else {
+            option.textContent = i + " months";
+        }
+        $('#candidateTotalExperienceMonth').append(option);
+    }
     try {
         $.ajax({
             type: "GET",
