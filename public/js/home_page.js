@@ -40,7 +40,7 @@ function processDataCheckJobs(returnedData) {
 $(function () {
     $('#myRegistrationModal').on('hidden.bs.modal', function () {
         document.getElementById("registerBtn").disabled = false;
-        $('#form_signup_candidate').trigger("reset");
+        window.location = "/"
     })
 });
 

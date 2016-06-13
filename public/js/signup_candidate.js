@@ -58,20 +58,23 @@ $(function() {
         var lastName = $('#candidateSecondName').val();
         var phone = $('#candidateMobile').val();
         var firstNameCheck = validateName(firstName);
-        var lastNameCheck = validateName(lastName);
+        if(lastName != ""){
+            var lastNameCheck = validateName(lastName);
+        }
         var res = validateMobile(phone);
         var localitySelected = $('#candidateLocality').val();
         var jobSelected = $('#candidateJobPref').val();
         
         if(firstNameCheck == 0){
-            alert("Please Enter First Name");
+            alert("First name contains number. Please Enter a valid First Name");
             statusCheck=0;
-        } 
-        else if(lastNameCheck == 0){
-            alert("Please Enter your Last Name");
+        } else if(firstNameCheck == 2){
+            alert("First Name cannot be blank spaces. Enter a valid first name");
             statusCheck=0;
-        }
-        else if(res == 0){ // invalid mobile
+        } else if(firstNameCheck == 3){
+            alert("First name contains special symbols. Enter a valid first name");
+            statusCheck=0;
+        } else if(res == 0){ // invalid mobile
             alert("Enter a valid mobile number");
             statusCheck=0;
         }
@@ -87,9 +90,22 @@ $(function() {
             alert("Please Enter the Jobs you are Interested");
             statusCheck=0;
         }
+
+        if(lastName != ""){
+            if(lastNameCheck == 0){
+                alert("Last name contains number. Please Enter a valid Last Name");
+                statusCheck=0;
+            } else if(lastNameCheck == 2){
+                alert("Last Name cannot be blank spaces. Enter a valid Last name");
+                statusCheck=0;
+            } else if(lastNameCheck == 3){
+                alert("Last name contains special symbols. Enter a valid Last name");
+                statusCheck=0;
+            }
+        }
         if(statusCheck == 1){
             candidateMobile = phone;
-            document.getElementById("registerBtn").disabled = true;
+            document.getElementById("registerBtnSubmit").disabled = true;
             try {
                 var candidatePreferredJob = [];
                 var candidatePreferredLocality = [];

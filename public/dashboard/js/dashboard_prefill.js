@@ -376,34 +376,43 @@ function saveCandidateBasicProfile(){
     var lastName = $('#candidateSecondName').val();
     var phone = $('#candidateMobile').val();
     var firstNameCheck = validateName(firstName);
-    var lastNameCheck = validateName(lastName);
+    if(lastName != ""){
+        var lastNameCheck = validateName(lastName);        
+    }
     var res = validateMobile(phone);
     var selectedGender = $('input:radio[name="gender"]:checked').val();
 
     var localitySelected = $('#candidateLocalityPref').val();
     var jobSelected = $('#candidateJobPref').val();
+    var selectedDob = $('#dob_year').val() + "-" + $('#dob_month').val() + "-" + $('#dob_day').val();
+    var c_dob = String(selectedDob);
+    var selectedDate = new Date(c_dob);
+    var todayDate = new Date();
+    var dobCheck=1;
+    console.log(selectedDate + " " + todayDate);
+    if(selectedDate>todayDate){
+        dobCheck=0;
+    }
 
     if(firstNameCheck == 0){
-        alert("Please Enter First Name");
+        alert("First name contains number. Please Enter a valid First Name");
         statusCheck=0;
-    }
-    else if(lastNameCheck == 0){
-        alert("Please Enter your Last Name");
+    } else if(firstNameCheck == 2){
+        alert("First Name cannot be blank spaces. Enter a valid first name");
         statusCheck=0;
-    }
-    else if(res == 0){ // invalid mobile
+    } else if(firstNameCheck == 3){
+        alert("First name contains special symbols. Enter a valid first name");
+        statusCheck=0;
+    } else if(res == 0){ // invalid mobile
         alert("Enter a valid mobile number");
         statusCheck=0;
-    }
-    else if(res == 1){ // mobile no. less than 1 digits
+    } else if(res == 1){ // mobile no. less than 1 digits
         alert("Enter 10 digit mobile number");
         statusCheck=0;
-    }
-    else if(localitySelected == "") {
+    } else if(localitySelected == "") {
         alert("Please Enter your Job Localities");
         statusCheck=0;
-    }
-    else if(jobSelected == "") {
+    } else if(jobSelected == "") {
         alert("Please Enter the Jobs you are Interested");
         statusCheck=0;
     } else if($('#candidateTimeShiftPref').val() == -1){
@@ -418,9 +427,25 @@ function saveCandidateBasicProfile(){
     } else if($('#dob_year').val() == ""){
         statusCheck=0;
         alert("Please Select your Birth year");
+    } else if(dobCheck == 0){
+        alert("Please select a valid date of birth");
+        statusCheck=0;
     } else if(selectedGender == undefined) {
         statusCheck=0;
         alert("Please Select your Gender");
+    }
+
+    if(lastName != ""){
+        if(lastNameCheck == 0){
+            alert("Last name contains number. Please Enter a valid Last Name");
+            statusCheck=0;
+        } else if(lastNameCheck == 2){
+            alert("Last Name cannot be blank spaces. Enter a valid Last name");
+            statusCheck=0;
+        } else if(lastNameCheck == 3){
+            alert("Last name contains special symbols. Enter a valid Last name");
+            statusCheck=0;
+        }
     }
 
     if(statusCheck == 1){
@@ -440,9 +465,6 @@ function saveCandidateBasicProfile(){
             candidatePreferredLocality.push(parseInt(localityPref[i]));
         }
         try {
-            var selectedDob = $('#dob_year').val() + "-" + $('#dob_month').val() + "-" + $('#dob_day').val();
-            var c_dob = String(selectedDob);
-
             var d = {
                 //mandatory fields
                 candidateFirstName: $('#candidateFirstName').val(),

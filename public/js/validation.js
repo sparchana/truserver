@@ -26,11 +26,11 @@ function validateName(name) {
         return 0; //name contains integer
     } else {
         if(spacing.test(name)){
-            return 0; // blank spaces
+            return 2; // blank spaces
         }
         else{
             if(specialChars.test(name)) {
-                return 0; //name has special characters
+                return 3; //name has special characters
             } else{
                 return 1; // name valid with space in between
             }
