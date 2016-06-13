@@ -393,20 +393,19 @@ function saveCandidateBasicProfile(){
     if(selectedDate>todayDate){
         dobCheck=0;
     }
+    
+    //checking first name
+    switch(firstNameCheck){
+        case 0: alert("First name contains number. Please Enter a valid First Name"); statusCheck=0; break;
+        case 2: alert("First Name cannot be blank spaces. Enter a valid first name"); statusCheck=0; break;
+        case 3: alert("First name contains special symbols. Enter a valid first name"); statusCheck=0; break;
+        case 4: alert("Please enter your first name"); statusCheck=0; break;
+    }
 
-    if(firstNameCheck == 0){
-        alert("First name contains number. Please Enter a valid First Name");
-        statusCheck=0;
-    } else if(firstNameCheck == 2){
-        alert("First Name cannot be blank spaces. Enter a valid first name");
-        statusCheck=0;
-    } else if(firstNameCheck == 3){
-        alert("First name contains special symbols. Enter a valid first name");
-        statusCheck=0;
-    } else if(res == 0){ // invalid mobile
+    if(res == 0){
         alert("Enter a valid mobile number");
         statusCheck=0;
-    } else if(res == 1){ // mobile no. less than 1 digits
+    } else if(res == 1){
         alert("Enter 10 digit mobile number");
         statusCheck=0;
     } else if(localitySelected == "") {
@@ -435,17 +434,12 @@ function saveCandidateBasicProfile(){
         alert("Please Select your Gender");
     }
 
-    if(lastName != ""){
-        if(lastNameCheck == 0){
-            alert("Last name contains number. Please Enter a valid Last Name");
-            statusCheck=0;
-        } else if(lastNameCheck == 2){
-            alert("Last Name cannot be blank spaces. Enter a valid Last name");
-            statusCheck=0;
-        } else if(lastNameCheck == 3){
-            alert("Last name contains special symbols. Enter a valid Last name");
-            statusCheck=0;
-        }
+    //checking last name
+    switch(lastNameCheck){
+        case 0: alert("Last name contains number. Please Enter a valid Last Name"); statusCheck=0; break;
+        case 2: alert("Last Name cannot be blank spaces. Enter a valid Last name"); statusCheck=0; break;
+        case 3: alert("Last name contains special symbols. Enter a valid Last name"); statusCheck=0; break;
+        case 4: alert("Please enter your Last name"); statusCheck=0; break;
     }
 
     if(statusCheck == 1){

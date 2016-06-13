@@ -925,24 +925,22 @@ function saveProfileForm(){
     var expYear = parseInt($('#candidateTotalExperienceYear').val());
     var totalExp = expMonth + (12*expYear);
 
-    console.log(selectedDate + " " + todayDate);
     if(selectedDate>todayDate){
         dobCheck=0;
     }
 
-    if(firstNameCheck == 0){
-        alert("First name contains number. Please Enter a valid First Name");
+    //checking first name
+    switch(firstNameCheck){
+        case 0: alert("First name contains number. Please Enter a valid First Name"); statusCheck=0; break;
+        case 2: alert("First Name cannot be blank spaces. Enter a valid first name"); statusCheck=0; break;
+        case 3: alert("First name contains special symbols. Enter a valid first name"); statusCheck=0; break;
+        case 4: alert("Please enter your first name"); statusCheck=0; break;
+    }
+
+    if(res == 0){
+        alert("Enter a valid mobile number"); 
         statusCheck=0;
-    } else if(firstNameCheck == 2){
-        alert("First Name cannot be blank spaces. Enter a valid first name");
-        statusCheck=0;
-    } else if(firstNameCheck == 3){
-        alert("First name contains special symbols. Enter a valid first name");
-        statusCheck=0;
-    } else if(res == 0){ // invalid mobile
-        alert("Enter a valid mobile number");
-        statusCheck=0;
-    } else if(res == 1){ // mobile no. less than 1 digits
+    } else if(res == 1){
         alert("Enter 10 digit mobile number");
         statusCheck=0;
     } else if(localitySelected == "") {
@@ -954,25 +952,22 @@ function saveProfileForm(){
     } else if(dobCheck == 0){
         alert("Please enter valid date of birth");
         statusCheck=0;
-    } else if($('#candidateTotalExperienceYear').val() > 19){
+    } else if($('#candidateTotalExperienceYear').val() > 30){
         alert("Please enter valid years of experience");
         statusCheck=0;
     } else if(($('input:radio[name="workExperience"]:checked').val() == 1) && totalExp == 0){
         alert("Please select total years of experience");
         statusCheck=0;
     }
-    if(lastName != ""){
-        if(lastNameCheck == 0){
-            alert("Last name contains number. Please Enter a valid Last Name");
-            statusCheck=0;
-        } else if(lastNameCheck == 2){
-            alert("Last Name cannot be blank spaces. Enter a valid Last name");
-            statusCheck=0;
-        } else if(lastNameCheck == 3){
-            alert("Last name contains special symbols. Enter a valid Last name");
-            statusCheck=0;
-        }
+
+    //checking last name
+    switch(lastNameCheck){
+        case 0: alert("Last name contains number. Please Enter a valid Last Name"); statusCheck=0; break;
+        case 2: alert("Last Name cannot be blank spaces. Enter a valid Last name"); statusCheck=0; break;
+        case 3: alert("Last name contains special symbols. Enter a valid Last name"); statusCheck=0; break;
+        case 4: alert("Please enter your Last name"); statusCheck=0; break;
     }
+
     if(statusCheck == 1){
         var languageKnown = $('#languageTable input:checked').map(function() {
             check=0;
@@ -1013,6 +1008,8 @@ function saveProfileForm(){
 
         if(($('input:radio[name="workExperience"]:checked').val() == 0)){
             totalExp = 0;
+        } else if(($('input:radio[name="workExperience"]:checked').val() == undefined)){
+            totalExp = null;
         }
 
         document.getElementById("saveBtn").disabled = true;
