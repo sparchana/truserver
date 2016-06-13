@@ -507,6 +507,7 @@ function saveCandidateExperienceDetails(){
         } else if((experienceStatus == 1) && ($('input:radio[name="isEmployed"]:checked').val() == 1) && ($('#candidateCurrentJobSalary').val() == null || $('#candidateCurrentJobSalary').val() == "" || $('#candidateCurrentJobSalary').val() == "0")){
             alert("Enter your current salary");
         }
+
         else if(experienceStatus == 1 && totalExp == 0){
             alert("Select Total Years of Experience");
         }

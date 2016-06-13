@@ -163,6 +163,13 @@ public class CandidateService
         String interactionNote;
         boolean isNewCandidate = false;
 
+        if(isSupport){
+            createdBy = session().get("sessionUsername");
+            interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM;
+            interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT;
+            interactionNote = ServerConstants.INTERACTION_NOTE_CALL_OUTBOUNDS;
+        }
+
         if(candidate == null){
             Logger.info("Candidate with mobile number: " + request.getCandidateMobile() + " doesn't exist");
             CandidateSignUpRequest candidateSignUpRequest = ( CandidateSignUpRequest ) request;
@@ -297,7 +304,6 @@ public class CandidateService
                 interactionNote = ServerConstants.INTERACTION_NOTE_DUMMY_PASSWORD_CREATED;
             }
         }
-
         // check if we have enough details required to complete the minimum profile
         candidate.setIsMinProfileComplete(isMinProfileComplete(candidate));
 
