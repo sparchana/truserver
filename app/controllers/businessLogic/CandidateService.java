@@ -58,7 +58,9 @@ public class CandidateService {
         } else {return null;}
     }
 
-    public static CandidateSignUpResponse signUpCandidate(CandidateSignUpRequest candidateSignUpRequest, boolean isSupport, int leadSourceId){
+    public static CandidateSignUpResponse signUpCandidate(CandidateSignUpRequest candidateSignUpRequest,
+                                                          boolean isSupport,
+                                                          int leadSourceId) {
         List<Integer> localityList = candidateSignUpRequest.getCandidateLocality();
         List<Integer> jobsList = candidateSignUpRequest.getCandidateJobPref();
 
@@ -129,7 +131,9 @@ public class CandidateService {
         return candidateSignUpResponse;
     }
 
-    public static CandidateSignUpResponse createCandidateProfile(AddCandidateRequest request, boolean isSupport, int flag){
+    public static CandidateSignUpResponse createCandidateProfile(AddCandidateRequest request,
+                                                                 boolean isSupport,
+                                                                 int flag) {
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
         // get candidateBasic obj from req
         // Handle jobPrefList and any other list with , as break point at application only
@@ -140,6 +144,7 @@ public class CandidateService {
         String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SELF;
         Integer interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
         String interactionNote;
+        boolean isNewCandidate = false;
 
         if(candidate == null){
             Logger.info("No existing candidate | New Candidate");
@@ -153,7 +158,7 @@ public class CandidateService {
                 return candidateSignUpResponse;
             } else {
                 candidate = isCandidateExists(request.getCandidateMobile());
-                interactionResult = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE_SUPPORT;
+                isNewCandidate = true;
             }
 
         } else{
@@ -220,7 +225,13 @@ public class CandidateService {
             createdBy = session().get("sessionUsername");
             interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT;
             interactionNote = ServerConstants.INTERACTION_NOTE_CALL_OUTBOUNDS;
-            interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM;
+
+            if (isNewCandidate) {
+                interactionResult = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE_SUPPORT;
+            }
+            else {
+                interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM;
+            }
         }
 
         Auth auth = AuthService.isAuthExists(candidate.getCandidateId());
