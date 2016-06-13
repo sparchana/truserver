@@ -257,8 +257,8 @@ public class CandidateService {
     }
 
     private static int isMinProfileComplete(Candidate candidate) {
-        if(candidate.getCandidateFirstName() != null && candidate.getCandidateMobile() != null && candidate.getLocalityPreferenceList().size() > 0
-                && candidate.getJobHistoryList().size() > 0 && candidate.getCandidateDOB() != null &&
+        if(candidate.getCandidateFirstName() != null && candidate.getCandidateMobile() != null && (candidate.getLocalityPreferenceList() != null && candidate.getLocalityPreferenceList().size() > 0)
+                && (candidate.getJobPreferencesList() != null && candidate.getJobPreferencesList().size() > 0) && candidate.getCandidateDOB() != null &&
                 candidate.getCandidateGender() != null && candidate.getCandidateTotalExperience() != null && candidate.getCandidateEducation() != null &&
                 candidate.getTimeShiftPreference() != null && candidate.getLanguageKnownList().size() > 0){
             if(candidate.getCandidateIsEmployed() != null) {
