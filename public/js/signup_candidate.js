@@ -9,7 +9,7 @@ function processDataSignUpSubmit(returnedData) {
         returnedOtp = returnedData.otp;
         $('#myRegistrationModal').modal('show');
         $('#authMobile').val($('#candidateMobile').val());
-        $('#candidateName').val('');
+        $('#candidateFirstName').val('');
         $('#candidateSecondName').val('');
         $('#candidateMobile').val('');
         $('#candidateEmail').val('');
@@ -24,7 +24,7 @@ function processDataSignUpSubmit(returnedData) {
     }
     else {
         $('#errorMsg').show();
-        $('#candidateName').val('');
+        $('#candidateFirstName').val('');
         $('#candidateMobile').val('');
         $('#candidateEmail').val('');
     }
@@ -35,7 +35,7 @@ function processDataAddAuth(returnedData) {
     if(returnedData.status == 1) {
         // Store
         localStorage.setItem("mobile", "+91" + candidateMobile);
-        localStorage.setItem("name", returnedData.candidateName);
+        localStorage.setItem("name", returnedData.candidateFirstName);
         localStorage.setItem("lastName", returnedData.candidateLastName);
         localStorage.setItem("id", returnedData.candidateId);
         localStorage.setItem("leadId", returnedData.leadId);
@@ -53,33 +53,82 @@ function processDataAddAuth(returnedData) {
 $(function() {
     $("#form_signup_candidate").submit(function(eventObj) {
         eventObj.preventDefault();
+        var statusCheck = 1;
+        var firstName = $('#candidateFirstName').val();
+        var lastName = $('#candidateSecondName').val();
+        var phone = $('#candidateMobile').val();
+        var firstNameCheck = validateName(firstName);
+        if(lastName != ""){
+            var lastNameCheck = validateName(lastName);
+        }
+        var res = validateMobile(phone);
         var localitySelected = $('#candidateLocality').val();
         var jobSelected = $('#candidateJobPref').val();
-        if (localitySelected == "") {
-            alert("Please Enter your Job Localities");
-        } else if (jobSelected == "") {
-            alert("Please Enter the Jobs you are Interested");
+
+        //checking first name
+        switch(firstNameCheck){
+            case 0: alert("First name contains number. Please Enter a valid First Name"); statusCheck=0; break;
+            case 2: alert("First Name cannot be blank spaces. Enter a valid first name"); statusCheck=0; break;
+            case 3: alert("First name contains special symbols. Enter a valid first name"); statusCheck=0; break;
+            case 4: alert("Please enter your first name"); statusCheck=0; break;
         }
-        else{
-            document.getElementById("registerBtn").disabled = true;
+
+        if(res == 0){
+            alert("Enter a valid mobile number");
+            statusCheck=0;
+        } else if(res == 1){
+            alert("Enter 10 digit mobile number");
+            statusCheck=0;
+        } else if(localitySelected == "") {
+            alert("Please Enter your Job Localities");
+            statusCheck=0;
+        }
+        else if(jobSelected == "") {
+            alert("Please Enter the Jobs you are Interested");
+            statusCheck=0;
+        }
+
+        //checking last name
+        switch(lastNameCheck){
+            case 0: alert("Last name contains number. Please Enter a valid Last Name"); statusCheck=0; break;
+            case 2: alert("Last Name cannot be blank spaces. Enter a valid Last name"); statusCheck=0; break;
+            case 3: alert("Last name contains special symbols. Enter a valid Last name"); statusCheck=0; break;
+            case 4: alert("Please enter your Last name"); statusCheck=0; break;
+        }
+        
+        if(statusCheck == 1){
+            candidateMobile = phone;
+            document.getElementById("registerBtnSubmit").disabled = true;
             try {
-                var name  = $('#candidateName').val();
-                var secondName  = $('#candidateSecondName').val();
-                var phone = $('#candidateMobile').val();
-                candidateMobile = phone;
+                var candidatePreferredJob = [];
+                var candidatePreferredLocality = [];
+
+                var jobPref = $('#candidateJobPref').val().split(",");
+                var localityPref = $('#candidateLocality').val().split(",");
+
+                var i;
+                for(i=0;i<jobPref.length; i++){
+                    candidatePreferredJob.push(parseInt(jobPref[i]));
+                }
+
+                for(i=0;i<localityPref.length; i++){
+                    candidatePreferredLocality.push(parseInt(localityPref[i]));
+                }
+
                 $('#alreadyMsgCandidate').hide();
                 var d = {
-                    candidateName : name,
-                    candidateSecondName : secondName,
+                    candidateFirstName : firstName,
+                    candidateSecondName : lastName,
                     candidateMobile : phone,
-                    candidateLocality : $('#candidateLocality').val(),
-                    candidateJobPref : $('#candidateJobPref').val()
+                    candidateLocality : candidatePreferredLocality,
+                    candidateJobPref : candidatePreferredJob
                 };
 
                 $.ajax({
                     type: "POST",
                     url: "/signUp",
-                    data: d,
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
                     success: processDataSignUpSubmit
                 });
             } catch (exception) {
@@ -100,7 +149,6 @@ $(function() {
                     $('#form_auth').show();
                     $('#errorMsg').hide();
                     $('#incorrectMsg').hide();
-
                 }
                 else {
                     $('#incorrectOtpMsg').show();
@@ -115,10 +163,14 @@ $(function() {
 $(function() {
     $("#form_auth").submit(function(eventObj) {
         eventObj.preventDefault();
-        if(($('#candidatePassword').val()).length < 6){
-            alert("Minimum 6 characters password required");
+        var userPwd = $('#candidatePassword').val();
+        var passwordCheck = validatePassword(userPwd);
+        if(passwordCheck == 0){
+            alert("Please set min 6 chars for password");
+        } else if(passwordCheck == 1){
+            alert("Password cannot have blank spaces. Enter a valid password");
         }
-        else {
+        else{
             document.getElementById("btnSubmit").disabled = true;
             try {
                 var authPassword = $('#candidatePassword').val();
@@ -131,7 +183,8 @@ $(function() {
                 $.ajax({
                     type: "POST",
                     url: "/addPassword",
-                    data: d,
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
                     success: processDataAddAuth
                 });
             } catch (exception) {

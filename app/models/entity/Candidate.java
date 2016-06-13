@@ -1,6 +1,7 @@
 package models.entity;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.PrivateOwned;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.OM.*;
 import models.entity.OO.CandidateCurrentJobDetail;
@@ -15,6 +16,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by batcoder1 on 19/4/16.
@@ -24,118 +26,136 @@ import java.util.List;
 @Table(name = "candidate")
 public class Candidate extends Model {
     @Id
-    @Column(name = "CandidateId", columnDefinition = "bigint signed null", unique = true)
-    public long candidateId = 0;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "CandidateId", columnDefinition = "bigint signed", unique = true)
+    private long candidateId = 0;
 
     @Column(name = "candidateUUId", columnDefinition = "varchar(255) not null", nullable = false, unique = true)
-    public String candidateUUId;
+    private String candidateUUId;
 
     @Column(name = "CandidateName", columnDefinition = "varchar(50) not null")
-    public String candidateName;
+    private String candidateFirstName;
 
     @Column(name = "CandidateLastName", columnDefinition = "varchar(50) null")
-    public String candidateLastName;
+    private String candidateLastName;
 
     @Column(name = "CandidateGender", columnDefinition = "int(1) null")
-    public Integer candidateGender;
+    private Integer candidateGender;
 
     @Column(name = "CandidateDOB", columnDefinition = "date null")
-    public Date candidateDOB;
+    private Date candidateDOB;
 
     @Column(name = "CandidateMobile", columnDefinition = "varchar(13) not null")
-    public String candidateMobile;
+    private String candidateMobile;
 
     @Column(name = "CandidatePhoneType", columnDefinition = "varchar(100) null")
-    public String candidatePhoneType;
+    private String candidatePhoneType;
 
     @Column(name = "CandidateMaritalStatus", columnDefinition = "int null")
-    public Integer candidateMaritalStatus;
+    private Integer candidateMaritalStatus;
 
     @Column(name = "CandidateEmail", columnDefinition = "varchar(255) null")
-    public String candidateEmail;
+    private String candidateEmail;
 
     @Column(name = "CandidateIsEmployed", columnDefinition = "int null")
-    public Integer candidateIsEmployed;
+    private Integer candidateIsEmployed;
 
     @Column(name = "CandidateTotalExperience", columnDefinition = "int signed null")
-    public Integer candidateTotalExperience;  // data in months
+    private Integer candidateTotalExperience;  // data in months
 
     @Column(name = "CandidateAge", columnDefinition = "int signed null")
-    public Integer candidateAge;
+    private Integer candidateAge;
 
-    @Column(name = "CandidateCreateTimestamp", columnDefinition = "timestamp default current_timestamp not null")
-    public Timestamp candidateCreateTimestamp = new Timestamp(System.currentTimeMillis());
+    @Column(name = "CandidateCreateTimestamp", columnDefinition = "timestamp not null")
+    private Timestamp candidateCreateTimestamp;
 
     @Column(name = "CandidateUpdateTimestamp", columnDefinition = "timestamp null")
-    public Timestamp candidateUpdateTimestamp;
+    private Timestamp candidateUpdateTimestamp;
 
     @Column(name = "CandidateIsAssessed", columnDefinition = "int signed not null default 0")
-    public int candidateIsAssessed;
+    private int candidateIsAssessed;
 
     @Column(name = "CandidateSalarySlip", columnDefinition = "int signed null")
-    public Integer candidateSalarySlip;
+    private Integer candidateSalarySlip;
 
     @Column(name = "CandidateAppointmentLetter", columnDefinition = "int signed null")
-    public Integer candidateAppointmentLetter;
+    private Integer candidateAppointmentLetter;
 
     @Column(name = "IsMinProfileComplete", columnDefinition = "int signed not null default 0")
-    public int IsMinProfileComplete = 0; // 0 - Not Complete
+    private int IsMinProfileComplete = 0; // 0 - Not Complete
 
     @JsonManagedReference
+    @PrivateOwned
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
-    public List<IDProofReference> idProofReferenceList;
+    private List<IDProofReference> idProofReferenceList;
 
     @JsonManagedReference
+    @PrivateOwned
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
-    public List<JobHistory> jobHistoryList;
+    private List<JobHistory> jobHistoryList;
 
     @JsonManagedReference
+    @PrivateOwned
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
-    public List<JobPreference> jobPreferencesList;
+    private List<JobPreference> jobPreferencesList;
 
     @JsonManagedReference
+    @PrivateOwned
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
-    public List<LanguageKnown> languageKnownList;
+    private List<LanguageKnown> languageKnownList;
 
     @JsonManagedReference
+    @PrivateOwned
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
-    public List<LocalityPreference> localityPreferenceList;
+    private List<LocalityPreference> localityPreferenceList;
 
     @JsonManagedReference
+    @PrivateOwned
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
-    public List<CandidateSkill> candidateSkillList;
-
-    @JsonManagedReference
-    @OneToOne(mappedBy = "candidate", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    public CandidateCurrentJobDetail candidateCurrentJobDetail;
+    private List<CandidateSkill> candidateSkillList;
 
     @JsonManagedReference
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    public Lead lead;
+    private Lead lead;
 
     @JsonManagedReference
-    @OneToOne(mappedBy = "candidate", cascade = CascadeType.ALL)
-    public TimeShiftPreference timeShiftPreference;
+    @JoinColumn(name = "candidateCurrentJobId", referencedColumnName = "candidateCurrentJobId")
+    @OneToOne(cascade = CascadeType.ALL)
+    private CandidateCurrentJobDetail candidateCurrentJobDetail;
+
+    @JsonManagedReference
+    @JoinColumn(name = "candidateEducationId", referencedColumnName = "candidateEducationId")
+    @OneToOne(cascade = CascadeType.ALL)
+    private CandidateEducation candidateEducation;
+
+    @JsonManagedReference
+    @JoinColumn(name = "timeShiftPreferenceId", referencedColumnName = "timeShiftPreferenceId")
+    @OneToOne(cascade = CascadeType.ALL)
+    private TimeShiftPreference timeShiftPreference;
 
     @JsonManagedReference
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "CandidateMotherTongue", referencedColumnName = "languageId")
-    public Language motherTongue;
+    private Language motherTongue;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonManagedReference
     @JoinColumn(name = "CandidateHomeLocality")
-    public Locality locality;
+    private Locality locality;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonManagedReference
     @JoinColumn(name = "CandidateStatusId", referencedColumnName = "profileStatusId")
-    public CandidateProfileStatus candidateprofilestatus;
+    private CandidateProfileStatus candidateprofilestatus;
 
-    @OneToOne(mappedBy = "candidate", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    public CandidateEducation candidateEducation;
 
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
+
+    public Candidate() {
+        this.candidateUUId = UUID.randomUUID().toString();
+        this.candidateCreateTimestamp = new Timestamp(System.currentTimeMillis());
+        this.candidateUpdateTimestamp = new Timestamp(System.currentTimeMillis());
+    }
 
     public void registerCandidate() {
         Logger.info("inside registerCandidate(), Candidate registered/saved" );
@@ -160,8 +180,8 @@ public class Candidate extends Model {
         this.candidateId = candidateId;
     }
 
-    public void setCandidateName(String candidateName) {
-        this.candidateName = candidateName;
+    public void setCandidateFirstName(String candidateFirstName) {
+        this.candidateFirstName = candidateFirstName;
     }
 
     public void setCandidateLastName(String candidateLastName) {
@@ -275,6 +295,143 @@ public class Candidate extends Model {
     public void setLead(Lead lead) {
         this.lead = lead;
     }
+
+    public long getCandidateId() {
+        return candidateId;
+    }
+
+    public String getCandidateUUId() {
+        return candidateUUId;
+    }
+
+    public String getCandidateFirstName() {
+        return candidateFirstName;
+    }
+
+    public String getCandidateLastName() {
+        return candidateLastName;
+    }
+
+    public Integer getCandidateGender() {
+        return candidateGender;
+    }
+
+    public Date getCandidateDOB() {
+        return candidateDOB;
+    }
+
+    public String getCandidateMobile() {
+        return candidateMobile;
+    }
+
+    public String getCandidatePhoneType() {
+        return candidatePhoneType;
+    }
+
+    public Integer getCandidateMaritalStatus() {
+        return candidateMaritalStatus;
+    }
+
+    public String getCandidateEmail() {
+        return candidateEmail;
+    }
+
+    public Integer getCandidateIsEmployed() {
+        return candidateIsEmployed;
+    }
+
+    public Integer getCandidateTotalExperience() {
+        return candidateTotalExperience;
+    }
+
+    public Integer getCandidateAge() {
+        return candidateAge;
+    }
+
+    public Timestamp getCandidateCreateTimestamp() {
+        return candidateCreateTimestamp;
+    }
+
+    public Timestamp getCandidateUpdateTimestamp() {
+        return candidateUpdateTimestamp;
+    }
+
+    public int getCandidateIsAssessed() {
+        return candidateIsAssessed;
+    }
+
+    public void setCandidateIsAssessed(int candidateIsAssessed) {
+        this.candidateIsAssessed = candidateIsAssessed;
+    }
+
+    public Integer getCandidateSalarySlip() {
+        return candidateSalarySlip;
+    }
+
+    public Integer getCandidateAppointmentLetter() {
+        return candidateAppointmentLetter;
+    }
+
+    public int getIsMinProfileComplete() {
+        return IsMinProfileComplete;
+    }
+
+    public void setIsMinProfileComplete(int isMinProfileComplete) {
+        IsMinProfileComplete = isMinProfileComplete;
+    }
+
+    public List<IDProofReference> getIdProofReferenceList() {
+        return idProofReferenceList;
+    }
+
+    public List<JobHistory> getJobHistoryList() {
+        return jobHistoryList;
+    }
+
+    public List<JobPreference> getJobPreferencesList() {
+        return jobPreferencesList;
+    }
+
+    public List<LanguageKnown> getLanguageKnownList() {
+        return languageKnownList;
+    }
+
+    public List<LocalityPreference> getLocalityPreferenceList() {
+        return localityPreferenceList;
+    }
+
+    public List<CandidateSkill> getCandidateSkillList() {
+        return candidateSkillList;
+    }
+
+    public CandidateCurrentJobDetail getCandidateCurrentJobDetail() {
+        return candidateCurrentJobDetail;
+    }
+
+    public Lead getLead() {
+        return lead;
+    }
+
+    public TimeShiftPreference getTimeShiftPreference() {
+        return timeShiftPreference;
+    }
+
+    public Language getMotherTongue() {
+        return motherTongue;
+    }
+
+    public Locality getLocality() {
+        return locality;
+    }
+
+    public CandidateProfileStatus getCandidateprofilestatus() {
+        return candidateprofilestatus;
+    }
+
+    public CandidateEducation getCandidateEducation() {
+        return candidateEducation;
+    }
+
 }
 
 

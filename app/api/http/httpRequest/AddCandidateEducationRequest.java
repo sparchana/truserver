@@ -1,4 +1,4 @@
-package api.http;
+package api.http.httpRequest;
 
 /**
  * Created by batcoder1 on 31/5/16.
@@ -18,5 +18,17 @@ public class AddCandidateEducationRequest extends AddCandidateExperienceRequest 
 
     public String getCandidateEducationInstitute() {
         return candidateEducationInstitute;
+    }
+
+    public void setCandidateEducationLevel(Integer candidateEducationLevel) {
+        this.candidateEducationLevel = candidateEducationLevel;
+    }
+
+    public void setCandidateDegree(Integer candidateDegree) {
+        this.candidateDegree = candidateDegree;
+    }
+
+    public void setCandidateEducationInstitute(String candidateEducationInstitute) {
+        this.candidateEducationInstitute = candidateEducationInstitute;
     }
 }

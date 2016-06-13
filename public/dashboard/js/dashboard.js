@@ -96,6 +96,41 @@ $(document).ready(function(){
         console.log("exception occured!!" + exception);
     }
 
+    var i;
+    for(i=1;i<=31;i++){
+        var option = document.createElement("option");
+        option.value = ('0' + i).slice(-2);
+        option.textContent = i;
+        $('#dob_day').append(option);
+    }
+
+    for(i=1;i<=12;i++){
+        option = document.createElement("option");
+        option.value = ('0' + i).slice(-2);
+        var monthName;
+        switch(i){
+            case 1: monthName = "January"; break;
+            case 2: monthName = "February"; break;
+            case 3: monthName = "March"; break;
+            case 4: monthName = "April"; break;
+            case 5: monthName = "May"; break;
+            case 6: monthName = "June"; break;
+            case 7: monthName = "July"; break;
+            case 8: monthName = "August"; break;
+            case 9: monthName = "September"; break;
+            case 10: monthName = "October"; break;
+            case 11: monthName = "November"; break;
+            case 12: monthName = "December"; break;
+        }
+        option.textContent = monthName;
+        $('#dob_month').append(option);
+    }
+    for(i=new Date().getFullYear();i>=1940;i--){
+        option = document.createElement("option");
+        option.value = i;
+        option.textContent = i;
+        $('#dob_year').append(option);
+    }
 });
 
 try {
@@ -113,6 +148,32 @@ try {
 }
 
 function fetchSkillAjaxApis() {
+    var i;
+    $('#candidateTotalExperienceYear, #candidateTotalExperienceMonth')
+        .find('option')
+        .remove();
+
+    for(i=0;i<=30;i++){
+        var option = document.createElement("option");
+        option.value = i;
+        if(i<2){
+            option.textContent = i + " year";
+        } else {
+            option.textContent = i + " years";
+        }
+        $('#candidateTotalExperienceYear').append(option);
+    }
+
+    for(i=0;i<=11;i++){
+        var option = document.createElement("option");
+        option.value = i;
+        if(i<2){
+            option.textContent = i + " month";
+        } else {
+            option.textContent = i + " months";
+        }
+        $('#candidateTotalExperienceMonth').append(option);
+    }
     try {
         $.ajax({
             type: "GET",
@@ -181,36 +242,39 @@ function generateSkills(){
 }
 
 function processDataCheckSkills(returnedData) {
-    var skillParent = $("#skillQuestion");
-    var skillQualifierParent = $("#skillAnswer");
-    skillParent.html('');
-    skillQualifierParent.html('');
 
     var count =0;
+    var table = document.getElementById("skillTable");
+    $('#skillTable').empty();
     returnedData.forEach(function (singleSkill) {
         count++;
-        var q = document.createElement("h5");
-        q.style = "padding: 5px";
-        var question = singleSkill.skill.skillQuestion;
-        q.textContent = question + "       ";
-        skillParent.append(q);
+        var row = table.insertRow(0);
 
-        var object = singleSkill.skill.skillQualifierList;
-
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
+        
+        var ques = document.createElement("div");
+        ques.id = "skillQues";
+        ques.textContent = singleSkill.skill.skillQuestion;
+        
         var lbl = document.createElement("div");
         lbl.className = "btn-group";
-        skillQualifierParent.append(lbl);
+        lbl.id = "skillOption";
 
+        cell1.appendChild(ques);
+        cell2.appendChild(lbl);
+
+        var object = singleSkill.skill.skillQualifierList;
         object.forEach(function (x) {
             var headLbl = document.createElement("label");
+            headLbl.style = "display: inline-block";
             headLbl.className = "btn btn-custom-check skillBtn";
             headLbl.textContent = x.qualifier;
             headLbl.onclick = function () {
                 document.getElementById(s[0] + "_" + s[1] + "_" + x.qualifier).checked = true;
                 document.getElementById(s[0] + "_" + s[1] + "_" + x.qualifier).click();
             };
-            lbl.appendChild(headLbl);
-
+            
             var o = document.createElement("input");
             o.type = "radio";
             o.style = "display: inline-block";
@@ -240,10 +304,8 @@ function processDataCheckSkills(returnedData) {
                     skillMap[pos] = item;
             };
             headLbl.appendChild(o);
+            lbl.appendChild(headLbl);
         });
-        var br = document.createElement("div");
-        br.id = "skillBreak";
-        skillQualifierParent.append(br);
     });
     if(count == 0){
         $(".skillSection").hide();
@@ -251,14 +313,17 @@ function processDataCheckSkills(returnedData) {
 }
 
 function prefillSkills(candidateSkillList){
-    $('#skillAnswer input').each(function() {
-        var skillResponse = document.createElement("INPUT");
-        skillResponse= $(this).get(0);
-        candidateSkillList.forEach(function (skillElement) {
-            if(skillResponse.name == skillElement.skillName && skillResponse.value == skillElement.skillResponse){
-                skillResponse.checked = true;
-                skillResponse.click();
-            }
+    $('table#skillTable tr').each(function(){
+        $(this).find('input').each(function(){
+            //do your stuff, you can use $(this) to get current cell
+            var skillResponse = document.createElement("INPUT");
+            skillResponse= $(this).get(0);
+            candidateSkillList.forEach(function (skillElement) {
+                if(skillResponse.name == skillElement.skillName && skillResponse.value == skillElement.skillResponse){
+                    skillResponse.checked = true;
+                    skillResponse.click();
+                }
+            });
         });
     });
 }
@@ -343,13 +408,11 @@ function populateLanguages(l, lId) {
             var cell2 = row.insertCell(1);
             var cell3 = row.insertCell(2);
             var cell4 = row.insertCell(3);
-            var cell5 = row.insertCell(4);
 
             cell1.innerHTML = l[i];
-            cell2.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;";
-            cell3.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"r\" value=0 >Read</label></div>";
-            cell4.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"w\" value=0 >Write</label></div>";
-            cell5.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >Speak</label></div>";
+            cell2.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" id=\"languageBtn\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"r\" value=0 >Read</label></div>";
+            cell3.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" id=\"languageBtn\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"w\" value=0 >Write</label></div>";
+            cell4.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" id=\"languageBtn\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >Speak</label></div>";
         }
     }
 

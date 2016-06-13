@@ -188,7 +188,7 @@ function renderSearchResult(returnedData) {
 
             returnedDataArray.push({
                 'cLID': '<a href="/candidateSignupSupport/'+newCandidate.lead.leadId+'" target="_blank">'+newCandidate.lead.leadId+'</a>',
-                'candidateName' : newCandidate.candidateName,
+                "candidateFirstName" : newCandidate.candidateFirstName,
                 'candidateMobile' : newCandidate.candidateMobile,
                 'candidateCurrentSalary' : getCurrentSalary(newCandidate.candidateCurrentJobDetail),
                 'candidateJobPref' :  getJobPref(newCandidate.jobPreferencesList),
@@ -218,7 +218,7 @@ function renderSearchResult(returnedData) {
             "scrollX": true,
             "columns": [
                 { "data": "cLID" },
-                { "data": "candidateName" },
+                { "data": "candidateFirstName" },
                 { "data": "candidateMobile" },
                 { "data": "candidateJobPref" },
                 { "data": "candidateLocalityPref" },
@@ -275,12 +275,26 @@ function renderSearchResult(returnedData) {
 
 
 function searchForm(){
+    var localityArray = [];
+    var jobArray = [];
+    
+    var i;
+    var searchJob = $('#candidateJobPref').val().split(",");
+    var searchLocality = $('#candidateLocalityPref').val().split(",");
+    
+    for(i=0;i<searchJob.length;i++){
+        jobArray.push(searchJob[i]);
+    }
+
+    for(i=0;i<searchLocality.length;i++){
+        localityArray.push(searchLocality[i]);
+    }
     /* ajax commands to fetch all localities and jobs*/
     var d = {
-        candidateName: $('#candidateName').val(),
+        candidateFirstName: $('#candidateFirstName').val(),
         candidateMobile: $('#candidateMobile').val(),
-        candidateLocality: $('#candidateLocalityPref').val(),
-        candidateJobInterest: $('#candidateJobPref').val(),
+        candidateLocality: localityArray,
+        candidateJobInterest: jobArray,
         fromThisDate: $('#fromThisDate').val(),
         toThisDate: $('#toThisDate').val()
     };
@@ -351,7 +365,7 @@ $(function() {
         var title = $(this).text();
         $(this).html( '<label for="'+title+'">'+title+'</label>' +
             '<input type="text" name="'+title+'"  id="'+title+'" placeholder="'+title+'" />' );
-    } );
+    });
 
     /* ajax commands to fetch all localities and jobs*/
     NProgress.start();

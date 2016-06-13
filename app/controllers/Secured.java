@@ -13,7 +13,6 @@ public class Secured extends Security.Authenticator {
     @Override
     public String getUsername(Context ctx) {
         String sessionId = ctx.session().get("sessionId");
-
         if(sessionId != null){
             return ctx.session().get("sessionId");
         } else {

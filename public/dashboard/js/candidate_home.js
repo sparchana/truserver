@@ -5,6 +5,7 @@ $(document).ready(function(){
     var userMobile = localStorage.getItem("mobile");
     var userName = localStorage.getItem("name");
     var userLastName = localStorage.getItem("lastName");
+    console.log("userName: " + userName + " mobile:" + userMobile);
 
     if(userMobile != null){
         document.getElementById("helloMsg").innerHTML = "Hello " + userName + "!";
@@ -57,8 +58,6 @@ $(document).ready(function(){
             data = response.getDataTable();
             new google.visualization.Table(document.getElementById('table')).draw(data, options);
             var data2 = document.getElementsByClassName('google-visualization-table-td google-visualization-table-td-number').length;
-            var assessmentHeader = document.getElementById("assessmentHeader");
-            assessmentHeader.style = "color: #000000";
             if(data2>0) {
                 document.getElementById("assessedStatusResult").innerHTML = '<font color="#46AB49">Complete</font>';
                 document.getElementById("assessedStatusAction").innerHTML = '-';
@@ -88,8 +87,6 @@ $(document).ready(function(){
         google.setOnLoadCallback(sendAndDraw);
     }
     else{
-        var assessmentHeader = document.getElementById("assessmentHeader");
-        assessmentHeader.style = "color: #000000";
         document.getElementById("assessedStatusResult").innerHTML = '<font color="#46AB49">Complete</font>';
         document.getElementById("assessedStatusAction").innerHTML = '-';
         $("#assessedIcon").attr('src', '/assets/dashboard/img/right.png');
@@ -97,9 +94,9 @@ $(document).ready(function(){
 });
 
 function processDataAndFillMinProfile(returnedData) {
-    if(returnedData.IsMinProfileComplete == 0){ // profile not complete
+    if(returnedData.isMinProfileComplete == 0){ // profile not complete
         document.getElementById("profileStatusResult").innerHTML = '<font color="#F26522">Incomplete</font>';
-        document.getElementById("profileStatusAction").innerHTML = '<font size="2" color="#F26522">(Complete Profile Now)</font>';
+        document.getElementById("profileStatusAction").innerHTML = '<font size="2" color="#F26522">(Complete Profile)</font>';
         var profileStatusParent = document.getElementById("profileStatusParent");
         profileStatusParent.addEventListener("click", completeProfile);
         profileStatusParent.style = "cursor: pointer";

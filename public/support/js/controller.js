@@ -9,7 +9,7 @@ function cleaModalBackDrop() {
 
 function clearModal() {
 
-    $("#candidateName").val("");
+    $("#candidateFirstName").val("");
     $("#candidateMobile").val("");
     $("#candidateJobInterest").val("");
     $("#candidateType").val("");
@@ -18,7 +18,7 @@ function clearModal() {
 
 function fillModal(returnedData) {
 
-    $("#candidateName").val(returnedData.candidateName);
+    $("#candidateFirstName").val(returnedData.candidateFirstName);
     $("#candidateMobile").val(returnedData.candidateMobile);
 
 }

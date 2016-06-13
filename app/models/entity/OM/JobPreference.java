@@ -18,25 +18,53 @@ public class JobPreference extends Model {
     @Id
     @JsonBackReference
     @Column(name = "JobPreferenceId", columnDefinition = "int signed", nullable = false, unique = true)
-    public int jobPreferenceId = 0;
+    private int jobPreferenceId;
 
     @JsonBackReference
-    @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp default current_timestamp null")
-    public Timestamp updateTimeStamp;
+    @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp null")
+    private Timestamp updateTimeStamp = new Timestamp(System.currentTimeMillis());
 
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "JobRoleId", referencedColumnName = "JobRoleId")
-    public JobRole jobRole;
+    private JobRole jobRole;
 
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "CandidateId", referencedColumnName= "CandidateId")
-    public Candidate candidate;
+    private Candidate candidate;
+
+    public static Finder<String, JobPreference> find = new Finder(JobPreference.class);
 
     public void setUpdateTimeStamp(Timestamp updateTimeStamp) {
         this.updateTimeStamp = updateTimeStamp;
     }
 
-    public static Finder<String, JobPreference> find = new Finder(JobPreference.class);
+    public int getJobPreferenceId() {
+        return jobPreferenceId;
+    }
+
+    public void setJobPreferenceId(int jobPreferenceId) {
+        this.jobPreferenceId = jobPreferenceId;
+    }
+
+    public Timestamp getUpdateTimeStamp() {
+        return updateTimeStamp;
+    }
+
+    public JobRole getJobRole() {
+        return jobRole;
+    }
+
+    public void setJobRole(JobRole jobRole) {
+        this.jobRole = jobRole;
+    }
+
+    public Candidate getCandidate() {
+        return candidate;
+    }
+
+    public void setCandidate(Candidate candidate) {
+        this.candidate = candidate;
+    }
 }

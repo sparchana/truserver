@@ -7,7 +7,7 @@ function processDataLogin(returnedData) {
     if(returnedData.status == 1) {
         // Store
         localStorage.setItem("mobile", "+91" + candidateMobile);
-        localStorage.setItem("name", returnedData.candidateName);
+        localStorage.setItem("name", returnedData.candidateFirstName);
         localStorage.setItem("lastName", returnedData.candidateLastName);
         localStorage.setItem("id", returnedData.candidateId);
         localStorage.setItem("leadId", returnedData.leadId);
@@ -30,25 +30,34 @@ function processDataLogin(returnedData) {
 $(function() {
     $("#form_login_candidate").submit(function(eventObj) {
         eventObj.preventDefault();
-        try {
-            var phone  = $('#candidateLoginMobile').val();
-            var password = $('#candidateLoginPassword').val();
-            candidateMobile = phone;
-            console.log("phone: " + phone);
-            var s = {
-                candidateLoginMobile: phone,
-                candidateLoginPassword : password 
-            };
-            $.ajax({
-                type: "POST",
-                url: "/loginSubmit",
-                data: s,
-                success: processDataLogin
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
+        var phone  = $('#candidateLoginMobile').val();
+        var password = $('#candidateLoginPassword').val();
+        console.log(phone + " " + password);
+        if(phone == null || phone == ""){
+            alert("Enter your Phone Number");
+        } else if(password == null || password == ""){
+            alert("Enter your Password");
         }
+        else{
+            try {
 
+                candidateMobile = phone;
+                console.log("phone: " + phone);
+                var s = {
+                    candidateLoginMobile: phone,
+                    candidateLoginPassword : password
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/loginSubmit",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(s),
+                    success: processDataLogin
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
+        }
     }); // end of submit
 }); // end of function
 

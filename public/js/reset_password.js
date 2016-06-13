@@ -25,7 +25,7 @@ function processDataPostReset(returnedData) {
     if(returnedData.status == 1) {
 
         localStorage.setItem("mobile", "+91" + candidateMobile);
-        localStorage.setItem("name", returnedData.candidateName);
+        localStorage.setItem("name", returnedData.candidateFirstName);
         localStorage.setItem("lastName", returnedData.candidateLastName);
         localStorage.setItem("id", returnedData.candidateId);
         localStorage.setItem("leadId", returnedData.leadId);
@@ -50,23 +50,32 @@ function processDataPostReset(returnedData) {
 $(function() {
     $("#form_forgot_password").submit(function(eventObj) {
         eventObj.preventDefault();
-        document.getElementById("resetCheckUserBtn").disabled = true;
-        try {
-            var phone = $('#resetPasswordMobile').val();
-            candidateMobile = phone;
-            var s = {
-                resetPasswordMobile : phone
-            };
-            $.ajax({
-                type: "POST",
-                url: "/findUserAndSendOtp",
-                data: s,
-                success: processDataResetCheckUser
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
+        var phone = $('#resetPasswordMobile').val();
+        var phoneRes = validateMobile(phone);
+        if(phoneRes == 0){ // invalid mobile
+            alert("Enter a valid mobile number");
         }
-
+        else if(phoneRes == 1){ // mobile no. less than 1 digits
+            alert("Enter 10 digit mobile number");
+        }
+        else{
+            candidateMobile = phone;
+            document.getElementById("resetCheckUserBtn").disabled = true;
+            try {
+                var s = {
+                    resetPasswordMobile : phone
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/findUserAndSendOtp",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(s),
+                    success: processDataResetCheckUser
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
+        }
     }); // end of submit
 
     $("#form_password_reset_otp").submit(function(eventObj) {
@@ -84,8 +93,12 @@ $(function() {
 
     $("#form_password_reset_new").submit(function(eventObj) {
         eventObj.preventDefault();
-        if(($('#candidateNewPassword').val()).length < 6){
-            alert("Minimum 6 characters password required");
+        var userPwd = $('#candidateNewPassword').val();
+        var passwordCheck = validatePassword(userPwd);
+        if(passwordCheck == 0){
+            alert("Please set min 6 chars for password");
+        } else if(passwordCheck == 1){
+            alert("Password cannot have blank spaces. Enter a valid password");
         }
         else{
             document.getElementById("resetNewPasswordBtn").disabled = true;
@@ -100,7 +113,8 @@ $(function() {
                 $.ajax({
                     type: "POST",
                     url: "/addPassword",
-                    data: s,
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(s),
                     success: processDataPostReset
                 });
             } catch (exception) {

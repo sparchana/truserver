@@ -15,15 +15,40 @@ import java.util.List;
 @Table(name = "leadsource")
 public class LeadSource extends Model {
     @Id
-    @Column(name = "LeadSourceId", columnDefinition = "int signed null", nullable = false, unique = true)
-    public int  leadSourceId;
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name = "LeadSourceId", columnDefinition = "int signed", unique = true)
+    private int  leadSourceId;
 
     @Column(name = "LeadSourceName", columnDefinition = "varchar(255) null")
-    public String leadSourceName;
+    private String leadSourceName;
 
     @JsonBackReference
     @OneToMany(mappedBy = "leadSource")
-    public List<Lead> leadList;
+    private List<Lead> leadList;
 
     public static Model.Finder<String, LeadSource> find = new Model.Finder(LeadSource.class);
+
+    public int getLeadSourceId() {
+        return leadSourceId;
+    }
+
+    public void setLeadSourceId(int leadSourceId) {
+        this.leadSourceId = leadSourceId;
+    }
+
+    public String getLeadSourceName() {
+        return leadSourceName;
+    }
+
+    public void setLeadSourceName(String leadSourceName) {
+        this.leadSourceName = leadSourceName;
+    }
+
+    public List<Lead> getLeadList() {
+        return leadList;
+    }
+
+    public void setLeadList(List<Lead> leadList) {
+        this.leadList = leadList;
+    }
 }

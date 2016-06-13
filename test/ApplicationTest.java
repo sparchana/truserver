@@ -1,7 +1,10 @@
-import models.entity.OM.IDProofReference;
+import models.entity.Candidate;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static play.test.Helpers.fakeApplication;
+import static play.test.Helpers.running;
 
 
 /**
@@ -13,19 +16,15 @@ import static org.junit.Assert.assertEquals;
 public class ApplicationTest {
 
     @Test
-    public void simpleCheck() {
-        int a = 1 + 1;
-        assertEquals(2,a);
-    }
-
-    @Test
     public void aTest() {
         assertEquals(2, 1 + 1); // A really important thing to test
     }
 
     @Test
     public void testUsers() {
-        IDProofReference idProofReference = IDProofReference.find.where().eq("idproofreferenceid", 1).findUnique();
-        assertEquals(idProofReference.idProof, 1);
+        running(fakeApplication(), () -> {
+            Candidate existingCandidate = Candidate.find.where().eq("t0.candidateMobile", "+918787878787").findUnique();
+            assertTrue(existingCandidate == null);
+        });
     }
 }

@@ -1,4 +1,4 @@
-package api.http;
+package api.http.httpResponse;
 
 /**
  * Created by batcoder1 on 28/4/16.

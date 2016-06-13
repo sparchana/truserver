@@ -33,7 +33,8 @@ $(document).ready(function(){
         leadId = localStorage.getItem("leadId");
     }
 
-    $("#candidateSignUpSupportForm input").prop("disabled", true);
+    $("#candidateSignUpSupportForm *").prop("disabled", true);
+
     /* ajax commands to fetch leads Info */
     try {
         $.ajax({
@@ -197,7 +198,7 @@ function processDataAndFillAllFields(returnedData) {
     if(returnedData == "0"){
     } else {
 
-        $("#candidateFirstName").val(returnedData.candidateName);
+        $("#candidateFirstName").val(returnedData.candidateFirstName);
         if(returnedData.candidateLastName == "null" || returnedData.candidateLastName == null){
             $("#candidateSecondName").val("");
         } else{
@@ -428,8 +429,18 @@ function processDataAndFillAllFields(returnedData) {
             }
             if(returnedData.candidateTotalExperience != null){
                 var totalExperience = parseInt(returnedData.candidateTotalExperience);
-                $("#candidateTotalExperienceYear").val(parseInt((totalExperience / 12)).toString()); // years
-                $("#candidateTotalExperienceMonth").val(totalExperience % 12); // years
+                if(totalExperience == 0){
+                    document.getElementById("fresher").checked = true;
+                    $('#fresher').parent().addClass('active').siblings().removeClass('active');
+                    $("#totalWorkExperience").hide();
+                }
+                else{
+                    document.getElementById("experienced").checked = true;
+                    $('#experienced').parent().addClass('active').siblings().removeClass('active');
+                    $("#totalWorkExperience").show();
+                    $("#candidateTotalExperienceYear").val(parseInt((totalExperience / 12)).toString()); // years
+                    $("#candidateTotalExperienceMonth").val(totalExperience % 12); // years
+                }
             }
         } catch(err){
             console.log(err);
@@ -516,16 +527,18 @@ function prefillLanguageTable(languageKnownList) {
     });
 }
 
-
 function prefillSkills(candidateSkillList){
-    $('#skillAnswer input').each(function() {
-        var skillResponse = document.createElement("INPUT");
-        skillResponse= $(this).get(0);
-        candidateSkillList.forEach(function (skillElement) {
-            if(skillResponse.name == skillElement.skillName && skillResponse.value == skillElement.skillResponse){
-                skillResponse.checked = true;
-                skillResponse.click();
-            }
+    $('table#skillTable tr').each(function(){
+        $(this).find('input').each(function(){
+            //do your stuff, you can use $(this) to get current cell
+            var skillResponse = document.createElement("INPUT");
+            skillResponse= $(this).get(0);
+            candidateSkillList.forEach(function (skillElement) {
+                if(skillResponse.name == skillElement.skillName && skillResponse.value == skillElement.skillResponse){
+                    skillResponse.checked = true;
+                    skillResponse.click();
+                }
+            });
         });
     });
 }
@@ -704,7 +717,7 @@ function processLeadUpdate(returnedData) {
 function activateEdit() {
     $("#saveBtn").prop("disabled", false);
     $("#cancelBtn").prop("disabled", false);
-    $("#candidateSignUpSupportForm input").prop("disabled", false);
+    $("#candidateSignUpSupportForm *").prop("disabled", false);
     $('#callNoClass').hide();
     $('#callYesClass').show();
 }
@@ -731,7 +744,7 @@ function cancelAndRedirect() {
 function onCallNo(leadId){
     $("#saveBtn").prop("disabled", true);
     $("#cancelBtn").prop("disabled", true);
-    $("#candidateSignUpSupportForm input").prop("disabled", true);
+    $("#candidateSignUpSupportForm *").prop("disabled", true);
     $('#callYesClass').hide();
     $('#callNoClass').show();
     // also saveResponse gets trigger after selecting No and clicking on SaveBtn
@@ -759,34 +772,32 @@ function employedNo(){
 }
 
 function processDataCheckSkills(returnedData) {
-    var skillParent = $("#skillQuestion");
-    var skillQualifierParent = $("#skillAnswer");
 
     var count =0;
+    var table = document.getElementById("skillTable");
+    $('#skillTable').empty();
     returnedData.forEach(function (singleSkill) {
         count++;
-        var q = document.createElement("h5");
-        q.style = "padding: 5px";
-        var question = singleSkill.skill.skillQuestion;
-        q.textContent = question + "       ";
-        skillParent.append(q);
+        var row = table.insertRow(0);
 
-        var object = singleSkill.skill.skillQualifierList;
+        var cell1 = row.insertCell(0);
+        var cell2 = row.insertCell(1);
 
         var lbl = document.createElement("div");
         lbl.className = "btn-group";
-        skillQualifierParent.append(lbl);
 
+        cell1.innerHTML = singleSkill.skill.skillQuestion;
+        cell2.appendChild(lbl);
+
+        var object = singleSkill.skill.skillQualifierList;
         object.forEach(function (x) {
             var headLbl = document.createElement("label");
-            headLbl.className = "btn btn-custom-check";
-            headLbl.style = "width: 80px";
+            headLbl.className = "btn btn-custom-check skillBtn";
             headLbl.textContent = x.qualifier;
             headLbl.onclick = function () {
                 document.getElementById(s[0] + "_" + s[1] + "_" + x.qualifier).checked = true;
                 document.getElementById(s[0] + "_" + s[1] + "_" + x.qualifier).click();
             };
-            lbl.appendChild(headLbl);
 
             var o = document.createElement("input");
             o.type = "radio";
@@ -817,10 +828,8 @@ function processDataCheckSkills(returnedData) {
                     skillMap[pos] = item;
             };
             headLbl.appendChild(o);
+            lbl.appendChild(headLbl);
         });
-        var br = document.createElement("div");
-        br.id = "skillBreak";
-        skillQualifierParent.append(br);
     });
     if(count == 0){
         $(".skillSection").hide();
@@ -892,20 +901,79 @@ function prefillAll() {
     }
 }
 function saveProfileForm(){
+    var statusCheck = 1;
+    var firstName = $('#candidateFirstName').val();
+    var lastName = $('#candidateSecondName').val();
+    var phone = $('#candidateMobile').val();
+    var firstNameCheck = validateName(firstName);
+    if(lastName != ""){
+        var lastNameCheck = validateName(lastName);
+    }
+    var res = validateMobile(phone);
+
     var localitySelected = $('#candidateLocalityPref').val();
     var jobSelected = $('#candidateJobPref').val();
 
-    if (localitySelected == "") {
+    var selectedDob = $('#candidateDob').val();
+    var c_dob = String(selectedDob);
+    var selectedDate = new Date(c_dob);
+    var todayDate = new Date();
+    var dobCheck=1;
+
+    /* calculate total experience in months */
+    var expMonth = parseInt($('#candidateTotalExperienceMonth').val());
+    var expYear = parseInt($('#candidateTotalExperienceYear').val());
+    var totalExp = expMonth + (12*expYear);
+
+    if(selectedDate>todayDate){
+        dobCheck=0;
+    }
+
+    //checking first name
+    switch(firstNameCheck){
+        case 0: alert("First name contains number. Please Enter a valid First Name"); statusCheck=0; break;
+        case 2: alert("First Name cannot be blank spaces. Enter a valid first name"); statusCheck=0; break;
+        case 3: alert("First name contains special symbols. Enter a valid first name"); statusCheck=0; break;
+        case 4: alert("Please enter your first name"); statusCheck=0; break;
+    }
+
+    if(res == 0){
+        alert("Enter a valid mobile number"); 
+        statusCheck=0;
+    } else if(res == 1){
+        alert("Enter 10 digit mobile number");
+        statusCheck=0;
+    } else if(localitySelected == "") {
         alert("Please Enter your Job Localities");
-    } else if (jobSelected == "") {
+        statusCheck=0;
+    } else if(jobSelected == "") {
         alert("Please Enter the Jobs you are Interested");
-    } 
-    else{
+        statusCheck=0;
+    } else if(dobCheck == 0){
+        alert("Please enter valid date of birth");
+        statusCheck=0;
+    } else if($('#candidateTotalExperienceYear').val() > 30){
+        alert("Please enter valid years of experience");
+        statusCheck=0;
+    } else if(($('input:radio[name="workExperience"]:checked').val() == 1) && totalExp == 0){
+        alert("Please select total years of experience");
+        statusCheck=0;
+    }
+
+    //checking last name
+    switch(lastNameCheck){
+        case 0: alert("Last name contains number. Please Enter a valid Last Name"); statusCheck=0; break;
+        case 2: alert("Last Name cannot be blank spaces. Enter a valid Last name"); statusCheck=0; break;
+        case 3: alert("Last name contains special symbols. Enter a valid Last name"); statusCheck=0; break;
+        case 4: alert("Please enter your Last name"); statusCheck=0; break;
+    }
+
+    if(statusCheck == 1){
         var languageKnown = $('#languageTable input:checked').map(function() {
             check=0;
             var id = this.id;
             var name = this.name;
-            var item = {}
+            var item = {};
             var pos;
 
             for(var i in languageMap){
@@ -938,16 +1006,14 @@ function saveProfileForm(){
             }
         }).get();
 
+        if(($('input:radio[name="workExperience"]:checked').val() == 0)){
+            totalExp = 0;
+        } else if(($('input:radio[name="workExperience"]:checked').val() == undefined)){
+            totalExp = null;
+        }
+
         document.getElementById("saveBtn").disabled = true;
         try {
-            var selectedDob = $('#candidateDob').val();
-            var c_dob = String(selectedDob);
-            /* calculate total experience in months */
-            var expMonth = parseInt($('#candidateTotalExperienceMonth').val());
-            var expYear = parseInt($('#candidateTotalExperienceYear').val());
-            var totalExp = expMonth + (12*expYear);
-
-            console.log("selected leadSourcevalue " + $('#leadSource').val());
             /* calculate current job duration in months */
             var currentJobMonth = parseInt($('#candidateCurrentJobDurationMonth').val());
             var currentJobYear = parseInt($('#candidateCurrentJobDurationYear').val());
@@ -966,36 +1032,61 @@ function saveProfileForm(){
                 workShift = $('#currentWorkShift').val();
             }
 
+            var candidatePreferredJob = [];
+            var candidatePreferredLocality = [];
+
+            var jobPref = $('#candidateJobPref').val().split(",");
+            var localityPref = $('#candidateLocalityPref').val().split(",");
+
+            var i;
+            
+            /* Candidate job role preferences  */
+            for(i=0;i<jobPref.length; i++){
+                candidatePreferredJob.push(parseInt(jobPref[i]));
+            }
+            
+            /* Candidate locality Preferences */
+            for(i=0;i<localityPref.length; i++){
+                candidatePreferredLocality.push(parseInt(localityPref[i]));
+            }
+            
+            /* Candidate ID proof */
+            var candidateIdProofArray = [];
+            var candidateIdProof = $('#candidateIdProof').val().split(",");
+            for(i=0;i<candidateIdProof.length; i++){
+                candidateIdProofArray.push(parseInt(candidateIdProof[i]));
+            }
+
             var d = {
                 //mandatory fields
                 candidateFirstName: $('#candidateFirstName').val(),
                 candidateSecondName: $('#candidateSecondName').val(),
                 candidateMobile: $('#candidateMobile').val(),
-                candidateLocality: $('#candidateLocalityPref').val(),
-                candidateJobInterest: $('#candidateJobPref').val(),
+                candidateLocality: candidatePreferredLocality,
+                candidateJobPref: candidatePreferredJob,
 
                 leadSource: $('#leadSource').val(),
                 //others
                 candidateDob: c_dob,
                 candidatePhoneType: $('#candidatePhoneType').val(),
                 candidateGender: ($('input:radio[name="gender"]:checked').val()),
-                candidateHomeLocality: $('#candidateHomeLocality').val(),
+                candidateHomeLocality: parseInt($('#candidateHomeLocality').val()),
                 candidateMaritalStatus: ($('input:radio[name="married"]:checked').val()),
                 candidateEmail: $('#candidateEmail').val(),
                 candidateIsEmployed: ($('input:radio[name="employed"]:checked').val()),
                 candidateTotalExperience: totalExp,
 
                 candidateCurrentCompany: $('#candidateCurrentCompany').val(),
-                candidateCurrentJobLocation: $('#candidateCurrentJobLocation').val(),
+                candidateCurrentJobLocation: parseInt($('#candidateCurrentJobLocation').val()),
                 candidateTransportation: ($('#selectTransportation').val()),
                 candidateCurrentWorkShift: workShift,
-                candidateCurrentJobRole: $('#candidateCurrentJobRole').val(),
+                candidateCurrentJobRole: parseInt($('#candidateCurrentJobRole').val()),
                 candidateCurrentJobDesignation: $('#candidateCurrentJobDesignation').val(),
                 candidateCurrentSalary: ($('#candidateCurrentJobSalary').val()),
                 candidateCurrentJobDuration: currentJobDuration,
 
                 candidatePastJobCompany: $('#candidatePastCompany').val(),
-                candidatePastJobRole: $('#candidatePastJobRole').val(),
+                candidatePastJobRole: parseInt($('#candidatePastJobRole').val()),
                 candidatePastJobSalary: ($('#candidatePastJobSalary').val()),
 
                 candidateEducationLevel: higherEducation,
@@ -1009,7 +1100,7 @@ function saveProfileForm(){
 
                 candidateSkills: skillMap,
 
-                candidateIdProof: $('#candidateIdProof').val(),
+                candidateIdProof: candidateIdProofArray,
                 candidateSalarySlip: ($('input:radio[name="payslip"]:checked').val()),
                 candidateAppointmentLetter: ($('input:radio[name="appointmentLetter"]:checked').val())
             };
