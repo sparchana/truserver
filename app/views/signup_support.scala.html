@@ -183,13 +183,33 @@
                   <input id="candidateEmail" placeholder="What is your email ID?" name="candidateEmail" type="email" class="form-control input-md">
                 </div>
               </div>
-
             </div>
 
           <hr>
           <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Employment Status and Experience</h4>
-          <div id="
-          ">
+          <div id="">
+              <div class="row" style="margin-top: 4px">
+                  <div class="col-sm-3"><h5>Your Work Experience:</h5></div>
+                  <div class="col-sm-9">
+                      <div class="btn-group" data-toggle="buttons">
+                          <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickFresher()">
+                              <input type="radio" name="workExperience" id="fresher" value="0">Fresher
+                          </label>
+                          <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickExperienced()">
+                              <input type="radio" name="workExperience" id="experienced" value="1">Experienced
+                          </label>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="row" id="totalWorkExperience" style="display: none; margin-top: 4px">
+                  <div class="col-sm-3"><h5>Total Experience:</h5></div>
+                  <div class="col-sm-9">
+                      <input id="candidateTotalExperienceYear" value="0" style="width: 15%; display: inline-block" placeholder="Years" type="number" class="form-control input-md">&nbsp;Years&nbsp;&nbsp;
+                      <input id="candidateTotalExperienceMonth" value="0" style="width: 15%; display: inline-block" placeholder="Months" type="number" min="0" max="11" step="1"  class="form-control input-md">&nbsp; Months
+                  </div>
+              </div>
+              
             <div class="row" style="margin-top: 4px">
               <div class="col-sm-3"><h5>Do you have a Job?:</h5></div>
               <div class="col-sm-9" style="margin-top: 6px;">
@@ -283,15 +303,6 @@
 
                   </select>
                 </div>
-              </div>
-
-            </div>
-
-            <div class="row" style="margin-top: 4px">
-              <div class="col-sm-3"><h5>Total Experience:</h5></div>
-              <div class="col-sm-9">
-                <input id="candidateTotalExperienceYear" value="0" style="width: 15%; display: inline-block" placeholder="Years" type="number" class="form-control input-md">&nbsp;Years&nbsp;&nbsp;
-                <input id="candidateTotalExperienceMonth" value="0" style="width: 15%; display: inline-block" placeholder="Months" type="number" min="0" max="11" step="1"  class="form-control input-md">&nbsp; Months
               </div>
             </div>
 
@@ -473,5 +484,13 @@
       <script type="text/javascript" src="/assets/support/js/bootstrap.min.js"></script>
       <script type="text/javascript" src="/assets/support/js/nprogress.js"></script>
       <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
+      <script>
+              function clickFresher(){
+                  $("#totalWorkExperience").hide();
+              }
+              function clickExperienced(){
+                  $("#totalWorkExperience").show();
+              }
+      </script>
   </body>
 </html>

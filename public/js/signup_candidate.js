@@ -58,28 +58,28 @@ $(function() {
         var lastName = $('#candidateSecondName').val();
         var phone = $('#candidateMobile').val();
         var firstNameCheck = validateName(firstName);
-        var lastNameCheck = validateName(lastName);
+        if(lastName != ""){
+            var lastNameCheck = validateName(lastName);
+        }
         var res = validateMobile(phone);
         var localitySelected = $('#candidateLocality').val();
         var jobSelected = $('#candidateJobPref').val();
-        
-        if(firstNameCheck == 0){
-            alert("Please Enter First Name");
-            statusCheck=0;
-        } 
-        else if(lastNameCheck == 0){
-            alert("Please Enter your Last Name");
-            statusCheck=0;
+
+        //checking first name
+        switch(firstNameCheck){
+            case 0: alert("First name contains number. Please Enter a valid First Name"); statusCheck=0; break;
+            case 2: alert("First Name cannot be blank spaces. Enter a valid first name"); statusCheck=0; break;
+            case 3: alert("First name contains special symbols. Enter a valid first name"); statusCheck=0; break;
+            case 4: alert("Please enter your first name"); statusCheck=0; break;
         }
-        else if(res == 0){ // invalid mobile
+
+        if(res == 0){
             alert("Enter a valid mobile number");
             statusCheck=0;
-        }
-        else if(res == 1){ // mobile no. less than 1 digits
+        } else if(res == 1){
             alert("Enter 10 digit mobile number");
             statusCheck=0;
-        }
-        else if(localitySelected == "") {
+        } else if(localitySelected == "") {
             alert("Please Enter your Job Localities");
             statusCheck=0;
         }
@@ -87,9 +87,18 @@ $(function() {
             alert("Please Enter the Jobs you are Interested");
             statusCheck=0;
         }
+
+        //checking last name
+        switch(lastNameCheck){
+            case 0: alert("Last name contains number. Please Enter a valid Last Name"); statusCheck=0; break;
+            case 2: alert("Last Name cannot be blank spaces. Enter a valid Last name"); statusCheck=0; break;
+            case 3: alert("Last name contains special symbols. Enter a valid Last name"); statusCheck=0; break;
+            case 4: alert("Please enter your Last name"); statusCheck=0; break;
+        }
+        
         if(statusCheck == 1){
             candidateMobile = phone;
-            document.getElementById("registerBtn").disabled = true;
+            document.getElementById("registerBtnSubmit").disabled = true;
             try {
                 var candidatePreferredJob = [];
                 var candidatePreferredLocality = [];

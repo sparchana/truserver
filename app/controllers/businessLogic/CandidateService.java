@@ -75,9 +75,15 @@ public class CandidateService {
             if(candidate == null) {
                 candidate = new Candidate();
                 Logger.info("creating new candidate");
-                candidate.setCandidateFirstName(candidateSignUpRequest.getCandidateFirstName());
-                candidate.setCandidateLastName(candidateSignUpRequest.getCandidateSecondName());
-                candidate.setCandidateMobile(candidateSignUpRequest.getCandidateMobile());
+                if(candidateSignUpRequest.getCandidateFirstName()!= null){
+                    candidate.setCandidateFirstName(candidateSignUpRequest.getCandidateFirstName());
+                }
+                if(candidateSignUpRequest.getCandidateSecondName()!= null){
+                    candidate.setCandidateLastName(candidateSignUpRequest.getCandidateSecondName());
+                }
+                if(candidateSignUpRequest.getCandidateMobile()!= null){
+                    candidate.setCandidateMobile(candidateSignUpRequest.getCandidateMobile());
+                }
                 candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(localityList, candidate));
                 candidate.setJobPreferencesList(getCandidateJobPreferenceList(jobsList, candidate));
                 candidateSignUpResponse = createNewCandidate(candidate, lead);
@@ -165,15 +171,17 @@ public class CandidateService {
                 candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(request.getCandidateLocality(), candidate));
             }
 
-            if(request.getCandidateFirstName()!= null && !request.getCandidateFirstName().trim().isEmpty()){
+            if(request.getCandidateFirstName()!= null && !request.getCandidateFirstName().trim().isEmpty()) {
                 candidate.setCandidateFirstName(request.getCandidateFirstName());
-                String lastName = request.getCandidateSecondName() != null ? request.getCandidateSecondName() : "";
-                candidate.setCandidateLastName(lastName);
-                if(request.getCandidateMobile() != null){
-                    Lead lead = createOrUpdateConvertedLead(request.getCandidateFirstName() +" " + lastName, request.getCandidateMobile(), request.getLeadSource(), isSupport);
-                    Logger.info("CandidateExists: " + candidate.getCandidateId() + " | LeadExists: " + lead.getLeadId());
-                    candidate.setLead(lead);
-                }
+            }
+            if(request.getCandidateSecondName()!= null) {
+                candidate.setCandidateLastName(request.getCandidateSecondName());
+            }
+
+            if(request.getCandidateMobile() != null){
+                Lead lead = createOrUpdateConvertedLead(request.getCandidateFirstName() +" " + request.getCandidateSecondName(), request.getCandidateMobile(), request.getLeadSource(), isSupport);
+                Logger.info("CandidateExists: " + candidate.getCandidateId() + " | LeadExists: " + lead.getLeadId());
+                candidate.setLead(lead);
             }
         }
 
@@ -249,8 +257,8 @@ public class CandidateService {
     }
 
     private static int isMinProfileComplete(Candidate candidate) {
-
-        if(candidate.getCandidateFirstName() != null && candidate.getCandidateLastName() != null && candidate.getCandidateMobile() != null && candidate.getCandidateDOB() != null &&
+        if(candidate.getCandidateFirstName() != null && candidate.getCandidateMobile() != null && (candidate.getLocalityPreferenceList() != null && candidate.getLocalityPreferenceList().size() > 0)
+                && (candidate.getJobPreferencesList() != null && candidate.getJobPreferencesList().size() > 0) && candidate.getCandidateDOB() != null &&
                 candidate.getCandidateGender() != null && candidate.getCandidateTotalExperience() != null && candidate.getCandidateEducation() != null &&
                 candidate.getTimeShiftPreference() != null && candidate.getLanguageKnownList().size() > 0){
             if(candidate.getCandidateIsEmployed() != null) {
