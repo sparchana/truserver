@@ -30,7 +30,7 @@ public class Lead extends Model {
     private int leadStatus;
 
     @Column(name = "LeadName", columnDefinition = "varchar(50) not null", nullable = false)
-    private String leadName;
+    private String leadName = "";
 
     @Column(name = "LeadMobile", columnDefinition = "varchar(13) not null ", nullable = false)
     private String leadMobile;
