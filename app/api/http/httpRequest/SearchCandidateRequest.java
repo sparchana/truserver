@@ -2,6 +2,7 @@ package api.http.httpRequest;
 
 import api.http.FormValidator;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -25,7 +26,15 @@ public class SearchCandidateRequest {
     }
 
     public Date getToThisDate() {
-        return toThisDate;
+
+        if (toThisDate != null) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(toThisDate);
+            cal.add(Calendar.DATE, 1);
+            return cal.getTime();
+        }
+
+        return null;
     }
 
     public void setToThisDate(Date toThisDate) {
