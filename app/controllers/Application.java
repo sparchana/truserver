@@ -61,6 +61,11 @@ public class Application extends Controller {
     public static Result candidateInteraction(long id) {
         return ok(views.html.candidate_interaction.render());
     }
+
+    public static Result privacy() {
+        return ok(views.html.privacy.render());
+    }
+
     @Security.Authenticated(Secured.class)
     public static Result getCandidateInteraction(long id){
         Lead lead = Lead.find.where().eq("leadId",id).findUnique();
