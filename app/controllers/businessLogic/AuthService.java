@@ -28,6 +28,7 @@ public class AuthService {
         session("sessionExpiry", String.valueOf(auth.getAuthSessionIdExpiryMillis()));
 
     }
+
     public static CandidateSignUpResponse savePassword(String mobile, String password){
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
 
@@ -85,9 +86,7 @@ public class AuthService {
                 existingLead.update();
                 Logger.info("Lead converted in candidate");
 
-                String msg = "Hey " + existingCandidate.getCandidateFirstName()+
-                        "! Welcome to Trujobs.in. Login and complete our skill assessment today and find your right job.";
-                SmsUtil.sendSms(existingCandidate.getCandidateMobile(),msg);
+                SmsUtil.sendWelcomeSmsFromWebsite(existingCandidate.getCandidateFirstName(), existingCandidate.getCandidateMobile());
 
                 candidateSignUpResponse.setCandidateFirstName(existingCandidate.getCandidateFirstName());
                 candidateSignUpResponse.setCandidateLastName(existingCandidate.getCandidateLastName());

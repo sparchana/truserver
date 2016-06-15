@@ -17,6 +17,7 @@ import models.entity.OO.CandidateCurrentJobDetail;
 import models.entity.OO.CandidateEducation;
 import models.entity.OO.TimeShiftPreference;
 import models.entity.Static.*;
+import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
 
@@ -568,8 +569,7 @@ public class CandidateService
 
     private static void triggerOtp(Candidate candidate, CandidateSignUpResponse candidateSignUpResponse) {
         int randomPIN = generateOtp();
-        String msg = "Welcome to Trujobs.in! Use OTP " + randomPIN + " to register";
-        SendOtpService.sendSms(candidate.getCandidateMobile(), msg);
+        SmsUtil.sendOTPSms(randomPIN, candidate.getCandidateMobile());
 
         candidateSignUpResponse.setCandidateId(candidate.getCandidateId());
         candidateSignUpResponse.setCandidateFirstName(candidate.getCandidateFirstName());
@@ -802,12 +802,12 @@ public class CandidateService
                 resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
                 Logger.info("reset password not allowed as Auth don't exists");
             } else {
-                    int randomPIN = generateOtp();
-                    existingCandidate.update();
-                    String msg = "Welcome to Trujobs.in! Use OTP " + randomPIN + " to reset password";
-                    SendOtpService.sendSms(existingCandidate.getCandidateMobile(), msg);
-                    resetPasswordResponse.setOtp(randomPIN);
-                    resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);
+                int randomPIN = generateOtp();
+                existingCandidate.update();
+                SmsUtil.sendOTPSms(randomPIN, existingCandidate.getCandidateMobile());
+
+                resetPasswordResponse.setOtp(randomPIN);
+                resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);
             }
         } else{
             resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
@@ -852,9 +852,9 @@ public class CandidateService
         authToken.setCandidateId(candidate.getCandidateId());
         authToken.setPasswordMd5(Util.md5(dummyPassword + authToken.getPasswordSalt()));
         authToken.save();
-        String msg = "Welcome to Trujobs.in! Your login details are Username: " + candidate.getCandidateMobile().substring(3, 13) + " and password: " +dummyPassword+ ". Use this to login at trujobs.in !!";
-        SendOtpService.sendSms(candidate.getCandidateMobile(), msg);
-        Logger.info("Dummy auth created + otp triggered + auth saved");
+
+        SmsUtil.sendWelcomeSmsFromSupport(candidate.getCandidateFirstName(), candidate.getCandidateMobile(), dummyPassword);
+        Logger.info("Dummy auth created + otp triggered + auth saved for " + candidate.getCandidateMobile());
     }
     private static void resetLocalityAndJobPref(Candidate existingCandidate, List<LocalityPreference> localityPreferenceList, List<JobPreference> jobPreferencesList) {
 

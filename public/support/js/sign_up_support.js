@@ -724,7 +724,7 @@ function activateEdit() {
 
 function onCallYes(leadId){
     activateEdit();
-    var value = "Out Bound Call Successfully got connected";
+    var value = "CONNECTED";
     //update leadStatus to TTC
     NProgress.start();
     $.ajax({
@@ -751,7 +751,7 @@ function onCallNo(leadId){
 }
 
 function saveResponse(id) {
-    var value = "Out Bound Call UnSuccessful : Callee is " + $('#callResponse').val();
+    var value = $('#callResponse').val();
 
     // update status and interaction
     $.ajax({
