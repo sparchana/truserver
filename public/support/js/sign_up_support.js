@@ -722,18 +722,33 @@ function activateEdit() {
     $('#callYesClass').show();
 }
 
-function onCallYes(leadId){
+function onInterestedNo(leadId){
+    $("#candidateSignUpSupportForm *").prop("disabled", true);
+    var value = "Lead not interested anymore = Lost";
+    updateLeadStatus(leadId, 3, value);
+    window.location="/support";
+}
+
+function onInterestedYes(leadId){
     activateEdit();
     var value = "Out Bound Call Successfully got connected";
-    //update leadStatus to TTC
+    updateLeadStatus(leadId, 1, value);
+}
+
+function updateLeadStatus(leadId, leadStatus, value){
     NProgress.start();
     $.ajax({
         type: "GET",
-        url: "/updateLeadStatus/"+leadId+"/1/"+value,
+        url: "/updateLeadStatus/"+leadId+"/"+leadStatus+"/"+value,
         processData: false,
         success: false
     });
     NProgress.done();
+}
+
+function onCallYes(leadId){
+    $('#callNoClass').hide();
+    $('#callYesClass').show();
 }
 
 function cancelAndRedirect() {

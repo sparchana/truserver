@@ -28,6 +28,13 @@
         <input type="radio" name="callConnected" id="callNo" value="no" onclick="onCallNo(@id)">&nbsp;No
       </h4>
 
+      <div id="callYesClass" style="display: none">
+        <h5>Is Interested?:
+            <input type="radio" name="interested" id="interestedYes" value="Yes" onclick="onInterestedYes(@id)" > &nbsp;Yes&nbsp;
+            <input type="radio" name="interested" id="interestedNo" value="No" onclick="onInterestedNo(@id)"> No
+        </h5>
+      </div>
+
       <div id="callNoClass" style="display: none">
         <h5>Reason?:
           <select id="callResponse" class="selectDropdown" >
