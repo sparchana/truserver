@@ -19,6 +19,7 @@ import models.entity.OM.JobToSkill;
 import models.entity.OM.LocalityPreference;
 import models.entity.Static.*;
 import models.util.ParseCSV;
+import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
 import play.data.Form;
@@ -512,8 +513,22 @@ public class Application extends Controller {
         }
         return badRequest();
     }
+
+    /**
+     * This API is invoked from the support dashboard when the support executive marks the call status.
+     * This results in changing the lead status and creating a new interaction.
+     *
+     * @param leadId The id of the lead that we tried calling
+     * @param leadStatus The current status of this lead
+     * @param callStatus Whether call was connected or not. If not, what was the failure reason.
+     * @return the Json view of target view (in this case lead status)
+     */
     @Security.Authenticated(Secured.class)
-    public static Result updateLeadStatus(long leadId, int leadStatus, String interactionResult) {
+    public static Result updateLeadStatus(long leadId, int leadStatus, String callStatus) {
+
+        String interactionResult;
+        String interactionNote;
+
         try {
             Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
             // A value is for overriding leadStatus is also there in Lead Model setLeadStatus
@@ -530,26 +545,41 @@ public class Application extends Controller {
                     }
                     Logger.info("updateLeadStatus invoked leadId:"+leadId+" status:" + leadStatus);
                     lead.update();
-                    Interaction interaction = new Interaction(
-                            lead.getLeadUUId(),
-                            lead.getLeadType(),
-                            ServerConstants.INTERACTION_TYPE_CALL_OUT,
-                            ServerConstants.INTERACTION_NOTE_LEAD_STATUS_CHANGED,
-                            interactionResult,
-                            session().get("sessionUsername")
-                    );
-                    interaction.save();
+                    interactionNote = ServerConstants.INTERACTION_NOTE_LEAD_STATUS_CHANGED;
+
                 } else {
-                    Interaction interaction = new Interaction(
-                            lead.getLeadUUId(),
-                            lead.getLeadType(),
-                            ServerConstants.INTERACTION_TYPE_CALL_OUT,
-                            ServerConstants.INTERACTION_NOTE_CALL_OUTBOUNDS,
-                            interactionResult,
-                            session().get("sessionUsername")
-                    );
-                    interaction.save();
+                    interactionNote = ServerConstants.INTERACTION_NOTE_CALL_OUTBOUNDS;
                 }
+
+                // If call was connected just set the right interaction result
+                if (callStatus.equals("CONNECTED")) {
+                    interactionResult = "Out Bound Call Successfully got connected";
+                }
+                else {
+                    // if call was not connected, set the interaction result and send an sms
+                    // to lead/candidate saying we tried reaching
+                    interactionResult = "Out Bound Call UnSuccessful : Callee is " + callStatus;
+
+                    if (callStatus.equals(ServerConstants.CALL_STATUS_BUSY)
+                            || callStatus.equals(ServerConstants.CALL_STATUS_DND)
+                            || callStatus.equals(ServerConstants.CALL_STATUS_NA)
+                            || callStatus.equals(ServerConstants.CALL_STATUS_NR)
+                            || callStatus.equals(ServerConstants.CALL_STATUS_SWITCHED_OFF)) {
+
+                        SmsUtil.sendTryingToCallSms(lead.getLeadMobile());
+                    }
+                }
+
+                // save the interaction
+                Interaction interaction = new Interaction(
+                        lead.getLeadUUId(),
+                        lead.getLeadType(),
+                        ServerConstants.INTERACTION_TYPE_CALL_OUT,
+                        interactionNote,
+                        interactionResult,
+                        session().get("sessionUsername")
+                );
+                interaction.save();
 
                 return ok(toJson(lead.getLeadStatus()));
             }
