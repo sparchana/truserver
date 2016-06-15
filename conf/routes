@@ -96,6 +96,8 @@ GET      /searchCandidate                                         controllers.Ap
 
 POST     /getSearchCandidateResult                                controllers.Application.getSearchCandidateResult()
 
+GET      /privacy                                                 controllers.Application.privacy()
+
 # Map static resources from the /public folder to the /assets URL path
 GET    /robots.txt                                controllers.Assets.at(path="/public", file="robots.txt")
 GET    /assets/*file                             controllers.Assets.at(path="/public", file)
