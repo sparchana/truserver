@@ -747,6 +747,7 @@ function updateLeadStatus(leadId, leadStatus, value){
 }
 
 function onCallYes(leadId){
+    $('#callYesClass').addClass('animated fadeIn');
     $('#callNoClass').hide();
     $('#callYesClass').show();
 }
@@ -1154,6 +1155,7 @@ $(function() {
 
     if(tempLeadId == 0){
         $('h4#callConfirmation').remove();
+        $('div#callYesClass').remove();
         activateEdit();
     }
     prefillAll();
