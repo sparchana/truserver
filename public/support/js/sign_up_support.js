@@ -721,11 +721,8 @@ function onInterestedNo(leadId) {
 
 function onInterestedYes(leadId) {
     activateEdit();
-    var value = "Out Bound Call Successfully got connected";
+    var value = "CONNECTED";
     updateLeadStatus(leadId, 1, value);
-}
-
-function updateLeadStatus(leadId, leadStatus, value) {
     NProgress.start();
     $.ajax({
         type: "GET",
@@ -767,7 +764,7 @@ function onCallNo(leadId) {
 }
 
 function saveResponse(id) {
-    var value = "Out Bound Call UnSuccessful : Callee is " + $('#callResponse').val();
+    var value = $('#callResponse').val();
 
     // update status and interaction
     $.ajax({

@@ -58,6 +58,13 @@ public class ServerConstants {
     public static final int LEAD_STATUS_WON= 2; // Converted:
     public static final int LEAD_STATUS_LOST= 3; // LOST:
 
+    // NOTE: Changing the below should reflect in change in option values in signup_support.scala.html file as well
+    public static final String CALL_STATUS_BUSY = "busy";
+    public static final String CALL_STATUS_NR = "not_reachable";
+    public static final String CALL_STATUS_NA = "not_answering";
+    public static final String CALL_STATUS_SWITCHED_OFF = "switched_off";
+    public static final String CALL_STATUS_DND = "dnd";
+
     public static final int CANDIDATE_STATUS_NOT_VERIFIED = 0;
     public static final int CANDIDATE_STATUS_VERIFIED= 1;
 

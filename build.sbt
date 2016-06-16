@@ -14,6 +14,7 @@ libraryDependencies ++= Seq(
   javaJdbc,
   cache,
   javaWs,
+  filters,
   "mysql" % "mysql-connector-java" % "5.1.27",
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.0" % "test",
   "junit" % "junit" % "4.12",
