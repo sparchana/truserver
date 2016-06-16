@@ -22,6 +22,7 @@ import models.util.ParseCSV;
 import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
+import play.cache.Cached;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -592,39 +593,55 @@ public class Application extends Controller {
     public static Result kwCdrInput() {
         return ok("TODO");
     }
+
+    @Cached(key= "allLocalities")
     public static Result getAllLocality() {
         List<Locality> localities = Locality.find.findList();
         return ok(toJson(localities));
     }
+
+    @Cached(key= "allJobs")
     public static Result getAllJobs() {
         List<JobRole> jobs = JobRole.find.findList();
         return ok(toJson(jobs));
     }
+
+    @Cached(key= "allShifts")
     @Security.Authenticated(Secured.class)
     public static Result getAllShift() {
         List<TimeShift> timeShifts = TimeShift.find.findList();
         return ok(toJson(timeShifts));
     }
+
+    @Cached(key= "allTransportModes")
     @Security.Authenticated(Secured.class)
     public static Result getAllTransportation() {
         List<TransportationMode> transportationModes = TransportationMode.find.findList();
         return ok(toJson(transportationModes));
     }
+
+    @Cached(key= "allEducation")
     @Security.Authenticated(Secured.class)
     public static Result getAllEducation() {
         List<Education> educations = Education.find.findList();
         return ok(toJson(educations));
     }
+
+    @Cached(key= "allLanguages")
     @Security.Authenticated(Secured.class)
     public static Result getAllLanguage() {
         List<Language> languages = Language.find.findList();
         return ok(toJson(languages));
     }
+
+    @Cached(key= "allIDProof")
     @Security.Authenticated(Secured.class)
     public static Result getAllIdProof() {
         List<IdProof> idProofs = IdProof.find.findList();
         return ok(toJson(idProofs));
     }
+
+    @Cached(key= "allDegree")
     @Security.Authenticated(Secured.class)
     public static Result getAllDegree() {
         List<Degree> degreeList = Degree.find.findList();
