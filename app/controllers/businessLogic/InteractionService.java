@@ -1,8 +1,15 @@
 package controllers.businessLogic;
 
 import api.ServerConstants;
+import models.entity.Candidate;
 import models.entity.Interaction;
+import models.entity.Lead;
 import play.Logger;
+
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+
+import static play.mvc.Controller.session;
 
 /**
  * Created by batcoder1 on 5/5/16.
@@ -15,8 +22,8 @@ public class InteractionService {
                     objectAUUId,
                     ServerConstants.OBJECT_TYPE_CANDIDATE,
                     ServerConstants.INTERACTION_TYPE_WEBSITE,
-                    ServerConstants.INTERACTION_NOTE_SELF_SIGNEDUP,
-                    result,
+                    ServerConstants.INTERACTION_NOTE_BLANK,
+                    result + " & " + ServerConstants.INTERACTION_NOTE_SELF_SIGNEDUP,
                     ServerConstants.INTERACTION_CREATED_SELF
             );
             InteractionService.createInteraction(interaction);
@@ -31,6 +38,40 @@ public class InteractionService {
                 interactionNote,
                 interactionResult,
                 createdBy
+        );
+
+        InteractionService.createInteraction(interaction);
+    }
+
+    public static void createInteractionForFollowUpRequest(String followUpMobile, Timestamp followUpSchedule){
+        Candidate candidate = CandidateService.isCandidateExists(followUpMobile);
+        String uuId = "";
+        int objectAType = 99;
+        Logger.info("FollowUpDateTime: " + followUpSchedule);
+        SimpleDateFormat sfdFollowUp = new SimpleDateFormat(ServerConstants.SDF_FORMAT_FOLLOWUP);
+        int interactionType = ServerConstants.INTERACTION_TYPE_FOLLOWUP_CALL;
+        String interactionNote = ServerConstants.INTERACTION_NOTE_BLANK ;
+        String interactionResult = "";
+        if(candidate == null){
+            objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
+            uuId = candidate.getCandidateUUId();
+            interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_FOLLOWED_UP_REQUEST;
+        } else {
+            Lead lead = LeadService.isLeadExists(followUpMobile);
+            if(lead != null){
+                objectAType = ServerConstants.OBJECT_TYPE_LEAD;
+                uuId = lead.getLeadUUId();
+                interactionResult = ServerConstants.INTERACTION_RESULT_LEAD_FOLLOWED_UP_REQUEST + " scheduled time";
+            }
+        }
+
+        Interaction interaction = new Interaction(
+                uuId,
+                objectAType,
+                interactionType,
+                interactionNote,
+                interactionResult,
+                session().get("sessionUsername")
         );
 
         InteractionService.createInteraction(interaction);

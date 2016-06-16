@@ -23,7 +23,15 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
     public List<Integer> candidateIdProof;
     public Integer candidateSalarySlip ;
     public Integer candidateAppointmentLetter ;
+    public String supportNote;
 
+    public String getSupportNote() {
+        return supportNote;
+    }
+
+    public void setSupportNote(String supportNote) {
+        this.supportNote = supportNote;
+    }
 
     public Integer getCandidateAge() {
         return candidateAge;

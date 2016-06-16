@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.AuthService;
 import controllers.businessLogic.CandidateService;
+import controllers.businessLogic.FollowUpService;
 import controllers.businessLogic.LeadService;
 import models.entity.Candidate;
 import models.entity.Developer;
@@ -97,6 +98,8 @@ public class Application extends Controller {
                     case 3: response.setUserInteractionType("Incoming SMS"); break;
                     case 4: response.setUserInteractionType("Out Going SMS"); break;
                     case 5: response.setUserInteractionType("Website Interaction"); break;
+                    case 6: response.setUserInteractionType("Follow Up Call"); break;
+                    default: response.setUserInteractionType("Interaction Undefined in getCandidateInteraction()"); break;
                 }
                 responses.add(response);
             }
@@ -289,6 +292,7 @@ public class Application extends Controller {
         ArrayList<SupportDashboardElementResponse> responses = new ArrayList<>();
 
         SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT);
+        SimpleDateFormat sfdFollowUp = new SimpleDateFormat(ServerConstants.SDF_FORMAT_FOLLOWUP);
 
         //getting leadUUID from allLead
         List<String> leadUUIDList = allLead.stream().map(Lead::getLeadUUId).collect(Collectors.toList());
@@ -334,6 +338,10 @@ public class Application extends Controller {
             }
             response.setLastIncomingCallTimestamp(sfd.format(mostRecent));
             response.setTotalInBounds(mTotalInteraction);
+            if(lead.getFollowUp() != null && lead.getFollowUp().getFollowUpTimeStamp()!= null){
+                response.setFollowUpStatus(lead.getFollowUp().isFollowUpStatusRequired());
+                response.setFollowUpTimeStamp(sfdFollowUp.format(lead.getFollowUp().getFollowUpTimeStamp()));
+            }
             responses.add(response);
         }
 
@@ -642,5 +650,21 @@ public class Application extends Controller {
             return ok(toJson(agentMobile));
         }
         return ok("0");
+    }
+
+    public static Result addOrUpdateFollowUp() {
+        JsonNode followUp = request().body().asJson();
+        if(followUp == null){
+            return badRequest();
+        }
+        AddOrUpdateFollowUpRequest addOrUpdateFollowUpRequest = new AddOrUpdateFollowUpRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addOrUpdateFollowUpRequest = newMapper.readValue(followUp.toString(), AddOrUpdateFollowUpRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Logger.info("addOrUpdateFollowUp: " + addOrUpdateFollowUpRequest.getLeadMobile() + " createTimeStamp: " + addOrUpdateFollowUpRequest.getFollowUpDateTime());
+        return ok(toJson(FollowUpService.CreateOrUpdateFollowUp(addOrUpdateFollowUpRequest)));
     }
 }

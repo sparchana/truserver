@@ -277,15 +277,17 @@ public class CandidateService
         }
 
         // set the default interaction note string
-        interactionNote = ServerConstants.INTERACTION_NOTE_SELF_PROFILE_CREATION;
+        interactionNote = ServerConstants.INTERACTION_NOTE_BLANK;
 
         if(isSupport){
             // update additional fields that are part of the support request
             updateOthersBySupport(candidate, request);
 
+            AddSupportCandidateRequest supportCandidateRequest = (AddSupportCandidateRequest) request;
+
             createdBy = session().get("sessionUsername");
             interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT;
-            interactionNote = ServerConstants.INTERACTION_NOTE_CALL_OUTBOUNDS;
+            interactionNote = supportCandidateRequest.getSupportNote();
 
             if (isNewCandidate) {
                 interactionResult = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE_SUPPORT;
@@ -301,7 +303,7 @@ public class CandidateService
             if(isSupport){
                 // TODO: differentiate between in/out call
                 createAndSaveDummyAuthFor(candidate);
-                interactionNote = ServerConstants.INTERACTION_NOTE_DUMMY_PASSWORD_CREATED;
+                interactionResult += " & " + ServerConstants.INTERACTION_NOTE_DUMMY_PASSWORD_CREATED;
             }
         }
         // check if we have enough details required to complete the minimum profile
