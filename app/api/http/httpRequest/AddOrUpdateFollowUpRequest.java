@@ -7,7 +7,7 @@ import java.sql.Timestamp;
 /**
  * Created by zero on 15/6/16.
  */
-public class AddOrUpdateFollowUp {
+public class AddOrUpdateFollowUpRequest {
     private String leadMobile;
 
     private Timestamp followUpDateTime;

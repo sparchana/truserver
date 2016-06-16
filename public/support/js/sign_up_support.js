@@ -710,7 +710,6 @@ function activateEdit() {
     $("#cancelBtn").prop("disabled", false);
     $("#candidateSignUpSupportForm *").prop("disabled", false);
     $('#callNoClass').hide();
-    $('#callYesClass').show();
 }
 
 function onInterestedNo(leadId) {
@@ -738,9 +737,19 @@ function updateLeadStatus(leadId, leadStatus, value) {
 }
 
 function onCallYes(leadId) {
+    var pathname = window.location.pathname; // Returns path only
+    var pathElement = pathname.split('/');
+    var urlSection = pathElement = pathElement[(pathElement.length) - 2];
+    console.log("pathElement: " + urlSection);
+
     $('#callYesClass').addClass('animated fadeIn');
     $('#callNoClass').hide();
     $('#callYesClass').show();
+    if(urlSection == 'candidateSignupSupport' && $('#candidateFirstName').val() != ""){
+        $('#callYesClass').hide();
+        activateEdit();
+    }
+
 }
 
 function cancelAndRedirect() {
@@ -918,24 +927,32 @@ function prefillAll() {
 
 function processUpdateFollowUp(returnedData) {
     console.log("updateFollowUp: " + JSON.stringify(returnedData));
+    if(returnedData.status == '2'){
+        $('.well').removeClass(' filled');
+        $('.well').addClass(' filled');
+    }
+}
+
+function updateFollowUpApiTrigger(){
+    var scheduleTime = $('#datetimepickerValue').val();
+    var d = {
+        leadMobile: $('#candidateMobile').val(),
+        followUpDateTime: new Date(scheduleTime).getTime()
+
+    };
+    $.ajax({
+        type: "POST",
+        url: "/addOrUpdateFollowUp",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(d),
+        success: processUpdateFollowUp
+    });
 }
 
 function updateFollowUpValue() {
     var scheduleTime = $('#datetimepickerValue').val();
     if ($('#followUpRequired').is(':checked') && scheduleTime.length != 0) {
-        var d = {
-            leadMobile: $('#candidateMobile').val(),
-            followUpDateTime: new Date(scheduleTime).getTime()
-
-        };
-        $.ajax({
-            type: "POST",
-            url: "/addOrUpdateFollowUp",
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(d),
-            success: processUpdateFollowUp
-        });
-        //api trigger for followUp update  $('#well').addClass('filled');
+        updateFollowUpApiTrigger();
     } else {
         alert('Please specify Follow Up Date/Time');
     }
@@ -1122,6 +1139,10 @@ function saveProfileForm() {
                 candidateIdProofArray.push(parseInt(candidateIdProof[i]));
             }
 
+            if(!$('#followUpRequired').is(':checked')){
+                updateFollowUpApiTrigger();
+            }
+
             var d = {
                 //mandatory fields
                 candidateFirstName: $('#candidateFirstName').val(),
@@ -1167,7 +1188,10 @@ function saveProfileForm() {
 
                 candidateIdProof: candidateIdProofArray,
                 candidateSalarySlip: ($('input:radio[name="payslip"]:checked').val()),
-                candidateAppointmentLetter: ($('input:radio[name="appointmentLetter"]:checked').val())
+                candidateAppointmentLetter: ($('input:radio[name="appointmentLetter"]:checked').val()),
+
+                supportNote: ($('#supportNote').val())
+
             };
 
             $.ajax({
@@ -1211,10 +1235,10 @@ $(function () {
      }
      }); */
     var pathname = window.location.pathname; // Returns path only
-    var tempLeadId = pathname.split('/');
-    tempLeadId = tempLeadId[(tempLeadId.length) - 1];
+    var pathElement = pathname.split('/');
+    pathElement = pathElement[(pathElement.length) - 1];
 
-    if (tempLeadId == 0) {
+    if (pathElement == 0) {
         $('h4#callConfirmation').remove();
         $('div#callYesClass').remove();
         activateEdit();

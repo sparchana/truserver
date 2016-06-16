@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.AuthService;
 import controllers.businessLogic.CandidateService;
+import controllers.businessLogic.FollowUpService;
 import controllers.businessLogic.LeadService;
 import models.entity.Candidate;
 import models.entity.Developer;
@@ -97,6 +98,8 @@ public class Application extends Controller {
                     case 3: response.setUserInteractionType("Incoming SMS"); break;
                     case 4: response.setUserInteractionType("Out Going SMS"); break;
                     case 5: response.setUserInteractionType("Website Interaction"); break;
+                    case 6: response.setUserInteractionType("Follow Up Call"); break;
+                    default: response.setUserInteractionType("Interaction Undefined in getCandidateInteraction()"); break;
                 }
                 responses.add(response);
             }
@@ -335,7 +338,7 @@ public class Application extends Controller {
             }
             response.setLastIncomingCallTimestamp(sfd.format(mostRecent));
             response.setTotalInBounds(mTotalInteraction);
-            if(lead.getFollowUp() != null){
+            if(lead.getFollowUp() != null && lead.getFollowUp().getFollowUpTimeStamp()!= null){
                 response.setFollowUpStatus(lead.getFollowUp().isFollowUpStatusRequired());
                 response.setFollowUpTimeStamp(sfdFollowUp.format(lead.getFollowUp().getFollowUpTimeStamp()));
             }
@@ -654,14 +657,14 @@ public class Application extends Controller {
         if(followUp == null){
             return badRequest();
         }
-        AddOrUpdateFollowUp addOrUpdateFollowUpObj = new AddOrUpdateFollowUp();
+        AddOrUpdateFollowUpRequest addOrUpdateFollowUpRequest = new AddOrUpdateFollowUpRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
-            addOrUpdateFollowUpObj = newMapper.readValue(followUp.toString(), AddOrUpdateFollowUp.class);
+            addOrUpdateFollowUpRequest = newMapper.readValue(followUp.toString(), AddOrUpdateFollowUpRequest.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return ok(toJson(addOrUpdateFollowUpObj));
+        Logger.info("addOrUpdateFollowUp: " + addOrUpdateFollowUpRequest.getLeadMobile() + " createTimeStamp: " + addOrUpdateFollowUpRequest.getFollowUpDateTime());
+        return ok(toJson(FollowUpService.CreateOrUpdateFollowUp(addOrUpdateFollowUpRequest)));
     }
 }

@@ -7,6 +7,7 @@ create table followup (
 	followupstatus                tinyint(1) not null,
 	followuptimestamp             timestamp null,
 	followupcreationtimestamp     timestamp not null,
+	followupupdatetimestamp       timestamp null,
 constraint pk_followup primary key (followupid)
 );
 

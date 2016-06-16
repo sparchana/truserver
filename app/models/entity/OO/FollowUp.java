@@ -28,11 +28,15 @@ public class FollowUp extends Model {
     @Column(name = "followUpCreationTimeStamp", columnDefinition = "timestamp not null")
     private Timestamp followUpCreationTimeStamp;
 
+    @Column(name = "followUpUpdateTimeStamp", columnDefinition = "timestamp null")
+    private Timestamp followUpUpdateTimeStamp;
+
     public static Finder<String, FollowUp> find = new Finder(FollowUp.class);
 
     public FollowUp(){
         this.followUpCreationTimeStamp = new Timestamp(System.currentTimeMillis());
         this.followUpStatus = false;
+        this.followUpUpdateTimeStamp = new Timestamp(System.currentTimeMillis());
     }
 
     public int getFollowUpId() {
@@ -74,4 +78,18 @@ public class FollowUp extends Model {
     public void setFollowUpCreationTimeStamp(Timestamp followUpCreationTimeStamp) {
         this.followUpCreationTimeStamp = followUpCreationTimeStamp;
     }
+
+    public boolean isFollowUpStatus() {
+        return followUpStatus;
+    }
+
+    public Timestamp getFollowUpUpdateTimeStamp() {
+        return followUpUpdateTimeStamp;
+    }
+
+    public void setFollowUpUpdateTimeStamp(Timestamp followUpUpdateTimeStamp) {
+        this.followUpUpdateTimeStamp = followUpUpdateTimeStamp;
+    }
+
+
 }
