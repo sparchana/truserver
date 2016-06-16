@@ -643,4 +643,20 @@ public class Application extends Controller {
         }
         return ok("0");
     }
+
+    public static Result addOrUpdateFollowUp() {
+        JsonNode followUp = request().body().asJson();
+        if(followUp == null){
+            return badRequest();
+        }
+        AddOrUpdateFollowUp addOrUpdateFollowUpObj = new AddOrUpdateFollowUp();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addOrUpdateFollowUpObj = newMapper.readValue(followUp.toString(), AddOrUpdateFollowUp.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ok(toJson(addOrUpdateFollowUpObj));
+    }
 }
