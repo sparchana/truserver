@@ -289,6 +289,7 @@ public class Application extends Controller {
         ArrayList<SupportDashboardElementResponse> responses = new ArrayList<>();
 
         SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT);
+        SimpleDateFormat sfdFollowUp = new SimpleDateFormat(ServerConstants.SDF_FORMAT_FOLLOWUP);
 
         //getting leadUUID from allLead
         List<String> leadUUIDList = allLead.stream().map(Lead::getLeadUUId).collect(Collectors.toList());
@@ -334,6 +335,10 @@ public class Application extends Controller {
             }
             response.setLastIncomingCallTimestamp(sfd.format(mostRecent));
             response.setTotalInBounds(mTotalInteraction);
+            if(lead.getFollowUp() != null){
+                response.setFollowUpStatus(lead.getFollowUp().isFollowUpStatusRequired());
+                response.setFollowUpTimeStamp(sfdFollowUp.format(lead.getFollowUp().getFollowUpTimeStamp()));
+            }
             responses.add(response);
         }
 

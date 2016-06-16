@@ -3,6 +3,7 @@ package models.entity;
 import api.ServerConstants;
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import models.entity.OO.FollowUp;
 import models.entity.Static.LeadSource;
 import play.Logger;
 
@@ -51,6 +52,11 @@ public class Lead extends Model {
     @JsonManagedReference
     @JoinColumn(name = "LeadSourceId", referencedColumnName = "leadSourceId")
     private LeadSource leadSource;
+
+    @JsonManagedReference
+    @JoinColumn(name = "followUpId", referencedColumnName = "followUpId")
+    @OneToOne(cascade = CascadeType.ALL)
+    private FollowUp followUp;
 
     public static Finder<String, Lead> find = new Finder(Lead.class);
 
@@ -160,5 +166,13 @@ public class Lead extends Model {
 
     public LeadSource getLeadSource() {
         return leadSource;
+    }
+
+    public FollowUp getFollowUp() {
+        return followUp;
+    }
+
+    public void setFollowUp(FollowUp followUp) {
+        this.followUp = followUp;
     }
 }
