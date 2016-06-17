@@ -954,6 +954,15 @@ margin-bottom: 20px;
 	color: #88898c;
 }
 
-.filled{
-    background-color: #2d8fb9;
+.created{
+    background-color: #E0F7FA;
   }
+
+.updated{
+    background-color: #E8EAF6;
+  }
+
+.btn.sharp {
+    border-radius:0;
+}
+.black-background {background-color:#000000;}

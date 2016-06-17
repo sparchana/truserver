@@ -79,10 +79,6 @@ public class FollowUp extends Model {
         this.followUpCreationTimeStamp = followUpCreationTimeStamp;
     }
 
-    public boolean isFollowUpStatus() {
-        return followUpStatus;
-    }
-
     public Timestamp getFollowUpUpdateTimeStamp() {
         return followUpUpdateTimeStamp;
     }

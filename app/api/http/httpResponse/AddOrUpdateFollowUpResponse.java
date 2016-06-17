@@ -6,7 +6,7 @@ package api.http.httpResponse;
 public class AddOrUpdateFollowUpResponse {
     public static final int STATUS_FOLLOWUP_CREATE_SUCCESS = 1;
     public static final int STATUS_FOLLOWUP_UPDATE_SUCCESS = 2;
-    public static final int STATUS_FOLLOWUP_REMOVED_SUCCESS = 3;
+    public static final int STATUS_FOLLOWUP_DEACTIVATED = 3;
     public static final int STATUS_FOLLOWUP_FAILURE = 4;
 
     public int status;

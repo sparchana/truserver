@@ -52,18 +52,24 @@ public class InteractionService {
         int interactionType = ServerConstants.INTERACTION_TYPE_FOLLOWUP_CALL;
         String interactionNote = ServerConstants.INTERACTION_NOTE_BLANK ;
         String interactionResult = "";
-        if(candidate == null){
-            objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
-            uuId = candidate.getCandidateUUId();
-            interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_FOLLOWED_UP_REQUEST;
-        } else {
-            Lead lead = LeadService.isLeadExists(followUpMobile);
-            if(lead != null){
-                objectAType = ServerConstants.OBJECT_TYPE_LEAD;
-                uuId = lead.getLeadUUId();
-                interactionResult = ServerConstants.INTERACTION_RESULT_LEAD_FOLLOWED_UP_REQUEST + " scheduled time";
+        try {
+            if(candidate != null) {
+                objectAType = ServerConstants.OBJECT_TYPE_CANDIDATE;
+                uuId = candidate.getCandidateUUId();
+                interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_FOLLOWED_UP_REQUEST + " " + sfdFollowUp.format(followUpSchedule);
+            } else {
+                Lead lead = LeadService.isLeadExists(followUpMobile);
+                if(lead != null) {
+                    objectAType = ServerConstants.OBJECT_TYPE_LEAD;
+                    uuId = lead.getLeadUUId();
+                    interactionResult = ServerConstants.INTERACTION_RESULT_LEAD_FOLLOWED_UP_REQUEST + " " + sfdFollowUp.format(followUpSchedule);
+                }
             }
+        } catch (NullPointerException npe){
+            interactionResult = ServerConstants.INTERACTION_RESULT_FOLLOWUP_DEACTIVATED;
         }
+
+
 
         Interaction interaction = new Interaction(
                 uuId,

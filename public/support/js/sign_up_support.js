@@ -719,10 +719,7 @@ function onInterestedNo(leadId) {
     window.location = "/support";
 }
 
-function onInterestedYes(leadId) {
-    activateEdit();
-    var value = "CONNECTED";
-    updateLeadStatus(leadId, 1, value);
+function updateLeadStatus(leadId, leadStatus, value) {
     NProgress.start();
     $.ajax({
         type: "GET",
@@ -733,11 +730,22 @@ function onInterestedYes(leadId) {
     NProgress.done();
 }
 
+
+function onInterestedYes(leadId) {
+    activateEdit();
+    var value = "CONNECTED";
+    updateLeadStatus(leadId, 1, value);
+}
+
 function onCallYes(leadId) {
     var pathname = window.location.pathname; // Returns path only
     var pathElement = pathname.split('/');
     var urlSection = pathElement = pathElement[(pathElement.length) - 2];
     console.log("pathElement: " + urlSection);
+
+    if ($('#candidateMobile').val().length == 10) {
+        $('#followUpRequiredBox').show();
+    }
 
     $('#callYesClass').addClass('animated fadeIn');
     $('#callNoClass').hide();
@@ -765,15 +773,7 @@ function onCallNo(leadId) {
 
 function saveResponse(id) {
     var value = $('#callResponse').val();
-
-    // update status and interaction
-    $.ajax({
-        type: "GET",
-        url: "/updateLeadStatus/" + id + "/1/" + value,
-        processData: false,
-        success: processLeadUpdate
-    });
-
+    updateLeadStatus(leadId, 1, value);
 }
 
 function employedYes() {
@@ -784,10 +784,17 @@ function employedNo() {
     $('#employedForm').hide();
 }
 
+function resetFolloupBox() {
+    $('.well').removeClass(' created');
+    $('.well').removeClass(' updated');
+    $('#btnFollowUp').text('Schedule FollowUp');
+    $('#btnFollowUp').removeClass(' animated fadeIn');
+    $('#datetimepickerValue').val("");
+}
+
 function followUpRequired() {
     $('#followUpScheduler').show();
     if (!$('#followUpRequired').is(':checked')) {
-        $('#datetimepickerValue').val("")
         $('#followUpScheduler').hide();
     }
 }
@@ -924,9 +931,18 @@ function prefillAll() {
 
 function processUpdateFollowUp(returnedData) {
     console.log("updateFollowUp: " + JSON.stringify(returnedData));
-    if(returnedData.status == '2'){
-        $('.well').removeClass(' filled');
-        $('.well').addClass(' filled');
+    if(returnedData.status == '1'){
+        $('.well').removeClass(' created');
+        $('.well').removeClass(' updated');
+        $('.well').addClass(' created');
+        $('#btnFollowUp').text('Scheduled');
+        $('#btnFollowUp').addClass(' animated fadeIn');
+    } else if(returnedData.status == '2'){
+        $('.well').removeClass(' created');
+        $('.well').removeClass(' updated');
+        $('.well').addClass(' updated');
+        $('#btnFollowUp').text('Scheduled');
+        $('#btnFollowUp').addClass(' animated fadeIn');
     }
 }
 
@@ -935,7 +951,6 @@ function updateFollowUpApiTrigger(){
     var d = {
         leadMobile: $('#candidateMobile').val(),
         followUpDateTime: new Date(scheduleTime).getTime()
-
     };
     $.ajax({
         type: "POST",
@@ -1206,10 +1221,6 @@ function saveProfileForm() {
 
 // form_candidate ajax script
 $(function () {
-    // onload
-    if ($('#candidateMobile').val().length == 10) {
-        $('#followUpRequiredBox').show();
-    }
 
     $('#candidateMobile').change(function () {
         if ($('#candidateMobile').val().length == 10) {
