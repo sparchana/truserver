@@ -300,9 +300,9 @@ function setJobs(returnedData, start, totalJobs){
 }
 
 function processCheckLeadStatus() {
-    alert("Thanks! We will get back soon!");
-    $("#addLeadMobile").val('');
-
+    $("#addLeadMobile").val("");
+    $("#messagePromptModal").modal("show");
+    $("#customMsg").html("Thanks! We will get back soon!");
 }
 function addLead() {
     var phone = $('#addLeadMobile').val();
