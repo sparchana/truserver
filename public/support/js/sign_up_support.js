@@ -728,6 +728,7 @@ function updateLeadStatus(leadId, leadStatus, value) {
         success: false
     });
     NProgress.done();
+
 }
 
 
@@ -744,7 +745,8 @@ function onCallYes(leadId) {
     console.log("pathElement: " + urlSection);
 
     if ($('#candidateMobile').val().length == 10) {
-        $('#followUpRequiredBox').show();
+        $('#panel-note').show();
+        $('#btnFloatFollowUp').show();
     }
 
     $('#callYesClass').addClass('animated fadeIn');
@@ -771,9 +773,16 @@ function onCallNo(leadId) {
     // also saveResponse gets trigger after selecting No and clicking on SaveBtn
 }
 
-function saveResponse(id) {
+function saveResponse(leadId) {
     var value = $('#callResponse').val();
-    updateLeadStatus(leadId, 1, value);
+
+    // update status and interaction
+    $.ajax({
+        type: "GET",
+        url: "/updateLeadStatus/"+leadId+"/1/"+value,
+        processData: false,
+        success: processLeadUpdate
+    });
 }
 
 function employedYes() {
@@ -929,6 +938,38 @@ function prefillAll() {
     }
 }
 
+function prefillInteractionNote(leadId) {
+
+        // trigger api to download interaction note for this candidate
+        $.ajax({
+            type: "GET",
+            url: "/getInteractionNote/" + leadId + "/10",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processInteractionNote,
+            error: false
+        });
+}
+
+function processInteractionNote(interactionNoteList) {
+    interactionNoteList.forEach(function (interaction) {
+        var div = document.createElement('div');
+        div.className = 'panel panel-default';
+
+        var dynamicHtml = '<div class="panel panel-default">'+
+            '<div class="panel-heading"><h6 class="panel-title">'+
+            '<a data-toggle="collapse" data-parent="#accordion" href="#collapse'+interaction.interactionId+'">'+interaction.userInteractionTimestamp+'</a>'+
+            '</h6></div><div id="collapse'+interaction.interactionId+'" class="panel-collapse collapse">'+
+            '<div class="panel-body">'+ interaction.userNote +'</div>'+
+            '</div></div>';
+
+        div.innerHTML = dynamicHtml;
+        $( ".accordion-inner" ).before( div );
+    });
+}
+
 function processUpdateFollowUp(returnedData) {
     console.log("updateFollowUp: " + JSON.stringify(returnedData));
     if(returnedData.status == '1'){
@@ -968,6 +1009,10 @@ function updateFollowUpValue() {
     } else {
         alert('Please specify Follow Up Date/Time');
     }
+}
+
+function enablePanelFollowUp() {
+    $('#panel-followUp').show();
 }
 
 function saveProfileForm() {
@@ -1152,8 +1197,9 @@ function saveProfileForm() {
             }
 
             if(!$('#followUpRequired').is(':checked')){
+                $('#datetimepickerValue').val("");
                 updateFollowUpApiTrigger();
-            }
+            } 
 
             var d = {
                 //mandatory fields
@@ -1221,10 +1267,14 @@ function saveProfileForm() {
 
 // form_candidate ajax script
 $(function () {
+    var pathname = window.location.pathname; // Returns path only
+    var pathElement = pathname.split('/');
+    pathElement = pathElement[(pathElement.length) - 1];
 
     $('#candidateMobile').change(function () {
         if ($('#candidateMobile').val().length == 10) {
-            $('#followUpRequiredBox').show();
+            $('#panel-note').show();
+            $('#btnFloatFollowUp').show();
         }
     });
 
@@ -1242,14 +1292,13 @@ $(function () {
      saveProfileForm();
      }
      }); */
-    var pathname = window.location.pathname; // Returns path only
-    var pathElement = pathname.split('/');
-    pathElement = pathElement[(pathElement.length) - 1];
 
     if (pathElement == 0) {
         $('h4#callConfirmation').remove();
         $('div#callYesClass').remove();
         activateEdit();
+    } else {
+        prefillInteractionNote(pathElement)
     }
     prefillAll();
     $("#candidateSignUpSupportForm").submit(function (eventObj) {
@@ -1257,5 +1306,13 @@ $(function () {
         saveProfileForm();
     }); // end of submit
 
-    $('#datetimepicker').datetimepicker({});
+    $('#datetimepicker').datetimepicker({
+        showClear: true,
+        minDate: new Date(),
+        format: 'MM/DD hh:mm a',
+        useCurrent: true,
+        dayViewHeaderFormat: 'MMMM',
+        toolbarPlacement: 'default',
+        showClose: true
+    });
 }); // end of function
