@@ -45,6 +45,8 @@ $(function () {
 });
 
 $(document).ready(function(){
+    console.log(applyJobFlag);
+
     $(".navbar-nav li a").click(function(event) {
         $(".navbar-collapse").collapse('hide');
     });
@@ -121,7 +123,181 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/getAllJobPosts",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataAllJobPosts
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
 });
+
+function processDataAllJobPosts(returnedData) {
+    var count = 0;
+    var jobPostCount = Object.keys(returnedData).length;
+    var parent = $("#hotJobPosts");
+    /* for first 3 active items (slider) */
+    var jobItemMain = document.createElement("div");
+    jobItemMain.className = "item active";
+    parent.append(jobItemMain);
+    returnedData.forEach(function (jobPosts){
+        count ++;
+        if(count > 3){
+            return false;
+        }
+        var jobItem = document.createElement("div");
+        jobItem.className = "col-lg-4";
+        jobItemMain.appendChild(jobItem);
+        var jobItemPanel = document.createElement("div");
+        jobItemPanel.className = "panel";
+        jobItemPanel.id = "hot_box";
+        jobItemPanel.style = "margin: 10%";
+        jobItem.appendChild(jobItemPanel);
+        var jobItemPanelHeading = document.createElement("div");
+        jobItemPanelHeading.className = "panel-heading";
+        jobItemPanelHeading.id = "hot_box_head";
+        jobItemPanel.appendChild(jobItemPanelHeading);
+        var jobLogo = document.createElement("img");
+        jobLogo.src = "/assets/new/img/company4.jpg";
+        jobItemPanelHeading.appendChild(jobLogo);
+        var jobItemPanelBody = document.createElement("div");
+        jobItemPanelBody.className = "panel-body";
+        jobItemPanelBody.id = "hot_box_body";
+        jobItemPanel.appendChild(jobItemPanelBody);
+        var jobItemRole = document.createElement("div");
+        jobItemRole.className = "hot_body_role";
+        jobItemRole.textContent = jobPosts.jobPostTitle;
+        jobItemPanelBody.appendChild(jobItemRole);
+        var jobItemSalary = document.createElement("div");
+        jobItemSalary.className = "hot_body_salary";
+        jobItemSalary.textContent = jobPosts.jobPostMinSalary + " - " + jobPosts.jobPostMaxSalary + " monthly";
+        jobItemPanelBody.appendChild(jobItemSalary);
+        var jobItemExperience = document.createElement("div");
+        jobItemExperience.className = "hot_body_salary";
+        jobItemExperience.textContent = "Experience: " + jobPosts.jobPostExperience.experienceType;
+        jobItemPanelBody.appendChild(jobItemExperience);
+        var jobItemLocation = document.createElement("div");
+        jobItemLocation.className = "hot_body_location";
+        var localityList = jobPosts.jobPostToLocalityList;
+        var localities = "";
+        var loopCount = 0;
+        localityList.forEach(function (locality) {
+            loopCount ++;
+            var name = locality.locality.localityName;
+            localities += name;
+            if(loopCount < Object.keys(localityList).length){
+                localities += ", ";
+            }
+        });
+        jobItemLocation.textContent = localities;
+        jobItemPanelBody.appendChild(jobItemLocation);
+        var jobHr = document.createElement("hr");
+        jobItemPanelBody.appendChild(jobHr);
+        var applyBtnDiv = document.createElement("div");
+        applyBtnDiv.className = "btn jobApplyBtn";
+        applyBtnDiv.id = jobPosts.jobPostId;
+        applyBtnDiv.onclick = function () {
+            applyJob(jobPosts.jobPostId);
+        };
+        applyBtnDiv.style = "width: 100%; font-weight: bold";
+        jobItemPanelBody.appendChild(applyBtnDiv);
+        var btnFont = document.createElement("font");
+        btnFont.size = "2";
+        btnFont.textContent = "Apply";
+        applyBtnDiv.appendChild(btnFont);
+    });
+
+    /* for jobs more than 3(active) */
+    var totalJob = jobPostCount;
+    jobPostCount = jobPostCount - 3;
+    var jobPostSectionCount = Math.floor(jobPostCount/3);
+    var i;
+    var startIndex = 3;
+    for(i=0;i<jobPostSectionCount+1;i+=1){
+        setJobs(returnedData,startIndex,totalJob);
+        startIndex+=3;
+    }
+}
+
+function setJobs(returnedData, start, totalJobs){
+    var parent = $("#hotJobPosts");
+    var jobItemMain = document.createElement("div");
+    jobItemMain.className = "item";
+    parent.append(jobItemMain);
+    var count = 0;
+    returnedData.forEach(function (jobPosts){
+        count++;
+        if(count > start && (count < start+4 && count<= totalJobs)){
+            var jobItem = document.createElement("div");
+            jobItem.className = "col-lg-4";
+            jobItemMain.appendChild(jobItem);
+            var jobItemPanel = document.createElement("div");
+            jobItemPanel.className = "panel";
+            jobItemPanel.id = "hot_box";
+            jobItemPanel.style = "margin: 10%";
+            jobItem.appendChild(jobItemPanel);
+            var jobItemPanelHeading = document.createElement("div");
+            jobItemPanelHeading.className = "panel-heading";
+            jobItemPanelHeading.id = "hot_box_head";
+            jobItemPanel.appendChild(jobItemPanelHeading);
+            var jobLogo = document.createElement("img");
+            jobLogo.src = "/assets/new/img/company4.jpg";
+            jobItemPanelHeading.appendChild(jobLogo);
+            var jobItemPanelBody = document.createElement("div");
+            jobItemPanelBody.className = "panel-body";
+            jobItemPanelBody.id = "hot_box_body";
+            jobItemPanel.appendChild(jobItemPanelBody);
+            var jobItemRole = document.createElement("div");
+            jobItemRole.className = "hot_body_role";
+            jobItemRole.textContent = jobPosts.jobPostTitle;
+            jobItemPanelBody.appendChild(jobItemRole);
+            var jobItemSalary = document.createElement("div");
+            jobItemSalary.className = "hot_body_salary";
+            jobItemSalary.textContent = jobPosts.jobPostMinSalary + " - " + jobPosts.jobPostMaxSalary + " monthly";
+            jobItemPanelBody.appendChild(jobItemSalary);
+            var jobItemExperience = document.createElement("div");
+            jobItemExperience.className = "hot_body_salary";
+            jobItemExperience.textContent = "Experience: " + jobPosts.jobPostExperience.experienceType;
+            jobItemPanelBody.appendChild(jobItemExperience);
+            var jobItemLocation = document.createElement("div");
+            jobItemLocation.className = "hot_body_location";
+            var localityList = jobPosts.jobPostToLocalityList;
+            var localities = "";
+            var loopCount = 0;
+            localityList.forEach(function (locality) {
+                loopCount ++;
+                var name = locality.locality.localityName;
+                localities += name;
+                if(loopCount < Object.keys(localityList).length){
+                    localities += ", ";
+                }
+            });
+            jobItemLocation.textContent = localities;
+            jobItemPanelBody.appendChild(jobItemLocation);
+            var jobHr = document.createElement("hr");
+            jobItemPanelBody.appendChild(jobHr);
+            var applyBtnDiv = document.createElement("div");
+            applyBtnDiv.className = "btn jobApplyBtn";
+            applyBtnDiv.id = jobPosts.jobPostId;
+            applyBtnDiv.onclick = function () {
+                applyJob(jobPosts.jobPostId);
+            };
+            applyBtnDiv.style = "width: 100%; font-weight: bold";
+            jobItemPanelBody.appendChild(applyBtnDiv);
+            var btnFont = document.createElement("font");
+            btnFont.size = "2";
+            btnFont.textContent = "Apply";
+            applyBtnDiv.appendChild(btnFont);
+        }
+    });
+}
 
 function processCheckLeadStatus() {
     alert("Thanks! We will get back soon!");

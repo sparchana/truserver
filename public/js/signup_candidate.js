@@ -3,6 +3,8 @@
  */
 var returnedOtp;
 var candidateMobile;
+var applyJobFlag = 0;
+var applyJobId = 0;
 function processDataSignUpSubmit(returnedData) {
     console.log("returedData :" + returnedData.status);
     if(returnedData.status == 1) {
@@ -41,7 +43,15 @@ function processDataAddAuth(returnedData) {
         localStorage.setItem("leadId", returnedData.leadId);
         localStorage.setItem("assessed", returnedData.isAssessed);
         console.log(returnedData.candidateId);
-        window.location = "/dashboard";
+
+        if(localStorage.getItem("applyJobFlag") == 1){
+            $("#myLoginModal").modal("hide");
+            applyJob(applyJobId);
+            localStorage.setItem("applyJobFlag", "0");
+            localStorage.setItem("applyJobId", "0");
+        } else{
+            window.location = "/dashboard";
+        }
     }
 
     else {

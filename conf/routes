@@ -26,6 +26,10 @@ POST     /candidateUpdateEducationDetails                         controllers.Ap
 
 POST     /addPassword                                             controllers.Application.addPassword()
 
+POST     /applyJob                                                controllers.Application.applyJob()
+
+POST     /addJobPost                                              controllers.Application.addJobPost()
+
 POST     /processCsv                                              controllers.Application.processcsv()
 
 GET      /dashboard                                               controllers.Application.dashboard()
@@ -39,6 +43,8 @@ POST     /findUserAndSendOtp                                      controllers.Ap
 POST     /processCsv                                              controllers.Application.processcsv()
 
 GET      /getAll/:id                                              controllers.Application.getAll(id: Integer)
+
+GET      /getAllJobPosts                                          controllers.Application.getAllJobPosts()
 
 GET      /getAllLocality                                          controllers.Application.getAllLocality()
 
@@ -66,7 +72,9 @@ GET      /getCandidateInfo/:id                                    controllers.Ap
 
 GET      /getCandidateLocality/:id                                controllers.Application.getCandidateLocality(id : Long)
 
-GET      /getCandidateJob/:id                                     controllers.Application.getCandidateJob(id : Long)
+GET      /getCompanyInfo/:id                                      controllers.Application.getCompanyInfo(id : Long)
+
+GET      /getJobPostInfo/:id                                      controllers.Application.getJobPostInfo(id : Long)
 
 GET      /checkMinProfile/:id                                     controllers.Application.checkMinProfile(id : Long)
 

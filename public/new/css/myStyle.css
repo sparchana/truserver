@@ -41,6 +41,12 @@ input::-webkit-inner-spin-button {
     margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
 }
 
+.jobApplyBtn{
+    border: none;
+    background-color: #0065a4;
+    color: white;
+}
+
 @media only screen and (max-width: 768px) {
     #hot_box{
         margin: 4%;
@@ -51,6 +57,10 @@ input::-webkit-inner-spin-button {
     #candidateName {
 		width: 96%;
 	}
+
+    #candidateFirstName {
+        width: 96%;
+    }
 
 	.candidateSecondNameMain {
 		width: 96%;

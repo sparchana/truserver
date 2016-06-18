@@ -12,7 +12,15 @@ function processDataLogin(returnedData) {
         localStorage.setItem("id", returnedData.candidateId);
         localStorage.setItem("leadId", returnedData.leadId);
         localStorage.setItem("assessed", returnedData.isAssessed);
-        window.location = "/dashboard";
+
+        if(localStorage.getItem("applyJobFlag") == 1){
+            $("#myLoginModal").modal("hide");
+            applyJob(localStorage.getItem("applyJobId"));
+            localStorage.setItem("applyJobFlag", "0");
+            localStorage.setItem("applyJobId", "0");
+        } else{
+            window.location = "/dashboard";
+        }
     }
 
     else if(returnedData.status == 3){

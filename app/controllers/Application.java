@@ -9,12 +9,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.AuthService;
 import controllers.businessLogic.CandidateService;
+import controllers.businessLogic.JobService;
 import controllers.businessLogic.LeadService;
-import models.entity.Candidate;
-import models.entity.Developer;
-import models.entity.Interaction;
-import models.entity.Lead;
-import models.entity.OM.JobPreference;
+import models.entity.*;
 import models.entity.OM.JobToSkill;
 import models.entity.OM.LocalityPreference;
 import models.entity.Static.*;
@@ -217,6 +214,34 @@ public class Application extends Controller {
         return ok(toJson(AuthService.savePassword(userMobile, userPassword)));
     }
 
+    public static Result applyJob() {
+        JsonNode req = request().body().asJson();
+        ApplyJobRequest applyJobRequest = new ApplyJobRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            applyJobRequest = newMapper.readValue(req.toString(), ApplyJobRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String userMobile = applyJobRequest.getCandidateMobile();
+        Integer jobId = applyJobRequest.getJobId();
+
+        return ok(toJson(JobService.applyJob(userMobile, jobId)));
+    }
+
+    public static Result addJobPost() {
+        JsonNode req = request().body().asJson();
+        AddJobPostRequest addJobPostRequest = new AddJobPostRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addJobPostRequest = newMapper.readValue(req.toString(), AddJobPostRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ok(toJson(JobService.addJobPost(addJobPostRequest)));
+    }
+
     public static Result loginSubmit() {
         JsonNode req = request().body().asJson();
         LoginRequest loginRequest = new LoginRequest();
@@ -362,17 +387,29 @@ public class Application extends Controller {
             }
         return ok("0");
     }
+
+    public static Result getCompanyInfo(long companyId) {
+        Company company = Company.find.where().eq("companyId", companyId).findUnique();
+        if(company!=null){
+            return ok(toJson(company));
+        }
+        return ok("0");
+    }
+
+    public static Result getJobPostInfo(long jobPostId) {
+        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        if(jobPost!=null){
+            return ok(toJson(jobPost));
+        }
+        return ok("0");
+    }
+
     @Security.Authenticated(SecuredUser.class)
     public static Result getCandidateLocality(long candidateId) {
         List<LocalityPreference> candidateLocalities = LocalityPreference.find.where().eq("candidateId", candidateId).findList();
         if(candidateLocalities == null)
             return ok("0");
         return ok(toJson(candidateLocalities));
-    }
-    @Security.Authenticated(SecuredUser.class)
-    public static Result getCandidateJob(long id) {
-        List<JobPreference> candidateJobs = JobPreference.find.where().eq("CandidateId", id).findList();
-        return ok(toJson(candidateJobs));
     }
 
     public static Result checkMinProfile(long id) {
@@ -591,6 +628,11 @@ public class Application extends Controller {
 
     public static Result kwCdrInput() {
         return ok("TODO");
+    }
+
+    public static Result getAllJobPosts() {
+        List<JobPost> jobPosts = JobPost.find.findList();
+        return ok(toJson(jobPosts));
     }
     public static Result getAllLocality() {
         List<Locality> localities = Locality.find.findList();
