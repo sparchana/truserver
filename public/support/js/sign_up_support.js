@@ -709,6 +709,8 @@ function activateEdit() {
     $("#saveBtn").prop("disabled", false);
     $("#cancelBtn").prop("disabled", false);
     $("#candidateSignUpSupportForm *").prop("disabled", false);
+    $('#btnFloatFollowUp').prop('disabled', false);
+
     $('#callNoClass').hide();
 }
 
@@ -746,7 +748,6 @@ function onCallYes(leadId) {
 
     if ($('#candidateMobile').val().length == 10) {
         $('#panel-note').show();
-        $('#btnFloatFollowUp').show();
     }
 
     $('#callYesClass').addClass('animated fadeIn');
@@ -1270,6 +1271,7 @@ $(function () {
     var pathname = window.location.pathname; // Returns path only
     var pathElement = pathname.split('/');
     pathElement = pathElement[(pathElement.length) - 1];
+
 
     $('#candidateMobile').change(function () {
         if ($('#candidateMobile').val().length == 10) {
