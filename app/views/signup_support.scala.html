@@ -4,6 +4,8 @@
   <head>
     <meta charset="UTF-8">
     <title>Create Candidate - Support | Trujobs.in</title>
+      <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.indigo-pink.min.css">
+
       <link rel="stylesheet" href="/assets/support/css/bootstrap.min.css">
 
       <script type="text/javascript" src="/assets/support/js/jquery-1.12.0.min.js"></script>
@@ -27,6 +29,10 @@
     <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
     <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css">
 
+          <!-- Material Design Lite -->
+      <script src="https://code.getmdl.io/1.1.3/material.min.js"></script>
+          <!-- Material Design icon font -->
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   </head>
 
   <body style="font-size: 13px;">
@@ -40,7 +46,7 @@
         </h4>
 
         <div id="callYesClass" style="display: none">
-            <h5>Is Interested?:
+            <h5>Is Interested to create profile ?:
                 <input type="radio" name="interested" id="interestedYes" value="Yes" onclick="onInterestedYes(@id)" > &nbsp;Yes&nbsp;
                 <input type="radio" name="interested" id="interestedNo" value="No" onclick="onInterestedNo(@id)"> No
             </h5>
@@ -65,9 +71,32 @@
 
         <hr>
         <div class="row">
-            <div class="col-sm-10">
+            <nav class="col-sm-3">
+                <div class="panel panel-default ">
+                    <div class="panel-heading">Previous Notes</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <div class="panel-group" id="accordion">
+                                @*pivot for dynamic accordion*@
+                                <div class="accordion-inner"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="20"  >
+                    <div id="panel-note" style="display: none" class="panel panel-default">
+                    <div class="panel-heading">Add Note</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <textarea class="form-control" rows="4" id="supportNote" maxlength="250"></textarea>
+                        </div>
+                    </div>
+                </div>
+                </ul>
+            </nav>
+            <div class="col-sm-6">
                 <form id="candidateSignUpSupportForm">
-                    <div style="margin-left: 20%; margin-right: 20%">
+                    <div>
                         <h3>Candidate Registration Form:</h3>
                         <hr>
                         <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Mandatory Details</h4>
@@ -498,34 +527,42 @@
                 </form>
             </div>
             <nav class="col-sm-2">
-                <ul class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="205" id="followUpRequiredBox" style="display: none">
-                    <div class="form-group">
-                        <label for="comment">Note:</label>
-                        <textarea class="form-control" rows="5" id="supportNote"></textarea>
-                    </div>
-                    <div class="checkbox">
-                        <label>
-                            <input type="checkbox" id="followUpRequired" value="99" onclick="followUpRequired()" > Follow-Up
-                        </label>
-                        <div id="followUpScheduler" style="display: none">
-                            <div class="well">
-                                <div class="form-group">
-                                    <div class='input-group date' id="datetimepicker">
-                                        <input type='text' class="form-control" id="datetimepickerValue" required/>
-                                        <span class="input-group-addon">
-                                            <span class="glyphicon glyphicon-calendar"></span>
-                                        </span>
+                <ul class="nav nav-pills nav-stacked" data-spy="affix">
+                    <div class="panel-group">
+                        <div id="panel-followUp" class="panel panel-default collapse">
+                            <div class="panel-heading">Schedule Follow Up</div>
+                            <div class="panel-body">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="followUpRequired" value="99" onclick="followUpRequired()" > Follow-Up
+                                    </label>
+                                    <div id="followUpScheduler" style="display: none">
+                                        <div class="well">
+                                            <div class="form-group">
+                                                <div class='input-group date' id="datetimepicker">
+                                                    <input type='text' class="form-control" id="datetimepickerValue" required/>
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-calendar"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <button id="btnFollowUp" class="btn btn-block btn-warning" style="align-items: flex-end" onclick="updateFollowUpValue()"> Schedule FollowUp</button>
+                                        </div>
                                     </div>
                                 </div>
-                                <button id="btnFollowUp" class="btn btn-block btn-warning" style="align-items: flex-end" onclick="updateFollowUpValue()"> Schedule FollowUp</button>
                             </div>
                         </div>
                     </div>
                 </ul>
             </nav>
+            <div class="col-sm-1">
+                <button id="btnFloatFollowUp" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" data-spy="affix" data-offset-bottom="5"  data-toggle="collapse"  data-target="#panel-followUp" disabled>
+                    <i class="material-icons">perm_contact_calendar</i>
+                    <div class="mdl-tooltip" data-offset-bottom="5"  data-toggle="collapse"  data-target="#panel-followUp" for="btnFloatFollowUp">Schedule FollowUp</div>
+                </button>
+            </div>
         </div>
     </div>
-
       <!-- Including Bootstrap -->
       <script type="text/javascript" src="/assets/js/validation.js"></script>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>

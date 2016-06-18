@@ -54,7 +54,7 @@ public class LeadService {
         Lead existingLead = isLeadExists(lead.getLeadMobile());
         String objectAUUId;
         String result;
-        String note = "";
+        String note = ServerConstants.INTERACTION_NOTE_BLANK;
         int interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
         int objectAType;
         String createdBy;

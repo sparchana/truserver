@@ -966,3 +966,8 @@ margin-bottom: 20px;
     border-radius:0;
 }
 .black-background {background-color:#000000;}
+
+.affix {
+    position:fixed;
+    bottom: 50px;
+}
