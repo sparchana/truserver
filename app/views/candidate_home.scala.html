@@ -26,6 +26,9 @@
           function showEditProfile(){
               window.location = "/dashboard/editProfile";
           }
+          function showAppliedJobs(){
+              window.location = "/dashboard/appliedJobs";
+          }
 
           var userMobile = localStorage.getItem("mobile");
           if(userMobile == null){
@@ -54,10 +57,27 @@
     </head>
 
     <body>
+        <!-- custom message modal -->
+        <div class="modal fade" id="messagePromptModal" tabindex="-1" role="dialog" aria-labelledby="messagePromptModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">TruJobs</h4>
+                    </div>
+                    <div class="modal-body">
+                        <center>
+                            <img id="customMsgIcon" width="48px">
+                            <div id="customMsg" style="padding: 16px"></div>
+                        </center>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div id="table" style="display: none;"></div>
         <div id="wrapper">
 
-                <!-- Sidebar -->
+            <!-- Sidebar -->
             <div id="sidebar-wrapper">
                 <ul class="sidebar-nav">
                     <li class="sidebar-brand">
@@ -80,6 +100,11 @@
                     <li>
                         <div class="sideNav">
                             <a href="/dashboard">Dashboard</a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="sideNav">
+                            <a href="#" onclick="showAppliedJobs()">My Jobs</a>
                         </div>
                     </li>
                     <li>
@@ -282,265 +307,7 @@
                                         </div>
                                         <div class="col-md-10">
                                             <div id="hot_job" class="carousel slide" data-ride="carousel">
-                                                <div class="carousel-inner" role="listbox">
-                                                    <div class="item active">
-                                                        <div class="col-lg-4 visible-lg" style="padding: 1%">
-                                                            <div class="panel" id="hot_box">
-                                                                <div class="panel-heading" id="hot_box_head">
-                                                                    <img class="img-responsive" src="/assets/new/img/company4.jpg">
-                                                                </div>
-                                                                <div class="panel-body" id="hot_box_body">
-                                                                    <div class="hot_body_role">
-                                                                      Customer Support Executive
-                                                                    </div>
-                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
-                                                                    <div class="hot_body_salary">
-                                                                        10,000 - 20,000 Monthly
-                                                                        <br>
-                                                                        Experience : 6 months +
-                                                                    </div>
-                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
-                                                                    <div class="hot_body_location">
-                                                                        St. John's Road<br><br>
-                                                                        <a href="tel:+918880007799">
-                                                                            <div class="btn btn-primary" id="modalBtn" style="width: 92%">
-                                                                                <font size="2">Call 8880007799 to Apply</font>
-                                                                            </div>
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-4" style="padding: 1%">
-                                                            <div class="panel" id="hot_box">
-                                                                <div class="panel-heading" id="hot_box_head">
-                                                                    <img class="img-responsive" src="/assets/new/img/company1.jpg">
-                                                                </div>
-                                                                <div class="panel-body" id="hot_box_body">
-                                                                    <div class="hot_body_role">
-                                                                        Office Accountant
-                                                                    </div>
-                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
-                                                                    <div class="hot_body_salary">
-                                                                        15,000 - 20,000 Monthly
-                                                                        <br>
-                                                                        Experience : 1 yr
-                                                                    </div>
-                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
-                                                                    <div class="hot_body_location">
-                                                                        MICO Gate, Bannerghatta Road<br><br>
-                                                                        <a href="tel:+918880007799">
-                                                                            <div class="btn btn-primary" id="modalBtn" style="width: 92%">
-                                                                                <font size="2">Call 8880007799 to Apply</font>
-                                                                            </div>
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-4" style="padding: 1%">
-                                                            <div class="panel" id="hot_box">
-                                                                <div class="panel-heading" id="hot_box_head">
-                                                                    <img class="img-responsive" src="/assets/new/img/company1.jpg">
-                                                                </div>
-                                                                <div class="panel-body" id="hot_box_body">
-                                                                    <div class="hot_body_role">
-                                                                        Marketing Executive
-                                                                    </div>
-                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
-                                                                    <div class="hot_body_salary">
-                                                                        20,000 - 25,000 Monthly
-                                                                        <br>
-                                                                        Experience : 2 yrs
-                                                                    </div>
-                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
-                                                                    <div class="hot_body_location">
-                                                                        MICO Gate, Bannerghatta Road<br><br>
-                                                                        <a href="tel:+918880007799">
-                                                                            <div class="btn btn-primary" id="modalBtn" style="width: 92%">
-                                                                                <font size="2">Call 8880007799 to Apply</font>
-                                                                            </div>
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                        <!--add-->
-                                                    <div class="item">
-                                                        <div class="col-sm-4" style="padding: 1%">
-                                                            <div class="panel" id="hot_box">
-                                                                <div class="panel-heading" id="hot_box_head">
-                                                                    <img class="img-responsive" src="/assets/new/img/company1.jpg">
-                                                                </div>
-                                                                <div class="panel-body" id="hot_box_body">
-                                                                    <div class="hot_body_role">
-                                                                        Receptionist
-                                                                    </div>
-                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
-                                                                    <div class="hot_body_salary">
-                                                                        15,000 - 20,000 Monthly
-                                                                        <br>
-                                                                        Experience : Any
-                                                                    </div>
-                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
-                                                                    <div class="hot_body_location">
-                                                                        MICO Gate, Bannerghatta Road<br><br>
-                                                                        <a href="tel:+918880007799">
-                                                                            <div class="btn btn-primary" id="modalBtn" style="width: 92%">
-                                                                                <font size="2">Call 8880007799 to Apply</font>
-                                                                            </div>
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                            <!-- pebbles pre school -->
-                                                        <div class="col-sm-4 visible-lg" style="padding: 1%">
-                                                            <div class="panel" id="hot_box">
-                                                                <div class="panel-heading" id="hot_box_head">
-                                                                    <img class="img-responsive" src="/assets/new/img/logo_pebbles.png">
-                                                                </div>
-                                                                <div class="panel-body" id="hot_box_body">
-                                                                    <div class="hot_body_role">
-                                                                        Teacher
-                                                                    </div>
-                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
-                                                                    <div class="hot_body_salary">
-                                                                        9,000 - 11,000 Monthly
-                                                                        <br>
-                                                                        Experience : Any
-                                                                    </div>
-                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
-                                                                    <div class="hot_body_location">
-                                                                        Kadugodi<br><br>
-                                                                        <a href="tel:+918880007799">
-                                                                            <div class="btn btn-primary" id="modalBtn" style="width: 92%">
-                                                                                <font size="2">Call 8880007799 to Apply</font>
-                                                                            </div>
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                            <!-- online systemsm indiranagar -->
-                                                        <div class="col-lg-4 visible-lg" id="hot_box_padding" style="padding: 1%">
-                                                            <div class="panel" id="hot_box">
-                                                                <div class="panel-heading" id="hot_box_head">
-                                                                    <img  class="img-responsive" src="/assets/new/img/logo_online_systems.png">
-                                                                </div>
-                                                                <div class="panel-body" id="hot_box_body">
-                                                                    <div class="hot_body_role">
-                                                                        Sales Executive
-                                                                    </div>
-                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
-                                                                    <div class="hot_body_salary">
-                                                                        15,000 - 20,000 Monthly
-                                                                        <br>
-                                                                        Experience : 6 Months +
-                                                                    </div>
-                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
-                                                                    <div class="hot_body_location">
-                                                                        Indiranagar<br><br>
-                                                                        <a href="tel:+918880007799">
-                                                                            <div class="btn btn-primary" id="modalBtn" style="width: 92%">
-                                                                                <font size="2">Call 8880007799 to Apply</font>
-                                                                            </div>
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                        <!-- end add -->
-                                                        <!--add-->
-                                                    <div class="item">
-                                                        @*online systems*@
-                                                        <div class="col-sm-4" style="padding: 1%">
-                                                            <div class="panel" id="hot_box">
-                                                                <div class="panel-heading" id="hot_box_head">
-                                                                    <img class="img-responsive" src="/assets/new/img/company1.jpg">
-                                                                </div>
-                                                                <div class="panel-body" id="hot_box_body">
-                                                                    <div class="hot_body_role">
-                                                                        Office Assistant
-                                                                    </div>
-                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
-                                                                    <div class="hot_body_salary">
-                                                                        10,000 - 15,000 Monthly
-                                                                        <br>
-                                                                        Experience : 6 Months +
-                                                                    </div>
-                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
-                                                                    <div class="hot_body_location">
-                                                                        Indiranagar<br><br>
-                                                                        <a href="tel:+918880007799">
-                                                                            <div class="btn btn-primary" id="modalBtn" style="width: 92%">
-                                                                                <font size="2">Call 8880007799 to Apply</font>
-                                                                            </div>
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        @* online Systems*@
-                                                        <div class="col-sm-4 visible-lg" style="padding: 1%">
-                                                            <div class="panel" id="hot_box">
-                                                                <div class="panel-heading" id="hot_box_head">
-                                                                    <img class="img-responsive" src="/assets/new/img/company1.jpg">
-                                                                </div>
-                                                                <div class="panel-body" id="hot_box_body">
-                                                                    <div class="hot_body_role">
-                                                                        Telemarketing Executive
-                                                                    </div>
-                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
-                                                                    <div class="hot_body_salary">
-                                                                        15,000 Monthly
-                                                                        <br>
-                                                                        Experience : 6 Months +
-                                                                    </div>
-                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
-                                                                    <div class="hot_body_location">
-                                                                        Indiranagar<br><br>
-                                                                        <a href="tel:+918880007799">
-                                                                            <div class="btn btn-primary" id="modalBtn" style="width: 92%">
-                                                                                <font size="2">Call 8880007799 to Apply</font>
-                                                                            </div>
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-lg-4 visible-lg" id="hot_box_padding" style="padding: 1%">
-                                                            <div class="panel" id="hot_box">
-                                                                <div class="panel-heading" id="hot_box_head">
-                                                                    <img  class="img-responsive" src="/assets/new/img/logo_vlokal.png">
-                                                                </div>
-                                                                <div class="panel-body" id="hot_box_body">
-                                                                    <div class="hot_body_role">
-                                                                        Delivery Executive
-                                                                    </div>
-                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
-                                                                    <div class="hot_body_salary">
-                                                                        15,000 Monthly
-                                                                        <br>
-                                                                        Experience : Any
-                                                                    </div>
-                                                                    <img class="img-responsive" src="/assets/new/img/hotjob_divider.jpg">
-                                                                    <div class="hot_body_location">
-                                                                        Marathahalli<br><br>
-                                                                        <a href="tel:+918880007799">
-                                                                            <div class="btn btn-primary" id="modalBtn" style="width: 92%">
-                                                                                <font size="2">Call 8880007799 to Apply</font>
-                                                                            </div>
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                        <!-- end add -->
-                                                </div>
+                                                <div class="carousel-inner" role="listbox" id="hotJobPosts"></div>
                                             </div>
                                         </div>
                                         <div class="col-lg-1 visible-lg" id="arrow_right_hot">
@@ -551,7 +318,6 @@
                                     </div>
                                 </div>
                             </center>
-                            <hr>
                         </div>
                     </div>
                 </div>
@@ -586,6 +352,7 @@
             <!-- Including Bootstrap -->
         <script src="/assets/dashboard/js/jquery.js"></script>
         <script src="/assets/dashboard/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/assets/js/apply_job.js"></script>
         <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
             <!-- Menu Toggle Script -->
         <script>
