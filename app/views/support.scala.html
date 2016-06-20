@@ -14,14 +14,17 @@
         <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css">
 
         <style>
-        .btn-info.active {
-         background-color: #FF8100;
+        .btn-default.active {
+            background-color: #337ab7;
+            color: white;
         }
-        .btn-info.active:hover{
-            background-color: #FF8100;
+        .btn-default.active:hover{
+            background-color: #337ab7;
+            color: white;
         }
-        .btn-info.active:focus{
-            background-color: #FF8100;
+        .btn-default.active:focus{
+            background-color: #337ab7;
+            color: white;
         }
 
         </style>
@@ -31,11 +34,11 @@
         <div class="container">
 
             <h2> Support Dashboard :<a href="/logout"><button class="btn btn-danger" style="align-items: flex-end"> Logout</button></a></h2>
-            <button id="showLead" class="btn btn-info active" onclick="getThis(1)">Show Lead</button>
-            <button id="showCandidate" class="btn btn-info " onclick="getThis(2)">Show Candidates</button>
-            <button id="showAll" class="btn btn-info " onclick="getThis(3)">Show All</button>
-            <button id="createNewCandidate" class="btn btn-success" onclick="window.location.href='/createCandidateForm'">Create Candidate</button>
-            <button id="searchCandidate" class="btn btn-warning" onclick="window.location.href='/searchCandidate'">Search Candidate</button>
+            <button id="showLead" class="btn btn-default active" onclick="getThis(1)">Show Lead</button>
+            <button id="showCandidate" class="btn btn-default " onclick="getThis(2)">Show Candidates</button>
+            <button id="showAll" class="btn btn-default " onclick="getThis(3)">Show All</button>
+            <button id="createNewCandidate" class="btn btn-default " onclick="window.location.href='/createCandidateForm'">Create Candidate</button>
+            <button id="searchCandidate" class="btn btn-default" onclick="window.location.href='/searchCandidate'">Search Candidate</button>
             <div style="margin-top: 16px"></div>
             <table id="leadTable" class="table table-striped table-bordered" style="margin-top: 16px" cellspacing="0" width="100%">
                 <thead>

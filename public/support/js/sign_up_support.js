@@ -743,7 +743,6 @@ function onCallYes(leadId) {
     var pathname = window.location.pathname; // Returns path only
     var pathElement = pathname.split('/');
     var urlSection = pathElement = pathElement[(pathElement.length) - 2];
-    console.log("pathElement: " + urlSection);
 
     if ($('#candidateMobile').val().length == 10) {
         $('#panel-note').show();
