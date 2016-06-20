@@ -5,8 +5,6 @@ $(document).ready(function(){
     var userMobile = localStorage.getItem("mobile");
     var userName = localStorage.getItem("name");
     var userLastName = localStorage.getItem("lastName");
-    console.log("userName: " + userName + " mobile:" + userMobile);
-
     if(userMobile != null){
         document.getElementById("helloMsg").innerHTML = "Hello " + userName + "!";
         try{
@@ -132,7 +130,7 @@ function processDataAllJobPosts(returnedData) {
         jobItemPanelHeading.id = "hot_box_head";
         jobItemPanel.appendChild(jobItemPanelHeading);
         var jobLogo = document.createElement("img");
-        jobLogo.src = "/assets/new/img/company4.jpg";
+        jobLogo.src = "/assets/new/img/" + jobPosts.company.companyLogo + ".png";
         jobItemPanelHeading.appendChild(jobLogo);
         var jobItemPanelBody = document.createElement("div");
         jobItemPanelBody.className = "panel-body";
@@ -142,14 +140,21 @@ function processDataAllJobPosts(returnedData) {
         jobItemRole.className = "hot_body_role";
         jobItemRole.textContent = jobPosts.jobPostTitle;
         jobItemPanelBody.appendChild(jobItemRole);
+
+        var jobItemHr1 = document.createElement("div");
+        jobItemHr1.style = "height: 1px; background: #0B4063";
+        jobItemPanelBody.appendChild(jobItemHr1);
         var jobItemSalary = document.createElement("div");
         jobItemSalary.className = "hot_body_salary";
-        jobItemSalary.textContent = jobPosts.jobPostMinSalary + " - " + jobPosts.jobPostMaxSalary + " monthly";
+        jobItemSalary.textContent = "₹" + jobPosts.jobPostMinSalary + " - ₹" + jobPosts.jobPostMaxSalary + " monthly";
         jobItemPanelBody.appendChild(jobItemSalary);
         var jobItemExperience = document.createElement("div");
         jobItemExperience.className = "hot_body_salary";
         jobItemExperience.textContent = "Experience: " + jobPosts.jobPostExperience.experienceType;
         jobItemPanelBody.appendChild(jobItemExperience);
+        var jobItemHr2 = document.createElement("div");
+        jobItemHr2.style = "height: 1px; background: #0B4063";
+        jobItemPanelBody.appendChild(jobItemHr2);
         var jobItemLocation = document.createElement("div");
         jobItemLocation.className = "hot_body_location";
         var localityList = jobPosts.jobPostToLocalityList;
@@ -165,8 +170,6 @@ function processDataAllJobPosts(returnedData) {
         });
         jobItemLocation.textContent = localities;
         jobItemPanelBody.appendChild(jobItemLocation);
-        var jobHr = document.createElement("hr");
-        jobItemPanelBody.appendChild(jobHr);
         var applyBtnDiv = document.createElement("div");
         applyBtnDiv.className = "btn btn-primary";
         applyBtnDiv.id = jobPosts.jobPostId;
@@ -214,7 +217,7 @@ function setJobs(returnedData, start, totalJobs){
             jobItemPanelHeading.id = "hot_box_head";
             jobItemPanel.appendChild(jobItemPanelHeading);
             var jobLogo = document.createElement("img");
-            jobLogo.src = "/assets/new/img/company4.jpg";
+            jobLogo.src = "/assets/new/img/" + jobPosts.company.companyLogo + ".png";
             jobItemPanelHeading.appendChild(jobLogo);
             var jobItemPanelBody = document.createElement("div");
             jobItemPanelBody.className = "panel-body";
@@ -224,14 +227,20 @@ function setJobs(returnedData, start, totalJobs){
             jobItemRole.className = "hot_body_role";
             jobItemRole.textContent = jobPosts.jobPostTitle;
             jobItemPanelBody.appendChild(jobItemRole);
+            var jobItemHr1 = document.createElement("div");
+            jobItemHr1.style = "height: 1px; background: #0B4063";
+            jobItemPanelBody.appendChild(jobItemHr1);
             var jobItemSalary = document.createElement("div");
             jobItemSalary.className = "hot_body_salary";
-            jobItemSalary.textContent = jobPosts.jobPostMinSalary + " - " + jobPosts.jobPostMaxSalary + " monthly";
+            jobItemSalary.textContent = "₹" + jobPosts.jobPostMinSalary + " - ₹" + jobPosts.jobPostMaxSalary + " monthly";
             jobItemPanelBody.appendChild(jobItemSalary);
             var jobItemExperience = document.createElement("div");
             jobItemExperience.className = "hot_body_salary";
             jobItemExperience.textContent = "Experience: " + jobPosts.jobPostExperience.experienceType;
             jobItemPanelBody.appendChild(jobItemExperience);
+            var jobItemHr2 = document.createElement("div");
+            jobItemHr2.style = "height: 1px; background: #0B4063";
+            jobItemPanelBody.appendChild(jobItemHr2);
             var jobItemLocation = document.createElement("div");
             jobItemLocation.className = "hot_body_location";
             var localityList = jobPosts.jobPostToLocalityList;
@@ -247,8 +256,6 @@ function setJobs(returnedData, start, totalJobs){
             });
             jobItemLocation.textContent = localities;
             jobItemPanelBody.appendChild(jobItemLocation);
-            var jobHr = document.createElement("hr");
-            jobItemPanelBody.appendChild(jobHr);
             var applyBtnDiv = document.createElement("div");
             applyBtnDiv.className = "btn btn-primary";
             applyBtnDiv.id = jobPosts.jobPostId;

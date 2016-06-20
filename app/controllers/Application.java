@@ -401,6 +401,14 @@ public class Application extends Controller {
         return ok("0");
     }
 
+    public static Result GetCompanyJobList(long companyId){
+        List<JobPost> jobPostList = JobPost.find.where().eq("company.companyId", companyId).findList();
+        if(jobPostList!=null){
+            return ok(toJson(jobPostList));
+        }
+        return ok("0");
+    }
+
     public static Result getJobPostInfo(long jobPostId) {
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
         if(jobPost!=null){

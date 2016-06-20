@@ -90,7 +90,7 @@ public class JobPost extends Model {
     @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
     private List<JobPostToLocality> jobPostToLocalityList;
 
-    @JsonBackReference
+    @JsonManagedReference
     @ManyToOne
     @JoinColumn(name = "CompanyId", referencedColumnName = "CompanyId")
     private Company company;

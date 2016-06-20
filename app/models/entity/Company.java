@@ -2,6 +2,7 @@ package models.entity;
 
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.PrivateOwned;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Static.CompanyStatus;
 import models.entity.Static.CompanyType;
@@ -62,7 +63,7 @@ public class Company extends Model {
     @JoinColumn(name = "CompStatus")
     private CompanyStatus compStatus;
 
-    @JsonManagedReference
+    @JsonBackReference
     @PrivateOwned
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
     private List<JobPost> jobPostList;
