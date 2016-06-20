@@ -65,22 +65,21 @@ public class InteractionService {
                     interactionResult = ServerConstants.INTERACTION_RESULT_LEAD_FOLLOWED_UP_REQUEST + " " + sfdFollowUp.format(followUpSchedule);
                 }
             }
+
+            Interaction interaction = new Interaction(
+                    uuId,
+                    objectAType,
+                    interactionType,
+                    interactionNote,
+                    interactionResult,
+                    session().get("sessionUsername")
+            );
+
+            InteractionService.createInteraction(interaction);
         } catch (NullPointerException npe){
-            interactionResult = ServerConstants.INTERACTION_RESULT_FOLLOWUP_DEACTIVATED;
+            Logger.info("Followup deactivated");
         }
 
-
-
-        Interaction interaction = new Interaction(
-                uuId,
-                objectAType,
-                interactionType,
-                interactionNote,
-                interactionResult,
-                session().get("sessionUsername")
-        );
-
-        InteractionService.createInteraction(interaction);
     }
 
     public static void createInteraction(Interaction interaction){
