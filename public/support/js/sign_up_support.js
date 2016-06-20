@@ -710,7 +710,6 @@ function activateEdit() {
     $("#cancelBtn").prop("disabled", false);
     $("#candidateSignUpSupportForm *").prop("disabled", false);
     $('#btnFloatFollowUp').prop('disabled', false);
-
     $('#callNoClass').hide();
 }
 
@@ -944,7 +943,7 @@ function prefillInteractionNote(leadId) {
         // trigger api to download interaction note for this candidate
         $.ajax({
             type: "GET",
-            url: "/getInteractionNote/" + leadId + "/10",
+            url: "/getInteractionNote/" + leadId + "/4",
             data: false,
             async: false,
             contentType: false,
@@ -1276,10 +1275,9 @@ $(function () {
     $('#candidateMobile').change(function () {
         if ($('#candidateMobile').val().length == 10) {
             $('#panel-note').show();
-            $('#btnFloatFollowUp').show();
+            $('#btnFloatFollowUp').prop('disabled', false);
         }
     });
-
 
     $('#candidateJobPref').change(function () {
         generateSkills();
@@ -1298,7 +1296,9 @@ $(function () {
     if (pathElement == 0) {
         $('h4#callConfirmation').remove();
         $('div#callYesClass').remove();
+        $('div#panel-prevNotes').remove();
         activateEdit();
+        $('#btnFloatFollowUp').prop('disabled', true);
     } else {
         prefillInteractionNote(pathElement)
     }

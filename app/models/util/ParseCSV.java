@@ -35,6 +35,7 @@ public class ParseCSV {
                 // Read all InBound Calls
                 if (nextLine != null && nextLine[0].equals("0")) {
                     Date  knowlarityInBoundDate = sdf.parse(nextLine[4]);
+                    Timestamp knowlarityInBoundTimestamp = new Timestamp(knowlarityInBoundDate.getTime());
 
                     // fix mobile no
                     if(!nextLine[1].contains("+")) {
@@ -50,24 +51,26 @@ public class ParseCSV {
                         lead.setLeadType(ServerConstants.TYPE_LEAD);
                         lead.setLeadChannel(ServerConstants.LEAD_CHANNEL_KNOWLARITY);
                         lead.setLeadStatus(ServerConstants.LEAD_STATUS_NEW);
+                        lead.setLeadCreationTimestamp(knowlarityInBoundTimestamp);
                         lead.save();
                         leads.add(lead);
                         totalUniqueLead++;
 
                         interaction.setObjectAType(lead.getLeadType());
                         interaction.setObjectAUUId(lead.getLeadUUId());
-                        interaction.setNote("First Inbound Call");
+                        interaction.setResult(ServerConstants.INTERACTION_RESULT_FIRST_INBOUND_CALL);
 
                     } else {
-                        if(existingLead.getLeadCreationTimestamp().getTime() > lead.getLeadCreationTimestamp().getTime()) {
+                        if(existingLead.getLeadCreationTimestamp().getTime() > knowlarityInBoundTimestamp.getTime()) {
                             // recording the first inbound of a lead
-                            existingLead.setLeadCreationTimestamp(lead.getLeadCreationTimestamp());
+                            Logger.info("updating leadCreationTimeStamp");
+                            existingLead.setLeadCreationTimestamp(knowlarityInBoundTimestamp);
                             existingLead.update();
                         }
                         overLappingRecordCount++;
                         interaction.setObjectAType(existingLead.getLeadType());
                         interaction.setObjectAUUId(existingLead.getLeadUUId());
-                        interaction.setNote(ServerConstants.INTERACTION_NOTE_EXISTING_LEAD_CALLED_BACK);
+                        interaction.setResult(ServerConstants.INTERACTION_RESULT_EXISTING_LEAD_CALLED_BACK);
                     }
 
                     // gives total no of old leads
@@ -80,7 +83,7 @@ public class ParseCSV {
                         // save all inbound calls to interaction
                         Logger.info("CSV Interaction saved");
                         interaction.setCreatedBy(ServerConstants.INTERACTION_CREATED_SYSTEM_KNOWLARITY);
-                        interaction.setCreationTimestamp(new Timestamp(knowlarityInBoundDate.getTime()));
+                        interaction.setCreationTimestamp(knowlarityInBoundTimestamp);
                         interaction.setInteractionType(ServerConstants.INTERACTION_TYPE_CALL_IN);
                         interaction.save();
                     }
