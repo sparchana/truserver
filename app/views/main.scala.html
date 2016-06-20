@@ -85,7 +85,7 @@
                                         <input type="checkbox" class="checkbox-inline" style="margin-right:5px;">Remember me
                                     </div>
                                     <div class="col-xs-6 pull-right" style="text-align:right;">
-                                        <a href="#" onclick="resetPassword()"><font color="#06436a">Forgot Password?</font></a>
+                                        <a style="cursor: pointer;" onclick="resetPassword()"><font color="#06436a">Forgot Password?</font></a>
                                     </div>
                                 </div>
                                 <div class="row">
@@ -95,7 +95,8 @@
                                 </div>
                                 <hr>
                                 <center>
-                                    Don't have an account?<a href=""><font color="#06436a">&nbsp;Sign Up</font></a>
+                                    Don't have an account?<a style="cursor: pointer;" data-toggle="modal" data-target="#mySignUpModal" onClick="openSignUp()">
+                                        <font color="#06436a">&nbsp;Sign Up</font></a>
                                 </center>
                             </div>
                         </form>
@@ -168,6 +169,65 @@
                                 </div>
                             </font>
                         </center>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="mySignUpModal" class="modal fade" role="dialog">
+            <div class="modal-dialog">
+                    <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-body" id="model_size">
+                        <form id="form_signup_candidate_modal"  style="margin-top: 0%; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
+                            <h4 style="font-weight: bold">Job Seeker Registration</h4>
+                            <div class="row" id="firstNameLastName">
+                                <div class="col-sm-6" style="padding: 0 4px 0 16px">
+                                    <input id="candidateFirstNameModal" placeholder="First name" type="text" maxLength="49" class="form-control input-md">
+                                </div>
+                                <div class="col-sm-6" style="padding: 0 16px 0 4px">
+                                    <input id="candidateSecondNameModal" placeholder="Last name" type="text" maxLength="49" class="form-control input-md candidateSecondNameMain" >
+                                </div>
+                            </div>
+
+                            <input id="candidateMobileModal" style="margin-top: 8px" placeholder="Mobile No." name="candidateMobile" type="text" maxlength="10" class="form-control input-md" >
+
+                            <div style="margin-top: 8px">
+                                <input type="text" id="candidateJobPrefModal" placeholder="What jobs you are Interested in?">
+                                <script type="text/javascript">
+                                    $(document).ready(function() {
+                                        $("#candidateJobPrefModal").tokenInput(getJob(), {
+                                            theme: "facebook",
+                                            placeholder: "Jobs Interested? (Max: 3)",
+                                            hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                                            minChars: 0,
+                                            tokenLimit: 3,
+                                            zindex: 9999999,
+                                            preventDuplicates: true
+                                        });
+                                    });
+                                </script>
+                            </div>
+
+                            <div style="margin-top: 8px">
+                                <input type="text" id="candidateLocalityModal" style="margin-top: 4px">
+                                <script type="text/javascript">
+                                    $(document).ready(function() {
+                                        $("#candidateLocalityModal").tokenInput(getLocality(), {
+                                            theme: "facebook",
+                                            placeholder: "Localities Interested?",
+                                            minChars: 3,
+                                            zindex: 9999999,
+                                            hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
+                                            preventDuplicates: true
+                                        });
+                                    });
+                                </script>
+                            </div>
+
+                            <button type="submit" id="registerBtnSubmit" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
+                                <!-- Text input-->
+                        </form>
                     </div>
                 </div>
             </div>
@@ -385,8 +445,10 @@
                         <h4 class="modal-title" id="myModalLabel">TruJobs</h4>
                     </div>
                     <div class="modal-body">
-                        <center><div id="customMsg"></div></center>
-
+                        <center>
+                            <img id="customMsgIcon" width="48px">
+                            <div id="customMsg" style="padding: 16px"></div>
+                        </center>
                     </div>
                 </div>
             </div>

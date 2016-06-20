@@ -268,6 +268,11 @@ public class Application extends Controller {
         return ok(views.html.edit_profile.render());
     }
 
+    @Security.Authenticated(SecuredUser.class)
+    public static Result appliedJobs() {
+        return ok(views.html.candidate_applied_job.render());
+    }
+
     public static Result findUserAndSendOtp() {
         JsonNode req = request().body().asJson();
         ResetPasswordResquest resetPasswordResquest = new ResetPasswordResquest();

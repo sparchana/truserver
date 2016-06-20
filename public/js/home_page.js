@@ -346,6 +346,10 @@ function openLogin() {
     $('#form_password_reset_new').hide();
 }
 
+function openSignUp() {
+    $("#myLoginModal").modal("hide");
+}
+
 function resetPassword() {
     $('#noUserLogin').hide();
     $('#incorrectMsgLogin').hide();

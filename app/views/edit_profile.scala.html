@@ -29,6 +29,12 @@
         logoutUser();
         window.location = "/";
       }
+      function showAppliedJobs(){
+        window.location = "/dashboard/appliedJobs";
+      }
+      function showEditProfile(){
+        window.location = "/dashboard/editProfile";
+      }
 
       function logoutUser() {
         localStorage.clear();
@@ -74,6 +80,11 @@
           <li>
             <div class="sideNav">
               <a href="/dashboard">Dashboard</a>
+            </div>
+          </li>
+          <li>
+            <div class="sideNav">
+              <a href="#" onclick="showAppliedJobs()">My Jobs</a>
             </div>
           </li>
           <li>

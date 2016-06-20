@@ -2,6 +2,9 @@
  * Created by batcoder1 on 26/4/16.
  */
 var candidateMobile;
+var applyJobFlag = 0;
+var applyJobId = 0;
+
 function processDataLogin(returnedData) {
     console.log(returnedData);
     if(returnedData.status == 1) {
@@ -13,11 +16,15 @@ function processDataLogin(returnedData) {
         localStorage.setItem("leadId", returnedData.leadId);
         localStorage.setItem("assessed", returnedData.isAssessed);
 
-        if(localStorage.getItem("applyJobFlag") == 1){
+        if(applyJobFlag == 1){
             $("#myLoginModal").modal("hide");
-            applyJob(localStorage.getItem("applyJobId"));
-            localStorage.setItem("applyJobFlag", "0");
-            localStorage.setItem("applyJobId", "0");
+            applyJob(applyJobId);
+            applyJobFlag = 0;
+            applyJobId = 0;
+            setTimeout(function(){
+                window.location = "/dashboard/appliedJobs";
+            }, 4000);
+
         } else{
             window.location = "/dashboard";
         }

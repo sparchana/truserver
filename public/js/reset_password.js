@@ -30,7 +30,17 @@ function processDataPostReset(returnedData) {
         localStorage.setItem("id", returnedData.candidateId);
         localStorage.setItem("leadId", returnedData.leadId);
         localStorage.setItem("assessed", returnedData.isAssessed);
-        window.location = "/dashboard";
+        if(applyJobFlag == 1){
+            $("#myLoginModal").modal("hide");
+            applyJob(applyJobId);
+            applyJobFlag = 0;
+            applyJobId = 0;
+            setTimeout(function(){
+                window.location = "/dashboard/appliedJobs";
+            }, 4000);
+        } else{
+            window.location = "/dashboard";
+        }
     }
 
     else if(returnedData.status == 2){

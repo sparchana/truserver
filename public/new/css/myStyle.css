@@ -248,6 +248,23 @@ body{
     color: #ffffff;
 }
 
+a:hover{
+    text-decoration: none;
+}
+
+.jobDetails{
+    display: none;
+    font-size: 14px;
+    padding-left : 16px;
+    padding-right : 16px;
+    padding-bottom : 16px;
+    color: rgba(0,0,0,.54);
+}
+
+#jobSubSection{
+    padding: 8px;
+}
+
 #fixed-menu
 {
     margin-top: -33px;

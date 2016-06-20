@@ -5,14 +5,19 @@
 function processDataApplyJob(returnedData) {
     $("#messagePromptModal").modal("show");
     if(returnedData.status == 1){
-        $("#customMsg").html("Applied Success");
+        $('#customMsgIcon').attr('src', "/assets/img/jobApplied.png");
+        $("#customMsg").html("Job Applied Successfully!");
     } else if(returnedData.status == 2){
+        $('#customMsgIcon').attr('src', "/assets/img/jobApplied.png");
         $("#customMsg").html("Oops! Something went Wrong. Unable to apply");
     } else if(returnedData.status == 3){
+        $('#customMsgIcon').attr('src', "/assets/img/alreadyApplied.png");
         $("#customMsg").html("Looks like you already applied for this Job");
     } else if(returnedData.status == 4){
+        $('#customMsgIcon').attr('src', "/assets/img/logo.gif");
         $("#customMsg").html("Oops! Candidate does't Exists");
     } else{
+        $('#customMsgIcon').attr('src', "/assets/img/logo.gif");
         $("#customMsg").html("Oops! Looks like the job is no longer available");
     }
 }
@@ -61,16 +66,15 @@ function addJobPost(){
 
 // apply_job ajax script
 function applyJob(id){
-    localStorage.setItem("applyJobFlag", "1");
-    localStorage.setItem("applyJobId", id);
+    applyJobFlag = 1;
+    applyJobId = id;
     var phone = localStorage.getItem("mobile");
-    var jobId = id;
     if(phone == null){ // not logged in
         $("#myLoginModal").modal("show");
     } else{
         try {
             var d = {
-                jobId: jobId,
+                jobId: id,
                 candidateMobile: phone
             };
             $.ajax({

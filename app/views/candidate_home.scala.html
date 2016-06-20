@@ -26,6 +26,9 @@
           function showEditProfile(){
               window.location = "/dashboard/editProfile";
           }
+          function showAppliedJobs(){
+              window.location = "/dashboard/appliedJobs";
+          }
 
           var userMobile = localStorage.getItem("mobile");
           if(userMobile == null){
@@ -63,8 +66,10 @@
                         <h4 class="modal-title" id="myModalLabel">TruJobs</h4>
                     </div>
                     <div class="modal-body">
-                        <center><div id="customMsg"></div></center>
-
+                        <center>
+                            <img id="customMsgIcon" width="48px">
+                            <div id="customMsg" style="padding: 16px"></div>
+                        </center>
                     </div>
                 </div>
             </div>
@@ -95,6 +100,11 @@
                     <li>
                         <div class="sideNav">
                             <a href="/dashboard">Dashboard</a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="sideNav">
+                            <a href="#" onclick="showAppliedJobs()">My Jobs</a>
                         </div>
                     </li>
                     <li>

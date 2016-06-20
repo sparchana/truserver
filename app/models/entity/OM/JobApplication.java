@@ -20,7 +20,6 @@ public class JobApplication extends Model {
     @Column(name = "JobApplicationId", columnDefinition = "int signed", unique = true)
     private Integer jobApplicationId;
 
-    @JsonBackReference
     @Column(name = "JobApplicationCreateTimeStamp", columnDefinition = "timestamp null")
     private Timestamp jobApplicationCreateTimeStamp = new Timestamp(System.currentTimeMillis());
 
