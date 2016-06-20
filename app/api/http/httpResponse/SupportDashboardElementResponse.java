@@ -13,6 +13,8 @@ public class SupportDashboardElementResponse {
     public String leadMobile;
     public String lastIncomingCallTimestamp;
     public int totalInBounds;
+    public boolean followUpStatus;
+    public String followUpTimeStamp;
 
     public int getTotalInBounds() {
         return totalInBounds;
@@ -84,5 +86,21 @@ public class SupportDashboardElementResponse {
 
     public void setLastIncomingCallTimestamp(String lastIncomingCallTimestamp) {
         this.lastIncomingCallTimestamp = lastIncomingCallTimestamp;
+    }
+
+    public boolean isFollowUpStatus() {
+        return followUpStatus;
+    }
+
+    public void setFollowUpStatus(boolean followUpStatus) {
+        this.followUpStatus = followUpStatus;
+    }
+
+    public String getFollowUpTimeStamp() {
+        return followUpTimeStamp;
+    }
+
+    public void setFollowUpTimeStamp(String followUpTimeStamp) {
+        this.followUpTimeStamp = followUpTimeStamp;
     }
 }

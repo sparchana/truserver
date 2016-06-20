@@ -98,6 +98,10 @@ POST     /getSearchCandidateResult                                controllers.Ap
 
 GET      /privacy                                                 controllers.Application.privacy()
 
+POST     /addOrUpdateFollowUp                                     controllers.Application.addOrUpdateFollowUp()
+
+GET     /getInteractionNote/:leadId/:limit                        controllers.Application.getInteractionNote(leadId: Long,limit: Long)
+
 # Map static resources from the /public folder to the /assets URL path
 GET    /robots.txt                                controllers.Assets.at(path="/public", file="robots.txt")
 GET    /assets/*file                             controllers.Assets.at(path="/public", file)

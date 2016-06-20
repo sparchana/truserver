@@ -44,8 +44,8 @@ public class SmsUtil {
 
     public static void sendTryingToCallSms(String mobile) {
 
-        String msg = "Hello! We tried calling you from www.TruJobs.in to help you with your job search. "
-        + "We will try again in sometime or you can reach us on 888007799";
+        String msg = "Hello! We tried calling you from www.TruJobs.in to help you with job search. "
+        + "We will try again in sometime or you can call us on 8880007799";
 
         sendSms(mobile, msg);
 
