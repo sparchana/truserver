@@ -245,9 +245,11 @@
         </div>
         <div>
             <div id="sectionOne">
-                <div id="fixed-menu" >
-                    <div id="leadFormText" style="display: inline-block"><input style="color: black; height: 26px" id="addLeadMobile" pattern="[7-9]{1}[0-9]{9}" maxlength="10" class="form-control input-md" type="text" placeholder="Enter mobile no."></div>
-                    <div style="display: inline-block"><button type="button" style=" height: 26px; width: 100px; " class="btn btn-add-lead" onclick="addLead()"><b>Find a Job now</b></button></div>
+                <div id="fixed-menu" style="padding-bottom: 8px; padding-top: 4px" >
+                    <div id="leadFormBox" class="input-group">
+                        <input type="text" class="form-control" placeholder="Enter mobile number" id="addLeadMobile" pattern="[7-9]{1}[0-9]{9}" maxlength="10">
+                        <button class="btn btn-default" type="button" onclick="addLead()" id="addLeadMobileButton" class="btn btn-add-lead">Find Job Now</button>
+                    </div>
                 </div>
 
                 <font color="white">

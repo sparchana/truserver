@@ -100,7 +100,7 @@ function prePopulateJobSection(jobApplication) {
     divJobDetail.appendChild(jobDetailSalaryRow);
 
     var divMinSalaryCol = document.createElement("div");
-    divMinSalaryCol.className = "col-lg-3";
+    divMinSalaryCol.className = "col-lg-4";
     divMinSalaryCol.textContent = "Salary: ₹" + jobApplication.jobPost.jobPostMinSalary + " - ₹" + jobApplication.jobPost.jobPostMaxSalary + " monthly";
     jobDetailSalaryRow.appendChild(divMinSalaryCol);
 
@@ -110,7 +110,7 @@ function prePopulateJobSection(jobApplication) {
     jobDetailSalaryRow.appendChild(divExpCol);
 
     var divLocCol = document.createElement("div");
-    divLocCol.className = "col-lg-6";
+    divLocCol.className = "col-lg-5";
     var localityList = jobApplication.jobPost.jobPostToLocalityList;
     var localities = "";
     var loopCount = 0;
