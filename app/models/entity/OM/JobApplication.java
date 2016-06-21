@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
 import models.entity.JobPost;
+import models.entity.Static.ScreeningStatus;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -20,7 +21,7 @@ public class JobApplication extends Model {
     @Column(name = "JobApplicationId", columnDefinition = "int signed", unique = true)
     private Integer jobApplicationId;
 
-    @Column(name = "JobApplicationCreateTimeStamp", columnDefinition = "timestamp null")
+    @Column(name = "JobApplicationCreateTimeStamp", columnDefinition = "timestamp not null")
     private Timestamp jobApplicationCreateTimeStamp = new Timestamp(System.currentTimeMillis());
 
     @ManyToOne
@@ -29,9 +30,18 @@ public class JobApplication extends Model {
     private JobPost jobPost;
 
     @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "ScreeningStatusId", referencedColumnName = "ScreeningStatusId")
+    private ScreeningStatus screeningStatus;
+
+    @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "CandidateId", referencedColumnName = "CandidateId")
     private Candidate candidate;
+
+    public JobApplication() {
+        this.jobApplicationCreateTimeStamp = new Timestamp(System.currentTimeMillis());
+    }
 
     public static Model.Finder<String, JobApplication> find = new Model.Finder(JobApplication.class);
 

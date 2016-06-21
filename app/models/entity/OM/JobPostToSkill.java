@@ -20,7 +20,10 @@ public class JobPostToSkill extends Model {
     @Column(name = "JobPostToSkillId", columnDefinition = "bigint signed not null", unique = true)
     private Long jobPostToSkillId;
 
-    @Column(name = "JobPostToSkillUpdateTimeStamp", columnDefinition = "timestamp null")
+    @Column(name = "JobPostToSkillCreateTimeStamp", columnDefinition = "timestamp not null")
+    private Timestamp jobPostToSkillCreateTimeStamp = new Timestamp(System.currentTimeMillis());
+
+    @Column(name = "JobPostToSkillUpdateTimeStamp", columnDefinition = "timestamp not null")
     private Timestamp jobPostToSkillUpdateTimeStamp = new Timestamp(System.currentTimeMillis());
 
     @ManyToOne

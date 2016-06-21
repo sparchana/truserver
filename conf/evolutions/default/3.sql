@@ -7,9 +7,11 @@ create table company (
 	companyemployeecount          int signed null,
 	companywebsite                varchar(30) null,
 	companydescription            varchar(500) null,
+	companyaddress                varchar(1000) null,
+	companypincode                bigint signed null,
 	companylogo                   varchar(80) null,
-	companycreatetimestamp        timestamp null,
-	companyupdatetimestamp        timestamp null,
+	companycreatetimestamp        timestamp not null,
+	companyupdatetimestamp        timestamp not null,
 	companylocality               bigint signed,
 	comptype                      bigint signed,
 	compstatus                    bigint signed,
@@ -36,37 +38,54 @@ create table experience (
 
 create table jobapplication (
 	jobapplicationid              int signed auto_increment not null,
-	jobapplicationcreatetimestamp timestamp null,
+	jobapplicationcreatetimestamp timestamp not null,
 	jobpostid                     bigint signed,
+	screeningstatusid             bigint signed,
 	candidateid                   bigint signed,
 	constraint pk_jobapplication primary key (jobapplicationid)
+);
+
+create table jobbenefit (
+	jobbenefitid                  bigint signed auto_increment not null,
+	jobbenefitname                varchar(20) not null,
+	constraint pk_jobbenefit primary key (jobbenefitid)
 );
 
 create table jobpost (
 	jobpostid                     bigint signed auto_increment not null,
 	jobpostuuid                   varchar(255) not null,
 	jobpostcreatetimestamp        timestamp not null,
-	jobpostupdatetimestamp        timestamp null,
+	jobpostupdatetimestamp        timestamp not null,
 	jobpostminsalary              bigint signed null,
 	jobpostmaxsalary              bigint signed null,
 	jobpoststarttime              time null,
 	jobpostendtime                time null,
-	jobpostbenefitpf              int signed null,
-	jobpostbenefitfuel            int signed null,
-	jobpostbenefitinsurance       int signed null,
+	jobpostishot                  int signed null,
 	jobpostdescription            varchar(1000) null,
 	jobposttitle                  varchar(100) null,
+	jobpostincentives             varchar(1000) null,
+	jobpostminrequirement         varchar(1000) null,
+	jobpostaddress                varchar(1000) null,
+	jobpostpincode                bigint signed null,
 	jobpostvacancy                bigint signed null,
 	jobpostdescriptionaudio       varchar(100) null,
 	jobpostworkfromhome           int signed null,
-	jobpostworkingdays            binary(7) null,
 	jobstatus                     bigint signed,
+	pricingplantype               bigint signed,
 	jobpostjobrole                bigint signed,
 	companyid                     bigint signed,
 	jobshiftid                    int signed,
 	jobexperienceid               bigint signed,
 	jobeducationid                int signed,
 	constraint pk_jobpost primary key (jobpostid)
+);
+
+create table jobposttobenefits (
+	jobposttobenefitsid           bigint signed not null auto_increment not null,
+	jobposttobenefitsupdatetimestamp timestamp null,
+	jobbenefitid                  bigint signed,
+	jobpostid                     bigint signed,
+	constraint pk_jobposttobenefits primary key (jobposttobenefitsid)
 );
 
 create table jobposttolocality (
@@ -79,7 +98,8 @@ create table jobposttolocality (
 
 create table jobposttoskill (
 	jobposttoskillid              bigint signed not null auto_increment not null,
-	jobposttoskillupdatetimestamp timestamp null,
+	jobposttoskillcreatetimestamp timestamp not null,
+	jobposttoskillupdatetimestamp timestamp not null,
 	jobpostid                     bigint signed,
 	skillid                       int signed,
 	constraint pk_jobposttoskill primary key (jobposttoskillid)
@@ -90,6 +110,39 @@ create table jobstatus (
 	jobstatusname                 varchar(20) not null,
 	constraint pk_jobstatus primary key (jobstatusid)
 );
+
+create table pricingplantype (
+	pricingplantypeid             bigint signed auto_increment not null,
+	pricingplantypename           varchar(20) not null,
+	constraint pk_pricingplantype primary key (pricingplantypeid)
+);
+
+create table recruiterprofile (
+	recruiterprofileid            bigint signed auto_increment not null,
+	recruiterprofileuuid          varchar(255) not null,
+	recruiterprofilename          varchar(50) not null,
+	recruiterprofilemobile        varchar(13) not null,
+	recruiterprofilelandline      varchar(13) not null,
+	recruiterprofilepin           int signed null,
+	recruiterprofileemail         varchar(255) null,
+	recruiterprofilecreatetimestamp timestamp not null,
+	recruiterprofileupdatetimestamp timestamp not null,
+	recstatus                     bigint signed,
+	constraint pk_recruiterprofile primary key (recruiterprofileid)
+);
+
+create table recruiterstatus (
+	recruiterstatusid             bigint signed auto_increment not null,
+	recruiterstatusname           varchar(20) not null,
+	constraint pk_recruiterstatus primary key (recruiterstatusid)
+);
+
+create table screeningstatus (
+	screeningstatusid             bigint signed auto_increment not null,
+	screeningstatusname           varchar(20) not null,
+	constraint pk_screeningstatus primary key (screeningstatusid)
+);
+
 
 alter table company add constraint fk_company_companylocality foreign key (companylocality) references locality (localityid) on delete restrict on update restrict;
 create index ix_company_companylocality on company (companylocality);
@@ -103,11 +156,17 @@ create index ix_company_compstatus on company (compstatus);
 alter table jobapplication add constraint fk_jobapplication_jobpostid foreign key (jobpostid) references jobpost (jobpostid) on delete restrict on update restrict;
 create index ix_jobapplication_jobpostid on jobapplication (jobpostid);
 
+alter table jobapplication add constraint fk_jobapplication_screeningstatusid foreign key (screeningstatusid) references screeningstatus (screeningstatusid) on delete restrict on update restrict;
+create index ix_jobapplication_screeningstatusid on jobapplication (screeningstatusid);
+
 alter table jobapplication add constraint fk_jobapplication_candidateid foreign key (candidateid) references candidate (candidateid) on delete restrict on update restrict;
 create index ix_jobapplication_candidateid on jobapplication (candidateid);
 
 alter table jobpost add constraint fk_jobpost_jobstatus foreign key (jobstatus) references jobstatus (jobstatusid) on delete restrict on update restrict;
 create index ix_jobpost_jobstatus on jobpost (jobstatus);
+
+alter table jobpost add constraint fk_jobpost_pricingplantype foreign key (pricingplantype) references pricingplantype (pricingplantypeid) on delete restrict on update restrict;
+create index ix_jobpost_pricingplantype on jobpost (pricingplantype);
 
 alter table jobpost add constraint fk_jobpost_jobpostjobrole foreign key (jobpostjobrole) references jobrole (jobroleid) on delete restrict on update restrict;
 create index ix_jobpost_jobpostjobrole on jobpost (jobpostjobrole);
@@ -124,6 +183,12 @@ create index ix_jobpost_jobexperienceid on jobpost (jobexperienceid);
 alter table jobpost add constraint fk_jobpost_jobeducationid foreign key (jobeducationid) references education (educationid) on delete restrict on update restrict;
 create index ix_jobpost_jobeducationid on jobpost (jobeducationid);
 
+alter table jobposttobenefits add constraint fk_jobposttobenefits_jobbenefitid foreign key (jobbenefitid) references jobbenefit (jobbenefitid) on delete restrict on update restrict;
+create index ix_jobposttobenefits_jobbenefitid on jobposttobenefits (jobbenefitid);
+
+alter table jobposttobenefits add constraint fk_jobposttobenefits_jobpostid foreign key (jobpostid) references jobpost (jobpostid) on delete restrict on update restrict;
+create index ix_jobposttobenefits_jobpostid on jobposttobenefits (jobpostid);
+
 alter table jobposttolocality add constraint fk_jobposttolocality_localityid foreign key (localityid) references locality (localityid) on delete restrict on update restrict;
 create index ix_jobposttolocality_localityid on jobposttolocality (localityid);
 
@@ -135,6 +200,9 @@ create index ix_jobposttoskill_jobpostid on jobposttoskill (jobpostid);
 
 alter table jobposttoskill add constraint fk_jobposttoskill_skillid foreign key (skillid) references skill (skillid) on delete restrict on update restrict;
 create index ix_jobposttoskill_skillid on jobposttoskill (skillid);
+
+alter table recruiterprofile add constraint fk_recruiterprofile_recstatus foreign key (recstatus) references recruiterstatus (recruiterstatusid) on delete restrict on update restrict;
+create index ix_recruiterprofile_recstatus on recruiterprofile (recstatus);
 
 # --- !Downs
 
@@ -150,11 +218,17 @@ drop index ix_company_compstatus on company;
 alter table jobapplication drop foreign key fk_jobapplication_jobpostid;
 drop index ix_jobapplication_jobpostid on jobapplication;
 
+alter table jobapplication drop foreign key fk_jobapplication_screeningstatusid;
+drop index ix_jobapplication_screeningstatusid on jobapplication;
+
 alter table jobapplication drop foreign key fk_jobapplication_candidateid;
 drop index ix_jobapplication_candidateid on jobapplication;
 
 alter table jobpost drop foreign key fk_jobpost_jobstatus;
 drop index ix_jobpost_jobstatus on jobpost;
+
+alter table jobpost drop foreign key fk_jobpost_pricingplantype;
+drop index ix_jobpost_pricingplantype on jobpost;
 
 alter table jobpost drop foreign key fk_jobpost_jobpostjobrole;
 drop index ix_jobpost_jobpostjobrole on jobpost;
@@ -171,6 +245,12 @@ drop index ix_jobpost_jobexperienceid on jobpost;
 alter table jobpost drop foreign key fk_jobpost_jobeducationid;
 drop index ix_jobpost_jobeducationid on jobpost;
 
+alter table jobposttobenefits drop foreign key fk_jobposttobenefits_jobbenefitid;
+drop index ix_jobposttobenefits_jobbenefitid on jobposttobenefits;
+
+alter table jobposttobenefits drop foreign key fk_jobposttobenefits_jobpostid;
+drop index ix_jobposttobenefits_jobpostid on jobposttobenefits;
+
 alter table jobposttolocality drop foreign key fk_jobposttolocality_localityid;
 drop index ix_jobposttolocality_localityid on jobposttolocality;
 
@@ -183,7 +263,8 @@ drop index ix_jobposttoskill_jobpostid on jobposttoskill;
 alter table jobposttoskill drop foreign key fk_jobposttoskill_skillid;
 drop index ix_jobposttoskill_skillid on jobposttoskill;
 
-
+alter table recruiterprofile drop foreign key fk_recruiterprofile_recstatus;
+drop index ix_recruiterprofile_recstatus on recruiterprofile;
 
 drop table if exists company;
 
@@ -195,7 +276,11 @@ drop table if exists experience;
 
 drop table if exists jobapplication;
 
+drop table if exists jobbenefit;
+
 drop table if exists jobpost;
+
+drop table if exists jobposttobenefits;
 
 drop table if exists jobposttolocality;
 
@@ -203,3 +288,8 @@ drop table if exists jobposttoskill;
 
 drop table if exists jobstatus;
 
+drop table if exists pricingplantype;
+
+drop table if exists recruiterprofile;
+
+drop table if exists recruiterstatus;
