@@ -4,12 +4,14 @@ import api.ServerConstants;
 import api.http.httpRequest.*;
 import api.http.httpResponse.AddLeadResponse;
 import api.http.httpResponse.SupportDashboardElementResponse;
+import api.http.httpResponse.SupportInteractionNoteResponse;
 import api.http.httpResponse.SupportInteractionResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.AuthService;
 import controllers.businessLogic.CandidateService;
 import controllers.businessLogic.JobService;
+import controllers.businessLogic.FollowUpService;
 import controllers.businessLogic.LeadService;
 import models.entity.*;
 import models.entity.OM.JobToSkill;
@@ -19,6 +21,7 @@ import models.util.ParseCSV;
 import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
+import play.cache.Cached;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -28,10 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static play.libs.Json.toJson;
@@ -95,6 +95,8 @@ public class Application extends Controller {
                     case 3: response.setUserInteractionType("Incoming SMS"); break;
                     case 4: response.setUserInteractionType("Out Going SMS"); break;
                     case 5: response.setUserInteractionType("Website Interaction"); break;
+                    case 6: response.setUserInteractionType("Follow Up Call"); break;
+                    default: response.setUserInteractionType("Interaction Undefined in getCandidateInteraction()"); break;
                 }
                 responses.add(response);
             }
@@ -311,15 +313,14 @@ public class Application extends Controller {
                         .findList();
                 break;
             case 3: // get all
-                allLead = Lead.find.where()
-                        .ne("leadStatus", ServerConstants.LEAD_STATUS_LOST)
-                        .findList();
+                allLead = Lead.find.all();
                 break;
         }
 
         ArrayList<SupportDashboardElementResponse> responses = new ArrayList<>();
 
         SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT);
+        SimpleDateFormat sfdFollowUp = new SimpleDateFormat(ServerConstants.SDF_FORMAT_FOLLOWUP);
 
         //getting leadUUID from allLead
         List<String> leadUUIDList = allLead.stream().map(Lead::getLeadUUId).collect(Collectors.toList());
@@ -365,6 +366,10 @@ public class Application extends Controller {
             }
             response.setLastIncomingCallTimestamp(sfd.format(mostRecent));
             response.setTotalInBounds(mTotalInteraction);
+            if(lead.getFollowUp() != null && lead.getFollowUp().getFollowUpTimeStamp()!= null){
+                response.setFollowUpStatus(lead.getFollowUp().isFollowUpStatusRequired());
+                response.setFollowUpTimeStamp(sfdFollowUp.format(lead.getFollowUp().getFollowUpTimeStamp()));
+            }
             responses.add(response);
         }
 
@@ -595,10 +600,10 @@ public class Application extends Controller {
                     }
                     Logger.info("updateLeadStatus invoked leadId:"+leadId+" status:" + leadStatus);
                     lead.update();
-                    interactionNote = ServerConstants.INTERACTION_NOTE_LEAD_STATUS_CHANGED;
+                    interactionNote = ServerConstants.INTERACTION_NOTE_BLANK;
 
                 } else {
-                    interactionNote = ServerConstants.INTERACTION_NOTE_CALL_OUTBOUNDS;
+                    interactionNote = ServerConstants.INTERACTION_NOTE_BLANK;
                 }
 
                 // If call was connected just set the right interaction result
@@ -647,39 +652,54 @@ public class Application extends Controller {
         List<JobPost> jobPosts = JobPost.find.findList();
         return ok(toJson(jobPosts));
     }
+    @Cached(key= "allLocalities")
     public static Result getAllLocality() {
         List<Locality> localities = Locality.find.findList();
         return ok(toJson(localities));
     }
+
+    @Cached(key= "allJobs")
     public static Result getAllJobs() {
         List<JobRole> jobs = JobRole.find.findList();
         return ok(toJson(jobs));
     }
+
+    @Cached(key= "allShifts")
     @Security.Authenticated(Secured.class)
     public static Result getAllShift() {
         List<TimeShift> timeShifts = TimeShift.find.findList();
         return ok(toJson(timeShifts));
     }
+
+    @Cached(key= "allTransportModes")
     @Security.Authenticated(Secured.class)
     public static Result getAllTransportation() {
         List<TransportationMode> transportationModes = TransportationMode.find.findList();
         return ok(toJson(transportationModes));
     }
+
+    @Cached(key= "allEducation")
     @Security.Authenticated(Secured.class)
     public static Result getAllEducation() {
         List<Education> educations = Education.find.findList();
         return ok(toJson(educations));
     }
+
+    @Cached(key= "allLanguages")
     @Security.Authenticated(Secured.class)
     public static Result getAllLanguage() {
         List<Language> languages = Language.find.findList();
         return ok(toJson(languages));
     }
+
+    @Cached(key= "allIDProof")
     @Security.Authenticated(Secured.class)
     public static Result getAllIdProof() {
         List<IdProof> idProofs = IdProof.find.findList();
         return ok(toJson(idProofs));
     }
+
+    @Cached(key= "allDegree")
     @Security.Authenticated(Secured.class)
     public static Result getAllDegree() {
         List<Degree> degreeList = Degree.find.findList();
@@ -727,5 +747,66 @@ public class Application extends Controller {
             return ok(toJson(agentMobile));
         }
         return ok("0");
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result addOrUpdateFollowUp() {
+        JsonNode followUp = request().body().asJson();
+        if(followUp == null){
+            return badRequest();
+        }
+        AddOrUpdateFollowUpRequest addOrUpdateFollowUpRequest = new AddOrUpdateFollowUpRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addOrUpdateFollowUpRequest = newMapper.readValue(followUp.toString(), AddOrUpdateFollowUpRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Logger.info("addOrUpdateFollowUp: " + addOrUpdateFollowUpRequest.getLeadMobile() + " createTimeStamp: " + addOrUpdateFollowUpRequest.getFollowUpDateTime());
+        return ok(toJson(FollowUpService.CreateOrUpdateFollowUp(addOrUpdateFollowUpRequest)));
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result getInteractionNote(Long leadId, Long limit) {
+        Lead lead = Lead.find.where().eq("leadId",leadId).findUnique();
+        if(lead !=null){
+            List<Interaction> fullInteractionList = Interaction.find.where()
+                    .eq("objectAUUId", lead.getLeadUUId())
+                    .ne("note", "")
+                    .findList();
+
+            // fetch candidate interaction as well
+            Candidate candidate = Candidate.find.where().eq("lead_leadId", leadId).findUnique();
+            if(candidate != null){
+                List<Interaction> candidateInteractionList = Interaction.find.where()
+                        .eq("objectAUUId", candidate.getCandidateUUId())
+                        .ne("note", "")
+                        .findList();
+                fullInteractionList.addAll(candidateInteractionList);
+            }
+
+            List<SupportInteractionNoteResponse> responses = new ArrayList<>();
+
+            SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT_FOLLOWUP);
+            //latest timestamp on top
+            Collections.sort(fullInteractionList,  (o1, o2) -> o2.getCreationTimestamp().compareTo(o1.getCreationTimestamp()));
+            int lastTenRecords = 0;
+            for(Interaction interaction : fullInteractionList){
+                if(interaction.getNote() != null){
+                    lastTenRecords++;
+                    SupportInteractionNoteResponse response = new SupportInteractionNoteResponse();
+                    response.setInteractionId(interaction.getId());
+                    response.setUserInteractionTimestamp(sfd.format(interaction.getCreationTimestamp()));
+                    response.setUserNote(interaction.getNote());
+                    responses.add(response);
+                }
+                if(lastTenRecords >= limit){
+                    break;
+                }
+            }
+            return ok(toJson(responses));
+        }
+        else
+            return ok("no records");
     }
 }

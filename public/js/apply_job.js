@@ -38,18 +38,18 @@ function addJobPost(){
     }
     try {
         var d = {
-            jobPostMinSalary: 2500,
-            jobPostMaxSalary: 3000,
+            jobPostMinSalary: 20000,
+            jobPostMaxSalary: 25000,
             jobPostStartTime: startTime,
             jobPostEndTime: startTime,
             jobPostBenefitPf: 1,
             jobPostBenefitFuel: 1,
             jobPostBenefitInsurance: 1,
             jobPostWorkFromHome: 1,
-            jobPostDescription: "Asdajsdknasd",
-            jobPostTitle: "Title",
+            jobPostDescription: "This is a test job",
+            jobPostTitle: "Delivery boy executive at test",
             jobPostVacancy: 15,
-            jobPostDescriptionAudio: "asdasdas",
+            jobPostDescriptionAudio: "Delivery boy executive at test",
             jobPostLocality: jobPostLocality
         };
         $.ajax({

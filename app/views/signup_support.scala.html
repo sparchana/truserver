@@ -4,479 +4,565 @@
   <head>
     <meta charset="UTF-8">
     <title>Create Candidate - Support | Trujobs.in</title>
+          <!-- Material Design Lite -->
+      <link rel="stylesheet" href="/assets/support/css/material.indigo-pink.min.css">
+
       <link rel="stylesheet" href="/assets/support/css/bootstrap.min.css">
 
       <script type="text/javascript" src="/assets/support/js/jquery-1.12.0.min.js"></script>
       <link rel="stylesheet" href="/assets/css/token-input.css" type="text/css" />
       <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
+
       <link rel="stylesheet" href="/assets/support/css/style.css">
       <link rel="stylesheet" type="text/css" href="/assets/new/css/myStyle.css">
       <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/dashboard.css">
+
+      <link rel="stylesheet" href="/assets/support/css/bootstrap-datetimepicker.min.css">
+      <script type="text/javascript" src="/assets/support/js/Moment.js"></script>
+
       <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lato" />
       <link rel="stylesheet" href="/assets/support/css/nprogress.css">
+      <link rel="stylesheet" href="/assets/support/css/animate.css">
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
       <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
-      <script type="text/javascript" src="/assets/support/js/sign_up_support.js"></script>
+    <script type="text/javascript" src="/assets/support/js/sign_up_support.js"></script>
+
+    <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
+    <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css">
+
+      <!-- Material Design Lite -->
+      <script type="text/javascript" src="/assets/support/js/material.min.js"></script>
+      <!-- Material Design icon font -->
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
   </head>
 
   <body style="font-size: 13px;">
     <div class="container">
-      <h2> Create Candidate Admin:&nbsp;<a href="/logout"><button class="btn btn-danger" style="align-items: flex-end"> Logout</button></a></h2>
-      <br>
-      <h4 id="callConfirmation">Call Connected? :&nbsp;
-        <input type="radio" name="callConnected" id="callYes" value="yes" onclick="onCallYes(@id)">&nbsp;Yes&nbsp;
-        <input type="radio" name="callConnected" id="callNo" value="no" onclick="onCallNo(@id)">&nbsp;No
-      </h4>
 
-      <div id="callNoClass" style="display: none">
-        <h5>Reason?:
-          <select id="callResponse" class="selectDropdown" >
-            <option value="busy">Busy</option>
-            <option value="not_reachable">Not Reachable</option>
-            <option value="not_answering">Not Answering</option>
-            <option value="switched_off">Switched Off</option>
-            <option value="dnd">DND</option>
-            <option value="recruiter">Recruiter</option>
-            <option value="third_person">Third Person</option>
-            <option value="others">Others</option>
-          </select>
+        <h2> Create Candidate Admin:&nbsp;<a href="/logout"><button class="btn btn-danger" style="align-items: flex-end"> Logout</button></a></h2>
+        <br>
+        <h4 id="callConfirmation">Call Connected? :&nbsp;
+            <input type="radio" name="callConnected" id="callYes" value="yes" onclick="onCallYes(@id)">&nbsp;Yes&nbsp;
+            <input type="radio" name="callConnected" id="callNo" value="no" onclick="onCallNo(@id)">&nbsp;No
+        </h4>
 
-          <button type="submit" id="responseSaveBtn"  class="btn btn-primary" onclick="saveResponse(@id)">Save</button>
-        </h5>
-      </div>
-
-      <hr>
-      <form id="candidateSignUpSupportForm">
-        <div style="margin-left: 20%; margin-right: 20%">
-          <h3>Candidate Registration Form:</h3>
-          <hr>
-          <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Mandatory Details</h4>
-          <div class="row">
-            <div class="col-sm-3"><h5>Candidate First Name:</h5></div>
-            <div class="col-sm-9">
-              <input id="candidateFirstName" name="candidateFirstName" placeholder="What is your First name?" type="text" class="form-control input-md" >
-            </div>
-          </div>
-
-          <div class="row" style="margin-top: 4px">
-            <div class="col-sm-3"><h5>Candidate Last Name:</h5></div>
-            <div class="col-sm-9">
-              <input id="candidateSecondName" name="candidateSecondName" placeholder="What is your Last name?" type="text" class="form-control input-md" >
-            </div>
-          </div>
-
-          <div class="row" style="margin-top: 4px">
-            <div class="col-sm-3"><h5>Candidate Mobile:</h5></div>
-            <div class="col-sm-9">
-              <input id="candidateMobile" placeholder="What is your mobile no.?" name="candidateMobile" type="text" maxlength="10" class="form-control input-md" >
-            </div>
-          </div>
-
-          <div class="row" style="margin-top: 4px">
-            <div class="col-sm-3"><h5>Job Role Preference:</h5></div>
-            <div class="col-sm-9">
-              <input type="text" id="candidateJobPref" >
-              <script type="text/javascript">
-                  $(document).ready(function() {
-                    $("#candidateJobPref").tokenInput(getJob(), {
-                      theme: "facebook",
-                      placeholder: "What job roles are you interested?",
-                      hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-                      minChars: 0,
-                      tokenLimit: 3,
-                      prePopulate: jobPrefArray,
-                      preventDuplicates: true
-                    });
-                      generateSkills();
-                  });
-              </script>
-            </div>
-          </div>
-
-          <div class="row" style="margin-top: 4px">
-            <div class="col-sm-3"><h5>Locality Preference:</h5></div>
-            <div class="col-sm-9">
-              <input type="text" id="candidateLocalityPref" placeholder="Where do you want to work?">
-              <script type="text/javascript">
-                      $(document).ready(function() {
-                        $("#candidateLocalityPref").tokenInput(getLocality(), {
-                          theme: "facebook",
-                          placeholder: "Where do you want to work?",
-                          hintText: "Start typing Area (eg. BTM Layout, Bellandur..)",
-                          minChars: 0,
-                          tokenLimit: 3,
-                          prePopulate: localityPrefArray,
-                          preventDuplicates: true
-                        });
-                      });
-              </script>
-            </div>
-          </div>
-
-          <hr>
-
-          <div class="row" style="margin-top: 4px">
-            <div class="col-sm-3"><h5>How did you find out about Us :</h5></div>
-            <div class="col-sm-9" style="margin-top: 6px;">
-              <select id="leadSource">
-              </select>
-            </div>
-          </div>
-
-          <hr>
-            <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Basic Details</h4>
-            <div id="basic_details">
-              <div class="row">
-                <div class="col-sm-3"><h5>Date of Birth:</h5></div>
-                <div class="col-sm-9">
-                  <input id="candidateDob" name="candidateDob" placeholder="When is your Birthday?" type="date" class="form-control input-md"  data-date-inline-picker="true"/>
-                </div>
-              </div>
-
-              <div class="row" style="margin-top: 4px">
-                <div class="col-sm-3"><h5>Phone Type:</h5></div>
-                <div class="col-sm-9">
-                  <input id="candidatePhoneType" placeholder="Which phone do you use? (Eg. Samsung Galaxy S3)" type="text" class="form-control input-md">
-                </div>
-              </div>
-
-              <div class="row" style="margin-top: 4px">
-                <div class="col-sm-3"><h5>Candidate Gender:</h5></div>
-                <div class="col-sm-9" style="margin-top: 6px;">
-                  <input type="radio" name="gender" id="genderMale" value="0">&nbsp;Male&nbsp;&nbsp;
-                  <input type="radio" name="gender" id="genderFemale" value="1">&nbsp;Female
-                </div>
-              </div>
-
-              <div class="row" style="margin-top: 4px">
-                <div class="col-sm-3"><h5>Current Location:</h5></div>
-                <div class="col-sm-9">
-                  <input type="text" id="candidateHomeLocality">
-                  <script type="text/javascript">
-                  $(document).ready(function() {
-                    $("#candidateHomeLocality").tokenInput(getLocality(), {
-                      theme: "facebook",
-                      placeholder: "Where do you Live?",
-                      hintText: "Start typing jobs (eg. BTM Layout, Bellandur..)",
-                      minChars: 0,
-                      prePopulate: currentLocationArray,
-                      tokenLimit: 1,
-                      preventDuplicates: true
-                    });
-                  });
-                  </script>
-                </div>
-              </div>
-
-              <div class="row" style="margin-top: 4px">
-                <div class="col-sm-3"><h5>Married?:</h5></div>
-                <div class="col-sm-9" style="margin-top: 6px;">
-
-                  <input type="radio" name="married" id="married" value="0">&nbsp;Married&nbsp;&nbsp;
-                  <input type="radio" name="married" id="marriedNot" value="1">&nbsp;Not Married
-                </div>
-              </div>
-
-              <div class="row" style="margin-top: 4px">
-                <div class="col-sm-3"><h5>Candidate Email:</h5></div>
-                <div class="col-sm-9">
-                  <input id="candidateEmail" placeholder="What is your email ID?" name="candidateEmail" type="email" class="form-control input-md">
-                </div>
-              </div>
-            </div>
-
-          <hr>
-          <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Employment Status and Experience</h4>
-          <div id="">
-              <div class="row" style="margin-top: 4px">
-                  <div class="col-sm-3"><h5>Your Work Experience:</h5></div>
-                  <div class="col-sm-9">
-                      <div class="btn-group" data-toggle="buttons">
-                          <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickFresher()">
-                              <input type="radio" name="workExperience" id="fresher" value="0">Fresher
-                          </label>
-                          <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickExperienced()">
-                              <input type="radio" name="workExperience" id="experienced" value="1">Experienced
-                          </label>
-                      </div>
-                  </div>
-              </div>
-
-              <div class="row" id="totalWorkExperience" style="display: none; margin-top: 4px">
-                  <div class="col-sm-3"><h5>Total Experience:</h5></div>
-                  <div class="col-sm-9">
-                      <input id="candidateTotalExperienceYear" value="0" style="width: 15%; display: inline-block" placeholder="Years" type="number" class="form-control input-md">&nbsp;Years&nbsp;&nbsp;
-                      <input id="candidateTotalExperienceMonth" value="0" style="width: 15%; display: inline-block" placeholder="Months" type="number" min="0" max="11" step="1"  class="form-control input-md">&nbsp; Months
-                  </div>
-              </div>
-              
-            <div class="row" style="margin-top: 4px">
-              <div class="col-sm-3"><h5>Do you have a Job?:</h5></div>
-              <div class="col-sm-9" style="margin-top: 6px;">
-                <input type="radio" name="employed" id="employed" value="1" onclick="employedYes()">&nbsp;Yes&nbsp;&nbsp;
-                <input type="radio" name="employed" id="employedNot" value="0" onclick="employedNo()">&nbsp;No
-              </div>
-            </div>
-
-            <div id="employedForm" style="display: none">
-
-              <div class="row" style="margin-top: 4px">
-                <div class="col-sm-3"><h5>Current Company:</h5></div>
-                <div class="col-sm-9">
-                  <input id="candidateCurrentCompany" placeholder="What is your Company name?" type="text" class="form-control input-md">
-                </div>
-              </div>
-
-              <div class="row" style="margin-top: 8px">
-                <div class="col-sm-3"><h5>Current Job Location:</h5></div>
-                <div class="col-sm-9">
-                  <input type="text" id="candidateCurrentJobLocation" >
-                  <script type="text/javascript">
-                  $(document).ready(function() {
-                    $("#candidateCurrentJobLocation").tokenInput(getLocality(), {
-                      theme: "facebook",
-                      placeholder: "Office Location",
-                      minChars: 0,
-                      prePopulate: currentJobLocationArray,
-                      tokenLimit: 1,
-                      preventDuplicates: true
-                    });
-                  });
-                  </script>
-                </div>
-              </div>
-
-              <div class="row" style="margin-top: 4px">
-                <div class="col-sm-3"><h5>Current Job Role:</h5></div>
-                <div class="col-sm-9">
-                  <input type="text" id="candidateCurrentJobRole" >
-                  <script type="text/javascript">
-                          $(document).ready(function() {
-                            $("#candidateCurrentJobRole").tokenInput(getJob(), {
-                              theme: "facebook",
-                              placeholder: "Current Jobrole?",
-                              minChars: 0,
-                              tokenLimit: 1,
-                              prePopulate: currentJobRoleArray,
-                              preventDuplicates: true
-                            });
-                          });
-                  </script>
-                </div>
-              </div>
-
-              <div class="row" style="margin-top: 4px">
-                <div class="col-sm-3"><h5>Current Job Designation:</h5></div>
-                <div class="col-sm-9">
-                  <input id="candidateCurrentJobDesignation" placeholder="What is your Designation?" type="text" class="form-control input-md">
-                </div>
-              </div>
-
-              <div class="row" style="margin-top: 4px">
-                <div class="col-sm-3"><h5>Current Job Salary:</h5></div>
-                <div class="col-sm-9">
-                  <input id="candidateCurrentJobSalary" placeholder="What is your current Salary?" type="number" class="form-control input-md">
-                </div>
-              </div>
-
-              <div class="row" style="margin-top: 4px">
-                <div class="col-sm-3"><h5>Current Job Duration:</h5></div>
-                <div class="col-sm-9">
-                  <input id="candidateCurrentJobDurationYear" value="0" style="width: 15%; display: inline-block" placeholder="Years" type="number" class="form-control input-md">&nbsp;Years&nbsp;&nbsp;
-                  <input id="candidateCurrentJobDurationMonth"  value="0" style="width: 15%; display: inline-block"  type="number" min="0" max="11" step="1" placeholder="Months" class="form-control input-md" >&nbsp; Months
-                </div>
-              </div>
-
-              <div class="row" style="margin-top: 4px">
-                <div class="col-sm-3"><h5>Mode of Transport:</h5></div>
-                <div class="col-sm-9" style="margin-top: 8px">
-                  <select id="selectTransportation" class="selectDropdown" >
-
-                  </select>
-                </div>
-              </div>
-
-              <div class="row" style="margin-top: 4px">
-                <div class="col-sm-3"><h5>Current work shift?: </h5></div>
-                <div class="col-sm-9" style="margin-top: 8px">
-                  <select id="currentWorkShift" class="selectDropdown" >
-
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div class="row" style="margin-top: 4px">
-              <div class="col-sm-3"><h5>Past Company:</h5></div>
-              <div class="col-sm-9">
-                  <input id="candidatePastCompany" placeholder="What was your previous company Name?" type="text" class="form-control input-md">
-              </div>
-            </div>
-
-            <div class="row" style="margin-top: 4px">
-              <div class="col-sm-3"><h5>Past Job Role:</h5></div>
-              <div class="col-sm-9">
-                <input type="text" id="candidatePastJobRole" >
-                <script type="text/javascript">
-                        $(document).ready(function() {
-                          $("#candidatePastJobRole").tokenInput(getJob(), {
-                            theme: "facebook",
-                            placeholder: "What was your past Job Role?",
-                            minChars: 0,
-                            prePopulate: pastJobRoleArray,
-                            tokenLimit: 1,
-                            preventDuplicates: true
-                          });
-                        });
-                </script>
-              </div>
-            </div>
-
-              <div class="row" style="margin-top: 4px">
-                  <div class="col-sm-3"><h5>Past Job Salary:</h5></div>
-                  <div class="col-sm-9">
-                      <input id="candidatePastJobSalary" placeholder="What was your previous job salary?" type="number" class="form-control input-md">
-                  </div>
-              </div>
-          </div>
-
-          <hr>
-
-          <!-- Education details -->
-          <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Educational Details</h4>
-          <div id="education_details">
-            <div class="row" style="margin-top: 4px">
-              <div class="col-sm-3"><h5>Highest Education Qualification?</h5></div>
-              <div class="col-sm-9">
-                <div style="width: 100%; height: 34px;" id="candidateHighestEducation"  class="btn-group" data-toggle="buttons">
-                </div>
-              </div>
-            </div>
-
-            <div id="educationalInstitute" style="margin-top: 26px;" >
-              <div class="row">
-                <div class="col-sm-3"><h5>Highest Education Degree?:</h5></div>
-                <div class="col-sm-5">
-                  <select class="selectDropdown" id="candidateHighestDegree" style="width: 326px">
-                  </select>
-                </div>
-              </div>
-              <div class="row" style="margin-top: 4px">
-                <div class="col-sm-3"><h5>Last attended Education Institute?</h5></div>
-                <div class="col-sm-5">
-                  <input id="candidateEducationInstitute" style="width: 326px" placeholder="Which was the last college u went to?" type="text" class="form-control input-md">
-                </div>
-              </div>
-            </div>
-
-          </div>
-          <hr>
-            <!-- Job Preference details -->
-          <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Job TimeShift Preferences</h4>
-          <div id="job_pref_details">
-            <div class="row">
-              <div class="col-sm-3" style="margin-top: 5px"><h5 style="margin-top: 4px">Preferred work shift?: </h5></div>
-                <div class="col-sm-9" style="margin-top: 6px;">
-                    <select class="selectDropdown"  id="candidateTimeShiftPref" size="5">
-                </select>
-                </div>
-            </div>
-          </div>
-          <hr>
-
-            <!-- Language details -->
-          <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Language Details</h4>
-          <div id="language_details">
-            <div class="row" style="margin-top: 4px">
-              <div class="col-sm-3"><h5>Mother Tongue?: </h5></div>
-              <div class="col-sm-9" style="margin-top: 8px">
-                <select id="candidateMotherTongue" class="selectDropdown" >
-                </select>
-              </div>
-            </div>
-              <h5><u>Language Details:</u></h5>
-            <table class="table table-striped" cellspacing="0" width="100%">
-              <thead>
-                  <tr>
-                      <th>Language Name</th>
-                      <th>Read</th>
-                      <th>Write</th>
-                      <th>Speak</th>
-                  </tr>
-              </thead>
-            </table>
-
-              <table id="languageTable" class="table table-striped" cellspacing="0" width="100%">
-                  <thead>
-                  </thead>
-                  <tbody>
-
-                </tbody>
-            </table>
-          </div>
-
-          <!-- skill details -->
-          <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Candidate Skills </h4>
-          <div class="row">
-            <div class="col-sm-12">
-              <div id="skill_details">
-                <table id="skillTable" class="table table-striped" cellspacing="0" width="100%">
-                  <thead></thead>
-                  <tbody></tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <hr>
-
-            <!-- Document details -->
-          <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Document Details</h4>
-          <div id="document_details">
-              <div class="row" style="margin-top: 4px">
-                  <div class="col-sm-3"><h5>ID Proof/Address proof ID?:</h5></div>
-                  <div class="col-sm-9" style="margin-top: 6px;">
-                      <input type="text" id="candidateIdProof" >
-                      <script type="text/javascript">
-                        $(document).ready(function() {
-                            $("#candidateIdProof").tokenInput(getIdProofs(), {
-                                theme: "facebook",
-                                placeholder: "What ID Proofs you have?",
-                                hintText: "Start typing jobs (eg. PAN, Driving Licence,..)",
-                                minChars: 0,
-                                prePopulate: candidateIdProofArray,
-                                preventDuplicates: true
-                            });
-                        });
-                      </script>
-                  </div>
-              </div>
-
-              <div class="row" style="margin-top: 4px">
-                  <div class="col-sm-5"><h5>Do you get Monthly Pay Slip?:</h5></div>
-                  <div class="col-sm-7" style="margin-top: 6px;">
-                      <input type="radio" name="payslip" id="payslipY" value="1">&nbsp;Yes&nbsp;&nbsp;
-                      <input type="radio" name="payslip" id="payslipN" value="0">&nbsp;No
-                  </div>
-              </div>
-
-              <div class="row" style="margin-top: 4px">
-                  <div class="col-sm-5"><h5>Do you have an Appointment Letter for your Current job?:</h5></div>
-                  <div class="col-sm-7" style="margin-top: 6px;">
-                      <input type="radio" name="appointmentLetter" id="appointmentLetterY" value="1">&nbsp;Yes&nbsp;&nbsp;
-                      <input type="radio" name="appointmentLetter" id="appointmentLetterN" value="0">&nbsp;No
-                  </div>
-              </div>
-          </div>
-          <hr>
-
-          <br>
-          <button type="submit" id="saveBtn" class="btn btn-primary">Save</button>
-          <button type="button" id="cancelBtn" class="btn btn-default" onclick="cancelAndRedirect()">Back</button>
+        <div id="callYesClass" style="display: none">
+            <h5>Is Interested to create profile ?:
+                <input type="radio" name="interested" id="interestedYes" value="Yes" onclick="onInterestedYes(@id)" > &nbsp;Yes&nbsp;
+                <input type="radio" name="interested" id="interestedNo" value="No" onclick="onInterestedNo(@id)"> No
+            </h5>
         </div>
-        <br><br>
 
-      </form>
+        <div id="callNoClass" style="display: none">
+            <h5>Reason?:
+                <select id="callResponse" class="selectDropdown" >
+                    <option value="busy">Busy</option>
+                    <option value="not_reachable">Not Reachable</option>
+                    <option value="not_answering">Not Answering</option>
+                    <option value="switched_off">Switched Off</option>
+                    <option value="dnd">DND</option>
+                    <option value="recruiter">Recruiter</option>
+                    <option value="third_person">Third Person</option>
+                    <option value="others">Others</option>
+                </select>
 
+                <button type="submit" id="responseSaveBtn"  class="btn btn-primary" onclick="saveResponse(@id)">Save</button>
+            </h5>
+        </div>
+
+        <hr>
+        <div class="row">
+            <nav class="col-sm-3">
+                <div class="panel panel-default " id="panel-prevNotes">
+                    <div class="panel-heading">Previous Notes</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <div class="panel-group" id="accordion">
+                                <!-- pivot for dynamic accordion  -->
+                                <div class="accordion-inner"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <ul class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="20"  >
+                    <div id="panel-note" style="display: none" class="panel panel-default">
+                    <div class="panel-heading">Add Note</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <textarea class="form-control" rows="4" id="supportNote" maxlength="250"></textarea>
+                        </div>
+                    </div>
+                </div>
+                </ul>
+            </nav>
+            <div class="col-sm-6">
+                <form id="candidateSignUpSupportForm">
+                    <div>
+                        <h3>Candidate Registration Form:</h3>
+                        <hr>
+                        <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Mandatory Details</h4>
+                        <div class="row">
+                            <div class="col-sm-3"><h5>Candidate First Name:</h5></div>
+                            <div class="col-sm-9">
+                                <input id="candidateFirstName" name="candidateFirstName" placeholder="What is your First name?" type="text" class="form-control input-md" >
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h5>Candidate Last Name:</h5></div>
+                            <div class="col-sm-9">
+                                <input id="candidateSecondName" name="candidateSecondName" placeholder="What is your Last name?" type="text" class="form-control input-md" >
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h5>Candidate Mobile:</h5></div>
+                            <div class="col-sm-9">
+                                <input id="candidateMobile" placeholder="What is your mobile no.?" name="candidateMobile" type="text" maxlength="10" class="form-control input-md" >
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h5>Job Role Preference:</h5></div>
+                            <div class="col-sm-9">
+                                <input type="text" id="candidateJobPref" >
+                                <script type="text/javascript">
+                                        $(document).ready(function() {
+                                            $("#candidateJobPref").tokenInput(getJob(), {
+                                                theme: "facebook",
+                                                placeholder: "What job roles are you interested?",
+                                                hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                                                minChars: 0,
+                                                tokenLimit: 3,
+                                                prePopulate: jobPrefArray,
+                                                preventDuplicates: true
+                                            });
+                                            generateSkills();
+                                        });
+                                </script>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h5>Locality Preference:</h5></div>
+                            <div class="col-sm-9">
+                                <input type="text" id="candidateLocalityPref" placeholder="Where do you want to work?">
+                                <script type="text/javascript">
+                                        $(document).ready(function() {
+                                            $("#candidateLocalityPref").tokenInput(getLocality(), {
+                                                theme: "facebook",
+                                                placeholder: "Where do you want to work?",
+                                                hintText: "Start typing Area (eg. BTM Layout, Bellandur..)",
+                                                minChars: 0,
+                                                tokenLimit: 3,
+                                                prePopulate: localityPrefArray,
+                                                preventDuplicates: true
+                                            });
+                                        });
+                                </script>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h5>How did you find out about Us :</h5></div>
+                            <div class="col-sm-9" style="margin-top: 6px;">
+                                <select id="leadSource">
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Basic Details</h4>
+                        <div id="basic_details">
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Date of Birth:</h5></div>
+                                <div class="col-sm-9">
+                                    <input id="candidateDob" name="candidateDob" placeholder="When is your Birthday?" type="date" class="form-control input-md"  data-date-inline-picker="true"/>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Phone Type:</h5></div>
+                                <div class="col-sm-9">
+                                    <input id="candidatePhoneType" placeholder="Which phone do you use? (Eg. Samsung Galaxy S3)" type="text" class="form-control input-md">
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Candidate Gender:</h5></div>
+                                <div class="col-sm-9" style="margin-top: 6px;">
+                                    <input type="radio" name="gender" id="genderMale" value="0">&nbsp;Male&nbsp;&nbsp;
+                                    <input type="radio" name="gender" id="genderFemale" value="1">&nbsp;Female
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Current Location:</h5></div>
+                                <div class="col-sm-9">
+                                    <input type="text" id="candidateHomeLocality">
+                                    <script type="text/javascript">
+                                            $(document).ready(function() {
+                                                $("#candidateHomeLocality").tokenInput(getLocality(), {
+                                                    theme: "facebook",
+                                                    placeholder: "Where do you Live?",
+                                                    hintText: "Start typing jobs (eg. BTM Layout, Bellandur..)",
+                                                    minChars: 0,
+                                                    prePopulate: currentLocationArray,
+                                                    tokenLimit: 1,
+                                                    preventDuplicates: true
+                                                });
+                                            });
+                                    </script>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Married?:</h5></div>
+                                <div class="col-sm-9" style="margin-top: 6px;">
+
+                                    <input type="radio" name="married" id="married" value="0">&nbsp;Married&nbsp;&nbsp;
+                                    <input type="radio" name="married" id="marriedNot" value="1">&nbsp;Not Married
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Candidate Email:</h5></div>
+                                <div class="col-sm-9">
+                                    <input id="candidateEmail" placeholder="What is your email ID?" name="candidateEmail" type="email" class="form-control input-md">
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Employment Status and Experience</h4>
+                        <div id="">
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Your Work Experience:</h5></div>
+                                <div class="col-sm-9">
+                                    <div class="btn-group" data-toggle="buttons">
+                                        <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickFresher()">
+                                            <input type="radio" name="workExperience" id="fresher" value="0">Fresher
+                                        </label>
+                                        <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickExperienced()">
+                                            <input type="radio" name="workExperience" id="experienced" value="1">Experienced
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" id="totalWorkExperience" style="display: none; margin-top: 4px">
+                                <div class="col-sm-3"><h5>Total Experience:</h5></div>
+                                <div class="col-sm-9">
+                                    <input id="candidateTotalExperienceYear" value="0" style="width: 15%; display: inline-block" placeholder="Years" type="number" class="form-control input-md">&nbsp;Years&nbsp;&nbsp;
+                                    <input id="candidateTotalExperienceMonth" value="0" style="width: 15%; display: inline-block" placeholder="Months" type="number" min="0" max="11" step="1"  class="form-control input-md">&nbsp; Months
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Do you have a Job?:</h5></div>
+                                <div class="col-sm-9" style="margin-top: 6px;">
+                                    <input type="radio" name="employed" id="employed" value="1" onclick="employedYes()">&nbsp;Yes&nbsp;&nbsp;
+                                    <input type="radio" name="employed" id="employedNot" value="0" onclick="employedNo()">&nbsp;No
+                                </div>
+                            </div>
+
+                            <div id="employedForm" style="display: none">
+
+                                <div class="row" style="margin-top: 4px">
+                                    <div class="col-sm-3"><h5>Current Company:</h5></div>
+                                    <div class="col-sm-9">
+                                        <input id="candidateCurrentCompany" placeholder="What is your Company name?" type="text" class="form-control input-md">
+                                    </div>
+                                </div>
+
+                                <div class="row" style="margin-top: 8px">
+                                    <div class="col-sm-3"><h5>Current Job Location:</h5></div>
+                                    <div class="col-sm-9">
+                                        <input type="text" id="candidateCurrentJobLocation" >
+                                        <script type="text/javascript">
+                                                $(document).ready(function() {
+                                                    $("#candidateCurrentJobLocation").tokenInput(getLocality(), {
+                                                        theme: "facebook",
+                                                        placeholder: "Office Location",
+                                                        minChars: 0,
+                                                        prePopulate: currentJobLocationArray,
+                                                        tokenLimit: 1,
+                                                        preventDuplicates: true
+                                                    });
+                                                });
+                                        </script>
+                                    </div>
+                                </div>
+
+                                <div class="row" style="margin-top: 4px">
+                                    <div class="col-sm-3"><h5>Current Job Role:</h5></div>
+                                    <div class="col-sm-9">
+                                        <input type="text" id="candidateCurrentJobRole" >
+                                        <script type="text/javascript">
+                                                $(document).ready(function() {
+                                                    $("#candidateCurrentJobRole").tokenInput(getJob(), {
+                                                        theme: "facebook",
+                                                        placeholder: "Current Jobrole?",
+                                                        minChars: 0,
+                                                        tokenLimit: 1,
+                                                        prePopulate: currentJobRoleArray,
+                                                        preventDuplicates: true
+                                                    });
+                                                });
+                                        </script>
+                                    </div>
+                                </div>
+
+                                <div class="row" style="margin-top: 4px">
+                                    <div class="col-sm-3"><h5>Current Job Designation:</h5></div>
+                                    <div class="col-sm-9">
+                                        <input id="candidateCurrentJobDesignation" placeholder="What is your Designation?" type="text" class="form-control input-md">
+                                    </div>
+                                </div>
+
+                                <div class="row" style="margin-top: 4px">
+                                    <div class="col-sm-3"><h5>Current Job Salary:</h5></div>
+                                    <div class="col-sm-9">
+                                        <input id="candidateCurrentJobSalary" placeholder="What is your current Salary?" type="number" class="form-control input-md">
+                                    </div>
+                                </div>
+
+                                <div class="row" style="margin-top: 4px">
+                                    <div class="col-sm-3"><h5>Current Job Duration:</h5></div>
+                                    <div class="col-sm-9">
+                                        <input id="candidateCurrentJobDurationYear" value="0" style="width: 15%; display: inline-block" placeholder="Years" type="number" class="form-control input-md">&nbsp;Years&nbsp;&nbsp;
+                                        <input id="candidateCurrentJobDurationMonth"  value="0" style="width: 15%; display: inline-block"  type="number" min="0" max="11" step="1" placeholder="Months" class="form-control input-md" >&nbsp; Months
+                                    </div>
+                                </div>
+
+                                <div class="row" style="margin-top: 4px">
+                                    <div class="col-sm-3"><h5>Mode of Transport:</h5></div>
+                                    <div class="col-sm-9" style="margin-top: 8px">
+                                        <select id="selectTransportation" class="selectDropdown" >
+
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row" style="margin-top: 4px">
+                                    <div class="col-sm-3"><h5>Current work shift?: </h5></div>
+                                    <div class="col-sm-9" style="margin-top: 8px">
+                                        <select id="currentWorkShift" class="selectDropdown" >
+
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Past Company:</h5></div>
+                                <div class="col-sm-9">
+                                    <input id="candidatePastCompany" placeholder="What was your previous company Name?" type="text" class="form-control input-md">
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Past Job Role:</h5></div>
+                                <div class="col-sm-9">
+                                    <input type="text" id="candidatePastJobRole" >
+                                    <script type="text/javascript">
+                                            $(document).ready(function() {
+                                                $("#candidatePastJobRole").tokenInput(getJob(), {
+                                                    theme: "facebook",
+                                                    placeholder: "What was your past Job Role?",
+                                                    minChars: 0,
+                                                    prePopulate: pastJobRoleArray,
+                                                    tokenLimit: 1,
+                                                    preventDuplicates: true
+                                                });
+                                            });
+                                    </script>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Past Job Salary:</h5></div>
+                                <div class="col-sm-9">
+                                    <input id="candidatePastJobSalary" placeholder="What was your previous job salary?" type="number" class="form-control input-md">
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                            <!-- Education details -->
+                        <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Educational Details</h4>
+                        <div id="education_details">
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Highest Education Qualification?</h5></div>
+                                <div class="col-sm-9">
+                                    <div style="width: 100%; height: 34px;" id="candidateHighestEducation"  class="btn-group" data-toggle="buttons">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div id="educationalInstitute" style="margin-top: 26px;" >
+                                <div class="row">
+                                    <div class="col-sm-3"><h5>Highest Education Degree?:</h5></div>
+                                    <div class="col-sm-5">
+                                        <select class="selectDropdown" id="candidateHighestDegree" style="width: 326px">
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row" style="margin-top: 4px">
+                                    <div class="col-sm-3"><h5>Last attended Education Institute?</h5></div>
+                                    <div class="col-sm-5">
+                                        <input id="candidateEducationInstitute" style="width: 326px" placeholder="Which was the last college u went to?" type="text" class="form-control input-md">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <hr>
+                            <!-- Job Preference details -->
+                        <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Job TimeShift Preferences</h4>
+                        <div id="job_pref_details">
+                            <div class="row">
+                                <div class="col-sm-3" style="margin-top: 5px"><h5 style="margin-top: 4px">Preferred work shift?: </h5></div>
+                                <div class="col-sm-9" style="margin-top: 6px;">
+                                    <select class="selectDropdown"  id="candidateTimeShiftPref" size="5">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+
+                            <!-- Language details -->
+                        <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Language Details</h4>
+                        <div id="language_details">
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Mother Tongue?: </h5></div>
+                                <div class="col-sm-9" style="margin-top: 8px">
+                                    <select id="candidateMotherTongue" class="selectDropdown" >
+                                    </select>
+                                </div>
+                            </div>
+                            <h5><u>Language Details:</u></h5>
+                            <table class="table table-striped" cellspacing="0" width="100%">
+                                <thead>
+                                    <tr>
+                                        <th>Language Name</th>
+                                        <th>Read</th>
+                                        <th>Write</th>
+                                        <th>Speak</th>
+                                    </tr>
+                                </thead>
+                            </table>
+
+                            <table id="languageTable" class="table table-striped" cellspacing="0" width="100%">
+                                <thead>
+                                </thead>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                            <!-- skill details -->
+                        <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Candidate Skills </h4>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div id="skill_details">
+                                    <table id="skillTable" class="table table-striped" cellspacing="0" width="100%">
+                                        <thead></thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+
+                            <!-- Document details -->
+                        <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Document Details</h4>
+                        <div id="document_details">
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>ID Proof/Address proof ID?:</h5></div>
+                                <div class="col-sm-9" style="margin-top: 6px;">
+                                    <input type="text" id="candidateIdProof" >
+                                    <script type="text/javascript">
+                                            $(document).ready(function() {
+                                                $("#candidateIdProof").tokenInput(getIdProofs(), {
+                                                    theme: "facebook",
+                                                    placeholder: "What ID Proofs you have?",
+                                                    hintText: "Start typing jobs (eg. PAN, Driving Licence,..)",
+                                                    minChars: 0,
+                                                    prePopulate: candidateIdProofArray,
+                                                    preventDuplicates: true
+                                                });
+                                            });
+                                    </script>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-5"><h5>Do you get Monthly Pay Slip?:</h5></div>
+                                <div class="col-sm-7" style="margin-top: 6px;">
+                                    <input type="radio" name="payslip" id="payslipY" value="1">&nbsp;Yes&nbsp;&nbsp;
+                                    <input type="radio" name="payslip" id="payslipN" value="0">&nbsp;No
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-5"><h5>Do you have an Appointment Letter for your Current job?:</h5></div>
+                                <div class="col-sm-7" style="margin-top: 6px;">
+                                    <input type="radio" name="appointmentLetter" id="appointmentLetterY" value="1">&nbsp;Yes&nbsp;&nbsp;
+                                    <input type="radio" name="appointmentLetter" id="appointmentLetterN" value="0">&nbsp;No
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+
+                        <br>
+                        <button type="submit" id="saveBtn" class="btn btn-primary">Save</button>
+                        <button type="button" id="cancelBtn" class="btn btn-default" onclick="cancelAndRedirect()">Back</button>
+                    </div>
+                    <br><br>
+
+                </form>
+            </div>
+            <nav class="col-sm-2">
+                <ul class="nav nav-pills nav-stacked" data-spy="affix">
+                    <div class="panel-group">
+                        <div id="panel-followUp" class="panel panel-default collapse">
+                            <div class="panel-heading">Schedule Follow Up</div>
+                            <div class="panel-body">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="followUpRequired" value="99" onclick="followUpRequired()" > Follow-Up
+                                    </label>
+                                    <div id="followUpScheduler" style="display: none">
+                                        <div class="well">
+                                            <div class="form-group">
+                                                <div class='input-group date' id="datetimepicker">
+                                                    <input type='text' class="form-control" id="datetimepickerValue" required/>
+                                                    <span class="input-group-addon">
+                                                        <span class="glyphicon glyphicon-calendar"></span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <button id="btnFollowUp" class="btn btn-block btn-warning" style="align-items: flex-end" onclick="updateFollowUpValue()"> Schedule FollowUp</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ul>
+            </nav>
+            <div class="col-sm-1">
+                <button id="btnFloatFollowUp" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect mdl-button--colored" data-spy="affix" data-offset-bottom="5"  data-toggle="collapse"  data-target="#panel-followUp" disabled>
+                    <i class="material-icons">perm_contact_calendar</i>
+                    <div class="mdl-tooltip" data-offset-bottom="5"  data-toggle="collapse"  data-target="#panel-followUp" for="btnFloatFollowUp">Schedule FollowUp</div>
+                </button>
+            </div>
+        </div>
     </div>
       <!-- Including Bootstrap -->
       <script type="text/javascript" src="/assets/js/validation.js"></script>
@@ -492,5 +578,6 @@
                   $("#totalWorkExperience").show();
               }
       </script>
+      <script type="text/javascript" src="/assets/support/js/bootstrap-datetimepicker.min.js"></script>
   </body>
 </html>

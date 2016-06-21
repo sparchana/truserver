@@ -89,9 +89,18 @@ function renderDashboard(viewType) {
                         'leadChannel' : newLead.leadChannel,
                         'leadMobile' : newLead.leadMobile,
                         'leadName' :  newLead.leadName,
+                        'leadFollowUpTimestamp' :  function(){
+                            if (newLead.followUpStatus != null || newLead.followUpStatus == true){
+                                return newLead.followUpTimeStamp
+                            } else {
+                                return ""
+                            }
+                        },
                         'btnFUA' : function(){
                             if(newLead.leadStatus == 'New') {
                                 return '<input type="submit" value="Call"  style="width:100px" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+');" id="'+newLead.leadId+'" class="btn btn-primary">'
+                            } else if (newLead.followUpStatus == true){
+                                return '<input title="'+newLead.followUpTimeStamp+'" type="submit" value="Follow Up"  style="width:100px" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+'); " id="'+newLead.leadId+'"  class="btn btn-warning">'
                             } else {
                                 return '<input type="submit" value="Call Back"  style="width:100px" onclick="myHandler('+newLead.leadMobile+', '+newLead.leadId+'); " id="'+newLead.leadId+'"  class="btn btn-default">'
                             }
@@ -112,6 +121,7 @@ function renderDashboard(viewType) {
             { "data": "leadChannel" },
             { "data": "leadMobile" },
             { "data": "leadName" },
+            { "data": "leadFollowUpTimestamp" },
             { "data": "btnFUA" }
         ],
         "order": [[5, "desc"]],

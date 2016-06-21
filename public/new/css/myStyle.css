@@ -994,3 +994,21 @@ margin-bottom: 20px;
 	font-size: 24px;
 	color: #88898c;
 }
+
+.created{
+    background-color: #E0F7FA;
+  }
+
+.updated{
+    background-color: #E8EAF6;
+  }
+
+.btn.sharp {
+    border-radius:0;
+}
+.black-background {background-color:#000000;}
+
+.affix {
+    position:fixed;
+    bottom: 50px;
+}
