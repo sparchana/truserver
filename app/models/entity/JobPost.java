@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sun.org.apache.xalan.internal.xsltc.dom.BitArray;
 import models.entity.OM.JobApplication;
+import models.entity.OM.JobPostToBenefits;
 import models.entity.OM.JobPostToLocality;
 import models.entity.Static.*;
 
@@ -33,7 +34,7 @@ public class JobPost extends Model {
     @Column(name = "JobPostCreateTimestamp", columnDefinition = "timestamp not null")
     private Timestamp jobPostCreateTimestamp;
 
-    @Column(name = "JobPostUpdateTimestamp", columnDefinition = "timestamp null")
+    @Column(name = "JobPostUpdateTimestamp", columnDefinition = "timestamp not null")
     private Timestamp jobPostUpdateTimestamp;
 
     @Column(name = "JobPostMinSalary", columnDefinition = "bigint signed null")
@@ -48,29 +49,35 @@ public class JobPost extends Model {
     @Column(name = "JobPostEndTime", columnDefinition = "time null")
     private Time jobPostEndTime;
 
-    @Column(name = "JobPostBenefitPF", columnDefinition = "int signed null")
-    private Boolean jobPostBenefitPF;
-
-    @Column(name = "JobPostBenefitFuel", columnDefinition = "int signed null")
-    private Boolean jobPostBenefitFuel;
-
-    @Column(name = "JobPostBenefitInsurance", columnDefinition = "int signed null")
-    private Boolean jobPostBenefitInsurance;
+    @Column(name = "JobPostIsHot", columnDefinition = "int signed null")
+    private Boolean jobPostIsHot;
 
     @Column(name = "JobPostDescription", columnDefinition = "varchar(1000) null")
-    private String jobDescription;
+    private String jobPostDescription;
 
     @Column(name = "JobPostTitle", columnDefinition = "varchar(100) null")
     private String jobPostTitle;
+
+    @Column(name = "JobPostIncentives", columnDefinition = "varchar(1000) null")
+    private String jobPostIncentives;
+
+    @Column(name = "JobPostMinRequirement", columnDefinition = "varchar(1000) null")
+    private String jobPostMinRequirement;
+
+    @Column(name = "JobPostAddress", columnDefinition = "varchar(1000) null")
+    private String jobPostAddress;
+
+    @Column(name = "JobPostPinCode", columnDefinition = "bigint signed null")
+    private Long jobPostPinCode;
 
     @Column(name = "JobPostVacancy", columnDefinition = "bigint signed null")
     private Integer jobPostVacancy;
 
     @Column(name = "JobPostDescriptionAudio", columnDefinition = "varchar(100) null")
-    private String jobDescriptionAudio;
+    private String jobPostDescriptionAudio;
 
     @Column(name = "JobPostWorkFromHome", columnDefinition = "int signed null")
-    private Boolean jobWorkFromHome;
+    private Boolean jobPostWorkFromHome;
 
     @Column(name = "JobPostWorkingDays", columnDefinition = "binary(7) null")
     private BitArray jobPostWorkingDays;
@@ -79,6 +86,11 @@ public class JobPost extends Model {
     @JsonManagedReference
     @JoinColumn(name = "JobStatus")
     private JobStatus jobPostStatus;
+
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "PricingPlanType")
+    private PricingPlanType pricingPlanType;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JsonManagedReference
@@ -89,6 +101,11 @@ public class JobPost extends Model {
     @PrivateOwned
     @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
     private List<JobPostToLocality> jobPostToLocalityList;
+
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
+    private List<JobPostToBenefits> jobPostToBenefitsList;
 
     @JsonManagedReference
     @ManyToOne
@@ -122,7 +139,85 @@ public class JobPost extends Model {
         this.jobPostUpdateTimestamp = new Timestamp(System.currentTimeMillis());
     }
 
+    public Boolean getJobPostIsHot() {
+        return jobPostIsHot;
+    }
 
+    public void setJobPostIsHot(Boolean jobPostIsHot) {
+        this.jobPostIsHot = jobPostIsHot;
+    }
+
+    public String getJobPostDescription() {
+        return jobPostDescription;
+    }
+
+    public void setJobPostDescription(String jobPostDescription) {
+        this.jobPostDescription = jobPostDescription;
+    }
+
+    public String getJobPostIncentives() {
+        return jobPostIncentives;
+    }
+
+    public void setJobPostIncentives(String jobPostIncentives) {
+        this.jobPostIncentives = jobPostIncentives;
+    }
+
+    public String getJobPostMinRequirement() {
+        return jobPostMinRequirement;
+    }
+
+    public void setJobPostMinRequirement(String jobPostMinRequirement) {
+        this.jobPostMinRequirement = jobPostMinRequirement;
+    }
+
+    public String getJobPostAddress() {
+        return jobPostAddress;
+    }
+
+    public void setJobPostAddress(String jobPostAddress) {
+        this.jobPostAddress = jobPostAddress;
+    }
+
+    public Long getJobPostPinCode() {
+        return jobPostPinCode;
+    }
+
+    public void setJobPostPinCode(Long jobPostPinCode) {
+        this.jobPostPinCode = jobPostPinCode;
+    }
+
+    public String getJobPostDescriptionAudio() {
+        return jobPostDescriptionAudio;
+    }
+
+    public void setJobPostDescriptionAudio(String jobPostDescriptionAudio) {
+        this.jobPostDescriptionAudio = jobPostDescriptionAudio;
+    }
+
+    public Boolean getJobPostWorkFromHome() {
+        return jobPostWorkFromHome;
+    }
+
+    public void setJobPostWorkFromHome(Boolean jobPostWorkFromHome) {
+        this.jobPostWorkFromHome = jobPostWorkFromHome;
+    }
+
+    public PricingPlanType getPricingPlanType() {
+        return pricingPlanType;
+    }
+
+    public void setPricingPlanType(PricingPlanType pricingPlanType) {
+        this.pricingPlanType = pricingPlanType;
+    }
+
+    public List<JobPostToBenefits> getJobPostToBenefitsList() {
+        return jobPostToBenefitsList;
+    }
+
+    public void setJobPostToBenefitsList(List<JobPostToBenefits> jobPostToBenefitsList) {
+        this.jobPostToBenefitsList = jobPostToBenefitsList;
+    }
 
     public Long getJobPostId() {
         return jobPostId;
@@ -188,38 +283,6 @@ public class JobPost extends Model {
         this.jobPostEndTime = jobPostEndTime;
     }
 
-    public Boolean getJobPostBenefitPF() {
-        return jobPostBenefitPF;
-    }
-
-    public void setJobPostBenefitPF(Boolean jobPostBenefitPF) {
-        this.jobPostBenefitPF = jobPostBenefitPF;
-    }
-
-    public Boolean getJobPostBenefitFuel() {
-        return jobPostBenefitFuel;
-    }
-
-    public void setJobPostBenefitFuel(Boolean jobPostBenefitFuel) {
-        this.jobPostBenefitFuel = jobPostBenefitFuel;
-    }
-
-    public Boolean getJobPostBenefitInsurance() {
-        return jobPostBenefitInsurance;
-    }
-
-    public void setJobPostBenefitInsurance(Boolean jobPostBenefitInsurance) {
-        this.jobPostBenefitInsurance = jobPostBenefitInsurance;
-    }
-
-    public String getJobDescription() {
-        return jobDescription;
-    }
-
-    public void setJobDescription(String jobDescription) {
-        this.jobDescription = jobDescription;
-    }
-
     public String getJobPostTitle() {
         return jobPostTitle;
     }
@@ -234,22 +297,6 @@ public class JobPost extends Model {
 
     public void setJobPostVacancy(Integer jobPostVacancy) {
         this.jobPostVacancy = jobPostVacancy;
-    }
-
-    public String getJobDescriptionAudio() {
-        return jobDescriptionAudio;
-    }
-
-    public void setJobDescriptionAudio(String jobDescriptionAudio) {
-        this.jobDescriptionAudio = jobDescriptionAudio;
-    }
-
-    public Boolean getJobWorkFromHome() {
-        return jobWorkFromHome;
-    }
-
-    public void setJobWorkFromHome(Boolean jobWorkFromHome) {
-        this.jobWorkFromHome = jobWorkFromHome;
     }
 
     public BitArray getJobPostWorkingDays() {

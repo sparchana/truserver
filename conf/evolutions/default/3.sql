@@ -12,9 +12,9 @@ create table company (
 	companylogo                   varchar(80) null,
 	companycreatetimestamp        timestamp not null,
 	companyupdatetimestamp        timestamp not null,
-	companylocality               bigint signed,
-	comptype                      bigint signed,
-	compstatus                    bigint signed,
+	companylocality               bigint signed null,
+	comptype                      bigint signed null,
+	compstatus                    bigint signed null,
 	constraint pk_company primary key (companyid)
 );
 
@@ -39,9 +39,9 @@ create table experience (
 create table jobapplication (
 	jobapplicationid              int signed auto_increment not null,
 	jobapplicationcreatetimestamp timestamp not null,
-	jobpostid                     bigint signed,
-	screeningstatusid             bigint signed,
-	candidateid                   bigint signed,
+	jobpostid                     bigint signed null,
+	screeningstatusid             bigint signed null,
+	candidateid                   bigint signed null,
 	constraint pk_jobapplication primary key (jobapplicationid)
 );
 
@@ -70,29 +70,29 @@ create table jobpost (
 	jobpostvacancy                bigint signed null,
 	jobpostdescriptionaudio       varchar(100) null,
 	jobpostworkfromhome           int signed null,
-	jobstatus                     bigint signed,
-	pricingplantype               bigint signed,
-	jobpostjobrole                bigint signed,
-	companyid                     bigint signed,
-	jobshiftid                    int signed,
-	jobexperienceid               bigint signed,
-	jobeducationid                int signed,
+	jobstatus                     bigint signed null,
+	pricingplantype               bigint signed null,
+	jobpostjobrole                bigint signed null,
+	companyid                     bigint signed null,
+	jobshiftid                    int signed null,
+	jobexperienceid               bigint signed null,
+	jobeducationid                int signed null,
 	constraint pk_jobpost primary key (jobpostid)
 );
 
 create table jobposttobenefits (
 	jobposttobenefitsid           bigint signed not null auto_increment not null,
-	jobposttobenefitsupdatetimestamp timestamp null,
-	jobbenefitid                  bigint signed,
-	jobpostid                     bigint signed,
+	jobposttobenefitscreatetimestamp timestamp null,
+	jobbenefitid                  bigint signed null,
+	jobpostid                     bigint signed null,
 	constraint pk_jobposttobenefits primary key (jobposttobenefitsid)
 );
 
 create table jobposttolocality (
 	jobposttolocalityid           bigint signed not null auto_increment not null,
-	jobposttolocalityupdatetimestamp timestamp null,
-	localityid                    bigint signed,
-	jobpostid                     bigint signed,
+	jobposttolocalitycreatetimestamp timestamp null,
+	localityid                    bigint signed null,
+	jobpostid                     bigint signed null,
 	constraint pk_jobposttolocality primary key (jobposttolocalityid)
 );
 
@@ -100,8 +100,8 @@ create table jobposttoskill (
 	jobposttoskillid              bigint signed not null auto_increment not null,
 	jobposttoskillcreatetimestamp timestamp not null,
 	jobposttoskillupdatetimestamp timestamp not null,
-	jobpostid                     bigint signed,
-	skillid                       int signed,
+	jobpostid                     bigint signed null,
+	skillid                       int signed null,
 	constraint pk_jobposttoskill primary key (jobposttoskillid)
 );
 

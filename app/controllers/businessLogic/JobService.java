@@ -26,12 +26,9 @@ public class JobService {
         newJobPost.setJobPostMaxSalary(addJobPostRequest.getJobPostMaxSalary());
         newJobPost.setJobPostStartTime(addJobPostRequest.getJobPostStartTime());
         newJobPost.setJobPostEndTime(addJobPostRequest.getJobPostEndTime());
-        newJobPost.setJobPostBenefitPF(addJobPostRequest.getJobPostBenefitPf());
-        newJobPost.setJobPostBenefitInsurance(addJobPostRequest.getJobPostBenefitInsurance());
-        newJobPost.setJobPostBenefitFuel(addJobPostRequest.getJobPostBenefitFuel());
-        newJobPost.setJobWorkFromHome(addJobPostRequest.getJobPostWorkFromHome());
-        newJobPost.setJobDescription(addJobPostRequest.getJobPostDescription());
-        newJobPost.setJobDescriptionAudio(addJobPostRequest.getJobPostDescriptionAudio());
+        newJobPost.setJobPostWorkFromHome(addJobPostRequest.getJobPostWorkFromHome());
+        newJobPost.setJobPostDescription(addJobPostRequest.getJobPostDescription());
+        newJobPost.setJobPostDescriptionAudio(addJobPostRequest.getJobPostDescriptionAudio());
         newJobPost.setJobPostTitle(addJobPostRequest.getJobPostTitle());
         newJobPost.setJobPostVacancy(addJobPostRequest.getJobPostVacancy());
         newJobPost.setJobPostToLocalityList(getJobPostLocality(jobPostLocalityList, newJobPost));
@@ -76,7 +73,6 @@ public class JobService {
                     JobApplication jobApplication = new JobApplication();
                     jobApplication.setCandidate(existingCandidate);
                     jobApplication.setJobPost(existingJobPost);
-                    jobApplication.setJobApplicationCreateTimeStamp(new Timestamp(System.currentTimeMillis()));
                     jobApplication.save();
                     Logger.info("Job Added Successfully");
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_SUCCESS);
@@ -97,7 +93,7 @@ public class JobService {
         for(Integer  localityId : localityList) {
             JobPostToLocality jobPostToLocality = new JobPostToLocality();
             jobPostToLocality.setJobPost(jobPost);
-            jobPostToLocality.setJobPostToLocalityUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
+            jobPostToLocality.setJobPostToLocalityCreateTimeStamp(new Timestamp(System.currentTimeMillis()));
             Locality locality = Locality.find.where()
                     .eq("localityId", localityId).findUnique();
             jobPostToLocality.setLocality(locality);

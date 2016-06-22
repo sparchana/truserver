@@ -20,8 +20,8 @@ public class JobPostToBenefits extends Model {
     @Column(name = "JobPostToBenefitsId", columnDefinition = "bigint signed not null", unique = true)
     private Long jobPostToBenefitsId;
 
-    @Column(name = "JobPostToBenefitsUpdateTimeStamp", columnDefinition = "timestamp null")
-    private Timestamp jobPostToBenefitsUpdateTimeStamp = new Timestamp(System.currentTimeMillis());
+    @Column(name = "JobPostToBenefitsCreateTimeStamp", columnDefinition = "timestamp null")
+    private Timestamp jobPostToBenefitsCreateTimeStamp = new Timestamp(System.currentTimeMillis());
 
     @ManyToOne
     @JsonManagedReference

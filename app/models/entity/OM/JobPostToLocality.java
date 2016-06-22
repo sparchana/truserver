@@ -21,8 +21,8 @@ public class JobPostToLocality extends Model {
     @Column(name = "JobPostToLocalityId", columnDefinition = "bigint signed not null", unique = true)
     private Long jobPostToLocalityId;
 
-    @Column(name = "JobPostToLocalityUpdateTimeStamp", columnDefinition = "timestamp null")
-    private Timestamp jobPostToLocalityUpdateTimeStamp = new Timestamp(System.currentTimeMillis());
+    @Column(name = "JobPostToLocalityCreateTimeStamp", columnDefinition = "timestamp null")
+    private Timestamp jobPostToLocalityCreateTimeStamp = new Timestamp(System.currentTimeMillis());
 
     @ManyToOne
     @JsonManagedReference
@@ -42,12 +42,12 @@ public class JobPostToLocality extends Model {
         this.jobPostToLocalityId = jobPostToLocalityId;
     }
 
-    public Timestamp getJobPostToLocalityUpdateTimeStamp() {
-        return jobPostToLocalityUpdateTimeStamp;
+    public Timestamp getJobPostToLocalityCreateTimeStamp() {
+        return jobPostToLocalityCreateTimeStamp;
     }
 
-    public void setJobPostToLocalityUpdateTimeStamp(Timestamp jobPostToLocalityUpdateTimeStamp) {
-        this.jobPostToLocalityUpdateTimeStamp = jobPostToLocalityUpdateTimeStamp;
+    public void setJobPostToLocalityCreateTimeStamp(Timestamp jobPostToLocalityCreateTimeStamp) {
+        this.jobPostToLocalityCreateTimeStamp = jobPostToLocalityCreateTimeStamp;
     }
 
     public Locality getLocality() {

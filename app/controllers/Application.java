@@ -655,7 +655,6 @@ public class Application extends Controller {
     @Cached(key= "allLocalities")
     public static Result getAllLocality() {
         List<Locality> localities = Locality.find.findList();
-        Logger.info(localities.get(0).getLocalityName());
         return ok(toJson(localities));
     }
 
