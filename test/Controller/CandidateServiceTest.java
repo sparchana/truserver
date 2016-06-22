@@ -155,6 +155,7 @@ public class CandidateServiceTest {
     }
 
 
+    @Test
     public void testSignUpSupportAllFields() {
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
         running(server, () -> {
@@ -287,7 +288,6 @@ public class CandidateServiceTest {
         }
     }
 
-    @Test
     public void cleanup(){
         cleanDB();
     }

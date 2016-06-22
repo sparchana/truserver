@@ -34,6 +34,9 @@ public class CandidateSkill extends Model {
     @JoinColumn(name = "SkillId", referencedColumnName = "SkillId")
     private Skill skill;
 
+    @Column(name = "candidateSkillResponse", columnDefinition = "bit null")
+    private boolean candidateSkillResponse;
+
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "SkillQualifierId", referencedColumnName = "skillqualifierId")
