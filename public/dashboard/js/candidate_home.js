@@ -19,6 +19,7 @@ $(document).ready(function(){
         console.log("exception occured!!" + exception);
     }
 
+
     if(localStorage.getItem("assessed") == '0'){
         var options = {'showRowNumber': true};
         var data;

@@ -11,6 +11,8 @@ import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
 
+import java.util.UUID;
+
 import static play.mvc.Controller.session;
 
 /**
@@ -43,6 +45,12 @@ public class AuthService {
                 Logger.info("Resetting password");
                 setNewPassword(existingAuth, password);
                 Auth.savePassword(existingAuth);
+                existingAuth.setAuthSessionId(UUID.randomUUID().toString());
+                existingAuth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
+                session("sessionId", existingAuth.getAuthSessionId());
+                session("candidateId", String.valueOf(existingCandidate.getCandidateId()));
+                session("leadId", String.valueOf(existingCandidate.getLead().getLeadId()));
+                session("sessionExpiry", String.valueOf(existingAuth.getAuthSessionIdExpiryMillis()));
 
                 candidateSignUpResponse.setCandidateFirstName(existingCandidate.getCandidateFirstName());
                 candidateSignUpResponse.setCandidateLastName(existingCandidate.getCandidateLastName());
@@ -59,6 +67,12 @@ public class AuthService {
                 setNewPassword(auth,password);
                 auth.setAuthStatus(ServerConstants.CANDIDATE_STATUS_VERIFIED);
                 Auth.savePassword(auth);
+                auth.setAuthSessionId(UUID.randomUUID().toString());
+                auth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
+                session("sessionId", auth.getAuthSessionId());
+                session("candidateId", String.valueOf(existingCandidate.getCandidateId()));
+                session("leadId", String.valueOf(existingCandidate.getLead().getLeadId()));
+                session("sessionExpiry", String.valueOf(auth.getAuthSessionIdExpiryMillis()));
 
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
