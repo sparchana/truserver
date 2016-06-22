@@ -29,12 +29,12 @@ function processDataAddJobPost(returnedData) {
 
 function addJobPost(){
     var startTime = new Date().getTime();
-    var jobPostLocality = [];
+    var jobPostLocalities = [];
 
     var locality = "5";
     var i;
     for(i=0;i<locality.length; i++){
-        jobPostLocality.push(parseInt(locality[i]));
+        jobPostLocalities.push(parseInt(locality[i]));
     }
     try {
         var d = {
@@ -42,15 +42,24 @@ function addJobPost(){
             jobPostMaxSalary: 25000,
             jobPostStartTime: startTime,
             jobPostEndTime: startTime,
-            jobPostBenefitPf: 1,
-            jobPostBenefitFuel: 1,
-            jobPostBenefitInsurance: 1,
-            jobPostWorkFromHome: 1,
+            jobPostIsHot: 1,
             jobPostDescription: "This is a test job",
             jobPostTitle: "Delivery boy executive at test",
+            jobPostIncentives: "Incentives free text",
+            jobPostMinRequirement: "Minimum requirement free text",
+            jobPostAddress: "Address of the company",
+            jobPostPinCode: 560035,
             jobPostVacancy: 15,
             jobPostDescriptionAudio: "Delivery boy executive at test",
-            jobPostLocality: jobPostLocality
+            jobPostWorkFromHome: 1,
+            jobPostStatusId: 1,
+            pricingPlanTypeId: 1,
+            jobPostJobRoleId: 1,
+            jobPostCompanyId: 1,
+            jobPostShiftId: 1,
+            jobPostExperienceId: 1,
+            jobPostEducationId: 1,
+            jobPostLocalities: jobPostLocalities
         };
         $.ajax({
             type: "POST",

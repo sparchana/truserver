@@ -11,33 +11,28 @@ public class AddJobPostRequest {
     public Long jobPostMaxSalary;
     public Time jobPostStartTime;
     public Time jobPostEndTime;
-    public Boolean jobPostBenefitPf;
-    public Boolean jobPostBenefitFuel;
-    public Boolean jobPostBenefitInsurance;
-    public Boolean jobPostWorkFromHome;
+    public Boolean jobPostIsHot;
     public String jobPostDescription;
     public String jobPostTitle;
+    public String jobPostIncentives;
+    public String jobPostMinRequirement;
+    public String jobPostAddress;
+    public Long jobPostPinCode;
     public Integer jobPostVacancy;
     public String jobPostDescriptionAudio;
-    public Integer jobPostStatus;
-    public Integer jobPostJobRole;
-    public Integer jobPostCompany;
-    public Integer jobPostShift;
-    public Integer jobPostExperience;
-    public Integer jobPostEducation;
+    public Boolean jobPostWorkFromHome;
+    public Integer jobPostStatusId;
+    public Integer pricingPlanTypeId;
+    public Integer jobPostJobRoleId;
+    public Integer jobPostCompanyId;
+    public Integer jobPostShiftId;
+    public Integer jobPostExperienceId;
+    public Integer jobPostEducationId;
 
-    protected List<Integer> jobPostLocality;
+    protected List<Integer> jobPostLocalities;
 
     public Long getJobPostMinSalary() {
         return jobPostMinSalary;
-    }
-
-    public List<Integer> getJobPostLocality() {
-        return jobPostLocality;
-    }
-
-    public void setJobPostLocality(List<Integer> jobPostLocality) {
-        this.jobPostLocality = jobPostLocality;
     }
 
     public void setJobPostMinSalary(Long jobPostMinSalary) {
@@ -68,36 +63,12 @@ public class AddJobPostRequest {
         this.jobPostEndTime = jobPostEndTime;
     }
 
-    public Boolean getJobPostBenefitPf() {
-        return jobPostBenefitPf;
+    public Boolean getJobPostIsHot() {
+        return jobPostIsHot;
     }
 
-    public void setJobPostBenefitPf(Boolean jobPostBenefitPf) {
-        this.jobPostBenefitPf = jobPostBenefitPf;
-    }
-
-    public Boolean getJobPostBenefitFuel() {
-        return jobPostBenefitFuel;
-    }
-
-    public void setJobPostBenefitFuel(Boolean jobPostBenefitFuel) {
-        this.jobPostBenefitFuel = jobPostBenefitFuel;
-    }
-
-    public Boolean getJobPostBenefitInsurance() {
-        return jobPostBenefitInsurance;
-    }
-
-    public void setJobPostBenefitInsurance(Boolean jobPostBenefitInsurance) {
-        this.jobPostBenefitInsurance = jobPostBenefitInsurance;
-    }
-
-    public Boolean getJobPostWorkFromHome() {
-        return jobPostWorkFromHome;
-    }
-
-    public void setJobPostWorkFromHome(Boolean jobPostWorkFromHome) {
-        this.jobPostWorkFromHome = jobPostWorkFromHome;
+    public void setJobPostIsHot(Boolean jobPostIsHot) {
+        this.jobPostIsHot = jobPostIsHot;
     }
 
     public String getJobPostDescription() {
@@ -116,6 +87,38 @@ public class AddJobPostRequest {
         this.jobPostTitle = jobPostTitle;
     }
 
+    public String getJobPostIncentives() {
+        return jobPostIncentives;
+    }
+
+    public void setJobPostIncentives(String jobPostIncentives) {
+        this.jobPostIncentives = jobPostIncentives;
+    }
+
+    public String getJobPostMinRequirement() {
+        return jobPostMinRequirement;
+    }
+
+    public void setJobPostMinRequirement(String jobPostMinRequirement) {
+        this.jobPostMinRequirement = jobPostMinRequirement;
+    }
+
+    public String getJobPostAddress() {
+        return jobPostAddress;
+    }
+
+    public void setJobPostAddress(String jobPostAddress) {
+        this.jobPostAddress = jobPostAddress;
+    }
+
+    public Long getJobPostPinCode() {
+        return jobPostPinCode;
+    }
+
+    public void setJobPostPinCode(Long jobPostPinCode) {
+        this.jobPostPinCode = jobPostPinCode;
+    }
+
     public Integer getJobPostVacancy() {
         return jobPostVacancy;
     }
@@ -132,51 +135,75 @@ public class AddJobPostRequest {
         this.jobPostDescriptionAudio = jobPostDescriptionAudio;
     }
 
-    public Integer getJobPostStatus() {
-        return jobPostStatus;
+    public Boolean getJobPostWorkFromHome() {
+        return jobPostWorkFromHome;
     }
 
-    public void setJobPostStatus(Integer jobPostStatus) {
-        this.jobPostStatus = jobPostStatus;
+    public void setJobPostWorkFromHome(Boolean jobPostWorkFromHome) {
+        this.jobPostWorkFromHome = jobPostWorkFromHome;
     }
 
-    public Integer getJobPostJobRole() {
-        return jobPostJobRole;
+    public Integer getJobPostStatusId() {
+        return jobPostStatusId;
     }
 
-    public void setJobPostJobRole(Integer jobPostJobRole) {
-        this.jobPostJobRole = jobPostJobRole;
+    public void setJobPostStatusId(Integer jobPostStatusId) {
+        this.jobPostStatusId = jobPostStatusId;
     }
 
-    public Integer getJobPostCompany() {
-        return jobPostCompany;
+    public Integer getPricingPlanTypeId() {
+        return pricingPlanTypeId;
     }
 
-    public void setJobPostCompany(Integer jobPostCompany) {
-        this.jobPostCompany = jobPostCompany;
+    public void setPricingPlanTypeId(Integer pricingPlanTypeId) {
+        this.pricingPlanTypeId = pricingPlanTypeId;
     }
 
-    public Integer getJobPostShift() {
-        return jobPostShift;
+    public Integer getJobPostJobRoleId() {
+        return jobPostJobRoleId;
     }
 
-    public void setJobPostShift(Integer jobPostShift) {
-        this.jobPostShift = jobPostShift;
+    public void setJobPostJobRoleId(Integer jobPostJobRoleId) {
+        this.jobPostJobRoleId = jobPostJobRoleId;
     }
 
-    public Integer getJobPostExperience() {
-        return jobPostExperience;
+    public Integer getJobPostCompanyId() {
+        return jobPostCompanyId;
     }
 
-    public void setJobPostExperience(Integer jobPostExperience) {
-        this.jobPostExperience = jobPostExperience;
+    public void setJobPostCompanyId(Integer jobPostCompanyId) {
+        this.jobPostCompanyId = jobPostCompanyId;
     }
 
-    public Integer getJobPostEducation() {
-        return jobPostEducation;
+    public Integer getJobPostShiftId() {
+        return jobPostShiftId;
     }
 
-    public void setJobPostEducation(Integer jobPostEducation) {
-        this.jobPostEducation = jobPostEducation;
+    public void setJobPostShiftId(Integer jobPostShiftId) {
+        this.jobPostShiftId = jobPostShiftId;
+    }
+
+    public Integer getJobPostExperienceId() {
+        return jobPostExperienceId;
+    }
+
+    public void setJobPostExperienceId(Integer jobPostExperienceId) {
+        this.jobPostExperienceId = jobPostExperienceId;
+    }
+
+    public Integer getJobPostEducationId() {
+        return jobPostEducationId;
+    }
+
+    public void setJobPostEducationId(Integer jobPostEducationId) {
+        this.jobPostEducationId = jobPostEducationId;
+    }
+
+    public List<Integer> getJobPostLocalities() {
+        return jobPostLocalities;
+    }
+
+    public void setJobPostLocalities(List<Integer> jobPostLocalities) {
+        this.jobPostLocalities = jobPostLocalities;
     }
 }

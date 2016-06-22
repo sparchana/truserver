@@ -30,6 +30,8 @@ POST     /applyJob                                                controllers.Ap
 
 POST     /addJobPost                                              controllers.Application.addJobPost()
 
+POST     /addCompany                                              controllers.Application.addCompany()
+
 POST     /processCsv                                              controllers.Application.processcsv()
 
 GET      /dashboard                                               controllers.Application.dashboard()

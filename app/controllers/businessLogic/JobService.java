@@ -19,53 +19,58 @@ import java.util.List;
  */
 public class JobService {
     public static Integer addJobPost(AddJobPostRequest addJobPostRequest) {
-        List<Integer> jobPostLocalityList = addJobPostRequest.getJobPostLocality();
+        List<Integer> jobPostLocalityList = addJobPostRequest.getJobPostLocalities();
         JobPost newJobPost = new JobPost();
 
         newJobPost.setJobPostMinSalary(addJobPostRequest.getJobPostMinSalary());
         newJobPost.setJobPostMaxSalary(addJobPostRequest.getJobPostMaxSalary());
         newJobPost.setJobPostStartTime(addJobPostRequest.getJobPostStartTime());
         newJobPost.setJobPostEndTime(addJobPostRequest.getJobPostEndTime());
-        newJobPost.setJobPostWorkFromHome(addJobPostRequest.getJobPostWorkFromHome());
+        newJobPost.setJobPostIsHot(addJobPostRequest.getJobPostIsHot());
         newJobPost.setJobPostDescription(addJobPostRequest.getJobPostDescription());
-        newJobPost.setJobPostDescriptionAudio(addJobPostRequest.getJobPostDescriptionAudio());
         newJobPost.setJobPostTitle(addJobPostRequest.getJobPostTitle());
+        newJobPost.setJobPostIncentives(addJobPostRequest.getJobPostIncentives());
+        newJobPost.setJobPostMinRequirement(addJobPostRequest.getJobPostMinRequirement());
+        newJobPost.setJobPostAddress(addJobPostRequest.getJobPostAddress());
+        newJobPost.setJobPostPinCode(addJobPostRequest.getJobPostPinCode());
         newJobPost.setJobPostVacancy(addJobPostRequest.getJobPostVacancy());
+        newJobPost.setJobPostDescriptionAudio(addJobPostRequest.getJobPostDescriptionAudio());
+        newJobPost.setJobPostWorkFromHome(addJobPostRequest.getJobPostWorkFromHome());
+
         newJobPost.setJobPostToLocalityList(getJobPostLocality(jobPostLocalityList, newJobPost));
 
-        JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", "1").findUnique();
+        JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", addJobPostRequest.getJobPostStatusId()).findUnique();
         newJobPost.setJobPostStatus(jobStatus);
 
-        JobRole jobRole = JobRole.find.where().eq("jobRoleId", "5").findUnique();
+        JobRole jobRole = JobRole.find.where().eq("jobRoleId", addJobPostRequest.getJobPostJobRoleId()).findUnique();
         newJobPost.setJobRole(jobRole);
 
-        Company company = Company.find.where().eq("companyId","1").findUnique();
+        Company company = Company.find.where().eq("companyId", addJobPostRequest.getJobPostCompanyId()).findUnique();
         newJobPost.setCompany(company);
 
-        TimeShift timeShift = TimeShift.find.where().eq("timeShiftId","1").findUnique();
+        TimeShift timeShift = TimeShift.find.where().eq("timeShiftId", addJobPostRequest.getJobPostShiftId()).findUnique();
         newJobPost.setJobPostShift(timeShift);
 
-        Experience experience = Experience.find.where().eq("experienceId", "1").findUnique();
+        Experience experience = Experience.find.where().eq("experienceId", addJobPostRequest.getJobPostExperienceId()).findUnique();
         newJobPost.setJobPostExperience(experience);
 
-        Education education = Education.find.where().eq("educationId","1").findUnique();
+        Education education = Education.find.where().eq("educationId", addJobPostRequest.getJobPostEducationId()).findUnique();
         newJobPost.setJobPostEducation(education);
 
         newJobPost.save();
-        Logger.info("Sample JobPost Saved");
-
+        Logger.info("JobPost with jobId: " + newJobPost.getJobPostId() + " and job title: " + newJobPost.getJobPostTitle() + " created successfully");
         return 0;
     }
 
     public static ApplyJobResponse applyJob(String candidateMobile, Integer jobId) {
-        Logger.info(candidateMobile + " " + jobId);
+        Logger.info("checking user and jobId: " + candidateMobile + " + " + jobId);
         ApplyJobResponse applyJobResponse = new ApplyJobResponse();
         Candidate existingCandidate = CandidateService.isCandidateExists(candidateMobile);
         if(existingCandidate != null){
             JobPost existingJobPost = JobPost.find.where().eq("jobPostId",jobId).findUnique();
             if(existingJobPost == null ){
                 applyJobResponse.setStatus(ApplyJobResponse.STATUS_NO_JOB);
-                Logger.info("JobPost does not exists");
+                Logger.info("JobPost with jobId: " + jobId + " does not exists");
             }
             else{
                 JobApplication existingJobApplication = JobApplication.find.where().eq("candidateId", existingCandidate.getCandidateId()).eq("jobPostId", jobId).findUnique();
@@ -74,11 +79,11 @@ public class JobService {
                     jobApplication.setCandidate(existingCandidate);
                     jobApplication.setJobPost(existingJobPost);
                     jobApplication.save();
-                    Logger.info("Job Added Successfully");
+                    Logger.info("candidate: " + existingCandidate.getCandidateFirstName() + "with mobile: " + existingCandidate.getCandidateMobile() + " applied to the jobPost of JobPostId:" + existingJobPost.getJobPostId());
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_SUCCESS);
                 } else{
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_EXISTS);
-                    Logger.info("Candidate Already Applied");
+                    Logger.info("candidate: " + existingCandidate.getCandidateFirstName() + " with mobile: " + existingCandidate.getCandidateMobile() + " already applied to jobPost with jobId:" + existingJobPost.getJobPostId());
                 }
             }
         } else{

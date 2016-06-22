@@ -139,7 +139,7 @@ public class JobPost extends Model {
         this.jobPostUpdateTimestamp = new Timestamp(System.currentTimeMillis());
     }
 
-    public Boolean getJobPostIsHot() {
+    public Boolean getJobPostIsHot(Boolean isJobHot) {
         return jobPostIsHot;
     }
 

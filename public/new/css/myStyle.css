@@ -47,36 +47,6 @@ input::-webkit-inner-spin-button {
     color: white;
 }
 
-@media only screen and (max-width: 768px) {
-    #hot_box{
-        margin: 4%;
-    }
-    #fixed-menu{
-        margin-top: 0px;
-    }
-    #candidateName {
-		width: 96%;
-	}
-
-    #candidateFirstName {
-        width: 96%;
-    }
-
-    #candidateFirstNameModal {
-        width: 96%;
-    }
-
-	.candidateSecondNameMain {
-		width: 96%;
-		margin-top: 8px;
-		margin-left: 12px;
-	}
-
-    .candidateSecondNameDashboard {
-        margin-top: 8px;
-    }
-}
-
 .materialDash{
     height: 2px;
     width: 72px;
@@ -231,23 +201,6 @@ body{
     margin-top: 8px;
 }
 
-/* custom bootstrap code for 5 columns in single row */
-.col-xs-15,
-.col-sm-15,
-.col-md-15,
-.col-lg-15 {
-    text-align: center;
-    position: relative;
-    min-height: 1px;
-    padding-top: 8px;
-    padding-right: 24px;
-    padding-left: 24px;
-}
-.col-xs-15 {
-    width: 20%;
-    float: left;
-}
-
 #navigationbar{
     color: #ffffff;
 }
@@ -327,9 +280,52 @@ a:hover{
     color: #ffffff;
 }
 
-@media screen and (max-width: 540px) {
+#steps{
+    text-align: left;
+}
+
+@media screen and (max-width: 280px) {
+    #navLogo{
+        height: 24px;
+    }
+    #leadFormBox{
+        margin-top: 20px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    #hot_box{
+        margin: 4%;
+    }
     #fixed-menu{
-        margin-top: -32px;
+        margin-top: 0px;
+    }
+    #candidateName {
+        width: 96%;
+    }
+    #steps{
+        text-align: left;
+    }
+    #candidateFirstName {
+        width: 96%;
+    }
+
+    #candidateFirstNameModal {
+        width: 96%;
+    }
+
+    .candidateSecondNameMain {
+        width: 96%;
+        margin-top: 8px;
+        margin-left: 12px;
+    }
+
+    .candidateSecondNameDashboard {
+        margin-top: 8px;
+    }
+
+    #fixed-menu{
+        margin-top: -42px;
     }
     #leadFormBox{
         width: 70%;
@@ -344,9 +340,10 @@ a:hover{
     #educationalInstitute{
         margin-top: 80px;
     }
+
     #sectionOne {
         background-size: 220%;
-        margin-top: 38px;
+        margin-top: 48px;
         padding-top: 12%;
     }
 
@@ -387,28 +384,6 @@ a:hover{
 
 #headingMain {
     margin-top: 20px;
-}
-
-@media (min-width: 768px) {
-    .col-sm-15 {
-        width: 20%;
-        float: left;
-    }
-    #steps{
-        text-align: left;
-    }
-}
-@media (min-width: 992px) {
-    .col-md-15 {
-        width: 20%;
-        float: left;
-    }
-}
-@media (min-width: 1200px) {
-    .col-lg-15 {
-        width: 20%;
-        float: left;
-    }
 }
 
 /* custom bootstrap ends */

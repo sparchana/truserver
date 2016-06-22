@@ -8,11 +8,7 @@ import api.http.httpResponse.SupportInteractionNoteResponse;
 import api.http.httpResponse.SupportInteractionResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import controllers.businessLogic.AuthService;
-import controllers.businessLogic.CandidateService;
-import controllers.businessLogic.JobService;
-import controllers.businessLogic.FollowUpService;
-import controllers.businessLogic.LeadService;
+import controllers.businessLogic.*;
 import models.entity.*;
 import models.entity.OM.JobToSkill;
 import models.entity.OM.LocalityPreference;
@@ -242,6 +238,18 @@ public class Application extends Controller {
             e.printStackTrace();
         }
         return ok(toJson(JobService.addJobPost(addJobPostRequest)));
+    }
+
+    public static Result addCompany() {
+        JsonNode req = request().body().asJson();
+        AddCompanyRequest addCompanyRequest = new AddCompanyRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addCompanyRequest = newMapper.readValue(req.toString(), AddCompanyRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ok(toJson(CompanyService.addCompany(addCompanyRequest)));
     }
 
     public static Result loginSubmit() {

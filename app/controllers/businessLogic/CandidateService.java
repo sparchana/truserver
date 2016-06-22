@@ -29,7 +29,6 @@ import java.util.UUID;
 import static controllers.businessLogic.InteractionService.createInteractionForSignUpCandidate;
 import static controllers.businessLogic.LeadService.createOrUpdateConvertedLead;
 import static models.util.Util.generateOtp;
-import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 
 /**
@@ -790,7 +789,6 @@ public class CandidateService
                 Logger.info("No User");
             }
         }
-        Logger.info(" LoginResponse Returned: " + toJson(loginResponse));
         return loginResponse;
     }
 

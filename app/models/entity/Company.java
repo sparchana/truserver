@@ -39,13 +39,19 @@ public class Company extends Model {
     @Column(name = "CompanyDescription", columnDefinition = "varchar(500) null")
     private String companyDescription;
 
+    @Column(name = "CompanyAddress", columnDefinition = "varchar(1000) null")
+    private String companyAddress;
+
+    @Column(name = "CompanyPinCode", columnDefinition = "bigint signed null")
+    private Long companyPinCode;
+
     @Column(name = "CompanyLogo", columnDefinition = "varchar(80) null")
     private String companyLogo;
 
-    @Column(name = "CompanyCreateTimestamp", columnDefinition = "timestamp null")
+    @Column(name = "CompanyCreateTimestamp", columnDefinition = "timestamp not null")
     private Timestamp companyCreateTimestamp;
 
-    @Column(name = "CompanyUpdateTimestamp", columnDefinition = "timestamp null")
+    @Column(name = "CompanyUpdateTimestamp", columnDefinition = "timestamp not null")
     private Timestamp companyUpdateTimestamp;
 
     @ManyToOne
@@ -122,6 +128,30 @@ public class Company extends Model {
 
     public void setCompanyDescription(String companyDescription) {
         this.companyDescription = companyDescription;
+    }
+
+    public String getCompanyAddress() {
+        return companyAddress;
+    }
+
+    public void setCompanyAddress(String companyAddress) {
+        this.companyAddress = companyAddress;
+    }
+
+    public Long getCompanyPinCode() {
+        return companyPinCode;
+    }
+
+    public void setCompanyPinCode(Long companyPinCode) {
+        this.companyPinCode = companyPinCode;
+    }
+
+    public List<JobPost> getJobPostList() {
+        return jobPostList;
+    }
+
+    public void setJobPostList(List<JobPost> jobPostList) {
+        this.jobPostList = jobPostList;
     }
 
     public String getCompanyLogo() {
