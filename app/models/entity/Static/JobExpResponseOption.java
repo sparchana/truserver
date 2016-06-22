@@ -21,7 +21,7 @@ public class JobExpResponseOption extends Model{
     @Column(name = "ResponseGroupId", columnDefinition = "int signed null")
     private Integer responseGroupId;
 
-    @Column(name = "JobExpResponseNameId", columnDefinition = "varchar(255)", unique = true)
+    @Column(name = "JobExpResponseName", columnDefinition = "varchar(255)")
     private String jobExpResponseName;
 
     public static Model.Finder<String, JobExpResponseOption> find = new Model.Finder(JobExpResponseOption.class);

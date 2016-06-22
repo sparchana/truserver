@@ -755,4 +755,19 @@ public class Application extends Controller {
         else
             return ok("no records");
     }
+
+    public static Result getAllJobExpQuestion() {
+        List<JobExpQuestion> jobExpQuestionList = JobExpQuestion.find.all();
+        return ok(toJson(jobExpQuestionList));
+    }
+
+    public static Result getJobExpQuestion(Long jobRoleId) {
+        if(jobRoleId != null){
+            List<JobExpQuestion> response = JobExpQuestion.find.where().eq("jobRoleId", jobRoleId).findList();
+            if(response != null && !response.isEmpty()){
+                return ok(toJson(response));
+            }
+        }
+        return ok();
+    }
 }

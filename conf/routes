@@ -60,6 +60,10 @@ GET      /getAllIdProof                                           controllers.Ap
 
 GET      /getAllDegree                                            controllers.Application.getAllDegree()
 
+GET      /getAllJobExpQuestion                                    controllers.Application.getAllJobExpQuestion()
+
+GET      /getJobExpQuestion/:jobRoleId                            controllers.Application.getJobExpQuestion(jobRoleId : Long)
+
 GET      /getUserInfo/:id                                         controllers.Application.getUserInfo(id : Long)
 
 GET      /getCandidateInfo/:id                                    controllers.Application.getCandidateInfo(id : Long)

@@ -438,6 +438,13 @@ public class Candidate extends Model {
         return candidateEducation;
     }
 
+    public List<CandidateExp> getCandidateExpList() {
+        return candidateExpList;
+    }
+
+    public void setCandidateExpList(List<CandidateExp> candidateExpList) {
+        this.candidateExpList = candidateExpList;
+    }
 }
 
 

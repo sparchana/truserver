@@ -1,9 +1,11 @@
 package models.entity.Static;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.PrivateOwned;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created by zero on 20/6/16.
@@ -28,6 +30,11 @@ public class JobExpQuestion extends Model {
 
     @Column(name = "JobExpQuestion", columnDefinition = "text null")
     private String jobExpQuestion;
+
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "jobExpQuestion", cascade = CascadeType.ALL)
+    private List<JobExpResponse> jobExpResponseList;
 
     public static Model.Finder<String, JobExpQuestion> find = new Model.Finder(JobExpQuestion.class);
 
@@ -61,5 +68,13 @@ public class JobExpQuestion extends Model {
 
     public void setJobExpQuestion(String jobExpQuestion) {
         this.jobExpQuestion = jobExpQuestion;
+    }
+
+    public List<JobExpResponse> getJobExpResponseList() {
+        return jobExpResponseList;
+    }
+
+    public void setJobExpResponseList(List<JobExpResponse> jobExpResponseList) {
+        this.jobExpResponseList = jobExpResponseList;
     }
 }

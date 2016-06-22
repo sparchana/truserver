@@ -29,8 +29,7 @@ create table jobexpresponse (
 create table jobexpresponseoption (
   jobexpresponseoptionid        int signed auto_increment not null,
   responsegroupid               int signed null,
-  jobexpresponsenameid          varchar(255),
-  constraint uq_jobexpresponseoption_jobexpresponsenameid unique (jobexpresponsenameid),
+  jobexpresponsename            varchar(255),
   constraint pk_jobexpresponseoption primary key (jobexpresponseoptionid)
 );
 
