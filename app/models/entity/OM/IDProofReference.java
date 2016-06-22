@@ -1,6 +1,7 @@
 package models.entity.OM;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
@@ -20,8 +21,9 @@ public class IDProofReference extends Model {
     @Column(name = "IDProofReferenceId", columnDefinition = "int signed", unique = true)
     private int idProofReferenceId;
 
+    @UpdatedTimestamp
     @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp null")
-    private Timestamp updateTimeStamp = new Timestamp(System.currentTimeMillis());
+    private Timestamp updateTimeStamp;
 
     @ManyToOne
     @JsonBackReference

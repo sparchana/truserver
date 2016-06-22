@@ -1,6 +1,7 @@
 package models.entity;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.UpdatedTimestamp;
 import models.util.Util;
 import play.Logger;
 
@@ -41,6 +42,7 @@ public class Auth extends Model {
     @Column(name = "authCreateTimestamp", columnDefinition = "timestamp not null")
     private Timestamp authCreateTimestamp;
 
+    @UpdatedTimestamp
     @Column(name = "authUpdateTimestamp", columnDefinition = "timestamp null")
     private Timestamp authUpdateTimestamp;
 

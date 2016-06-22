@@ -2,6 +2,7 @@ package models.entity;
 
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.PrivateOwned;
+import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.OM.*;
 import models.entity.OO.CandidateCurrentJobDetail;
@@ -69,6 +70,7 @@ public class Candidate extends Model {
     @Column(name = "CandidateCreateTimestamp", columnDefinition = "timestamp not null")
     private Timestamp candidateCreateTimestamp;
 
+    @UpdatedTimestamp
     @Column(name = "CandidateUpdateTimestamp", columnDefinition = "timestamp null")
     private Timestamp candidateUpdateTimestamp;
 

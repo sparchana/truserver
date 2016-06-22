@@ -559,7 +559,6 @@ public class CandidateService
                 Logger.info("Language static table is empty for:" + candidateKnownLanguage.getId());
                 return null;
             }
-            languageKnown.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
             languageKnown.setLanguage(language);
             languageKnown.setReadingAbility(candidateKnownLanguage.getR());
             languageKnown.setWritingAbility(candidateKnownLanguage.getW());
@@ -589,7 +588,6 @@ public class CandidateService
             }
             idProofReference.setIdProof(idProof);
             idProofReference.setCandidate(candidate);
-            idProofReference.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
             response.add(idProofReference);
         }
         return response;
@@ -615,7 +613,6 @@ public class CandidateService
         if(degree != null){
             response.setDegree(degree);
         }
-        response.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
         if(!Strings.isNullOrEmpty(request.getCandidateEducationInstitute())){
             response.setCandidateLastInstitute(request.getCandidateEducationInstitute());
         }
@@ -641,7 +638,6 @@ public class CandidateService
                 return null;
             }
             candidateSkill.setCandidate(candidate);
-            candidateSkill.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
             candidateSkill.setSkill(skill);
             candidateSkill.setSkillQualifier(skillQualifier);
             response.add(candidateSkill);
@@ -659,7 +655,6 @@ public class CandidateService
             Logger.info("No info related to Candidate Past Job was Provided");
             return null;
         }
-        jobHistory.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
         jobHistory.setCandidatePastSalary(request.getCandidatePastJobSalary());
         jobHistory.setCandidatePastCompany(request.getCandidatePastJobCompany());
         if(request.getCandidatePastJobRole() != null){
@@ -691,7 +686,6 @@ public class CandidateService
             }
             response.setTimeShift(existingTimeShift);
         }
-        response.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
         return response;
     }
 
@@ -704,7 +698,6 @@ public class CandidateService
 
         Logger.info("inserting current Job details");
         try{
-            response.setUpdateTimeStamp( new Timestamp(System.currentTimeMillis()));
             response.setCandidateCurrentCompany( request.getCandidateCurrentCompany());
             response.setCandidateCurrentSalary(request.getCandidateCurrentSalary());
 
@@ -823,7 +816,6 @@ public class CandidateService
         for(Integer  s : jobsList) {
             JobPreference candidateJobPreference = new JobPreference();
             candidateJobPreference.setCandidate(candidate);
-            candidateJobPreference.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
             JobRole jobRole = JobRole.find.where().eq("JobRoleId", s).findUnique();
             candidateJobPreference.setJobRole(jobRole);
             candidateJobPreferences.add(candidateJobPreference);
@@ -836,7 +828,6 @@ public class CandidateService
         for(Integer  localityId : localityList) {
             LocalityPreference candidateLocalityPreference = new LocalityPreference();
             candidateLocalityPreference.setCandidate(candidate);
-            candidateLocalityPreference.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
             Locality locality = Locality.find.where()
                     .eq("localityId", localityId).findUnique();
             candidateLocalityPreference.setLocality(locality);

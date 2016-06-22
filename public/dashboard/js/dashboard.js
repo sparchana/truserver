@@ -56,7 +56,7 @@ $(document).ready(function(){
     /* ajax commands to fetch all localities and jobs*/
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllLocality",
             data: false,
             async: false,
@@ -70,7 +70,7 @@ $(document).ready(function(){
 
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllJobs",
             data: false,
             async: false,
@@ -84,7 +84,7 @@ $(document).ready(function(){
 
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllShift",
             data: false,
             async: false,
@@ -176,7 +176,7 @@ function fetchSkillAjaxApis() {
     }
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllLanguage",
             data: false,
             async: false,
@@ -194,7 +194,7 @@ function fetchSkillAjaxApis() {
 function fetchEducationAjaxApis() {
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllEducation",
             data: false,
             async: false,
@@ -208,7 +208,7 @@ function fetchEducationAjaxApis() {
 
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllDegree",
             data: false,
             async: false,

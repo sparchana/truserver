@@ -40,25 +40,25 @@ POST     /processCsv                                              controllers.Ap
 
 GET      /getAll/:id                                              controllers.Application.getAll(id: Integer)
 
-GET      /getAllLocality                                          controllers.Application.getAllLocality()
+POST     /getAllLocality                                          controllers.Application.getAllLocality()
 
-GET      /getAllJobs                                              controllers.Application.getAllJobs()
+POST     /getAllJobs                                              controllers.Application.getAllJobs()
 
-GET      /getAllShift                                             controllers.Application.getAllShift()
+POST      /getAllShift                                             controllers.Application.getAllShift()
 
-GET      /getAllTransportation                                    controllers.Application.getAllTransportation()
+POST      /getAllTransportation                                    controllers.Application.getAllTransportation()
 
-GET      /getAllEducation                                         controllers.Application.getAllEducation()
+POST      /getAllEducation                                         controllers.Application.getAllEducation()
 
-GET      /getAllLeadSource                                        controllers.Application.getAllLeadSource()
+POST      /getAllLeadSource                                        controllers.Application.getAllLeadSource()
 
 GET      /getSupportAgent                                         controllers.Application.getSupportAgent()
 
-GET      /getAllLanguage                                          controllers.Application.getAllLanguage()
+POST      /getAllLanguage                                          controllers.Application.getAllLanguage()
 
-GET      /getAllIdProof                                           controllers.Application.getAllIdProof()
+POST      /getAllIdProof                                           controllers.Application.getAllIdProof()
 
-GET      /getAllDegree                                            controllers.Application.getAllDegree()
+POST      /getAllDegree                                            controllers.Application.getAllDegree()
 
 GET      /getUserInfo/:id                                         controllers.Application.getUserInfo(id : Long)
 
