@@ -19,6 +19,7 @@
             <!-- Custom CSS -->
         <link href="/assets/dashboard/css/dashboard.css" rel="stylesheet">
         <script type="text/javascript" src="//www.google.com/jsapi"></script>
+        <script type="text/javascript" src="/assets/dashboard/js/user_login.js"></script>
         <script type="text/javascript" src="/assets/dashboard/js/candidate_home.js"></script>
         <link rel="stylesheet" type="text/css" href="/assets/new/css/myStyle.css">
 
@@ -37,22 +38,6 @@
           }
 
           google.load('visualization', '1', {packages: ['table']});
-
-          function logoutUser() {
-              localStorage.clear();
-              window.location = "/";
-              try {
-                  $.ajax({
-                      type: "GET",
-                      url: "/logoutUser",
-                      data: false,
-                      contentType: false,
-                      processData: false,
-                  });
-              } catch (exception) {
-                  console.log("exception occured!!" + exception);
-              }
-          }
     </script>
     </head>
 

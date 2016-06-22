@@ -29,28 +29,6 @@
           function showEditProfile(){
               window.location = "/dashboard/editProfile";
           }
-
-          var userMobile = localStorage.getItem("mobile");
-          if(userMobile == null){
-            logoutUser();
-            window.location = "/";
-          }
-
-          function logoutUser() {
-            localStorage.clear();
-            window.location = "/";
-            try {
-              $.ajax({
-                type: "GET",
-                url: "/logoutUser",
-                data: false,
-                contentType: false,
-                processData: false,
-              });
-            } catch (exception) {
-              console.log("exception occured!!" + exception);
-            }
-          }
     </script>
   </head>
 
@@ -163,7 +141,8 @@
       <!-- Including Bootstrap -->
     <script src="/assets/dashboard/js/jquery.js"></script>
     <script src="/assets/dashboard/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/assets/dashboard/js/appliedJobs.js"></script>
+    <script type="text/javascript" src="/assets/dashboard/js/user_login.js"></script>
+    <script type="text/javascript" src="/assets/dashboard/js/applied_jobs.js"></script>
       <!-- Menu Toggle Script -->
     <script>
           $("#menu-toggle").click(function(e) {
