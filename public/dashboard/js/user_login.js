@@ -20,7 +20,7 @@ function checkUserLogin(){
     }
     else{
         logoutUser();
-        window.location = "/new";
+        window.location = "/";
     }
 }
 

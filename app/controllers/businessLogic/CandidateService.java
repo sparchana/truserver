@@ -769,12 +769,15 @@ public class CandidateService
                     loginResponse.setCandidateFirstName(existingCandidate.getCandidateFirstName());
                     loginResponse.setCandidateLastName(existingCandidate.getCandidateLastName());
                     loginResponse.setIsAssessed(existingCandidate.getCandidateIsAssessed());
+                    loginResponse.setMinProfile(existingCandidate.getIsMinProfileComplete());
                     loginResponse.setLeadId(existingCandidate.getLead().getLeadId());
                     loginResponse.setStatus(loginResponse.STATUS_SUCCESS);
 
                     existingAuth.setAuthSessionId(UUID.randomUUID().toString());
                     existingAuth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
                     session("sessionId", existingAuth.getAuthSessionId());
+                    session("candidateId", String.valueOf(existingCandidate.getCandidateId()));
+                    session("leadId", String.valueOf(existingCandidate.getLead().getLeadId()));
                     session("sessionExpiry", String.valueOf(existingAuth.getAuthSessionIdExpiryMillis()));
                     existingAuth.update();
                     Logger.info("Login Successful");

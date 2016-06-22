@@ -3,33 +3,11 @@
  */
 
 $(document).ready(function(){
-    var userMobile = localStorage.getItem("mobile");
-    var userName = localStorage.getItem("name");
-    var userLastName = localStorage.getItem("lastName");
-
-    if(userMobile != null){
-        document.getElementById("helloMsg").innerHTML = "Hello " + userName + "!";
-        try{
-            if(userLastName == "null" || userLastName == null){
-                document.getElementById("userName").innerHTML = userName;
-            } else{
-                document.getElementById("userName").innerHTML = userName + " " + userLastName;
-            }
-            document.getElementById("userMobile").innerHTML = userMobile;
-        } catch(err){
-        }
-
-        $('#userExist').show();
-    }
-    else{
-        logoutUser();
-        window.location = "/new";
-    }
-
+    checkUserLogin();
     try {
         $.ajax({
             type: "GET",
-            url: "/getCandidateInfo/" + localStorage.getItem("leadId"),
+            url: "/getCandidateJobApplication",
             data: false,
             async: false,
             contentType: false,
@@ -42,12 +20,12 @@ $(document).ready(function(){
 });
 
 function processDataAndFetchAppliedJobs(returnedData) {
-    if(returnedData.isMinProfileComplete == "0"){
+    if(localStorage.getItem("minProfile") == 0){
         $("#profileIncomplete").show();
     } else{
         $("#profileIncomplete").hide();
     }
-    var candidateJobApplication = returnedData.jobApplicationList;
+    var candidateJobApplication = returnedData;
     if(Object.keys(candidateJobApplication).length > 0){
         candidateJobApplication.forEach(function (jobApplication) {
             prePopulateJobSection(jobApplication);

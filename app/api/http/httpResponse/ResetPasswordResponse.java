@@ -10,11 +10,20 @@ public class ResetPasswordResponse {
 
     public int status;
     public int otp;
+    public int minProfile;
     public long accountStatus;
     public long candidateId;
     public String candidateName;
     public String candidateEmail;
     public String candidateMobile;
+
+    public int getMinProfile() {
+        return minProfile;
+    }
+
+    public void setMinProfile(int minProfile) {
+        this.minProfile = minProfile;
+    }
 
     public void setStatus(int status) {
         this.status = status;

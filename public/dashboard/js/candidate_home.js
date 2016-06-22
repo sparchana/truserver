@@ -1,12 +1,14 @@
 /**
  * Created by batcoder1 on 4/6/16.
  */
+
+var minProfileComplete = 0;
 $(document).ready(function(){
     checkUserLogin();
     try {
         $.ajax({
             type: "GET",
-            url: "/getCandidateInfo/" + localStorage.getItem("leadId"),
+            url: "/getCandidateInfoDashboard",
             data: false,
             async: false,
             contentType: false,
@@ -42,7 +44,7 @@ $(document).ready(function(){
                 // update isAssessed status to '1'
                 $.ajax({
                     type: "GET",
-                    url: "/updateIsAssessedToAssessed/" + localStorage.getItem("id"),
+                    url: "/updateIsAssessedToAssessed",
                     processData: false,
                     success: processAssessedStatus
                 });
@@ -254,6 +256,7 @@ function setJobs(returnedData, start, totalJobs){
 }
 
 function processDataAndFillMinProfile(returnedData) {
+    minProfileComplete = returnedData.isMinProfileComplete;
     if(returnedData.isMinProfileComplete == 0){ // profile not complete
         document.getElementById("profileStatusResult").innerHTML = '<font color="#F26522">Incomplete</font>';
         document.getElementById("profileStatusAction").innerHTML = '<font size="2" color="#F26522">(Complete Profile)</font>';
@@ -422,7 +425,7 @@ function handleQueryResponse(response) {
         // update isAssessed status to '1'
         $.ajax({
             type: "GET",
-            url: "/updateIsAssessedToAssessed/" + localStorage.getItem("id"),
+            url: "/updateIsAssessedToAssessed",
             processData: false,
             success: processAssessedStatus
         });

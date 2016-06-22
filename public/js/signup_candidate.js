@@ -47,6 +47,7 @@ function processDataAddAuth(returnedData) {
         localStorage.setItem("id", returnedData.candidateId);
         localStorage.setItem("leadId", returnedData.leadId);
         localStorage.setItem("assessed", returnedData.isAssessed);
+        localStorage.setItem("minProfile", returnedData.minProfile);
         console.log(returnedData.candidateId);
 
         if(applyJobFlag == 1){

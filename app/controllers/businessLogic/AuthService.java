@@ -48,6 +48,7 @@ public class AuthService {
                 candidateSignUpResponse.setCandidateLastName(existingCandidate.getCandidateLastName());
                 candidateSignUpResponse.setCandidateId(existingCandidate.getCandidateId());
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+                candidateSignUpResponse.setMinProfile(existingCandidate.getIsMinProfileComplete());
                 candidateSignUpResponse.setIsAssessed(existingCandidate.getCandidateIsAssessed());
                 candidateSignUpResponse.setLeadId(existingCandidate.getLead().getLeadId());
             }
@@ -92,6 +93,7 @@ public class AuthService {
                 candidateSignUpResponse.setCandidateLastName(existingCandidate.getCandidateLastName());
                 candidateSignUpResponse.setCandidateId(existingCandidate.getCandidateId());
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+                candidateSignUpResponse.setMinProfile(existingCandidate.getIsMinProfileComplete());
                 candidateSignUpResponse.setIsAssessed(existingCandidate.getCandidateIsAssessed());
                 candidateSignUpResponse.setLeadId(existingCandidate.getLead().getLeadId());
             }

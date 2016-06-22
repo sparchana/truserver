@@ -12,9 +12,8 @@ function processDataLogin(returnedData) {
         localStorage.setItem("mobile", "+91" + candidateMobile);
         localStorage.setItem("name", returnedData.candidateFirstName);
         localStorage.setItem("lastName", returnedData.candidateLastName);
-        localStorage.setItem("id", returnedData.candidateId);
-        localStorage.setItem("leadId", returnedData.leadId);
         localStorage.setItem("assessed", returnedData.isAssessed);
+        localStorage.setItem("minProfile", returnedData.minProfile);
 
         if(applyJobFlag == 1){
             $("#myLoginModal").modal("hide");

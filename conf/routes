@@ -72,9 +72,13 @@ GET      /getAllDegree                                            controllers.Ap
 
 GET      /getUserInfo/:id                                         controllers.Application.getUserInfo(id : Long)
 
+GET      /getCandidateInfoDashboard                               controllers.Application.getCandidateInfoDashboard()
+
 GET      /getCandidateInfo/:id                                    controllers.Application.getCandidateInfo(id : Long)
 
 GET      /getCandidateLocality/:id                                controllers.Application.getCandidateLocality(id : Long)
+
+GET      /getCandidateJobApplication                             controllers.Application.getCandidateJobApplication()
 
 GET      /getCompanyInfo/:id                                      controllers.Application.getCompanyInfo(id : Long)
 
@@ -86,7 +90,7 @@ GET      /getAllSkills/:id                                        controllers.Ap
 
 GET      /updateLeadType/:leadId/:newStatus                       controllers.Application.updateLeadType(leadId: Long, newStatus: Long)
 
-GET      /updateIsAssessedToAssessed/:leadId                      controllers.Application.updateIsAssessedToAssessed(leadId: Long)
+GET      /updateIsAssessedToAssessed                              controllers.Application.updateIsAssessedToAssessed()
 
 GET      /updateLeadStatus/:leadId/:leadStatus/:res               controllers.Application.updateLeadStatus(leadId: Long, leadStatus: Integer,res: String)
 

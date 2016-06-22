@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
 import models.entity.*;
+import models.entity.OM.JobApplication;
 import models.entity.OM.JobToSkill;
 import models.entity.OM.LocalityPreference;
 import models.entity.Static.*;
@@ -394,6 +395,18 @@ public class Application extends Controller {
         }
         return ok();
     }
+
+    public static Result getCandidateInfoDashboard() {
+        Lead lead = Lead.find.where().eq("leadId", session().get("leadId")).findUnique();
+        if(lead != null) {
+            Candidate candidate = Candidate.find.where().eq("lead_leadId", lead.getLeadId()).findUnique();
+            if(candidate!=null){
+                return ok(toJson(candidate));
+            }
+        }
+        return ok("0");
+    }
+
     @Security.Authenticated(Secured.class)
     public static Result getCandidateInfo(long leadId) {
             Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
@@ -436,6 +449,14 @@ public class Application extends Controller {
         if(candidateLocalities == null)
             return ok("0");
         return ok(toJson(candidateLocalities));
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result getCandidateJobApplication() {
+        List<JobApplication> jobApplicationList = JobApplication.find.where().eq("candidateId", session().get("candidateId")).findList();
+        if(jobApplicationList == null)
+            return ok("0");
+        return ok(toJson(jobApplicationList));
     }
 
     public static Result checkMinProfile(long id) {
@@ -489,6 +510,7 @@ public class Application extends Controller {
             return ok(views.html.candidate_home.render());
         }
         else{
+            Logger.info("Candidate Logged Out");
             return ok(views.html.index.render());
         }
     }
@@ -520,9 +542,9 @@ public class Application extends Controller {
         return redirect(routes.Application.supportAuth());
     }
 
-    public static Result updateIsAssessedToAssessed(long candidateId) {
+    public static Result updateIsAssessedToAssessed() {
         try{
-            Candidate existingCandidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
+            Candidate existingCandidate = Candidate.find.where().eq("candidateId", session().get("candidateId")).findUnique();
             try{
                 existingCandidate.setCandidateIsAssessed(ServerConstants.CANDIDATE_ASSESSED);
                 existingCandidate.update();

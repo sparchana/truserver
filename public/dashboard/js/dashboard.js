@@ -26,8 +26,6 @@ var endPoint;
 /* candidate Data returned JSON */
 var candidateInformation;
 
-var leadId = localStorage.getItem("leadId");
-
 $(document).ready(function(){
     /* Section Disable */
     $("#basicProfileSection").show();
@@ -124,7 +122,7 @@ $(document).ready(function(){
 try {
     $.ajax({
         type: "GET",
-        url: "/getCandidateInfo/" + leadId,
+        url: "/getCandidateInfoDashboard",
         data: false,
         async: false,
         contentType: false,
