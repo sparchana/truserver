@@ -874,6 +874,119 @@ function processDataCheckSkills(returnedData) {
     $(".btn-group").removeClass('active');
     prefillSkills(candidateSkill);
 }
+function processDataCheckExp(returnedData) {
+    var selectIdList =[];
+    console.log(JSON.stringify(returnedData));
+    var count = 0;
+    var tableExpDuration = document.getElementById("expDurationTable");
+    var tableExpOther = document.getElementById("expOtherTable");
+    $('#expDurationTable').empty();
+    $('#expOtherTable').empty();
+    var prevJobRoleId = -99;
+    returnedData.forEach(function (singleQuestion) {
+        if(singleQuestion.expCategory.expCategoryName == 'Duration'){
+            count++;
+            var row = tableExpDuration.insertRow(0);
+
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+
+            cell1.innerHTML = '<div id="jobId_'+singleQuestion.jobExpQuestionId+'">'+singleQuestion.jobExpQuestion+'</div>';
+
+            var selectList = document.createElement("select");
+            selectList.setAttribute("id", "exp_duration_"+singleQuestion.jobExpQuestionId);
+            var option = document.createElement("option");
+            option.setAttribute("value", "-1");
+            option.text = "Select";
+            selectList.appendChild(option);
+            var expDurationResponseList = singleQuestion.jobExpResponseList;
+
+            expDurationResponseList.forEach(function (expDurationResponse) {
+                if(expDurationResponse != null){
+                    var option = document.createElement("option");
+                    option.setAttribute("value", expDurationResponse.jobExpResponseOption.jobExpResponseOptionId);
+                    option.text = expDurationResponse.jobExpResponseOption.jobExpResponseOptionName;
+                    selectList.appendChild(option);
+                }
+            });
+            cell2.appendChild(selectList);
+            $('#expDurationTable tr:last').after(row);
+
+        }
+        else {
+            if(prevJobRoleId != singleQuestion.jobRole.jobRoleId){
+                // create a new title row
+                prevJobRoleId = singleQuestion.jobRole.jobRoleId;
+                var tr = tableExpOther.insertRow(0);
+                var td = tr.insertCell(0);
+                tr.insertCell(1);
+                td.innerHTML = '<div style="font-weight: bold;" id="jobId_'+singleQuestion.jobExpQuestionId+'"> Tell us about your '+singleQuestion.jobRole.jobName+' experience </div>';
+                td.setAttribute("width", "100%");
+                $('#expOtherTable tr:last').after(tr);
+            }
+            count++;
+            var row = tableExpOther.insertRow(0);
+
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+
+            cell1.innerHTML = '<div id="jobId_'+singleQuestion.jobExpQuestionId+'">'+singleQuestion.jobExpQuestion+'</div>';
+
+            var selectList = document.createElement("select");
+            selectList.multiple = true;
+            selectList.setAttribute("id", "exp_other_"+singleQuestion.jobExpQuestionId);
+            selectIdList.push("exp_other_"+singleQuestion.jobExpQuestionId);
+
+            var expOtherResponseList = singleQuestion.jobExpResponseList;
+
+            expOtherResponseList.forEach(function (expOtherResponse) {
+                if(expOtherResponse != null){
+                    var option = document.createElement("option");
+                    option.setAttribute("value", expOtherResponse.jobExpResponseOption.jobExpResponseOptionId);
+                    option.text = expOtherResponse.jobExpResponseOption.jobExpResponseOptionName;
+                    selectList.appendChild(option);
+                }
+            });
+            cell2.appendChild(selectList);
+            $('#expOtherTable tr:last').after(row);
+        }
+
+    });
+    if (count == 0) {
+    }
+    selectIdList.forEach( function(selectId){
+        $('#'+selectId).multiselect({
+            dropRight: true,
+            numberDisplayed: 0,
+            buttonWidth: '100%'
+        });
+    });
+    $(".btn-group").attr("data-toggle", "buttons");
+    $(".btn-group").removeClass('active');
+    //prefillExperience(candidateExp);
+}
+
+function generateExperience() {
+    var myNode = document.getElementById("exp_duration_details");
+    /*myNode.innerHTML = '';*/
+    var selectedJobPref = $('#candidateJobPref').val();
+    console.log("selectedJobPref : " + JSON.stringify(selectedJobPref));
+    if (selectedJobPref != null && selectedJobPref !== '') {
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/getJobExpQuestion/" + selectedJobPref,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataCheckExp
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+}
 
 function generateSkills() {
     var myNode = document.getElementById("skill_details");
@@ -1280,6 +1393,7 @@ $(function () {
 
     $('#candidateJobPref').change(function () {
         generateSkills();
+        generateExperience();
     });
     // auto save code : incomplete
     /*  $('#candidateSignUpSupportForm').change(function () {

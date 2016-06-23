@@ -21,8 +21,8 @@ public class JobExpResponseOption extends Model{
     @Column(name = "ResponseGroupId", columnDefinition = "int signed null")
     private Integer responseGroupId;
 
-    @Column(name = "JobExpResponseName", columnDefinition = "varchar(255)")
-    private String jobExpResponseName;
+    @Column(name = "JobExpResponseOptionName", columnDefinition = "varchar(255)")
+    private String jobExpResponseOptionName;
 
     public static Model.Finder<String, JobExpResponseOption> find = new Model.Finder(JobExpResponseOption.class);
 
@@ -42,11 +42,11 @@ public class JobExpResponseOption extends Model{
         this.responseGroupId = responseGroupId;
     }
 
-    public String getJobExpResponseName() {
-        return jobExpResponseName;
+    public String getJobExpResponseOptionName() {
+        return jobExpResponseOptionName;
     }
 
-    public void setJobExpResponseName(String jobExpResponseName) {
-        this.jobExpResponseName = jobExpResponseName;
+    public void setJobExpResponseOptionName(String jobExpResponseOptionName) {
+        this.jobExpResponseOptionName = jobExpResponseOptionName;
     }
 }

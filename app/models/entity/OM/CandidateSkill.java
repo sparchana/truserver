@@ -83,4 +83,12 @@ public class CandidateSkill extends Model {
     public SkillQualifier getSkillQualifier() {
         return skillQualifier;
     }
+
+    public boolean isCandidateSkillResponse() {
+        return candidateSkillResponse;
+    }
+
+    public void setCandidateSkillResponse(boolean candidateSkillResponse) {
+        this.candidateSkillResponse = candidateSkillResponse;
+    }
 }

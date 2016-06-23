@@ -62,7 +62,7 @@ GET      /getAllDegree                                            controllers.Ap
 
 GET      /getAllJobExpQuestion                                    controllers.Application.getAllJobExpQuestion()
 
-GET      /getJobExpQuestion/:jobRoleId                            controllers.Application.getJobExpQuestion(jobRoleId : Long)
+POST     /getJobExpQuestion/:jobRoleIdList                        controllers.Application.getJobExpQuestion(jobRoleIdList : String)
 
 GET      /getUserInfo/:id                                         controllers.Application.getUserInfo(id : Long)
 

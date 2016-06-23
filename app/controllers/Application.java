@@ -761,12 +761,17 @@ public class Application extends Controller {
         return ok(toJson(jobExpQuestionList));
     }
 
-    public static Result getJobExpQuestion(Long jobRoleId) {
-        if(jobRoleId != null){
-            List<JobExpQuestion> response = JobExpQuestion.find.where().eq("jobRoleId", jobRoleId).findList();
-            if(response != null && !response.isEmpty()){
-                return ok(toJson(response));
+    public static Result getJobExpQuestion(String jobRoleIds) {
+        List<String> jobRoleIdList = Arrays.asList(jobRoleIds.split("\\s*,\\s*"));
+        List<JobExpQuestion> response = new ArrayList<>();
+        if(jobRoleIdList != null){
+            for(String jobRoleId: jobRoleIdList) {
+                List<JobExpQuestion> jobExpQuestionList = JobExpQuestion.find.where().eq("jobRoleId", jobRoleId).findList();
+                if(jobExpQuestionList != null && !jobExpQuestionList.isEmpty()){
+                    response.addAll(jobExpQuestionList);
+                }
             }
+            return ok(toJson(response));
         }
         return ok();
     }
