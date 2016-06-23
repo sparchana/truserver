@@ -11,11 +11,20 @@ public class LoginResponse {
 
     public int status;
     public int isAssessed;
+    public int minProfile;
     public long candidateId;
     public long leadId;
     public String candidateFirstName;
     public String candidateLastName;
     public String candidateEmail;
+
+    public int getMinProfile() {
+        return minProfile;
+    }
+
+    public void setMinProfile(int minProfile) {
+        this.minProfile = minProfile;
+    }
 
     public void setStatus(int status) {
         this.status = status;

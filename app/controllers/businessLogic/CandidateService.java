@@ -17,6 +17,7 @@ import models.entity.OO.CandidateCurrentJobDetail;
 import models.entity.OO.CandidateEducation;
 import models.entity.OO.TimeShiftPreference;
 import models.entity.Static.*;
+import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
 
@@ -28,7 +29,6 @@ import java.util.UUID;
 import static controllers.businessLogic.InteractionService.createInteractionForSignUpCandidate;
 import static controllers.businessLogic.LeadService.createOrUpdateConvertedLead;
 import static models.util.Util.generateOtp;
-import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 
 /**
@@ -277,15 +277,17 @@ public class CandidateService
         }
 
         // set the default interaction note string
-        interactionNote = ServerConstants.INTERACTION_NOTE_SELF_PROFILE_CREATION;
+        interactionNote = ServerConstants.INTERACTION_NOTE_BLANK;
 
         if(isSupport){
             // update additional fields that are part of the support request
             updateOthersBySupport(candidate, request);
 
+            AddSupportCandidateRequest supportCandidateRequest = (AddSupportCandidateRequest) request;
+
             createdBy = session().get("sessionUsername");
             interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT;
-            interactionNote = ServerConstants.INTERACTION_NOTE_CALL_OUTBOUNDS;
+            interactionNote = supportCandidateRequest.getSupportNote();
 
             if (isNewCandidate) {
                 interactionResult = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE_SUPPORT;
@@ -301,7 +303,7 @@ public class CandidateService
             if(isSupport){
                 // TODO: differentiate between in/out call
                 createAndSaveDummyAuthFor(candidate);
-                interactionNote = ServerConstants.INTERACTION_NOTE_DUMMY_PASSWORD_CREATED;
+                interactionResult += " & " + ServerConstants.INTERACTION_NOTE_DUMMY_PASSWORD_CREATED;
             }
         }
         // check if we have enough details required to complete the minimum profile
@@ -314,6 +316,7 @@ public class CandidateService
 
         Logger.info("Candidate with mobile " +  candidate.getCandidateMobile() + " created/updated successfully");
         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+        candidateSignUpResponse.setMinProfile(candidate.getIsMinProfileComplete());
 
         return candidateSignUpResponse;
     }
@@ -423,7 +426,7 @@ public class CandidateService
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
         Logger.info("Inside Education profile update");
         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-
+        candidateSignUpResponse.setMinProfile(candidate.getIsMinProfileComplete());
         try {
             candidate.setCandidateEducation(getCandidateEducationFromAddSupportCandidate(addCandidateEducationRequest, candidate));
         }
@@ -433,7 +436,6 @@ public class CandidateService
             e.printStackTrace();
         }
 
-
         return candidateSignUpResponse;
     }
 
@@ -442,6 +444,7 @@ public class CandidateService
                                                               boolean isSupport) {
 
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
+        candidateSignUpResponse.setMinProfile(candidate.getIsMinProfileComplete());
 
         Logger.info("Inside Skills profile update");
 
@@ -568,8 +571,7 @@ public class CandidateService
 
     private static void triggerOtp(Candidate candidate, CandidateSignUpResponse candidateSignUpResponse) {
         int randomPIN = generateOtp();
-        String msg = "Welcome to Trujobs.in! Use OTP " + randomPIN + " to register";
-        SendOtpService.sendSms(candidate.getCandidateMobile(), msg);
+        SmsUtil.sendOTPSms(randomPIN, candidate.getCandidateMobile());
 
         candidateSignUpResponse.setCandidateId(candidate.getCandidateId());
         candidateSignUpResponse.setCandidateFirstName(candidate.getCandidateFirstName());
@@ -768,13 +770,14 @@ public class CandidateService
                     loginResponse.setCandidateFirstName(existingCandidate.getCandidateFirstName());
                     loginResponse.setCandidateLastName(existingCandidate.getCandidateLastName());
                     loginResponse.setIsAssessed(existingCandidate.getCandidateIsAssessed());
+                    loginResponse.setMinProfile(existingCandidate.getIsMinProfileComplete());
                     loginResponse.setLeadId(existingCandidate.getLead().getLeadId());
                     loginResponse.setStatus(loginResponse.STATUS_SUCCESS);
 
                     existingAuth.setAuthSessionId(UUID.randomUUID().toString());
                     existingAuth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
-                    session("sessionId", existingAuth.getAuthSessionId());
-                    session("sessionExpiry", String.valueOf(existingAuth.getAuthSessionIdExpiryMillis()));
+                    /* adding session details */
+                    AuthService.addSession(existingAuth,existingCandidate);
                     existingAuth.update();
                     Logger.info("Login Successful");
                 }
@@ -788,7 +791,6 @@ public class CandidateService
                 Logger.info("No User");
             }
         }
-        Logger.info(" LoginResponse Returned: " + toJson(loginResponse));
         return loginResponse;
     }
 
@@ -802,12 +804,12 @@ public class CandidateService
                 resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
                 Logger.info("reset password not allowed as Auth don't exists");
             } else {
-                    int randomPIN = generateOtp();
-                    existingCandidate.update();
-                    String msg = "Welcome to Trujobs.in! Use OTP " + randomPIN + " to reset password";
-                    SendOtpService.sendSms(existingCandidate.getCandidateMobile(), msg);
-                    resetPasswordResponse.setOtp(randomPIN);
-                    resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);
+                int randomPIN = generateOtp();
+                existingCandidate.update();
+                SmsUtil.sendOTPSms(randomPIN, existingCandidate.getCandidateMobile());
+
+                resetPasswordResponse.setOtp(randomPIN);
+                resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);
             }
         } else{
             resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
@@ -852,9 +854,9 @@ public class CandidateService
         authToken.setCandidateId(candidate.getCandidateId());
         authToken.setPasswordMd5(Util.md5(dummyPassword + authToken.getPasswordSalt()));
         authToken.save();
-        String msg = "Welcome to Trujobs.in! Your login details are Username: " + candidate.getCandidateMobile().substring(3, 13) + " and password: " +dummyPassword+ ". Use this to login at trujobs.in !!";
-        SendOtpService.sendSms(candidate.getCandidateMobile(), msg);
-        Logger.info("Dummy auth created + otp triggered + auth saved");
+
+        SmsUtil.sendWelcomeSmsFromSupport(candidate.getCandidateFirstName(), candidate.getCandidateMobile(), dummyPassword);
+        Logger.info("Dummy auth created + otp triggered + auth saved for " + candidate.getCandidateMobile());
     }
     private static void resetLocalityAndJobPref(Candidate existingCandidate, List<LocalityPreference> localityPreferenceList, List<JobPreference> jobPreferencesList) {
 

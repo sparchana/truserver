@@ -11,10 +11,10 @@
 
       <!-- Bootstrap Core CSS -->
     <link rel="icon" type="image/png" href="/assets/img/icon.png">
-    <link href='https://fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
 
     <link href="/assets/dashboard/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/assets/js/jquery.min_1_12_0.js"></script>
+    <script type="text/javascript" src="/assets/dashboard/js/user_login.js"></script>
     <script type="text/javascript" src="/assets/dashboard/js/dashboard.js"></script>
 
       <!-- Custom CSS -->
@@ -24,26 +24,11 @@
     <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
 
     <script type="text/javascript">
-      var userMobile = localStorage.getItem("mobile");
-      if(userMobile == null){
-        logoutUser();
-        window.location = "/";
+      function showAppliedJobs(){
+        window.location = "/dashboard/appliedJobs";
       }
-
-      function logoutUser() {
-        localStorage.clear();
-        window.location = "/";
-        try {
-          $.ajax({
-            type: "GET",
-            url: "/logoutUser",
-            data: false,
-            contentType: false,
-            processData: false,
-          });
-        } catch (exception) {
-          console.log("exception occured!!" + exception);
-        }
+      function showEditProfile(){
+        window.location = "/dashboard/editProfile";
       }
       </script>
   </head>
@@ -78,6 +63,11 @@
           </li>
           <li>
             <div class="sideNav">
+              <a href="#" onclick="showAppliedJobs()">My Jobs</a>
+            </div>
+          </li>
+          <li>
+            <div class="sideNav">
               <a href="/dashboard/editProfile">Profile</a>
             </div>
           </li>
@@ -97,7 +87,7 @@
 
         <!-- Page Content -->
       <div id="page-content-wrapper">
-        <a href="#menu-toggle" class="visible-xs btn btn-default" style="width: 30%" id="menu-toggle">Show Menu</a>
+        <a href="#menu-toggle" class="visible-xs btn btn-default" style="width: 30%" id="menu-toggle">Menu</a>
         <div class="container-fluid">
           <div class="row">
             <div style="display: inline-block">
@@ -432,11 +422,10 @@
       <!-- /#page-content-wrapper -->
 
       <!-- Including Bootstrap -->
-    <script type="text/javascript" src="/assets/js/validation.js"></script>
-    <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
     <script src="/assets/dashboard/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/validation.js"></script>
     <script type="text/javascript" src="/assets/dashboard/js/dashboard_prefill.js"></script>
-      <!-- Menu Toggle Script -->
+    <!-- Menu Toggle Script -->
     <script>
         $("#menu-toggle").click(function(e) {
           e.preventDefault();

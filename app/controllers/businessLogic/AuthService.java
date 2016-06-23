@@ -11,6 +11,8 @@ import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
 
+import java.util.UUID;
+
 import static play.mvc.Controller.session;
 
 /**
@@ -28,6 +30,7 @@ public class AuthService {
         session("sessionExpiry", String.valueOf(auth.getAuthSessionIdExpiryMillis()));
 
     }
+
     public static CandidateSignUpResponse savePassword(String mobile, String password){
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
 
@@ -42,11 +45,16 @@ public class AuthService {
                 Logger.info("Resetting password");
                 setNewPassword(existingAuth, password);
                 Auth.savePassword(existingAuth);
+                existingAuth.setAuthSessionId(UUID.randomUUID().toString());
+                existingAuth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
+                /* adding session details */
+                addSession(existingAuth, existingCandidate);
 
                 candidateSignUpResponse.setCandidateFirstName(existingCandidate.getCandidateFirstName());
                 candidateSignUpResponse.setCandidateLastName(existingCandidate.getCandidateLastName());
                 candidateSignUpResponse.setCandidateId(existingCandidate.getCandidateId());
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+                candidateSignUpResponse.setMinProfile(existingCandidate.getIsMinProfileComplete());
                 candidateSignUpResponse.setIsAssessed(existingCandidate.getCandidateIsAssessed());
                 candidateSignUpResponse.setLeadId(existingCandidate.getLead().getLeadId());
             }
@@ -57,6 +65,10 @@ public class AuthService {
                 setNewPassword(auth,password);
                 auth.setAuthStatus(ServerConstants.CANDIDATE_STATUS_VERIFIED);
                 Auth.savePassword(auth);
+                auth.setAuthSessionId(UUID.randomUUID().toString());
+                auth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
+                /* adding session details */
+                addSession(auth, existingCandidate);
 
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
@@ -85,14 +97,13 @@ public class AuthService {
                 existingLead.update();
                 Logger.info("Lead converted in candidate");
 
-                String msg = "Hey " + existingCandidate.getCandidateFirstName()+
-                        "! Welcome to Trujobs.in. Login and complete our skill assessment today and find your right job.";
-                SmsUtil.sendSms(existingCandidate.getCandidateMobile(),msg);
+                SmsUtil.sendWelcomeSmsFromWebsite(existingCandidate.getCandidateFirstName(), existingCandidate.getCandidateMobile());
 
                 candidateSignUpResponse.setCandidateFirstName(existingCandidate.getCandidateFirstName());
                 candidateSignUpResponse.setCandidateLastName(existingCandidate.getCandidateLastName());
                 candidateSignUpResponse.setCandidateId(existingCandidate.getCandidateId());
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+                candidateSignUpResponse.setMinProfile(existingCandidate.getIsMinProfileComplete());
                 candidateSignUpResponse.setIsAssessed(existingCandidate.getCandidateIsAssessed());
                 candidateSignUpResponse.setLeadId(existingCandidate.getLead().getLeadId());
             }
@@ -104,5 +115,11 @@ public class AuthService {
         }
 
         return candidateSignUpResponse;
+    }
+    public static void addSession(Auth existingAuth, Candidate existingCandidate){
+        session("sessionId", existingAuth.getAuthSessionId());
+        session("candidateId", String.valueOf(existingCandidate.getCandidateId()));
+        session("leadId", String.valueOf(existingCandidate.getLead().getLeadId()));
+        session("sessionExpiry", String.valueOf(existingAuth.getAuthSessionIdExpiryMillis()));
     }
 }

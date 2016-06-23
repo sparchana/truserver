@@ -4,23 +4,21 @@ import api.ServerConstants;
 import api.http.httpRequest.*;
 import api.http.httpResponse.AddLeadResponse;
 import api.http.httpResponse.SupportDashboardElementResponse;
+import api.http.httpResponse.SupportInteractionNoteResponse;
 import api.http.httpResponse.SupportInteractionResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import controllers.businessLogic.AuthService;
-import controllers.businessLogic.CandidateService;
-import controllers.businessLogic.LeadService;
-import models.entity.Candidate;
-import models.entity.Developer;
-import models.entity.Interaction;
-import models.entity.Lead;
-import models.entity.OM.JobPreference;
+import controllers.businessLogic.*;
+import models.entity.*;
+import models.entity.OM.JobApplication;
 import models.entity.OM.JobToSkill;
 import models.entity.OM.LocalityPreference;
 import models.entity.Static.*;
 import models.util.ParseCSV;
+import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
+import play.cache.Cached;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -30,10 +28,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static play.libs.Json.toJson;
@@ -97,6 +92,8 @@ public class Application extends Controller {
                     case 3: response.setUserInteractionType("Incoming SMS"); break;
                     case 4: response.setUserInteractionType("Out Going SMS"); break;
                     case 5: response.setUserInteractionType("Website Interaction"); break;
+                    case 6: response.setUserInteractionType("Follow Up Call"); break;
+                    default: response.setUserInteractionType("Interaction Undefined in getCandidateInteraction()"); break;
                 }
                 responses.add(response);
             }
@@ -216,6 +213,46 @@ public class Application extends Controller {
         return ok(toJson(AuthService.savePassword(userMobile, userPassword)));
     }
 
+    public static Result applyJob() {
+        JsonNode req = request().body().asJson();
+        ApplyJobRequest applyJobRequest = new ApplyJobRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            applyJobRequest = newMapper.readValue(req.toString(), ApplyJobRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String userMobile = applyJobRequest.getCandidateMobile();
+        Integer jobId = applyJobRequest.getJobId();
+
+        return ok(toJson(JobService.applyJob(userMobile, jobId)));
+    }
+
+    public static Result addJobPost() {
+        JsonNode req = request().body().asJson();
+        AddJobPostRequest addJobPostRequest = new AddJobPostRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addJobPostRequest = newMapper.readValue(req.toString(), AddJobPostRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ok(toJson(JobService.addJobPost(addJobPostRequest)));
+    }
+
+    public static Result addCompany() {
+        JsonNode req = request().body().asJson();
+        AddCompanyRequest addCompanyRequest = new AddCompanyRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addCompanyRequest = newMapper.readValue(req.toString(), AddCompanyRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ok(toJson(CompanyService.addCompany(addCompanyRequest)));
+    }
+
     public static Result loginSubmit() {
         JsonNode req = request().body().asJson();
         LoginRequest loginRequest = new LoginRequest();
@@ -240,6 +277,11 @@ public class Application extends Controller {
     @Security.Authenticated(SecuredUser.class)
     public static Result editProfile() {
         return ok(views.html.edit_profile.render());
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result appliedJobs() {
+        return ok(views.html.candidate_applied_job.render());
     }
 
     public static Result findUserAndSendOtp() {
@@ -280,15 +322,14 @@ public class Application extends Controller {
                         .findList();
                 break;
             case 3: // get all
-                allLead = Lead.find.where()
-                        .ne("leadStatus", ServerConstants.LEAD_STATUS_LOST)
-                        .findList();
+                allLead = Lead.find.all();
                 break;
         }
 
         ArrayList<SupportDashboardElementResponse> responses = new ArrayList<>();
 
         SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT);
+        SimpleDateFormat sfdFollowUp = new SimpleDateFormat(ServerConstants.SDF_FORMAT_FOLLOWUP);
 
         //getting leadUUID from allLead
         List<String> leadUUIDList = allLead.stream().map(Lead::getLeadUUId).collect(Collectors.toList());
@@ -334,6 +375,10 @@ public class Application extends Controller {
             }
             response.setLastIncomingCallTimestamp(sfd.format(mostRecent));
             response.setTotalInBounds(mTotalInteraction);
+            if(lead.getFollowUp() != null && lead.getFollowUp().getFollowUpTimeStamp()!= null){
+                response.setFollowUpStatus(lead.getFollowUp().isFollowUpStatusRequired());
+                response.setFollowUpTimeStamp(sfdFollowUp.format(lead.getFollowUp().getFollowUpTimeStamp()));
+            }
             responses.add(response);
         }
 
@@ -350,6 +395,21 @@ public class Application extends Controller {
         }
         return ok();
     }
+
+    /* this method is used by candidate dashboard */
+    @Security.Authenticated(SecuredUser.class)
+    public static Result getCandidateInfoDashboard() {
+        Lead lead = Lead.find.where().eq("leadId", session().get("leadId")).findUnique();
+        if(lead != null) {
+            Candidate candidate = Candidate.find.where().eq("lead_leadId", lead.getLeadId()).findUnique();
+            if(candidate!=null){
+                return ok(toJson(candidate));
+            }
+        }
+        return ok("0");
+    }
+
+    /* this method is used by support */
     @Security.Authenticated(Secured.class)
     public static Result getCandidateInfo(long leadId) {
             Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
@@ -361,6 +421,31 @@ public class Application extends Controller {
             }
         return ok("0");
     }
+
+    public static Result getCompanyInfo(long companyId) {
+        Company company = Company.find.where().eq("companyId", companyId).findUnique();
+        if(company!=null){
+            return ok(toJson(company));
+        }
+        return ok("0");
+    }
+
+    public static Result GetCompanyJobList(long companyId){
+        List<JobPost> jobPostList = JobPost.find.where().eq("company.companyId", companyId).findList();
+        if(jobPostList!=null){
+            return ok(toJson(jobPostList));
+        }
+        return ok("0");
+    }
+
+    public static Result getJobPostInfo(long jobPostId) {
+        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        if(jobPost!=null){
+            return ok(toJson(jobPost));
+        }
+        return ok("0");
+    }
+
     @Security.Authenticated(SecuredUser.class)
     public static Result getCandidateLocality(long candidateId) {
         List<LocalityPreference> candidateLocalities = LocalityPreference.find.where().eq("candidateId", candidateId).findList();
@@ -368,10 +453,17 @@ public class Application extends Controller {
             return ok("0");
         return ok(toJson(candidateLocalities));
     }
+
     @Security.Authenticated(SecuredUser.class)
-    public static Result getCandidateJob(long id) {
-        List<JobPreference> candidateJobs = JobPreference.find.where().eq("CandidateId", id).findList();
-        return ok(toJson(candidateJobs));
+    public static Result getCandidateJobApplication() {
+        if(session().get("candidateId") != null){
+            List<JobApplication> jobApplicationList = JobApplication.find.where().eq("candidateId", session().get("candidateId")).findList();
+            if(jobApplicationList == null)
+                return ok("0");
+            return ok(toJson(jobApplicationList));
+        } else{
+            return ok("0");
+        }
     }
 
     public static Result checkMinProfile(long id) {
@@ -425,6 +517,7 @@ public class Application extends Controller {
             return ok(views.html.candidate_home.render());
         }
         else{
+            Logger.info("Candidate Logged Out");
             return ok(views.html.index.render());
         }
     }
@@ -456,18 +549,14 @@ public class Application extends Controller {
         return redirect(routes.Application.supportAuth());
     }
 
-    public static Result updateIsAssessedToAssessed(long candidateId) {
-        try{
-            Candidate existingCandidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
-            try{
+    public static Result updateIsAssessedToAssessed() {
+        if(session().get("candidateId") != null){
+            Candidate existingCandidate = Candidate.find.where().eq("candidateId", session().get("candidateId")).findUnique();
+            if(existingCandidate != null){
                 existingCandidate.setCandidateIsAssessed(ServerConstants.CANDIDATE_ASSESSED);
                 existingCandidate.update();
                 return ok(toJson(ServerConstants.CANDIDATE_ASSESSED));
-            } catch (NullPointerException n) {
-                n.printStackTrace();
             }
-        } catch (NullPointerException n) {
-            n.printStackTrace();
         }
         return badRequest();
     }
@@ -512,8 +601,22 @@ public class Application extends Controller {
         }
         return badRequest();
     }
+
+    /**
+     * This API is invoked from the support dashboard when the support executive marks the call status.
+     * This results in changing the lead status and creating a new interaction.
+     *
+     * @param leadId The id of the lead that we tried calling
+     * @param leadStatus The current status of this lead
+     * @param callStatus Whether call was connected or not. If not, what was the failure reason.
+     * @return the Json view of target view (in this case lead status)
+     */
     @Security.Authenticated(Secured.class)
-    public static Result updateLeadStatus(long leadId, int leadStatus, String interactionResult) {
+    public static Result updateLeadStatus(long leadId, int leadStatus, String callStatus) {
+
+        String interactionResult;
+        String interactionNote;
+
         try {
             Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
             // A value is for overriding leadStatus is also there in Lead Model setLeadStatus
@@ -530,26 +633,41 @@ public class Application extends Controller {
                     }
                     Logger.info("updateLeadStatus invoked leadId:"+leadId+" status:" + leadStatus);
                     lead.update();
-                    Interaction interaction = new Interaction(
-                            lead.getLeadUUId(),
-                            lead.getLeadType(),
-                            ServerConstants.INTERACTION_TYPE_CALL_OUT,
-                            ServerConstants.INTERACTION_NOTE_LEAD_STATUS_CHANGED,
-                            interactionResult,
-                            session().get("sessionUsername")
-                    );
-                    interaction.save();
+                    interactionNote = ServerConstants.INTERACTION_NOTE_BLANK;
+
                 } else {
-                    Interaction interaction = new Interaction(
-                            lead.getLeadUUId(),
-                            lead.getLeadType(),
-                            ServerConstants.INTERACTION_TYPE_CALL_OUT,
-                            ServerConstants.INTERACTION_NOTE_CALL_OUTBOUNDS,
-                            interactionResult,
-                            session().get("sessionUsername")
-                    );
-                    interaction.save();
+                    interactionNote = ServerConstants.INTERACTION_NOTE_BLANK;
                 }
+
+                // If call was connected just set the right interaction result
+                if (callStatus.equals("CONNECTED")) {
+                    interactionResult = "Out Bound Call Successfully got connected";
+                }
+                else {
+                    // if call was not connected, set the interaction result and send an sms
+                    // to lead/candidate saying we tried reaching
+                    interactionResult = "Out Bound Call UnSuccessful : Callee is " + callStatus;
+
+                    if (callStatus.equals(ServerConstants.CALL_STATUS_BUSY)
+                            || callStatus.equals(ServerConstants.CALL_STATUS_DND)
+                            || callStatus.equals(ServerConstants.CALL_STATUS_NA)
+                            || callStatus.equals(ServerConstants.CALL_STATUS_NR)
+                            || callStatus.equals(ServerConstants.CALL_STATUS_SWITCHED_OFF)) {
+
+                        SmsUtil.sendTryingToCallSms(lead.getLeadMobile());
+                    }
+                }
+
+                // save the interaction
+                Interaction interaction = new Interaction(
+                        lead.getLeadUUId(),
+                        lead.getLeadType(),
+                        ServerConstants.INTERACTION_TYPE_CALL_OUT,
+                        interactionNote,
+                        interactionResult,
+                        session().get("sessionUsername")
+                );
+                interaction.save();
 
                 return ok(toJson(lead.getLeadStatus()));
             }
@@ -562,39 +680,59 @@ public class Application extends Controller {
     public static Result kwCdrInput() {
         return ok("TODO");
     }
+
+    public static Result getAllJobPosts() {
+        List<JobPost> jobPosts = JobPost.find.findList();
+        return ok(toJson(jobPosts));
+    }
+    @Cached(key= "allLocalities")
     public static Result getAllLocality() {
         List<Locality> localities = Locality.find.findList();
         return ok(toJson(localities));
     }
+
+    @Cached(key= "allJobs")
     public static Result getAllJobs() {
         List<JobRole> jobs = JobRole.find.findList();
         return ok(toJson(jobs));
     }
+
+    @Cached(key= "allShifts")
     @Security.Authenticated(Secured.class)
     public static Result getAllShift() {
         List<TimeShift> timeShifts = TimeShift.find.findList();
         return ok(toJson(timeShifts));
     }
+
+    @Cached(key= "allTransportModes")
     @Security.Authenticated(Secured.class)
     public static Result getAllTransportation() {
         List<TransportationMode> transportationModes = TransportationMode.find.findList();
         return ok(toJson(transportationModes));
     }
+
+    @Cached(key= "allEducation")
     @Security.Authenticated(Secured.class)
     public static Result getAllEducation() {
         List<Education> educations = Education.find.findList();
         return ok(toJson(educations));
     }
+
+    @Cached(key= "allLanguages")
     @Security.Authenticated(Secured.class)
     public static Result getAllLanguage() {
         List<Language> languages = Language.find.findList();
         return ok(toJson(languages));
     }
+
+    @Cached(key= "allIDProof")
     @Security.Authenticated(Secured.class)
     public static Result getAllIdProof() {
         List<IdProof> idProofs = IdProof.find.findList();
         return ok(toJson(idProofs));
     }
+
+    @Cached(key= "allDegree")
     @Security.Authenticated(Secured.class)
     public static Result getAllDegree() {
         List<Degree> degreeList = Degree.find.findList();
@@ -642,5 +780,66 @@ public class Application extends Controller {
             return ok(toJson(agentMobile));
         }
         return ok("0");
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result addOrUpdateFollowUp() {
+        JsonNode followUp = request().body().asJson();
+        if(followUp == null){
+            return badRequest();
+        }
+        AddOrUpdateFollowUpRequest addOrUpdateFollowUpRequest = new AddOrUpdateFollowUpRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addOrUpdateFollowUpRequest = newMapper.readValue(followUp.toString(), AddOrUpdateFollowUpRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Logger.info("addOrUpdateFollowUp: " + addOrUpdateFollowUpRequest.getLeadMobile() + " createTimeStamp: " + addOrUpdateFollowUpRequest.getFollowUpDateTime());
+        return ok(toJson(FollowUpService.CreateOrUpdateFollowUp(addOrUpdateFollowUpRequest)));
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result getInteractionNote(Long leadId, Long limit) {
+        Lead lead = Lead.find.where().eq("leadId",leadId).findUnique();
+        if(lead !=null){
+            List<Interaction> fullInteractionList = Interaction.find.where()
+                    .eq("objectAUUId", lead.getLeadUUId())
+                    .ne("note", "")
+                    .findList();
+
+            // fetch candidate interaction as well
+            Candidate candidate = Candidate.find.where().eq("lead_leadId", leadId).findUnique();
+            if(candidate != null){
+                List<Interaction> candidateInteractionList = Interaction.find.where()
+                        .eq("objectAUUId", candidate.getCandidateUUId())
+                        .ne("note", "")
+                        .findList();
+                fullInteractionList.addAll(candidateInteractionList);
+            }
+
+            List<SupportInteractionNoteResponse> responses = new ArrayList<>();
+
+            SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT_FOLLOWUP);
+            //latest timestamp on top
+            Collections.sort(fullInteractionList,  (o1, o2) -> o2.getCreationTimestamp().compareTo(o1.getCreationTimestamp()));
+            int lastTenRecords = 0;
+            for(Interaction interaction : fullInteractionList){
+                if(interaction.getNote() != null){
+                    lastTenRecords++;
+                    SupportInteractionNoteResponse response = new SupportInteractionNoteResponse();
+                    response.setInteractionId(interaction.getId());
+                    response.setUserInteractionTimestamp(sfd.format(interaction.getCreationTimestamp()));
+                    response.setUserNote(interaction.getNote());
+                    responses.add(response);
+                }
+                if(lastTenRecords >= limit){
+                    break;
+                }
+            }
+            return ok(toJson(responses));
+        }
+        else
+            return ok("no records");
     }
 }

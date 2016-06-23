@@ -30,6 +30,7 @@ public class SmsUtil {
         Logger.info("msg: "+ requestString);
 
         String smsResponse = "";
+
         try {
             URL url = new URL(requestString);
             BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
@@ -41,7 +42,38 @@ public class SmsUtil {
         return smsResponse;
     }
 
-    public static String checkDevliveryReport(String scheduleId){
+    public static void sendTryingToCallSms(String mobile) {
+
+        String msg = "Hello! We tried calling you from www.TruJobs.in to help you with job search. "
+        + "We will try again in sometime or you can call us on 8880007799";
+
+        sendSms(mobile, msg);
+
+    }
+
+    public static void sendOTPSms(int otp, String mobile) {
+        String msg = "Welcome to www.Trujobs.in! Use OTP " + otp + " to register and start your job search";
+        sendSms(mobile, msg);
+    }
+
+    public static void sendWelcomeSmsFromSupport(String name, String mobile, String password)
+    {
+        String msg = "Hi " + name + ", Welcome to www.Trujobs.in! Your login details are Username: "
+                + mobile.substring(3, 13) + " and password: " + password + ". Use this to login at trujobs.in !!";
+
+        sendSms(mobile, msg);
+    }
+
+    public static void sendWelcomeSmsFromWebsite(String name, String mobile)
+    {
+        String msg = "Hi " + name + ", Welcome to Trujobs.in! "
+                + "Complete your profile and skill assessment today to begin your job search";
+
+        sendSms(mobile, msg);
+    }
+
+
+    public static String checkDeliveryReport(String scheduleId){
 
         try {
             scheduleId= URLEncoder.encode(scheduleId, "UTF-8");
