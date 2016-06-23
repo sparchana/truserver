@@ -7,7 +7,7 @@
 
     <meta name="keywords" content="freshers jobs, driver jobs, delivery boy jobs, field sales agent,call center jobs, BPO jobs, data entry jobs, back office jobs, receptionist jobs, beautician jobs, waiter jobs, cook jobs, restaurant jobs, cashier jobs, experienced jobs, jobs in Bangalore, driver jobs, delivery boy jobs, field sales agent,call center jobs, BPO jobs, data entry jobs, back office jobs, receptionist jobs, beautician jobs, waiter jobs, cook jobs, restaurant jobs, cashier jobs, full time jobs, part time jobs, entry level jobs, plumber jobs, electrician jobs">
     <meta name="description" content="TruJobs helps you find the right job! Give a missed call at 8880007799 for Best Jobs. We pre-screen, match and schedule interviews for Jobs" />
-    <title>Dashboard - Trujobs</title>
+    <title>My Jobs - Trujobs</title>
 
       <!-- Bootstrap Core CSS -->
     <link rel="icon" type="image/png" href="/assets/img/icon.png">
@@ -109,21 +109,30 @@
             <div class="col-lg-12">
               <h3>My Job Applications</h3>
               <hr>
-                <div id="profileIncomplete" style="display : none ;">
-                    <div style="width: 120px;">
-                        <center>
-                            <div style="color: #000000; font-size: 12px;">Profile Status</div>
-                            <div id="profileStatusParent">
-                                <div id="profileStatusMyJobsMyJobs"><img id="profileStatusIconMyJobs" style="margin: 6px" src="/assets/dashboard/img/wrong.png" width="36px"></div>
-                                <div id="profileStatusResultMyJobs"><font color="#F26522">Incomplete</font></div>
-                                <div id="profileStatusActionMyJobs"><a href="/dashboard/editProfile"><font color="#F26522">(Complete Profile Now)</font></a></div>
-                            </div>
-                        </center>
-                    </div>
+                <div style="width: 120px; display: inline-block">
+                    <center>
+                      <div style="color: #000000; font-size: 12px;">Profile Status</div>
+                      <div id="profileStatusParentMyJobs">
+                          <div id="profileStatusMyJobs"><img id="profileStatusIconMyJobs" style="margin: 6px" src="/assets/img/loading.gif" width="36px"></div>
+                          <div id="profileStatusResultMyJobs"><font color="#F26522">...</font></div>
+                          <div id="profileStatusActionMyJobs"><font color="#F26522">...</font></div>
+                      </div>
+                    </center>
+                </div>
 
-                    <div style="background : #e4ffd3 ;margin-top: 16px; padding: 16px; border-radius: 6px">
-                        Complete your profile now to increase chances of getting Interview Call.
-                    </div>
+                <div style="width: 120px; display: inline-block">
+                  <center>
+                      <div style="color: #000000; font-size: 12px;">Assessment</div>
+                      <div id="assessmentStatusParentMyJobs">
+                        <div id="assessmentStatusMyJobs"><img id="assessmentStatusIconMyJobs" style="margin: 6px" src="/assets/img/loading.gif" width="36px"></div>
+                        <div id="assessmentStatusResultMyJobs"><font color="#F26522">...</font></div>
+                        <div id="assessmentStatusActionMyJobs"><font color="#F26522">...</font></div>
+                      </div>
+                  </center>
+                </div>
+
+                <div id="incompleteProfileMsg" style="display: none; background : #e4ffd3 ;margin-top: 16px; padding: 16px; border-radius: 6px">
+                    Complete your profile now to increase chances of getting Interview Call.
                 </div>
 
               <div style="background : #f9ffcd ;margin-top: 16px; padding: 16px; border-radius: 6px">

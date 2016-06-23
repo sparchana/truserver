@@ -24,6 +24,9 @@ public class JobApplication extends Model {
     @Column(name = "JobApplicationCreateTimeStamp", columnDefinition = "timestamp not null")
     private Timestamp jobApplicationCreateTimeStamp = new Timestamp(System.currentTimeMillis());
 
+    @Column(name = "ScreeningComments", columnDefinition = "varchar(1000) null")
+    private String screeningComments;
+
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "JobPostId", referencedColumnName = "JobPostId")
@@ -67,6 +70,22 @@ public class JobApplication extends Model {
 
     public void setJobApplicationCreateTimeStamp(Timestamp jobApplicationCreateTimeStamp) {
         this.jobApplicationCreateTimeStamp = jobApplicationCreateTimeStamp;
+    }
+
+    public String getScreeningComments() {
+        return screeningComments;
+    }
+
+    public void setScreeningComments(String screeningnComments) {
+        this.screeningComments = screeningnComments;
+    }
+
+    public ScreeningStatus getScreeningStatus() {
+        return screeningStatus;
+    }
+
+    public void setScreeningStatus(ScreeningStatus screeningStatus) {
+        this.screeningStatus = screeningStatus;
     }
 
     public Candidate getCandidate() {

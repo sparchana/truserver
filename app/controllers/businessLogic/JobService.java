@@ -79,7 +79,7 @@ public class JobService {
                     jobApplication.setCandidate(existingCandidate);
                     jobApplication.setJobPost(existingJobPost);
                     jobApplication.save();
-                    Logger.info("candidate: " + existingCandidate.getCandidateFirstName() + "with mobile: " + existingCandidate.getCandidateMobile() + " applied to the jobPost of JobPostId:" + existingJobPost.getJobPostId());
+                    Logger.info("candidate: " + existingCandidate.getCandidateFirstName() + " with mobile: " + existingCandidate.getCandidateMobile() + " applied to the jobPost of JobPostId:" + existingJobPost.getJobPostId());
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_SUCCESS);
                 } else{
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_EXISTS);

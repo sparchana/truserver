@@ -20,11 +20,36 @@ $(document).ready(function(){
 });
 
 function processDataAndFetchAppliedJobs(returnedData) {
+    /* Check min profile */
     if(localStorage.getItem("minProfile") == 0){
-        $("#profileIncomplete").show();
+        var profileStatusParent = document.getElementById("profileStatusParentMyJobs");
+        profileStatusParent.addEventListener("click", completeProfile);
+        profileStatusParent.style = "cursor: pointer";
+        document.getElementById("profileStatusResultMyJobs").innerHTML = '<font color="#F26522">Incomplete</font>';
+        document.getElementById("profileStatusActionMyJobs").innerHTML = '<font color="#F26522">(Complete Now)</font>';
+        $("#profileStatusIconMyJobs").attr('src', '/assets/dashboard/img/wrong.png');
+        $("#incompleteProfileMsg").show();
     } else{
-        $("#profileIncomplete").hide();
+        document.getElementById("profileStatusResultMyJobs").innerHTML = '<font color="#46AB49">Complete</font>';
+        document.getElementById("profileStatusActionMyJobs").innerHTML = '-';
+        $("#profileStatusIconMyJobs").attr('src', '/assets/dashboard/img/right.png');
+        $("#incompleteProfileMsg").hide();
     }
+
+    /* check assessment */
+    if(localStorage.getItem("isAssessed") == 0){
+        var assessmentStatusParent = document.getElementById("assessmentStatusParentMyJobs");
+        assessmentStatusParent.addEventListener("click", completeAssessment);
+        assessmentStatusParent.style = "cursor: pointer";
+        document.getElementById("assessmentStatusResultMyJobs").innerHTML = '<font color="#F26522">Incomplete</font>';
+        document.getElementById("assessmentStatusActionMyJobs").innerHTML = '<font color="#F26522">(Take Assessment)</font>';
+        $("#assessmentStatusIconMyJobs").attr('src', '/assets/dashboard/img/wrong.png');
+    } else{
+        document.getElementById("assessmentStatusResultMyJobs").innerHTML = '<font color="#46AB49">Complete</font>';
+        document.getElementById("assessmentStatusActionMyJobs").innerHTML = '-';
+        $("#assessmentStatusIconMyJobs").attr('src', '/assets/dashboard/img/right.png');
+    }
+
     var candidateJobApplication = returnedData;
     if(Object.keys(candidateJobApplication).length > 0){
         candidateJobApplication.forEach(function (jobApplication) {
@@ -57,12 +82,33 @@ function prePopulateJobSection(jobApplication) {
     /*Job Title*/
     var divTitle = document.createElement("div");
     divTitle.id = "cardTitle";
+
+    /* bootstrap column */
+    var titleRow = document.createElement("div");
+    titleRow.className = "row";
+
+    var titleRowOne = document.createElement("div");
+    titleRowOne.className = "col-sm-9";
+
     var divTitleText = document.createElement("div");
-    divTitleText.style = "display: inline-block";
     divTitleText.textContent = jobApplication.jobPost.company.companyName + " | " + jobApplication.jobPost.jobPostTitle ;
 
+    var titleRowTwo = document.createElement("div");
+    titleRowTwo.className = "col-sm-3";
+
+    var fetchedAppliedDate = jobApplication.jobApplicationCreateTimeStamp;
+
+    var divAppliedDate = document.createElement("div");
+    divAppliedDate.style = "font-size: 14px; margin-top: 4px; float: right";
+    divAppliedDate.textContent = "Applied on: " + new Date(fetchedAppliedDate).getDay() + "/" + new Date(fetchedAppliedDate).getMonth() + "/" + new Date(fetchedAppliedDate).getFullYear();
+
+    titleRowOne.appendChild(divTitleText);
+    titleRowTwo.appendChild(divAppliedDate);
+    titleRow.appendChild(titleRowOne);
+    titleRow.appendChild(titleRowTwo);
+    divTitle.appendChild(titleRow);
+
     divCard.appendChild(divTitle);
-    divTitle.appendChild(divTitleText);
 
     /*Job Details view*/
     var divJobDetail = document.createElement("div");
@@ -105,6 +151,12 @@ function prePopulateJobSection(jobApplication) {
 
 
     divCard.appendChild(divJobDetail);
+}
 
+function completeAssessment() {
+    window.open("http://bit.ly/trujobstest");
+}
 
+function completeProfile() {
+    window.open("/dashboard/editProfile");
 }

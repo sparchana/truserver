@@ -41,6 +41,7 @@ create table jobapplication (
 	jobapplicationcreatetimestamp timestamp not null,
 	jobpostid                     bigint signed null,
 	screeningstatusid             bigint signed null,
+	screeningcomments             varchar(1000) null,
 	candidateid                   bigint signed null,
 	constraint pk_jobapplication primary key (jobapplicationid)
 );

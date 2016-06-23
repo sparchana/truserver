@@ -20,6 +20,7 @@ function processDataLogin(returnedData) {
             applyJob(applyJobId);
             applyJobFlag = 0;
             applyJobId = 0;
+            $("#customSubMsg").html("Logging in ...");
             setTimeout(function(){
                 window.location = "/dashboard/appliedJobs";
             }, 4000);

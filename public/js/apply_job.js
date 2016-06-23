@@ -11,6 +11,11 @@ var totalExp;
 var isEmployed;
 var isAssessed;
 var languagesKnown = "";
+var candidateSkills = "";
+var jobPref = "";
+var localityPref = "";
+var salary;
+var education;
 var motherTongue;
 var homeLocality;
 
@@ -25,7 +30,7 @@ function processDataApplyJob(returnedData) {
         $("#customMsg").html("Oops! Something went Wrong. Unable to apply");
     } else if(returnedData.status == 3){
         $('#customMsgIcon').attr('src', "/assets/img/alreadyApplied.png");
-        $("#customMsg").html("Looks like you already applied for this Job");
+        $("#customMsg").html("Looks like you already applied for this Job. Click My Jobs to view your applied Jobs");
     } else if(returnedData.status == 4){
         $('#customMsgIcon').attr('src', "/assets/img/logo.gif");
         $("#customMsg").html("Oops! Candidate does't Exists");
@@ -132,19 +137,43 @@ function processDataGetCandidateInfo(returnedData) {
         console.log("exception occured!!" + exception);
     }
 
-    console.log(returnedData.lead.leadId + " =====");
+    console.log(returnedData);
     candidateId = returnedData.lead.leadId;
     candidateName = returnedData.candidateFirstName + " " + returnedData.candidateLastName;
-    candidateGender = returnedData.candidateGender;
-    totalExp = returnedData.candidateTotalExperience;
-    isEmployed = ((returnedData.candidateIsEmployed == 0) ? "No" : "Yes");
-    isAssessed = ((returnedData.candidateIsAssessed == 0) ? "No" : "Yes");
-    var lang = returnedData.languageKnownList;
-    lang.forEach(function (language) {
-       languagesKnown += language.language.languageName + ", ";
+    if(returnedData.candidateGender != null)
+        candidateGender = ((returnedData.candidateGender == 0) ? "Male" : "Female");
+    if(returnedData.candidateTotalExperience != null)
+        totalExp = returnedData.candidateTotalExperience;
+    if(returnedData.candidateIsEmployed != null)
+        isEmployed = ((returnedData.candidateIsEmployed == 0) ? "No" : "Yes");
+    if(returnedData.candidateIsAssessed != null)
+        isAssessed = ((returnedData.candidateIsAssessed == 0) ? "No" : "Yes");
+    if(returnedData.languageKnownList != null || returnedData.languageKnownList != ""){
+        var lang = returnedData.languageKnownList;
+        lang.forEach(function (language) {
+            languagesKnown += language.language.languageName + ", ";
+        });
+    }
+    if(returnedData.motherTongue != null)
+        motherTongue = returnedData.motherTongue.languageName;
+    if(returnedData.locality != null)
+        homeLocality = returnedData.locality;
+    if(returnedData.candidateCurrentJobDetail.candidateCurrentSalary != null)
+        salary = returnedData.candidateCurrentJobDetail.candidateCurrentSalary;
+    if(returnedData.candidateEducation.education.educationName != null)
+        education = returnedData.candidateEducation.education.educationName;
+    var jobRoleList = returnedData.jobPreferencesList;
+    jobRoleList.forEach(function (job) {
+       jobPref += job.jobRole.jobName + ", ";
     });
-    motherTongue = returnedData.motherTongue.languageName;
-    homeLocality = returnedData.locality;
+    var localityList = returnedData.localityPreferenceList;
+    localityList.forEach(function (locality) {
+        localityPref += locality.locality.localityName + ", ";
+    });
+    var skillList = returnedData.candidateSkillList;
+    skillList.forEach(function (skill) {
+        candidateSkills += skill.skill.skillName + ", ";
+    });
 
     try {
         $.ajax({
@@ -162,7 +191,11 @@ function processDataGetCandidateInfo(returnedData) {
                 "entry.1488146275": isAssessed,
                 "entry.67497584": languagesKnown,
                 "entry.441069988": motherTongue,
-                "entry.1350761294": homeLocality
+                "entry.1350761294": homeLocality,
+                "entry.2057814300": localityPref,
+                "entry.598773915": jobPref,
+                "entry.125850326": salary,
+                "entry.240702722": education
             },
             type: "POST",
             dataType: "xml",

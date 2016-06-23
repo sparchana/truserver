@@ -396,6 +396,8 @@ public class Application extends Controller {
         return ok();
     }
 
+    /* this method is used by candidate dashboard */
+    @Security.Authenticated(SecuredUser.class)
     public static Result getCandidateInfoDashboard() {
         Lead lead = Lead.find.where().eq("leadId", session().get("leadId")).findUnique();
         if(lead != null) {
@@ -407,6 +409,7 @@ public class Application extends Controller {
         return ok("0");
     }
 
+    /* this method is used by support */
     @Security.Authenticated(Secured.class)
     public static Result getCandidateInfo(long leadId) {
             Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();

@@ -45,7 +45,7 @@ $(function () {
 });
 
 $(document).ready(function(){
-    console.log(applyJobFlag);
+    localStorage.clear();
 
     $(".navbar-nav li a").click(function(event) {
         $(".navbar-collapse").collapse('hide');

@@ -266,7 +266,7 @@ a:hover{
     background: rgba(0, 0, 0, 0.175);
     position: fixed;
     width: 113.5%;
-    height: auto;
+    height: 48px;
     color: #ffffff;
     padding: 8px;
     z-index: 999;
@@ -594,6 +594,7 @@ padding: 0px;
 	margin-left: -2px;
 }
 .navbar-default {
+    height: 50px;
     background-color: transparent;
     border: none;
 }

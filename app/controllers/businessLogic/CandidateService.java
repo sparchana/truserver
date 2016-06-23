@@ -316,6 +316,7 @@ public class CandidateService
 
         Logger.info("Candidate with mobile " +  candidate.getCandidateMobile() + " created/updated successfully");
         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+        candidateSignUpResponse.setMinProfile(candidate.getIsMinProfileComplete());
 
         return candidateSignUpResponse;
     }
@@ -425,7 +426,7 @@ public class CandidateService
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
         Logger.info("Inside Education profile update");
         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-
+        candidateSignUpResponse.setMinProfile(candidate.getIsMinProfileComplete());
         try {
             candidate.setCandidateEducation(getCandidateEducationFromAddSupportCandidate(addCandidateEducationRequest, candidate));
         }
@@ -435,7 +436,6 @@ public class CandidateService
             e.printStackTrace();
         }
 
-
         return candidateSignUpResponse;
     }
 
@@ -444,6 +444,7 @@ public class CandidateService
                                                               boolean isSupport) {
 
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
+        candidateSignUpResponse.setMinProfile(candidate.getIsMinProfileComplete());
 
         Logger.info("Inside Skills profile update");
 

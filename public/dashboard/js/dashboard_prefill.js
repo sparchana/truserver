@@ -11,6 +11,7 @@ $(document).ready(function(){
 });
 
 function processDataCandidateSaveBasicProfile(returnedData) {
+    localStorage.setItem("minProfile", returnedData.minProfile);
     var heading = document.getElementById('basicHeading');
     heading.style.color = '#9f9f9f';
     heading = document.getElementById('skillsHeading');
@@ -31,6 +32,7 @@ function processDataCandidateSaveBasicProfile(returnedData) {
 }
 
 function processDataCandidateExperienceUpdate(returnedData) {
+    localStorage.setItem("minProfile", returnedData.minProfile);
     var heading = document.getElementById('basicHeading');
     heading.style.color = '#9f9f9f';
     heading = document.getElementById('skillsHeading');
@@ -51,6 +53,7 @@ function processDataCandidateExperienceUpdate(returnedData) {
 }
 
 function processDataCandidateEducationUpdate(returnedData) {
+    localStorage.setItem("minProfile", returnedData.minProfile);
     window.location = "/dashboard";
 }
 
