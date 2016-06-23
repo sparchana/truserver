@@ -47,10 +47,8 @@ public class AuthService {
                 Auth.savePassword(existingAuth);
                 existingAuth.setAuthSessionId(UUID.randomUUID().toString());
                 existingAuth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
-                session("sessionId", existingAuth.getAuthSessionId());
-                session("candidateId", String.valueOf(existingCandidate.getCandidateId()));
-                session("leadId", String.valueOf(existingCandidate.getLead().getLeadId()));
-                session("sessionExpiry", String.valueOf(existingAuth.getAuthSessionIdExpiryMillis()));
+                /* adding session details */
+                addSession(existingAuth, existingCandidate);
 
                 candidateSignUpResponse.setCandidateFirstName(existingCandidate.getCandidateFirstName());
                 candidateSignUpResponse.setCandidateLastName(existingCandidate.getCandidateLastName());
@@ -69,10 +67,8 @@ public class AuthService {
                 Auth.savePassword(auth);
                 auth.setAuthSessionId(UUID.randomUUID().toString());
                 auth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
-                session("sessionId", auth.getAuthSessionId());
-                session("candidateId", String.valueOf(existingCandidate.getCandidateId()));
-                session("leadId", String.valueOf(existingCandidate.getLead().getLeadId()));
-                session("sessionExpiry", String.valueOf(auth.getAuthSessionIdExpiryMillis()));
+                /* adding session details */
+                addSession(auth, existingCandidate);
 
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
@@ -119,5 +115,11 @@ public class AuthService {
         }
 
         return candidateSignUpResponse;
+    }
+    public static void addSession(Auth existingAuth, Candidate existingCandidate){
+        session("sessionId", existingAuth.getAuthSessionId());
+        session("candidateId", String.valueOf(existingCandidate.getCandidateId()));
+        session("leadId", String.valueOf(existingCandidate.getLead().getLeadId()));
+        session("sessionExpiry", String.valueOf(existingAuth.getAuthSessionIdExpiryMillis()));
     }
 }

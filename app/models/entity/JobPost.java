@@ -2,6 +2,7 @@ package models.entity;
 
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.PrivateOwned;
+import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sun.org.apache.xalan.internal.xsltc.dom.BitArray;
@@ -34,7 +35,8 @@ public class JobPost extends Model {
     @Column(name = "JobPostCreateTimestamp", columnDefinition = "timestamp not null")
     private Timestamp jobPostCreateTimestamp;
 
-    @Column(name = "JobPostUpdateTimestamp", columnDefinition = "timestamp not null")
+    @UpdatedTimestamp
+    @Column(name = "JobPostUpdateTimestamp", columnDefinition = "timestamp null")
     private Timestamp jobPostUpdateTimestamp;
 
     @Column(name = "JobPostMinSalary", columnDefinition = "bigint signed null")
@@ -67,11 +69,17 @@ public class JobPost extends Model {
     @Column(name = "JobPostAddress", columnDefinition = "varchar(1000) null")
     private String jobPostAddress;
 
+    @Column(name = "Latitude", columnDefinition = "double(10,6) null")
+    private Double latitude;
+
+    @Column(name = "Longitude", columnDefinition = "double(10,6) null")
+    private Double longitude;
+
     @Column(name = "JobPostPinCode", columnDefinition = "bigint signed null")
     private Long jobPostPinCode;
 
-    @Column(name = "JobPostVacancy", columnDefinition = "bigint signed null")
-    private Integer jobPostVacancy;
+    @Column(name = "JobPostVacancies", columnDefinition = "bigint signed null")
+    private Integer jobPostVacancies;
 
     @Column(name = "JobPostDescriptionAudio", columnDefinition = "varchar(100) null")
     private String jobPostDescriptionAudio;
@@ -136,7 +144,26 @@ public class JobPost extends Model {
     public JobPost() {
         this.jobPostUUId = UUID.randomUUID().toString();
         this.jobPostCreateTimestamp = new Timestamp(System.currentTimeMillis());
-        this.jobPostUpdateTimestamp = new Timestamp(System.currentTimeMillis());
+    }
+
+    public Boolean getJobPostIsHot() {
+        return jobPostIsHot;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 
     public Boolean getJobPostIsHot(Boolean isJobHot) {
@@ -291,12 +318,12 @@ public class JobPost extends Model {
         this.jobPostTitle = jobPostTitle;
     }
 
-    public Integer getJobPostVacancy() {
-        return jobPostVacancy;
+    public Integer getJobPostVacancies() {
+        return jobPostVacancies;
     }
 
-    public void setJobPostVacancy(Integer jobPostVacancy) {
-        this.jobPostVacancy = jobPostVacancy;
+    public void setJobPostVacancies(Integer jobPostVacancies) {
+        this.jobPostVacancies = jobPostVacancies;
     }
 
     public BitArray getJobPostWorkingDays() {

@@ -456,10 +456,14 @@ public class Application extends Controller {
 
     @Security.Authenticated(SecuredUser.class)
     public static Result getCandidateJobApplication() {
-        List<JobApplication> jobApplicationList = JobApplication.find.where().eq("candidateId", session().get("candidateId")).findList();
-        if(jobApplicationList == null)
+        if(session().get("candidateId") != null){
+            List<JobApplication> jobApplicationList = JobApplication.find.where().eq("candidateId", session().get("candidateId")).findList();
+            if(jobApplicationList == null)
+                return ok("0");
+            return ok(toJson(jobApplicationList));
+        } else{
             return ok("0");
-        return ok(toJson(jobApplicationList));
+        }
     }
 
     public static Result checkMinProfile(long id) {
@@ -546,17 +550,13 @@ public class Application extends Controller {
     }
 
     public static Result updateIsAssessedToAssessed() {
-        try{
+        if(session().get("candidateId") != null){
             Candidate existingCandidate = Candidate.find.where().eq("candidateId", session().get("candidateId")).findUnique();
-            try{
+            if(existingCandidate != null){
                 existingCandidate.setCandidateIsAssessed(ServerConstants.CANDIDATE_ASSESSED);
                 existingCandidate.update();
                 return ok(toJson(ServerConstants.CANDIDATE_ASSESSED));
-            } catch (NullPointerException n) {
-                n.printStackTrace();
             }
-        } catch (NullPointerException n) {
-            n.printStackTrace();
         }
         return badRequest();
     }

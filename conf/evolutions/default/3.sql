@@ -1,147 +1,154 @@
 # --- !Ups
 
 create table company (
-	companyid                     bigint signed auto_increment not null,
-	companyuuid                   varchar(255) not null,
-	companyname                   varchar(50) not null,
-	companyemployeecount          int signed null,
-	companywebsite                varchar(30) null,
-	companydescription            varchar(500) null,
-	companyaddress                varchar(1000) null,
-	companypincode                bigint signed null,
-	companylogo                   varchar(80) null,
-	companycreatetimestamp        timestamp not null,
-	companyupdatetimestamp        timestamp not null,
-	companylocality               bigint signed null,
-	comptype                      bigint signed null,
-	compstatus                    bigint signed null,
-	constraint pk_company primary key (companyid)
+  companyid                     bigint signed auto_increment not null,
+  companyuuid                   varchar(255) not null,
+  companyname                   varchar(50) not null,
+  companyemployeecount          int signed null,
+  companywebsite                varchar(30) null,
+  companydescription            varchar(500) null,
+  companyaddress                varchar(1000) null,
+  latitude                      double(10,6) null,
+  longitude                     double(10,6) null,
+  companypincode                bigint signed null,
+  companylogo                   varchar(80) null,
+  companycreatetimestamp        timestamp not null,
+  companyupdatetimestamp        timestamp not null,
+  companylocality               bigint signed,
+  comptype                      bigint signed,
+  compstatus                    bigint signed,
+  constraint pk_company primary key (companyid)
 );
 
 create table companystatus (
-	companystatusid               bigint signed auto_increment not null,
-	companystatusname             varchar(20) not null,
-	constraint pk_companystatus primary key (companystatusid)
+  companystatusid               bigint signed auto_increment not null,
+  companystatusname             varchar(20) not null,
+  constraint pk_companystatus primary key (companystatusid)
 );
 
 create table companytype (
-	companytypeid                 bigint signed auto_increment not null,
-	companytypename               varchar(100) not null,
-	constraint pk_companytype primary key (companytypeid)
+  companytypeid                 bigint signed auto_increment not null,
+  companytypename               varchar(100) not null,
+  constraint pk_companytype primary key (companytypeid)
 );
 
 create table experience (
-	experienceid                  bigint signed auto_increment not null,
-	experiencetype                varchar(20) null,
-	constraint pk_experience primary key (experienceid)
+  experienceid                  bigint signed auto_increment not null,
+  experiencetype                varchar(20) null,
+  constraint pk_experience primary key (experienceid)
 );
 
 create table jobapplication (
-	jobapplicationid              int signed auto_increment not null,
-	jobapplicationcreatetimestamp timestamp not null,
-	jobpostid                     bigint signed null,
-	screeningstatusid             bigint signed null,
-	screeningcomments             varchar(1000) null,
-	candidateid                   bigint signed null,
-	constraint pk_jobapplication primary key (jobapplicationid)
+  jobapplicationid              int signed auto_increment not null,
+  jobapplicationcreatetimestamp timestamp not null,
+  screeningcomments             varchar(1000) null,
+  jobpostid                     bigint signed,
+  screeningstatusid             bigint signed,
+  candidateid                   bigint signed,
+  jobapplicationupdatetimestamp timestamp null,
+  constraint pk_jobapplication primary key (jobapplicationid)
 );
 
 create table jobbenefit (
-	jobbenefitid                  bigint signed auto_increment not null,
-	jobbenefitname                varchar(20) not null,
-	constraint pk_jobbenefit primary key (jobbenefitid)
+  jobbenefitid                  bigint signed auto_increment not null,
+  jobbenefitname                varchar(20) not null,
+  constraint pk_jobbenefit primary key (jobbenefitid)
 );
 
 create table jobpost (
-	jobpostid                     bigint signed auto_increment not null,
-	jobpostuuid                   varchar(255) not null,
-	jobpostcreatetimestamp        timestamp not null,
-	jobpostupdatetimestamp        timestamp not null,
-	jobpostminsalary              bigint signed null,
-	jobpostmaxsalary              bigint signed null,
-	jobpoststarttime              time null,
-	jobpostendtime                time null,
-	jobpostishot                  int signed null,
-	jobpostdescription            varchar(1000) null,
-	jobposttitle                  varchar(100) null,
-	jobpostincentives             varchar(1000) null,
-	jobpostminrequirement         varchar(1000) null,
-	jobpostaddress                varchar(1000) null,
-	jobpostpincode                bigint signed null,
-	jobpostvacancy                bigint signed null,
-	jobpostdescriptionaudio       varchar(100) null,
-	jobpostworkfromhome           int signed null,
-	jobstatus                     bigint signed null,
-	pricingplantype               bigint signed null,
-	jobpostjobrole                bigint signed null,
-	companyid                     bigint signed null,
-	jobshiftid                    int signed null,
-	jobexperienceid               bigint signed null,
-	jobeducationid                int signed null,
-	constraint pk_jobpost primary key (jobpostid)
+  jobpostid                     bigint signed auto_increment not null,
+  jobpostuuid                   varchar(255) not null,
+  jobpostcreatetimestamp        timestamp not null,
+  jobpostminsalary              bigint signed null,
+  jobpostmaxsalary              bigint signed null,
+  jobpoststarttime              time null,
+  jobpostendtime                time null,
+  jobpostishot                  int signed null,
+  jobpostdescription            varchar(1000) null,
+  jobposttitle                  varchar(100) null,
+  jobpostincentives             varchar(1000) null,
+  jobpostminrequirement         varchar(1000) null,
+  jobpostaddress                varchar(1000) null,
+  latitude                      double(10,6) null,
+  longitude                     double(10,6) null,
+  jobpostpincode                bigint signed null,
+  jobpostvacancies              bigint signed null,
+  jobpostdescriptionaudio       varchar(100) null,
+  jobpostworkfromhome           int signed null,
+  jobstatus                     bigint signed,
+  pricingplantype               bigint signed,
+  jobpostjobrole                bigint signed,
+  companyid                     bigint signed,
+  jobshiftid                    int signed,
+  jobexperienceid               bigint signed,
+  jobeducationid                int signed,
+  jobpostupdatetimestamp        timestamp null,
+  constraint pk_jobpost primary key (jobpostid)
 );
 
 create table jobposttobenefits (
-	jobposttobenefitsid           bigint signed not null auto_increment not null,
-	jobposttobenefitscreatetimestamp timestamp null,
-	jobbenefitid                  bigint signed null,
-	jobpostid                     bigint signed null,
-	constraint pk_jobposttobenefits primary key (jobposttobenefitsid)
+  jobposttobenefitsid           bigint signed not null auto_increment not null,
+  jobposttobenefitscreatetimestamp timestamp null,
+  jobbenefitid                  bigint signed,
+  jobpostid                     bigint signed,
+  jobposttobenefitsupdatetimestamp timestamp null not null,
+  constraint pk_jobposttobenefits primary key (jobposttobenefitsid)
 );
 
 create table jobposttolocality (
-	jobposttolocalityid           bigint signed not null auto_increment not null,
-	jobposttolocalitycreatetimestamp timestamp null,
-	localityid                    bigint signed null,
-	jobpostid                     bigint signed null,
-	constraint pk_jobposttolocality primary key (jobposttolocalityid)
+  jobposttolocalityid           bigint signed not null auto_increment not null,
+  jobposttolocalitycreatetimestamp timestamp null,
+  localityid                    bigint signed,
+  jobpostid                     bigint signed,
+  jobposttolocalityupdatetimestamp timestamp null not null,
+  constraint pk_jobposttolocality primary key (jobposttolocalityid)
 );
 
 create table jobposttoskill (
-	jobposttoskillid              bigint signed not null auto_increment not null,
-	jobposttoskillcreatetimestamp timestamp not null,
-	jobposttoskillupdatetimestamp timestamp not null,
-	jobpostid                     bigint signed null,
-	skillid                       int signed null,
-	constraint pk_jobposttoskill primary key (jobposttoskillid)
+  jobposttoskillid              bigint signed not null auto_increment not null,
+  jobposttoskillcreatetimestamp timestamp not null,
+  jobpostid                     bigint signed,
+  skillid                       int signed,
+  jobposttoskillupdatetimestamp timestamp null not null,
+  constraint pk_jobposttoskill primary key (jobposttoskillid)
 );
 
 create table jobstatus (
-	jobstatusid                   bigint signed auto_increment not null,
-	jobstatusname                 varchar(20) not null,
-	constraint pk_jobstatus primary key (jobstatusid)
+  jobstatusid                   bigint signed auto_increment not null,
+  jobstatusname                 varchar(20) not null,
+  constraint pk_jobstatus primary key (jobstatusid)
 );
 
 create table pricingplantype (
-	pricingplantypeid             bigint signed auto_increment not null,
-	pricingplantypename           varchar(20) not null,
-	constraint pk_pricingplantype primary key (pricingplantypeid)
+  pricingplantypeid             bigint signed auto_increment not null,
+  pricingplantypename           varchar(20) not null,
+  constraint pk_pricingplantype primary key (pricingplantypeid)
 );
 
 create table recruiterprofile (
-	recruiterprofileid            bigint signed auto_increment not null,
-	recruiterprofileuuid          varchar(255) not null,
-	recruiterprofilename          varchar(50) not null,
-	recruiterprofilemobile        varchar(13) not null,
-	recruiterprofilelandline      varchar(13) not null,
-	recruiterprofilepin           int signed null,
-	recruiterprofileemail         varchar(255) null,
-	recruiterprofilecreatetimestamp timestamp not null,
-	recruiterprofileupdatetimestamp timestamp not null,
-	recstatus                     bigint signed,
-	constraint pk_recruiterprofile primary key (recruiterprofileid)
+  recruiterprofileid            bigint signed auto_increment not null,
+  recruiterprofileuuid          varchar(255) not null,
+  recruiterprofilename          varchar(50) not null,
+  recruiterprofilemobile        varchar(13) not null,
+  recruiterprofilelandline      varchar(13) not null,
+  recruiterprofilepin           int signed null,
+  recruiterprofileemail         varchar(255) null,
+  recruiterprofilecreatetimestamp timestamp not null,
+  recruiterprofileupdatetimestamp timestamp not null,
+  recstatus                     bigint signed,
+  constraint pk_recruiterprofile primary key (recruiterprofileid)
 );
 
 create table recruiterstatus (
-	recruiterstatusid             bigint signed auto_increment not null,
-	recruiterstatusname           varchar(20) not null,
-	constraint pk_recruiterstatus primary key (recruiterstatusid)
+  recruiterstatusid             bigint signed auto_increment not null,
+  recruiterstatusname           varchar(20) not null,
+  constraint pk_recruiterstatus primary key (recruiterstatusid)
 );
 
 create table screeningstatus (
-	screeningstatusid             bigint signed auto_increment not null,
-	screeningstatusname           varchar(20) not null,
-	constraint pk_screeningstatus primary key (screeningstatusid)
+  screeningstatusid             bigint signed auto_increment not null,
+  screeningstatusname           varchar(20) not null,
+  constraint pk_screeningstatus primary key (screeningstatusid)
 );
 
 
@@ -294,3 +301,5 @@ drop table if exists pricingplantype;
 drop table if exists recruiterprofile;
 
 drop table if exists recruiterstatus;
+
+drop table if exists screeningstatus;

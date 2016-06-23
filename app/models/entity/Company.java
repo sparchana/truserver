@@ -2,6 +2,7 @@ package models.entity;
 
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.PrivateOwned;
+import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Static.CompanyStatus;
@@ -42,6 +43,12 @@ public class Company extends Model {
     @Column(name = "CompanyAddress", columnDefinition = "varchar(1000) null")
     private String companyAddress;
 
+    @Column(name = "Latitude", columnDefinition = "double(10,6) null")
+    private Double lat;
+
+    @Column(name = "Longitude", columnDefinition = "double(10,6) null")
+    private Double lng;
+
     @Column(name = "CompanyPinCode", columnDefinition = "bigint signed null")
     private Long companyPinCode;
 
@@ -51,7 +58,8 @@ public class Company extends Model {
     @Column(name = "CompanyCreateTimestamp", columnDefinition = "timestamp not null")
     private Timestamp companyCreateTimestamp;
 
-    @Column(name = "CompanyUpdateTimestamp", columnDefinition = "timestamp not null")
+    @UpdatedTimestamp
+    @Column(name = "CompanyUpdateTimestamp", columnDefinition = "timestamp null")
     private Timestamp companyUpdateTimestamp;
 
     @ManyToOne
@@ -79,7 +87,22 @@ public class Company extends Model {
     public Company() {
         this.companyUUId = UUID.randomUUID().toString();
         this.companyCreateTimestamp = new Timestamp(System.currentTimeMillis());
-        this.companyUpdateTimestamp = new Timestamp(System.currentTimeMillis());
+    }
+
+    public Double getLat() {
+        return lat;
+    }
+
+    public void setLat(Double lat) {
+        this.lat = lat;
+    }
+
+    public Double getLng() {
+        return lng;
+    }
+
+    public void setLng(Double lng) {
+        this.lng = lng;
     }
 
     public Long getCompanyId() {

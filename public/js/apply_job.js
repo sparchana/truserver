@@ -66,7 +66,7 @@ function addJobPost(){
             jobPostMinRequirement: "Minimum requirement free text",
             jobPostAddress: "Address of the company",
             jobPostPinCode: 560035,
-            jobPostVacancy: 15,
+            jobPostVacancies: 15,
             jobPostDescriptionAudio: "Delivery boy executive at test",
             jobPostWorkFromHome: 1,
             jobPostStatusId: 1,
@@ -143,7 +143,7 @@ function processDataGetCandidateInfo(returnedData) {
     if(returnedData.candidateGender != null)
         candidateGender = ((returnedData.candidateGender == 0) ? "Male" : "Female");
     if(returnedData.candidateTotalExperience != null)
-        totalExp = returnedData.candidateTotalExperience;
+        totalExp = Math.round((parseInt(returnedData.candidateTotalExperience)/12)*100)/100;
     if(returnedData.candidateIsEmployed != null)
         isEmployed = ((returnedData.candidateIsEmployed == 0) ? "No" : "Yes");
     if(returnedData.candidateIsAssessed != null)
@@ -158,9 +158,9 @@ function processDataGetCandidateInfo(returnedData) {
         motherTongue = returnedData.motherTongue.languageName;
     if(returnedData.locality != null)
         homeLocality = returnedData.locality;
-    if(returnedData.candidateCurrentJobDetail.candidateCurrentSalary != null)
+    if(returnedData.candidateCurrentJobDetail != null)
         salary = returnedData.candidateCurrentJobDetail.candidateCurrentSalary;
-    if(returnedData.candidateEducation.education.educationName != null)
+    if(returnedData.candidateEducation != null)
         education = returnedData.candidateEducation.education.educationName;
     var jobRoleList = returnedData.jobPreferencesList;
     jobRoleList.forEach(function (job) {
@@ -199,14 +199,6 @@ function processDataGetCandidateInfo(returnedData) {
             },
             type: "POST",
             dataType: "xml",
-            statusCode: {
-                0: function() {
-                    //Success message
-                },
-                200: function() {
-                    //Success Message
-                }
-            }
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);

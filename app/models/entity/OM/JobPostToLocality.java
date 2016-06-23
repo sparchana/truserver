@@ -1,6 +1,7 @@
 package models.entity.OM;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.JobPost;
@@ -22,7 +23,11 @@ public class JobPostToLocality extends Model {
     private Long jobPostToLocalityId;
 
     @Column(name = "JobPostToLocalityCreateTimeStamp", columnDefinition = "timestamp null")
-    private Timestamp jobPostToLocalityCreateTimeStamp = new Timestamp(System.currentTimeMillis());
+    private Timestamp jobPostToLocalityCreateTimeStamp;
+
+    @UpdatedTimestamp
+    @Column(name = "JobPostToLocalityUpdateTimeStamp", columnDefinition = "timestamp null")
+    private Timestamp jobPostToLocalityUpdateTimeStamp;
 
     @ManyToOne
     @JsonManagedReference
@@ -33,6 +38,10 @@ public class JobPostToLocality extends Model {
     @JsonBackReference
     @JoinColumn(name = "JobPostId", referencedColumnName= "JobPostId")
     private JobPost jobPost;
+
+    public JobPostToLocality(){
+        this.jobPostToLocalityCreateTimeStamp = new Timestamp(System.currentTimeMillis());
+    }
 
     public Long getJobPostToLocalityId() {
         return jobPostToLocalityId;

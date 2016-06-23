@@ -1,6 +1,7 @@
 package models.entity.OM;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.JobPost;
@@ -21,7 +22,11 @@ public class JobPostToBenefits extends Model {
     private Long jobPostToBenefitsId;
 
     @Column(name = "JobPostToBenefitsCreateTimeStamp", columnDefinition = "timestamp null")
-    private Timestamp jobPostToBenefitsCreateTimeStamp = new Timestamp(System.currentTimeMillis());
+    private Timestamp jobPostToBenefitsCreateTimeStamp;
+
+    @UpdatedTimestamp
+    @Column(name = "JobPostToBenefitsUpdateTimestamp", columnDefinition = "timestamp null")
+    private Timestamp jobPostToBenefitsUpdateTimestamp;
 
     @ManyToOne
     @JsonManagedReference
@@ -32,4 +37,8 @@ public class JobPostToBenefits extends Model {
     @JsonBackReference
     @JoinColumn(name = "JobPostId", referencedColumnName= "JobPostId")
     private JobPost jobPost;
+
+    public JobPostToBenefits(){
+        this.jobPostToBenefitsCreateTimeStamp = new Timestamp(System.currentTimeMillis());
+    }
 }

@@ -18,7 +18,7 @@ public class AddJobPostRequest {
     public String jobPostMinRequirement;
     public String jobPostAddress;
     public Long jobPostPinCode;
-    public Integer jobPostVacancy;
+    public Integer jobPostVacancies;
     public String jobPostDescriptionAudio;
     public Boolean jobPostWorkFromHome;
     public Integer jobPostStatusId;
@@ -29,7 +29,7 @@ public class AddJobPostRequest {
     public Integer jobPostExperienceId;
     public Integer jobPostEducationId;
 
-    protected List<Integer> jobPostLocalities;
+    public List<Integer> jobPostLocalities;
 
     public Long getJobPostMinSalary() {
         return jobPostMinSalary;
@@ -119,12 +119,12 @@ public class AddJobPostRequest {
         this.jobPostPinCode = jobPostPinCode;
     }
 
-    public Integer getJobPostVacancy() {
-        return jobPostVacancy;
+    public Integer getJobPostVacancies() {
+        return jobPostVacancies;
     }
 
-    public void setJobPostVacancy(Integer jobPostVacancy) {
-        this.jobPostVacancy = jobPostVacancy;
+    public void setJobPostVacancies(Integer jobPostVacancy) {
+        this.jobPostVacancies = jobPostVacancy;
     }
 
     public String getJobPostDescriptionAudio() {

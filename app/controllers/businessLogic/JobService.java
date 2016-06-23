@@ -33,7 +33,7 @@ public class JobService {
         newJobPost.setJobPostMinRequirement(addJobPostRequest.getJobPostMinRequirement());
         newJobPost.setJobPostAddress(addJobPostRequest.getJobPostAddress());
         newJobPost.setJobPostPinCode(addJobPostRequest.getJobPostPinCode());
-        newJobPost.setJobPostVacancy(addJobPostRequest.getJobPostVacancy());
+        newJobPost.setJobPostVacancies(addJobPostRequest.getJobPostVacancies());
         newJobPost.setJobPostDescriptionAudio(addJobPostRequest.getJobPostDescriptionAudio());
         newJobPost.setJobPostWorkFromHome(addJobPostRequest.getJobPostWorkFromHome());
 

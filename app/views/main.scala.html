@@ -367,6 +367,53 @@
                 <!-- End of sectionOne -->
         </div>
 
+        <!-- custom message modal -->
+        <div class="modal fade" id="messagePromptModal" tabindex="-1" role="dialog" aria-labelledby="messagePromptModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">TruJobs</h4>
+                    </div>
+                    <div class="modal-body">
+                        <center>
+                            <img id="customMsgIcon" width="48px">
+                            <div id="customMsg" style="padding: 16px"></div>
+                            <div id="customSubMsg" style="padding: 16px"></div>
+                        </center>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <!-- start hot job -->
+        <div class="company_class" id="hot_job_section">
+                Hot Jobs
+        </div>
+
+        <center id="temp_hot_job_section">
+            <div class="materialDash"></div>
+            <div class="container-fluid" id="company_box">
+                <div class="row">
+                    <div class="col-lg-1 visible-lg" id="arrow_left_hot">
+                        <a class="right carousel-control" href="#hot_job" role="button" data-slide="prev">
+                            <img class="img-responsive" src="/assets/new/img/arrow_left_hot.png">
+                        </a>
+                    </div>
+                    <div class="col-md-10">
+                        <div id="hot_job" class="carousel slide" data-ride="carousel">
+                            <div class="carousel-inner" role="listbox" id="hotJobPosts"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-1 visible-lg" id="arrow_right_hot">
+                        <a class="right carousel-control" href="#hot_job" role="button" data-slide="next">
+                            <img class="img-responsive" src="/assets/new/img/arrow_right_hot.png">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </center>
+        <hr>
         <div class="company_class">
             Companies Hiring From Us
         </div>
@@ -449,54 +496,7 @@
                 </div>
             </div>
         </center>
-        <hr>
 
-        <!-- custom message modal -->
-        <div class="modal fade" id="messagePromptModal" tabindex="-1" role="dialog" aria-labelledby="messagePromptModalLabel">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="myModalLabel">TruJobs</h4>
-                    </div>
-                    <div class="modal-body">
-                        <center>
-                            <img id="customMsgIcon" width="48px">
-                            <div id="customMsg" style="padding: 16px"></div>
-                            <div id="customSubMsg" style="padding: 16px"></div>
-                        </center>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-            <!-- start hot job -->
-        <div class="company_class" id="hot_job_section">
-                Hot Jobs
-        </div>
-
-        <center>
-            <div class="materialDash"></div>
-            <div class="container-fluid" id="company_box">
-                <div class="row">
-                    <div class="col-lg-1 visible-lg" id="arrow_left_hot">
-                        <a class="right carousel-control" href="#hot_job" role="button" data-slide="prev">
-                            <img class="img-responsive" src="/assets/new/img/arrow_left_hot.png">
-                        </a>
-                    </div>
-                    <div class="col-md-10">
-                        <div id="hot_job" class="carousel slide" data-ride="carousel">
-                            <div class="carousel-inner" role="listbox" id="hotJobPosts"></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-1 visible-lg" id="arrow_right_hot">
-                        <a class="right carousel-control" href="#hot_job" role="button" data-slide="next">
-                            <img class="img-responsive" src="/assets/new/img/arrow_right_hot.png">
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </center>
 
         <div class="sectionStats">
             <div class="row">

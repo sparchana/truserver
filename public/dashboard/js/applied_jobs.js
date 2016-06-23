@@ -37,7 +37,7 @@ function processDataAndFetchAppliedJobs(returnedData) {
     }
 
     /* check assessment */
-    if(localStorage.getItem("isAssessed") == 0){
+    if(localStorage.getItem("assessed") == 0){
         var assessmentStatusParent = document.getElementById("assessmentStatusParentMyJobs");
         assessmentStatusParent.addEventListener("click", completeAssessment);
         assessmentStatusParent.style = "cursor: pointer";

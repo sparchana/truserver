@@ -1,6 +1,7 @@
 package models.entity.OM;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
@@ -23,6 +24,10 @@ public class JobApplication extends Model {
 
     @Column(name = "JobApplicationCreateTimeStamp", columnDefinition = "timestamp not null")
     private Timestamp jobApplicationCreateTimeStamp = new Timestamp(System.currentTimeMillis());
+
+    @UpdatedTimestamp
+    @Column(name = "JobApplicationUpdateTimestamp", columnDefinition = "timestamp null")
+    private Timestamp jobApplicationUpdateTimestamp;
 
     @Column(name = "ScreeningComments", columnDefinition = "varchar(1000) null")
     private String screeningComments;

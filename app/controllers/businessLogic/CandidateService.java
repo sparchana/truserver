@@ -776,10 +776,8 @@ public class CandidateService
 
                     existingAuth.setAuthSessionId(UUID.randomUUID().toString());
                     existingAuth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
-                    session("sessionId", existingAuth.getAuthSessionId());
-                    session("candidateId", String.valueOf(existingCandidate.getCandidateId()));
-                    session("leadId", String.valueOf(existingCandidate.getLead().getLeadId()));
-                    session("sessionExpiry", String.valueOf(existingAuth.getAuthSessionIdExpiryMillis()));
+                    /* adding session details */
+                    AuthService.addSession(existingAuth,existingCandidate);
                     existingAuth.update();
                     Logger.info("Login Successful");
                 }

@@ -159,7 +159,6 @@ public class Candidate extends Model {
     public Candidate() {
         this.candidateUUId = UUID.randomUUID().toString();
         this.candidateCreateTimestamp = new Timestamp(System.currentTimeMillis());
-        this.candidateUpdateTimestamp = new Timestamp(System.currentTimeMillis());
     }
 
     public void registerCandidate() {
