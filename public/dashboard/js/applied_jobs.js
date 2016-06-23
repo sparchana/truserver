@@ -100,7 +100,7 @@ function prePopulateJobSection(jobApplication) {
 
     var divAppliedDate = document.createElement("div");
     divAppliedDate.style = "font-size: 14px; margin-top: 4px; float: right";
-    divAppliedDate.textContent = "Applied on: " + new Date(fetchedAppliedDate).getDay() + "/" + new Date(fetchedAppliedDate).getMonth() + "/" + new Date(fetchedAppliedDate).getFullYear();
+    divAppliedDate.textContent = "Applied on: " + new Date(fetchedAppliedDate).getDate() + "/" + (new Date(fetchedAppliedDate).getMonth()+1) + "/" + new Date(fetchedAppliedDate).getFullYear();
 
     titleRowOne.appendChild(divTitleText);
     titleRowTwo.appendChild(divAppliedDate);
