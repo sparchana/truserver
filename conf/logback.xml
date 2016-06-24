@@ -6,7 +6,7 @@
 
     <conversionRule conversionWord="coloredLevel" converterClass="play.api.libs.logback.ColoredLevel" />
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${user.dir}/logs/application_test.log</file>
+        <file>${user.dir}/logs/application.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- Daily rollover with compression -->
             <fileNamePattern>${user.dir}/logs/application-log-%d{yyyy-MM-dd}.gz</fileNamePattern>
