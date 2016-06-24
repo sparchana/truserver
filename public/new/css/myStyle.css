@@ -307,17 +307,31 @@ a:hover{
 }
 
 @media screen and (max-width: 280px) {
+    .panel{
+        padding: 0px;
+    }
     #navLogo{
         height: 24px;
     }
     #leadFormBox{
         margin-top: 20px;
     }
+    li{
+        margin-top: -10px;
+        background-color: #ffffff;
+    }
 }
 
 @media screen and (max-width: 768px) {
+    .panel{
+        padding: 0px;
+    }
+    li{
+        margin-top: -10px;
+        background-color: #ffffff;
+    }
     #hot_box{
-        margin: 4%;
+        margin: 0%;
     }
     #fixed-menu{
         margin-top: 0px;
@@ -326,7 +340,7 @@ a:hover{
         width: 96%;
     }
     #steps{
-        text-align: left;
+        text-align: center;
     }
     #candidateFirstName {
         width: 96%;
