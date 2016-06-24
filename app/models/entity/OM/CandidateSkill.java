@@ -36,6 +36,9 @@ public class CandidateSkill extends Model {
     @JoinColumn(name = "SkillId", referencedColumnName = "SkillId")
     private Skill skill;
 
+    @Column(name = "candidateSkillResponse", columnDefinition = "bit null")
+    private boolean candidateSkillResponse;
+
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "SkillQualifierId", referencedColumnName = "skillqualifierId")
@@ -81,5 +84,13 @@ public class CandidateSkill extends Model {
 
     public SkillQualifier getSkillQualifier() {
         return skillQualifier;
+    }
+
+    public boolean isCandidateSkillResponse() {
+        return candidateSkillResponse;
+    }
+
+    public void setCandidateSkillResponse(boolean candidateSkillResponse) {
+        this.candidateSkillResponse = candidateSkillResponse;
     }
 }

@@ -6,6 +6,7 @@ import api.http.httpResponse.AddLeadResponse;
 import api.http.httpResponse.SupportDashboardElementResponse;
 import api.http.httpResponse.SupportInteractionNoteResponse;
 import api.http.httpResponse.SupportInteractionResponse;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.AuthService;
@@ -152,6 +153,8 @@ public class Application extends Controller {
         JsonNode req = request().body().asJson();
         AddSupportCandidateRequest addSupportCandidateRequest = new AddSupportCandidateRequest();
         ObjectMapper newMapper = new ObjectMapper();
+        // since jsonReq has single/multiple values in array
+        newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
         try {
             addSupportCandidateRequest = newMapper.readValue(req.toString(), AddSupportCandidateRequest.class);
             Logger.info("json" + req.toString());
@@ -754,5 +757,25 @@ public class Application extends Controller {
         }
         else
             return ok("no records");
+    }
+
+    public static Result getAllJobExpQuestion() {
+        List<JobExpQuestion> jobExpQuestionList = JobExpQuestion.find.all();
+        return ok(toJson(jobExpQuestionList));
+    }
+
+    public static Result getJobExpQuestion(String jobRoleIds) {
+        List<String> jobRoleIdList = Arrays.asList(jobRoleIds.split("\\s*,\\s*"));
+        List<JobExpQuestion> response = new ArrayList<>();
+        if(jobRoleIdList != null){
+            for(String jobRoleId: jobRoleIdList) {
+                List<JobExpQuestion> jobExpQuestionList = JobExpQuestion.find.where().eq("jobRoleId", jobRoleId).findList();
+                if(jobExpQuestionList != null && !jobExpQuestionList.isEmpty()){
+                    response.addAll(jobExpQuestionList);
+                }
+            }
+            return ok(toJson(response));
+        }
+        return ok();
     }
 }

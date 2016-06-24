@@ -5,35 +5,41 @@
     <meta charset="UTF-8">
     <title>Create Candidate - Support | Trujobs.in</title>
           <!-- Material Design Lite -->
-      <link rel="stylesheet" href="/assets/support/css/material.indigo-pink.min.css">
+      <link rel="stylesheet" href="/assets/support/css/material.indigo-pink.min.css"/>
 
-      <link rel="stylesheet" href="/assets/support/css/bootstrap.min.css">
+      <link rel="stylesheet" href="/assets/support/css/bootstrap.min.css"/>
 
       <script type="text/javascript" src="/assets/support/js/jquery-1.12.0.min.js"></script>
       <link rel="stylesheet" href="/assets/css/token-input.css" type="text/css" />
       <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
 
-      <link rel="stylesheet" href="/assets/support/css/style.css">
-      <link rel="stylesheet" type="text/css" href="/assets/new/css/myStyle.css">
-      <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/dashboard.css">
+      <link rel="stylesheet" href="/assets/support/css/style.css"/>
+      <link rel="stylesheet" type="text/css" href="/assets/new/css/myStyle.css"/>
+      <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/dashboard.css"/>
 
-      <link rel="stylesheet" href="/assets/support/css/bootstrap-datetimepicker.min.css">
+      <link rel="stylesheet" href="/assets/support/css/bootstrap-datetimepicker.min.css"/>
       <script type="text/javascript" src="/assets/support/js/Moment.js"></script>
 
       <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lato" />
       <link rel="stylesheet" href="/assets/support/css/nprogress.css">
       <link rel="stylesheet" href="/assets/support/css/animate.css">
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+      <script type="text/javascript" src="/assets/support/js/jquery-1.11.1.min.js"></script>
       <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
-    <script type="text/javascript" src="/assets/support/js/sign_up_support.js"></script>
 
-    <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
-    <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css">
+          <!-- Include the plugin's CSS and JS: -->
+      <script type="text/javascript" src="/assets/support/js/bootstrap-multiselect.js"></script>
+      <link rel="stylesheet" href="/assets/support/css/bootstrap-multiselect.css" type="text/css"/>
+
+      <script type="text/javascript" src="/assets/support/js/sign_up_support.js"></script>
+
+      <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
+      <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css"/>
 
       <!-- Material Design Lite -->
       <script type="text/javascript" src="/assets/support/js/material.min.js"></script>
       <!-- Material Design icon font -->
-      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+
   </head>
 
   <body style="font-size: 13px;">
@@ -217,7 +223,7 @@
                                     </script>
                                 </div>
                             </div>
-
+                                <!-- TODO: remove this-->
                             <div class="row" style="margin-top: 4px">
                                 <div class="col-sm-3"><h5>Married?:</h5></div>
                                 <div class="col-sm-9" style="margin-top: 6px;">
@@ -237,7 +243,7 @@
 
                         <hr>
                         <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Employment Status and Experience</h4>
-                        <div id="">
+                        <div>
                             <div class="row" style="margin-top: 4px">
                                 <div class="col-sm-3"><h5>Your Work Experience:</h5></div>
                                 <div class="col-sm-9">
@@ -252,13 +258,45 @@
                                 </div>
                             </div>
 
-                            <div class="row" id="totalWorkExperience" style="display: none; margin-top: 4px">
-                                <div class="col-sm-3"><h5>Total Experience:</h5></div>
-                                <div class="col-sm-9">
-                                    <input id="candidateTotalExperienceYear" value="0" style="width: 15%; display: inline-block" placeholder="Years" type="number" class="form-control input-md">&nbsp;Years&nbsp;&nbsp;
-                                    <input id="candidateTotalExperienceMonth" value="0" style="width: 15%; display: inline-block" placeholder="Months" type="number" min="0" max="11" step="1"  class="form-control input-md">&nbsp; Months
+                            <div id="totalWorkExperience" style="display: none; margin-top: 4px">
+                                <div class="row">
+                                    <div class="col-sm-3"><h5>Total Experience:</h5></div>
+                                    <div class="col-sm-9">
+                                        <input id="candidateTotalExperienceYear" value="0" style="width: 15%; display: inline-block" placeholder="Years" type="number" class="form-control input-md">&nbsp;Years&nbsp;&nbsp;
+                                        <input id="candidateTotalExperienceMonth" value="0" style="width: 15%; display: inline-block" placeholder="Months" type="number" min="0" max="11" step="1"  class="form-control input-md">&nbsp; Months
+                                    </div>
+                                </div>
+
+                                    <!-- expDuration details -->
+                                <div class="row" style="margin-top: 8px;">
+                                    <div class="col-sm-12">
+                                        <div id="exp_duration_details">
+                                            <table id="expDurationTable" class="table table-striped" cellspacing="0" width="100%">
+                                                <thead></thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div>
+
+                                </div>
+
+
+                                    <!-- expOther details -->
+                                <div class="row" style="margin-top: 8px;">
+                                    <div class="col-sm-12">
+                                        <div id="exp_other_details">
+                                            <table id="expOtherTable" class="table table-striped" cellspacing="0" width="100%">
+                                                <thead></thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+
 
                             <div class="row" style="margin-top: 4px">
                                 <div class="col-sm-3"><h5>Do you have a Job?:</h5></div>
@@ -336,7 +374,7 @@
                                         <input id="candidateCurrentJobDurationMonth"  value="0" style="width: 15%; display: inline-block"  type="number" min="0" max="11" step="1" placeholder="Months" class="form-control input-md" >&nbsp; Months
                                     </div>
                                 </div>
-
+                                    <!-- TODO: remove this-->
                                 <div class="row" style="margin-top: 4px">
                                     <div class="col-sm-3"><h5>Mode of Transport:</h5></div>
                                     <div class="col-sm-9" style="margin-top: 8px">
@@ -565,19 +603,11 @@
         </div>
     </div>
       <!-- Including Bootstrap -->
+
       <script type="text/javascript" src="/assets/js/validation.js"></script>
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
       <script type="text/javascript" src="/assets/support/js/bootstrap.min.js"></script>
       <script type="text/javascript" src="/assets/support/js/nprogress.js"></script>
       <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
-      <script>
-              function clickFresher(){
-                  $("#totalWorkExperience").hide();
-              }
-              function clickExperienced(){
-                  $("#totalWorkExperience").show();
-              }
-      </script>
       <script type="text/javascript" src="/assets/support/js/bootstrap-datetimepicker.min.js"></script>
   </body>
 </html>

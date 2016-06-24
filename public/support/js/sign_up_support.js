@@ -24,6 +24,7 @@ var pastJobRoleArray = [];
 var candidateIdProofArray = [];
 
 var candidateSkill = [];
+var jobPrefString = "";
 
 $(document).ready(function () {
     var pathname = window.location.pathname; // Returns path only
@@ -216,7 +217,10 @@ function processDataAndFillAllFields(returnedData) {
                 item ["id"] = id;
                 item ["name"] = name;
                 jobPrefArray.push(item);
+                jobPrefString +=id + ",";
             });
+            jobPrefString = jobPrefString.substring(0, jobPrefString.length - 1);
+            //console.log("constructed jobPrefString : " + jobPrefString);
         } catch (err) {
             console.log(err);
         }
@@ -440,6 +444,21 @@ function processDataAndFillAllFields(returnedData) {
                     $("#totalWorkExperience").show();
                     $("#candidateTotalExperienceYear").val(parseInt((totalExperience / 12)).toString()); // years
                     $("#candidateTotalExperienceMonth").val(totalExperience % 12); // years
+
+                    var candidateExpList = returnedData.candidateExpList;
+                    if(candidateExpList != null){
+                        generateExperience(jobPrefString);
+                        var arr = [];
+                        candidateExpList.forEach(function (candidateExp) {
+                            if(candidateExp.jobExpQuestion.expCategory.expCategoryName == 'Duration'){
+                                $("#expDuration_" + candidateExp.jobExpQuestion.jobExpQuestionId).val(candidateExp.jobExpResponse.jobExpResponseOption.jobExpResponseOptionId);
+                            } else {
+                                arr.push(""+candidateExp.jobExpResponse.jobExpResponseOption.jobExpResponseOptionId);
+                                $("#expOther_" + candidateExp.jobExpQuestion.jobExpQuestionId).val(arr);
+                                $("#expOther_" + candidateExp.jobExpQuestion.jobExpQuestionId).multiselect('rebuild');
+                            }
+                        });
+                    }
                 }
             }
         } catch (err) {
@@ -874,6 +893,117 @@ function processDataCheckSkills(returnedData) {
     $(".btn-group").removeClass('active');
     prefillSkills(candidateSkill);
 }
+function processDataCheckExp(returnedData) {
+    var selectIdList =[];
+    //console.log(JSON.stringify(returnedData));
+    var count = 0;
+    var tableExpDuration = document.getElementById("expDurationTable");
+    var tableExpOther = document.getElementById("expOtherTable");
+    $('#expDurationTable').empty();
+    $('#expOtherTable').empty();
+    var prevJobRoleId = -99;
+    returnedData.forEach(function (singleQuestion) {
+        if(singleQuestion.expCategory.expCategoryName == 'Duration'){
+            count++;
+            var row = tableExpDuration.insertRow(0);
+
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+
+            cell1.innerHTML = '<div id="jobId_'+singleQuestion.jobExpQuestionId+'">'+singleQuestion.jobExpQuestion+'</div>';
+
+            var selectList = document.createElement("select");
+            selectList.setAttribute("id", "expDuration_"+singleQuestion.jobExpQuestionId);
+            var option = document.createElement("option");
+            option.setAttribute("value", "-1");
+            option.text = "Select";
+            selectList.appendChild(option);
+            var expDurationResponseList = singleQuestion.jobExpResponseList;
+
+            expDurationResponseList.forEach(function (expDurationResponse) {
+                if(expDurationResponse != null){
+                    var option = document.createElement("option");
+                    option.setAttribute("value", expDurationResponse.jobExpResponseOption.jobExpResponseOptionId);
+                    option.text = expDurationResponse.jobExpResponseOption.jobExpResponseOptionName;
+                    selectList.appendChild(option);
+                }
+            });
+            cell2.appendChild(selectList);
+            $('#expDurationTable tr:last').after(row);
+
+        }
+        else {
+            if(prevJobRoleId != singleQuestion.jobRole.jobRoleId){
+                // create a new title row
+                prevJobRoleId = singleQuestion.jobRole.jobRoleId;
+                var tr = tableExpOther.insertRow(0);
+                var td = tr.insertCell(0);
+                tr.insertCell(1);
+                td.innerHTML = '<div style="font-weight: bold;"> Tell us about your '+singleQuestion.jobRole.jobName+' experience </div>';
+                td.setAttribute("width", "100%");
+                $('#expOtherTable tr:last').after(tr);
+            }
+            count++;
+            var row = tableExpOther.insertRow(0);
+
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+
+            cell1.innerHTML = '<div id="jobId_'+singleQuestion.jobExpQuestionId+'">'+singleQuestion.jobExpQuestion+'</div>';
+
+            var selectList = document.createElement("select");
+            selectList.multiple = true;
+            selectList.setAttribute("id", "expOther_"+singleQuestion.jobExpQuestionId);
+            selectIdList.push("expOther_"+singleQuestion.jobExpQuestionId);
+
+            var expOtherResponseList = singleQuestion.jobExpResponseList;
+
+            expOtherResponseList.forEach(function (expOtherResponse) {
+                if(expOtherResponse != null){
+                    var option = document.createElement("option");
+                    option.setAttribute("value", expOtherResponse.jobExpResponseOption.jobExpResponseOptionId);
+                    option.text = expOtherResponse.jobExpResponseOption.jobExpResponseOptionName;
+                    selectList.appendChild(option);
+                }
+            });
+            cell2.appendChild(selectList);
+            $('#expOtherTable tr:last').after(row);
+        }
+
+    });
+    if (count == 0) {
+    }
+    selectIdList.forEach( function(selectId){
+        $('#'+selectId).multiselect({
+            dropRight: true,
+            numberDisplayed: 0,
+            buttonWidth: '100%'
+        });
+    });
+    $(".btn-group").attr("data-toggle", "buttons");
+    $(".btn-group").removeClass('active');
+    //prefillExperience(candidateExp);
+}
+
+function generateExperience(jobPrefString) {
+    var selectedJobPref = jobPrefString;
+    //console.log("selectedJobPref : " + JSON.stringify(selectedJobPref));
+    if (selectedJobPref != null && selectedJobPref !== '') {
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/getJobExpQuestion/" + selectedJobPref,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataCheckExp
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+}
 
 function generateSkills() {
     var myNode = document.getElementById("skill_details");
@@ -1198,7 +1328,48 @@ function saveProfileForm() {
             if(!$('#followUpRequired').is(':checked')){
                 $('#datetimepickerValue').val("");
                 updateFollowUpApiTrigger();
-            } 
+            }
+
+            var expList = [];
+
+            // iterate through two table and prep data
+            $('#expDurationTable tr').each(function(){
+                var item = {};
+                $(this).find('td').each(function(){
+                    $(this).find('div').each(function(){
+                        item ["jobExpQuestionId"] = parseInt($(this).attr('id').split("_").slice(-1).pop());
+                    });
+                    $(this).find('select').each(function(){
+                        item ["jobExpResponseIdArray"] = parseInt($(this).val());
+                    });
+                });
+                if(!jQuery.isEmptyObject(item)){
+                    expList.push(item);
+                };
+            });
+
+            $('#expOtherTable tr').each(function(){
+                var item = {};
+                $(this).find('td').each(function(){
+                    $(this).find('div').each(function(){
+                        if($(this).attr('id')!= undefined){
+                            item ["jobExpQuestionId"] = parseInt($(this).attr('id').split("_").slice(-1).pop());
+                        }
+                    });
+                    $(this).find('select').each(function(){
+                        if($(this).val() != null){
+                            item ["jobExpResponseIdArray"] = $(this).val().map(function(x) {
+                                console.log("toParseInt: " + x);
+                                return parseInt(x);
+                            });
+                        }
+                    });
+                });
+                if(!jQuery.isEmptyObject(item)) {
+                    expList.push(item);
+                };
+            });
+            console.log(JSON.stringify(expList));
 
             var d = {
                 //mandatory fields
@@ -1247,7 +1418,9 @@ function saveProfileForm() {
                 candidateSalarySlip: ($('input:radio[name="payslip"]:checked').val()),
                 candidateAppointmentLetter: ($('input:radio[name="appointmentLetter"]:checked').val()),
 
-                supportNote: ($('#supportNote').val())
+                supportNote: ($('#supportNote').val()),
+
+                expList: expList
 
             };
 
@@ -1263,7 +1436,13 @@ function saveProfileForm() {
         }
     }
 }
-
+function clickFresher(){
+    $("#totalWorkExperience").hide();
+}
+function clickExperienced(){
+    $("#totalWorkExperience").show();
+    generateExperience($('#candidateJobPref').val());
+}
 // form_candidate ajax script
 $(function () {
     var pathname = window.location.pathname; // Returns path only
@@ -1280,6 +1459,7 @@ $(function () {
 
     $('#candidateJobPref').change(function () {
         generateSkills();
+        generateExperience($('#candidateJobPref').val());
     });
     // auto save code : incomplete
     /*  $('#candidateSignUpSupportForm').change(function () {
