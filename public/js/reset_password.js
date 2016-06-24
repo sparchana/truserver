@@ -34,9 +34,10 @@ function processDataPostReset(returnedData) {
             applyJobFlag = 0;
             applyJobId = 0;
             $("#customSubMsg").html("Logging in ...");
+            $('#customSubMsg').modal({backdrop: 'static', keyboard: false});
             setTimeout(function(){
                 window.location = "/dashboard/appliedJobs";
-            }, 4000);
+            }, 3000);
         } else{
             window.location = "/dashboard";
         }

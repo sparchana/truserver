@@ -153,9 +153,10 @@ function processDataGetCandidateInfo(returnedData) {
     if(returnedData.languageKnownList != null || returnedData.languageKnownList != ""){
         var lang = returnedData.languageKnownList;
         lang.forEach(function (language) {
-            languagesKnown += language.language.languageName + ", ";
+            languagesKnown += language.language.languageName + "(" + language.readingAbility + "," + language.writingAbility + "," + language.verbalAbility + ")" +  ", ";
         });
     }
+    console.log(languagesKnown);
     if(returnedData.motherTongue != null)
         motherTongue = returnedData.motherTongue.languageName;
     if(returnedData.locality != null)
