@@ -24,6 +24,7 @@ var pastJobRoleArray = [];
 var candidateIdProofArray = [];
 
 var candidateSkill = [];
+var jobPrefString = "";
 
 $(document).ready(function () {
     var pathname = window.location.pathname; // Returns path only
@@ -216,7 +217,10 @@ function processDataAndFillAllFields(returnedData) {
                 item ["id"] = id;
                 item ["name"] = name;
                 jobPrefArray.push(item);
+                jobPrefString +=id + ",";
             });
+            jobPrefString = jobPrefString.substring(0, jobPrefString.length - 1);
+            //console.log("constructed jobPrefString : " + jobPrefString);
         } catch (err) {
             console.log(err);
         }
@@ -440,6 +444,22 @@ function processDataAndFillAllFields(returnedData) {
                     $("#totalWorkExperience").show();
                     $("#candidateTotalExperienceYear").val(parseInt((totalExperience / 12)).toString()); // years
                     $("#candidateTotalExperienceMonth").val(totalExperience % 12); // years
+
+                    var candidateExpList = returnedData.candidateExpList;
+                    if(candidateExpList != null){
+                        generateExperience(jobPrefString);
+                        var arr = [];
+                        candidateExpList.forEach(function (candidateExp) {
+                            if(candidateExp.jobExpQuestion.expCategory.expCategoryName == 'Duration'){
+                                $("#exp_duration_" + candidateExp.jobExpQuestion.jobExpQuestionId).val(candidateExp.jobExpResponse.jobExpResponseOption.jobExpResponseOptionId);
+                            } else {
+                                arr.push(""+candidateExp.jobExpResponse.jobExpResponseOption.jobExpResponseOptionId);
+                                $("#exp_other_" + candidateExp.jobExpQuestion.jobExpQuestionId).val(arr);
+                                $("#exp_other_" + candidateExp.jobExpQuestion.jobExpQuestionId).multiselect('rebuild');
+                            }
+                        });
+
+                    }
                 }
             }
         } catch (err) {
@@ -876,7 +896,7 @@ function processDataCheckSkills(returnedData) {
 }
 function processDataCheckExp(returnedData) {
     var selectIdList =[];
-    console.log(JSON.stringify(returnedData));
+    //console.log(JSON.stringify(returnedData));
     var count = 0;
     var tableExpDuration = document.getElementById("expDurationTable");
     var tableExpOther = document.getElementById("expOtherTable");
@@ -966,11 +986,11 @@ function processDataCheckExp(returnedData) {
     //prefillExperience(candidateExp);
 }
 
-function generateExperience() {
+function generateExperience(jobPrefString) {
     var myNode = document.getElementById("exp_duration_details");
     /*myNode.innerHTML = '';*/
-    var selectedJobPref = $('#candidateJobPref').val();
-    console.log("selectedJobPref : " + JSON.stringify(selectedJobPref));
+    var selectedJobPref = jobPrefString;
+    //console.log("selectedJobPref : " + JSON.stringify(selectedJobPref));
     if (selectedJobPref != null && selectedJobPref !== '') {
         try {
             $.ajax({
@@ -1393,7 +1413,7 @@ $(function () {
 
     $('#candidateJobPref').change(function () {
         generateSkills();
-        generateExperience();
+        generateExperience($('#candidateJobPref').val());
     });
     // auto save code : incomplete
     /*  $('#candidateSignUpSupportForm').change(function () {
