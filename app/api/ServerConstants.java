@@ -112,7 +112,7 @@ public class ServerConstants {
     public static final int DEV_ACCESS_LEVEL_UPLOADER = 2;
 
     public static final String SDF_FORMAT = "yyyy-MM-dd hh:mm:ss a";
-    public static final String SDF_FORMAT_FOLLOWUP = "EEE, d MMM hh:mm aaa";
+    public static final String SDF_FORMAT_FOLLOWUP = "d MMM hh:mm a";
     public static final String SDF_FORMAT_ENTRY = "yyyy-MM-dd hh:mm:ss";
 
 

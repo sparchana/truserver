@@ -168,7 +168,6 @@ public class CandidateService
             createdBy = session().get("sessionUsername");
             interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM;
             interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT;
-            interactionNote = ServerConstants.INTERACTION_NOTE_CALL_OUTBOUNDS;
         }
 
         if(candidate == null){
@@ -407,7 +406,7 @@ public class CandidateService
         try{
             candidate.setJobHistoryList(getJobHistoryListFromAddSupportCandidate(supportCandidateRequest, candidate));
         } catch(Exception e){
-            Logger.info(" Exception while setting pas job details");
+            Logger.info(" Exception while setting past job details");
             e.printStackTrace();
         }
 
@@ -418,6 +417,44 @@ public class CandidateService
             e.printStackTrace();
         }
 
+        try{
+            candidate.setCandidateExpList(getCandidateExpListFromAddSupportCandidate(supportCandidateRequest.getExpList(), candidate));
+        } catch(Exception e){
+            Logger.info(" Exception while setting explist reference list");
+            e.printStackTrace();
+        }
+
+    }
+
+    private static List<CandidateExp> getCandidateExpListFromAddSupportCandidate(List<AddSupportCandidateRequest.ExpList> expList, Candidate candidate) {
+        List<CandidateExp> candidateExpList = CandidateExp.find.where().eq("CandidateId", candidate.getCandidateId()).findList();
+        /* Here List can be empty but not null */
+        for (AddSupportCandidateRequest.ExpList exp : expList){
+            JobExpQuestion jobExpQuestion = JobExpQuestion.find.where().eq("jobExpQuestionId", exp.getJobExpQuestionId()).findUnique();
+            Query<JobExpResponse> query = JobExpResponse.find.query();
+            if(exp.getJobExpResponseIdArray() ==  null || exp.getJobExpResponseIdArray().isEmpty()){
+                List<CandidateExp> candidateExpListToDelete = CandidateExp.find.where().eq("jobExpQuestionId",exp.getJobExpQuestionId()).findList();
+                for(CandidateExp candidateExp : candidateExpListToDelete){
+                    candidateExp.delete();
+                }
+                continue;
+            }
+            query = query.select("*")
+                    .where()
+                    .eq("jobExpQuestionId", exp.getJobExpQuestionId())
+                    .in("jobExpResponseOptionId", exp.getJobExpResponseIdArray())
+                    .query();
+            List<JobExpResponse> jobExpResponseList = query.findList();
+            for(JobExpResponse jobExpResponse : jobExpResponseList){
+                CandidateExp candidateExp = new CandidateExp();
+                candidateExp.setCandidate(candidate);
+                candidateExp.setJobExpQuestion(jobExpQuestion);
+                candidateExp.setJobExpResponse(jobExpResponse);
+                candidateExpList.add(candidateExp);
+            }
+        }
+        Logger.info("--- " + toJson(expList));
+        return candidateExpList;
     }
 
     private static CandidateSignUpResponse updateEducationProfile(Candidate candidate,

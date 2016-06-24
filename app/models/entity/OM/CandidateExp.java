@@ -47,10 +47,6 @@ public class CandidateExp extends Model{
         return candidateExpId;
     }
 
-    public void setCandidateExpId(int candidateExpId) {
-        this.candidateExpId = candidateExpId;
-    }
-
     public Candidate getCandidate() {
         return candidate;
     }
@@ -79,7 +75,4 @@ public class CandidateExp extends Model{
         return updateTimeStamp;
     }
 
-    public void setUpdateTimeStamp(Timestamp updateTimeStamp) {
-        this.updateTimeStamp = updateTimeStamp;
-    }
 }

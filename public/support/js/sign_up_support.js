@@ -451,14 +451,13 @@ function processDataAndFillAllFields(returnedData) {
                         var arr = [];
                         candidateExpList.forEach(function (candidateExp) {
                             if(candidateExp.jobExpQuestion.expCategory.expCategoryName == 'Duration'){
-                                $("#exp_duration_" + candidateExp.jobExpQuestion.jobExpQuestionId).val(candidateExp.jobExpResponse.jobExpResponseOption.jobExpResponseOptionId);
+                                $("#expDuration_" + candidateExp.jobExpQuestion.jobExpQuestionId).val(candidateExp.jobExpResponse.jobExpResponseOption.jobExpResponseOptionId);
                             } else {
                                 arr.push(""+candidateExp.jobExpResponse.jobExpResponseOption.jobExpResponseOptionId);
-                                $("#exp_other_" + candidateExp.jobExpQuestion.jobExpQuestionId).val(arr);
-                                $("#exp_other_" + candidateExp.jobExpQuestion.jobExpQuestionId).multiselect('rebuild');
+                                $("#expOther_" + candidateExp.jobExpQuestion.jobExpQuestionId).val(arr);
+                                $("#expOther_" + candidateExp.jobExpQuestion.jobExpQuestionId).multiselect('rebuild');
                             }
                         });
-
                     }
                 }
             }
@@ -914,7 +913,7 @@ function processDataCheckExp(returnedData) {
             cell1.innerHTML = '<div id="jobId_'+singleQuestion.jobExpQuestionId+'">'+singleQuestion.jobExpQuestion+'</div>';
 
             var selectList = document.createElement("select");
-            selectList.setAttribute("id", "exp_duration_"+singleQuestion.jobExpQuestionId);
+            selectList.setAttribute("id", "expDuration_"+singleQuestion.jobExpQuestionId);
             var option = document.createElement("option");
             option.setAttribute("value", "-1");
             option.text = "Select";
@@ -940,7 +939,7 @@ function processDataCheckExp(returnedData) {
                 var tr = tableExpOther.insertRow(0);
                 var td = tr.insertCell(0);
                 tr.insertCell(1);
-                td.innerHTML = '<div style="font-weight: bold;" id="jobId_'+singleQuestion.jobExpQuestionId+'"> Tell us about your '+singleQuestion.jobRole.jobName+' experience </div>';
+                td.innerHTML = '<div style="font-weight: bold;"> Tell us about your '+singleQuestion.jobRole.jobName+' experience </div>';
                 td.setAttribute("width", "100%");
                 $('#expOtherTable tr:last').after(tr);
             }
@@ -954,8 +953,8 @@ function processDataCheckExp(returnedData) {
 
             var selectList = document.createElement("select");
             selectList.multiple = true;
-            selectList.setAttribute("id", "exp_other_"+singleQuestion.jobExpQuestionId);
-            selectIdList.push("exp_other_"+singleQuestion.jobExpQuestionId);
+            selectList.setAttribute("id", "expOther_"+singleQuestion.jobExpQuestionId);
+            selectIdList.push("expOther_"+singleQuestion.jobExpQuestionId);
 
             var expOtherResponseList = singleQuestion.jobExpResponseList;
 
@@ -987,8 +986,6 @@ function processDataCheckExp(returnedData) {
 }
 
 function generateExperience(jobPrefString) {
-    var myNode = document.getElementById("exp_duration_details");
-    /*myNode.innerHTML = '';*/
     var selectedJobPref = jobPrefString;
     //console.log("selectedJobPref : " + JSON.stringify(selectedJobPref));
     if (selectedJobPref != null && selectedJobPref !== '') {
@@ -1331,7 +1328,48 @@ function saveProfileForm() {
             if(!$('#followUpRequired').is(':checked')){
                 $('#datetimepickerValue').val("");
                 updateFollowUpApiTrigger();
-            } 
+            }
+
+            var expList = [];
+
+            // iterate through two table and prep data
+            $('#expDurationTable tr').each(function(){
+                var item = {};
+                $(this).find('td').each(function(){
+                    $(this).find('div').each(function(){
+                        item ["jobExpQuestionId"] = parseInt($(this).attr('id').split("_").slice(-1).pop());
+                    });
+                    $(this).find('select').each(function(){
+                        item ["jobExpResponseIdArray"] = parseInt($(this).val());
+                    });
+                });
+                if(!jQuery.isEmptyObject(item)){
+                    expList.push(item);
+                };
+            });
+
+            $('#expOtherTable tr').each(function(){
+                var item = {};
+                $(this).find('td').each(function(){
+                    $(this).find('div').each(function(){
+                        if($(this).attr('id')!= undefined){
+                            item ["jobExpQuestionId"] = parseInt($(this).attr('id').split("_").slice(-1).pop());
+                        }
+                    });
+                    $(this).find('select').each(function(){
+                        if($(this).val() != null){
+                            item ["jobExpResponseIdArray"] = $(this).val().map(function(x) {
+                                console.log("toParseInt: " + x);
+                                return parseInt(x);
+                            });
+                        }
+                    });
+                });
+                if(!jQuery.isEmptyObject(item)) {
+                    expList.push(item);
+                };
+            });
+            console.log(JSON.stringify(expList));
 
             var d = {
                 //mandatory fields
@@ -1380,7 +1418,9 @@ function saveProfileForm() {
                 candidateSalarySlip: ($('input:radio[name="payslip"]:checked').val()),
                 candidateAppointmentLetter: ($('input:radio[name="appointmentLetter"]:checked').val()),
 
-                supportNote: ($('#supportNote').val())
+                supportNote: ($('#supportNote').val()),
+
+                expList: expList
 
             };
 
@@ -1396,7 +1436,13 @@ function saveProfileForm() {
         }
     }
 }
-
+function clickFresher(){
+    $("#totalWorkExperience").hide();
+}
+function clickExperienced(){
+    $("#totalWorkExperience").show();
+    generateExperience($('#candidateJobPref').val());
+}
 // form_candidate ajax script
 $(function () {
     var pathname = window.location.pathname; // Returns path only
