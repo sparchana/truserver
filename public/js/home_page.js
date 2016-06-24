@@ -344,6 +344,7 @@ function addLead() {
 }
 
 function openLogin() {
+    $("#signInPopup").html("Sign In");
     document.getElementById("resetCheckUserBtn").disabled = false;
     document.getElementById("resetNewPasswordBtn").disabled = false;
     $('#form_login_candidate').show();

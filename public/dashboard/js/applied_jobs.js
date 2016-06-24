@@ -4,6 +4,11 @@
 
 $(document).ready(function(){
     checkUserLogin();
+    if(localStorage.getItem("gender") == 1){
+        $("#userGenderIcon").attr('src', '/assets/dashboard/img/female.png');
+    } else{
+        $("#userGenderIcon").attr('src', '/assets/dashboard/img/male.png');
+    }
     try {
         $.ajax({
             type: "GET",

@@ -24,7 +24,7 @@ function processDataApplyJob(returnedData) {
     if(returnedData.status == 1){
         postToGoogle();
         $('#customMsgIcon').attr('src', "/assets/img/jobApplied.png");
-        $("#customMsg").html("Job Applied Successfully!");
+        $("#customMsg").html("Your Job Application is Successful");
     } else if(returnedData.status == 2){
         $('#customMsgIcon').attr('src', "/assets/img/jobApplied.png");
         $("#customMsg").html("Oops! Something went Wrong. Unable to apply");
@@ -96,7 +96,9 @@ function applyJob(id){
     applyJobId = id;
     var phone = localStorage.getItem("mobile");
     if(phone == null){ // not logged in
+        openLogin();
         $("#myLoginModal").modal("show");
+        $("#signInPopup").html("Sign In to Apply");
     } else{
         try {
             var d = {

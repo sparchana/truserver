@@ -8,6 +8,19 @@ $(document).ready(function(){
     try {
         $.ajax({
             type: "GET",
+            url: "/getAllJobPosts",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataAllJobPosts
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+    try {
+        $.ajax({
+            type: "GET",
             url: "/getCandidateInfoDashboard",
             data: false,
             async: false,
@@ -71,20 +84,6 @@ $(document).ready(function(){
         document.getElementById("assessedStatusAction").innerHTML = '-';
         $("#assessedIcon").attr('src', '/assets/dashboard/img/right.png');
     }
-
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/getAllJobPosts",
-            data: false,
-            async: false,
-            contentType: false,
-            processData: false,
-            success: processDataAllJobPosts
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
 });
 
 function processDataAllJobPosts(returnedData) {
@@ -108,11 +107,16 @@ function processDataAllJobPosts(returnedData) {
             jobItemPanel.className = "panel";
             jobItemPanel.id = "hot_box";
             jobItem.appendChild(jobItemPanel);
+            var alreadyApplied = document.createElement("img");
+            alreadyApplied.style = "width: 36px; margin-top: -30px; margin-right: -30px; float: right";
+            alreadyApplied.id = "already_applied_" + jobPosts.jobPostId;
+            jobItemPanel.appendChild(alreadyApplied);
             var jobItemPanelHeading = document.createElement("div");
             jobItemPanelHeading.className = "panel-heading";
             jobItemPanelHeading.id = "hot_box_head";
             jobItemPanel.appendChild(jobItemPanelHeading);
             var jobLogo = document.createElement("img");
+            jobLogo.style = "margin-top: -20px";
             jobLogo.src = "/assets/new/img/" + jobPosts.company.companyLogo + ".png";
             jobItemPanelHeading.appendChild(jobLogo);
             var jobItemPanelBody = document.createElement("div");
@@ -196,11 +200,16 @@ function setJobs(returnedData, start, totalJobs){
             jobItemPanel.className = "panel";
             jobItemPanel.id = "hot_box";
             jobItem.appendChild(jobItemPanel);
+            var alreadyApplied = document.createElement("img");
+            alreadyApplied.style = "width: 36px; margin-top: -30px; margin-right: -30px; float: right";
+            alreadyApplied.id = "already_applied_" + jobPosts.jobPostId;
+            jobItemPanel.appendChild(alreadyApplied);
             var jobItemPanelHeading = document.createElement("div");
             jobItemPanelHeading.className = "panel-heading";
             jobItemPanelHeading.id = "hot_box_head";
             jobItemPanel.appendChild(jobItemPanelHeading);
             var jobLogo = document.createElement("img");
+            jobLogo.style = "margin-top: -20px";
             jobLogo.src = "/assets/new/img/" + jobPosts.company.companyLogo + ".png";
             jobItemPanelHeading.appendChild(jobLogo);
             var jobItemPanelBody = document.createElement("div");
@@ -272,6 +281,7 @@ function processDataAndFillMinProfile(returnedData) {
         $("#profileStatusIcon").attr('src', '/assets/dashboard/img/right.png');
     }
     if (returnedData.candidateGender != null) {
+        localStorage.setItem("gender", returnedData.candidateGender);
         if (returnedData.candidateGender == 0) {
             try{
                 document.getElementById("userGender").innerHTML = ", Male";
@@ -394,6 +404,12 @@ function processDataAndFillMinProfile(returnedData) {
             }
         }
     }
+
+    var appliedJobs = returnedData.jobApplicationList;
+    appliedJobs.forEach(function (jobApplication) {
+        $("#already_applied_" + jobApplication.jobPost.jobPostId).attr('src', '/assets/dashboard/img/right.png');
+    });
+    /* /assets/dashboard/img/right.png */
 
 }
 
