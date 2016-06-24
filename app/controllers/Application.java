@@ -678,7 +678,7 @@ public class Application extends Controller {
     }
 
     public static Result kwCdrInput() {
-        return ok("TODO");
+        return ok("0");
     }
 
     public static Result getAllJobPosts() {
