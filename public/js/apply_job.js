@@ -41,54 +41,92 @@ function processDataApplyJob(returnedData) {
 }
 
 function processDataAddJobPost(returnedData) {
-    console.log("returnedData :" + returnedData.status);
+    alert("Job Post added Successfully");
+    window.location = "/support/addCompany"
 }
 
-function addJobPost(){
-    var startTime = new Date().getTime();
-    var jobPostLocalities = [];
+// job_post_form ajax script
+$(function() {
+    $("#job_post_form").submit(function(eventObj) {
+        eventObj.preventDefault();
+        var jobPostLocalities = [];
+        var status = 1;
+        var locality = $('#jobPostLocalities').val().split(",");
+        if($("#jobPostCompany").val() == ""){
+            alert("Please enter Job Post Company");
+            status = 0;
+        } else if($("#jobPostTitle").val() == ""){
+            alert("Please enter Job Post Title");
+            status = 0;
+        } else if($("#jobPostMinSalary").val() == "0"){
+            alert("Please enter Job Post Minimum salary");
+            status = 0;
 
-    var locality = "5";
-    var i;
-    for(i=0;i<locality.length; i++){
-        jobPostLocalities.push(parseInt(locality[i]));
-    }
-    try {
-        var d = {
-            jobPostMinSalary: 20000,
-            jobPostMaxSalary: 25000,
-            jobPostStartTime: startTime,
-            jobPostEndTime: startTime,
-            jobPostIsHot: 1,
-            jobPostDescription: "This is a test job",
-            jobPostTitle: "Delivery boy executive at test",
-            jobPostIncentives: "Incentives free text",
-            jobPostMinRequirement: "Minimum requirement free text",
-            jobPostAddress: "Address of the company",
-            jobPostPinCode: 560035,
-            jobPostVacancies: 15,
-            jobPostDescriptionAudio: "Delivery boy executive at test",
-            jobPostWorkFromHome: 1,
-            jobPostStatusId: 1,
-            pricingPlanTypeId: 1,
-            jobPostJobRoleId: 1,
-            jobPostCompanyId: 1,
-            jobPostShiftId: 1,
-            jobPostExperienceId: 1,
-            jobPostEducationId: 1,
-            jobPostLocalities: jobPostLocalities
-        };
-        $.ajax({
-            type: "POST",
-            url: "/addJobPost",
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(d),
-            success: processDataAddJobPost
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-}
+        } else if($("#jobPostMaxSalary").val() == "0"){
+            alert("Please enter Job Post Maximum salary");
+            status = 0;
+        } else if(locality == ""){
+            alert("Please enter localities");
+            status = 0;
+        } else if($("#jobPostExperience").val() == ""){
+            alert("Please enter Job Post Experience required");
+            status = 0;
+        }
+        if(status == 1){
+            var i;
+            for(i=0;i<locality.length; i++){
+                jobPostLocalities.push(parseInt(locality[i]));
+            }
+            var jobPostIsHot = 0;
+            var jobPostWorkFromHome = 0;
+            if ($('#jobPostIsHot').is(":checked"))
+            {
+                jobPostIsHot = 1;
+            }
+            if ($('#jobPostWorkFromHome').is(":checked"))
+            {
+                jobPostWorkFromHome = 1;
+            }
+
+            try {
+                var d = {
+                    jobPostMinSalary: $("#jobPostMinSalary").val(),
+                    jobPostMaxSalary: $("#jobPostMaxSalary").val(),
+                    jobPostStartTime: $("#jobPostStartTime").val(),
+                    jobPostEndTime: $("#jobPostEndTime").val(),
+                    jobPostIsHot: jobPostIsHot,
+                    jobPostDescription: $("#jobPostDescription").val(),
+                    jobPostTitle: $("#jobPostTitle").val(),
+                    jobPostIncentives: $("#jobPostIncentives").val(),
+                    jobPostMinRequirement: $("#jobPostMinRequirement").val(),
+                    jobPostAddress: $("#jobPostAddress").val(),
+                    jobPostPinCode: $("#jobPostPinCode").val(),
+                    jobPostVacancies: $("#jobPostVacancies").val(),
+                    jobPostLocalities: jobPostLocalities,
+                    jobPostJobRoleId: parseInt($("#jobPostJobRole").val()),
+                    jobPostCompanyId: $("#jobPostCompany").val(),
+                    jobPostDescriptionAudio: "",
+                    jobPostWorkFromHome: jobPostWorkFromHome,
+                    jobPostShiftId: $("#jobPostWorkShift").val(),
+                    jobPostEducationId: $("#jobPostEducation").val(),
+                    jobPostStatusId: $("#jobPostStatus").val(),
+                    pricingPlanTypeId: 1,
+                    jobPostExperienceId: $("#jobPostExperience").val()
+                };
+                $.ajax({
+                    type: "POST",
+                    url: "/addJobPost",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
+                    success: processDataAddJobPost
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
+        }
+
+    }); // end of submit
+}); // end of function
 
 // apply_job ajax script
 function applyJob(id){

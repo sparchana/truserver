@@ -1,6 +1,6 @@
 package api.http.httpRequest;
 
-import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -9,8 +9,8 @@ import java.util.List;
 public class AddJobPostRequest {
     public Long jobPostMinSalary;
     public Long jobPostMaxSalary;
-    public Time jobPostStartTime;
-    public Time jobPostEndTime;
+    public Timestamp jobPostStartTime;
+    public Timestamp jobPostEndTime;
     public Boolean jobPostIsHot;
     public String jobPostDescription;
     public String jobPostTitle;
@@ -47,19 +47,19 @@ public class AddJobPostRequest {
         this.jobPostMaxSalary = jobPostMaxSalary;
     }
 
-    public Time getJobPostStartTime() {
+    public Timestamp getJobPostStartTime() {
         return jobPostStartTime;
     }
 
-    public void setJobPostStartTime(Time jobPostStartTime) {
+    public void setJobPostStartTime(Timestamp jobPostStartTime) {
         this.jobPostStartTime = jobPostStartTime;
     }
 
-    public Time getJobPostEndTime() {
+    public Timestamp getJobPostEndTime() {
         return jobPostEndTime;
     }
 
-    public void setJobPostEndTime(Time jobPostEndTime) {
+    public void setJobPostEndTime(Timestamp jobPostEndTime) {
         this.jobPostEndTime = jobPostEndTime;
     }
 

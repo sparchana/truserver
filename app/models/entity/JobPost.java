@@ -12,7 +12,6 @@ import models.entity.OM.JobPostToLocality;
 import models.entity.Static.*;
 
 import javax.persistence.*;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
@@ -45,25 +44,25 @@ public class JobPost extends Model {
     @Column(name = "JobPostMaxSalary", columnDefinition = "bigint signed null")
     private Long jobPostMaxSalary;
 
-    @Column(name = "JobPostStartTime", columnDefinition = "time null")
-    private Time jobPostStartTime;
+    @Column(name = "JobPostStartTime", columnDefinition = "int null")
+    private Integer jobPostStartTime;
 
-    @Column(name = "JobPostEndTime", columnDefinition = "time null")
-    private Time jobPostEndTime;
+    @Column(name = "JobPostEndTime", columnDefinition = "int null")
+    private Integer jobPostEndTime;
 
     @Column(name = "JobPostIsHot", columnDefinition = "int signed null")
     private Boolean jobPostIsHot;
 
-    @Column(name = "JobPostDescription", columnDefinition = "varchar(1000) null")
+    @Column(name = "JobPostDescription", columnDefinition = "varchar(5000) null")
     private String jobPostDescription;
 
     @Column(name = "JobPostTitle", columnDefinition = "varchar(100) null")
     private String jobPostTitle;
 
-    @Column(name = "JobPostIncentives", columnDefinition = "varchar(1000) null")
+    @Column(name = "JobPostIncentives", columnDefinition = "varchar(5000) null")
     private String jobPostIncentives;
 
-    @Column(name = "JobPostMinRequirement", columnDefinition = "varchar(1000) null")
+    @Column(name = "JobPostMinRequirement", columnDefinition = "varchar(5000) null")
     private String jobPostMinRequirement;
 
     @Column(name = "JobPostAddress", columnDefinition = "varchar(1000) null")
@@ -294,19 +293,19 @@ public class JobPost extends Model {
         this.jobPostMaxSalary = jobPostmaxSalary;
     }
 
-    public Time getJobPostStartTime() {
+    public Integer getJobPostStartTime() {
         return jobPostStartTime;
     }
 
-    public void setJobPostStartTime(Time jobPostStartTime) {
+    public void setJobPostStartTime(Integer jobPostStartTime) {
         this.jobPostStartTime = jobPostStartTime;
     }
 
-    public Time getJobPostEndTime() {
+    public Integer getJobPostEndTime() {
         return jobPostEndTime;
     }
 
-    public void setJobPostEndTime(Time jobPostEndTime) {
+    public void setJobPostEndTime(Integer jobPostEndTime) {
         this.jobPostEndTime = jobPostEndTime;
     }
 

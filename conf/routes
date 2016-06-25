@@ -6,6 +6,8 @@ GET      /                                                        controllers.Ap
 
 GET      /support                                                 controllers.Application.support()
 
+GET      /support/addCompany                                      controllers.Application.companyAndJob()
+
 GET      /createCandidateForm                                     controllers.Application.createCandidateForm()
 
 GET      /candidateInteraction/:id                                controllers.Application.candidateInteraction(id : Long)
@@ -70,6 +72,16 @@ GET      /getAllIdProof                                           controllers.Ap
 
 GET      /getAllDegree                                            controllers.Application.getAllDegree()
 
+GET      /getAllCompany                                           controllers.Application.getAllCompany()
+
+GET      /getAllCompanyStatus                                     controllers.Application.getAllCompanyStatus()
+
+GET      /getAllCompanyType                                       controllers.Application.getAllCompanyType()
+
+GET      /getAllExperience                                        controllers.Application.getAllExperience()
+
+GET      /getAllJobStatus                                         controllers.Application.getAllJobStatus()
+
 GET      /getUserInfo/:id                                         controllers.Application.getUserInfo(id : Long)
 
 GET      /getCandidateInfoDashboard                               controllers.Application.getCandidateInfoDashboard()
@@ -78,7 +90,7 @@ GET      /getCandidateInfo/:id                                    controllers.Ap
 
 GET      /getCandidateLocality/:id                                controllers.Application.getCandidateLocality(id : Long)
 
-GET      /getCandidateJobApplication                             controllers.Application.getCandidateJobApplication()
+GET      /getCandidateJobApplication                              controllers.Application.getCandidateJobApplication()
 
 GET      /getCompanyInfo/:id                                      controllers.Application.getCompanyInfo(id : Long)
 

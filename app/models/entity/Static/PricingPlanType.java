@@ -15,7 +15,7 @@ public class PricingPlanType extends Model {
     @Column(name = "PricingPlanTypeId", columnDefinition = "bigint signed", unique = true)
     private Integer pricingPlanTypeId;
 
-    @Column(name = "PricingPlanTypeName", columnDefinition = "varchar(20) not null")
+    @Column(name = "PricingPlanTypeName", columnDefinition = "varchar(50) not null")
     private String pricingPlanTypeName;
 
     public Integer getPricingPlanTypeId() {

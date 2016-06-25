@@ -52,6 +52,17 @@ public class Application extends Controller {
         }
         return redirect("/street");
     }
+
+    @Security.Authenticated(Secured.class)
+    public static Result companyAndJob() {
+        String sessionId = session().get("sessionId");
+        Developer developer = Developer.find.where().eq("developerSessionId", sessionId ).findUnique();
+        if(developer != null && developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE) {
+            return ok(views.html.add_company.render());
+        }
+        return redirect("/street");
+    }
+
     @Security.Authenticated(Secured.class)
     public static Result candidateInteraction(long id) {
         return ok(views.html.candidate_interaction.render());
@@ -231,6 +242,7 @@ public class Application extends Controller {
 
     public static Result addJobPost() {
         JsonNode req = request().body().asJson();
+        Logger.info(req + " == ");
         AddJobPostRequest addJobPostRequest = new AddJobPostRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -737,6 +749,36 @@ public class Application extends Controller {
     public static Result getAllDegree() {
         List<Degree> degreeList = Degree.find.findList();
         return ok(toJson(degreeList));
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result getAllCompany() {
+        List<Company> companyList = Company.find.orderBy("companyName").findList();
+        return ok(toJson(companyList));
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result getAllExperience() {
+        List<Experience> experienceList = Experience.find.findList();
+        return ok(toJson(experienceList));
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result getAllCompanyStatus() {
+        List<CompanyStatus> companyStatusList = CompanyStatus.find.findList();
+        return ok(toJson(companyStatusList));
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result getAllCompanyType() {
+        List<CompanyType> companyTypeList = CompanyType.find.findList();
+        return ok(toJson(companyTypeList));
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result getAllJobStatus() {
+        List<JobStatus> jobStatusList = JobStatus.find.findList();
+        return ok(toJson(jobStatusList));
     }
 
     @Security.Authenticated(Secured.class)

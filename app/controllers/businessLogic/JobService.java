@@ -24,8 +24,6 @@ public class JobService {
 
         newJobPost.setJobPostMinSalary(addJobPostRequest.getJobPostMinSalary());
         newJobPost.setJobPostMaxSalary(addJobPostRequest.getJobPostMaxSalary());
-        newJobPost.setJobPostStartTime(addJobPostRequest.getJobPostStartTime());
-        newJobPost.setJobPostEndTime(addJobPostRequest.getJobPostEndTime());
         newJobPost.setJobPostIsHot(addJobPostRequest.getJobPostIsHot());
         newJobPost.setJobPostDescription(addJobPostRequest.getJobPostDescription());
         newJobPost.setJobPostTitle(addJobPostRequest.getJobPostTitle());

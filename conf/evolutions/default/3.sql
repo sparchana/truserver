@@ -61,8 +61,8 @@ create table jobpost (
   jobpostcreatetimestamp        timestamp not null,
   jobpostminsalary              bigint signed null,
   jobpostmaxsalary              bigint signed null,
-  jobpoststarttime              time null,
-  jobpostendtime                time null,
+  jobpoststarttime              timestamp null,
+  jobpostendtime                timestamp null,
   jobpostishot                  int signed null,
   jobpostdescription            varchar(1000) null,
   jobposttitle                  varchar(100) null,
@@ -121,7 +121,7 @@ create table jobstatus (
 
 create table pricingplantype (
   pricingplantypeid             bigint signed auto_increment not null,
-  pricingplantypename           varchar(20) not null,
+  pricingplantypename           varchar(50) not null,
   constraint pk_pricingplantype primary key (pricingplantypeid)
 );
 

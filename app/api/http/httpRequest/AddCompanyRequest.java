@@ -5,7 +5,7 @@ package api.http.httpRequest;
  */
 public class AddCompanyRequest {
     public String companyName;
-    public Integer companyEmployeeCount;
+    public String companyEmployeeCount;
     public String companyWebsite;
     public String companyDescription;
     public String companyAddress;
@@ -23,11 +23,11 @@ public class AddCompanyRequest {
         this.companyName = companyName;
     }
 
-    public Integer getCompanyEmployeeCount() {
+    public String getCompanyEmployeeCount() {
         return companyEmployeeCount;
     }
 
-    public void setCompanyEmployeeCount(Integer companyEmployeeCount) {
+    public void setCompanyEmployeeCount(String companyEmployeeCount) {
         this.companyEmployeeCount = companyEmployeeCount;
     }
 

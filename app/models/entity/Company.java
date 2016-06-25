@@ -31,13 +31,13 @@ public class Company extends Model {
     @Column(name = "CompanyName", columnDefinition = "varchar(50) not null")
     private String companyName;
 
-    @Column(name = "CompanyEmployeeCount", columnDefinition = "int signed null")
-    private Integer companyEmployeeCount;
+    @Column(name = "CompanyEmployeeCount", columnDefinition = "varchar(15) signed null")
+    private String companyEmployeeCount;
 
     @Column(name = "CompanyWebsite", columnDefinition = "varchar(30) null")
     private String companyWebsite;
 
-    @Column(name = "CompanyDescription", columnDefinition = "varchar(500) null")
+    @Column(name = "CompanyDescription", columnDefinition = "varchar(5000) null")
     private String companyDescription;
 
     @Column(name = "CompanyAddress", columnDefinition = "varchar(1000) null")
@@ -129,11 +129,11 @@ public class Company extends Model {
         this.companyName = companyName;
     }
 
-    public Integer getCompanyEmployeeCount() {
+    public String getCompanyEmployeeCount() {
         return companyEmployeeCount;
     }
 
-    public void setCompanyEmployeeCount(Integer companyEmployeeCount) {
+    public void setCompanyEmployeeCount(String companyEmployeeCount) {
         this.companyEmployeeCount = companyEmployeeCount;
     }
 
