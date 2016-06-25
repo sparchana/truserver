@@ -221,13 +221,16 @@ function processDataAllJobPosts(returnedData) {
         /* for jobs more than 3(active) */
         var totalJob = jobPostCount;
         jobPostCount = jobPostCount - 3;
-        var jobPostSectionCount = Math.floor(jobPostCount/3);
-        var i;
-        var startIndex = 3;
-        for(i=0;i<jobPostSectionCount+1;i+=1){
-            setJobs(returnedData,startIndex,totalJob);
-            startIndex+=3;
+        if(jobPostCount>0){
+            var jobPostSectionCount = Math.floor(jobPostCount/3);
+            var i;
+            var startIndex = 3;
+            for(i=0;i<jobPostSectionCount+1;i+=1){
+                setJobs(returnedData,startIndex,totalJob);
+                startIndex+=3;
+            }
         }
+
     }
 }
 

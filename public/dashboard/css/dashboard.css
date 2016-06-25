@@ -314,6 +314,11 @@ input::-webkit-inner-spin-button {
         width: 98%;
     }
 
+    li{
+        margin-top: -10px;
+        background-color: transparent;
+    }
+
     .sectionDashboard{
         margin-top: 8%;
         padding: 3%;
