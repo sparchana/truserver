@@ -24,6 +24,7 @@ var pastJobRoleArray = [];
 var candidateIdProofArray = [];
 
 var candidateSkill = [];
+var candidateExps;
 var jobPrefString = "";
 
 $(document).ready(function () {
@@ -445,19 +446,10 @@ function processDataAndFillAllFields(returnedData) {
                     $("#candidateTotalExperienceYear").val(parseInt((totalExperience / 12)).toString()); // years
                     $("#candidateTotalExperienceMonth").val(totalExperience % 12); // years
 
-                    var candidateExpList = returnedData.candidateExpList;
-                    if(candidateExpList != null){
+                    candidateExps = returnedData.candidateExpList;
+                    if(candidateExps != null){
                         generateExperience(jobPrefString);
-                        var arr = [];
-                        candidateExpList.forEach(function (candidateExp) {
-                            if(candidateExp.jobExpQuestion.expCategory.expCategoryName == 'Duration'){
-                                $("#expDuration_" + candidateExp.jobExpQuestion.jobExpQuestionId).val(candidateExp.jobExpResponse.jobExpResponseOption.jobExpResponseOptionId);
-                            } else {
-                                arr.push(""+candidateExp.jobExpResponse.jobExpResponseOption.jobExpResponseOptionId);
-                                $("#expOther_" + candidateExp.jobExpQuestion.jobExpQuestionId).val(arr);
-                                $("#expOther_" + candidateExp.jobExpQuestion.jobExpQuestionId).multiselect('rebuild');
-                            }
-                        });
+                        prefillCandidateExp(candidateExps);
                     }
                 }
             }
@@ -519,6 +511,21 @@ function processDataAndFillAllFields(returnedData) {
                 candidateSkill.push(obj);
             });
         }
+    }
+}
+
+function prefillCandidateExp(candidateExpList) {
+    if(candidateExpList != null){
+        var arr = [];
+        candidateExpList.forEach(function (candidateExp) {
+            if(candidateExp.jobExpQuestion.expCategory.expCategoryName == 'Duration'){
+                $("#expDuration_" + candidateExp.jobExpQuestion.jobExpQuestionId).val(candidateExp.jobExpResponse.jobExpResponseOption.jobExpResponseOptionId);
+            } else {
+                arr.push(""+candidateExp.jobExpResponse.jobExpResponseOption.jobExpResponseOptionId);
+                $("#expOther_" + candidateExp.jobExpQuestion.jobExpQuestionId).val(arr);
+                $("#expOther_" + candidateExp.jobExpQuestion.jobExpQuestionId).multiselect('rebuild');
+            }
+        });
     }
 }
 
@@ -982,7 +989,9 @@ function processDataCheckExp(returnedData) {
     });
     $(".btn-group").attr("data-toggle", "buttons");
     $(".btn-group").removeClass('active');
-    //prefillExperience(candidateExp);
+    if(candidateExps != null){
+        prefillCandidateExp(candidateExps);
+    }
 }
 
 function generateExperience(jobPrefString) {
