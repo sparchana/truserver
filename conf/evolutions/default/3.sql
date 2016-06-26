@@ -4,7 +4,7 @@ create table company (
   companyid                     bigint signed auto_increment not null,
   companyuuid                   varchar(255) not null,
   companyname                   varchar(50) not null,
-  companyemployeecount          int signed null,
+  companyemployeecount          varchar(15) null,
   companywebsite                varchar(30) null,
   companydescription            varchar(500) null,
   companyaddress                varchar(1000) null,
