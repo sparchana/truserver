@@ -196,12 +196,18 @@ function processDataAllJobPosts(returnedData) {
             var loopCount = 0;
             localityList.forEach(function (locality) {
                 loopCount ++;
+                if(loopCount > 2){
+                    return false;
+                }
                 var name = locality.locality.localityName;
                 localities += name;
                 if(loopCount < Object.keys(localityList).length){
                     localities += ", ";
                 }
             });
+            if(((localityList.length) - 2) > 0 ){
+                localities += " + " + ((localityList.length) - 2);
+            }
             jobItemLocation.textContent = localities;
             jobItemPanelBody.appendChild(jobItemLocation);
             var applyBtnDiv = document.createElement("div");
@@ -287,12 +293,18 @@ function setJobs(returnedData, start, totalJobs){
             var loopCount = 0;
             localityList.forEach(function (locality) {
                 loopCount ++;
+                if(loopCount > 2){
+                    return false;
+                }
                 var name = locality.locality.localityName;
                 localities += name;
                 if(loopCount < Object.keys(localityList).length){
                     localities += ", ";
                 }
             });
+            if(((localityList.length) - 2) > 0 ){
+                localities += " + " + ((localityList.length) - 2);
+            }
             jobItemLocation.textContent = localities;
             jobItemPanelBody.appendChild(jobItemLocation);
             var applyBtnDiv = document.createElement("div");

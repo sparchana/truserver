@@ -92,8 +92,8 @@ $(function() {
                 var d = {
                     jobPostMinSalary: $("#jobPostMinSalary").val(),
                     jobPostMaxSalary: $("#jobPostMaxSalary").val(),
-                    jobPostStartTime: $("#jobPostStartTime").val(),
-                    jobPostEndTime: $("#jobPostEndTime").val(),
+                    jobPostStartTime: parseInt($("#jobPostStartTime").val()),
+                    jobPostEndTime: parseInt($("#jobPostEndTime").val()),
                     jobPostIsHot: jobPostIsHot,
                     jobPostDescription: $("#jobPostDescription").val(),
                     jobPostTitle: $("#jobPostTitle").val(),

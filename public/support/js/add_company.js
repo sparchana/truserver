@@ -15,9 +15,6 @@ $(function() {
         if($("#companyName").val() == ""){
             alert("Please Enter company Name");
             status=0;
-        } else if($("#companyLocality").val() == ""){
-            alert("Please Enter company Locality");
-            status=0;
         } else if($("#companyLogo").val() == ""){
             alert("Please Enter company Logo");
             status=0;

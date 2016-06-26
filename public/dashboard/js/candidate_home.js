@@ -116,7 +116,7 @@ function processDataAllJobPosts(returnedData) {
             jobItemPanelHeading.id = "hot_box_head";
             jobItemPanel.appendChild(jobItemPanelHeading);
             var jobLogo = document.createElement("img");
-            jobLogo.style = "margin-top: -20px";
+            jobLogo.style = "height: 75px";
             jobLogo.src = "/assets/new/img/" + jobPosts.company.companyLogo + ".png";
             jobItemPanelHeading.appendChild(jobLogo);
             var jobItemPanelBody = document.createElement("div");
@@ -149,12 +149,18 @@ function processDataAllJobPosts(returnedData) {
             var loopCount = 0;
             localityList.forEach(function (locality) {
                 loopCount ++;
+                if(loopCount > 2){
+                    return false;
+                }
                 var name = locality.locality.localityName;
                 localities += name;
                 if(loopCount < Object.keys(localityList).length){
                     localities += ", ";
                 }
             });
+            if(((localityList.length) - 2) > 0 ){
+                localities += " + " + ((localityList.length) - 2);
+            }
             jobItemLocation.textContent = localities;
             jobItemPanelBody.appendChild(jobItemLocation);
             var applyBtnDiv = document.createElement("div");
@@ -243,12 +249,18 @@ function setJobs(returnedData, start, totalJobs){
             var loopCount = 0;
             localityList.forEach(function (locality) {
                 loopCount ++;
+                if(loopCount > 2){
+                    return false;
+                }
                 var name = locality.locality.localityName;
                 localities += name;
                 if(loopCount < Object.keys(localityList).length){
                     localities += ", ";
                 }
             });
+            if(((localityList.length) - 2) > 0 ){
+                localities += " + " + ((localityList.length) - 2);
+            }
             jobItemLocation.textContent = localities;
             jobItemPanelBody.appendChild(jobItemLocation);
             var applyBtnDiv = document.createElement("div");

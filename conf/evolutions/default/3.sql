@@ -14,9 +14,9 @@ create table company (
   companylogo                   varchar(80) null,
   companycreatetimestamp        timestamp not null,
   companyupdatetimestamp        timestamp not null,
-  companylocality               bigint signed,
-  comptype                      bigint signed,
-  compstatus                    bigint signed,
+  companylocality               bigint signed null,
+  comptype                      bigint signed null,
+  compstatus                    bigint signed null,
   constraint pk_company primary key (companyid)
 );
 
@@ -42,9 +42,9 @@ create table jobapplication (
   jobapplicationid              int signed auto_increment not null,
   jobapplicationcreatetimestamp timestamp not null,
   screeningcomments             varchar(1000) null,
-  jobpostid                     bigint signed,
-  screeningstatusid             bigint signed,
-  candidateid                   bigint signed,
+  jobpostid                     bigint signed null,
+  screeningstatusid             bigint signed null,
+  candidateid                   bigint signed null,
   jobapplicationupdatetimestamp timestamp null,
   constraint pk_jobapplication primary key (jobapplicationid)
 );
@@ -61,8 +61,8 @@ create table jobpost (
   jobpostcreatetimestamp        timestamp not null,
   jobpostminsalary              bigint signed null,
   jobpostmaxsalary              bigint signed null,
-  jobpoststarttime              timestamp null,
-  jobpostendtime                timestamp null,
+  jobpoststarttime              int signed null,
+  jobpostendtime                int signed null,
   jobpostishot                  int signed null,
   jobpostdescription            varchar(5000) null,
   jobposttitle                  varchar(100) null,
@@ -75,13 +75,13 @@ create table jobpost (
   jobpostvacancies              bigint signed null,
   jobpostdescriptionaudio       varchar(100) null,
   jobpostworkfromhome           int signed null,
-  jobstatus                     bigint signed,
-  pricingplantype               bigint signed,
-  jobpostjobrole                bigint signed,
-  companyid                     bigint signed,
-  jobshiftid                    int signed,
-  jobexperienceid               bigint signed,
-  jobeducationid                int signed,
+  jobstatus                     bigint signed null,
+  pricingplantype               bigint signed null,
+  jobpostjobrole                bigint signed null,
+  companyid                     bigint signed null,
+  jobshiftid                    int signed null,
+  jobexperienceid               bigint signed null,
+  jobeducationid                int signed null,
   jobpostupdatetimestamp        timestamp null,
   constraint pk_jobpost primary key (jobpostid)
 );
@@ -89,8 +89,8 @@ create table jobpost (
 create table jobposttobenefits (
   jobposttobenefitsid           bigint signed not null auto_increment not null,
   jobposttobenefitscreatetimestamp timestamp null,
-  jobbenefitid                  bigint signed,
-  jobpostid                     bigint signed,
+  jobbenefitid                  bigint signed null,
+  jobpostid                     bigint signed null,
   jobposttobenefitsupdatetimestamp timestamp null not null,
   constraint pk_jobposttobenefits primary key (jobposttobenefitsid)
 );
@@ -98,8 +98,8 @@ create table jobposttobenefits (
 create table jobposttolocality (
   jobposttolocalityid           bigint signed not null auto_increment not null,
   jobposttolocalitycreatetimestamp timestamp null,
-  localityid                    bigint signed,
-  jobpostid                     bigint signed,
+  localityid                    bigint signed null,
+  jobpostid                     bigint signed null,
   jobposttolocalityupdatetimestamp timestamp null not null,
   constraint pk_jobposttolocality primary key (jobposttolocalityid)
 );
@@ -107,7 +107,7 @@ create table jobposttolocality (
 create table jobposttoskill (
   jobposttoskillid              bigint signed not null auto_increment not null,
   jobposttoskillcreatetimestamp timestamp not null,
-  jobpostid                     bigint signed,
+  jobpostid                     bigint signed null,
   skillid                       int signed,
   jobposttoskillupdatetimestamp timestamp null not null,
   constraint pk_jobposttoskill primary key (jobposttoskillid)
@@ -135,7 +135,7 @@ create table recruiterprofile (
   recruiterprofileemail         varchar(255) null,
   recruiterprofilecreatetimestamp timestamp not null,
   recruiterprofileupdatetimestamp timestamp not null,
-  recstatus                     bigint signed,
+  recstatus                     bigint signed null,
   constraint pk_recruiterprofile primary key (recruiterprofileid)
 );
 
