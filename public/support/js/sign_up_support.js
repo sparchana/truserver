@@ -525,6 +525,7 @@ function prefillCandidateExp(candidateExpList) {
                 $("#expOther_" + candidateExp.jobExpQuestion.jobExpQuestionId).val(arr);
                 $("#expOther_" + candidateExp.jobExpQuestion.jobExpQuestionId).multiselect('rebuild');
             }
+            checkExpDurationSelection(candidateExp.jobExpQuestion.jobExpQuestionId, candidateExp.jobExpQuestion.jobRole.jobRoleId);
         });
     }
 }
@@ -900,6 +901,20 @@ function processDataCheckSkills(returnedData) {
     $(".btn-group").removeClass('active');
     prefillSkills(candidateSkill);
 }
+function checkExpDurationSelection(questionId, jobRoleId){
+    var fresherId = $('#expDuration_'+questionId).val();
+    if(fresherId == "1"){
+        //its fresher hence hide Header = 'expHeader_' & Body ='expBody_'
+        $('#expHeader_' + jobRoleId).hide();
+        $('[id=expBody_'+jobRoleId+']').find('select').val('');
+        $('[id=expBody_'+jobRoleId+']').find('select').multiselect('rebuild');
+        $('[id=expBody_'+jobRoleId+']').hide();
+    } else {
+        $('#expHeader_' + jobRoleId).show();
+        $('[id=expBody_'+jobRoleId+']').show();
+    }
+}
+
 function processDataCheckExp(returnedData) {
     var selectIdList =[];
     //console.log(JSON.stringify(returnedData));
@@ -917,10 +932,11 @@ function processDataCheckExp(returnedData) {
             var cell1 = row.insertCell(0);
             var cell2 = row.insertCell(1);
 
-            cell1.innerHTML = '<div id="jobId_'+singleQuestion.jobExpQuestionId+'">'+singleQuestion.jobExpQuestion+'</div>';
+            cell1.innerHTML = '<div id="jobExpDurationQuestionId_'+singleQuestion.jobExpQuestionId+'">'+singleQuestion.jobExpQuestion+'</div>';
 
             var selectList = document.createElement("select");
             selectList.setAttribute("id", "expDuration_"+singleQuestion.jobExpQuestionId);
+            selectList.setAttribute("onchange", "checkExpDurationSelection("+singleQuestion.jobExpQuestionId+", "+singleQuestion.jobRole.jobRoleId+")");
             var option = document.createElement("option");
             option.setAttribute("value", "-1");
             option.text = "Select";
@@ -944,6 +960,8 @@ function processDataCheckExp(returnedData) {
                 // create a new title row
                 prevJobRoleId = singleQuestion.jobRole.jobRoleId;
                 var tr = tableExpOther.insertRow(0);
+                tr.id = "expHeader_" + singleQuestion.jobRole.jobRoleId;
+                tr.setAttribute("style", "background-color:#337ab7; color:white;");
                 var td = tr.insertCell(0);
                 tr.insertCell(1);
                 td.innerHTML = '<div style="font-weight: bold;"> Tell us about your '+singleQuestion.jobRole.jobName+' experience </div>';
@@ -952,11 +970,12 @@ function processDataCheckExp(returnedData) {
             }
             count++;
             var row = tableExpOther.insertRow(0);
+            row.id = "expBody_" + singleQuestion.jobRole.jobRoleId;
 
             var cell1 = row.insertCell(0);
             var cell2 = row.insertCell(1);
 
-            cell1.innerHTML = '<div id="jobId_'+singleQuestion.jobExpQuestionId+'">'+singleQuestion.jobExpQuestion+'</div>';
+            cell1.innerHTML = '<div id="jobExpQuestionId_'+singleQuestion.jobExpQuestionId+'">'+singleQuestion.jobExpQuestion+'</div>';
 
             var selectList = document.createElement("select");
             selectList.multiple = true;
@@ -1109,7 +1128,6 @@ function processInteractionNote(interactionNoteList) {
 }
 
 function processUpdateFollowUp(returnedData) {
-    console.log("updateFollowUp: " + JSON.stringify(returnedData));
     if(returnedData.status == '1'){
         $('.well').removeClass(' created');
         $('.well').removeClass(' updated');
@@ -1368,7 +1386,6 @@ function saveProfileForm() {
                     $(this).find('select').each(function(){
                         if($(this).val() != null){
                             item ["jobExpResponseIdArray"] = $(this).val().map(function(x) {
-                                console.log("toParseInt: " + x);
                                 return parseInt(x);
                             });
                         }
@@ -1378,7 +1395,6 @@ function saveProfileForm() {
                     expList.push(item);
                 };
             });
-            console.log(JSON.stringify(expList));
 
             var d = {
                 //mandatory fields
