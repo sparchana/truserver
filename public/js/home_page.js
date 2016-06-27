@@ -231,16 +231,19 @@ function processDataAllJobPosts(returnedData) {
         /* for jobs more than 3(active) */
         var totalJob = jobPostCount;
         jobPostCount = jobPostCount - 3;
-        if(jobPostCount>0){
-            var jobPostSectionCount = Math.floor(jobPostCount/3);
+        if(jobPostCount > 0){
+            var jobPostSectionCount = Math.floor(jobPostCount/3); //decide no. of scrollers required
+            var jobPostSectionCountMod = jobPostCount % 3;
+            if(jobPostSectionCountMod > 0){
+                jobPostSectionCount ++; //add a new scroller page
+            }
             var i;
             var startIndex = 3;
-            for(i=0;i<jobPostSectionCount+1;i+=1){
+            for(i=0;i<jobPostSectionCount;i+=1){
                 setJobs(returnedData,startIndex,totalJob);
                 startIndex+=3;
             }
         }
-
     }
 }
 

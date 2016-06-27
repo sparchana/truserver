@@ -25,6 +25,13 @@ function processDataApplyJob(returnedData) {
         postToGoogle();
         $('#customMsgIcon').attr('src', "/assets/img/jobApplied.png");
         $("#customMsg").html("Your Job Application is Successful");
+        try{
+            $("#" + applyJobId).addClass("appliedBtn").removeClass("btn-primary");
+            $("#" + applyJobId).prop('disabled',true);
+            $("#apply_btn_" + applyJobId).html("Already Applied");
+        } catch(err){
+            console.log(err);
+        }
     } else if(returnedData.status == 2){
         $('#customMsgIcon').attr('src', "/assets/img/jobApplied.png");
         $("#customMsg").html("Oops! Something went Wrong. Unable to apply");
@@ -61,7 +68,11 @@ $(function() {
         } else if($("#jobPostMinSalary").val() == "0"){
             alert("Please enter Job Post Minimum salary");
             status = 0;
-        } else if(locality == ""){
+        } else if($("#jobPostJobRole").val() == ""){
+            alert("Please enter job roles");
+            status = 0;
+        }
+        else if(locality == ""){
             alert("Please enter localities");
             status = 0;
         } else if($("#jobPostExperience").val() == ""){
@@ -177,7 +188,6 @@ function processDataGetCandidateInfo(returnedData) {
         console.log("exception occured!!" + exception);
     }
 
-    console.log(returnedData);
     candidateId = returnedData.lead.leadId;
     candidateName = returnedData.candidateFirstName + " " + returnedData.candidateLastName;
     if(returnedData.candidateGender != null)
@@ -194,7 +204,6 @@ function processDataGetCandidateInfo(returnedData) {
             languagesKnown += language.language.languageName + "(" + language.readingAbility + "," + language.writingAbility + "," + language.verbalAbility + ")" +  ", ";
         });
     }
-    console.log(languagesKnown);
     if(returnedData.motherTongue != null)
         motherTongue = returnedData.motherTongue.languageName;
     if(returnedData.locality != null)
