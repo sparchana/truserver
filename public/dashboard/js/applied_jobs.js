@@ -130,7 +130,11 @@ function prePopulateJobSection(jobApplication) {
 
     var divMinSalaryCol = document.createElement("div");
     divMinSalaryCol.className = "col-lg-4";
-    divMinSalaryCol.textContent = "Salary: ₹" + jobApplication.jobPost.jobPostMinSalary + " - ₹" + jobApplication.jobPost.jobPostMaxSalary + " monthly";
+    if(jobApplication.jobPost.jobPostMaxSalary == "0"){
+        divMinSalaryCol.textContent = "₹" + jobApplication.jobPost.jobPostMinSalary + " monthly";
+    } else{
+        divMinSalaryCol.textContent = "₹" + jobApplication.jobPost.jobPostMinSalary + " - ₹" + jobApplication.jobPost.jobPostMaxSalary + " monthly";
+    }
     jobDetailSalaryRow.appendChild(divMinSalaryCol);
 
     var divExpCol = document.createElement("div");
