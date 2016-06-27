@@ -61,10 +61,6 @@ $(function() {
         } else if($("#jobPostMinSalary").val() == "0"){
             alert("Please enter Job Post Minimum salary");
             status = 0;
-
-        } else if($("#jobPostMaxSalary").val() == "0"){
-            alert("Please enter Job Post Maximum salary");
-            status = 0;
         } else if(locality == ""){
             alert("Please enter localities");
             status = 0;
@@ -86,6 +82,10 @@ $(function() {
             if ($('#jobPostWorkFromHome').is(":checked"))
             {
                 jobPostWorkFromHome = 1;
+            }
+            var maxSalary = $("#jobPostMaxSalary").val();
+            if(maxSalary == 0 || maxSalary == undefined){
+                maxSalary = null;
             }
 
             try {

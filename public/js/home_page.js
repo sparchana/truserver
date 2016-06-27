@@ -180,7 +180,11 @@ function processDataAllJobPosts(returnedData) {
             jobItemPanelBody.appendChild(jobItemHr1);
             var jobItemSalary = document.createElement("div");
             jobItemSalary.className = "hot_body_salary";
-            jobItemSalary.textContent = "₹" + jobPosts.jobPostMinSalary + " - ₹" + jobPosts.jobPostMaxSalary + " monthly";
+            if(jobPosts.jobPostMaxSalary == "0"){
+                jobItemSalary.textContent = "₹" + jobPosts.jobPostMinSalary + " monthly";
+            } else{
+                jobItemSalary.textContent = "₹" + jobPosts.jobPostMinSalary + " - ₹" + jobPosts.jobPostMaxSalary + " monthly";
+            }
             jobItemPanelBody.appendChild(jobItemSalary);
             var jobItemExperience = document.createElement("div");
             jobItemExperience.className = "hot_body_salary";
@@ -206,7 +210,7 @@ function processDataAllJobPosts(returnedData) {
                 }
             });
             if(((localityList.length) - 2) > 0 ){
-                localities += " + " + ((localityList.length) - 2);
+                localities += " more";
             }
             jobItemLocation.textContent = localities;
             jobItemPanelBody.appendChild(jobItemLocation);
@@ -277,7 +281,11 @@ function setJobs(returnedData, start, totalJobs){
             jobItemPanelBody.appendChild(jobItemHr1);
             var jobItemSalary = document.createElement("div");
             jobItemSalary.className = "hot_body_salary";
-            jobItemSalary.textContent = "₹" + jobPosts.jobPostMinSalary + " - ₹" + jobPosts.jobPostMaxSalary + " monthly";
+            if(jobPosts.jobPostMaxSalary == "0"){
+                jobItemSalary.textContent = "₹" + jobPosts.jobPostMinSalary + " monthly";
+            } else{
+                jobItemSalary.textContent = "₹" + jobPosts.jobPostMinSalary + " - ₹" + jobPosts.jobPostMaxSalary + " monthly";
+            }
             jobItemPanelBody.appendChild(jobItemSalary);
             var jobItemExperience = document.createElement("div");
             jobItemExperience.className = "hot_body_salary";
@@ -303,7 +311,7 @@ function setJobs(returnedData, start, totalJobs){
                 }
             });
             if(((localityList.length) - 2) > 0 ){
-                localities += " + " + ((localityList.length) - 2);
+                localities += " more";
             }
             jobItemLocation.textContent = localities;
             jobItemPanelBody.appendChild(jobItemLocation);
