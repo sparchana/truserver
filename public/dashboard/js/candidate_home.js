@@ -299,6 +299,9 @@ function processDataAndFillMinProfile(returnedData) {
         document.getElementById("profileStatusAction").innerText = "-";
         $("#profileStatusIcon").attr('src', '/assets/dashboard/img/right.png');
     }
+    if(returnedData.candidateIsAssessed == 1){
+        localStorage.setItem("assessed", 1);
+    }
     if (returnedData.candidateGender != null) {
         localStorage.setItem("gender", returnedData.candidateGender);
         if (returnedData.candidateGender == 0) {
