@@ -660,26 +660,17 @@ public class CandidateService
     private static List<CandidateSkill> getCandidateSkillListFromAddSupportCandidate(AddCandidateExperienceRequest request, Candidate candidate) {
         List<CandidateSkill> response = new ArrayList<>();
         for(CandidateSkills item: request.candidateSkills){
-            item.getQualifier();
             CandidateSkill candidateSkill = new CandidateSkill();
             Skill skill = Skill.find.where().eq("skillId", item.getId()).findUnique();
             if(skill == null) {
                 Logger.info("skill static table empty");
                 return null;
             }
-            SkillQualifier skillQualifier =SkillQualifier.find.where()
-                    .eq("skillId", item.getId())
-                    .eq("qualifier", item.getQualifier())
-                    .findUnique();
-            if(skillQualifier == null){
-                Logger.info("skillQualifier static table is empty");
-                return null;
-            }
             candidateSkill.setCandidate(candidate);
             candidateSkill.setSkill(skill);
-            candidateSkill.setSkillQualifier(skillQualifier);
+            candidateSkill.setCandidateSkillResponse(item.getAnswer());
             response.add(candidateSkill);
-            Logger.info("skill........ " + skillQualifier.getQualifier());
+            Logger.info("skill........ " + item.getAnswer());
         }
         return response;
     }

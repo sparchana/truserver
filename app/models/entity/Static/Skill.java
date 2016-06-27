@@ -2,7 +2,6 @@ package models.entity.Static;
 
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.OM.JobToSkill;
 
 import javax.persistence.*;
@@ -29,7 +28,7 @@ public class Skill extends Model{
     @OneToMany(mappedBy = "skill", cascade = CascadeType.REMOVE)
     private List<JobToSkill> jobToSkillList;
 
-    @JsonManagedReference
+    @JsonBackReference
     @OneToMany(mappedBy = "skill", cascade = CascadeType.REMOVE)
     private List<SkillQualifier> skillQualifierList;
 

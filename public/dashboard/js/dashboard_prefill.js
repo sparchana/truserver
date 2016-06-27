@@ -204,7 +204,7 @@ function prefillSkillProfile(){
         skillList.forEach(function (skillElement) {
             var obj = {};
             obj["skillName"] = skillElement.skill.skillName;
-            obj["skillResponse"] = skillElement.skillQualifier.qualifier;
+            obj["skillResponse"] = skillElement.candidateSkillResponse;
             candidateSkill.push(obj);
         });
     }

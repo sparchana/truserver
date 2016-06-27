@@ -352,6 +352,7 @@ public class Application extends Controller {
 
         List<Interaction> interactionsOfLead = Interaction.find.where().in("objectAUUId", leadUUIDList).findList();
 
+        Logger.info("Entering Loop at " + new Timestamp(System.currentTimeMillis()));
         for(Lead lead : allLead) {
             SupportDashboardElementResponse response = new SupportDashboardElementResponse();
 
@@ -397,6 +398,7 @@ public class Application extends Controller {
             }
             responses.add(response);
         }
+        Logger.info("Exit Loop at " + new Timestamp(System.currentTimeMillis()));
 
         return ok(toJson(responses));
     }

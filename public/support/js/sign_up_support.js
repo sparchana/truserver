@@ -26,6 +26,7 @@ var candidateIdProofArray = [];
 var candidateSkill = [];
 var candidateExps;
 var jobPrefString = "";
+var check = 0;
 
 $(document).ready(function () {
     var pathname = window.location.pathname; // Returns path only
@@ -507,7 +508,7 @@ function processDataAndFillAllFields(returnedData) {
             skillList.forEach(function (skillElement) {
                 var obj = {};
                 obj["skillName"] = skillElement.skill.skillName;
-                obj["skillResponse"] = skillElement.skillQualifier.qualifier;
+                obj["skillResponse"] = skillElement.candidateSkillResponse;
                 candidateSkill.push(obj);
             });
         }
@@ -834,6 +835,48 @@ function followUpRequired() {
     }
 }
 
+function createBtn(singleSkill, type){
+    var headLbl = document.createElement("label");
+    headLbl.className = "btn btn-custom-check skillBtn";
+    headLbl.textContent = type;
+    var s = singleSkill.skill.skillName.split(" ");
+    headLbl.onclick = function () {
+        document.getElementById(s[0] + "_" + s[1] + "_"+type).checked = true;
+        document.getElementById(s[0] + "_" + s[1] + "_"+type).click();
+    };
+    var o = document.createElement("input");
+    o.type = "radio";
+    o.style = "display: inline-block";
+    o.name = singleSkill.skill.skillName;
+    o.id = s[0] + "_" + s[1] + "_"+type;
+
+    o.value = type=="Yes"? 1 : 0;
+    o.onclick = function () {
+        var id = singleSkill.skill.skillId;
+        var answer = type=="Yes"? true : false;
+        var item = {};
+        var pos;
+        check = 0;
+
+        item ["id"] = id;
+        item ["answer"] = answer;
+        for (var i in skillMap) {
+            if (skillMap[i].id == id) {
+                check = 1;
+                pos = i;
+                break;
+            }
+        }
+        if (check == 0)
+            skillMap.push(item);
+        else
+            skillMap[pos] = item;
+    };
+    headLbl.appendChild(o);
+
+    return headLbl;
+}
+
 function processDataCheckSkills(returnedData) {
 
     var count = 0;
@@ -846,53 +889,12 @@ function processDataCheckSkills(returnedData) {
         var cell1 = row.insertCell(0);
         var cell2 = row.insertCell(1);
 
-        var lbl = document.createElement("div");
-        lbl.className = "btn-group";
-
+        var btnGroup = document.createElement("div");
+        btnGroup.className = "btn-group";
         cell1.innerHTML = singleSkill.skill.skillQuestion;
-        cell2.appendChild(lbl);
-
-        var object = singleSkill.skill.skillQualifierList;
-        object.forEach(function (x) {
-            var headLbl = document.createElement("label");
-            headLbl.className = "btn btn-custom-check skillBtn";
-            headLbl.textContent = x.qualifier;
-            headLbl.onclick = function () {
-                document.getElementById(s[0] + "_" + s[1] + "_" + x.qualifier).checked = true;
-                document.getElementById(s[0] + "_" + s[1] + "_" + x.qualifier).click();
-            };
-
-            var o = document.createElement("input");
-            o.type = "radio";
-            o.style = "display: inline-block";
-            o.name = singleSkill.skill.skillName;
-            var s = singleSkill.skill.skillName.split(" ");
-            o.id = s[0] + "_" + s[1] + "_" + x.qualifier;
-            o.value = x.qualifier;
-            o.onclick = function () {
-                check = 0;
-                var id = singleSkill.skill.skillId;
-                var name = x.qualifier;
-                var item = {};
-                var pos;
-
-                item ["id"] = id;
-                item ["qualifier"] = name;
-                for (var i in skillMap) {
-                    if (skillMap[i].id == id) {
-                        check = 1;
-                        pos = i;
-                        break;
-                    }
-                }
-                if (check == 0)
-                    skillMap.push(item);
-                else
-                    skillMap[pos] = item;
-            };
-            headLbl.appendChild(o);
-            lbl.appendChild(headLbl);
-        });
+        btnGroup.appendChild(createBtn(singleSkill, "Yes"));
+        btnGroup.appendChild(createBtn(singleSkill, "No"));
+        cell2.appendChild(btnGroup);
     });
     if (count == 0) {
         $(".skillSection").hide();
@@ -1034,8 +1036,6 @@ function generateExperience(jobPrefString) {
 }
 
 function generateSkills() {
-    var myNode = document.getElementById("skill_details");
-    /*myNode.innerHTML = '';*/
     var selectedJobPref = $('#candidateJobPref').val();
     if (selectedJobPref != null && selectedJobPref !== '') {
         $("#skillQuestion").html('');

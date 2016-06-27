@@ -9,7 +9,6 @@ create table expcategory (
   constraint pk_expcategory primary key (expcategoryid)
 );
 
-
 create table jobexpquestion (
   jobexpquestionid              int signed auto_increment not null,
   jobroleid                     bigint signed,
