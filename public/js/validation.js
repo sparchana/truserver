@@ -3,6 +3,7 @@
  */
 
 function validateMobile(mobile) {
+    console.log(mobile);
     var validMobile = /^[7-9]{1}[0-9]{9}$/i;
     if (mobile.length > 0 && validMobile.test(mobile) === false) {
         return 0;
