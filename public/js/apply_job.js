@@ -25,6 +25,13 @@ function processDataApplyJob(returnedData) {
         postToGoogle();
         $('#customMsgIcon').attr('src', "/assets/img/jobApplied.png");
         $("#customMsg").html("Your Job Application is Successful");
+        try{
+            $("#" + applyJobId).addClass("appliedBtn").removeClass("btn-primary");
+            $("#" + applyJobId).prop('disabled',true);
+            $("#apply_btn_" + applyJobId).html("Already Applied");
+        } catch(err){
+            console.log(err);
+        }
     } else if(returnedData.status == 2){
         $('#customMsgIcon').attr('src', "/assets/img/jobApplied.png");
         $("#customMsg").html("Oops! Something went Wrong. Unable to apply");

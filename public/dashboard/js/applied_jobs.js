@@ -57,6 +57,7 @@ function processDataAndFetchAppliedJobs(returnedData) {
 
     var candidateJobApplication = returnedData;
     if(Object.keys(candidateJobApplication).length > 0){
+        candidateJobApplication.reverse();
         candidateJobApplication.forEach(function (jobApplication) {
             prePopulateJobSection(jobApplication);
         });
