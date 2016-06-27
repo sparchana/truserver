@@ -693,8 +693,8 @@ public class Application extends Controller {
         return ok("0");
     }
 
-    public static Result getAllJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.findList();
+    public static Result getAllHotJobPosts() {
+        List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").findList();
         return ok(toJson(jobPosts));
     }
     @Cached(key= "allLocalities")

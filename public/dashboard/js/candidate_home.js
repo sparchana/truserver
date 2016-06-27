@@ -8,7 +8,7 @@ $(document).ready(function(){
     try {
         $.ajax({
             type: "GET",
-            url: "/getAllJobPosts",
+            url: "/getAllHotJobPosts",
             data: false,
             async: false,
             contentType: false,

@@ -50,7 +50,7 @@ POST     /processCsv                                              controllers.Ap
 
 GET      /getAll/:id                                              controllers.Application.getAll(id: Integer)
 
-GET      /getAllJobPosts                                          controllers.Application.getAllJobPosts()
+GET      /getAllHotJobPosts                                       controllers.Application.getAllHotJobPosts()
 
 GET      /getAllLocality                                          controllers.Application.getAllLocality()
 
