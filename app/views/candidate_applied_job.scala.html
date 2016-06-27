@@ -22,16 +22,26 @@
     <link href="/assets/dashboard/css/dashboard.css" rel="stylesheet">
 
     <script type="text/javascript">
-          function showAppliedJobs(){
-            window.location = "/dashboard/appliedJobs";
-          }
-          function showEditProfile(){
-              window.location = "/dashboard/editProfile";
-          }
+      $('html, body').css({
+        'overflow': 'hidden',
+        'height': '100%'
+      });
+      function showAppliedJobs(){
+        window.location = "/dashboard/appliedJobs";
+      }
+      function showEditProfile(){
+          window.location = "/dashboard/editProfile";
+      }
     </script>
   </head>
 
   <body>
+    <div id="preloader">
+      <div id="loaderLogo">
+        <img id="leaderLogo" src="/assets/new/img/logo-color.gif" alt="TruJobs Logo" height="40px">
+      </div>
+      <div id="status">&nbsp;</div>
+    </div>
       <!-- custom message modal -->
     <div class="modal fade" id="messagePromptModal" tabindex="-1" role="dialog" aria-labelledby="messagePromptModalLabel">
       <div class="modal-dialog" role="document">

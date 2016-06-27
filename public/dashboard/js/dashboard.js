@@ -26,6 +26,16 @@ var endPoint;
 /* candidate Data returned JSON */
 var candidateInformation;
 
+$(window).load(function() {
+    $('html, body').css({
+        'overflow': 'auto',
+        'height': 'auto'
+    });
+    $("#status").fadeOut();
+    $("#loaderLogo").fadeOut();
+    $("#preloader").delay(1000).fadeOut("slow");
+});
+
 $(document).ready(function(){
     /* Section Disable */
     $("#basicProfileSection").show();

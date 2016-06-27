@@ -44,6 +44,16 @@ $(function () {
     })
 });
 
+$(window).load(function() {
+    $('html, body').css({
+        'overflow': 'auto',
+        'height': 'auto'
+    });
+    $("#status").fadeOut();
+    $("#loaderLogo").fadeOut();
+    $("#preloader").delay(1000).fadeOut("slow");
+});
+
 $(document).ready(function(){
     localStorage.clear();
     $(".navbar-nav li a").click(function(event) {

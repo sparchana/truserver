@@ -3,6 +3,16 @@
  */
 
 var minProfileComplete = 0;
+$(window).load(function() {
+    $('html, body').css({
+        'overflow': 'auto',
+        'height': 'auto'
+    });
+    $("#status").fadeOut();
+    $("#loaderLogo").fadeOut();
+    $("#preloader").delay(1000).fadeOut("slow");
+});
+
 $(document).ready(function(){
     checkUserLogin();
     try {
