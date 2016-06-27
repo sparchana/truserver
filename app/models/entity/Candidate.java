@@ -103,6 +103,11 @@ public class Candidate extends Model {
 
     @JsonManagedReference
     @PrivateOwned
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.REMOVE)
+    private List<JobApplication> jobApplicationList;
+
+    @JsonManagedReference
+    @PrivateOwned
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
     private List<LanguageKnown> languageKnownList;
 
@@ -161,7 +166,6 @@ public class Candidate extends Model {
     public Candidate() {
         this.candidateUUId = UUID.randomUUID().toString();
         this.candidateCreateTimestamp = new Timestamp(System.currentTimeMillis());
-        this.candidateUpdateTimestamp = new Timestamp(System.currentTimeMillis());
     }
 
     public void registerCandidate() {
@@ -378,6 +382,14 @@ public class Candidate extends Model {
 
     public Integer getCandidateAppointmentLetter() {
         return candidateAppointmentLetter;
+    }
+
+    public List<JobApplication> getJobApplicationList() {
+        return jobApplicationList;
+    }
+
+    public void setJobApplicationList(List<JobApplication> jobApplicationList) {
+        this.jobApplicationList = jobApplicationList;
     }
 
     public int getIsMinProfileComplete() {

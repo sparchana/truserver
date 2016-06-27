@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+  <head>
+    <meta charset="UTF-8">
+    <title>Jobs and Company - Support | Trujobs.in</title>
+    <link rel="stylesheet" href="/assets/support/css/material.indigo-pink.min.css">
+
+    <link rel="stylesheet" href="/assets/support/css/bootstrap.min.css">
+
+    <script type="text/javascript" src="/assets/support/js/jquery-1.12.0.min.js"></script>
+    <link rel="stylesheet" href="/assets/css/token-input.css" type="text/css" />
+    <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
+
+    <link rel="stylesheet" href="/assets/support/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/assets/new/css/myStyle.css">
+    <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/dashboard.css">
+
+    <link rel="stylesheet" href="/assets/support/css/bootstrap-datetimepicker.min.css">
+    <script type="text/javascript" src="/assets/support/js/Moment.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lato" />
+    <link rel="stylesheet" href="/assets/support/css/nprogress.css">
+    <link rel="stylesheet" href="/assets/support/css/animate.css">
+    <script type="text/javascript" src="/assets/support/js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
+
+    <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
+    <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css">
+    <script type="text/javascript" src="/assets/support/js/company_and_job.js"></script>
+
+    <script type="text/javascript">
+            $(function () {
+              $('#jobPostStartTimePicker').datetimepicker({
+                format: 'LT'
+              });
+              $('#jobPostEndTimePicker').datetimepicker({
+                format: 'LT'
+              });
+            });
+        </script>
+  </head>
+
+  <body style="font-size: 13px;">
+    <div class="container">
+      <h2>
+        Company and Job Section
+          <a href="/support">
+            <button class="btn" style="align-items: flex-end">Support Home</button>
+          </a>
+          <a href="/logout">
+            <button class="btn btn-danger" style="align-items: flex-end">Logout</button>
+          </a>
+      </h2>
+      <hr>
+      <button id="addCompany" class="btn btn-default" onclick="showCompanyForm()">Add Company</button>
+      <button id="addJobPost" class="btn btn-default" onclick="showJobPostForm()">Add Job Post</button>
+
+      <hr>
+      <div id="companySection" style="display: none; width: 68%">
+        <form id="company_form">
+          <div class="row">
+            <div class="col-sm-3"><h5>Company Name:</h5></div>
+            <div class="col-sm-9">
+              <input id="companyName" name="companyName" placeholder="Company Name" type="text" class="form-control input-md" >
+            </div>
+          </div>
+
+          <div class="row" style="margin-top: 4px">
+            <div class="col-sm-3"><h5>Company Locality:</h5></div>
+            <div class="col-sm-9">
+              <input type="text" id="companyLocality">
+              <script type="text/javascript">
+                $(document).ready(function() {
+                  $("#companyLocality").tokenInput(getLocality(), {
+                    theme: "facebook",
+                    placeholder: "Company Localities?",
+                    hintText: "Start typing Area (eg. BTM Layout, Bellandur..)",
+                    minChars: 0,
+                    tokenLimit: 1,
+                    preventDuplicates: true
+                  });
+                });
+              </script>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Company Address:</h5></div>
+            <div class="col-sm-9">
+                <textarea rows="4" cols="80" id="companyAddress" class="form-control input-md" maxlength="1000"></textarea>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Company Pincode:</h5></div>
+            <div class="col-sm-9">
+              <input id="companyPinCode" name="companyPinCode" placeholder="Company PinCode" type="number" max="999999" class="form-control input-md" >
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Company Website:</h5></div>
+            <div class="col-sm-9">
+              <input id="companyWebsite" name="companyWebsite" placeholder="Company Website" type="text" class="form-control input-md" >
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Company Logo:</h5></div>
+            <div class="col-sm-9">
+              <input id="companyLogo" name="companyLogo" placeholder="Company Logo" type="text" class="form-control input-md" >
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Company Description:</h5></div>
+            <div class="col-sm-9">
+                <textarea rows="4" cols="80" id="companyDescription" class="form-control input-md" maxlength="5000"></textarea>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Company Employee Count:</h5></div>
+            <div class="col-sm-9">
+              <input id="companyEmployeeCount" maxlength="14" placeholder="Company Employee Count" type="text" class="form-control input-md">
+            </div>
+          </div>
+
+          <div class="row" style="margin-top: 4px">
+            <div class="col-sm-3"><h5>Company Type:</h5></div>
+            <div class="col-sm-9">
+              <select id="companyType" class="selectDropdown" ></select>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top: 4px">
+            <div class="col-sm-3"><h5>Company Status:</h5></div>
+            <div class="col-sm-9">
+              <select id="companyStatus" class="selectDropdown" ></select>
+            </div>
+          </div>
+          <button class="btn btn-default">Add Company</button>
+        </form>
+      </div>
+
+      <div id="jobPostSection" style="display: none; width: 68%">
+        <form id="job_post_form">
+
+          <div class="row" style="margin-top: 4px">
+            <div class="col-sm-3"><h5>Job Providing company?: </h5></div>
+            <div class="col-sm-9" style="margin-top: 8px">
+              <select id="jobPostCompany" class="selectDropdown" ></select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Job Post Title:</h5></div>
+            <div class="col-sm-9">
+              <input id="jobPostTitle" name="jobPostTitle" placeholder="job Post Title" type="text" class="form-control input-md" >
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Job Post Description:</h5></div>
+            <div class="col-sm-9">
+                <textarea rows="4" cols="80" id="jobPostDescription" class="form-control input-md" maxlength="5000"></textarea>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Min Salary:</h5></div>
+            <div class="col-sm-9">
+              <input id="jobPostMinSalary" value="0" style="width: 15%; display: inline-block" placeholder="Min Salary" type="number" class="form-control input-md">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Max Salary:</h5></div>
+            <div class="col-sm-9">
+              <input id="jobPostMaxSalary" value="0" style="width: 15%; display: inline-block" placeholder="Max Salary" type="number" class="form-control input-md">
+            </div>
+          </div>
+
+          <div class="row" style="margin-top: 4px">
+            <div class="col-sm-3"><h5>Job Post Job Role:</h5></div>
+            <div class="col-sm-9">
+              <input type="text" id="jobPostJobRole" >
+              <script type="text/javascript">
+                $(document).ready(function() {
+                  $("#jobPostJobRole").tokenInput(getJob(), {
+                    theme: "facebook",
+                    placeholder: "Job Role?",
+                    hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                    minChars: 0,
+                    tokenLimit: 1,
+                    preventDuplicates: true
+                  });
+                });
+              </script>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top: 4px">
+            <div class="col-sm-3"><h5>Job Post Locality(s):</h5></div>
+            <div class="col-sm-9">
+              <input type="text" id="jobPostLocalities">
+              <script type="text/javascript">
+                $(document).ready(function() {
+                  $("#jobPostLocalities").tokenInput(getLocality(), {
+                    theme: "facebook",
+                    placeholder: "job Localities?",
+                    hintText: "Start typing Area (eg. BTM Layout, Bellandur..)",
+                    minChars: 0,
+                    preventDuplicates: true
+                  });
+                });
+              </script>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Job Post Address:</h5></div>
+            <div class="col-sm-9">
+                <textarea rows="4" cols="80" id="jobPostAddress" class="form-control input-md" maxlength="5000"></textarea>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Job Post Pincode:</h5></div>
+            <div class="col-sm-9">
+              <input id="jobPostPinCode" name="jobPostPinCode" placeholder="Job Post PinCode" type="number" max="999999" class="form-control input-md" >
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Job Post Incentives:</h5></div>
+            <div class="col-sm-9">
+              <textarea rows="4" cols="80" id="jobPostIncentives" class="form-control input-md" maxlength="5000"></textarea>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Job Post Min Requirement:</h5></div>
+            <div class="col-sm-9">
+                <textarea rows="4" cols="80" id="jobPostMinRequirement" class="form-control input-md" maxlength="5000"></textarea>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Job Start Time:</h5></div>
+            <div class='col-sm-5'>
+                <select id="jobPostStartTime" class="selectDropdown" ></select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Job End Time:</h5></div>
+            <div class='col-sm-5'>
+                <select id="jobPostEndTime" class="selectDropdown" ></select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Is this a Hot Job?</h5></div>
+            <div class="col-sm-9">
+              <input id="jobPostIsHot" type="checkbox">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Work From Home?</h5></div>
+            <div class="col-sm-9">
+              <input id="jobPostWorkFromHome" type="checkbox">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Total Vacancies:</h5></div>
+            <div class="col-sm-9">
+              <input id="jobPostVacancies" value="0" style="width: 15%; display: inline-block" placeholder="Total Vacancies" type="number" class="form-control input-md">
+            </div>
+          </div>
+
+          <div class="row" style="margin-top: 4px">
+            <div class="col-sm-3"><h5>Job Post Min Experience req: </h5></div>
+            <div class="col-sm-9" style="margin-top: 8px">
+              <select id="jobPostExperience" class="selectDropdown" ></select>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top: 4px">
+            <div class="col-sm-3"><h5>Job Post work shift?: </h5></div>
+            <div class="col-sm-9" style="margin-top: 8px">
+              <select id="jobPostWorkShift" class="selectDropdown" ></select>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top: 4px">
+            <div class="col-sm-3"><h5>Job Post Education Required:</h5></div>
+            <div class="col-sm-9">
+              <select id="jobPostEducation" class="selectDropdown" ></select>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top: 4px">
+            <div class="col-sm-3"><h5>Job Post Status:</h5></div>
+            <div class="col-sm-9">
+              <select id="jobPostStatus" class="selectDropdown" ></select>
+            </div>
+          </div>
+
+          <br><br>
+          <button class="btn btn-default">Add Job Post</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Javascript import -->
+    <script type="text/javascript" src="/assets/js/validation.js"></script>
+    <script type="text/javascript" src="/assets/support/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/apply_job.js"></script>
+    <script type="text/javascript" src="/assets/support/js/add_company.js"></script>
+    <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
+    <script type="text/javascript" src="/assets/support/js/bootstrap-datetimepicker.min.js"></script>
+
+
+    <script>
+      function showCompanyForm() {
+        $("#companySection").show();
+        $("#jobPostSection").hide();
+      }
+      function showJobPostForm() {
+        $("#companySection").hide();
+        $("#jobPostSection").show();
+      }
+    </script>
+  </body>
+</html>

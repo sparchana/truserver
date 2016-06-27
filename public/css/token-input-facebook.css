@@ -5,6 +5,7 @@ ul.token-input-list-facebook {
     text-align: left;
     border: 1px solid #eaeaea;
     cursor: text;
+    z-index: 9999999;
     font-size: 13px;
     border-radius: 4px;
     z-index: 999;
@@ -21,6 +22,7 @@ ul.token-input-list-facebook {
 ul.token-input-list-facebook li input {
     border: 0;
     width: 100%;
+    z-index: 9999999;
     padding: 4px 12px;
     background-color: white;
     margin: 2px 0;
@@ -35,6 +37,7 @@ li.token-input-token-facebook {
     padding: 1px 3px;
     background-color: #eff2f7;
     color: #555;
+    z-index: 9999999;
     cursor: default;
     border: 1px solid #ccd5e4;
     font-size: 11px;
@@ -48,12 +51,14 @@ li.token-input-token-facebook {
 li.token-input-token-facebook p {
     display: inline;
     padding: 0;
+    z-index: 9999999;
     margin: 0;
 }
 
 li.token-input-token-facebook span {
     color: #555;
     margin-left: 5px;
+    z-index: 9999999;
     cursor: pointer;
 }
 
@@ -61,11 +66,13 @@ li.token-input-selected-token-facebook {
     background-color: #5670a6;
     border: 1px solid #3b5998;
     color: #fff;
+    z-index: 9999999;
 }
 
 li.token-input-input-token-facebook {
     float: left;
     margin: 0;
+    z-index: 9999999;
     padding: 0;
     list-style-type: none;
 }
@@ -73,7 +80,7 @@ li.token-input-input-token-facebook {
 div.token-input-dropdown-facebook {
     position: absolute;
     width: 18%;
-    z-index: 99999;
+    z-index: 9999999;
     background-color: #fff;
     overflow: auto;
     max-height: 120px;
@@ -89,36 +96,43 @@ div.token-input-dropdown-facebook {
 div.token-input-dropdown-facebook p {
     margin: 0;
     padding: 5px;
+    z-index: 9999999;
     color: #777;
 }
 
 div.token-input-dropdown-facebook ul {
     margin: 0;
+    z-index: 9999999;
     padding: 0;
 }
 
 div.token-input-dropdown-facebook ul li {
     background-color: #fff;
     padding: 3px;
+    z-index: 9999999;
     margin: 0;
     list-style-type: none;
 }
 
 div.token-input-dropdown-facebook ul li.token-input-dropdown-item-facebook {
     background-color: #fff;
+    z-index: 9999999;
 }
 
 div.token-input-dropdown-facebook ul li.token-input-dropdown-item2-facebook {
     background-color: #fff;
+    z-index: 9999999;
 }
 
 div.token-input-dropdown-facebook ul li em {
     font-style: normal;
+    z-index: 9999999;
 }
 
 div.token-input-dropdown-facebook ul li.token-input-selected-dropdown-item-facebook {
     background-color: #3b5998;
     color: #fff;
+    z-index: 9999999;
 }
 
 

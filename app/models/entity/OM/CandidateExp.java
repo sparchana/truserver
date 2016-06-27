@@ -19,7 +19,7 @@ import java.sql.Timestamp;
 public class CandidateExp extends Model{
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name = "CandidateExpId", columnDefinition = "int signed not null", unique = true)
+    @Column(name = "CandidateExpId", columnDefinition = "int signed", unique = true)
     private int candidateExpId;
 
     @ManyToOne
@@ -38,10 +38,18 @@ public class CandidateExp extends Model{
     private JobExpResponse jobExpResponse;
 
     @UpdatedTimestamp
+    @Column(name = "CreateTimeStamp", columnDefinition = "timestamp not null default current_timestamp")
+    private Timestamp createTimeStamp;
+
+    @UpdatedTimestamp
     @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp null")
     private Timestamp updateTimeStamp;
 
     public static Model.Finder<String, CandidateExp> find = new Model.Finder(CandidateExp.class);
+
+    public CandidateExp(){
+        this.createTimeStamp = new Timestamp(System.currentTimeMillis());
+    }
 
     public int getCandidateExpId() {
         return candidateExpId;
@@ -74,5 +82,6 @@ public class CandidateExp extends Model{
     public Timestamp getUpdateTimeStamp() {
         return updateTimeStamp;
     }
+
 
 }

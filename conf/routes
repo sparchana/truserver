@@ -6,6 +6,8 @@ GET      /                                                        controllers.Ap
 
 GET      /support                                                 controllers.Application.support()
 
+GET      /support/addCompany                                      controllers.Application.companyAndJob()
+
 GET      /createCandidateForm                                     controllers.Application.createCandidateForm()
 
 GET      /candidateInteraction/:id                                controllers.Application.candidateInteraction(id : Long)
@@ -26,11 +28,19 @@ POST     /candidateUpdateEducationDetails                         controllers.Ap
 
 POST     /addPassword                                             controllers.Application.addPassword()
 
+POST     /applyJob                                                controllers.Application.applyJob()
+
+POST     /addJobPost                                              controllers.Application.addJobPost()
+
+POST     /addCompany                                              controllers.Application.addCompany()
+
 POST     /processCsv                                              controllers.Application.processcsv()
 
 GET      /dashboard                                               controllers.Application.dashboard()
 
 GET      /dashboard/editProfile                                   controllers.Application.editProfile()
+
+GET      /dashboard/appliedJobs                                   controllers.Application.appliedJobs()
 
 POST     /loginSubmit                                             controllers.Application.loginSubmit()
 
@@ -41,6 +51,8 @@ POST     /processCsv                                              controllers.Ap
 GET      /getAll/:id                                              controllers.Application.getAll(id: Integer)
 
 POST     /getAllLocality                                          controllers.Application.getAllLocality()
+
+POST      /getAllHotJobPosts                                       controllers.Application.getAllHotJobPosts()
 
 POST     /getAllJobs                                              controllers.Application.getAllJobs()
 
@@ -60,17 +72,33 @@ POST      /getAllIdProof                                           controllers.A
 
 POST      /getAllDegree                                            controllers.Application.getAllDegree()
 
-GET      /getAllJobExpQuestion                                    controllers.Application.getAllJobExpQuestion()
+POST      /getAllJobExpQuestion                                    controllers.Application.getAllJobExpQuestion()
 
 POST     /getJobExpQuestion/:jobRoleIdList                        controllers.Application.getJobExpQuestion(jobRoleIdList : String)
 
+POST      /getAllCompany                                           controllers.Application.getAllCompany()
+
+POST      /getAllCompanyStatus                                     controllers.Application.getAllCompanyStatus()
+
+POST      /getAllCompanyType                                       controllers.Application.getAllCompanyType()
+
+POST      /getAllExperience                                        controllers.Application.getAllExperience()
+
+POST      /getAllJobStatus                                         controllers.Application.getAllJobStatus()
+
 GET      /getUserInfo/:id                                         controllers.Application.getUserInfo(id : Long)
+
+GET      /getCandidateInfoDashboard                               controllers.Application.getCandidateInfoDashboard()
 
 GET      /getCandidateInfo/:id                                    controllers.Application.getCandidateInfo(id : Long)
 
 GET      /getCandidateLocality/:id                                controllers.Application.getCandidateLocality(id : Long)
 
-GET      /getCandidateJob/:id                                     controllers.Application.getCandidateJob(id : Long)
+GET      /getCandidateJobApplication                              controllers.Application.getCandidateJobApplication()
+
+GET      /getCompanyInfo/:id                                      controllers.Application.getCompanyInfo(id : Long)
+
+GET      /getJobPostInfo/:id                                      controllers.Application.getJobPostInfo(id : Long)
 
 GET      /checkMinProfile/:id                                     controllers.Application.checkMinProfile(id : Long)
 
@@ -78,7 +106,7 @@ GET      /getAllSkills/:id                                        controllers.Ap
 
 GET      /updateLeadType/:leadId/:newStatus                       controllers.Application.updateLeadType(leadId: Long, newStatus: Long)
 
-GET      /updateIsAssessedToAssessed/:leadId                      controllers.Application.updateIsAssessedToAssessed(leadId: Long)
+GET      /updateIsAssessedToAssessed                              controllers.Application.updateIsAssessedToAssessed()
 
 GET      /updateLeadStatus/:leadId/:leadStatus/:res               controllers.Application.updateLeadStatus(leadId: Long, leadStatus: Integer,res: String)
 

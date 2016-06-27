@@ -9,15 +9,9 @@ import api.http.httpResponse.SupportInteractionResponse;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import controllers.businessLogic.AuthService;
-import controllers.businessLogic.CandidateService;
-import controllers.businessLogic.FollowUpService;
-import controllers.businessLogic.LeadService;
-import models.entity.Candidate;
-import models.entity.Developer;
-import models.entity.Interaction;
-import models.entity.Lead;
-import models.entity.OM.JobPreference;
+import controllers.businessLogic.*;
+import models.entity.*;
+import models.entity.OM.JobApplication;
 import models.entity.OM.JobToSkill;
 import models.entity.OM.LocalityPreference;
 import models.entity.Static.*;
@@ -59,6 +53,17 @@ public class Application extends Controller {
         }
         return redirect("/street");
     }
+
+    @Security.Authenticated(Secured.class)
+    public static Result companyAndJob() {
+        String sessionId = session().get("sessionId");
+        Developer developer = Developer.find.where().eq("developerSessionId", sessionId ).findUnique();
+        if(developer != null && developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE) {
+            return ok(views.html.add_company.render());
+        }
+        return redirect("/street");
+    }
+
     @Security.Authenticated(Secured.class)
     public static Result candidateInteraction(long id) {
         return ok(views.html.candidate_interaction.render());
@@ -222,6 +227,47 @@ public class Application extends Controller {
         return ok(toJson(AuthService.savePassword(userMobile, userPassword)));
     }
 
+    public static Result applyJob() {
+        JsonNode req = request().body().asJson();
+        ApplyJobRequest applyJobRequest = new ApplyJobRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            applyJobRequest = newMapper.readValue(req.toString(), ApplyJobRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String userMobile = applyJobRequest.getCandidateMobile();
+        Integer jobId = applyJobRequest.getJobId();
+
+        return ok(toJson(JobService.applyJob(userMobile, jobId)));
+    }
+
+    public static Result addJobPost() {
+        JsonNode req = request().body().asJson();
+        Logger.info(req + " == ");
+        AddJobPostRequest addJobPostRequest = new AddJobPostRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addJobPostRequest = newMapper.readValue(req.toString(), AddJobPostRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ok(toJson(JobService.addJobPost(addJobPostRequest)));
+    }
+
+    public static Result addCompany() {
+        JsonNode req = request().body().asJson();
+        AddCompanyRequest addCompanyRequest = new AddCompanyRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addCompanyRequest = newMapper.readValue(req.toString(), AddCompanyRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ok(toJson(CompanyService.addCompany(addCompanyRequest)));
+    }
+
     public static Result loginSubmit() {
         JsonNode req = request().body().asJson();
         LoginRequest loginRequest = new LoginRequest();
@@ -246,6 +292,11 @@ public class Application extends Controller {
     @Security.Authenticated(SecuredUser.class)
     public static Result editProfile() {
         return ok(views.html.edit_profile.render());
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result appliedJobs() {
+        return ok(views.html.candidate_applied_job.render());
     }
 
     public static Result findUserAndSendOtp() {
@@ -359,6 +410,21 @@ public class Application extends Controller {
         }
         return ok();
     }
+
+    /* this method is used by candidate dashboard */
+    @Security.Authenticated(SecuredUser.class)
+    public static Result getCandidateInfoDashboard() {
+        Lead lead = Lead.find.where().eq("leadId", session().get("leadId")).findUnique();
+        if(lead != null) {
+            Candidate candidate = Candidate.find.where().eq("lead_leadId", lead.getLeadId()).findUnique();
+            if(candidate!=null){
+                return ok(toJson(candidate));
+            }
+        }
+        return ok("0");
+    }
+
+    /* this method is used by support */
     @Security.Authenticated(Secured.class)
     public static Result getCandidateInfo(long leadId) {
             Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
@@ -370,6 +436,31 @@ public class Application extends Controller {
             }
         return ok("0");
     }
+
+    public static Result getCompanyInfo(long companyId) {
+        Company company = Company.find.where().eq("companyId", companyId).findUnique();
+        if(company!=null){
+            return ok(toJson(company));
+        }
+        return ok("0");
+    }
+
+    public static Result GetCompanyJobList(long companyId){
+        List<JobPost> jobPostList = JobPost.find.where().eq("company.companyId", companyId).findList();
+        if(jobPostList!=null){
+            return ok(toJson(jobPostList));
+        }
+        return ok("0");
+    }
+
+    public static Result getJobPostInfo(long jobPostId) {
+        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        if(jobPost!=null){
+            return ok(toJson(jobPost));
+        }
+        return ok("0");
+    }
+
     @Security.Authenticated(SecuredUser.class)
     public static Result getCandidateLocality(long candidateId) {
         List<LocalityPreference> candidateLocalities = LocalityPreference.find.where().eq("candidateId", candidateId).findList();
@@ -377,10 +468,17 @@ public class Application extends Controller {
             return ok("0");
         return ok(toJson(candidateLocalities));
     }
+
     @Security.Authenticated(SecuredUser.class)
-    public static Result getCandidateJob(long id) {
-        List<JobPreference> candidateJobs = JobPreference.find.where().eq("CandidateId", id).findList();
-        return ok(toJson(candidateJobs));
+    public static Result getCandidateJobApplication() {
+        if(session().get("candidateId") != null){
+            List<JobApplication> jobApplicationList = JobApplication.find.where().eq("candidateId", session().get("candidateId")).findList();
+            if(jobApplicationList == null)
+                return ok("0");
+            return ok(toJson(jobApplicationList));
+        } else{
+            return ok("0");
+        }
     }
 
     public static Result checkMinProfile(long id) {
@@ -434,6 +532,7 @@ public class Application extends Controller {
             return ok(views.html.candidate_home.render());
         }
         else{
+            Logger.info("Candidate Logged Out");
             return ok(views.html.index.render());
         }
     }
@@ -465,18 +564,14 @@ public class Application extends Controller {
         return redirect(routes.Application.supportAuth());
     }
 
-    public static Result updateIsAssessedToAssessed(long candidateId) {
-        try{
-            Candidate existingCandidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
-            try{
+    public static Result updateIsAssessedToAssessed() {
+        if(session().get("candidateId") != null){
+            Candidate existingCandidate = Candidate.find.where().eq("candidateId", session().get("candidateId")).findUnique();
+            if(existingCandidate != null){
                 existingCandidate.setCandidateIsAssessed(ServerConstants.CANDIDATE_ASSESSED);
                 existingCandidate.update();
                 return ok(toJson(ServerConstants.CANDIDATE_ASSESSED));
-            } catch (NullPointerException n) {
-                n.printStackTrace();
             }
-        } catch (NullPointerException n) {
-            n.printStackTrace();
         }
         return badRequest();
     }
@@ -598,9 +693,13 @@ public class Application extends Controller {
     }
 
     public static Result kwCdrInput() {
-        return ok("TODO");
+        return ok("0");
     }
 
+    public static Result getAllHotJobPosts() {
+        List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").findList();
+        return ok(toJson(jobPosts));
+    }
     @Cached(key= "allLocalities")
     public static Result getAllLocality() {
         List<Locality> localities = Locality.find.findList();
@@ -653,6 +752,36 @@ public class Application extends Controller {
     public static Result getAllDegree() {
         List<Degree> degreeList = Degree.find.findList();
         return ok(toJson(degreeList));
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result getAllCompany() {
+        List<Company> companyList = Company.find.orderBy("companyName").findList();
+        return ok(toJson(companyList));
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result getAllExperience() {
+        List<Experience> experienceList = Experience.find.findList();
+        return ok(toJson(experienceList));
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result getAllCompanyStatus() {
+        List<CompanyStatus> companyStatusList = CompanyStatus.find.findList();
+        return ok(toJson(companyStatusList));
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result getAllCompanyType() {
+        List<CompanyType> companyTypeList = CompanyType.find.findList();
+        return ok(toJson(companyTypeList));
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result getAllJobStatus() {
+        List<JobStatus> jobStatusList = JobStatus.find.findList();
+        return ok(toJson(jobStatusList));
     }
 
     @Security.Authenticated(Secured.class)
