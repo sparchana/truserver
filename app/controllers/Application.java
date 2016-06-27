@@ -6,6 +6,7 @@ import api.http.httpResponse.AddLeadResponse;
 import api.http.httpResponse.SupportDashboardElementResponse;
 import api.http.httpResponse.SupportInteractionNoteResponse;
 import api.http.httpResponse.SupportInteractionResponse;
+import com.avaje.ebean.Query;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -895,14 +896,13 @@ public class Application extends Controller {
 
     public static Result getJobExpQuestion(String jobRoleIds) {
         List<String> jobRoleIdList = Arrays.asList(jobRoleIds.split("\\s*,\\s*"));
-        List<JobExpQuestion> response = new ArrayList<>();
-        if(jobRoleIdList != null){
-            for(String jobRoleId: jobRoleIdList) {
-                List<JobExpQuestion> jobExpQuestionList = JobExpQuestion.find.where().eq("jobRoleId", jobRoleId).findList();
-                if(jobExpQuestionList != null && !jobExpQuestionList.isEmpty()){
-                    response.addAll(jobExpQuestionList);
-                }
-            }
+        Query<JobExpQuestion> query = JobExpQuestion.find.query();
+        query = query.select("*").fetch("jobRole")
+                    .where()
+                    .in("jobRole.jobRoleId", jobRoleIdList)
+                    .query();
+        List<JobExpQuestion> response = query.findList();
+        if(response != null){
             return ok(toJson(response));
         }
         return ok();
