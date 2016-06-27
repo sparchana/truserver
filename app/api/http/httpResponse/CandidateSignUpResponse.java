@@ -11,6 +11,7 @@ public class CandidateSignUpResponse {
 
     public int status;
     public int isAssessed;
+    public int minProfile;
     public int otp;
     public long leadId;
     public long accountStatus;
@@ -45,6 +46,14 @@ public class CandidateSignUpResponse {
     }
     public void setCandidateEmail(String candidateEmail) {
         this.candidateEmail = candidateEmail;
+    }
+
+    public int getMinProfile() {
+        return minProfile;
+    }
+
+    public void setMinProfile(int minProfile) {
+        this.minProfile = minProfile;
     }
 
     public int getStatus() {

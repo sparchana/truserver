@@ -29,7 +29,6 @@ import java.util.UUID;
 import static controllers.businessLogic.InteractionService.createInteractionForSignUpCandidate;
 import static controllers.businessLogic.LeadService.createOrUpdateConvertedLead;
 import static models.util.Util.generateOtp;
-import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 
 /**
@@ -317,6 +316,7 @@ public class CandidateService
 
         Logger.info("Candidate with mobile " +  candidate.getCandidateMobile() + " created/updated successfully");
         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+        candidateSignUpResponse.setMinProfile(candidate.getIsMinProfileComplete());
 
         return candidateSignUpResponse;
     }
@@ -426,7 +426,7 @@ public class CandidateService
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
         Logger.info("Inside Education profile update");
         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-
+        candidateSignUpResponse.setMinProfile(candidate.getIsMinProfileComplete());
         try {
             candidate.setCandidateEducation(getCandidateEducationFromAddSupportCandidate(addCandidateEducationRequest, candidate));
         }
@@ -436,7 +436,6 @@ public class CandidateService
             e.printStackTrace();
         }
 
-
         return candidateSignUpResponse;
     }
 
@@ -445,6 +444,7 @@ public class CandidateService
                                                               boolean isSupport) {
 
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
+        candidateSignUpResponse.setMinProfile(candidate.getIsMinProfileComplete());
 
         Logger.info("Inside Skills profile update");
 
@@ -770,13 +770,14 @@ public class CandidateService
                     loginResponse.setCandidateFirstName(existingCandidate.getCandidateFirstName());
                     loginResponse.setCandidateLastName(existingCandidate.getCandidateLastName());
                     loginResponse.setIsAssessed(existingCandidate.getCandidateIsAssessed());
+                    loginResponse.setMinProfile(existingCandidate.getIsMinProfileComplete());
                     loginResponse.setLeadId(existingCandidate.getLead().getLeadId());
                     loginResponse.setStatus(loginResponse.STATUS_SUCCESS);
 
                     existingAuth.setAuthSessionId(UUID.randomUUID().toString());
                     existingAuth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
-                    session("sessionId", existingAuth.getAuthSessionId());
-                    session("sessionExpiry", String.valueOf(existingAuth.getAuthSessionIdExpiryMillis()));
+                    /* adding session details */
+                    AuthService.addSession(existingAuth,existingCandidate);
                     existingAuth.update();
                     Logger.info("Login Successful");
                 }
@@ -790,7 +791,6 @@ public class CandidateService
                 Logger.info("No User");
             }
         }
-        Logger.info(" LoginResponse Returned: " + toJson(loginResponse));
         return loginResponse;
     }
 

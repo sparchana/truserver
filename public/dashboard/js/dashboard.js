@@ -26,11 +26,6 @@ var endPoint;
 /* candidate Data returned JSON */
 var candidateInformation;
 
-var leadId = localStorage.getItem("leadId");
-var userMobile = localStorage.getItem("mobile");
-var userName = localStorage.getItem("name");
-var userLastName = localStorage.getItem("lastName");
-
 $(document).ready(function(){
     /* Section Disable */
     $("#basicProfileSection").show();
@@ -42,16 +37,7 @@ $(document).ready(function(){
     $("#isEmployedForm").hide();
     $("#isEmployedSelect").hide();
 
-    document.getElementById("helloMsg").innerHTML = "Hello " + userName + "!";
-    try{
-        if(userLastName == "null" || userLastName == null){
-            document.getElementById("userName").innerHTML = userName;
-        } else{
-            document.getElementById("userName").innerHTML = userName + " " + userLastName;
-        }
-        document.getElementById("userMobile").innerHTML = userMobile;
-    } catch(err){
-    }
+    checkUserLogin();
     
     /* ajax commands to fetch all localities and jobs*/
     try {
@@ -136,7 +122,7 @@ $(document).ready(function(){
 try {
     $.ajax({
         type: "GET",
-        url: "/getCandidateInfo/" + leadId,
+        url: "/getCandidateInfoDashboard",
         data: false,
         async: false,
         contentType: false,
