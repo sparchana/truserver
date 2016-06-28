@@ -29,6 +29,7 @@ import java.util.UUID;
 import static controllers.businessLogic.InteractionService.createInteractionForSignUpCandidate;
 import static controllers.businessLogic.LeadService.createOrUpdateConvertedLead;
 import static models.util.Util.generateOtp;
+import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 
 /**
@@ -167,7 +168,6 @@ public class CandidateService
             createdBy = session().get("sessionUsername");
             interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM;
             interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT;
-            interactionNote = ServerConstants.INTERACTION_NOTE_CALL_OUTBOUNDS;
         }
 
         if(candidate == null){
@@ -407,7 +407,7 @@ public class CandidateService
         try{
             candidate.setJobHistoryList(getJobHistoryListFromAddSupportCandidate(supportCandidateRequest, candidate));
         } catch(Exception e){
-            Logger.info(" Exception while setting pas job details");
+            Logger.info(" Exception while setting past job details");
             e.printStackTrace();
         }
 
@@ -418,6 +418,44 @@ public class CandidateService
             e.printStackTrace();
         }
 
+        try{
+            candidate.setCandidateExpList(getCandidateExpListFromAddSupportCandidate(supportCandidateRequest.getExpList(), candidate));
+        } catch(Exception e){
+            Logger.info(" Exception while setting explist reference list");
+            e.printStackTrace();
+        }
+
+    }
+
+    private static List<CandidateExp> getCandidateExpListFromAddSupportCandidate(List<AddSupportCandidateRequest.ExpList> expList, Candidate candidate) {
+        List<CandidateExp> candidateExpList = CandidateExp.find.where().eq("CandidateId", candidate.getCandidateId()).findList();
+        /* Here List can be empty but not null */
+        for (AddSupportCandidateRequest.ExpList exp : expList){
+            JobExpQuestion jobExpQuestion = JobExpQuestion.find.where().eq("jobExpQuestionId", exp.getJobExpQuestionId()).findUnique();
+            Query<JobExpResponse> query = JobExpResponse.find.query();
+            if(exp.getJobExpResponseIdArray() ==  null || exp.getJobExpResponseIdArray().isEmpty()){
+                List<CandidateExp> candidateExpListToDelete = CandidateExp.find.where().eq("jobExpQuestionId",exp.getJobExpQuestionId()).findList();
+                for(CandidateExp candidateExp : candidateExpListToDelete){
+                    candidateExp.delete();
+                }
+                continue;
+            }
+            query = query.select("*")
+                    .where()
+                    .eq("jobExpQuestionId", exp.getJobExpQuestionId())
+                    .in("jobExpResponseOptionId", exp.getJobExpResponseIdArray())
+                    .query();
+            List<JobExpResponse> jobExpResponseList = query.findList();
+            for(JobExpResponse jobExpResponse : jobExpResponseList){
+                CandidateExp candidateExp = new CandidateExp();
+                candidateExp.setCandidate(candidate);
+                candidateExp.setJobExpQuestion(jobExpQuestion);
+                candidateExp.setJobExpResponse(jobExpResponse);
+                candidateExpList.add(candidateExp);
+            }
+        }
+        Logger.info("--- " + toJson(expList));
+        return candidateExpList;
     }
 
     private static CandidateSignUpResponse updateEducationProfile(Candidate candidate,
@@ -559,7 +597,6 @@ public class CandidateService
                 Logger.info("Language static table is empty for:" + candidateKnownLanguage.getId());
                 return null;
             }
-            languageKnown.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
             languageKnown.setLanguage(language);
             languageKnown.setReadingAbility(candidateKnownLanguage.getR());
             languageKnown.setWritingAbility(candidateKnownLanguage.getW());
@@ -589,7 +626,6 @@ public class CandidateService
             }
             idProofReference.setIdProof(idProof);
             idProofReference.setCandidate(candidate);
-            idProofReference.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
             response.add(idProofReference);
         }
         return response;
@@ -615,7 +651,6 @@ public class CandidateService
         if(degree != null){
             response.setDegree(degree);
         }
-        response.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
         if(!Strings.isNullOrEmpty(request.getCandidateEducationInstitute())){
             response.setCandidateLastInstitute(request.getCandidateEducationInstitute());
         }
@@ -625,27 +660,17 @@ public class CandidateService
     private static List<CandidateSkill> getCandidateSkillListFromAddSupportCandidate(AddCandidateExperienceRequest request, Candidate candidate) {
         List<CandidateSkill> response = new ArrayList<>();
         for(CandidateSkills item: request.candidateSkills){
-            item.getQualifier();
             CandidateSkill candidateSkill = new CandidateSkill();
             Skill skill = Skill.find.where().eq("skillId", item.getId()).findUnique();
             if(skill == null) {
                 Logger.info("skill static table empty");
                 return null;
             }
-            SkillQualifier skillQualifier =SkillQualifier.find.where()
-                    .eq("skillId", item.getId())
-                    .eq("qualifier", item.getQualifier())
-                    .findUnique();
-            if(skillQualifier == null){
-                Logger.info("skillQualifier static table is empty");
-                return null;
-            }
             candidateSkill.setCandidate(candidate);
-            candidateSkill.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
             candidateSkill.setSkill(skill);
-            candidateSkill.setSkillQualifier(skillQualifier);
+            candidateSkill.setCandidateSkillResponse(item.getAnswer());
             response.add(candidateSkill);
-            Logger.info("skill........ " + skillQualifier.getQualifier());
+            Logger.info("skill........ " + item.getAnswer());
         }
         return response;
     }
@@ -659,7 +684,6 @@ public class CandidateService
             Logger.info("No info related to Candidate Past Job was Provided");
             return null;
         }
-        jobHistory.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
         jobHistory.setCandidatePastSalary(request.getCandidatePastJobSalary());
         jobHistory.setCandidatePastCompany(request.getCandidatePastJobCompany());
         if(request.getCandidatePastJobRole() != null){
@@ -691,7 +715,6 @@ public class CandidateService
             }
             response.setTimeShift(existingTimeShift);
         }
-        response.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
         return response;
     }
 
@@ -704,7 +727,6 @@ public class CandidateService
 
         Logger.info("inserting current Job details");
         try{
-            response.setUpdateTimeStamp( new Timestamp(System.currentTimeMillis()));
             response.setCandidateCurrentCompany( request.getCandidateCurrentCompany());
             response.setCandidateCurrentSalary(request.getCandidateCurrentSalary());
 
@@ -823,7 +845,6 @@ public class CandidateService
         for(Integer  s : jobsList) {
             JobPreference candidateJobPreference = new JobPreference();
             candidateJobPreference.setCandidate(candidate);
-            candidateJobPreference.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
             JobRole jobRole = JobRole.find.where().eq("JobRoleId", s).findUnique();
             candidateJobPreference.setJobRole(jobRole);
             candidateJobPreferences.add(candidateJobPreference);
@@ -836,7 +857,6 @@ public class CandidateService
         for(Integer  localityId : localityList) {
             LocalityPreference candidateLocalityPreference = new LocalityPreference();
             candidateLocalityPreference.setCandidate(candidate);
-            candidateLocalityPreference.setUpdateTimeStamp(new Timestamp(System.currentTimeMillis()));
             Locality locality = Locality.find.where()
                     .eq("localityId", localityId).findUnique();
             candidateLocalityPreference.setLocality(locality);

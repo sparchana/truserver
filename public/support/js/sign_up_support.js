@@ -24,6 +24,9 @@ var pastJobRoleArray = [];
 var candidateIdProofArray = [];
 
 var candidateSkill = [];
+var candidateExps;
+var jobPrefString = "";
+var check = 0;
 
 $(document).ready(function () {
     var pathname = window.location.pathname; // Returns path only
@@ -53,7 +56,7 @@ $(document).ready(function () {
     /* ajax commands to fetch all localities and jobs*/
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllLocality",
             data: false,
             async: false,
@@ -67,7 +70,7 @@ $(document).ready(function () {
 
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllJobs",
             data: false,
             async: false,
@@ -81,7 +84,7 @@ $(document).ready(function () {
 
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllShift",
             data: false,
             async: false,
@@ -95,7 +98,7 @@ $(document).ready(function () {
 
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllTransportation",
             data: false,
             async: false,
@@ -109,7 +112,7 @@ $(document).ready(function () {
 
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllEducation",
             data: false,
             async: false,
@@ -123,7 +126,7 @@ $(document).ready(function () {
 
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllLeadSource",
             data: false,
             async: false,
@@ -137,7 +140,7 @@ $(document).ready(function () {
 
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllLanguage",
             data: false,
             async: false,
@@ -151,7 +154,7 @@ $(document).ready(function () {
 
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllIdProof",
             data: false,
             async: false,
@@ -165,7 +168,7 @@ $(document).ready(function () {
 
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllDegree",
             data: false,
             async: false,
@@ -216,7 +219,10 @@ function processDataAndFillAllFields(returnedData) {
                 item ["id"] = id;
                 item ["name"] = name;
                 jobPrefArray.push(item);
+                jobPrefString +=id + ",";
             });
+            jobPrefString = jobPrefString.substring(0, jobPrefString.length - 1);
+            //console.log("constructed jobPrefString : " + jobPrefString);
         } catch (err) {
             console.log(err);
         }
@@ -440,6 +446,12 @@ function processDataAndFillAllFields(returnedData) {
                     $("#totalWorkExperience").show();
                     $("#candidateTotalExperienceYear").val(parseInt((totalExperience / 12)).toString()); // years
                     $("#candidateTotalExperienceMonth").val(totalExperience % 12); // years
+
+                    candidateExps = returnedData.candidateExpList;
+                    if(candidateExps != null){
+                        generateExperience(jobPrefString);
+                        prefillCandidateExp(candidateExps);
+                    }
                 }
             }
         } catch (err) {
@@ -496,10 +508,26 @@ function processDataAndFillAllFields(returnedData) {
             skillList.forEach(function (skillElement) {
                 var obj = {};
                 obj["skillName"] = skillElement.skill.skillName;
-                obj["skillResponse"] = skillElement.skillQualifier.qualifier;
+                obj["skillResponse"] = skillElement.candidateSkillResponse;
                 candidateSkill.push(obj);
             });
         }
+    }
+}
+
+function prefillCandidateExp(candidateExpList) {
+    if(candidateExpList != null){
+        var arr = [];
+        candidateExpList.forEach(function (candidateExp) {
+            if(candidateExp.jobExpQuestion.expCategory.expCategoryName == 'Duration'){
+                $("#expDuration_" + candidateExp.jobExpQuestion.jobExpQuestionId).val(candidateExp.jobExpResponse.jobExpResponseOption.jobExpResponseOptionId);
+            } else {
+                arr.push(""+candidateExp.jobExpResponse.jobExpResponseOption.jobExpResponseOptionId);
+                $("#expOther_" + candidateExp.jobExpQuestion.jobExpQuestionId).val(arr);
+                $("#expOther_" + candidateExp.jobExpQuestion.jobExpQuestionId).multiselect('rebuild');
+            }
+            checkExpDurationSelection(candidateExp.jobExpQuestion.jobExpQuestionId, candidateExp.jobExpQuestion.jobRole.jobRoleId);
+        });
     }
 }
 
@@ -807,6 +835,48 @@ function followUpRequired() {
     }
 }
 
+function createBtn(singleSkill, type){
+    var headLbl = document.createElement("label");
+    headLbl.className = "btn btn-custom-check skillBtn";
+    headLbl.textContent = type;
+    var s = singleSkill.skill.skillName.split(" ");
+    headLbl.onclick = function () {
+        document.getElementById(s[0] + "_" + s[1] + "_"+type).checked = true;
+        document.getElementById(s[0] + "_" + s[1] + "_"+type).click();
+    };
+    var o = document.createElement("input");
+    o.type = "radio";
+    o.style = "display: inline-block";
+    o.name = singleSkill.skill.skillName;
+    o.id = s[0] + "_" + s[1] + "_"+type;
+
+    o.value = type=="Yes"? 1 : 0;
+    o.onclick = function () {
+        var id = singleSkill.skill.skillId;
+        var answer = type=="Yes"? true : false;
+        var item = {};
+        var pos;
+        check = 0;
+
+        item ["id"] = id;
+        item ["answer"] = answer;
+        for (var i in skillMap) {
+            if (skillMap[i].id == id) {
+                check = 1;
+                pos = i;
+                break;
+            }
+        }
+        if (check == 0)
+            skillMap.push(item);
+        else
+            skillMap[pos] = item;
+    };
+    headLbl.appendChild(o);
+
+    return headLbl;
+}
+
 function processDataCheckSkills(returnedData) {
 
     var count = 0;
@@ -819,53 +889,12 @@ function processDataCheckSkills(returnedData) {
         var cell1 = row.insertCell(0);
         var cell2 = row.insertCell(1);
 
-        var lbl = document.createElement("div");
-        lbl.className = "btn-group";
-
+        var btnGroup = document.createElement("div");
+        btnGroup.className = "btn-group";
         cell1.innerHTML = singleSkill.skill.skillQuestion;
-        cell2.appendChild(lbl);
-
-        var object = singleSkill.skill.skillQualifierList;
-        object.forEach(function (x) {
-            var headLbl = document.createElement("label");
-            headLbl.className = "btn btn-custom-check skillBtn";
-            headLbl.textContent = x.qualifier;
-            headLbl.onclick = function () {
-                document.getElementById(s[0] + "_" + s[1] + "_" + x.qualifier).checked = true;
-                document.getElementById(s[0] + "_" + s[1] + "_" + x.qualifier).click();
-            };
-
-            var o = document.createElement("input");
-            o.type = "radio";
-            o.style = "display: inline-block";
-            o.name = singleSkill.skill.skillName;
-            var s = singleSkill.skill.skillName.split(" ");
-            o.id = s[0] + "_" + s[1] + "_" + x.qualifier;
-            o.value = x.qualifier;
-            o.onclick = function () {
-                check = 0;
-                var id = singleSkill.skill.skillId;
-                var name = x.qualifier;
-                var item = {};
-                var pos;
-
-                item ["id"] = id;
-                item ["qualifier"] = name;
-                for (var i in skillMap) {
-                    if (skillMap[i].id == id) {
-                        check = 1;
-                        pos = i;
-                        break;
-                    }
-                }
-                if (check == 0)
-                    skillMap.push(item);
-                else
-                    skillMap[pos] = item;
-            };
-            headLbl.appendChild(o);
-            lbl.appendChild(headLbl);
-        });
+        btnGroup.appendChild(createBtn(singleSkill, "Yes"));
+        btnGroup.appendChild(createBtn(singleSkill, "No"));
+        cell2.appendChild(btnGroup);
     });
     if (count == 0) {
         $(".skillSection").hide();
@@ -875,9 +904,179 @@ function processDataCheckSkills(returnedData) {
     prefillSkills(candidateSkill);
 }
 
+function getMinMonthDuration(selectedDurationValue){
+    switch(selectedDurationValue) {
+        case "2": // > 6 months
+            return "6";
+            break;
+        case "3": // > 1 yrs
+            return "12";
+            break;
+        case "4": // > 2 yrs
+            return "24";
+            break;
+        case "5": // > 4 yrs
+            return "48";
+            break;
+        case "145": // > 6 yrs
+            return "72";
+            break;
+        default: return "0";
+
+    }
+}
+
+function validateExpDuration(){
+    var yr = parseInt($('#candidateTotalExperienceYear').val());
+    var months = parseInt($('#candidateTotalExperienceMonth').val());
+    var totalExpInMonths = yr * 12 + months;
+    var totalSelectedExpValue = 0;
+
+    $('#expDurationTable tr').each(function () {
+        totalSelectedExpValue += parseInt(getMinMonthDuration($(this).find('select').val()));
+    });
+    console.log("totalSelectedExpValue: " + totalSelectedExpValue + " totalExpInMonths:" + totalExpInMonths);
+    if (totalSelectedExpValue > totalExpInMonths) {
+        alert('Total Experience does not match with individual experience');
+        return 0;
+    } else {
+        return 1;
+    }
+}
+
+function checkExpDurationSelection(questionId, jobRoleId){
+    var fresherId = $('#expDuration_'+questionId).val();
+    if(fresherId == "1"){
+        //its fresher hence hide Header = 'expHeader_' & Body ='expBody_'
+        $('#expHeader_' + jobRoleId).hide();
+        $('[id=expBody_'+jobRoleId+']').find('select').val('');
+        $('[id=expBody_'+jobRoleId+']').find('select').multiselect('rebuild');
+        $('[id=expBody_'+jobRoleId+']').hide();
+    } else {
+        $('#expHeader_' + jobRoleId).show();
+        $('[id=expBody_'+jobRoleId+']').show();
+    }
+}
+
+function processDataCheckExp(returnedData) {
+    var selectIdList =[];
+    //console.log(JSON.stringify(returnedData));
+    var count = 0;
+    var tableExpDuration = document.getElementById("expDurationTable");
+    var tableExpOther = document.getElementById("expOtherTable");
+    $('#expDurationTable').empty();
+    $('#expOtherTable').empty();
+    var prevJobRoleId = -99;
+    returnedData.forEach(function (singleQuestion) {
+        if(singleQuestion.expCategory.expCategoryName == 'Duration'){
+            count++;
+            var row = tableExpDuration.insertRow(0);
+
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+
+            cell1.innerHTML = '<div id="jobExpDurationQuestionId_'+singleQuestion.jobExpQuestionId+'">'+singleQuestion.jobExpQuestion+'</div>';
+
+            var selectList = document.createElement("select");
+            selectList.setAttribute("id", "expDuration_"+singleQuestion.jobExpQuestionId);
+            selectList.setAttribute("onchange", "checkExpDurationSelection("+singleQuestion.jobExpQuestionId+", "+singleQuestion.jobRole.jobRoleId+")");
+            var option = document.createElement("option");
+            option.setAttribute("value", "-1");
+            option.text = "Select";
+            selectList.appendChild(option);
+            var expDurationResponseList = singleQuestion.jobExpResponseList;
+
+            expDurationResponseList.forEach(function (expDurationResponse) {
+                if(expDurationResponse != null){
+                    var option = document.createElement("option");
+                    option.setAttribute("value", expDurationResponse.jobExpResponseOption.jobExpResponseOptionId);
+                    option.text = expDurationResponse.jobExpResponseOption.jobExpResponseOptionName;
+                    selectList.appendChild(option);
+                }
+            });
+            cell2.appendChild(selectList);
+            $('#expDurationTable tr:last').after(row);
+
+        }
+        else {
+            if(prevJobRoleId != singleQuestion.jobRole.jobRoleId){
+                // create a new title row
+                prevJobRoleId = singleQuestion.jobRole.jobRoleId;
+                var tr = tableExpOther.insertRow(0);
+                tr.id = "expHeader_" + singleQuestion.jobRole.jobRoleId;
+                tr.setAttribute("style", "background-color:#337ab7; color:white;");
+                var td = tr.insertCell(0);
+                tr.insertCell(1);
+                td.innerHTML = '<div style="font-weight: bold;"> Tell us about your '+singleQuestion.jobRole.jobName+' experience </div>';
+                td.setAttribute("width", "100%");
+                $('#expOtherTable tr:last').after(tr);
+            }
+            count++;
+            var row = tableExpOther.insertRow(0);
+            row.id = "expBody_" + singleQuestion.jobRole.jobRoleId;
+
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+
+            cell1.innerHTML = '<div id="jobExpQuestionId_'+singleQuestion.jobExpQuestionId+'">'+singleQuestion.jobExpQuestion+'</div>';
+
+            var selectList = document.createElement("select");
+            selectList.multiple = true;
+            selectList.setAttribute("id", "expOther_"+singleQuestion.jobExpQuestionId);
+            selectIdList.push("expOther_"+singleQuestion.jobExpQuestionId);
+
+            var expOtherResponseList = singleQuestion.jobExpResponseList;
+
+            expOtherResponseList.forEach(function (expOtherResponse) {
+                if(expOtherResponse != null){
+                    var option = document.createElement("option");
+                    option.setAttribute("value", expOtherResponse.jobExpResponseOption.jobExpResponseOptionId);
+                    option.text = expOtherResponse.jobExpResponseOption.jobExpResponseOptionName;
+                    selectList.appendChild(option);
+                }
+            });
+            cell2.appendChild(selectList);
+            $('#expOtherTable tr:last').after(row);
+        }
+
+    });
+    if (count == 0) {
+    }
+    selectIdList.forEach( function(selectId){
+        $('#'+selectId).multiselect({
+            dropRight: true,
+            numberDisplayed: 0,
+            buttonWidth: '100%'
+        });
+    });
+    $(".btn-group").attr("data-toggle", "buttons");
+    $(".btn-group").removeClass('active');
+    if(candidateExps != null){
+        prefillCandidateExp(candidateExps);
+    }
+}
+
+function generateExperience(jobPrefString) {
+    var selectedJobPref = jobPrefString;
+    //console.log("selectedJobPref : " + JSON.stringify(selectedJobPref));
+    if (selectedJobPref != null && selectedJobPref !== '') {
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/getJobExpQuestion/" + selectedJobPref,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataCheckExp
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+}
+
 function generateSkills() {
-    var myNode = document.getElementById("skill_details");
-    /*myNode.innerHTML = '';*/
     var selectedJobPref = $('#candidateJobPref').val();
     if (selectedJobPref != null && selectedJobPref !== '') {
         $("#skillQuestion").html('');
@@ -970,7 +1169,6 @@ function processInteractionNote(interactionNoteList) {
 }
 
 function processUpdateFollowUp(returnedData) {
-    console.log("updateFollowUp: " + JSON.stringify(returnedData));
     if(returnedData.status == '1'){
         $('.well').removeClass(' created');
         $('.well').removeClass(' updated');
@@ -1105,6 +1303,14 @@ function saveProfileForm() {
             statusCheck = 0;
             break;
     }
+    if($('#leadSource').val() == '-1'){
+        alert('Please select a Lead Source');
+        statusCheck = 0;
+    }
+    if(statusCheck != 0){
+        statusCheck = validateExpDuration();
+        console.log("statusCheck for statusCheck: " + statusCheck);
+    }
 
     if (statusCheck == 1) {
         var languageKnown = $('#languageTable input:checked').map(function () {
@@ -1198,7 +1404,46 @@ function saveProfileForm() {
             if(!$('#followUpRequired').is(':checked')){
                 $('#datetimepickerValue').val("");
                 updateFollowUpApiTrigger();
-            } 
+            }
+
+            var expList = [];
+
+            // iterate through two table and prep data
+            $('#expDurationTable tr').each(function(){
+                var item = {};
+                $(this).find('td').each(function(){
+                    $(this).find('div').each(function(){
+                        item ["jobExpQuestionId"] = parseInt($(this).attr('id').split("_").slice(-1).pop());
+                    });
+                    $(this).find('select').each(function(){
+                        item ["jobExpResponseIdArray"] = parseInt($(this).val());
+                    });
+                });
+                if(!jQuery.isEmptyObject(item)){
+                    expList.push(item);
+                };
+            });
+
+            $('#expOtherTable tr').each(function(){
+                var item = {};
+                $(this).find('td').each(function(){
+                    $(this).find('div').each(function(){
+                        if($(this).attr('id')!= undefined){
+                            item ["jobExpQuestionId"] = parseInt($(this).attr('id').split("_").slice(-1).pop());
+                        }
+                    });
+                    $(this).find('select').each(function(){
+                        if($(this).val() != null){
+                            item ["jobExpResponseIdArray"] = $(this).val().map(function(x) {
+                                return parseInt(x);
+                            });
+                        }
+                    });
+                });
+                if(!jQuery.isEmptyObject(item)) {
+                    expList.push(item);
+                };
+            });
 
             var d = {
                 //mandatory fields
@@ -1247,7 +1492,9 @@ function saveProfileForm() {
                 candidateSalarySlip: ($('input:radio[name="payslip"]:checked').val()),
                 candidateAppointmentLetter: ($('input:radio[name="appointmentLetter"]:checked').val()),
 
-                supportNote: ($('#supportNote').val())
+                supportNote: ($('#supportNote').val()),
+
+                expList: expList
 
             };
 
@@ -1263,7 +1510,13 @@ function saveProfileForm() {
         }
     }
 }
-
+function clickFresher(){
+    $("#totalWorkExperience").hide();
+}
+function clickExperienced(){
+    $("#totalWorkExperience").show();
+    generateExperience($('#candidateJobPref').val());
+}
 // form_candidate ajax script
 $(function () {
     var pathname = window.location.pathname; // Returns path only
@@ -1280,6 +1533,7 @@ $(function () {
 
     $('#candidateJobPref').change(function () {
         generateSkills();
+        generateExperience($('#candidateJobPref').val());
     });
     // auto save code : incomplete
     /*  $('#candidateSignUpSupportForm').change(function () {

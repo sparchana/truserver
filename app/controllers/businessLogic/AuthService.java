@@ -76,8 +76,8 @@ public class AuthService {
                         existingCandidate.getCandidateUUId(),
                         ServerConstants.OBJECT_TYPE_CANDIDATE,
                         ServerConstants.INTERACTION_TYPE_WEBSITE,
-                        ServerConstants.INTERACTION_NOTE_SELF_PASSWORD_CHANGED,
-                        ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE,
+                        ServerConstants.INTERACTION_NOTE_BLANK,
+                        ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE + " & " + ServerConstants.INTERACTION_NOTE_SELF_PASSWORD_CHANGED,
                         ServerConstants.INTERACTION_CREATED_SELF
                 );
                 InteractionService.createInteraction(interaction);

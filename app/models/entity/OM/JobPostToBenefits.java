@@ -18,10 +18,10 @@ import java.sql.Timestamp;
 public class JobPostToBenefits extends Model {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name = "JobPostToBenefitsId", columnDefinition = "bigint signed not null", unique = true)
+    @Column(name = "JobPostToBenefitsId", columnDefinition = "bigint signed", unique = true)
     private Long jobPostToBenefitsId;
 
-    @Column(name = "JobPostToBenefitsCreateTimeStamp", columnDefinition = "timestamp null")
+    @Column(name = "JobPostToBenefitsCreateTimeStamp", columnDefinition = "timestamp not null default current_timestamp")
     private Timestamp jobPostToBenefitsCreateTimeStamp;
 
     @UpdatedTimestamp

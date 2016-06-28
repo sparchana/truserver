@@ -1,6 +1,7 @@
 package models.entity.OO;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.UpdatedTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -28,6 +29,7 @@ public class FollowUp extends Model {
     @Column(name = "followUpCreationTimeStamp", columnDefinition = "timestamp not null")
     private Timestamp followUpCreationTimeStamp;
 
+    @UpdatedTimestamp
     @Column(name = "followUpUpdateTimeStamp", columnDefinition = "timestamp null")
     private Timestamp followUpUpdateTimeStamp;
 
@@ -36,7 +38,6 @@ public class FollowUp extends Model {
     public FollowUp(){
         this.followUpCreationTimeStamp = new Timestamp(System.currentTimeMillis());
         this.followUpStatus = false;
-        this.followUpUpdateTimeStamp = new Timestamp(System.currentTimeMillis());
     }
 
     public int getFollowUpId() {

@@ -17,7 +17,7 @@ $(document).ready(function(){
     checkUserLogin();
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllHotJobPosts",
             data: false,
             async: false,

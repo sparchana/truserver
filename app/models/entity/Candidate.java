@@ -2,6 +2,7 @@ package models.entity;
 
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.PrivateOwned;
+import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.OM.*;
 import models.entity.OO.CandidateCurrentJobDetail;
@@ -69,6 +70,7 @@ public class Candidate extends Model {
     @Column(name = "CandidateCreateTimestamp", columnDefinition = "timestamp not null")
     private Timestamp candidateCreateTimestamp;
 
+    @UpdatedTimestamp
     @Column(name = "CandidateUpdateTimestamp", columnDefinition = "timestamp null")
     private Timestamp candidateUpdateTimestamp;
 
@@ -120,6 +122,11 @@ public class Candidate extends Model {
     private List<CandidateSkill> candidateSkillList;
 
     @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
+    private List<CandidateExp> candidateExpList;
+
+    @JsonManagedReference
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Lead lead;
 
@@ -168,6 +175,7 @@ public class Candidate extends Model {
 
     public void candidateUpdate() {
         Logger.info("inside CandidateUpdate(), Candidate updated" );
+        this.candidateUpdateTimestamp = new Timestamp(System.currentTimeMillis());
         this.update();
     }
 
@@ -444,6 +452,13 @@ public class Candidate extends Model {
         return candidateEducation;
     }
 
+    public List<CandidateExp> getCandidateExpList() {
+        return candidateExpList;
+    }
+
+    public void setCandidateExpList(List<CandidateExp> candidateExpList) {
+        this.candidateExpList = candidateExpList;
+    }
 }
 
 

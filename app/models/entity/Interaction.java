@@ -40,7 +40,7 @@ public class Interaction extends Model {
     private String result;
 
     @Column(name = "CreationTimestamp", columnDefinition = "timestamp default current_timestamp not null", nullable = false)
-    private Timestamp creationTimestamp = new Timestamp(System.currentTimeMillis());
+    private Timestamp creationTimestamp;
 
     @Column(name = "CreatedBy", columnDefinition = "varchar(255) not null default 'System'", nullable = false)
     private String createdBy = ServerConstants.INTERACTION_CREATED_SYSTEM;
