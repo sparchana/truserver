@@ -75,7 +75,7 @@ create table jobpost (
   jobpostvacancies              bigint signed null,
   jobpostdescriptionaudio       varchar(100) null,
   jobpostworkfromhome           int signed null,
-  jobPostWorkingDays            binary(7) null,
+  jobpostworkingdays            binary(7) null,
   jobstatus                     bigint signed null,
   pricingplantype               bigint signed null,
   jobpostjobrole                bigint signed null,
