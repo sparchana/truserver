@@ -371,7 +371,7 @@ $(function() {
     NProgress.start();
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllLocality",
             data: false,
             contentType: false,
@@ -384,7 +384,7 @@ $(function() {
 
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllJobs",
             data: false,
             contentType: false,

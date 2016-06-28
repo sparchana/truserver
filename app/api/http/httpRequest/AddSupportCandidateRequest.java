@@ -25,6 +25,34 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
     public Integer candidateAppointmentLetter ;
     public String supportNote;
 
+    public static class ExpList {
+        Integer jobExpQuestionId;
+        List<Integer> jobExpResponseIdArray;
+
+        public ExpList(){
+        }
+        public ExpList(ExpList expList){
+            //constructor Code
+        }
+
+        public Integer getJobExpQuestionId() {
+            return jobExpQuestionId;
+        }
+
+        public void setJobExpQuestionId(Integer jobExpQuestionId) {
+            this.jobExpQuestionId = jobExpQuestionId;
+        }
+
+        public List<Integer> getJobExpResponseIdArray() {
+            return jobExpResponseIdArray;
+        }
+
+        public void setJobExpResponseIdArray(List<Integer> jobExpResponseIdArray) {
+            this.jobExpResponseIdArray = jobExpResponseIdArray;
+        }
+    }
+    public List<ExpList> expList;
+
     public String getSupportNote() {
         return supportNote;
     }
@@ -172,5 +200,13 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
 
     public void setCandidateAppointmentLetter(Integer candidateAppointmentLetter) {
         this.candidateAppointmentLetter = candidateAppointmentLetter;
+    }
+
+    public List<ExpList> getExpList() {
+        return expList;
+    }
+
+    public void setExpList(List<ExpList> expList) {
+        this.expList = expList;
     }
 }

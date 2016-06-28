@@ -6,6 +6,8 @@ import api.http.httpResponse.AddLeadResponse;
 import api.http.httpResponse.SupportDashboardElementResponse;
 import api.http.httpResponse.SupportInteractionNoteResponse;
 import api.http.httpResponse.SupportInteractionResponse;
+import com.avaje.ebean.Query;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
@@ -157,6 +159,8 @@ public class Application extends Controller {
         JsonNode req = request().body().asJson();
         AddSupportCandidateRequest addSupportCandidateRequest = new AddSupportCandidateRequest();
         ObjectMapper newMapper = new ObjectMapper();
+        // since jsonReq has single/multiple values in array
+        newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
         try {
             addSupportCandidateRequest = newMapper.readValue(req.toString(), AddSupportCandidateRequest.class);
             Logger.info("json" + req.toString());
@@ -348,6 +352,7 @@ public class Application extends Controller {
 
         List<Interaction> interactionsOfLead = Interaction.find.where().in("objectAUUId", leadUUIDList).findList();
 
+        Logger.info("Entering Loop at " + new Timestamp(System.currentTimeMillis()));
         for(Lead lead : allLead) {
             SupportDashboardElementResponse response = new SupportDashboardElementResponse();
 
@@ -393,6 +398,7 @@ public class Application extends Controller {
             }
             responses.add(response);
         }
+        Logger.info("Exit Loop at " + new Timestamp(System.currentTimeMillis()));
 
         return ok(toJson(responses));
     }
@@ -589,7 +595,7 @@ public class Application extends Controller {
                             lead.getLeadUUId(),
                             lead.getLeadType(),
                             ServerConstants.INTERACTION_TYPE_CALL_OUT,
-                            ServerConstants.INTERACTION_NOTE_LEAD_TYPE_CHANGED,
+                            ServerConstants.INTERACTION_NOTE_BLANK,
                             ServerConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
                             session().get("sessionUsername")
                     );
@@ -600,7 +606,7 @@ public class Application extends Controller {
                             lead.getLeadUUId(),
                             lead.getLeadType(),
                             ServerConstants.INTERACTION_TYPE_CALL_OUT,
-                            ServerConstants.INTERACTION_NOTE_LEAD_TYPE_CHANGED,
+                            ServerConstants.INTERACTION_NOTE_BLANK,
                             ServerConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
                             session().get("sessionUsername")
                     );
@@ -883,5 +889,24 @@ public class Application extends Controller {
         }
         else
             return ok("no records");
+    }
+
+    public static Result getAllJobExpQuestion() {
+        List<JobExpQuestion> jobExpQuestionList = JobExpQuestion.find.all();
+        return ok(toJson(jobExpQuestionList));
+    }
+
+    public static Result getJobExpQuestion(String jobRoleIds) {
+        List<String> jobRoleIdList = Arrays.asList(jobRoleIds.split("\\s*,\\s*"));
+        Query<JobExpQuestion> query = JobExpQuestion.find.query();
+        query = query.select("*").fetch("jobRole")
+                    .where()
+                    .in("jobRole.jobRoleId", jobRoleIdList)
+                    .query();
+        List<JobExpQuestion> response = query.findList();
+        if(response != null){
+            return ok(toJson(response));
+        }
+        return ok();
     }
 }

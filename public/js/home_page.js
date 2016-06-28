@@ -97,7 +97,7 @@ $(document).ready(function(){
     
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllLocality",
             data: false,
             async: false,
@@ -111,7 +111,7 @@ $(document).ready(function(){
 
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllJobs",
             data: false,
             async: false,
@@ -125,7 +125,7 @@ $(document).ready(function(){
 
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllHotJobPosts",
             data: false,
             async: false,
