@@ -371,6 +371,7 @@ function processDataCheckShift(returnedData) {
 }
 
 function processDataCheckLanguage(returnedData) {
+    $('#candidateMotherTongue').html('');
     var arrayLang =[];
     var arrayLangId =[];
     var defaultOption=$('<option value="-1"></option>').text("Select");
