@@ -55,7 +55,7 @@ public class Company extends Model {
     @Column(name = "CompanyLogo", columnDefinition = "varchar(80) null")
     private String companyLogo;
 
-    @Column(name = "CompanyCreateTimestamp", columnDefinition = "timestamp not null")
+    @Column(name = "CompanyCreateTimestamp", columnDefinition = "timestamp not null default current_timestamp")
     private Timestamp companyCreateTimestamp;
 
     @UpdatedTimestamp

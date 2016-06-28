@@ -3,11 +3,21 @@
  */
 
 var minProfileComplete = 0;
+$(window).load(function() {
+    $('html, body').css({
+        'overflow': 'auto',
+        'height': 'auto'
+    });
+    $("#status").fadeOut();
+    $("#loaderLogo").fadeOut();
+    $("#preloader").delay(1000).fadeOut("slow");
+});
+
 $(document).ready(function(){
     checkUserLogin();
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllHotJobPosts",
             data: false,
             async: false,
@@ -107,16 +117,11 @@ function processDataAllJobPosts(returnedData) {
             jobItemPanel.className = "panel";
             jobItemPanel.id = "hot_box";
             jobItem.appendChild(jobItemPanel);
-            var alreadyApplied = document.createElement("img");
-            alreadyApplied.style = "width: 36px; margin-top: -30px; margin-right: -30px; float: right";
-            alreadyApplied.id = "already_applied_" + jobPosts.jobPostId;
-            jobItemPanel.appendChild(alreadyApplied);
             var jobItemPanelHeading = document.createElement("div");
             jobItemPanelHeading.className = "panel-heading";
             jobItemPanelHeading.id = "hot_box_head";
             jobItemPanel.appendChild(jobItemPanelHeading);
             var jobLogo = document.createElement("img");
-            jobLogo.style = "height: 75px";
             jobLogo.src = "/assets/new/img/" + jobPosts.company.companyLogo + ".png";
             jobItemPanelHeading.appendChild(jobLogo);
             var jobItemPanelBody = document.createElement("div");
@@ -167,7 +172,7 @@ function processDataAllJobPosts(returnedData) {
             }
             jobItemLocation.textContent = localities;
             jobItemPanelBody.appendChild(jobItemLocation);
-            var applyBtnDiv = document.createElement("div");
+            var applyBtnDiv = document.createElement("button");
             applyBtnDiv.className = "btn btn-primary";
             applyBtnDiv.id = jobPosts.jobPostId;
             applyBtnDiv.onclick = function () {
@@ -177,6 +182,7 @@ function processDataAllJobPosts(returnedData) {
             jobItemPanelBody.appendChild(applyBtnDiv);
             var btnFont = document.createElement("font");
             btnFont.size = "2";
+            btnFont.id = "apply_btn_" + jobPosts.jobPostId;
             btnFont.textContent = "Apply";
             applyBtnDiv.appendChild(btnFont);
         });
@@ -184,11 +190,15 @@ function processDataAllJobPosts(returnedData) {
         /* for jobs more than 3(active) */
         var totalJob = jobPostCount;
         jobPostCount = jobPostCount - 3;
-        if(jobPostCount>0){
-            var jobPostSectionCount = Math.floor(jobPostCount/3);
+        if(jobPostCount > 0){
+            var jobPostSectionCount = Math.floor(jobPostCount/3); //decide no. of scrollers required
+            var jobPostSectionCountMod = jobPostCount % 3;
+            if(jobPostSectionCountMod > 0){
+                jobPostSectionCount ++; //add a new scroller page
+            }
             var i;
             var startIndex = 3;
-            for(i=0;i<jobPostSectionCount+1;i+=1){
+            for(i=0;i<jobPostSectionCount;i+=1){
                 setJobs(returnedData,startIndex,totalJob);
                 startIndex+=3;
             }
@@ -212,16 +222,11 @@ function setJobs(returnedData, start, totalJobs){
             jobItemPanel.className = "panel";
             jobItemPanel.id = "hot_box";
             jobItem.appendChild(jobItemPanel);
-            var alreadyApplied = document.createElement("img");
-            alreadyApplied.style = "width: 36px; margin-top: -30px; margin-right: -30px; float: right";
-            alreadyApplied.id = "already_applied_" + jobPosts.jobPostId;
-            jobItemPanel.appendChild(alreadyApplied);
             var jobItemPanelHeading = document.createElement("div");
             jobItemPanelHeading.className = "panel-heading";
             jobItemPanelHeading.id = "hot_box_head";
             jobItemPanel.appendChild(jobItemPanelHeading);
             var jobLogo = document.createElement("img");
-            jobLogo.style = "margin-top: -20px";
             jobLogo.src = "/assets/new/img/" + jobPosts.company.companyLogo + ".png";
             jobItemPanelHeading.appendChild(jobLogo);
             var jobItemPanelBody = document.createElement("div");
@@ -232,6 +237,7 @@ function setJobs(returnedData, start, totalJobs){
             jobItemRole.className = "hot_body_role";
             jobItemRole.textContent = jobPosts.jobPostTitle;
             jobItemPanelBody.appendChild(jobItemRole);
+
             var jobItemHr1 = document.createElement("div");
             jobItemHr1.style = "height: 1px; background: #0B4063";
             jobItemPanelBody.appendChild(jobItemHr1);
@@ -271,7 +277,7 @@ function setJobs(returnedData, start, totalJobs){
             }
             jobItemLocation.textContent = localities;
             jobItemPanelBody.appendChild(jobItemLocation);
-            var applyBtnDiv = document.createElement("div");
+            var applyBtnDiv = document.createElement("button");
             applyBtnDiv.className = "btn btn-primary";
             applyBtnDiv.id = jobPosts.jobPostId;
             applyBtnDiv.onclick = function () {
@@ -281,6 +287,7 @@ function setJobs(returnedData, start, totalJobs){
             jobItemPanelBody.appendChild(applyBtnDiv);
             var btnFont = document.createElement("font");
             btnFont.size = "2";
+            btnFont.id = "apply_btn_" + jobPosts.jobPostId;
             btnFont.textContent = "Apply";
             applyBtnDiv.appendChild(btnFont);
         }
@@ -301,6 +308,9 @@ function processDataAndFillMinProfile(returnedData) {
         document.getElementById("profileStatusResult").innerHTML = '<font color="#46AB49">Complete</font>';
         document.getElementById("profileStatusAction").innerText = "-";
         $("#profileStatusIcon").attr('src', '/assets/dashboard/img/right.png');
+    }
+    if(returnedData.candidateIsAssessed == 1){
+        localStorage.setItem("assessed", 1);
     }
     if (returnedData.candidateGender != null) {
         localStorage.setItem("gender", returnedData.candidateGender);
@@ -429,7 +439,9 @@ function processDataAndFillMinProfile(returnedData) {
 
     var appliedJobs = returnedData.jobApplicationList;
     appliedJobs.forEach(function (jobApplication) {
-        $("#already_applied_" + jobApplication.jobPost.jobPostId).attr('src', '/assets/dashboard/img/right.png');
+        $("#" + jobApplication.jobPost.jobPostId).addClass("appliedBtn").removeClass("btn-primary");
+        $("#" + jobApplication.jobPost.jobPostId).prop('disabled',true);
+        $("#apply_btn_" + jobApplication.jobPost.jobPostId).html("Already Applied");
     });
     /* /assets/dashboard/img/right.png */
 

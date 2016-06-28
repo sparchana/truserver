@@ -50,37 +50,41 @@ POST     /processCsv                                              controllers.Ap
 
 GET      /getAll/:id                                              controllers.Application.getAll(id: Integer)
 
-GET      /getAllHotJobPosts                                       controllers.Application.getAllHotJobPosts()
+POST     /getAllLocality                                          controllers.Application.getAllLocality()
 
-GET      /getAllLocality                                          controllers.Application.getAllLocality()
+POST      /getAllHotJobPosts                                       controllers.Application.getAllHotJobPosts()
 
-GET      /getAllJobs                                              controllers.Application.getAllJobs()
+POST     /getAllJobs                                              controllers.Application.getAllJobs()
 
-GET      /getAllShift                                             controllers.Application.getAllShift()
+POST      /getAllShift                                             controllers.Application.getAllShift()
 
-GET      /getAllTransportation                                    controllers.Application.getAllTransportation()
+POST      /getAllTransportation                                    controllers.Application.getAllTransportation()
 
-GET      /getAllEducation                                         controllers.Application.getAllEducation()
+POST      /getAllEducation                                         controllers.Application.getAllEducation()
 
-GET      /getAllLeadSource                                        controllers.Application.getAllLeadSource()
+POST      /getAllLeadSource                                        controllers.Application.getAllLeadSource()
 
 GET      /getSupportAgent                                         controllers.Application.getSupportAgent()
 
-GET      /getAllLanguage                                          controllers.Application.getAllLanguage()
+POST      /getAllLanguage                                          controllers.Application.getAllLanguage()
 
-GET      /getAllIdProof                                           controllers.Application.getAllIdProof()
+POST      /getAllIdProof                                           controllers.Application.getAllIdProof()
 
-GET      /getAllDegree                                            controllers.Application.getAllDegree()
+POST      /getAllDegree                                            controllers.Application.getAllDegree()
 
-GET      /getAllCompany                                           controllers.Application.getAllCompany()
+POST      /getAllJobExpQuestion                                    controllers.Application.getAllJobExpQuestion()
 
-GET      /getAllCompanyStatus                                     controllers.Application.getAllCompanyStatus()
+POST     /getJobExpQuestion/:jobRoleIdList                        controllers.Application.getJobExpQuestion(jobRoleIdList : String)
 
-GET      /getAllCompanyType                                       controllers.Application.getAllCompanyType()
+POST      /getAllCompany                                           controllers.Application.getAllCompany()
 
-GET      /getAllExperience                                        controllers.Application.getAllExperience()
+POST      /getAllCompanyStatus                                     controllers.Application.getAllCompanyStatus()
 
-GET      /getAllJobStatus                                         controllers.Application.getAllJobStatus()
+POST      /getAllCompanyType                                       controllers.Application.getAllCompanyType()
+
+POST      /getAllExperience                                        controllers.Application.getAllExperience()
+
+POST      /getAllJobStatus                                         controllers.Application.getAllJobStatus()
 
 GET      /getUserInfo/:id                                         controllers.Application.getUserInfo(id : Long)
 
@@ -133,4 +137,5 @@ GET     /getInteractionNote/:leadId/:limit                        controllers.Ap
 # Map static resources from the /public folder to the /assets URL path
 GET    /robots.txt                                controllers.Assets.at(path="/public", file="robots.txt")
 GET    /assets/*file                             controllers.Assets.at(path="/public", file)
+GET    /sitemap.xml                               controllers.Assets.at(path="/public", file="sitemap.xml")
 #GET   /webjars/*file                           controllers.WebJarAssets.at(file)

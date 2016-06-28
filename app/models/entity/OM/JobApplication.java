@@ -22,7 +22,7 @@ public class JobApplication extends Model {
     @Column(name = "JobApplicationId", columnDefinition = "int signed", unique = true)
     private Integer jobApplicationId;
 
-    @Column(name = "JobApplicationCreateTimeStamp", columnDefinition = "timestamp not null")
+    @Column(name = "JobApplicationCreateTimeStamp", columnDefinition = "timestamp not null default current_timestamp")
     private Timestamp jobApplicationCreateTimeStamp = new Timestamp(System.currentTimeMillis());
 
     @UpdatedTimestamp

@@ -1,6 +1,7 @@
 package models.entity.OM;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
@@ -21,8 +22,9 @@ public class LocalityPreference extends Model {
     @Column(name = "LocalityPreferenceId", columnDefinition = "bigint signed not null", unique = true)
     private long localityPreferenceId;
 
+    @UpdatedTimestamp
     @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp null")
-    private Timestamp updateTimeStamp = new Timestamp(System.currentTimeMillis());
+    private Timestamp updateTimeStamp;
 
     @ManyToOne
     @JsonManagedReference

@@ -1,6 +1,7 @@
 package models.entity.OO;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
@@ -41,8 +42,9 @@ public class CandidateCurrentJobDetail extends Model{
     @Column(name = "CandidateCurrentEmployerRefMobile", columnDefinition = "varchar(13) null")
     private String candidateCurrentEmployerRefMobile;
 
+    @UpdatedTimestamp
     @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp null")
-    private Timestamp updateTimeStamp = new Timestamp(System.currentTimeMillis());
+    private Timestamp updateTimeStamp;
 
     @JsonBackReference
     @OneToOne(mappedBy = "candidateCurrentJobDetail")

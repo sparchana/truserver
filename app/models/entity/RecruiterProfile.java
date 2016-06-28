@@ -38,7 +38,7 @@ public class RecruiterProfile extends Model {
     @Column(name = "RecruiterProfileEmail", columnDefinition = "varchar(255) null")
     private String recruiterProfileEmail;
 
-    @Column(name = "RecruiterProfileCreateTimestamp", columnDefinition = "timestamp not null")
+    @Column(name = "RecruiterProfileCreateTimestamp", columnDefinition = "timestamp not null default current_timestamp")
     private Timestamp recruiterProfileCreateTimestamp;
 
     @UpdatedTimestamp

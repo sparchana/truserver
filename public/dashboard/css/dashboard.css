@@ -218,6 +218,12 @@ input::-webkit-inner-spin-button {
     margin-right: -250px;
 }
 
+.appliedBtn {
+    color: #fff;
+    border-color: #138025;
+    background-color: #138025;
+}
+
 /* Sidebar Styles */
 
 .sidebar-nav {
