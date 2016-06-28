@@ -24,6 +24,10 @@
     <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
 
     <script type="text/javascript">
+      $('html, body').css({
+        'overflow': 'hidden',
+        'height': '100%'
+      });
       function showAppliedJobs(){
         window.location = "/dashboard/appliedJobs";
       }
@@ -34,6 +38,12 @@
   </head>
 
   <body>
+    <div id="preloader">
+      <div id="loaderLogo">
+        <img id="leaderLogo" src="/assets/new/img/logo-color.gif" alt="TruJobs Logo" height="40px">
+      </div>
+      <div id="status">&nbsp;</div>
+    </div>
     <div id="table" style="display: none;"></div>
     <div id="wrapper">
         <!-- Sidebar -->

@@ -74,6 +74,37 @@ body{
     color: #3a3c3b;
 }
 
+#preloader  {
+    position: absolute;
+    height: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #fefefe;
+    z-index: 99999999;
+    height: 100%;
+}
+
+#loaderLogo  {
+    width: 200px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: -100px 0 0 -100px;
+}
+
+#status  {
+    width: 200px;
+    height: 136px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background: url(../../img/main_loader.svg) no-repeat center;
+    margin: -100px 0 0 -100px;
+}
+
+
 .form-control{
     border: 1px solid #eaeaea;
     color: #4d4f4e;

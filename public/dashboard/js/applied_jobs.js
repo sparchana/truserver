@@ -1,6 +1,15 @@
 /**
  * Created by batcoder1 on 20/6/16.
  */
+$(window).load(function() {
+    $('html, body').css({
+        'overflow': 'auto',
+        'height': 'auto'
+    });
+    $("#status").fadeOut();
+    $("#loaderLogo").fadeOut();
+    $("#preloader").delay(1000).fadeOut("slow");
+});
 
 $(document).ready(function(){
     checkUserLogin();
@@ -57,6 +66,7 @@ function processDataAndFetchAppliedJobs(returnedData) {
 
     var candidateJobApplication = returnedData;
     if(Object.keys(candidateJobApplication).length > 0){
+        candidateJobApplication.reverse();
         candidateJobApplication.forEach(function (jobApplication) {
             prePopulateJobSection(jobApplication);
         });
@@ -130,7 +140,11 @@ function prePopulateJobSection(jobApplication) {
 
     var divMinSalaryCol = document.createElement("div");
     divMinSalaryCol.className = "col-lg-4";
-    divMinSalaryCol.textContent = "Salary: ₹" + jobApplication.jobPost.jobPostMinSalary + " - ₹" + jobApplication.jobPost.jobPostMaxSalary + " monthly";
+    if(jobApplication.jobPost.jobPostMaxSalary == "0"){
+        divMinSalaryCol.textContent = "₹" + jobApplication.jobPost.jobPostMinSalary + " monthly";
+    } else{
+        divMinSalaryCol.textContent = "₹" + jobApplication.jobPost.jobPostMinSalary + " - ₹" + jobApplication.jobPost.jobPostMaxSalary + " monthly";
+    }
     jobDetailSalaryRow.appendChild(divMinSalaryCol);
 
     var divExpCol = document.createElement("div");
