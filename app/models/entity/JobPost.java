@@ -5,7 +5,6 @@ import com.avaje.ebean.annotation.PrivateOwned;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.sun.org.apache.xalan.internal.xsltc.dom.BitArray;
 import models.entity.OM.JobApplication;
 import models.entity.OM.JobPostToBenefits;
 import models.entity.OM.JobPostToLocality;
@@ -87,7 +86,7 @@ public class JobPost extends Model {
     private Boolean jobPostWorkFromHome;
 
     @Column(name = "JobPostWorkingDays", columnDefinition = "binary(7) null")
-    private BitArray jobPostWorkingDays;
+    private Byte jobPostWorkingDays;
 
     @ManyToOne
     @JsonManagedReference
@@ -325,11 +324,11 @@ public class JobPost extends Model {
         this.jobPostVacancies = jobPostVacancies;
     }
 
-    public BitArray getJobPostWorkingDays() {
+    public Byte getJobPostWorkingDays() {
         return jobPostWorkingDays;
     }
 
-    public void setJobPostWorkingDays(BitArray jobPostWorkingDays) {
+    public void setJobPostWorkingDays(Byte jobPostWorkingDays) {
         this.jobPostWorkingDays = jobPostWorkingDays;
     }
 

@@ -903,6 +903,47 @@ function processDataCheckSkills(returnedData) {
     $(".btn-group").removeClass('active');
     prefillSkills(candidateSkill);
 }
+
+function getMinMonthDuration(selectedDurationValue){
+    switch(selectedDurationValue) {
+        case "2": // > 6 months
+            return "6";
+            break;
+        case "3": // > 1 yrs
+            return "12";
+            break;
+        case "4": // > 2 yrs
+            return "24";
+            break;
+        case "5": // > 4 yrs
+            return "48";
+            break;
+        case "145": // > 6 yrs
+            return "72";
+            break;
+        default: return "0";
+
+    }
+}
+
+function validateExpDuration(){
+    var yr = parseInt($('#candidateTotalExperienceYear').val());
+    var months = parseInt($('#candidateTotalExperienceMonth').val());
+    var totalExpInMonths = yr * 12 + months;
+    var totalSelectedExpValue = 0;
+
+    $('#expDurationTable tr').each(function () {
+        totalSelectedExpValue += parseInt(getMinMonthDuration($(this).find('select').val()));
+    });
+    console.log("totalSelectedExpValue: " + totalSelectedExpValue + " totalExpInMonths:" + totalExpInMonths);
+    if (totalSelectedExpValue > totalExpInMonths) {
+        alert('Total Experience does not match with individual experience');
+        return 0;
+    } else {
+        return 1;
+    }
+}
+
 function checkExpDurationSelection(questionId, jobRoleId){
     var fresherId = $('#expDuration_'+questionId).val();
     if(fresherId == "1"){
@@ -1261,6 +1302,14 @@ function saveProfileForm() {
             alert("Please enter your Last name");
             statusCheck = 0;
             break;
+    }
+    if($('#leadSource').val() == '-1'){
+        alert('Please select a Lead Source');
+        statusCheck = 0;
+    }
+    if(statusCheck != 0){
+        statusCheck = validateExpDuration();
+        console.log("statusCheck for statusCheck: " + statusCheck);
     }
 
     if (statusCheck == 1) {

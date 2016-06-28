@@ -595,7 +595,7 @@ public class Application extends Controller {
                             lead.getLeadUUId(),
                             lead.getLeadType(),
                             ServerConstants.INTERACTION_TYPE_CALL_OUT,
-                            ServerConstants.INTERACTION_NOTE_LEAD_TYPE_CHANGED,
+                            ServerConstants.INTERACTION_NOTE_BLANK,
                             ServerConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
                             session().get("sessionUsername")
                     );
@@ -606,7 +606,7 @@ public class Application extends Controller {
                             lead.getLeadUUId(),
                             lead.getLeadType(),
                             ServerConstants.INTERACTION_TYPE_CALL_OUT,
-                            ServerConstants.INTERACTION_NOTE_LEAD_TYPE_CHANGED,
+                            ServerConstants.INTERACTION_NOTE_BLANK,
                             ServerConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
                             session().get("sessionUsername")
                     );
