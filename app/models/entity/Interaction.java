@@ -70,9 +70,11 @@ public class Interaction extends Model {
         this.objectAType = objectAType;
         this.objectBUUId = objectBUUId;
         this.objectBType = objectBType;
+        this.note = ServerConstants.INTERACTION_NOTE_BLANK;
         this.interactionType = interactionType;
         this.result = result;
         this.createdBy = (createdBy == null) ? ServerConstants.INTERACTION_CREATED_ERROR : createdBy;
+        this.creationTimestamp = new Timestamp(System.currentTimeMillis());
     }
 
     public static void addInteraction(Interaction interaction){

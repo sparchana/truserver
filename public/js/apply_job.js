@@ -92,7 +92,7 @@ function processDataGetJobGoogleSheetDetails(returnedData) {
         isAssessed = ((returnedData.candidateIsAssessed == 0) ? "No" : "Yes");
 
     var value = returnedData.candidateCreationTimestamp;
-    var dateTime = new Date(value).toLocaleDateString() +" "+ new Date(value).getHours() +":"+new Date(value).getMinutes()+":"+new Date(value).getSeconds();
+    var candidateCreateTimestamp = new Date(value).toLocaleDateString() +" "+ new Date(value).getHours() +":"+new Date(value).getMinutes()+":"+new Date(value).getSeconds();
     var formUrl = returnedData.formUrl;
     try {
         $.ajax({
@@ -116,7 +116,7 @@ function processDataGetJobGoogleSheetDetails(returnedData) {
                 "entry.125850326": ((returnedData.candidateCurrentSalary != null) ? returnedData.candidateCurrentSalary : ""),
                 "entry.240702722": ((returnedData.candidateEducation != null) ? returnedData.candidateEducation : ""),
                 "entry.190053755": ((returnedData.candidateSkill != null) ? returnedData.candidateSkill : ""),
-                "entry.971982828": dateTime
+                "entry.971982828": candidateCreateTimestamp
             },
             type: "POST",
             dataType: "xml",
