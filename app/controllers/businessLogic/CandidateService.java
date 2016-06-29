@@ -341,11 +341,6 @@ public class CandidateService
                 if(candidate.getCandidateIsEmployed() == 0 ) {
                     return ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE;
                 }
-                else{
-                    if(candidate.getCandidateCurrentJobDetail().getCandidateCurrentSalary() != null){
-                        return ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE;
-                    }
-                }
             }
             else{
                 return ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE;
