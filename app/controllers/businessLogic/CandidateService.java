@@ -337,10 +337,7 @@ public class CandidateService
                 && candidate.getTimeShiftPreference() != null && candidate.getLanguageKnownList().size() > 0){
 
             if(candidate.getCandidateIsEmployed() != null) {
-
-                if(candidate.getCandidateIsEmployed() == 0 ) {
                     return ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE;
-                }
             }
             else{
                 return ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE;
