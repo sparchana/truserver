@@ -274,7 +274,6 @@ function processDataAndFillAllFields(returnedData) {
             console.log(err);
         }
 
-
         // populate and select past job role within the token input field
         if (returnedData.jobHistoryList != null) {
             /* get Candidate's past job role */
@@ -357,6 +356,20 @@ function processDataAndFillAllFields(returnedData) {
                     $('input[id=employedNot]').attr('checked', true);
                 }
             }
+        } catch (err) {
+            console.log(err);
+        }
+
+        try {
+            if (returnedData.candidateCurrentJobDetail != null) {
+                if (returnedData.candidateCurrentJobDetail.candidateCurrentCompany != null) {
+                    $("#candidateCurrentCompany").val(returnedData.candidateCurrentJobDetail.candidateCurrentCompany);
+                }
+                if (returnedData.candidateCurrentJobDetail.candidateCurrentSalary != null) {
+                    $("#candidateCurrentJobSalary").val(returnedData.candidateCurrentJobDetail.candidateCurrentSalary);
+                }
+            }
+
         } catch (err) {
             console.log(err);
         }
@@ -553,8 +566,6 @@ function processDataCheckShift(returnedData) {
             var id = timeshift.timeShiftId;
             var name = timeshift.timeShiftName;
             var option = $('<option value=' + id + '></option>').text(name);
-
-            var option = $('<option value=' + id + '></option>').text(name);
             $('#candidateTimeShiftPref').append(option);
 
         });
@@ -608,7 +619,6 @@ function processDataCheckLanguage(returnedData) {
     var arrayLang = [];
     var arrayLangId = [];
     var defaultOption = $('<option value="-1"></option>').text("Select");
-    $('#candidateMotherTongue').append(defaultOption);
     returnedData.forEach(function (language) {
         var id = language.languageId;
         var name = language.languageName;
@@ -618,8 +628,6 @@ function processDataCheckLanguage(returnedData) {
         arrayLang.push(name);
         arrayLangId.push(id);
         var option = $('<option value=' + id + '></option>').text(name);
-        $('#candidateMotherTongue').append(option);
-
         languageArray.push(item);
     });
     populateLanguages(arrayLang.reverse(), arrayLangId.reverse());
@@ -1380,6 +1388,12 @@ function saveProfileForm() {
                 candidateEmail: $('#candidateEmail').val(),
                 candidateIsEmployed: ($('input:radio[name="employed"]:checked').val()),
                 candidateTotalExperience: totalExp,
+
+                candidateCurrentCompany: $('#candidateCurrentCompany').val(),
+                candidateCurrentSalary: ($('#candidateCurrentJobSalary').val()),
+
+                candidatePastJobCompany: $('#candidatePastCompany').val(),
+                candidatePastJobSalary: ($('#candidatePastJobSalary').val()),
 
                 candidateEducationLevel: higherEducation,
                 candidateDegree: ($('#candidateHighestDegree').val()),

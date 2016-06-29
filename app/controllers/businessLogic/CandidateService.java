@@ -681,14 +681,6 @@ public class CandidateService
         }
         jobHistory.setCandidatePastSalary(request.getCandidatePastJobSalary());
         jobHistory.setCandidatePastCompany(request.getCandidatePastJobCompany());
-        if(request.getCandidatePastJobRole() != null){
-            JobRole jobRole = JobRole.find.where().eq("jobRoleId",request.getCandidatePastJobRole()).findUnique();
-            if(jobRole == null) {
-                Logger.info("jobRole static table empty. Error : Adding jobHistory");
-                return null;
-            }
-            jobHistory.setJobRole(jobRole);
-        }
         response.add(jobHistory);
         return response;
     }
