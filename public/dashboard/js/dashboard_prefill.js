@@ -504,6 +504,9 @@ function saveCandidateExperienceDetails(){
         var expMonth = parseInt($('#candidateTotalExperienceMonth').val());
         var expYear = parseInt($('#candidateTotalExperienceYear').val());
         var totalExp = expMonth + (12*expYear);
+        if(experienceStatus == 0 ){
+            totalExp=0;
+        }
 
         if(experienceStatus == 1 && $('input:radio[name="isEmployed"]:checked').val() == null){
             alert("Select Current Employment Status");

@@ -5,7 +5,6 @@
 var returnedOtp;
 var candidateMobile;
 function processDataResetCheckUser(returnedData) {
-    console.log("returedData :" + returnedData.status + " " + returnedData.otp);
     if(returnedData.status == 1) {
         returnedOtp = returnedData.otp;
         document.getElementById("helpText").innerHTML = "Enter OTP sent on " + $('#resetPasswordMobile').val();
