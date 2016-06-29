@@ -190,13 +190,6 @@
                             </div>
 
                             <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-3"><h5>Phone Type:</h5></div>
-                                <div class="col-sm-9">
-                                    <input id="candidatePhoneType" placeholder="Which phone do you use? (Eg. Samsung Galaxy S3)" type="text" class="form-control input-md">
-                                </div>
-                            </div>
-
-                            <div class="row" style="margin-top: 4px">
                                 <div class="col-sm-3"><h5>Candidate Gender:</h5></div>
                                 <div class="col-sm-9" style="margin-top: 6px;">
                                     <input type="radio" name="gender" id="genderMale" value="0">&nbsp;Male&nbsp;&nbsp;
@@ -221,15 +214,6 @@
                                                 });
                                             });
                                     </script>
-                                </div>
-                            </div>
-                                <!-- TODO: remove this-->
-                            <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-3"><h5>Married?:</h5></div>
-                                <div class="col-sm-9" style="margin-top: 6px;">
-
-                                    <input type="radio" name="married" id="married" value="0">&nbsp;Married&nbsp;&nbsp;
-                                    <input type="radio" name="married" id="marriedNot" value="1">&nbsp;Not Married
                                 </div>
                             </div>
 
@@ -309,126 +293,6 @@
                                 </div>
                             </div>
 
-                            <div id="employedForm" style="display: none">
-
-                                <div class="row" style="margin-top: 4px">
-                                    <div class="col-sm-3"><h5>Current Company:</h5></div>
-                                    <div class="col-sm-9">
-                                        <input id="candidateCurrentCompany" placeholder="What is your Company name?" type="text" class="form-control input-md">
-                                    </div>
-                                </div>
-
-                                <div class="row" style="margin-top: 8px">
-                                    <div class="col-sm-3"><h5>Current Job Location:</h5></div>
-                                    <div class="col-sm-9">
-                                        <input type="text" id="candidateCurrentJobLocation" >
-                                        <script type="text/javascript">
-                                                $(document).ready(function() {
-                                                    $("#candidateCurrentJobLocation").tokenInput(getLocality(), {
-                                                        theme: "facebook",
-                                                        placeholder: "Office Location",
-                                                        minChars: 0,
-                                                        prePopulate: currentJobLocationArray,
-                                                        tokenLimit: 1,
-                                                        preventDuplicates: true
-                                                    });
-                                                });
-                                        </script>
-                                    </div>
-                                </div>
-
-                                <div class="row" style="margin-top: 4px">
-                                    <div class="col-sm-3"><h5>Current Job Role:</h5></div>
-                                    <div class="col-sm-9">
-                                        <input type="text" id="candidateCurrentJobRole" >
-                                        <script type="text/javascript">
-                                                $(document).ready(function() {
-                                                    $("#candidateCurrentJobRole").tokenInput(getJob(), {
-                                                        theme: "facebook",
-                                                        placeholder: "Current Jobrole?",
-                                                        minChars: 0,
-                                                        tokenLimit: 1,
-                                                        prePopulate: currentJobRoleArray,
-                                                        preventDuplicates: true
-                                                    });
-                                                });
-                                        </script>
-                                    </div>
-                                </div>
-
-                                <div class="row" style="margin-top: 4px">
-                                    <div class="col-sm-3"><h5>Current Job Designation:</h5></div>
-                                    <div class="col-sm-9">
-                                        <input id="candidateCurrentJobDesignation" placeholder="What is your Designation?" type="text" class="form-control input-md">
-                                    </div>
-                                </div>
-
-                                <div class="row" style="margin-top: 4px">
-                                    <div class="col-sm-3"><h5>Current Job Salary:</h5></div>
-                                    <div class="col-sm-9">
-                                        <input id="candidateCurrentJobSalary" placeholder="What is your current Salary?" type="number" class="form-control input-md">
-                                    </div>
-                                </div>
-
-                                <div class="row" style="margin-top: 4px">
-                                    <div class="col-sm-3"><h5>Current Job Duration:</h5></div>
-                                    <div class="col-sm-9">
-                                        <input id="candidateCurrentJobDurationYear" value="0" style="width: 15%; display: inline-block" placeholder="Years" type="number" class="form-control input-md">&nbsp;Years&nbsp;&nbsp;
-                                        <input id="candidateCurrentJobDurationMonth"  value="0" style="width: 15%; display: inline-block"  type="number" min="0" max="11" step="1" placeholder="Months" class="form-control input-md" >&nbsp; Months
-                                    </div>
-                                </div>
-                                    <!-- TODO: remove this-->
-                                <div class="row" style="margin-top: 4px">
-                                    <div class="col-sm-3"><h5>Mode of Transport:</h5></div>
-                                    <div class="col-sm-9" style="margin-top: 8px">
-                                        <select id="selectTransportation" class="selectDropdown" >
-
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="row" style="margin-top: 4px">
-                                    <div class="col-sm-3"><h5>Current work shift?: </h5></div>
-                                    <div class="col-sm-9" style="margin-top: 8px">
-                                        <select id="currentWorkShift" class="selectDropdown" >
-
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-3"><h5>Past Company:</h5></div>
-                                <div class="col-sm-9">
-                                    <input id="candidatePastCompany" placeholder="What was your previous company Name?" type="text" class="form-control input-md">
-                                </div>
-                            </div>
-
-                            <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-3"><h5>Past Job Role:</h5></div>
-                                <div class="col-sm-9">
-                                    <input type="text" id="candidatePastJobRole" >
-                                    <script type="text/javascript">
-                                            $(document).ready(function() {
-                                                $("#candidatePastJobRole").tokenInput(getJob(), {
-                                                    theme: "facebook",
-                                                    placeholder: "What was your past Job Role?",
-                                                    minChars: 0,
-                                                    prePopulate: pastJobRoleArray,
-                                                    tokenLimit: 1,
-                                                    preventDuplicates: true
-                                                });
-                                            });
-                                    </script>
-                                </div>
-                            </div>
-
-                            <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-3"><h5>Past Job Salary:</h5></div>
-                                <div class="col-sm-9">
-                                    <input id="candidatePastJobSalary" placeholder="What was your previous job salary?" type="number" class="form-control input-md">
-                                </div>
-                            </div>
                         </div>
 
                         <hr>
@@ -478,13 +342,6 @@
                             <!-- Language details -->
                         <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Language Details</h4>
                         <div id="language_details">
-                            <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-3"><h5>Mother Tongue?: </h5></div>
-                                <div class="col-sm-9" style="margin-top: 8px">
-                                    <select id="candidateMotherTongue" class="selectDropdown" >
-                                    </select>
-                                </div>
-                            </div>
                             <h5><u>Language Details:</u></h5>
                             <table class="table table-striped" cellspacing="0" width="100%">
                                 <thead>

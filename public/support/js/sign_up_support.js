@@ -274,35 +274,6 @@ function processDataAndFillAllFields(returnedData) {
             console.log(err);
         }
 
-        if (returnedData.candidateCurrentJobDetail != null) {
-            /* get Candidate's current job details preference */
-            try {
-                if (returnedData.candidateCurrentJobDetail.jobRole != null) {
-                    var id = returnedData.candidateCurrentJobDetail.jobRole.jobRoleId;
-                    var name = returnedData.candidateCurrentJobDetail.jobRole.jobName;
-                    var item = {};
-                    item ["id"] = id;
-                    item ["name"] = name;
-                    currentJobRoleArray.push(item);
-                }
-            } catch (err) {
-            }
-
-            /* get Candidate's current job details preference */
-            try {
-                if (returnedData.candidateCurrentJobDetail.candidateCurrentJobLocation != null && returnedData.candidateCurrentJobDetail.candidateCurrentJobLocation.localityId != null) {
-                    var id = returnedData.candidateCurrentJobDetail.candidateCurrentJobLocation.localityId;
-                    var name = returnedData.candidateCurrentJobDetail.candidateCurrentJobLocation.localityName;
-                    var item = {};
-                    item ["id"] = id;
-                    item ["name"] = name;
-                    currentJobLocationArray.push(item);
-                }
-            } catch (err) {
-                console.log(err);
-            }
-        }
-
 
         // populate and select past job role within the token input field
         if (returnedData.jobHistoryList != null) {
@@ -368,14 +339,6 @@ function processDataAndFillAllFields(returnedData) {
                     $('input[id=genderFemale]').attr('checked', true);
                 }
             }
-
-            if (returnedData.candidateMaritalStatus != null) {
-                if (returnedData.candidateMaritalStatus == 1) {
-                    $('input[id=marriedNot]').attr('checked', true);
-                } else {
-                    $('input[id=married]').attr('checked', true);
-                }
-            }
         } catch (err) {
             console.log(err);
         }
@@ -399,37 +362,6 @@ function processDataAndFillAllFields(returnedData) {
         }
 
         try {
-            if (returnedData.candidateCurrentJobDetail != null) {
-                if (returnedData.candidateCurrentJobDetail.candidateCurrentCompany != null) {
-                    $("#candidateCurrentCompany").val(returnedData.candidateCurrentJobDetail.candidateCurrentCompany);
-                }
-                if (returnedData.candidateCurrentJobDetail.candidateCurrentDesignation != null) {
-                    $("#candidateCurrentJobDesignation").val(returnedData.candidateCurrentJobDetail.candidateCurrentDesignation);
-                }
-                if (returnedData.candidateCurrentJobDetail.candidateCurrentSalary != null) {
-                    $("#candidateCurrentJobSalary").val(returnedData.candidateCurrentJobDetail.candidateCurrentSalary);
-                }
-                if (returnedData.candidateCurrentJobDetail.candidateCurrentJobDuration != null) {
-                    var currentJobDuration = parseInt(returnedData.candidateCurrentJobDetail.candidateCurrentJobDuration);
-                    $("#candidateCurrentJobDurationYear").val(parseInt((currentJobDuration / 12)).toString()); // years
-                    $("#candidateCurrentJobDurationMonth").val(currentJobDuration % 12); // months
-
-                }
-            }
-
-        } catch (err) {
-            console.log(err);
-        }
-
-        try {
-            if (returnedData.candidateCurrentJobDetail != null) {
-                if (returnedData.candidateCurrentJobDetail.candidateTransportationMode != null) {
-                    $("#selectTransportation").val(returnedData.candidateCurrentJobDetail.candidateTransportationMode.transportationModeId);
-                }
-                if (returnedData.candidateCurrentJobDetail.candidateCurrentWorkShift != null) {
-                    $("#currentWorkShift").val(returnedData.candidateCurrentJobDetail.candidateCurrentWorkShift.timeShiftId);
-                }
-            }
             if (returnedData.timeShiftPreference != null) {
                 $("#candidateTimeShiftPref").val(returnedData.timeShiftPreference.timeShift.timeShiftId);
             }
@@ -473,10 +405,6 @@ function processDataAndFillAllFields(returnedData) {
             }
         } catch (err) {
             console.log(err);
-        }
-
-        if (returnedData.motherTongue != null) {
-            $("#candidateMotherTongue").val(returnedData.motherTongue.languageId);
         }
 
         try {
@@ -620,13 +548,11 @@ function processDataCheckJobs(returnedData) {
 function processDataCheckShift(returnedData) {
     if (returnedData != null) {
         var defaultOption = $('<option value="-1"></option>').text("Select Preferred Shift");
-        $('#currentWorkShift').append(defaultOption);
         $('#candidateTimeShiftPref').append(defaultOption);
         returnedData.forEach(function (timeshift) {
             var id = timeshift.timeShiftId;
             var name = timeshift.timeShiftName;
             var option = $('<option value=' + id + '></option>').text(name);
-            $('#currentWorkShift').append(option);
 
             var option = $('<option value=' + id + '></option>').text(name);
             $('#candidateTimeShiftPref').append(option);
@@ -638,7 +564,6 @@ function processDataCheckShift(returnedData) {
 function processDataCheckTransportation(returnedData) {
     if (returnedData != null) {
         var defaultOption = $('<option value="-1"></option>').text("Select");
-        $('#selectTransportation').append(defaultOption);
         returnedData.forEach(function (transportation) {
             var id = transportation.transportationModeId;
             var name = transportation.transportationModeName;
@@ -646,7 +571,6 @@ function processDataCheckTransportation(returnedData) {
             item ["id"] = id;
             item ["name"] = name;
             var option = $('<option value=' + id + '></option>').text(name);
-            $('#selectTransportation').append(option);
             transportationArray.push(item);
         });
     }
@@ -1366,14 +1290,9 @@ function saveProfileForm() {
             var higherEducation = "";
             var workShift = "";
 
-            if (($('#candidateMotherTongue').val()) != -1) {
-                motherTongue = $('#candidateMotherTongue').val();
-            }
+
             if (($('#candidateHighestEducation').val()) != -1) {
                 higherEducation = $('input:radio[name="highestEducation"]:checked').val();
-            }
-            if (($('#currentWorkShift').val()) != -1) {
-                workShift = $('#currentWorkShift').val();
             }
 
             var candidatePreferredJob = [];
@@ -1456,26 +1375,11 @@ function saveProfileForm() {
                 leadSource: $('#leadSource').val(),
                 //others
                 candidateDob: c_dob,
-                candidatePhoneType: $('#candidatePhoneType').val(),
                 candidateGender: ($('input:radio[name="gender"]:checked').val()),
                 candidateHomeLocality: parseInt($('#candidateHomeLocality').val()),
-                candidateMaritalStatus: ($('input:radio[name="married"]:checked').val()),
                 candidateEmail: $('#candidateEmail').val(),
                 candidateIsEmployed: ($('input:radio[name="employed"]:checked').val()),
                 candidateTotalExperience: totalExp,
-
-                candidateCurrentCompany: $('#candidateCurrentCompany').val(),
-                candidateCurrentJobLocation: parseInt($('#candidateCurrentJobLocation').val()),
-                candidateTransportation: ($('#selectTransportation').val()),
-                candidateCurrentWorkShift: workShift,
-                candidateCurrentJobRole: parseInt($('#candidateCurrentJobRole').val()),
-                candidateCurrentJobDesignation: $('#candidateCurrentJobDesignation').val(),
-                candidateCurrentSalary: ($('#candidateCurrentJobSalary').val()),
-                candidateCurrentJobDuration: currentJobDuration,
-
-                candidatePastJobCompany: $('#candidatePastCompany').val(),
-                candidatePastJobRole: parseInt($('#candidatePastJobRole').val()),
-                candidatePastJobSalary: ($('#candidatePastJobSalary').val()),
 
                 candidateEducationLevel: higherEducation,
                 candidateDegree: ($('#candidateHighestDegree').val()),
@@ -1483,7 +1387,6 @@ function saveProfileForm() {
 
                 candidateTimeShiftPref: $('#candidateTimeShiftPref').val(),
 
-                candidateMotherTongue: motherTongue,
                 candidateLanguageKnown: languageMap,
 
                 candidateSkills: skillMap,
