@@ -48,8 +48,9 @@ public class Interaction extends Model {
     public static Finder<String, Interaction> find = new Finder(Interaction.class);
 
     public Interaction(){
-
+       this.creationTimestamp = new Timestamp(System.currentTimeMillis());
     }
+
     // single object constructor
     public Interaction(String objectAUUId, int objectAType, int interactionType, String note, String result, String createdBy){
         // no need to set creationTimestamp, It is set By - default
@@ -59,6 +60,7 @@ public class Interaction extends Model {
         this.note = (createdBy == null) ? ServerConstants.INTERACTION_NOTE_CREATED_BY_ERROR : note;
         this.result = result;
         this.createdBy = (createdBy == null) ? ServerConstants.INTERACTION_CREATED_ERROR : createdBy;
+        this.creationTimestamp = new Timestamp(System.currentTimeMillis());
     }
 
     // Two object constructor
