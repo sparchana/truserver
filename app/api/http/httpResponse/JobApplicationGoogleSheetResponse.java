@@ -23,7 +23,16 @@ public class JobApplicationGoogleSheetResponse {
     public String candidateJobPref;
     public String candidateLocalityPref;
     public String candidateSkill;
+    public String formUrl;
     public Timestamp candidateCreationTimestamp;
+
+    public String getFormUrl() {
+        return formUrl;
+    }
+
+    public void setFormUrl(String formUrl) {
+        this.formUrl = formUrl;
+    }
 
     public String getCompanyName() {
         return companyName;

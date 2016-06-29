@@ -15,6 +15,7 @@ import models.util.ParseCSV;
 import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
+import play.api.Play;
 import play.cache.Cached;
 import play.data.Form;
 import play.mvc.Controller;
@@ -743,7 +744,7 @@ public class Application extends Controller {
                     List<LanguageKnown> languageKnownList = candidate.getLanguageKnownList();
 
                     for(LanguageKnown l : languageKnownList){
-                        languagesKnown += l.getLanguage().getLanguageName() + ", ";
+                        languagesKnown += l.getLanguage().getLanguageName() + "(" + l.getReadingAbility() + ", " + l.getWritingAbility() + ", " + l.getVerbalAbility() + "), ";
                     }
                 }
 
@@ -789,6 +790,12 @@ public class Application extends Controller {
                 jobApplicationGoogleSheetResponse.setCandidateLocalityPref(candidateLocalityPref);
                 jobApplicationGoogleSheetResponse.setCandidateSkill(candidateSkills);
             }
+        }
+        if(Play.isDev(Play.current()) == false){
+            jobApplicationGoogleSheetResponse.setFormUrl(ServerConstants.PROD_GOOGLE_FORM_FOR_JOB_APPLICATION);
+        } else{
+            jobApplicationGoogleSheetResponse.setFormUrl(ServerConstants.DEV_GOOGLE_FORM_FOR_JOB_APPLICATION);
+
         }
         return ok(toJson(jobApplicationGoogleSheetResponse));
     }
