@@ -79,7 +79,19 @@ public class InteractionService {
         } catch (NullPointerException npe){
             Logger.info("Followup deactivated");
         }
+    }
 
+    public static void createInteractionForJobApplication(String objectAUUId, String objectBUUId, String result) {
+        Interaction interaction = new Interaction(
+                objectAUUId,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                objectBUUId,
+                ServerConstants.OBJECT_TYPE_JOB_POST,
+                ServerConstants.INTERACTION_TYPE_APPLIED_JOB,
+                result,
+                ServerConstants.INTERACTION_CREATED_SELF
+        );
+        InteractionService.createInteraction(interaction);
     }
 
     public static void createInteraction(Interaction interaction){

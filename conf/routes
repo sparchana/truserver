@@ -50,41 +50,43 @@ POST     /processCsv                                              controllers.Ap
 
 GET      /getAll/:id                                              controllers.Application.getAll(id: Integer)
 
+GET     /getJobApplicationDetailsForGoogleSheet/:id              controllers.Application.getJobApplicationDetailsForGoogleSheet(id: Integer)
+
 POST     /getAllLocality                                          controllers.Application.getAllLocality()
 
-POST      /getAllHotJobPosts                                       controllers.Application.getAllHotJobPosts()
+POST      /getAllHotJobPosts                                      controllers.Application.getAllHotJobPosts()
 
 POST     /getAllJobs                                              controllers.Application.getAllJobs()
 
-POST      /getAllShift                                             controllers.Application.getAllShift()
+POST      /getAllShift                                            controllers.Application.getAllShift()
 
-POST      /getAllTransportation                                    controllers.Application.getAllTransportation()
+POST      /getAllTransportation                                   controllers.Application.getAllTransportation()
 
-POST      /getAllEducation                                         controllers.Application.getAllEducation()
+POST      /getAllEducation                                        controllers.Application.getAllEducation()
 
-POST      /getAllLeadSource                                        controllers.Application.getAllLeadSource()
+POST      /getAllLeadSource                                       controllers.Application.getAllLeadSource()
 
 GET      /getSupportAgent                                         controllers.Application.getSupportAgent()
 
-POST      /getAllLanguage                                          controllers.Application.getAllLanguage()
+POST      /getAllLanguage                                         controllers.Application.getAllLanguage()
 
-POST      /getAllIdProof                                           controllers.Application.getAllIdProof()
+POST      /getAllIdProof                                          controllers.Application.getAllIdProof()
 
-POST      /getAllDegree                                            controllers.Application.getAllDegree()
+POST      /getAllDegree                                           controllers.Application.getAllDegree()
 
-POST      /getAllJobExpQuestion                                    controllers.Application.getAllJobExpQuestion()
+POST      /getAllJobExpQuestion                                   controllers.Application.getAllJobExpQuestion()
 
 POST     /getJobExpQuestion/:jobRoleIdList                        controllers.Application.getJobExpQuestion(jobRoleIdList : String)
 
-POST      /getAllCompany                                           controllers.Application.getAllCompany()
+POST      /getAllCompany                                          controllers.Application.getAllCompany()
 
-POST      /getAllCompanyStatus                                     controllers.Application.getAllCompanyStatus()
+POST      /getAllCompanyStatus                                    controllers.Application.getAllCompanyStatus()
 
-POST      /getAllCompanyType                                       controllers.Application.getAllCompanyType()
+POST      /getAllCompanyType                                      controllers.Application.getAllCompanyType()
 
-POST      /getAllExperience                                        controllers.Application.getAllExperience()
+POST      /getAllExperience                                       controllers.Application.getAllExperience()
 
-POST      /getAllJobStatus                                         controllers.Application.getAllJobStatus()
+POST      /getAllJobStatus                                        controllers.Application.getAllJobStatus()
 
 GET      /getUserInfo/:id                                         controllers.Application.getUserInfo(id : Long)
 
