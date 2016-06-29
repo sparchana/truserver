@@ -28,7 +28,7 @@ public class ServerConstants {
     public static final String INTERACTION_RESULT_FOLLOWUP_DEACTIVATED = "Follow Up deactivated";
     public static final String INTERACTION_RESULT_EXISTING_LEAD_CALLED_BACK = "Existing Lead Called Back";
     public static final String INTERACTION_RESULT_FIRST_INBOUND_CALL = "First Inbound Call";
-    public static final String INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB = "Candidate applied on a job by Self";
+    public static final String INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB = "Candidate applied on a job :";
 
     public static final String INTERACTION_CREATED_SELF = "Self";
     public static final String INTERACTION_CREATED_SYSTEM = "System";
@@ -86,6 +86,7 @@ public class ServerConstants {
     public static final int OBJECT_TYPE_LEAD= 1;
     public static final int OBJECT_TYPE_CANDIDATE= 4;
     public static final int OBJECT_TYPE_RECRUTER= 5;
+    public static final int OBJECT_TYPE_JOB_POST= 6;
 
     public static final int INTERACTION_TYPE_CALL_IN= 1;
     public static final int INTERACTION_TYPE_CALL_OUT= 2;
