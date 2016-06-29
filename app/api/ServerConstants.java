@@ -28,6 +28,7 @@ public class ServerConstants {
     public static final String INTERACTION_RESULT_FOLLOWUP_DEACTIVATED = "Follow Up deactivated";
     public static final String INTERACTION_RESULT_EXISTING_LEAD_CALLED_BACK = "Existing Lead Called Back";
     public static final String INTERACTION_RESULT_FIRST_INBOUND_CALL = "First Inbound Call";
+    public static final String INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB = "Candidate applied on a job by Self";
 
     public static final String INTERACTION_CREATED_SELF = "Self";
     public static final String INTERACTION_CREATED_SYSTEM = "System";
@@ -43,6 +44,7 @@ public class ServerConstants {
     public static final String INTERACTION_NOTE_SELF_SIGNEDUP = "Candidate Self Signed Up";
     public static final String INTERACTION_NOTE_CREATED_BY_ERROR = "Session Username is null";
     public static final String INTERACTION_NOTE_SELF_PROFILE_CREATION = "Candidate self updated profile details";
+    public static final String INTERACTION_NOTE_APPLIED_JOB = "Candidate applied on a job";
     public static final String INTERACTION_NOTE_BLANK = "";
 
     public static final int TYPE_LEAD = 1;
@@ -91,7 +93,7 @@ public class ServerConstants {
     public static final int INTERACTION_TYPE_SMS_OUT= 4;
     public static final int INTERACTION_TYPE_WEBSITE= 5;
     public static final int INTERACTION_TYPE_FOLLOWUP_CALL= 6;
-
+    public static final int INTERACTION_TYPE_APPLIED_JOB= 7;
 
     public static final boolean FOLLOW_UP_DEACTIVATE = false;
     public static final boolean FOLLOW_UP_ACTIVATE = true;

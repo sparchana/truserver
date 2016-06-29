@@ -1,5 +1,6 @@
 package controllers.businessLogic;
 
+import api.ServerConstants;
 import api.http.httpRequest.AddJobPostRequest;
 import api.http.httpResponse.ApplyJobResponse;
 import models.entity.Candidate;
@@ -76,6 +77,10 @@ public class JobService {
                     JobApplication jobApplication = new JobApplication();
                     jobApplication.setCandidate(existingCandidate);
                     jobApplication.setJobPost(existingJobPost);
+
+                    String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB;
+                    InteractionService.createInteractionForJobApplication(existingCandidate.getCandidateUUId(), existingJobPost.getJobPostUUId(), interactionResult);
+
                     jobApplication.save();
                     Logger.info("candidate: " + existingCandidate.getCandidateFirstName() + " with mobile: " + existingCandidate.getCandidateMobile() + " applied to the jobPost of JobPostId:" + existingJobPost.getJobPostId());
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_SUCCESS);
