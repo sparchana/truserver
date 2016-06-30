@@ -14,6 +14,7 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
     public String candidatePastJobCompany;
     public Integer candidatePastJobRole;
     public Long candidatePastJobSalary ;
+    public Long candidateLastWithdrawnSalary ;
     public Integer candidateCurrentJobLocation;
     public Integer candidateTransportation ;
     public Integer candidateCurrentWorkShift ;
@@ -51,7 +52,39 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
             this.jobExpResponseIdArray = jobExpResponseIdArray;
         }
     }
+    public static class PastCompany {
+        Integer jobRoleId;
+        List<String> companyName;
+        Integer currentCompanyEnumVal;
+
+        public PastCompany(){}
+
+        public Integer getJobRoleId() {
+            return jobRoleId;
+        }
+
+        public void setJobRoleId(Integer jobRoleId) {
+            this.jobRoleId = jobRoleId;
+        }
+
+        public List<String> getCompanyName() {
+            return companyName;
+        }
+
+        public void setCompanyName(List<String> companyName) {
+            this.companyName = companyName;
+        }
+
+        public Integer getCurrentCompanyEnumVal() {
+            return currentCompanyEnumVal;
+        }
+
+        public void setCurrentCompanyEnumVal(Integer currentCompanyEnumVal) {
+            this.currentCompanyEnumVal = currentCompanyEnumVal;
+        }
+    }
     public List<ExpList> expList;
+    public List<PastCompany> pastCompany;
 
     public String getSupportNote() {
         return supportNote;
@@ -208,5 +241,21 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
 
     public void setExpList(List<ExpList> expList) {
         this.expList = expList;
+    }
+
+    public List<PastCompany> getPastCompany() {
+        return pastCompany;
+    }
+
+    public void setPastCompany(List<PastCompany> pastCompany) {
+        this.pastCompany = pastCompany;
+    }
+
+    public Long getCandidateLastWithdrawnSalary() {
+        return candidateLastWithdrawnSalary;
+    }
+
+    public void setCandidateLastWithdrawnSalary(Long candidateLastWithdrawnSalary) {
+        this.candidateLastWithdrawnSalary = candidateLastWithdrawnSalary;
     }
 }
