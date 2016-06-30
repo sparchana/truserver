@@ -160,6 +160,9 @@ public class Candidate extends Model {
     @JoinColumn(name = "CandidateStatusId", referencedColumnName = "profileStatusId")
     private CandidateProfileStatus candidateprofilestatus;
 
+    @Column(name = "CandidateLastWithdrawnSalary", columnDefinition = "bigint signed null")
+    private Long candidateLastWithdrawnSalary;
+
 
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
@@ -458,6 +461,14 @@ public class Candidate extends Model {
 
     public void setCandidateExpList(List<CandidateExp> candidateExpList) {
         this.candidateExpList = candidateExpList;
+    }
+
+    public Long getCandidateLastWithdrawnSalary() {
+        return candidateLastWithdrawnSalary;
+    }
+
+    public void setCandidateLastWithdrawnSalary(Long candidateLastWithdrawnSalary) {
+        this.candidateLastWithdrawnSalary = candidateLastWithdrawnSalary;
     }
 }
 

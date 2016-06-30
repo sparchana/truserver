@@ -392,7 +392,7 @@ public class CandidateService
         }
 
         try{
-            candidate.setJobHistoryList(getJobHistoryListFromAddSupportCandidate(supportCandidateRequest, candidate));
+            candidate.setJobHistoryList(getJobHistoryListFromAddSupportCandidate(supportCandidateRequest.getPastCompany(), candidate));
         } catch(Exception e){
             Logger.info(" Exception while setting past job details");
             e.printStackTrace();
@@ -409,6 +409,12 @@ public class CandidateService
             candidate.setCandidateExpList(getCandidateExpListFromAddSupportCandidate(supportCandidateRequest.getExpList(), candidate));
         } catch(Exception e){
             Logger.info(" Exception while setting explist reference list");
+            e.printStackTrace();
+        }
+        try{
+            candidate.setCandidateLastWithdrawnSalary(((AddSupportCandidateRequest) request).getCandidateLastWithdrawnSalary());
+        } catch(Exception e){
+            Logger.info(" Exception while setting last withdrawn salary");
             e.printStackTrace();
         }
 
@@ -665,18 +671,35 @@ public class CandidateService
         return response;
     }
 
-    private static List<JobHistory> getJobHistoryListFromAddSupportCandidate(AddSupportCandidateRequest request, Candidate candidate) {
+    private static List<JobHistory> getJobHistoryListFromAddSupportCandidate(List<AddSupportCandidateRequest.PastCompany> requestList, Candidate candidate) {
         List<JobHistory> response = new ArrayList<>();
         // TODO: loop through the req and then store it in List
-        JobHistory jobHistory = new JobHistory();
-        jobHistory.setCandidate(candidate);
-        if((request.getCandidatePastJobSalary() == null) && (request.getCandidatePastJobCompany() == null || request.getCandidatePastJobCompany().isEmpty()) && request.getCandidatePastJobRole() == null ){
-            Logger.info("No info related to Candidate Past Job was Provided");
-            return null;
+        for(AddSupportCandidateRequest.PastCompany pastCompany: requestList){
+            if((pastCompany == null) || (pastCompany.getJobRoleId() == null && pastCompany.getCompanyName().isEmpty())){
+                Logger.info("Past company name not mentioned");
+            } else{
+                JobRole jobRole = JobRole.find.where().eq("jobRoleId", pastCompany.getJobRoleId()).findUnique();
+                if(jobRole != null){
+                    int count = 0;
+                    for(String companyName : pastCompany.getCompanyName()) {
+                        count++;
+                        if(companyName.isEmpty()){
+                            continue;
+                        }
+                        JobHistory jobHistory = new JobHistory();
+                        jobHistory.setCandidate(candidate);
+                        jobHistory.setCandidatePastCompany(companyName);
+                        jobHistory.setJobRole(jobRole);
+                        if(pastCompany.getCurrentCompanyEnumVal() != null && pastCompany.getCurrentCompanyEnumVal() == count){
+                            jobHistory.setCurrentJob(true);
+                        } else {
+                            jobHistory.setCurrentJob(false);
+                        }
+                        response.add(jobHistory);
+                    }
+                }
+            }
         }
-        jobHistory.setCandidatePastSalary(request.getCandidatePastJobSalary());
-        jobHistory.setCandidatePastCompany(request.getCandidatePastJobCompany());
-        response.add(jobHistory);
         return response;
     }
 

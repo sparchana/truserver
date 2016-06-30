@@ -25,6 +25,7 @@ var candidateIdProofArray = [];
 
 var candidateSkill = [];
 var candidateExps;
+var candidatePastJobExp;
 var jobPrefString = "";
 var check = 0;
 
@@ -333,7 +334,6 @@ function processDataAndFillAllFields(returnedData) {
             if (returnedData.candidateIsEmployed != null) {
                 if (returnedData.candidateIsEmployed == 1) {
                     $('input[id=employed]').attr('checked', true);
-                    $('#employedForm').show();
                 } else {
                     $('input[id=employedNot]').attr('checked', true);
                 }
@@ -343,22 +343,11 @@ function processDataAndFillAllFields(returnedData) {
         }
 
         try {
-            if (returnedData.candidateCurrentJobDetail != null) {
-                if (returnedData.candidateCurrentJobDetail.candidateCurrentCompany != null) {
-                    $("#candidateCurrentCompany").val(returnedData.candidateCurrentJobDetail.candidateCurrentCompany);
-                }
-                if (returnedData.candidateCurrentJobDetail.candidateCurrentSalary != null) {
-                    $("#candidateCurrentJobSalary").val(returnedData.candidateCurrentJobDetail.candidateCurrentSalary);
-                }
-            }
-
-        } catch (err) {
-            console.log(err);
-        }
-
-        try {
             if (returnedData.timeShiftPreference != null) {
                 $("#candidateTimeShiftPref").val(returnedData.timeShiftPreference.timeShift.timeShiftId);
+            }
+            if(returnedData.candidateLastWithdrawnSalary != null){
+                $('#candidateLastWithdrawnSalary').val(returnedData.candidateLastWithdrawnSalary);
             }
             if (returnedData.candidateTotalExperience != null) {
                 var totalExperience = parseInt(returnedData.candidateTotalExperience);
@@ -375,9 +364,13 @@ function processDataAndFillAllFields(returnedData) {
                     $("#candidateTotalExperienceMonth").val(totalExperience % 12); // years
 
                     candidateExps = returnedData.candidateExpList;
+                    candidatePastJobExp = returnedData.jobHistoryList;
                     if(candidateExps != null){
                         generateExperience(jobPrefString);
                         prefillCandidateExp(candidateExps);
+                        if(candidatePastJobExp != null){
+                            prefillCandidatePastJobExp(candidatePastJobExp)
+                        }
                     }
                 }
             }
@@ -445,6 +438,28 @@ function processDataAndFillAllFields(returnedData) {
         }
     }
 }
+
+function prefillCandidatePastJobExp(candidatePastJobExp) {
+    if(candidatePastJobExp != null){
+        var prevRow = -1;
+        var count = 0;
+        candidatePastJobExp.forEach(function (jobHistory) {
+            var jobRoleId = parseInt(jobHistory.jobRole.jobRoleId);
+            if(prevRow != jobRoleId){
+                prevRow = jobRoleId;
+                count = 0;
+            }
+            count++;
+            if(jobHistory.candidatePastCompany != null){
+                $('#expPastCompany_'+jobRoleId+' #candidatePastCompany_'+count+'_'+jobRoleId).val(jobHistory.candidatePastCompany);
+                if(jobHistory.currentJob != null && jobHistory.currentJob != false){
+                    $('#currentCompany_'+jobRoleId).val(count);
+                }
+            }
+        });
+    }
+}
+
 
 function prefillCandidateExp(candidateExpList) {
     if(candidateExpList != null){
@@ -735,11 +750,9 @@ function saveResponse(leadId) {
 }
 
 function employedYes() {
-    $('#employedForm').show();
 }
 
 function employedNo() {
-    $('#employedForm').hide();
 }
 
 function resetFolloupBox() {
@@ -874,9 +887,13 @@ function checkExpDurationSelection(questionId, jobRoleId){
         $('[id=expBody_'+jobRoleId+']').find('select').val('');
         $('[id=expBody_'+jobRoleId+']').find('select').multiselect('rebuild');
         $('[id=expBody_'+jobRoleId+']').hide();
+        $('[id=expPastCompanyHead_'+jobRoleId+']').hide();
+        $('[id=expPastCompanyBody_'+jobRoleId+']').hide();
     } else {
         $('#expHeader_' + jobRoleId).show();
         $('[id=expBody_'+jobRoleId+']').show();
+        $('[id=expPastCompanyHead_'+jobRoleId+']').show();
+        $('[id=expPastCompanyBody_'+jobRoleId+']').show();
     }
 }
 
@@ -932,6 +949,35 @@ function processDataCheckExp(returnedData) {
                 td.innerHTML = '<div style="font-weight: bold;"> Tell us about your '+singleQuestion.jobRole.jobName+' experience </div>';
                 td.setAttribute("width", "100%");
                 $('#expOtherTable tr:last').after(tr);
+
+
+                var trPastCompany = tableExpOther.insertRow(1);
+                trPastCompany.id = "expPastCompanyHead_" + singleQuestion.jobRole.jobRoleId;
+                trPastCompany.setAttribute("style", "background-color:#80CBC4; color:white;");
+                var tdPastCompany = trPastCompany.insertCell(0);
+                trPastCompany.insertCell(1);
+                tdPastCompany.innerHTML = '<div style="font-weight: bold;"> In which company have you worked before as '+singleQuestion.jobRole.jobName+'</div>';
+                tdPastCompany.setAttribute("width", "100%");
+                $('#expOtherTable tr:last').after(trPastCompany);
+
+                var trPastCompanyName = tableExpOther.insertRow(2);
+                trPastCompanyName.id = "expPastCompanyBody_" +singleQuestion.jobRole.jobRoleId;
+                var tdCompanyName = trPastCompanyName.insertCell(0);
+                var tdIsCurrentJob = trPastCompanyName.insertCell(1);
+                tdCompanyName.id = "expPastCompany_" + singleQuestion.jobRole.jobRoleId;
+                tdIsCurrentJob.id = "isCurrentCompany_" + singleQuestion.jobRole.jobRoleId;
+                tdCompanyName.innerHTML = '<div class="form-group col-xs-4" ><input id="candidatePastCompany_1_'+singleQuestion.jobRole.jobRoleId+'" type="text" class="form-control col-xs-4" "></div>'+
+                    '<div class="form-group col-xs-4" ><input id="candidatePastCompany_2_'+singleQuestion.jobRole.jobRoleId+'" type="text" class="form-control col-xs-4" "></div>'+
+                    '<div class="form-group col-xs-4" ><input id="candidatePastCompany_3_'+singleQuestion.jobRole.jobRoleId+'" type="text" class="form-control col-xs-4" "></div>';
+                tdIsCurrentJob.innerHTML = '<select id="currentCompany_'+singleQuestion.jobRole.jobRoleId+'">'+
+                    '<option >Select</option>'+
+                    '<option value="1">1</option>'+
+                    '<option value="2">2</option>'+
+                    '<option value="3">3</option>'+
+                    '</select>';
+
+                $('#expOtherTable tr:last').after(trPastCompanyName);
+
             }
             count++;
             var row = tableExpOther.insertRow(0);
@@ -1311,6 +1357,26 @@ function saveProfileForm() {
                 candidatePreferredLocality.push(parseInt(localityPref[i]));
             }
 
+            // past job company names
+            var pastJobArray = [];
+
+            if(candidatePreferredJob !=  null){
+                candidatePreferredJob.forEach(function(jobRoleId){
+                    var candidatePastCompanyFirst = $('#candidatePastCompany_1_'+ jobRoleId).val();
+                    var candidatePastCompanySecond = $('#candidatePastCompany_2_'+ jobRoleId).val();
+                    var candidatePastCompanyThird = $('#candidatePastCompany_3_'+ jobRoleId).val();
+                    var candidatePastJobObj = {};
+                    var companyNameArray = [];
+                    companyNameArray.push(candidatePastCompanyFirst);
+                    companyNameArray.push(candidatePastCompanySecond);
+                    companyNameArray.push(candidatePastCompanyThird);
+                    candidatePastJobObj ["jobRoleId"] = parseInt(jobRoleId);
+                    candidatePastJobObj ["companyName"] = companyNameArray;
+                    candidatePastJobObj ["currentCompanyEnumVal"] = parseInt($('#currentCompany_'+ jobRoleId).val());
+                    pastJobArray.push(candidatePastJobObj);
+                }) ;
+            }
+
             /* Candidate ID proof */
             var candidateIdProofArray = [];
             var candidateIdProof = $('#candidateIdProof').val().split(",");
@@ -1350,8 +1416,9 @@ function saveProfileForm() {
                         }
                     });
                     $(this).find('select').each(function(){
-                        if($(this).val() != null){
+                        if($(this).val() != null && $(this).val().isArray){
                             item ["jobExpResponseIdArray"] = $(this).val().map(function(x) {
+                                console.log(x);
                                 return parseInt(x);
                             });
                         }
@@ -1379,12 +1446,6 @@ function saveProfileForm() {
                 candidateIsEmployed: ($('input:radio[name="employed"]:checked').val()),
                 candidateTotalExperience: totalExp,
 
-                candidateCurrentCompany: $('#candidateCurrentCompany').val(),
-                candidateCurrentSalary: ($('#candidateCurrentJobSalary').val()),
-
-                candidatePastJobCompany: $('#candidatePastCompany').val(),
-                candidatePastJobSalary: ($('#candidatePastJobSalary').val()),
-
                 candidateEducationLevel: higherEducation,
                 candidateDegree: ($('#candidateHighestDegree').val()),
                 candidateEducationInstitute: $('#candidateEducationInstitute').val(),
@@ -1402,7 +1463,9 @@ function saveProfileForm() {
                 supportNote: ($('#supportNote').val()),
 
                 expList: expList,
-                candidateEducationCompletionStatus: parseInt($('input:radio[name="candidateEducationCompletionStatus"]:checked').val())
+                candidateEducationCompletionStatus: parseInt($('input:radio[name="candidateEducationCompletionStatus"]:checked').val()),
+                pastCompany: pastJobArray,
+                candidateLastWithdrawnSalary: parseInt($('#candidateLastWithdrawnSalary').val())
 
             };
 
