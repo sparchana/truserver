@@ -740,16 +740,17 @@ public class Application extends Controller {
                 String candidateSkills = "";
 
                 //Languages Known
-                if(candidate.getLanguageKnownList().size() > 0){
+                if(candidate.getLanguageKnownList() != null && candidate.getLanguageKnownList().size() > 0) {
                     List<LanguageKnown> languageKnownList = candidate.getLanguageKnownList();
 
                     for(LanguageKnown l : languageKnownList){
-                        languagesKnown += l.getLanguage().getLanguageName() + "(" + l.getReadingAbility() + ", " + l.getWritingAbility() + ", " + l.getVerbalAbility() + "), ";
+                        languagesKnown += l.getLanguage().getLanguageName() + "(" + l.getReadingAbility() + ", " +
+                                l.getWritingAbility() + ", " + l.getVerbalAbility() + "), ";
                     }
                 }
 
                 //Skill
-                if(candidate.getCandidateSkillList().size() > 0){
+                if(candidate.getCandidateSkillList()!= null && candidate.getCandidateSkillList().size() > 0){
                     List<CandidateSkill> candidateSkillList = candidate.getCandidateSkillList();
 
                     for(CandidateSkill skill : candidateSkillList){
@@ -757,7 +758,7 @@ public class Application extends Controller {
                     }
                 }
 
-                if(candidate.getMotherTongue().getLanguageName() != null){
+                if(candidate.getMotherTongue() != null){
                     jobApplicationGoogleSheetResponse.setCandidateMotherTongue(candidate.getMotherTongue().getLanguageName());
                 }
 
