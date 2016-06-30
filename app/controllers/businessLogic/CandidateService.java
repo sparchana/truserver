@@ -336,12 +336,7 @@ public class CandidateService
                 && candidate.getCandidateEducation() != null
                 && candidate.getTimeShiftPreference() != null && candidate.getLanguageKnownList().size() > 0){
 
-            if(candidate.getCandidateIsEmployed() != null) {
-                    return ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE;
-            }
-            else{
                 return ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE;
-            }
         }
         return ServerConstants.CANDIDATE_MIN_PROFILE_NOT_COMPLETE;
     }
@@ -642,6 +637,9 @@ public class CandidateService
 
         if(degree != null){
             response.setDegree(degree);
+        }
+        if(request.getCandidateEducationCompletionStatus() != null){
+            response.setCandidateEducationCompletionStatus(request.getCandidateEducationCompletionStatus());
         }
         if(!Strings.isNullOrEmpty(request.getCandidateEducationInstitute())){
             response.setCandidateLastInstitute(request.getCandidateEducationInstitute());

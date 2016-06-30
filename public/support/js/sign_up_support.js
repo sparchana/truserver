@@ -274,24 +274,6 @@ function processDataAndFillAllFields(returnedData) {
             console.log(err);
         }
 
-        // populate and select past job role within the token input field
-        if (returnedData.jobHistoryList != null) {
-            /* get Candidate's past job role */
-            try {
-                var pastJobRole = returnedData.jobHistoryList;
-                pastJobRole.forEach(function (pastJob) {
-                    var id = pastJob.jobRole.jobRoleId;
-                    var name = pastJob.jobRole.jobName;
-                    var item = {};
-                    item ["id"] = id;
-                    item ["name"] = name;
-                    pastJobRoleArray.push(item);
-                });
-            } catch (err) {
-                console.log(err);
-            }
-        }
-
 
         /* get Candidate's idProofs */
         try {
@@ -412,8 +394,16 @@ function processDataAndFillAllFields(returnedData) {
                 if (returnedData.candidateEducation.degree != null) {
                     $("#candidateHighestDegree").val(returnedData.candidateEducation.degree.degreeId);
                 }
-                if (returnedData.candidateEducation != null) {
+                if (returnedData.candidateEducation.candidateLastInstitute != null) {
                     $("#candidateEducationInstitute").val(returnedData.candidateEducation.candidateLastInstitute);
+                }
+                if (returnedData.candidateEducation.candidateEducationCompletionStatus != null) {
+                    if (returnedData.candidateEducation.candidateEducationCompletionStatus == '1') {
+                        // hasCompletedEducation
+                        $('input[id=eduCompleted]').attr('checked', true);
+                    } else {
+                        $('input[id=eduCompletedNot]').attr('checked', true);
+                    }
                 }
             }
         } catch (err) {
@@ -1411,7 +1401,8 @@ function saveProfileForm() {
 
                 supportNote: ($('#supportNote').val()),
 
-                expList: expList
+                expList: expList,
+                candidateEducationCompletionStatus: parseInt($('input:radio[name="candidateEducationCompletionStatus"]:checked').val())
 
             };
 
