@@ -65,43 +65,16 @@ $(document).ready(function(){
         $(".navbar-default").css('background-color', 'white');
     }
     $(window).scroll(function() {
-        if ($(document).scrollTop() > 50) {
+        if ($(document).scrollTop() > 150) {
             $("#fixed-menu").css('background-color', '#2980b9');
-            var w = window.innerWidth;
-            if(w > 440){
-                $(".navbar-fixed-top").removeClass('fade-transparent').addClass("fade-background"); // if yes, then change the color of class "navbar-fixed-top" to white (#f8f8f8)
-                $("#navItem1").css('color', '#747474');
-                $("#navItem2").css('color', '#747474');
-                $("#navItem3").css('color', '#747474');
-                $("#navItem4").css('color', '#747474');
-                $("#navItem5").css('color', '#747474');
-
-                var image = document.getElementById('navLogo');
-                image.src = "/assets/new/img/logo-color.gif";
+            $("#fixed-menu").fadeIn();
+            $(".navbar-default").css('background-color', 'white');
+            if(w > 720){
+                $("#candidateMobile").css('margin-top', '-24px');
             }
         } else {
             $("#fixed-menu").css('background-color', 'rgba(0, 0, 0, 0.175)');
-            var w = window.innerWidth;
-            if(w > 480){
-
-                $(".navbar-fixed-top").removeClass("fade-background").addClass('fade-transparent'); // if not, change it back to transparent
-                $("#navItem1").css('color', '#ffffff');
-                $("#navItem2").css('color', '#ffffff');
-                $("#navItem3").css('color', '#ffffff');
-                $("#navItem4").css('color', '#ffffff');
-                $("#navItem5").css('color', '#ffffff');
-                var image = document.getElementById('navLogo');
-                image.src = "/assets/new/img/logo-main.gif";
-                var w = window.innerWidth;
-                if (w < 480) {
-                    $("#fixed-menu").css('background-color', 'transparent');
-                    $("#navItem1").css('color', '#747474');
-                    $("#navItem2").css('color', '#747474');
-                    $("#navItem3").css('color', '#747474');
-                    $("#navItem4").css('color', '#747474');
-                    $("#navItem5").css('color', '#747474');
-                }
-            }
+            $("#fixed-menu").fadeOut();
         }
     });
     
