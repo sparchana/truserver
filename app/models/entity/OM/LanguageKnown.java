@@ -47,9 +47,12 @@ public class LanguageKnown extends Model {
     @Column(name = "LanguageIntel", columnDefinition = "int(1) null")
     private Integer languageIntel;
 
+    @Column(name = "ReadWrite", columnDefinition = "int(1) null")
+    private Integer readWrite;
+
     public static Finder<String, LanguageKnown> find = new Finder(LanguageKnown.class);
 
-    public int getLanguageKnownId() {
+    public Integer getLanguageKnownId() {
         return languageKnownId;
     }
 
@@ -57,7 +60,7 @@ public class LanguageKnown extends Model {
         this.languageKnownId = languageKnownId;
     }
 
-    public int getVerbalAbility() {
+    public Integer getVerbalAbility() {
         return verbalAbility;
     }
 
@@ -65,7 +68,7 @@ public class LanguageKnown extends Model {
         this.verbalAbility = verbalAbility;
     }
 
-    public int getReadingAbility() {
+    public Integer getReadingAbility() {
         return readingAbility;
     }
 
@@ -73,7 +76,7 @@ public class LanguageKnown extends Model {
         this.readingAbility = readingAbility;
     }
 
-    public int getWritingAbility() {
+    public Integer getWritingAbility() {
         return writingAbility;
     }
 
@@ -111,5 +114,13 @@ public class LanguageKnown extends Model {
 
     public void setLanguageIntel(Integer languageIntel) {
         this.languageIntel = languageIntel;
+    }
+
+    public Integer getReadWrite() {
+        return readWrite;
+    }
+
+    public void setReadWrite(Integer readWrite) {
+        this.readWrite = readWrite;
     }
 }

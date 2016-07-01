@@ -445,7 +445,8 @@ function prefillCandidatePastJobExp(candidatePastJobExp) {
             if(jobHistory.candidatePastCompany != null){
                 $('#expPastCompany_'+jobRoleId+' #candidatePastCompany_'+count+'_'+jobRoleId).val(jobHistory.candidatePastCompany);
                 if(jobHistory.currentJob != null && jobHistory.currentJob != false){
-                    $('#currentCompany_'+jobRoleId).val(count);
+                    // set radio to true
+                    $('#radio_'+jobRoleId+'_'+count).prop('checked',true);
                 }
             }
         });
@@ -480,10 +481,7 @@ function prefillLanguageTable(languageKnownList) {
                     if (languageKnown.verbalAbility == "1" && x.name == "s") {
                         x.checked = true;
                         $(x).parent().addClass('active').siblings().removeClass('active');
-                    } else if (languageKnown.readingAbility == "1" && x.name == "r") {
-                        x.checked = true;
-                        $(x).parent().addClass('active').siblings().removeClass('active');
-                    } else if (languageKnown.writingAbility == "1" && x.name == "w") {
+                    } else if (languageKnown.readWrite == "1" && x.name == "rw") {
                         x.checked = true;
                         $(x).parent().addClass('active').siblings().removeClass('active');
                     } else if (languageKnown.languageIntel == "1" && x.name == "u") {
@@ -645,14 +643,12 @@ function populateLanguages(l, lId) {
             var cell3 = row.insertCell(2);
             var cell4 = row.insertCell(3);
             var cell5 = row.insertCell(4);
-            var cell6 = row.insertCell(5);
 
             cell1.innerHTML = l[i];
             cell2.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;";
             cell3.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"u\" value=0 >Understand</label></div>";
-            cell4.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"r\" value=0 >Read</label></div>";
-            cell5.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"w\" value=0 >Write</label></div>";
-            cell6.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >Speak</label></div>";
+            cell4.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >Speak</label></div>";
+            cell5.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"rw\" value=0 >Read/Write</label></div>";
         }
     }
 }
@@ -938,8 +934,10 @@ function processDataCheckExp(returnedData) {
             if(prevJobRoleId != singleQuestion.jobRole.jobRoleId){
                 // create a new title row
                 prevJobRoleId = singleQuestion.jobRole.jobRoleId;
+                var jobRoleId = singleQuestion.jobRole.jobRoleId;
+
                 var tr = tableExpOther.insertRow(0);
-                tr.id = "expHeader_" + singleQuestion.jobRole.jobRoleId;
+                tr.id = "expHeader_" + jobRoleId;
                 tr.setAttribute("style", "background-color:#337ab7; color:white;");
                 var td = tr.insertCell(0);
                 tr.insertCell(1);
@@ -949,7 +947,7 @@ function processDataCheckExp(returnedData) {
 
 
                 var trPastCompany = tableExpOther.insertRow(1);
-                trPastCompany.id = "expPastCompanyHead_" + singleQuestion.jobRole.jobRoleId;
+                trPastCompany.id = "expPastCompanyHead_" + jobRoleId;
                 trPastCompany.setAttribute("style", "background-color:#80CBC4; color:white;");
                 var tdPastCompany = trPastCompany.insertCell(0);
                 trPastCompany.insertCell(1);
@@ -958,23 +956,15 @@ function processDataCheckExp(returnedData) {
                 $('#expOtherTable tr:last').after(trPastCompany);
 
                 var trPastCompanyName = tableExpOther.insertRow(2);
-                trPastCompanyName.id = "expPastCompanyBody_" +singleQuestion.jobRole.jobRoleId;
+                trPastCompanyName.id = "expPastCompanyBody_" +jobRoleId;
                 var tdCompanyName = trPastCompanyName.insertCell(0);
                 var tdIsCurrentJob = trPastCompanyName.insertCell(1);
-                tdCompanyName.id = "expPastCompany_" + singleQuestion.jobRole.jobRoleId;
-                tdIsCurrentJob.id = "isCurrentCompany_" + singleQuestion.jobRole.jobRoleId;
-                tdCompanyName.innerHTML = '<div class="form-group col-xs-4" ><input id="candidatePastCompany_1_'+singleQuestion.jobRole.jobRoleId+'" type="text" class="form-control col-xs-4" "></div>'+
-                    '<div class="form-group col-xs-4" ><input id="candidatePastCompany_2_'+singleQuestion.jobRole.jobRoleId+'" type="text" class="form-control col-xs-4" "></div>'+
-                    '<div class="form-group col-xs-4" ><input id="candidatePastCompany_3_'+singleQuestion.jobRole.jobRoleId+'" type="text" class="form-control col-xs-4" "></div>';
-                tdIsCurrentJob.innerHTML = '<select id="currentCompany_'+singleQuestion.jobRole.jobRoleId+'">'+
-                    '<option >Select</option>'+
-                    '<option value="1">1</option>'+
-                    '<option value="2">2</option>'+
-                    '<option value="3">3</option>'+
-                    '</select>';
-
+                tdCompanyName.id = "expPastCompany_" + jobRoleId;
+                tdCompanyName.innerHTML =
+                    '<div class="form-group col-xs-4" ><input id="candidatePastCompany_1_'+jobRoleId+'" type="text" class="form-control col-xs-4" "><input type="radio" id="radio_'+jobRoleId+'_1" name="currentJob_'+jobRoleId+'" value="1">&nbsp; Current Job?</div>'+
+                    '<div class="form-group col-xs-4" ><input id="candidatePastCompany_2_'+jobRoleId+'" type="text" class="form-control col-xs-4" "><input type="radio" id="radio_'+jobRoleId+'_2" name="currentJob_'+jobRoleId+'" value="2">&nbsp; Current Job?</div>'+
+                    '<div class="form-group col-xs-4" ><input id="candidatePastCompany_3_'+jobRoleId+'" type="text" class="form-control col-xs-4" "><input type="radio" id="radio_'+jobRoleId+'_3" name="currentJob_'+jobRoleId+'" value="3">&nbsp; Current Job?</div>';
                 $('#expOtherTable tr:last').after(trPastCompanyName);
-
             }
             count++;
             var row = tableExpOther.insertRow(0);
@@ -1295,15 +1285,12 @@ function saveProfileForm() {
             if (check == 0) {
                 item["id"] = id;
                 item["u"] = 0;
-                item["r"] = 0;
-                item["w"] = 0;
+                item["rw"] = 0;
                 item["s"] = 0;
                 if (name == "u")
                     item["u"] = 1;
-                else if (name == "r")
-                    item["r"] = 1;
-                else if (name == "w")
-                    item["w"] = 1;
+                else if (name == "rw")
+                    item["rw"] = 1;
                 else
                     item["s"] = 1;
                 languageMap.push(item);
@@ -1311,10 +1298,8 @@ function saveProfileForm() {
             else {
                 if (name == "u")
                     languageMap[pos].u = 1;
-                else if (name == "r")
-                    languageMap[pos].r = 1;
-                else if (name == "w")
-                    languageMap[pos].w = 1;
+                else if (name == "rw")
+                    languageMap[pos].rw = 1;
                 else
                     languageMap[pos].s = 1;
             }
@@ -1374,7 +1359,7 @@ function saveProfileForm() {
                     companyNameArray.push(candidatePastCompanyThird);
                     candidatePastJobObj ["jobRoleId"] = parseInt(jobRoleId);
                     candidatePastJobObj ["companyName"] = companyNameArray;
-                    candidatePastJobObj ["currentCompanyEnumVal"] = parseInt($('#currentCompany_'+ jobRoleId).val());
+                    candidatePastJobObj ["currentCompanyEnumVal"] = parseInt($('input[name=currentJob_'+jobRoleId+']:checked').val());
                     pastJobArray.push(candidatePastJobObj);
                 }) ;
             }
@@ -1417,10 +1402,9 @@ function saveProfileForm() {
                             item ["jobExpQuestionId"] = parseInt($(this).attr('id').split("_").slice(-1).pop());
                         }
                     });
-                    $(this).find('select').each(function(){
-                        if($(this).val() != null && $(this).val().isArray){
+                    $(this).find('select ').each(function(){
+                        if($(this).val() != null){
                             item ["jobExpResponseIdArray"] = $(this).val().map(function(x) {
-                                console.log(x);
                                 return parseInt(x);
                             });
                         }

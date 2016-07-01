@@ -435,18 +435,15 @@ public class CandidateService
     }
 
     private static List<CandidateExp> getCandidateExpListFromAddSupportCandidate(List<AddSupportCandidateRequest.ExpList> expList, Candidate candidate) {
-        List<CandidateExp> candidateExpList = CandidateExp.find.where().eq("CandidateId", candidate.getCandidateId()).findList();
+        List<CandidateExp> candidateExpList = new ArrayList<>();
         /* Here List can be empty but not null */
         for (AddSupportCandidateRequest.ExpList exp : expList){
-            JobExpQuestion jobExpQuestion = JobExpQuestion.find.where().eq("jobExpQuestionId", exp.getJobExpQuestionId()).findUnique();
-            Query<JobExpResponse> query = JobExpResponse.find.query();
-            if(exp.getJobExpResponseIdArray() ==  null || exp.getJobExpResponseIdArray().isEmpty()){
-                List<CandidateExp> candidateExpListToDelete = CandidateExp.find.where().eq("jobExpQuestionId",exp.getJobExpQuestionId()).findList();
-                for(CandidateExp candidateExp : candidateExpListToDelete){
-                    candidateExp.delete();
-                }
+            if(exp == null || exp.getJobExpResponseIdArray() == null ){
                 continue;
             }
+            Logger.info("------------"+exp.getJobExpResponseIdArray());
+            JobExpQuestion jobExpQuestion = JobExpQuestion.find.where().eq("jobExpQuestionId", exp.getJobExpQuestionId()).findUnique();
+            Query<JobExpResponse> query = JobExpResponse.find.query();
             query = query.select("*")
                     .where()
                     .eq("jobExpQuestionId", exp.getJobExpQuestionId())
@@ -606,8 +603,7 @@ public class CandidateService
             }
             languageKnown.setLanguage(language);
             languageKnown.setLanguageIntel(candidateKnownLanguage.getU()); // understanding
-            languageKnown.setReadingAbility(candidateKnownLanguage.getR());
-            languageKnown.setWritingAbility(candidateKnownLanguage.getW());
+            languageKnown.setReadWrite(candidateKnownLanguage.getRw());
             languageKnown.setVerbalAbility(candidateKnownLanguage.getS());
             languageKnownList.add(languageKnown);
         }
