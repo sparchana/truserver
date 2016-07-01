@@ -229,6 +229,13 @@
                         <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Employment Status and Experience</h4>
                         <div>
                             <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Last Drawn Salary:</h5></div>
+                                <div class="col-sm-9">
+                                    <input id="candidateLastWithdrawnSalary" placeholder="What was your LastWithdrawn Salary?" type="number" class="form-control input-md">
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 4px">
                                 <div class="col-sm-3"><h5>Your Work Experience:</h5></div>
                                 <div class="col-sm-9">
                                     <div class="btn-group" data-toggle="buttons">
@@ -283,17 +290,11 @@
                                     </div>
                                 </div>
 
-                                <div class="row" style="margin-top: 4px">
-                                    <div class="col-sm-3"><h5>Last Drawn Salary:</h5></div>
-                                    <div class="col-sm-9">
-                                        <input id="candidateLastWithdrawnSalary" placeholder="What was your LastWithdrawn Salary?" type="number" class="form-control input-md">
-                                    </div>
-                                </div>
                             </div>
 
 
                             <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-3"><h5>Do you have a Job?:</h5></div>
+                                <div class="col-sm-3"><h5>Are you currently Working?:</h5></div>
                                 <div class="col-sm-9" style="margin-top: 6px;">
                                     <input type="radio" name="employed" id="employed" value="1" onclick="employedYes()">&nbsp;Yes&nbsp;&nbsp;
                                     <input type="radio" name="employed" id="employedNot" value="0" onclick="employedNo()">&nbsp;No
@@ -362,10 +363,6 @@
                             <table class="table table-striped" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
-                                        <th>Language Name</th>
-                                        <th>Read</th>
-                                        <th>Write</th>
-                                        <th>Speak</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -416,18 +413,10 @@
                             </div>
 
                             <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-5"><h5>Do you have an Relieving Letter for your Current job?:</h5></div>
-                                <div class="col-sm-7" style="margin-top: 6px;">
-                                    <input type="radio" name="payslip" id="payslipY" value="1">&nbsp;Yes&nbsp;&nbsp;
-                                    <input type="radio" name="payslip" id="payslipN" value="0">&nbsp;No
-                                </div>
-                            </div>
-
-                            <div class="row" style="margin-top: 4px">
                                 <div class="col-sm-5"><h5>Do you have an Experience Letter for your Current job?:</h5></div>
                                 <div class="col-sm-7" style="margin-top: 6px;">
-                                    <input type="radio" name="appointmentLetter" id="appointmentLetterY" value="1">&nbsp;Yes&nbsp;&nbsp;
-                                    <input type="radio" name="appointmentLetter" id="appointmentLetterN" value="0">&nbsp;No
+                                    <input type="radio" name="experienceLetter" id="experienceLetterY" value="1">&nbsp;Yes&nbsp;&nbsp;
+                                    <input type="radio" name="experienceLetter" id="experienceLetterN" value="0">&nbsp;No
                                 </div>
                             </div>
                         </div>

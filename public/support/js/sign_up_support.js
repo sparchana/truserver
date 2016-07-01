@@ -404,20 +404,12 @@ function processDataAndFillAllFields(returnedData) {
         }
 
         try {
-            if (returnedData.candidateSalarySlip != null) {
-                if (returnedData.candidateSalarySlip == '1') {
-                    $('input[id=payslipY]').attr('checked', true);
-                }
-                else {
-                    $('input[id=payslipN]').attr('checked', true);
-                }
-            }
-            if (returnedData.candidateAppointmentLetter != null) {
-                if (returnedData.candidateAppointmentLetter == '1') {
+            if (returnedData.candidateExperienceLetter != null) {
+                if (returnedData.candidateExperienceLetter == true) {
                     // hasPaySlip
-                    $('input[id=appointmentLetterY]').attr('checked', true);
+                    $('input[id=experienceLetterY]').attr('checked', true);
                 } else {
-                    $('input[id=appointmentLetterN]').attr('checked', true);
+                    $('input[id=experienceLetterN]').attr('checked', true);
                 }
             }
         } catch (err) {
@@ -492,6 +484,9 @@ function prefillLanguageTable(languageKnownList) {
                         x.checked = true;
                         $(x).parent().addClass('active').siblings().removeClass('active');
                     } else if (languageKnown.writingAbility == "1" && x.name == "w") {
+                        x.checked = true;
+                        $(x).parent().addClass('active').siblings().removeClass('active');
+                    } else if (languageKnown.languageIntel == "1" && x.name == "u") {
                         x.checked = true;
                         $(x).parent().addClass('active').siblings().removeClass('active');
                     }
@@ -650,12 +645,14 @@ function populateLanguages(l, lId) {
             var cell3 = row.insertCell(2);
             var cell4 = row.insertCell(3);
             var cell5 = row.insertCell(4);
+            var cell6 = row.insertCell(5);
 
             cell1.innerHTML = l[i];
             cell2.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;";
-            cell3.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"r\" value=0 >Read</label></div>";
-            cell4.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"w\" value=0 >Write</label></div>";
-            cell5.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >Speak</label></div>";
+            cell3.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"u\" value=0 >Understand</label></div>";
+            cell4.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"r\" value=0 >Read</label></div>";
+            cell5.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"w\" value=0 >Write</label></div>";
+            cell6.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >Speak</label></div>";
         }
     }
 }
@@ -1297,10 +1294,13 @@ function saveProfileForm() {
             }
             if (check == 0) {
                 item["id"] = id;
+                item["u"] = 0;
                 item["r"] = 0;
                 item["w"] = 0;
                 item["s"] = 0;
-                if (name == "r")
+                if (name == "u")
+                    item["u"] = 1;
+                else if (name == "r")
                     item["r"] = 1;
                 else if (name == "w")
                     item["w"] = 1;
@@ -1309,7 +1309,9 @@ function saveProfileForm() {
                 languageMap.push(item);
             }
             else {
-                if (name == "r")
+                if (name == "u")
+                    languageMap[pos].u = 1;
+                else if (name == "r")
                     languageMap[pos].r = 1;
                 else if (name == "w")
                     languageMap[pos].w = 1;
@@ -1457,8 +1459,7 @@ function saveProfileForm() {
                 candidateSkills: skillMap,
 
                 candidateIdProof: candidateIdProofArray,
-                candidateSalarySlip: ($('input:radio[name="payslip"]:checked').val()),
-                candidateAppointmentLetter: ($('input:radio[name="appointmentLetter"]:checked').val()),
+                candidateExperienceLetter: parseInt($('input:radio[name="experienceLetter"]:checked').val()),
 
                 supportNote: ($('#supportNote').val()),
 

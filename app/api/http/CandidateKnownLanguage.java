@@ -8,7 +8,7 @@ public class CandidateKnownLanguage {
     public int s;
     public int r;
     public int w;
-
+    public int u; // languageIntel in Model
 
     public String getId() {
         return id;
@@ -40,5 +40,13 @@ public class CandidateKnownLanguage {
 
     public void setW(int w) {
         this.w = w;
+    }
+
+    public int getU() {
+        return u;
+    }
+
+    public void setU(int u) {
+        this.u = u;
     }
 }

@@ -383,6 +383,20 @@ public class CandidateService
             Logger.info(" Exception while setting appointment letter flag");
             e.printStackTrace();
         }
+        try{
+            Boolean hasExperienceLetter = null;
+            if(supportCandidateRequest.getCandidateExperienceLetter() != null){
+                if(supportCandidateRequest.getCandidateExperienceLetter() == 1){
+                    hasExperienceLetter = true;
+                } else {
+                    hasExperienceLetter = false;
+                }
+            }
+            candidate.setCandidateExperienceLetter(hasExperienceLetter);
+        } catch(Exception e){
+            Logger.info(" Exception while setting exp letter flag");
+            e.printStackTrace();
+        }
 
         try{
             candidate.setCandidateSalarySlip(supportCandidateRequest.getCandidateSalarySlip());
@@ -591,6 +605,7 @@ public class CandidateService
                 return null;
             }
             languageKnown.setLanguage(language);
+            languageKnown.setLanguageIntel(candidateKnownLanguage.getU()); // understanding
             languageKnown.setReadingAbility(candidateKnownLanguage.getR());
             languageKnown.setWritingAbility(candidateKnownLanguage.getW());
             languageKnown.setVerbalAbility(candidateKnownLanguage.getS());

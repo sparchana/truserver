@@ -24,6 +24,7 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
     public List<Integer> candidateIdProof;
     public Integer candidateSalarySlip ;
     public Integer candidateAppointmentLetter ;
+    public Integer candidateExperienceLetter ;
     public String supportNote;
 
     public static class ExpList {
@@ -257,5 +258,13 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
 
     public void setCandidateLastWithdrawnSalary(Long candidateLastWithdrawnSalary) {
         this.candidateLastWithdrawnSalary = candidateLastWithdrawnSalary;
+    }
+
+    public Integer getCandidateExperienceLetter() {
+        return candidateExperienceLetter;
+    }
+
+    public void setCandidateExperienceLetter(Integer candidateExperienceLetter) {
+        this.candidateExperienceLetter = candidateExperienceLetter;
     }
 }

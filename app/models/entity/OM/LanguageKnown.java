@@ -44,6 +44,9 @@ public class LanguageKnown extends Model {
     @JoinColumn(name = "CandidateId", referencedColumnName= "CandidateId")
     private Candidate candidate;
 
+    @Column(name = "LanguageIntel", columnDefinition = "int(1) null")
+    private Integer languageIntel;
+
     public static Finder<String, LanguageKnown> find = new Finder(LanguageKnown.class);
 
     public int getLanguageKnownId() {
@@ -100,5 +103,13 @@ public class LanguageKnown extends Model {
 
     public void setCandidate(Candidate candidate) {
         this.candidate = candidate;
+    }
+
+    public Integer getLanguageIntel() {
+        return languageIntel;
+    }
+
+    public void setLanguageIntel(Integer languageIntel) {
+        this.languageIntel = languageIntel;
     }
 }
