@@ -24,6 +24,7 @@
         <link rel="icon" type="image/png" href="/assets/img/icon.png">
         <link rel="stylesheet" type="text/css" href="/assets/new/css/myStyle.css">
 
+
         <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
         <script type="text/javascript" src="/assets/js/home_page.js"></script>
         <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
@@ -41,6 +42,7 @@
           ga('create', 'UA-77156203-1', 'auto');
           ga('send', 'pageview');
         </script>
+
     </head>
     <body>
         <div id="preloader">
@@ -61,18 +63,18 @@
 
                     </button>
                     <div itemscope itemtype ="http://schema.org/logo">
-                    <a class="navbar-brand" href="#"><img id="navLogo" itemprop="Brand" src="/assets/new/img/logo-color.gif" alt="TruJobs Logo" height="32px" style="margin-top: -8px;"></a>
+                    <a class="navbar-brand" href="#"><img id="navLogo" itemprop="Brand" src="/assets/new/img/logo-color.gif" alt="TruJobs Logo" height="30px" style="margin-top: -8px;"></a>
                     </div>
                     </div>
 
                 <div class="collapse navbar-collapse" id="navigationbar">
                     <ul class="nav navbar-nav navbar-right">
-                        <li> <a href="#sectionOne"><font id="navItem1" color="#0065a4" style="letter-spacing: 1px;">HOME</font></a></li>
-                        <li> <a href="#hot_job_section"><font id="navItem2" color="#0065a4" style="letter-spacing: 1px;">APPLY TO JOBS</font></a></li>
-                        <li> <a href="#contact"><font id="navItem3" color="#0065a4" style="letter-spacing: 1px;">JOB HOTLINE 8880007799</font></a></li>
-                        <li> <a href="#recruiterSection"><font id="navItem4" color="#0065a4" style="letter-spacing: 1px;">FOR EMPLOYERS</font></a></li>
+                        <li> <a href="#sectionOne"><font id="navItem1" color="#0065a4" style="font-size: 12px; letter-spacing: 1px;">HOME</font></a></li>
+                        <li> <a href="#totalHotJobsCount"><font id="navItem2" color="#0065a4" style="font-size: 12px; letter-spacing: 1px;">APPLY TO JOBS</font></a></li>
+                        <li> <a href="#forCandidate"><font id="navItem3" color="#0065a4"  style="font-size: 12px; letter-spacing: 1px;">FOR CANDIDATES</font></a></li>
+                        <li> <a href="#forRecruiter"><font id="navItem4" color="#0065a4"  style="font-size: 12px; letter-spacing: 1px;">FOR EMPLOYERS</font></a></li>
                         <li> <a style="cursor: pointer;" data-toggle="modal" data-target="#myLoginModal" onClick="openLogin()">
-                            <font id="navItem5" color="#0065a4" style="letter-spacing: 1px;">
+                            <font id="navItem5" color="#0065a4"  style="font-size: 12px; letter-spacing: 1px;">
                                 <img src="/assets/new/img/sign_up.png" height="16px" style="margin-right: 6px"/>SIGN IN
                             </font></a>
                         </li>
@@ -82,6 +84,14 @@
             </div>
                 <!-- /.container -->
         </nav>
+        <div class="container">
+            <div id="fixed-menu" style="padding-bottom: 12px; padding-top: 8px; display: none" >
+                <div id="leadFormBox" class="input-group">
+                    <input type="text" class="form-control" placeholder="Enter mobile number" id="addLeadMobile" pattern="[7-9]{1}[0-9]{9}" maxlength="10">
+                    <button class="btn btn-default" type="button" onclick="addLead()" id="addLeadMobileButton">Find Job Now</button>
+                </div>
+            </div>
+        </div>
 
         <div id="myLoginModal" class="modal fade" role="dialog">
             <div class="modal-dialog">
@@ -254,23 +264,12 @@
             </div>
         </div>
         <div>
-            <div class="container">
-                <div id="fixed-menu" style="padding-bottom: 12px; padding-top: 8px; display: none" >
-                    <div id="leadFormBox" class="input-group">
-                        <input type="text" class="form-control" placeholder="Enter mobile number" id="addLeadMobile" pattern="[7-9]{1}[0-9]{9}" maxlength="10">
-                        <button class="btn btn-default" type="button" onclick="addLead()" id="addLeadMobileButton">Find Job Now</button>
-                    </div>
-                </div>
-            </div>
             <div id="sectionOne">
                 <font color="white">
                     <div class="row">
                         <div class="col-sm-9" id="headingMain">
                             <h1 style="letter-spacing: 2px;"><b>Find Entry Level and Experienced Jobs </b></h1>
-                            <h3 style="letter-spacing: 2px;" style="margin-top: 6px">Call 8880007799 to find jobs in top companies!</h3>
-                        </div>
-
-                        <div class="col-sm-3">
+                            <h2 style="letter-spacing: 2px; margin-top: 10px">Call 8880007799 to find jobs in top companies!</h2>
                         </div>
                     </div>
                 </font>
@@ -394,35 +393,15 @@
                 </div>
             </div>
         </div>
-
             <!-- start hot job -->
-        <div class="company_class" id="hot_job_section">
+        <div id="totalHotJobsCount">
+            <h3>
                 Apply to Jobs
+            </h3>
         </div>
+        <div id="hotJobs"></div>
+        <br>
 
-        <center id="temp_hot_job_section">
-            <div class="materialDash"></div>
-            <div class="container-fluid" id="company_box">
-                <div class="row">
-                    <div class="col-lg-1 visible-lg" id="arrow_left_hot">
-                        <a class="right carousel-control" href="#hot_job" role="button" data-slide="prev">
-                            <img class="img-responsive" src="/assets/new/img/arrow_left_hot.png">
-                        </a>
-                    </div>
-                    <div class="col-md-10">
-                        <div id="hot_job" class="carousel slide" data-ride="carousel">
-                            <div class="carousel-inner" role="listbox" id="hotJobPosts"></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-1 visible-lg" id="arrow_right_hot">
-                        <a class="right carousel-control" href="#hot_job" role="button" data-slide="next">
-                            <img class="img-responsive" src="/assets/new/img/arrow_right_hot.png">
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </center>
-        <hr>
         <div class="company_class">
             Companies Hiring From Us
         </div>
@@ -435,9 +414,7 @@
                     <div class="col-sm-12">
                         <div class="row">
                             <div class="col-lg-1 visible-lg">
-                                <a class="left carousel-control" href="#myCarousel" style="padding-top: 40px; padding-left: 50px"  role="button" data-slide="prev">
-                                    <img src="/assets/new/img/arrow_left_hot.png" alt="Job Vacancy">
-                                </a>
+                                <a class="left carousel-control" href="#" style="padding-top: 36px; padding-left: 50px"  role="button" data-slide="prev"></a>
                             </div>
                             <div class="col-sm-10">
                                 <div class="container-fluid" id="slider_logo">
@@ -450,7 +427,7 @@
                                                         <img class="img-responsive" src="/assets/new/img/urban_clap.png" alt="Companies Hiring">
                                                     </div>
                                                     <div class="col-sm-2">
-                                                        <img class="img-responsive" src="/assets/new/img/dunkin_donuts.png" alt="Companies Hiring">
+                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/dunkin_donuts.png" alt="Companies Hiring">
                                                     </div>
                                                     <div class="col-sm-2">
                                                         <img class="img-responsive" src="/assets/new/img/driveu.png" alt="Companies Hiring">
@@ -482,7 +459,7 @@
                                                         <img class="img-responsive" src="/assets/new/img/vito.png" alt="Companies Hiring">
                                                     </div>
                                                     <div class="col-sm-2">
-                                                        <img class="img-responsive" src="/assets/new/img/aegis.png" alt="Companies Hiring">
+                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/aegis.png" alt="Companies Hiring">
                                                     </div>
                                                     <div class="col-sm-2">
                                                         <img class="img-responsive" src="/assets/new/img/dominos.png" alt="Companies Hiring">
@@ -496,16 +473,13 @@
                                 </div>
                             </div>
                             <div class="col-lg-1 visible-lg">
-                                <a class="right carousel-control" style="padding-top: 56px; padding-right: 50px" href="#myCarousel" role="button" data-slide="next">
-                                    <img src="/assets/new/img/arrow_right_hot.png" alt="Job Vacancy">
-                                </a>
+                                <a class="right carousel-control" style="padding-top: 36px; padding-right: 50px" href="#" role="button" data-slide="next"></a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </center>
-
 
         <div class="sectionStats">
             <div class="row">
@@ -693,15 +667,15 @@
                     <div id="jobRoleNoBorder" style="padding-top: 20%; padding-bottom: 20%">
                         <img src="/assets/new/img/icons/plumber.svg" width="50px" alt="Plumber Job">
                         <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Plumber </span>
+                            <span itemprop="name"> Plumber </span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        </div>
 
         <!-- Are you a candidate -->
-        <div class="sectionThree">
+        <div class="sectionThree" id="forCandidate">
             <div class="row" style="text-align: center">
                 <div class="col-sm-6">
                     <h3>Are you a Candidate?</h3>
@@ -713,7 +687,7 @@
                                 <img src="/assets/new/img/circle_1.svg" width="52px" alt="Free Registration">
                             </div>
                             <div class="col-sm-1"></div>
-                            <div class="col-sm-8" id="steps" style="margin-top: 8px"><h5>Give a missed call to 8880007799</h5></div>
+                            <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Give a missed call to 8880007799</h4></div>
                         </div>
                         <br>
                         <div class="row">
@@ -722,7 +696,7 @@
                                 <img src="/assets/new/img/circle_2.svg" width="52px" alt="Create Profile">
                             </div>
                             <div class="col-sm-1"></div>
-                            <div class="col-sm-8" id="steps" style="margin-top: 8px"><h5>Create your Online Profile</h5></div>
+                            <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Create your Online Profile</h4></div>
                         </div>
                         <br>
                         <div class="row">
@@ -731,7 +705,7 @@
                                 <img src="/assets/new/img/circle_3.svg" width="52px" alt="Job Interview">
                             </div>
                             <div class="col-sm-1"></div>
-                            <div class="col-sm-8" id="steps" style="margin-top: 8px"><h5>Attend interviews and get job offers!</h5></div>
+                            <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Attend interviews and get job offers!</h4></div>
                         </div>
                         <br>
                         <a href="#sectionOne"><button id="registerBtn" class="btn btn-primary" style="padding: 2%"><font color="#ffffff">Register for FREE</font></button></a>
@@ -739,17 +713,12 @@
                 </div>
 
                     <!-- Recruiter -->
-                <div class="col-sm-6" id="recruiterSection">
-                    <div id="jobseeker_img">
-                        <img src="/assets/new/img/job_seeker.png" width="140px" alt="Job Seeker">
-                    </div>
-                </div>
+                <div class="col-sm-6 hidden-xs" id="recruiterSection"></div>
             </div>
         </div>
-        <hr>
 
         <!-- Are you a recruiter -->
-        <div class="sectionThree">
+        <div class="sectionThree"  id="forRecruiter">
             <div class="row" style="text-align: center">
                 <!-- Recruiter -->
                 <div class="col-sm-6" id="recruiterSection">
@@ -761,7 +730,7 @@
                             <img src="/assets/new/img/circle_2_3.svg" width="52px">
                         </div>
                         <div class="col-sm-1"></div>
-                        <div class="col-sm-8" id="steps" style="margin-top: 8px"><h5>Call 8880007799 to specify requirement</h5></div>
+                        <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Call 8880007799 to specify requirement</h4></div>
                     </div>
                     <br>
                     <div class="row">
@@ -770,7 +739,7 @@
                             <img src="/assets/new/img/circle_2_2.svg" width="52px">
                         </div>
                         <div class="col-sm-1"></div>
-                        <div class="col-sm-8" id="steps" style="margin-top: 8px"><h5>We will schedule interviews for you with pre-screened Candidates</h5></div>
+                        <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>We will schedule interviews for you with pre-screened Candidates</h4></div>
                     </div>
                     <br>
                     <div class="row">
@@ -779,7 +748,7 @@
                             <img src="/assets/new/img/circle_2_1.svg" width="52px">
                         </div>
                         <div class="col-sm-1"></div>
-                        <div class="col-sm-8" id="steps" style="margin-top: 8px"><h5>Conduct interviews and make Offers!</h5></div>
+                        <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Conduct interviews and make Offers!</h4></div>
                     </div>
                     <br>
                 </div>
@@ -808,7 +777,7 @@
                                 <input id="leadInterest" name="leadInterest" type="text" class="form-control input-md" value="Recruiter Registration">
                             </div>
                             <div class="reg_input">
-                                <button type="submit" class="form-control" id="modalBtn">Call Me</button>
+                                <button type="submit" class="form-control" id="modalBtn">Get in Touch</button>
                             </div>
                         </form>
                         <font color="red">
@@ -857,6 +826,16 @@
         <script type="text/javascript" src="/assets/js/reset_password.js"></script>
         <script type="text/javascript" src="/assets/js/login.js"></script>
         <script type="text/javascript" src="/assets/js/signup_candidate.js"></script>
+        <script>
+            $(document).ready(function () {
+                $(document).click(function (event) {
+                    $(".navbar-collapse").collapse('hide');
+                });
+            });
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+        </script>
             <!-- Facebook Pixel Code -->
         <script>
             !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
