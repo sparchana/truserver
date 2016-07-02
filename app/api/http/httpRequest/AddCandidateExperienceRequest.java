@@ -12,25 +12,19 @@ public class AddCandidateExperienceRequest extends AddCandidateRequest {
     public Integer candidateTotalExperience ;
     public Integer candidateIsEmployed ;
     public String candidateCurrentCompany;
-    public Long candidateCurrentSalary;
+    public Long candidateLastWithdrawnSalary;
 
     public Integer candidateMotherTongue ;
     public List<CandidateSkills> candidateSkills;
     public List<CandidateKnownLanguage> candidateLanguageKnown;
 
-
     /* setters and getters */
-
     public String getCandidateCurrentCompany() {
         return candidateCurrentCompany;
     }
 
     public Integer getCandidateIsEmployed() {
         return candidateIsEmployed;
-    }
-
-    public Long getCandidateCurrentSalary() {
-        return candidateCurrentSalary;
     }
 
     public void setCandidateLanguageKnown(List<CandidateKnownLanguage> candidateLanguageKnown) {
@@ -60,10 +54,6 @@ public class AddCandidateExperienceRequest extends AddCandidateRequest {
         this.candidateCurrentCompany = candidateCurrentCompany;
     }
 
-    public void setCandidateCurrentSalary(Long candidateCurrentSalary) {
-        this.candidateCurrentSalary = candidateCurrentSalary;
-    }
-
     public void setCandidateMotherTongue(Integer candidateMotherTongue) {
         this.candidateMotherTongue = candidateMotherTongue;
     }
@@ -74,5 +64,13 @@ public class AddCandidateExperienceRequest extends AddCandidateRequest {
 
     public List<CandidateKnownLanguage> getCandidateLanguageKnown() {
         return candidateLanguageKnown;
+    }
+
+    public Long getCandidateLastWithdrawnSalary() {
+        return candidateLastWithdrawnSalary;
+    }
+
+    public void setCandidateLastWithdrawnSalary(Long candidateLastWithdrawnSalary) {
+        this.candidateLastWithdrawnSalary = candidateLastWithdrawnSalary;
     }
 }

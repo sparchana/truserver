@@ -14,7 +14,6 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
     public String candidatePastJobCompany;
     public Integer candidatePastJobRole;
     public Long candidatePastJobSalary ;
-    public Long candidateLastWithdrawnSalary ;
     public Integer candidateCurrentJobLocation;
     public Integer candidateTransportation ;
     public Integer candidateCurrentWorkShift ;
@@ -53,10 +52,11 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
             this.jobExpResponseIdArray = jobExpResponseIdArray;
         }
     }
+
     public static class PastCompany {
         Integer jobRoleId;
-        List<String> companyName;
-        Integer currentCompanyEnumVal;
+        String companyName;
+        Boolean current;
 
         public PastCompany(){}
 
@@ -68,20 +68,20 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
             this.jobRoleId = jobRoleId;
         }
 
-        public List<String> getCompanyName() {
+        public String getCompanyName() {
             return companyName;
         }
 
-        public void setCompanyName(List<String> companyName) {
+        public void setCompanyName(String companyName) {
             this.companyName = companyName;
         }
 
-        public Integer getCurrentCompanyEnumVal() {
-            return currentCompanyEnumVal;
+        public Boolean getCurrent() {
+            return current;
         }
 
-        public void setCurrentCompanyEnumVal(Integer currentCompanyEnumVal) {
-            this.currentCompanyEnumVal = currentCompanyEnumVal;
+        public void setCurrent(Boolean current) {
+            this.current = current;
         }
     }
     public List<ExpList> expList;
@@ -244,20 +244,12 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
         this.expList = expList;
     }
 
-    public List<PastCompany> getPastCompany() {
+    public List<PastCompany> getPastCompanyList() {
         return pastCompany;
     }
 
-    public void setPastCompany(List<PastCompany> pastCompany) {
+    public void setPastCompanyList(List<PastCompany> pastCompany) {
         this.pastCompany = pastCompany;
-    }
-
-    public Long getCandidateLastWithdrawnSalary() {
-        return candidateLastWithdrawnSalary;
-    }
-
-    public void setCandidateLastWithdrawnSalary(Long candidateLastWithdrawnSalary) {
-        this.candidateLastWithdrawnSalary = candidateLastWithdrawnSalary;
     }
 
     public Integer getCandidateExperienceLetter() {

@@ -8,7 +8,7 @@ alter table candidateeducation add column candidateeducationcompletionstatus int
 
 alter table jobhistory add column currentJob bit null;
 
-alter table languageknown add column languageintel int(1) null;
+alter table languageknown add column understanding int(1) null;
 
 alter table languageknown add column readwrite int(1) null;
 
@@ -22,6 +22,6 @@ alter table candidateeducation drop column candidateeducationcompletionstatus;
 
 alter table jobhistory drop column currentJob;
 
-alter table languageknown drop column languageintel;
+alter table languageknown drop column understanding;
 
 alter table languageknown drop column readwrite;

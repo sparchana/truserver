@@ -44,8 +44,8 @@ public class LanguageKnown extends Model {
     @JoinColumn(name = "CandidateId", referencedColumnName= "CandidateId")
     private Candidate candidate;
 
-    @Column(name = "LanguageIntel", columnDefinition = "int(1) null")
-    private Integer languageIntel;
+    @Column(name = "Understanding", columnDefinition = "int(1) null")
+    private Integer understanding;
 
     @Column(name = "ReadWrite", columnDefinition = "int(1) null")
     private Integer readWrite;
@@ -108,12 +108,12 @@ public class LanguageKnown extends Model {
         this.candidate = candidate;
     }
 
-    public Integer getLanguageIntel() {
-        return languageIntel;
+    public Integer getUnderstanding() {
+        return understanding;
     }
 
-    public void setLanguageIntel(Integer languageIntel) {
-        this.languageIntel = languageIntel;
+    public void setUnderstanding(Integer understanding) {
+        this.understanding = understanding;
     }
 
     public Integer getReadWrite() {

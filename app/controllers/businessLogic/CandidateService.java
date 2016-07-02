@@ -336,6 +336,15 @@ public class CandidateService
                 && candidate.getCandidateEducation() != null
                 && candidate.getTimeShiftPreference() != null && candidate.getLanguageKnownList().size() > 0){
 
+            if(candidate.getCandidateTotalExperience() > 0){
+                // !Fresher
+                if(candidate.getCandidateLastWithdrawnSalary() != null && candidate.getCandidateLastWithdrawnSalary() > 0) {
+                    // has lastWithDrawnSalary
+                    return ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE;
+                } else {
+                    return ServerConstants.CANDIDATE_MIN_PROFILE_NOT_COMPLETE;
+                }
+            }
                 return ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE;
         }
         return ServerConstants.CANDIDATE_MIN_PROFILE_NOT_COMPLETE;
@@ -406,7 +415,7 @@ public class CandidateService
         }
 
         try{
-            candidate.setJobHistoryList(getJobHistoryListFromAddSupportCandidate(supportCandidateRequest.getPastCompany(), candidate));
+            candidate.setJobHistoryList(getJobHistoryListFromAddSupportCandidate(supportCandidateRequest.getPastCompanyList(), candidate));
         } catch(Exception e){
             Logger.info(" Exception while setting past job details");
             e.printStackTrace();
@@ -423,12 +432,6 @@ public class CandidateService
             candidate.setCandidateExpList(getCandidateExpListFromAddSupportCandidate(supportCandidateRequest.getExpList(), candidate));
         } catch(Exception e){
             Logger.info(" Exception while setting explist reference list");
-            e.printStackTrace();
-        }
-        try{
-            candidate.setCandidateLastWithdrawnSalary(((AddSupportCandidateRequest) request).getCandidateLastWithdrawnSalary());
-        } catch(Exception e){
-            Logger.info(" Exception while setting last withdrawn salary");
             e.printStackTrace();
         }
 
@@ -525,6 +528,13 @@ public class CandidateService
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
             Logger.info(" try catch exception Current job candidateCurrentJobDetail  = " + e);
         }
+
+        try{
+            candidate.setCandidateLastWithdrawnSalary(addCandidateExperienceRequest.getCandidateLastWithdrawnSalary());
+        } catch(Exception e){
+            Logger.info(" Exception while setting last withdrawn salary");
+            e.printStackTrace();
+        }
         try {
             candidate.setCandidateSkillList(getCandidateSkillListFromAddSupportCandidate(addCandidateExperienceRequest, candidate));
         } catch(Exception e){
@@ -602,7 +612,7 @@ public class CandidateService
                 return null;
             }
             languageKnown.setLanguage(language);
-            languageKnown.setLanguageIntel(candidateKnownLanguage.getU()); // understanding
+            languageKnown.setUnderstanding(candidateKnownLanguage.getU()); // understanding
             languageKnown.setReadWrite(candidateKnownLanguage.getRw());
             languageKnown.setVerbalAbility(candidateKnownLanguage.getS());
             languageKnownList.add(languageKnown);
@@ -682,32 +692,22 @@ public class CandidateService
         return response;
     }
 
-    private static List<JobHistory> getJobHistoryListFromAddSupportCandidate(List<AddSupportCandidateRequest.PastCompany> requestList, Candidate candidate) {
+    private static List<JobHistory> getJobHistoryListFromAddSupportCandidate(List<AddSupportCandidateRequest.PastCompany> pastCompanyList, Candidate candidate) {
         List<JobHistory> response = new ArrayList<>();
         // TODO: loop through the req and then store it in List
-        for(AddSupportCandidateRequest.PastCompany pastCompany: requestList){
-            if((pastCompany == null) || (pastCompany.getJobRoleId() == null && pastCompany.getCompanyName().isEmpty())){
+        for(AddSupportCandidateRequest.PastCompany pastCompany: pastCompanyList){
+            if((pastCompany == null) || (pastCompany.getJobRoleId() == null)){
                 Logger.info("Past company name not mentioned");
             } else{
                 JobRole jobRole = JobRole.find.where().eq("jobRoleId", pastCompany.getJobRoleId()).findUnique();
-                if(jobRole != null){
-                    int count = 0;
-                    for(String companyName : pastCompany.getCompanyName()) {
-                        count++;
-                        if(companyName.isEmpty()){
-                            continue;
-                        }
-                        JobHistory jobHistory = new JobHistory();
-                        jobHistory.setCandidate(candidate);
-                        jobHistory.setCandidatePastCompany(companyName);
-                        jobHistory.setJobRole(jobRole);
-                        if(pastCompany.getCurrentCompanyEnumVal() != null && pastCompany.getCurrentCompanyEnumVal() == count){
-                            jobHistory.setCurrentJob(true);
-                        } else {
-                            jobHistory.setCurrentJob(false);
-                        }
-                        response.add(jobHistory);
-                    }
+                if(jobRole != null && pastCompany.getCompanyName()!= null){
+                    JobHistory jobHistory = new JobHistory();
+                    jobHistory.setCandidate(candidate);
+                    jobHistory.setCandidatePastCompany(pastCompany.getCompanyName());
+                    jobHistory.setJobRole(jobRole);
+                    jobHistory.setCurrentJob(pastCompany.getCurrent());
+
+                    response.add(jobHistory);
                 }
             }
         }
@@ -744,7 +744,7 @@ public class CandidateService
         Logger.info("inserting current Job details");
         try{
             response.setCandidateCurrentCompany( request.getCandidateCurrentCompany());
-            response.setCandidateCurrentSalary(request.getCandidateCurrentSalary());
+            response.setCandidateCurrentSalary(request.getCandidateLastWithdrawnSalary());
 
             if(isSupport) {
                 AddSupportCandidateRequest supportCandidateRequest = (AddSupportCandidateRequest) request;
@@ -754,11 +754,10 @@ public class CandidateService
                     && supportCandidateRequest.getCandidateCurrentWorkShift() == null
                     && supportCandidateRequest.getCandidateCurrentJobRole() == null
                     && supportCandidateRequest.getCandidateCurrentJobLocation() == null
-                    && request.getCandidateCurrentSalary() == null
+                    && request.getCandidateLastWithdrawnSalary() == null
                     && request.getCandidateCurrentCompany() == null
                         ) {
                     return null;
-
                 }
 
                 response.setCandidateCurrentDesignation(supportCandidateRequest.getCandidateCurrentJobDesignation());
@@ -772,7 +771,7 @@ public class CandidateService
                 TimeShift timeShift = TimeShift.find.where().eq("timeShiftId", supportCandidateRequest.getCandidateCurrentWorkShift()).findUnique();
                 JobRole jobRole = JobRole.find.where().eq("jobRoleId",supportCandidateRequest.getCandidateCurrentJobRole()).findUnique();
                 Locality locality = Locality.find.where().eq("localityId", supportCandidateRequest.getCandidateCurrentJobLocation()).findUnique();
-                if(timeShift == null && jobRole == null && locality == null && request.getCandidateCurrentSalary() == null &&
+                if(timeShift == null && jobRole == null && locality == null && request.getCandidateLastWithdrawnSalary() == null &&
                         (request.getCandidateCurrentCompany() == null || request.getCandidateCurrentCompany().trim().isEmpty()))
                 {
                     return null;

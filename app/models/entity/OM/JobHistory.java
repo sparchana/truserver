@@ -24,6 +24,7 @@ public class JobHistory extends Model {
     @Column(name = "CandidatePastCompany", columnDefinition = "varchar(255) null")
     private String candidatePastCompany = "";
 
+    @JsonBackReference
     @Column(name = "CandidatePastSalary", columnDefinition = "bigint signed null")
     private Long candidatePastSalary;
 

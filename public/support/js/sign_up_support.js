@@ -443,7 +443,7 @@ function prefillCandidatePastJobExp(candidatePastJobExp) {
             }
             count++;
             if(jobHistory.candidatePastCompany != null){
-                $('#expPastCompany_'+jobRoleId+' #candidatePastCompany_'+count+'_'+jobRoleId).val(jobHistory.candidatePastCompany);
+                $('#expPastCompany_'+jobRoleId+' #candidatePastCompany_'+jobRoleId+'_'+count).val(jobHistory.candidatePastCompany);
                 if(jobHistory.currentJob != null && jobHistory.currentJob != false){
                     // set radio to true
                     $('#radio_'+jobRoleId+'_'+count).prop('checked',true);
@@ -484,7 +484,7 @@ function prefillLanguageTable(languageKnownList) {
                     } else if (languageKnown.readWrite == "1" && x.name == "rw") {
                         x.checked = true;
                         $(x).parent().addClass('active').siblings().removeClass('active');
-                    } else if (languageKnown.languageIntel == "1" && x.name == "u") {
+                    } else if (languageKnown.understanding == "1" && x.name == "u") {
                         x.checked = true;
                         $(x).parent().addClass('active').siblings().removeClass('active');
                     }
@@ -743,9 +743,12 @@ function saveResponse(leadId) {
 }
 
 function employedYes() {
+    $('input:radio[name="currentJob"]').attr('disabled', false);
 }
 
 function employedNo() {
+    $('input:radio[name="currentJob"]').attr('disabled',true);
+    $('input:radio[name="currentJob"]:checked').attr('checked',false);
 }
 
 function resetFolloupBox() {
@@ -961,9 +964,9 @@ function processDataCheckExp(returnedData) {
                 var tdIsCurrentJob = trPastCompanyName.insertCell(1);
                 tdCompanyName.id = "expPastCompany_" + jobRoleId;
                 tdCompanyName.innerHTML =
-                    '<div class="form-group col-xs-4" ><input id="candidatePastCompany_1_'+jobRoleId+'" type="text" class="form-control col-xs-4" "><input type="radio" id="radio_'+jobRoleId+'_1" name="currentJob_'+jobRoleId+'" value="1">&nbsp; Current Job?</div>'+
-                    '<div class="form-group col-xs-4" ><input id="candidatePastCompany_2_'+jobRoleId+'" type="text" class="form-control col-xs-4" "><input type="radio" id="radio_'+jobRoleId+'_2" name="currentJob_'+jobRoleId+'" value="2">&nbsp; Current Job?</div>'+
-                    '<div class="form-group col-xs-4" ><input id="candidatePastCompany_3_'+jobRoleId+'" type="text" class="form-control col-xs-4" "><input type="radio" id="radio_'+jobRoleId+'_3" name="currentJob_'+jobRoleId+'" value="3">&nbsp; Current Job?</div>';
+                    '<div class="form-group col-xs-4" ><input id="candidatePastCompany_'+jobRoleId+'_1" type="text" class="form-control col-xs-4" "><input type="radio" id="radio_'+jobRoleId+'_1" name="currentJob" value="'+jobRoleId+'_1" onclick="validateCurrentJob($(this).val())" disabled>&nbsp; Current Job?</div>'+
+                    '<div class="form-group col-xs-4" ><input id="candidatePastCompany_'+jobRoleId+'_2" type="text" class="form-control col-xs-4" "><input type="radio" id="radio_'+jobRoleId+'_2" name="currentJob" value="'+jobRoleId+'_2" onclick="validateCurrentJob($(this).val())" disabled>&nbsp; Current Job?</div>'+
+                    '<div class="form-group col-xs-4" ><input id="candidatePastCompany_'+jobRoleId+'_3" type="text" class="form-control col-xs-4" "><input type="radio" id="radio_'+jobRoleId+'_3" name="currentJob" value="'+jobRoleId+'_3" onclick="validateCurrentJob($(this).val())" disabled>&nbsp; Current Job?</div>';
                 $('#expOtherTable tr:last').after(trPastCompanyName);
             }
             count++;
@@ -1104,6 +1107,19 @@ function prefillInteractionNote(leadId) {
             success: processInteractionNote,
             error: false
         });
+}
+
+function validateCurrentJob(currentJobValue) {
+    var cellValue = $('#candidatePastCompany_'+currentJobValue).val();
+    if(cellValue == "") {
+        alert("Please specify company name");
+        $('input:radio[name="currentJob"]:checked').attr('checked',false);
+    }
+    if($('input:radio[name="employed"]:checked').val() == "0"){
+        $('input:radio[name="currentJob"]:checked').attr('checked',false);
+        $('input:radio[name="currentJob"]').attr('disabled',true);
+        alert("Please mark Currently Employed as Yes to specify current company")
+    }
 }
 
 function processInteractionNote(interactionNoteList) {
@@ -1349,18 +1365,13 @@ function saveProfileForm() {
 
             if(candidatePreferredJob !=  null){
                 candidatePreferredJob.forEach(function(jobRoleId){
-                    var candidatePastCompanyFirst = $('#candidatePastCompany_1_'+ jobRoleId).val();
-                    var candidatePastCompanySecond = $('#candidatePastCompany_2_'+ jobRoleId).val();
-                    var candidatePastCompanyThird = $('#candidatePastCompany_3_'+ jobRoleId).val();
-                    var candidatePastJobObj = {};
-                    var companyNameArray = [];
-                    companyNameArray.push(candidatePastCompanyFirst);
-                    companyNameArray.push(candidatePastCompanySecond);
-                    companyNameArray.push(candidatePastCompanyThird);
-                    candidatePastJobObj ["jobRoleId"] = parseInt(jobRoleId);
-                    candidatePastJobObj ["companyName"] = companyNameArray;
-                    candidatePastJobObj ["currentCompanyEnumVal"] = parseInt($('input[name=currentJob_'+jobRoleId+']:checked').val());
-                    pastJobArray.push(candidatePastJobObj);
+                    var candidatePastCompanyFirst = $('#candidatePastCompany_'+ jobRoleId + '_1').val();
+                    var candidatePastCompanySecond = $('#candidatePastCompany_'+ jobRoleId + '_2').val();
+                    var candidatePastCompanyThird = $('#candidatePastCompany_'+ jobRoleId + '_3').val();
+
+                    pastJobArray.push(constructPastJobObj(jobRoleId, candidatePastCompanyFirst, 1));
+                    pastJobArray.push(constructPastJobObj(jobRoleId, candidatePastCompanySecond, 2));
+                    pastJobArray.push(constructPastJobObj(jobRoleId, candidatePastCompanyThird, 3));
                 }) ;
             }
 
@@ -1466,12 +1477,46 @@ function saveProfileForm() {
         }
     }
 }
+
+function constructPastJobObj(jobRoleId, cName ,i){
+   /* if(jobRoleId != null && (cName !=  null || cName != "")){
+
+    }*/
+    var candidatePastJobObj = {};
+    candidatePastJobObj ["jobRoleId"] = parseInt(jobRoleId);
+    candidatePastJobObj ["companyName"] = cName;
+    candidatePastJobObj ["current"] = checkIsCurrent(jobRoleId, i);
+    return candidatePastJobObj;
+}
+
+function checkIsCurrent(jobRoleId, i){
+    try {
+
+        var currentJob = $('input[name=currentJob]:checked').val();
+        if(currentJob != null){
+            var currentJobRoleId = currentJob.split("_")[0];
+            var IdxMarkedAsCurrent = currentJob.split("_")[1];
+            if(currentJobRoleId == jobRoleId && IdxMarkedAsCurrent == i){
+                return true;
+            } else {
+                return false;
+            }
+        }
+    } catch (e){
+        console.log("exception !!" + e);
+    }
+}
+
 function clickFresher(){
     $("#totalWorkExperience").hide();
 }
+
 function clickExperienced(){
     $("#totalWorkExperience").show();
     generateExperience($('#candidateJobPref').val());
+    if($('input[name=employed]:checked').val() == "1") {
+        $('input[name=currentJob]').attr('disabled', false);
+    }
 }
 // form_candidate ajax script
 $(function () {

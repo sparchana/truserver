@@ -315,9 +315,9 @@
                       </div>
 
                       <div class="row" style="margin-top: 8px">
-                        <div class="col-sm-3"><h5>Current Job Salary<font color="red">*</font></h5></div>
+                        <div class="col-sm-3"><h5>Last Withdrawn Salary<font color="red">*</font></h5></div>
                         <div class="col-sm-2">
-                          <input id="candidateCurrentJobSalary" placeholder="Salary" type="number" class="form-control input-md">
+                          <input id="candidateLastWithdrawnSalary" placeholder="Salary" type="number" class="form-control input-md">
                         </div>
                         <div class="col-sm-2" style="margin-top: 8px">₹/month</div>
                       </div>
@@ -327,12 +327,6 @@
                 <br>
                 <div id="profileUpdateHeader"><h4>Language Details</h4></div>
                 <div class=profileBody>
-                  <div class="row">
-                    <div class="col-sm-3"><h5>Mother Tongue?<div style="color : #9f9f9f; font-size: 12px">(optional)</div></h5></div>
-                    <div class="col-sm-9">
-                      <select id="candidateMotherTongue" style="width: 137.5px" class="selectDropdown" ></select>
-                    </div>
-                  </div>
                   <br>
                   <table id="languageTable" class="table table-striped" cellspacing="0" width="100%">
                     <h5>Languages you know</h5>
@@ -454,18 +448,18 @@
           $("#educationProfileSection").hide();
         }
 
-        function showEducationSection(){
+        function showEducationSection() {
           $("#basicProfileSection").hide();
           $("#skillProfileSection").hide();
           $("#educationProfileSection").show();
         }
 
-        function clickFresher(){
+        function clickFresher() {
           $("#totalWorkExperience").hide();
           $("#isEmployedForm").hide();
           $("#isEmployedSelect").hide();
         }
-        function clickExperienced(){
+        function clickExperienced() {
           $("#totalWorkExperience").show();
           $("#isEmployedSelect").show();
         }

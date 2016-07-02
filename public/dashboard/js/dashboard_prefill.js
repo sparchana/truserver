@@ -162,17 +162,17 @@ function prefillSkillProfile(){
     }
     /* current company details */
     try {
+        if(candidateInformation.candidateLastWithdrawnSalary != null){
+            try{
+                $("#candidateLastWithdrawnSalary").val(candidateInformation.candidateLastWithdrawnSalary);
+            } catch(err){
+                console.log(err);
+            }
+        }
         if(candidateInformation.candidateCurrentJobDetail != null){
             if(candidateInformation.candidateCurrentJobDetail.candidateCurrentCompany != null && candidateInformation.candidateCurrentJobDetail.candidateCurrentCompany != ""){
                 try{
                     $("#candidateCurrentCompany").val(candidateInformation.candidateCurrentJobDetail.candidateCurrentCompany);
-                } catch(err){
-                    console.log(err);
-                }
-            }
-            if(candidateInformation.candidateCurrentJobDetail.candidateCurrentSalary != null){
-                try{
-                    $("#candidateCurrentJobSalary").val(candidateInformation.candidateCurrentJobDetail.candidateCurrentSalary);
                 } catch(err){
                     console.log(err);
                 }
@@ -340,14 +340,14 @@ function prefillLanguageTable(languageKnownList) {
             var x = document.createElement("INPUT");
             x= $(this).get(0);
             languageKnownList.forEach(function (languageKnown) {
-                if(x.id == languageKnown.language.languageId){
-                    if(languageKnown.verbalAbility == "1" && x.name == "s") {
+                if (x.id == languageKnown.language.languageId) {
+                    if (languageKnown.verbalAbility == "1" && x.name == "s") {
                         x.checked = true;
                         $(x).parent().addClass('active').siblings().removeClass('active');
-                    } else if (languageKnown.readingAbility == "1" && x.name == "r") {
+                    } else if (languageKnown.readWrite == "1" && x.name == "rw") {
                         x.checked = true;
                         $(x).parent().addClass('active').siblings().removeClass('active');
-                    } else if(languageKnown.writingAbility == "1" && x.name == "w") {
+                    } else if (languageKnown.understanding == "1" && x.name == "u") {
                         x.checked = true;
                         $(x).parent().addClass('active').siblings().removeClass('active');
                     }
@@ -510,8 +510,8 @@ function saveCandidateExperienceDetails(){
 
         if(experienceStatus == 1 && $('input:radio[name="isEmployed"]:checked').val() == null){
             alert("Select Current Employment Status");
-        } else if((experienceStatus == 1) && ($('input:radio[name="isEmployed"]:checked').val() == 1) && ($('#candidateCurrentJobSalary').val() == null || $('#candidateCurrentJobSalary').val() == "" || $('#candidateCurrentJobSalary').val() == "0")){
-            alert("Enter your current salary");
+        } else if((experienceStatus == 1) && ($('input:radio[name="isEmployed"]:checked').val() == 1) && ($('#candidateLastWithdrawnSalary').val() == null || $('#candidateLastWithdrawnSalary').val() == "" || $('#candidateLastWithdrawnSalary').val() == "0")){
+            alert("Enter your Last Withdrawn Salary");
         }
 
         else if(experienceStatus == 1 && totalExp == 0){
@@ -534,39 +534,39 @@ function saveCandidateExperienceDetails(){
                             break;
                         }
                     }
-                    if(check==0){
+                    if (check == 0) {
                         item["id"] = id;
-                        item["r"] = 0;
-                        item["w"] = 0;
+                        item["u"] = 0;
+                        item["rw"] = 0;
                         item["s"] = 0;
-                        if(name == "r")
-                            item["r"] = 1;
-                        else if(name == "w")
-                            item["w"] = 1;
+                        if (name == "u")
+                            item["u"] = 1;
+                        else if (name == "rw")
+                            item["rw"] = 1;
                         else
                             item["s"] = 1;
                         languageMap.push(item);
                     }
-                    else{
-                        if(name == "r")
-                            languageMap[pos].r = 1;
-                        else if(name == "w")
-                            languageMap[pos].w = 1;
+                    else {
+                        if (name == "u")
+                            languageMap[pos].u = 1;
+                        else if (name == "rw")
+                            languageMap[pos].rw = 1;
                         else
                             languageMap[pos].s = 1;
                     }
                 }).get();
 
                 var candidateCurrentCompanyVal = "";
-                var candidateCurrentSalaryVal = "";
+                var candidateLastWithdrawnSalary = "";
 
                 if($('input:radio[name="isEmployed"]:checked').val() == 0){
                     candidateCurrentCompanyVal = null;
-                    candidateCurrentSalaryVal = 0;
+                    candidateLastWithdrawnSalary = 0;
                 }
                 else{
                     candidateCurrentCompanyVal = $('#candidateCurrentCompany').val();
-                    candidateCurrentSalaryVal = $('#candidateCurrentJobSalary').val();
+                    candidateLastWithdrawnSalary = $('#candidateLastWithdrawnSalary').val();
                 }
 
                 var d = {
@@ -577,9 +577,8 @@ function saveCandidateExperienceDetails(){
                     candidateTotalExperience: totalExp,
                     candidateIsEmployed: $('input:radio[name="isEmployed"]:checked').val(),
                     candidateCurrentCompany: candidateCurrentCompanyVal,
-                    candidateCurrentSalary: candidateCurrentSalaryVal,
+                    candidateLastWithdrawnSalary: candidateLastWithdrawnSalary,
 
-                    candidateMotherTongue: ($('#candidateMotherTongue').val()),
                     candidateLanguageKnown: languageMap,
 
                     candidateSkills: skillMap
