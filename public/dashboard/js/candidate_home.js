@@ -122,7 +122,7 @@ function processDataAllJobPosts(returnedData) {
             jobItemPanelHeading.id = "hot_box_head";
             jobItemPanel.appendChild(jobItemPanelHeading);
             var jobLogo = document.createElement("img");
-            jobLogo.src = "/assets/new/img/" + jobPosts.company.companyLogo + ".png";
+            jobLogo.src = jobPosts.company.companyLogo;
             jobItemPanelHeading.appendChild(jobLogo);
             var jobItemPanelBody = document.createElement("div");
             jobItemPanelBody.className = "panel-body";
@@ -155,23 +155,46 @@ function processDataAllJobPosts(returnedData) {
             jobItemLocation.className = "hot_body_location";
             var localityList = jobPosts.jobPostToLocalityList;
             var localities = "";
+            var allLocalities = "";
             var loopCount = 0;
+
             localityList.forEach(function (locality) {
                 loopCount ++;
                 if(loopCount > 2){
                     return false;
-                }
-                var name = locality.locality.localityName;
-                localities += name;
-                if(loopCount < Object.keys(localityList).length){
-                    localities += ", ";
+                } else{
+                    var name = locality.locality.localityName;
+                    localities += name;
+                    if(loopCount < Object.keys(localityList).length){
+                        localities += ", ";
+                    }
                 }
             });
-            if(((localityList.length) - 2) > 0 ){
-                localities += " more";
-            }
+
+            loopCount = 0;
+            localityList.forEach(function (locality) {
+                loopCount++;
+                var name = locality.locality.localityName;
+                allLocalities += name;
+                if(loopCount < Object.keys(localityList).length){
+                    allLocalities += ", ";
+                }
+            });
             jobItemLocation.textContent = localities;
             jobItemPanelBody.appendChild(jobItemLocation);
+
+            if(((localityList.length) - 2) > 0 ){
+                var tooltip = document.createElement("a");
+                tooltip.id = "locationMsg_" + jobPosts.jobPostId;
+                tooltip.title = allLocalities;
+                tooltip.style = "color: #2980b9";
+                tooltip.textContent = " more";
+                jobItemLocation.appendChild(tooltip);
+            }
+
+            $("#locationMsg_" + jobPosts.jobPostId).attr("data-toggle", "tooltip");
+            /*  apply button */
+
             var applyBtnDiv = document.createElement("button");
             applyBtnDiv.className = "btn btn-primary";
             applyBtnDiv.id = jobPosts.jobPostId;
@@ -227,7 +250,7 @@ function setJobs(returnedData, start, totalJobs){
             jobItemPanelHeading.id = "hot_box_head";
             jobItemPanel.appendChild(jobItemPanelHeading);
             var jobLogo = document.createElement("img");
-            jobLogo.src = "/assets/new/img/" + jobPosts.company.companyLogo + ".png";
+            jobLogo.src = jobPosts.company.companyLogo;
             jobItemPanelHeading.appendChild(jobLogo);
             var jobItemPanelBody = document.createElement("div");
             jobItemPanelBody.className = "panel-body";
@@ -260,23 +283,42 @@ function setJobs(returnedData, start, totalJobs){
             jobItemLocation.className = "hot_body_location";
             var localityList = jobPosts.jobPostToLocalityList;
             var localities = "";
+            var allLocalities = "";
             var loopCount = 0;
             localityList.forEach(function (locality) {
                 loopCount ++;
                 if(loopCount > 2){
-                    return false;
-                }
-                var name = locality.locality.localityName;
-                localities += name;
-                if(loopCount < Object.keys(localityList).length){
-                    localities += ", ";
+                    var name = locality.locality.localityName;
+                    allLocalities += name;
+                    if(loopCount < Object.keys(localityList).length){
+                        allLocalities += ", ";
+                    }
+                } else{
+                    name = locality.locality.localityName;
+                    localities += name;
+                    allLocalities += name;
+                    if(loopCount < 2){
+                        localities += ", ";
+                    } else{
+                        allLocalities += ", ";
+                    }
                 }
             });
-            if(((localityList.length) - 2) > 0 ){
-                localities += " more";
-            }
             jobItemLocation.textContent = localities;
             jobItemPanelBody.appendChild(jobItemLocation);
+
+            if(((localityList.length) - 2) > 0 ){
+                var tooltip = document.createElement("a");
+                tooltip.id = "locationMsg_" + jobPosts.jobPostId;
+                tooltip.title = allLocalities;
+                tooltip.style = "color: #2980b9";
+                tooltip.textContent = " more";
+                jobItemLocation.appendChild(tooltip);
+            }
+
+            $("#locationMsg_" + jobPosts.jobPostId).attr("data-toggle", "tooltip");
+            /*  apply button */
+
             var applyBtnDiv = document.createElement("button");
             applyBtnDiv.className = "btn btn-primary";
             applyBtnDiv.id = jobPosts.jobPostId;
