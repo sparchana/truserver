@@ -3,6 +3,7 @@ package models.entity;
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.PrivateOwned;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.OM.*;
 import models.entity.OO.CandidateCurrentJobDetail;
@@ -130,7 +131,7 @@ public class Candidate extends Model {
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Lead lead;
 
-    @JsonManagedReference
+    @JsonBackReference
     @JoinColumn(name = "candidateCurrentJobId", referencedColumnName = "candidateCurrentJobId")
     @OneToOne(cascade = CascadeType.ALL)
     private CandidateCurrentJobDetail candidateCurrentJobDetail;
