@@ -3,7 +3,10 @@ package controllers;
 import api.ServerConstants;
 import api.http.httpRequest.*;
 import api.http.httpResponse.*;
+import com.avaje.ebean.Ebean;
+import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.Query;
+import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,7 +19,6 @@ import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
 import play.api.Play;
-import play.cache.Cached;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -32,6 +34,8 @@ import java.util.stream.Collectors;
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {
+
+    private static boolean isDevMode = Play.isDev(Play.current());
 
     public static Result index() {
         String sessionId = session().get("sessionId");
@@ -554,7 +558,7 @@ public class Application extends Controller {
                 if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE){
                     return redirect(routes.Application.support());
                 }
-                if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_UPLOADER) {
+                if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_ADMIN) {
                     return ok(views.html.uploadcsv.render());
                 }
             }
@@ -563,6 +567,7 @@ public class Application extends Controller {
         }
         return redirect(routes.Application.supportAuth());
     }
+
 
     public static Result updateIsAssessedToAssessed() {
         if(session().get("candidateId") != null){
@@ -801,57 +806,49 @@ public class Application extends Controller {
         return ok(toJson(jobApplicationGoogleSheetResponse));
     }
 
-    @Cached(key= "allLocalities")
     public static Result getAllLocality() {
-        List<Locality> localities = Locality.find.findList();
+        List<Locality> localities = Locality.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(localities));
     }
 
-    @Cached(key= "allJobs")
     public static Result getAllJobs() {
-        List<JobRole> jobs = JobRole.find.findList();
+        List<JobRole> jobs = JobRole.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(jobs));
     }
 
-    @Cached(key= "allShifts")
     @Security.Authenticated(Secured.class)
     public static Result getAllShift() {
-        List<TimeShift> timeShifts = TimeShift.find.findList();
+        List<TimeShift> timeShifts = TimeShift.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(timeShifts));
     }
 
-    @Cached(key= "allTransportModes")
     @Security.Authenticated(Secured.class)
     public static Result getAllTransportation() {
-        List<TransportationMode> transportationModes = TransportationMode.find.findList();
+        List<TransportationMode> transportationModes = TransportationMode.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(transportationModes));
     }
 
-    @Cached(key= "allEducation")
     @Security.Authenticated(Secured.class)
     public static Result getAllEducation() {
-        List<Education> educations = Education.find.findList();
+        List<Education> educations = Education.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(educations));
     }
 
-    @Cached(key= "allLanguages")
     @Security.Authenticated(Secured.class)
     public static Result getAllLanguage() {
-        List<Language> languages = Language.find.findList();
+        List<Language> languages = Language.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(languages));
     }
 
-    @Cached(key= "allIDProof")
     @Security.Authenticated(Secured.class)
     public static Result getAllIdProof() {
-        List<IdProof> idProofs = IdProof.find.findList();
+        List<IdProof> idProofs = IdProof.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(idProofs));
     }
 
-    @Cached(key= "allDegree")
     @Security.Authenticated(Secured.class)
     public static Result getAllDegree() {
-        List<Degree> degreeList = Degree.find.findList();
+        List<Degree> degreeList = Degree.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(degreeList));
     }
 
@@ -863,7 +860,7 @@ public class Application extends Controller {
 
     @Security.Authenticated(Secured.class)
     public static Result getAllExperience() {
-        List<Experience> experienceList = Experience.find.findList();
+        List<Experience> experienceList = Experience.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(experienceList));
     }
 
@@ -1006,5 +1003,19 @@ public class Application extends Controller {
             return ok(toJson(response));
         }
         return ok();
+    }
+
+
+    @Security.Authenticated(Secured.class)
+    public static Result invalidateDbCache() {
+
+        String sessionId = session().get("sessionId");
+        Developer developer = Developer.find.where().eq("developerSessionId", sessionId ).findUnique();
+        if(developer != null && developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_ADMIN) {
+            ServerCacheManager serverCacheManager = Ebean.getServerCacheManager();
+            serverCacheManager.clearAll();
+            return ok("Cleared Static Cache");
+        }
+        return redirect("/street");
     }
 }
