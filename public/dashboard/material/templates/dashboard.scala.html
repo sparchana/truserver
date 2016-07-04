@@ -1,0 +1,260 @@
+<div class="profileBody">
+  <h3 style="display: inline-block">Profile</h3>
+  <div id="editBtn" onclick="loadEditProfile()">&nbsp;</div>
+  <hr>
+  <div class="profileSectionOne" id="dashboardProfileBody">
+    <div id="profileTitle"><font size="2"><b>PREFERENCES</b></font></div>
+    <div class="row" style="padding: 3%">
+      <div class="col-sm-12">
+        <div style="display : inline-block; margin: 4px;top:0">
+          <img src="/assets/img/job.svg" height="24px;" style="margin-top: -4px">
+        </div>
+        <div style="display: inline-block;">
+          <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Preferred Job Role(s)</div>
+          <div id="userJobs" style="margin-left: 4px; display: inline-block">...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="padding: 3%; padding-top: 0%">
+      <div class="col-sm-12">
+        <div style="display : inline-block; margin: 4px;">
+          <img src="/assets/img/location.svg" height="24px;" style="margin-top: -4px">
+        </div>
+        <div style="display: inline-block; margin-top: 4px">
+          <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Preferred Job Location(s)</div>
+          <div id="userLocality" style="margin-left: 4px; display: inline-block">...</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="padding: 3%; padding-top: 0%">
+      <div class="col-sm-12">
+        <div style="display : inline-block; margin: 4px;">
+          <img src="/assets/img/workExp.svg" height="24px;" style="margin-top: -4px">
+        </div>
+        <div style="display: inline-block; margin-top: 4px">
+          <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Preferred Work Shift</div>
+          <div id="userShift" style="margin-left: 4px; display: inline-block">Not Specified</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="profileSectionOne" id="dashboardProfileBody">
+    <div id="profileTitle"><font size="2"><b>EXPERIENCE & EDUCATION</b></font></div>
+    <div class="row" style="padding: 3%;">
+      <div class="col-sm-6">
+        <div style="display : inline-block; margin: 4px;">
+          <img src="/assets/img/office.svg" height="24px;" style="margin-top: -4px">
+        </div>
+        <div style="display: inline-block;">
+          <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Current Company</div>
+          <div id="userCurrentCompany" style="margin-left: 4px; display: inline-block">Not Specified</div>
+        </div>
+      </div>
+
+      <div class="col-sm-6" style="margin-bottom: 4px">
+        <div style="display : inline-block; margin: 4px;">
+          <img src="/assets/img/salary.svg" height="24px;" style="margin-top: -4px">
+        </div>
+        <div style="display: inline-block; margin-top: 4px">
+          <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Current Salary</div>
+          <div id="userCurrentSalary" style="margin-left: 4px; display: inline-block">Not Specified</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row" style="padding: 3%; padding-top: 0%">
+      <div class="col-sm-6">
+        <div style="display : inline-block; margin: 4px;">
+          <img src="/assets/img/education.svg" height="24px;" style="margin-top: -4px">
+        </div>
+        <div style="display: inline-block; margin-top: 4px">
+          <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Highest Education</div>
+          <div id="userEducationLevel" style="margin: 4px; display: inline-block">Not Specified</div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div style="display : inline-block; margin: 4px;">
+          <img src="/assets/img/workExp.svg" height="24px;" style="margin-top: -4px">
+        </div>
+        <div style="display: inline-block; margin-top: 4px">
+          <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Total Work Experience</div>
+          <div id="userTotalExperience" style="margin: 4px; display: inline-block">Not Specified</div>
+        </div>
+      </div>
+    </div>
+    <div class="row" style="padding: 3%; padding-top: 0%">
+      <div class="col-sm-12">
+        <div style="display : inline-block; margin-top: 3px; height: 32px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="profileBody" id="hotJobSection">
+  <h3>10 Available Jobs Found</h3>
+  <hr>
+  <div id="hotJobItem">
+    <center>
+      <div class="row">
+        <div class="col-sm-2">
+          <img id="jobLogo" src="/assets/new/img/dunkin_donuts.png" width="160px">
+        </div>
+        <div class="col-sm-8" id="jobBody">
+          <h4>Delivery Boy Executive | Dunkin Donuts</h4><hr>
+          <div class="row" id="jobBodyDetails">
+            <div class="col-sm-4">
+              <div class="row">
+                <div class="col-sm-12">
+                  <div style="display : inline-block; margin: 4px;top:0">
+                    <img src="/assets/img/salary.svg" height="18px;" style="margin-top: -4px">
+                  </div>
+                  <div id="jobSalary" style="display: inline-block;">
+                                                    20000 monthly
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="row">
+                <div class="col-sm-12">
+                  <div style="display : inline-block; margin: 4px;top:0">
+                    <img src="/assets/img/workExp.svg" height="18px;" style="margin-top: -4px">
+                  </div>
+                  <div id="jobExp" style="display: inline-block;">
+                                                    Experience: 0-2 yrs
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="row">
+                <div class="col-sm-12">
+                  <div style="display : inline-block; margin: 4px;top:0">
+                    <img src="/assets/img/location.svg" height="18px;" style="margin-top: -4px">
+                  </div>
+                  <div  id="jobLocation"  style="display: inline-block;">
+                                                    Kormangala, Whitefield
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-2">
+          <button class="jobApplyBtn">APPLY NOW</button>
+        </div>
+      </div>
+    </center>
+  </div>
+
+  <div id="hotJobItem">
+    <center>
+      <div class="row">
+        <div class="col-sm-2">
+          <img id="jobLogo" src="/assets/new/img/swiggy.png" width="160px">
+        </div>
+        <div class="col-sm-8" id="jobBody">
+          <h4>Delivery Boy Executive | Swiggy</h4><hr>
+          <div class="row" id="jobBodyDetails">
+            <div class="col-sm-4">
+              <div class="row">
+                <div class="col-sm-12">
+                  <div style="display : inline-block; margin: 4px;top:0">
+                    <img src="/assets/img/salary.svg" height="18px;" style="margin-top: -4px">
+                  </div>
+                  <div id="jobSalary" style="display: inline-block;">
+                                                    20000 monthly
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="row">
+                <div class="col-sm-12">
+                  <div style="display : inline-block; margin: 4px;top:0">
+                    <img src="/assets/img/workExp.svg" height="18px;" style="margin-top: -4px">
+                  </div>
+                  <div id="jobExp" style="display: inline-block;">
+                                                    Experience: 0-2 yrs
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="row">
+                <div class="col-sm-12">
+                  <div style="display : inline-block; margin: 4px;top:0">
+                    <img src="/assets/img/location.svg" height="18px;" style="margin-top: -4px">
+                  </div>
+                  <div  id="jobLocation"  style="display: inline-block;">
+                                                    Kormangala, Whitefield
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-2">
+          <button class="jobApplyBtn">APPLY NOW</button>
+        </div>
+      </div>
+    </center>
+  </div>
+
+  <div id="hotJobItem">
+    <center>
+      <div class="row">
+        <div class="col-sm-2">
+          <img id="jobLogo" src="/assets/new/img/driveu.png" width="160px">
+        </div>
+        <div class="col-sm-8" id="jobBody">
+          <h4>Driver | DriveU</h4><hr>
+          <div class="row" id="jobBodyDetails">
+            <div class="col-sm-4">
+              <div class="row">
+                <div class="col-sm-12">
+                  <div style="display : inline-block; margin: 4px;top:0">
+                    <img src="/assets/img/salary.svg" height="18px;" style="margin-top: -4px">
+                  </div>
+                  <div id="jobSalary" style="display: inline-block;">
+                                                    20000 monthly
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="row">
+                <div class="col-sm-12">
+                  <div style="display : inline-block; margin: 4px;top:0">
+                    <img src="/assets/img/workExp.svg" height="18px;" style="margin-top: -4px">
+                  </div>
+                  <div id="jobExp" style="display: inline-block;">
+                                                    Experience: 0-2 yrs
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="row">
+                <div class="col-sm-12">
+                  <div style="display : inline-block; margin: 4px;top:0">
+                    <img src="/assets/img/location.svg" height="18px;" style="margin-top: -4px">
+                  </div>
+                  <div  id="jobLocation"  style="display: inline-block;">
+                                                    Kormangala, Whitefield
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-2">
+          <button class="jobApplyBtn">APPLY NOW</button>
+        </div>
+      </div>
+    </center>
+  </div>
+  <br>
+</div>

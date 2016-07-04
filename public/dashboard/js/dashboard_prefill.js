@@ -58,6 +58,7 @@ function processDataCandidateEducationUpdate(returnedData) {
 }
 
 function prefillBasicProfile() {
+    $("#jobCount").html(Object.keys(candidateInformation.jobApplicationList).length);
     /* candidate First and Last name */
     $("#candidateFirstName").val(candidateInformation.candidateFirstName);
     if (candidateInformation.candidateLastName == "null" || candidateInformation.candidateLastName == null) {
