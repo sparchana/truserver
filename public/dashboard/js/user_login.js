@@ -9,9 +9,9 @@ function checkUserLogin(){
     if(userMobile != null){
         try{
             if(localStorage.getItem("gender") == 0){
-                $("#userImg").attr('src', '/assets/dashboard/material/img/userMale.png');
+                $("#userImg").attr('src', '/assets/dashboard/material/img/userMale.svg');
             } else{
-                $("#userImg").attr('src', '/assets/dashboard/material/img/userFemale.png');
+                $("#userImg").attr('src', '/assets/dashboard/material/img/userFemale.svg');
             }
             if(userLastName == "null" || userLastName == null){
                 document.getElementById("userName").innerHTML = userName;

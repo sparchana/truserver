@@ -292,36 +292,69 @@ function processDataAndFillMinProfile(returnedData) {
     minProfileComplete = returnedData.isMinProfileComplete;
     if(returnedData.isMinProfileComplete == 0){ // profile not complete
         localStorage.setItem("minProfile", 0);
-    }
-    else{
+    } else{
         localStorage.setItem("minProfile", 1);
     }
     if(returnedData.candidateIsAssessed == 1){
-        localStorage.setItem("assessed", 1);
+        $(".assessmentIncomplete").hide();
+        $(".assessmentComplete").show();
     } else {
-        localStorage.setItem("assessed", 0);
+        var options = {'showRowNumber': true};
+        var data;
+        var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1HwEWPzZD4BFCyeRf5HO_KqNXyaMporxYQfg5lhOoA2g/edit#gid=496359801');
+
+        function sendAndDraw() {
+            var val = localStorage.getItem("mobile");
+            query.setQuery('select C where C=' + val.substring(3, 13));
+            query.send(handleQueryResponse);
+        }
+
+        function handleQueryResponse(response) {
+            if (response.isError()) {
+                return;
+            }
+            data = response.getDataTable();
+            new google.visualization.Table(document.getElementById('table')).draw(data, options);
+            var data2 = document.getElementsByClassName('google-visualization-table-td google-visualization-table-td-number').length;
+            if(data2>0) {
+                $(".assessmentIncomplete").hide();
+                $(".assessmentComplete").show();
+                $.ajax({
+                    type: "GET",
+                    url: "/updateIsAssessedToAssessed",
+                    processData: false,
+                    success: processAssessedStatus
+                });
+            }
+            else{
+                try{
+                    $(".assessmentIncomplete").show();
+                    $(".assessmentComplete").hide();
+                }
+                catch(err){
+                }
+            }
+        }
+        google.setOnLoadCallback(sendAndDraw);
     }
+
     if (returnedData.candidateGender != null) {
         localStorage.setItem("gender", returnedData.candidateGender);
         if (returnedData.candidateGender == 0) {
             try{
                 document.getElementById("userGender").innerHTML = ", Male";
-                $("#userImg").attr('src', '/assets/dashboard/material/img/userMale.png');
-            } catch(err){
-            }
-        } else if(returnedData.candidateGender == 1) {
+                $("#userImg").attr('src', '/assets/dashboard/material/img/userMale.svg');
+            } catch(err){}
+        } else {
             try{
                 document.getElementById("userGender").innerHTML = ", Female";
-                $("#userImg").attr('src', '/assets/dashboard/material/img/userFemale.png');
-            } catch(err){
-            }
-        } else{
-            try{
-                $("#userGenderIcon").attr('src', '');
-            } catch(err){
-            }
+                $("#userImg").attr('src', '/assets/dashboard/material/img/userFemale.svg');
+            } catch(err){}
         }
-        
+    } else{
+        try{
+            $("#userImg").attr('src', '/assets/dashboard/material/img/userMale.svg');
+        } catch(err){}
     }
     if (returnedData.candidateDOB != null) {
         var date = JSON.parse(returnedData.candidateDOB);
