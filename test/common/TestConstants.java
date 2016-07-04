@@ -75,9 +75,8 @@ public class TestConstants {
     public static final List<CandidateKnownLanguage> testCandidateLanguageKnownList = new ArrayList<CandidateKnownLanguage>() {{
         CandidateKnownLanguage candidateKnownLanguage1 = new CandidateKnownLanguage();
         candidateKnownLanguage1.setId("1");
-        candidateKnownLanguage1.setR(1);
+        candidateKnownLanguage1.setRw(1);
         candidateKnownLanguage1.setS(1);
-        candidateKnownLanguage1.setW(1);
 
         add(candidateKnownLanguage1);
     }};
