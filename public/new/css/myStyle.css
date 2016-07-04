@@ -413,7 +413,7 @@ hr{
     padding: 8px;
 }
 
-#totalHotJobsCount{
+#applyToJobs{
     padding-top: 24px;
     padding-left: 14%;
     padding-bottom: 24px;
@@ -437,16 +437,23 @@ hr{
     }
 }
 
-#forCandidate{
+#forCandidate {
     background: url(../img/call_center.jpg) no-repeat;
     background-size: 100%;
 }
 
+#firstNameLastName {
+    height: 34px;
+}
+
 @media screen and (max-width: 768px) {
+    #firstNameLastName {
+        height: 77px;
+    }
     #forCandidate{
         background: #fff;
     }
-    #totalHotJobsCount{
+    #applyToJobs{
         padding: 0;
         margin: 0;
         text-align: center;
