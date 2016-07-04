@@ -1,12 +1,14 @@
 package models.entity.Static;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.CacheStrategy;
 
 import javax.persistence.*;
 
 /**
  * Created by zero on 13/5/16.
  */
+@CacheStrategy
 @Entity(name = "degree")
 @Table(name = "degree")
 public class Degree extends Model {
