@@ -136,14 +136,6 @@ function getInYearMonthFormat(d){
         return "-";
     } else {
         var totalYear = Math.round((parseInt(d)/12)*100)/100;
-        /*var yr = Math.floor((parseInt(d)/12)).toString();
-         var month =  parseInt(d)%12;
-         if(yr == 0){
-
-         return month +" Month";
-         } else {
-         return yr + " Year " + month +" Month";
-         }*/
         return totalYear;
     }
 }
