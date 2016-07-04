@@ -1,6 +1,7 @@
 package models.entity.Static;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.CacheStrategy;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import models.entity.OM.LanguageKnown;
 
@@ -10,7 +11,7 @@ import java.util.List;
 /**
  * Created by zero on 4/5/16.
  */
-
+@CacheStrategy
 @Entity(name = "language")
 @Table(name = "language")
 public class Language extends Model {

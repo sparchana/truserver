@@ -24,6 +24,7 @@ public class JobHistory extends Model {
     @Column(name = "CandidatePastCompany", columnDefinition = "varchar(255) null")
     private String candidatePastCompany = "";
 
+    @JsonBackReference
     @Column(name = "CandidatePastSalary", columnDefinition = "bigint signed null")
     private Long candidatePastSalary;
 
@@ -40,6 +41,9 @@ public class JobHistory extends Model {
     @JsonBackReference
     @JoinColumn(name = "CandidateId", referencedColumnName = "CandidateId")
     private Candidate candidate;
+
+    @Column(name = "CurrentJob", columnDefinition = "bit null")
+    private Boolean currentJob;
 
     public static Finder<String, JobHistory> find = new Finder(JobHistory.class);
 
@@ -77,5 +81,13 @@ public class JobHistory extends Model {
 
     public void setCandidatePastSalary(Long candidatePastSalary) {
         this.candidatePastSalary = candidatePastSalary;
+    }
+
+    public Boolean getCurrentJob() {
+        return currentJob;
+    }
+
+    public void setCurrentJob(Boolean currentJob) {
+        this.currentJob = currentJob;
     }
 }

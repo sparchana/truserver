@@ -37,7 +37,6 @@ public class CandidateExp extends Model{
     @JoinColumn(name = "JobExpResponseId", referencedColumnName = "JobExpResponseId")
     private JobExpResponse jobExpResponse;
 
-    @UpdatedTimestamp
     @Column(name = "CreateTimeStamp", columnDefinition = "timestamp not null default current_timestamp")
     private Timestamp createTimeStamp;
 
@@ -82,6 +81,5 @@ public class CandidateExp extends Model{
     public Timestamp getUpdateTimeStamp() {
         return updateTimeStamp;
     }
-
 
 }
