@@ -13,7 +13,6 @@ import models.entity.Auth;
 import models.entity.Candidate;
 import models.entity.Lead;
 import models.entity.OM.*;
-import models.entity.OO.CandidateCurrentJobDetail;
 import models.entity.OO.CandidateEducation;
 import models.entity.OO.TimeShiftPreference;
 import models.entity.Static.*;
@@ -521,20 +520,24 @@ public class CandidateService
             e.printStackTrace();
         }
 
-        try {
+       /* try {
             CandidateCurrentJobDetail candidateCurrentJobDetail = getCandidateCurrentJobDetailFromAddSupportCandidate(addCandidateExperienceRequest, candidate, isSupport);
             candidate.setCandidateCurrentJobDetail(candidateCurrentJobDetail);
         } catch(Exception e){
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
             Logger.info(" try catch exception Current job candidateCurrentJobDetail  = " + e);
-        }
+        }*/
+
+        /* TODO: remove this after changing flow to use support flow for multiple company name*/
+        candidate.setJobHistoryList(getCurrentCompanyNameAsList(addCandidateExperienceRequest, candidate));
 
         try{
             candidate.setCandidateLastWithdrawnSalary(addCandidateExperienceRequest.getCandidateLastWithdrawnSalary());
         } catch(Exception e){
-            Logger.info(" Exception while setting last withdrawn salary");
+            Logger.info(" Exception while setting current company for website under update skill");
             e.printStackTrace();
         }
+
         try {
             candidate.setCandidateSkillList(getCandidateSkillListFromAddSupportCandidate(addCandidateExperienceRequest, candidate));
         } catch(Exception e){
@@ -552,6 +555,35 @@ public class CandidateService
         }
 
         return candidateSignUpResponse;
+    }
+
+    private static List<JobHistory> getCurrentCompanyNameAsList(AddCandidateExperienceRequest candidateCurrentCompany, Candidate candidate) {
+        List<JobHistory> jobHistoryList = candidate.getJobHistoryList();
+        JobRole jobRole = JobRole.find.where().eq("jobRoleId", candidateCurrentCompany.getCandidateCurrentJobRoleId()).findUnique();
+        if(jobRole == null){
+            return null;
+        }
+        if(jobHistoryList == null){
+            // create new currentJob entry
+            jobHistoryList = new ArrayList<>();
+            JobHistory jobHistory = new JobHistory();
+            jobHistory.setCurrentJob(true);
+            jobHistory.setCandidatePastCompany(candidateCurrentCompany.getCandidateCurrentCompany());
+            jobHistory.setCandidate(candidate);
+            jobHistory.setJobRole(jobRole);
+            jobHistoryList.add(jobHistory);
+        } else {
+            // update currentJob entry
+            for(JobHistory jobHistory: jobHistoryList){
+                if(jobHistory.getCurrentJob()){
+                    jobHistory.setJobRole(jobRole);
+                    jobHistory.setCurrentJob(true);
+                    jobHistory.setCandidatePastCompany(candidateCurrentCompany.getCandidateCurrentCompany());
+                }
+            }
+        }
+
+        return jobHistoryList;
     }
 
     private static CandidateSignUpResponse updateBasicProfile(Candidate candidate, AddCandidateRequest request) {
@@ -700,7 +732,7 @@ public class CandidateService
                 Logger.info("Past company name not mentioned");
             } else{
                 JobRole jobRole = JobRole.find.where().eq("jobRoleId", pastCompany.getJobRoleId()).findUnique();
-                if(jobRole != null && pastCompany.getCompanyName()!= null){
+                if(jobRole != null && pastCompany.getCompanyName()!= null && !pastCompany.getCompanyName().equals("")){
                     JobHistory jobHistory = new JobHistory();
                     jobHistory.setCandidate(candidate);
                     jobHistory.setCandidatePastCompany(pastCompany.getCompanyName());
@@ -734,7 +766,7 @@ public class CandidateService
         return response;
     }
 
-    private static CandidateCurrentJobDetail getCandidateCurrentJobDetailFromAddSupportCandidate(AddCandidateExperienceRequest request, Candidate candidate, boolean isSupport) {
+    /*private static CandidateCurrentJobDetail getCandidateCurrentJobDetailFromAddSupportCandidate(AddCandidateExperienceRequest request, Candidate candidate, boolean isSupport) {
         CandidateCurrentJobDetail response = candidate.getCandidateCurrentJobDetail();
         if(response == null){
             response = new CandidateCurrentJobDetail();
@@ -788,7 +820,7 @@ public class CandidateService
         Logger.info("done insertion current Job details");
         return response;
     }
-
+*/
     public static LoginResponse login(String loginMobile, String loginPassword){
         LoginResponse loginResponse = new LoginResponse();
         Logger.info(" login mobile: " + loginMobile);

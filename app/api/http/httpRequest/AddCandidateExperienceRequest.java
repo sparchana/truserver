@@ -12,6 +12,7 @@ public class AddCandidateExperienceRequest extends AddCandidateRequest {
     public Integer candidateTotalExperience ;
     public Integer candidateIsEmployed ;
     public String candidateCurrentCompany;
+    public Long candidateCurrentJobRoleId;
     public Long candidateLastWithdrawnSalary;
 
     public Integer candidateMotherTongue ;
@@ -72,5 +73,13 @@ public class AddCandidateExperienceRequest extends AddCandidateRequest {
 
     public void setCandidateLastWithdrawnSalary(Long candidateLastWithdrawnSalary) {
         this.candidateLastWithdrawnSalary = candidateLastWithdrawnSalary;
+    }
+
+    public Long getCandidateCurrentJobRoleId() {
+        return candidateCurrentJobRoleId;
+    }
+
+    public void setCandidateCurrentJobRoleId(Long candidateCurrentJobRoleId) {
+        this.candidateCurrentJobRoleId = candidateCurrentJobRoleId;
     }
 }

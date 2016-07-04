@@ -369,7 +369,7 @@ function processDataAndFillAllFields(returnedData) {
                         generateExperience(jobPrefString);
                         prefillCandidateExp(candidateExps);
                         if(candidatePastJobExp != null){
-                            prefillCandidatePastJobExp(candidatePastJobExp)
+                            prefillCandidatePastJobExp(candidatePastJobExp);
                         }
                     }
                 }
@@ -436,17 +436,19 @@ function prefillCandidatePastJobExp(candidatePastJobExp) {
         var prevRow = -1;
         var count = 0;
         candidatePastJobExp.forEach(function (jobHistory) {
-            var jobRoleId = parseInt(jobHistory.jobRole.jobRoleId);
-            if(prevRow != jobRoleId){
-                prevRow = jobRoleId;
-                count = 0;
-            }
-            count++;
-            if(jobHistory.candidatePastCompany != null){
-                $('#expPastCompany_'+jobRoleId+' #candidatePastCompany_'+jobRoleId+'_'+count).val(jobHistory.candidatePastCompany);
-                if(jobHistory.currentJob != null && jobHistory.currentJob != false){
-                    // set radio to true
-                    $('#radio_'+jobRoleId+'_'+count).prop('checked',true);
+            if(jobHistory.jobRole !=  null){
+                var jobRoleId = parseInt(jobHistory.jobRole.jobRoleId);
+                if(prevRow != jobRoleId){
+                    prevRow = jobRoleId;
+                    count = 0;
+                }
+                count++;
+                if(jobHistory.candidatePastCompany != null){
+                    $('#expPastCompany_'+jobRoleId+' #candidatePastCompany_'+jobRoleId+'_'+count).val(jobHistory.candidatePastCompany);
+                    if(jobHistory.currentJob != null && jobHistory.currentJob != false){
+                        // set radio to true
+                        $('#radio_'+jobRoleId+'_'+count).prop('checked',true);
+                    }
                 }
             }
         });
@@ -1460,7 +1462,7 @@ function saveProfileForm() {
 
                 expList: expList,
                 candidateEducationCompletionStatus: parseInt($('input:radio[name="candidateEducationCompletionStatus"]:checked').val()),
-                pastCompany: pastJobArray,
+                pastCompanyList: pastJobArray,
                 candidateLastWithdrawnSalary: parseInt($('#candidateLastWithdrawnSalary').val())
 
             };
@@ -1511,13 +1513,18 @@ function clickFresher(){
     $("#totalWorkExperience").hide();
 }
 
+function unlockcurrentJobRadio() {
+    $('input[name=currentJob]').attr('disabled', false);
+}
+
 function clickExperienced(){
     $("#totalWorkExperience").show();
     generateExperience($('#candidateJobPref').val());
     if($('input[name=employed]:checked').val() == "1") {
-        $('input[name=currentJob]').attr('disabled', false);
+        unlockcurrentJobRadio();
     }
 }
+
 // form_candidate ajax script
 $(function () {
     var pathname = window.location.pathname; // Returns path only
@@ -1535,6 +1542,8 @@ $(function () {
     $('#candidateJobPref').change(function () {
         generateSkills();
         generateExperience($('#candidateJobPref').val());
+        prefillCandidatePastJobExp(candidatePastJobExp);
+        unlockcurrentJobRadio();
     });
     // auto save code : incomplete
     /*  $('#candidateSignUpSupportForm').change(function () {

@@ -169,14 +169,26 @@ function prefillSkillProfile(){
                 console.log(err);
             }
         }
-        if(candidateInformation.candidateCurrentJobDetail != null){
-            if(candidateInformation.candidateCurrentJobDetail.candidateCurrentCompany != null && candidateInformation.candidateCurrentJobDetail.candidateCurrentCompany != ""){
-                try{
-                    $("#candidateCurrentCompany").val(candidateInformation.candidateCurrentJobDetail.candidateCurrentCompany);
-                } catch(err){
-                    console.log(err);
+        if(candidateInformation.jobHistoryList != null){
+            var candidatePastJobList = candidateInformation.jobHistoryList;
+            candidatePastJobList.forEach(function (jobHistory) {
+                if(jobHistory.candidatePastCompany != null && jobHistory.candidatePastCompany != "" && jobHistory.currentJob != false && jobHistory.jobRole != null){
+                    $("#candidateCurrentCompany").val(jobHistory.candidatePastCompany);
+                    var item = {};
+                    item ["id"] = jobHistory.jobRole.jobRoleId;
+                    item ["name"] = jobHistory.jobRole.jobName;
+                    var currentJobRole = [];
+                    currentJobRole.push(item);
+                    $("#candidateCurrentJobRole").tokenInput(getJob(), {
+                        theme: "facebook",
+                        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                        minChars: 0,
+                        tokenLimit: 1,
+                        prePopulate: currentJobRole,
+                        preventDuplicates: true
+                    });
                 }
-            }
+            });
         }
     } catch(err){
         console.log(err);
@@ -577,6 +589,7 @@ function saveCandidateExperienceDetails(){
                     candidateTotalExperience: totalExp,
                     candidateIsEmployed: $('input:radio[name="isEmployed"]:checked').val(),
                     candidateCurrentCompany: candidateCurrentCompanyVal,
+                    candidateCurrentJobRoleId: parseInt($('#candidateCurrentJobRole').val()),
                     candidateLastWithdrawnSalary: candidateLastWithdrawnSalary,
 
                     candidateLanguageKnown: languageMap,
