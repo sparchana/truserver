@@ -9,6 +9,7 @@ import models.entity.JobPost;
 import models.entity.OM.JobApplication;
 import models.entity.OM.JobPostToLocality;
 import models.entity.Static.*;
+import models.util.SmsUtil;
 import play.Logger;
 
 import java.sql.Timestamp;
@@ -83,6 +84,8 @@ public class JobService {
 
                     jobApplication.save();
                     Logger.info("candidate: " + existingCandidate.getCandidateFirstName() + " with mobile: " + existingCandidate.getCandidateMobile() + " applied to the jobPost of JobPostId:" + existingJobPost.getJobPostId());
+
+                    SmsUtil.sendJobApplicationSms(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), existingCandidate.getCandidateMobile());
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_SUCCESS);
                 } else{
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_EXISTS);

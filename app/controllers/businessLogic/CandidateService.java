@@ -875,7 +875,7 @@ public class CandidateService
             } else {
                 int randomPIN = generateOtp();
                 existingCandidate.update();
-                SmsUtil.sendOTPSms(randomPIN, existingCandidate.getCandidateMobile());
+                SmsUtil.sendResetPasswordOTPSms(randomPIN, existingCandidate.getCandidateMobile());
 
                 resetPasswordResponse.setOtp(randomPIN);
                 resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);

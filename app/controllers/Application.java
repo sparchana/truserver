@@ -403,7 +403,7 @@ public class Application extends Controller {
         return ok(toJson(responses));
     }
     @Security.Authenticated(Secured.class)
-    public static Result getUserInfo(long id) {
+    public static Result getLeadMobile(long id) {
         try{
             Lead lead = Lead.find.where().eq("leadId",id).findUnique();
             String leadMobile = lead.getLeadMobile();
@@ -440,6 +440,7 @@ public class Application extends Controller {
         return ok("0");
     }
 
+    @Security.Authenticated(Secured.class)
     public static Result getCompanyInfo(long companyId) {
         Company company = Company.find.where().eq("companyId", companyId).findUnique();
         if(company!=null){
@@ -456,20 +457,13 @@ public class Application extends Controller {
         return ok("0");
     }
 
+    @Security.Authenticated(Secured.class)
     public static Result getJobPostInfo(long jobPostId) {
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
         if(jobPost!=null){
             return ok(toJson(jobPost));
         }
         return ok("0");
-    }
-
-    @Security.Authenticated(SecuredUser.class)
-    public static Result getCandidateLocality(long candidateId) {
-        List<LocalityPreference> candidateLocalities = LocalityPreference.find.where().eq("candidateId", candidateId).findList();
-        if(candidateLocalities == null)
-            return ok("0");
-        return ok(toJson(candidateLocalities));
     }
 
     @Security.Authenticated(SecuredUser.class)
@@ -482,11 +476,6 @@ public class Application extends Controller {
         } else{
             return ok("0");
         }
-    }
-
-    public static Result checkMinProfile(long id) {
-        Candidate existingCandidate = Candidate.find.where().eq("candidateId", id).findUnique();
-        return ok(toJson(existingCandidate.getIsMinProfileComplete()));
     }
 
     @Security.Authenticated(Secured.class)
@@ -567,7 +556,7 @@ public class Application extends Controller {
         return redirect(routes.Application.supportAuth());
     }
 
-
+    @Security.Authenticated(SecuredUser.class)
     public static Result updateIsAssessedToAssessed() {
         if(session().get("candidateId") != null){
             Candidate existingCandidate = Candidate.find.where().eq("candidateId", session().get("candidateId")).findUnique();
@@ -705,6 +694,7 @@ public class Application extends Controller {
         return ok(toJson(jobPosts));
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result getJobApplicationDetailsForGoogleSheet(Integer jobPostId) {
         JobApplicationGoogleSheetResponse jobApplicationGoogleSheetResponse = new JobApplicationGoogleSheetResponse();
 
@@ -886,6 +876,7 @@ public class Application extends Controller {
         return ok(views.html.signup_support.render(candidateId));
     }
 
+    @Security.Authenticated(Secured.class)
     public static Result createCandidateForm() {
         return redirect("/candidateSignupSupport/"+"0");
     }
