@@ -478,7 +478,6 @@ public class Application extends Controller {
         }
     }
 
-    @Security.Authenticated(Secured.class)
     public static Result getAllSkills(String ids) {
         List<String> jobPrefIdList = Arrays.asList(ids.split("\\s*,\\s*"));
         List<JobToSkill> response = new ArrayList<>();
@@ -805,37 +804,31 @@ public class Application extends Controller {
         return ok(toJson(jobs));
     }
 
-    @Security.Authenticated(Secured.class)
     public static Result getAllShift() {
         List<TimeShift> timeShifts = TimeShift.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(timeShifts));
     }
 
-    @Security.Authenticated(Secured.class)
     public static Result getAllTransportation() {
         List<TransportationMode> transportationModes = TransportationMode.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(transportationModes));
     }
 
-    @Security.Authenticated(Secured.class)
     public static Result getAllEducation() {
         List<Education> educations = Education.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(educations));
     }
 
-    @Security.Authenticated(Secured.class)
     public static Result getAllLanguage() {
         List<Language> languages = Language.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(languages));
     }
 
-    @Security.Authenticated(Secured.class)
     public static Result getAllIdProof() {
         List<IdProof> idProofs = IdProof.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(idProofs));
     }
 
-    @Security.Authenticated(Secured.class)
     public static Result getAllDegree() {
         List<Degree> degreeList = Degree.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(degreeList));

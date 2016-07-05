@@ -563,7 +563,7 @@ public class CandidateService
         if(jobRole == null){
             return null;
         }
-        if(jobHistoryList == null){
+        if(jobHistoryList == null || jobHistoryList.isEmpty()){
             // create new currentJob entry
             jobHistoryList = new ArrayList<>();
             JobHistory jobHistory = new JobHistory();
@@ -571,6 +571,7 @@ public class CandidateService
             jobHistory.setCandidatePastCompany(candidateCurrentCompany.getCandidateCurrentCompany());
             jobHistory.setCandidate(candidate);
             jobHistory.setJobRole(jobRole);
+            Logger.info(candidateCurrentCompany.getCandidateCurrentCompany() + " + " + candidateCurrentCompany.getCandidateCurrentJobRoleId() + " ============");
             jobHistoryList.add(jobHistory);
         } else {
             // update currentJob entry

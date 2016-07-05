@@ -106,6 +106,8 @@ function prefillBasicProfile() {
                 $('#genderFemale').parent().addClass('active').siblings().removeClass('active');
                 $("#userImg").attr('src', '/assets/dashboard/img/userFemale.svg');
             }
+        } else {
+            $("#userImg").attr('src', '/assets/dashboard/img/userMale.svg');
         }
     } catch(err){
         console.log(err);
@@ -170,6 +172,7 @@ function prefillSkillProfile(){
                 console.log(err);
             }
         }
+        var currentJobRole = [];
         if(candidateInformation.jobHistoryList != null){
             var candidatePastJobList = candidateInformation.jobHistoryList;
             candidatePastJobList.forEach(function (jobHistory) {
@@ -178,19 +181,18 @@ function prefillSkillProfile(){
                     var item = {};
                     item ["id"] = jobHistory.jobRole.jobRoleId;
                     item ["name"] = jobHistory.jobRole.jobName;
-                    var currentJobRole = [];
                     currentJobRole.push(item);
-                    $("#candidateCurrentJobRole").tokenInput(getJob(), {
-                        theme: "facebook",
-                        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-                        minChars: 0,
-                        tokenLimit: 1,
-                        prePopulate: currentJobRole,
-                        preventDuplicates: true
-                    });
                 }
             });
         }
+        $("#candidateCurrentJobRole").tokenInput(getJob(), {
+            theme: "facebook",
+            hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+            minChars: 0,
+            tokenLimit: 1,
+            prePopulate: currentJobRole,
+            preventDuplicates: true
+        });
     } catch(err){
         console.log(err);
     }

@@ -10,7 +10,6 @@ GET      /candidateSignupSupport/:cId                             controllers.Ap
 GET      /clearStaticCache                                        controllers.Application.invalidateDbCache()
 GET      /createCandidateForm                                     controllers.Application.createCandidateForm()
 GET      /getAll/:id                                              controllers.Application.getAll(id: Integer)
-GET      /getAllSkills/:id                                        controllers.Application.getAllSkills(id : String)
 GET      /getCandidateInfo/:id                                    controllers.Application.getCandidateInfo(id : Long)
 GET      /getCandidateInteraction/:id                             controllers.Application.getCandidateInteraction(id : Long)
 GET      /getCompanyInfo/:id                                      controllers.Application.getCompanyInfo(id : Long)
@@ -69,6 +68,7 @@ POST     /signUp                                                  controllers.Ap
 # ~~~~~~~~~~~~~~~~~~~~~
 
 GET      /                                                        controllers.Application.index()
+GET      /getAllSkills/:id                                        controllers.Application.getAllSkills(id : String)
 
 POST     /getAllDegree                                            controllers.Application.getAllDegree()
 POST     /getAllEducation                                         controllers.Application.getAllEducation()
