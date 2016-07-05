@@ -333,6 +333,13 @@ function prefillEducationProfile(){
                 if(candidateInformation.candidateEducation.education.educationId == 4 || candidateInformation.candidateEducation.education.educationId == 5){
                     $("#educationalInstitute").show();
                 }
+                if(candidateInformation.candidateEducation.candidateEducationCompletionStatus != null){
+                    if(candidateInformation.candidateEducation.candidateEducationCompletionStatus == "1"){
+                        $('input[id=eduCompleted]').attr('checked', true);
+                    } else {
+                        $('input[id=eduCompletedNot]').attr('checked', true);
+                    }
+                }
             }
             if(candidateInformation.candidateEducation.degree != null){
                 $("#candidateHighestDegree").val(candidateInformation.candidateEducation.degree.degreeId);
@@ -633,6 +640,7 @@ function saveCandidateEducationDetails(){
                     candidateEducationLevel: $('input:radio[name="highestEducation"]:checked').val(),
                     candidateDegree: selectedDegree,
                     candidateEducationInstitute: $('#candidateEducationInstitute').val(),
+                    candidateEducationCompletionStatus: parseInt($('input:radio[name="candidateEducationCompletionStatus"]:checked').val())
                 };
 
                 $.ajax({
