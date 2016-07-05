@@ -386,20 +386,24 @@ function processDataAndFillMinProfile(returnedData) {
         }
     }
 
+    if(returnedData.candidateLastWithdrawnSalary != null){
+        if(returnedData.candidateLastWithdrawnSalary == "0"){
+            document.getElementById("userCurrentSalary").innerHTML = "Fresher";
+        } else{
+            document.getElementById("userCurrentSalary").innerHTML = "&#x20B9;" + returnedData.candidateLastWithdrawnSalary + "/month";
+        }
+    }
+
     /* Current Company and Salary */
-    if (returnedData.candidateCurrentJobDetail != null) {
-        if(returnedData.candidateCurrentJobDetail.candidateCurrentSalary != null){
-            if(returnedData.candidateCurrentJobDetail.candidateCurrentSalary == "0"){
-                document.getElementById("userCurrentSalary").innerHTML = "Fresher";
-            } else{
-                document.getElementById("userCurrentSalary").innerHTML = "&#x20B9;" + returnedData.candidateCurrentJobDetail.candidateCurrentSalary + "/month";
+    if (Object.keys(returnedData.jobHistoryList).length > 0) {
+        returnedData.jobHistoryList.forEach(function (pastJob) {
+            if(pastJob.currentJob == true){
+                if(pastJob.candidatePastCompany != ""){
+                    document.getElementById("userCurrentCompany").innerHTML = pastJob.candidatePastCompany;
+                }
+                return false;
             }
-        }
-        if(returnedData.candidateCurrentJobDetail.candidateCurrentCompany != null){
-            if(returnedData.candidateCurrentJobDetail.candidateCurrentCompany != ""){
-                document.getElementById("userCurrentCompany").innerHTML = returnedData.candidateCurrentJobDetail.candidateCurrentCompany;
-            }
-        }
+        });
     }
 
     /* candidate Education */
