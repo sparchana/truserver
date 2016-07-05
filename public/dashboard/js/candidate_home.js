@@ -343,17 +343,17 @@ function processDataAndFillMinProfile(returnedData) {
         if (returnedData.candidateGender == 0) {
             try{
                 document.getElementById("userGender").innerHTML = ", Male";
-                $("#userImg").attr('src', '/assets/dashboard/material/img/userMale.svg');
+                $("#userImg").attr('src', '/assets/dashboard/img/userMale.svg');
             } catch(err){}
         } else {
             try{
                 document.getElementById("userGender").innerHTML = ", Female";
-                $("#userImg").attr('src', '/assets/dashboard/material/img/userFemale.svg');
+                $("#userImg").attr('src', '/assets/dashboard/img/userFemale.svg');
             } catch(err){}
         }
     } else{
         try{
-            $("#userImg").attr('src', '/assets/dashboard/material/img/userMale.svg');
+            $("#userImg").attr('src', '/assets/dashboard/img/userMale.svg');
         } catch(err){}
     }
     if (returnedData.candidateDOB != null) {

@@ -100,11 +100,11 @@ function prefillBasicProfile() {
             if (candidateInformation.candidateGender == 0) {
                 document.getElementById("genderMale").checked = true;
                 $('#genderMale').parent().addClass('active').siblings().removeClass('active');
-                $("#userGenderIcon").attr('src', '/assets/dashboard/img/male.png');
+                $("#userImg").attr('src', '/assets/dashboard/img/userMale.svg');
             } else {
                 document.getElementById("genderFemale").checked = true;
                 $('#genderFemale').parent().addClass('active').siblings().removeClass('active');
-                $("#userGenderIcon").attr('src', '/assets/dashboard/img/female.png');
+                $("#userImg").attr('src', '/assets/dashboard/img/userFemale.svg');
             }
         }
     } catch(err){
