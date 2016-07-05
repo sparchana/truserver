@@ -18,9 +18,8 @@ function processDataApplyJob(returnedData) {
         $('#customMsgIcon').attr('src', "/assets/img/jobApplied.png");
         $("#customMsg").html("Your Job Application is Successful");
         try{
-            $("#" + applyJobId).addClass("appliedBtn").removeClass("btn-primary");
-            $("#" + applyJobId).prop('disabled',true);
-            $("#apply_btn_" + applyJobId).html("Already Applied");
+            $("#apply_btn_" + applyJobId).addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Already Applied");
+            $("#applyBtnDiv_" + applyJobId).prop('disabled',true);
         } catch(err){
             console.log(err);
         }
