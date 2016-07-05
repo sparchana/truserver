@@ -173,6 +173,7 @@ function prefillSkillProfile(){
             }
         }
         var currentJobRole = [];
+
         if(candidateInformation.jobHistoryList != null){
             var candidatePastJobList = candidateInformation.jobHistoryList;
             candidatePastJobList.forEach(function (jobHistory) {
@@ -185,14 +186,18 @@ function prefillSkillProfile(){
                 }
             });
         }
-        $("#candidateCurrentJobRole").tokenInput(getJob(), {
-            theme: "facebook",
-            hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-            minChars: 0,
-            tokenLimit: 1,
-            prePopulate: currentJobRole,
-            preventDuplicates: true
-        });
+        if($("#candidateCurrentJobRole").val() == ""){
+            $("#candidateCurrentJobRole").tokenInput(getJob(), {
+                theme: "facebook",
+                hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                minChars: 0,
+                tokenLimit: 1,
+                prePopulate: currentJobRole,
+                preventDuplicates: true
+            });
+        }
+
+
     } catch(err){
         console.log(err);
     }

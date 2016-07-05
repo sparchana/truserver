@@ -575,12 +575,23 @@ public class CandidateService
             jobHistoryList.add(jobHistory);
         } else {
             // update currentJob entry
+            Boolean flag = false;
             for(JobHistory jobHistory: jobHistoryList){
-                if(jobHistory.getCurrentJob()){
+                if(jobHistory.getCurrentJob() != null && jobHistory.getCurrentJob()){
+                    flag = true;
                     jobHistory.setJobRole(jobRole);
                     jobHistory.setCurrentJob(true);
                     jobHistory.setCandidatePastCompany(candidateCurrentCompany.getCandidateCurrentCompany());
                 }
+            }
+            if(!flag){
+                JobHistory jobHistory = new JobHistory();
+                jobHistory.setCurrentJob(true);
+                jobHistory.setCandidatePastCompany(candidateCurrentCompany.getCandidateCurrentCompany());
+                jobHistory.setCandidate(candidate);
+                jobHistory.setJobRole(jobRole);
+                Logger.info(candidateCurrentCompany.getCandidateCurrentCompany() + " + " + candidateCurrentCompany.getCandidateCurrentJobRoleId() + " ============");
+                jobHistoryList.add(jobHistory);
             }
         }
 
@@ -849,6 +860,7 @@ public class CandidateService
                     /* adding session details */
                     AuthService.addSession(existingAuth,existingCandidate);
                     existingAuth.update();
+                    InteractionService.createInteractionForLoginCandidate(existingCandidate.getCandidateUUId(), false);
                     Logger.info("Login Successful");
                 }
                 else {

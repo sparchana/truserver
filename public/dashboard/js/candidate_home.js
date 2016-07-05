@@ -400,6 +400,8 @@ function processDataAndFillMinProfile(returnedData) {
             if(pastJob.currentJob == true){
                 if(pastJob.candidatePastCompany != ""){
                     document.getElementById("userCurrentCompany").innerHTML = pastJob.candidatePastCompany;
+                } else{
+                    document.getElementById("userCurrentCompany").innerHTML = "Not Specified";
                 }
                 return false;
             }
