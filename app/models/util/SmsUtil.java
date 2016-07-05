@@ -56,6 +56,16 @@ public class SmsUtil {
         sendSms(mobile, msg);
     }
 
+    public static void sendResetPasswordOTPSms(int otp, String mobile) {
+        String msg = "Welcome to www.Trujobs.in! Use OTP " + otp + " to reset your password";
+        sendSms(mobile, msg);
+    }
+
+    public static void sendJobApplicationSms(String candidateName, String jobTitle, String company, String mobile) {
+        String msg = "Hi " + candidateName + ", you have successfully applied to " + jobTitle + " job at " + company + ". Call us at +91 8048039089 to know about the status of your job application. All the best! www.trujobs.in";
+        sendSms(mobile, msg);
+    }
+
     public static void sendWelcomeSmsFromSupport(String name, String mobile, String password)
     {
         String msg = "Hi " + name + ", Welcome to www.Trujobs.in! Your login details are Username: "

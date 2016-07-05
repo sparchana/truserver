@@ -2,139 +2,84 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-GET      /                                                        controllers.Application.index()
-
-GET      /support                                                 controllers.Application.support()
-
-GET      /support/addCompany                                      controllers.Application.companyAndJob()
-
-GET      /createCandidateForm                                     controllers.Application.createCandidateForm()
+# support dashboard
+# ~~~~~~~~~~~~~~~~~
 
 GET      /candidateInteraction/:id                                controllers.Application.candidateInteraction(id : Long)
-
-GET      /getCandidateInteraction/:id                             controllers.Application.getCandidateInteraction(id : Long)
-
-POST     /addLead                                                 controllers.Application.addLead()
-
-POST     /signUp                                                  controllers.Application.signUp()
-
-POST     /signUpSupport                                           controllers.Application.signUpSupport()
-
-POST     /candidateUpdateBasicProfile                             controllers.Application.candidateUpdateBasicProfile()
-
-POST     /candidateUpdateExperienceDetails                        controllers.Application.candidateUpdateExperienceDetails()
-
-POST     /candidateUpdateEducationDetails                         controllers.Application.candidateUpdateEducationDetails()
-
-POST     /addPassword                                             controllers.Application.addPassword()
-
-POST     /applyJob                                                controllers.Application.applyJob()
-
-POST     /addJobPost                                              controllers.Application.addJobPost()
-
-POST     /addCompany                                              controllers.Application.addCompany()
-
-POST     /processCsv                                              controllers.Application.processcsv()
-
-GET      /dashboard                                               controllers.Application.dashboard()
-
-GET      /dashboard/editProfile                                   controllers.Application.editProfile()
-
-GET      /dashboard/appliedJobs                                   controllers.Application.appliedJobs()
-
-POST     /loginSubmit                                             controllers.Application.loginSubmit()
-
-POST     /findUserAndSendOtp                                      controllers.Application.findUserAndSendOtp()
-
-POST     /processCsv                                              controllers.Application.processcsv()
-
+GET      /candidateSignupSupport/:cId                             controllers.Application.candidateSignupSupport(cId: Long)
+GET      /clearStaticCache                                        controllers.Application.invalidateDbCache()
+GET      /createCandidateForm                                     controllers.Application.createCandidateForm()
 GET      /getAll/:id                                              controllers.Application.getAll(id: Integer)
-
-GET     /getJobApplicationDetailsForGoogleSheet/:id              controllers.Application.getJobApplicationDetailsForGoogleSheet(id: Integer)
-
-POST     /getAllLocality                                          controllers.Application.getAllLocality()
-
-POST      /getAllHotJobPosts                                      controllers.Application.getAllHotJobPosts()
-
-POST     /getAllJobs                                              controllers.Application.getAllJobs()
-
-POST      /getAllShift                                            controllers.Application.getAllShift()
-
-POST      /getAllTransportation                                   controllers.Application.getAllTransportation()
-
-POST      /getAllEducation                                        controllers.Application.getAllEducation()
-
-POST      /getAllLeadSource                                       controllers.Application.getAllLeadSource()
-
-GET      /getSupportAgent                                         controllers.Application.getSupportAgent()
-
-POST      /getAllLanguage                                         controllers.Application.getAllLanguage()
-
-POST      /getAllIdProof                                          controllers.Application.getAllIdProof()
-
-POST      /getAllDegree                                           controllers.Application.getAllDegree()
-
-POST      /getAllJobExpQuestion                                   controllers.Application.getAllJobExpQuestion()
-
-POST     /getJobExpQuestion/:jobRoleIdList                        controllers.Application.getJobExpQuestion(jobRoleIdList : String)
-
-POST      /getAllCompany                                          controllers.Application.getAllCompany()
-
-POST      /getAllCompanyStatus                                    controllers.Application.getAllCompanyStatus()
-
-POST      /getAllCompanyType                                      controllers.Application.getAllCompanyType()
-
-POST      /getAllExperience                                       controllers.Application.getAllExperience()
-
-POST      /getAllJobStatus                                        controllers.Application.getAllJobStatus()
-
-GET      /getUserInfo/:id                                         controllers.Application.getUserInfo(id : Long)
-
-GET      /getCandidateInfoDashboard                               controllers.Application.getCandidateInfoDashboard()
-
 GET      /getCandidateInfo/:id                                    controllers.Application.getCandidateInfo(id : Long)
-
-GET      /getCandidateLocality/:id                                controllers.Application.getCandidateLocality(id : Long)
-
-GET      /getCandidateJobApplication                              controllers.Application.getCandidateJobApplication()
-
+GET      /getCandidateInteraction/:id                             controllers.Application.getCandidateInteraction(id : Long)
 GET      /getCompanyInfo/:id                                      controllers.Application.getCompanyInfo(id : Long)
-
+GET      /getInteractionNote/:leadId/:limit                       controllers.Application.getInteractionNote(leadId: Long,limit: Long)
 GET      /getJobPostInfo/:id                                      controllers.Application.getJobPostInfo(id : Long)
-
-GET      /checkMinProfile/:id                                     controllers.Application.checkMinProfile(id : Long)
-
-GET      /getAllSkills/:id                                        controllers.Application.getAllSkills(id : String)
-
+GET      /getSupportAgent                                         controllers.Application.getSupportAgent()
+GET      /getLeadMobile/:id                                       controllers.Application.getLeadMobile(id : Long)
+GET      /logout                                                  controllers.Application.logout()
+GET      /searchCandidate                                         controllers.Application.searchCandidate()
+GET      /support                                                 controllers.Application.support()
+GET      /support/addCompany                                      controllers.Application.companyAndJob()
+GET      /street                                                  controllers.Application.supportAuth()
 GET      /updateLeadType/:leadId/:newStatus                       controllers.Application.updateLeadType(leadId: Long, newStatus: Long)
-
-GET      /updateIsAssessedToAssessed                              controllers.Application.updateIsAssessedToAssessed()
-
 GET      /updateLeadStatus/:leadId/:leadStatus/:res               controllers.Application.updateLeadStatus(leadId: Long, leadStatus: Integer,res: String)
 
-GET      /street                                                  controllers.Application.supportAuth()
-
-POST     /auth                                                    controllers.Application.auth()
-
-GET      /logout                                                  controllers.Application.logout()
-
-GET      /logoutUser                                              controllers.Application.logoutUser()
-
-#GET    /test/:id                                                controllers.Application.test(id: Integer)
-
-POST     /api/kw/cdr                                              controllers.Application.kwCdrInput()
-
-GET      /candidateSignupSupport/:cId                             controllers.Application.candidateSignupSupport(cId: Long)
-
-GET      /searchCandidate                                         controllers.Application.searchCandidate()
-
-POST     /getSearchCandidateResult                                controllers.Application.getSearchCandidateResult()
-
-GET      /privacy                                                 controllers.Application.privacy()
-
+POST     /addCompany                                              controllers.Application.addCompany()
+POST     /addJobPost                                              controllers.Application.addJobPost()
 POST     /addOrUpdateFollowUp                                     controllers.Application.addOrUpdateFollowUp()
+POST     /api/kw/cdr                                              controllers.Application.kwCdrInput()
+POST     /auth                                                    controllers.Application.auth()
+POST     /getAllCompany                                           controllers.Application.getAllCompany()
+POST     /getAllCompanyStatus                                     controllers.Application.getAllCompanyStatus()
+POST     /getAllCompanyType                                       controllers.Application.getAllCompanyType()
+POST     /getAllExperience                                        controllers.Application.getAllExperience()
+POST     /getAllJobStatus                                         controllers.Application.getAllJobStatus()
+POST     /getAllJobExpQuestion                                    controllers.Application.getAllJobExpQuestion()
+POST     /getJobExpQuestion/:jobRoleIdList                        controllers.Application.getJobExpQuestion(jobRoleIdList : String)
+POST     /getSearchCandidateResult                                controllers.Application.getSearchCandidateResult()
+POST     /processCsv                                              controllers.Application.processcsv()
+POST     /signUpSupport                                           controllers.Application.signUpSupport()
 
-GET     /getInteractionNote/:leadId/:limit                        controllers.Application.getInteractionNote(leadId: Long,limit: Long)
+# user dashboard
+# ~~~~~~~~~~~~~~
+
+GET      /dashboard                                               controllers.Application.dashboard()
+GET      /dashboard/appliedJobs                                   controllers.Application.appliedJobs()
+GET      /dashboard/editProfile                                   controllers.Application.editProfile()
+GET      /getCandidateInfoDashboard                               controllers.Application.getCandidateInfoDashboard()
+GET      /getCandidateJobApplication                              controllers.Application.getCandidateJobApplication()
+GET      /getJobApplicationDetailsForGoogleSheet/:id              controllers.Application.getJobApplicationDetailsForGoogleSheet(id: Integer)
+GET      /logoutUser                                              controllers.Application.logoutUser()
+GET      /privacy                                                 controllers.Application.privacy()
+GET      /updateIsAssessedToAssessed                              controllers.Application.updateIsAssessedToAssessed()
+
+POST     /addLead                                                 controllers.Application.addLead()
+POST     /addPassword                                             controllers.Application.addPassword()
+POST     /applyJob                                                controllers.Application.applyJob()
+POST     /candidateUpdateBasicProfile                             controllers.Application.candidateUpdateBasicProfile()
+POST     /candidateUpdateExperienceDetails                        controllers.Application.candidateUpdateExperienceDetails()
+POST     /candidateUpdateEducationDetails                         controllers.Application.candidateUpdateEducationDetails()
+POST     /findUserAndSendOtp                                      controllers.Application.findUserAndSendOtp()
+POST     /loginSubmit                                             controllers.Application.loginSubmit()
+POST     /signUp                                                  controllers.Application.signUp()
+
+# Both support and user
+# ~~~~~~~~~~~~~~~~~~~~~
+
+GET      /                                                        controllers.Application.index()
+GET      /getAllSkills/:id                                        controllers.Application.getAllSkills(id : String)
+
+POST     /getAllDegree                                            controllers.Application.getAllDegree()
+POST     /getAllEducation                                         controllers.Application.getAllEducation()
+POST     /getAllHotJobPosts                                       controllers.Application.getAllHotJobPosts()
+POST     /getAllIdProof                                           controllers.Application.getAllIdProof()
+POST     /getAllJobs                                              controllers.Application.getAllJobs()
+POST     /getAllLeadSource                                        controllers.Application.getAllLeadSource()
+POST     /getAllLanguage                                          controllers.Application.getAllLanguage()
+POST     /getAllLocality                                          controllers.Application.getAllLocality()
+POST     /getAllShift                                             controllers.Application.getAllShift()
+POST     /getAllTransportation                                    controllers.Application.getAllTransportation()
 
 # Map static resources from the /public folder to the /assets URL path
 GET    /robots.txt                                controllers.Assets.at(path="/public", file="robots.txt")

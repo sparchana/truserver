@@ -1,6 +1,7 @@
 package models.entity.Static;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.CacheStrategy;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import models.entity.OM.JobHistory;
 import models.entity.OM.JobPreference;
@@ -13,6 +14,7 @@ import java.util.List;
 /**
  * Created by zero on 4/5/16.
  */
+@CacheStrategy
 @Entity(name = "jobrole")
 @Table(name = "jobrole")
 public class JobRole extends Model {

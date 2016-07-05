@@ -7,8 +7,12 @@ function checkUserLogin(){
     var userName = localStorage.getItem("name");
     var userLastName = localStorage.getItem("lastName");
     if(userMobile != null){
-        document.getElementById("helloMsg").innerHTML = "Hello " + userName + "!";
         try{
+            if(localStorage.getItem("gender") == 0){
+                $("#userImg").attr('src', '/assets/dashboard/img/userMale.svg');
+            } else{
+                $("#userImg").attr('src', '/assets/dashboard/img/userFemale.svg');
+            }
             if(userLastName == "null" || userLastName == null){
                 document.getElementById("userName").innerHTML = userName;
             } else{
@@ -20,7 +24,21 @@ function checkUserLogin(){
     }
     else{
         logoutUser();
-        window.location = "/";
+    }
+    if(localStorage.getItem("assessed") == 0){
+        $(".assessmentComplete").hide();
+        $(".assessmentIncomplete").show();
+    } else{
+        $(".assessmentIncomplete").hide();
+        $(".assessmentComplete").show();
+    }
+
+    if(localStorage.getItem("minProfile") == 1){ // profile complete
+        $(".profileComplete").show();
+        $(".profileIncomplete").hide();
+    } else{
+        $(".profileIncomplete").show();
+        $(".profileComplete").hide();
     }
 }
 

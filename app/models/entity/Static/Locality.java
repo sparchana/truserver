@@ -1,6 +1,7 @@
 package models.entity.Static;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.CacheStrategy;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import models.entity.OM.LocalityPreference;
 import models.entity.OO.CandidateCurrentJobDetail;
@@ -13,6 +14,7 @@ import java.util.List;
  */
 
 // static table
+@CacheStrategy
 @Entity(name = "locality")
 @Table(name = "locality")
 public class Locality extends Model {

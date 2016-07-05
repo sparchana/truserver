@@ -1,12 +1,14 @@
 package models.entity.Static;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.CacheStrategy;
 
 import javax.persistence.*;
 
 /**
  * Created by zero on 4/5/16.
  */
+@CacheStrategy
 @Entity(name = "transportationmodes")
 @Table(name = "transportationmodes")
 public class TransportationMode extends Model{

@@ -3,6 +3,7 @@ package models.entity;
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.PrivateOwned;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.OM.*;
 import models.entity.OO.CandidateCurrentJobDetail;
@@ -130,7 +131,7 @@ public class Candidate extends Model {
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Lead lead;
 
-    @JsonManagedReference
+    @JsonBackReference
     @JoinColumn(name = "candidateCurrentJobId", referencedColumnName = "candidateCurrentJobId")
     @OneToOne(cascade = CascadeType.ALL)
     private CandidateCurrentJobDetail candidateCurrentJobDetail;
@@ -160,6 +161,11 @@ public class Candidate extends Model {
     @JoinColumn(name = "CandidateStatusId", referencedColumnName = "profileStatusId")
     private CandidateProfileStatus candidateprofilestatus;
 
+    @Column(name = "CandidateLastWithdrawnSalary", columnDefinition = "bigint signed null")
+    private Long candidateLastWithdrawnSalary;
+
+    @Column(name = "CandidateExperienceLetter", columnDefinition = "bit null")
+    private Boolean candidateExperienceLetter;
 
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
@@ -458,6 +464,22 @@ public class Candidate extends Model {
 
     public void setCandidateExpList(List<CandidateExp> candidateExpList) {
         this.candidateExpList = candidateExpList;
+    }
+
+    public Long getCandidateLastWithdrawnSalary() {
+        return candidateLastWithdrawnSalary;
+    }
+
+    public void setCandidateLastWithdrawnSalary(Long candidateLastWithdrawnSalary) {
+        this.candidateLastWithdrawnSalary = candidateLastWithdrawnSalary;
+    }
+
+    public Boolean getCandidateExperienceLetter() {
+        return candidateExperienceLetter;
+    }
+
+    public void setCandidateExperienceLetter(Boolean candidateExperienceLetter) {
+        this.candidateExperienceLetter = candidateExperienceLetter;
     }
 }
 
