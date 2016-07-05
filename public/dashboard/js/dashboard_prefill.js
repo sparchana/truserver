@@ -58,6 +58,7 @@ function processDataCandidateEducationUpdate(returnedData) {
 }
 
 function prefillBasicProfile() {
+    $("#jobCount").html(Object.keys(candidateInformation.jobApplicationList).length);
     /* candidate First and Last name */
     $("#candidateFirstName").val(candidateInformation.candidateFirstName);
     if (candidateInformation.candidateLastName == "null" || candidateInformation.candidateLastName == null) {
@@ -99,12 +100,14 @@ function prefillBasicProfile() {
             if (candidateInformation.candidateGender == 0) {
                 document.getElementById("genderMale").checked = true;
                 $('#genderMale').parent().addClass('active').siblings().removeClass('active');
-                $("#userGenderIcon").attr('src', '/assets/dashboard/img/male.png');
+                $("#userImg").attr('src', '/assets/dashboard/img/userMale.svg');
             } else {
                 document.getElementById("genderFemale").checked = true;
                 $('#genderFemale').parent().addClass('active').siblings().removeClass('active');
-                $("#userGenderIcon").attr('src', '/assets/dashboard/img/female.png');
+                $("#userImg").attr('src', '/assets/dashboard/img/userFemale.svg');
             }
+        } else {
+            $("#userImg").attr('src', '/assets/dashboard/img/userMale.svg');
         }
     } catch(err){
         console.log(err);
@@ -169,6 +172,8 @@ function prefillSkillProfile(){
                 console.log(err);
             }
         }
+        var currentJobRole = [];
+
         if(candidateInformation.jobHistoryList != null){
             var candidatePastJobList = candidateInformation.jobHistoryList;
             candidatePastJobList.forEach(function (jobHistory) {
@@ -177,19 +182,22 @@ function prefillSkillProfile(){
                     var item = {};
                     item ["id"] = jobHistory.jobRole.jobRoleId;
                     item ["name"] = jobHistory.jobRole.jobName;
-                    var currentJobRole = [];
                     currentJobRole.push(item);
-                    $("#candidateCurrentJobRole").tokenInput(getJob(), {
-                        theme: "facebook",
-                        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-                        minChars: 0,
-                        tokenLimit: 1,
-                        prePopulate: currentJobRole,
-                        preventDuplicates: true
-                    });
                 }
             });
         }
+        if($("#candidateCurrentJobRole").val() == ""){
+            $("#candidateCurrentJobRole").tokenInput(getJob(), {
+                theme: "facebook",
+                hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                minChars: 0,
+                tokenLimit: 1,
+                prePopulate: currentJobRole,
+                preventDuplicates: true
+            });
+        }
+
+
     } catch(err){
         console.log(err);
     }

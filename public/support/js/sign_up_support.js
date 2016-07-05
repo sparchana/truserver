@@ -43,7 +43,7 @@ $(document).ready(function () {
     try {
         $.ajax({
             type: "GET",
-            url: "/getUserInfo/" + leadId,
+            url: "/getLeadMobile/" + leadId,
             data: false,
             async: false,
             contentType: false,

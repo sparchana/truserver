@@ -563,7 +563,7 @@ public class CandidateService
         if(jobRole == null){
             return null;
         }
-        if(jobHistoryList == null){
+        if(jobHistoryList == null || jobHistoryList.isEmpty()){
             // create new currentJob entry
             jobHistoryList = new ArrayList<>();
             JobHistory jobHistory = new JobHistory();
@@ -571,15 +571,27 @@ public class CandidateService
             jobHistory.setCandidatePastCompany(candidateCurrentCompany.getCandidateCurrentCompany());
             jobHistory.setCandidate(candidate);
             jobHistory.setJobRole(jobRole);
+            Logger.info(candidateCurrentCompany.getCandidateCurrentCompany() + " + " + candidateCurrentCompany.getCandidateCurrentJobRoleId() + " ============");
             jobHistoryList.add(jobHistory);
         } else {
             // update currentJob entry
+            Boolean flag = false;
             for(JobHistory jobHistory: jobHistoryList){
-                if(jobHistory.getCurrentJob()){
+                if(jobHistory.getCurrentJob() != null && jobHistory.getCurrentJob()){
+                    flag = true;
                     jobHistory.setJobRole(jobRole);
                     jobHistory.setCurrentJob(true);
                     jobHistory.setCandidatePastCompany(candidateCurrentCompany.getCandidateCurrentCompany());
                 }
+            }
+            if(!flag){
+                JobHistory jobHistory = new JobHistory();
+                jobHistory.setCurrentJob(true);
+                jobHistory.setCandidatePastCompany(candidateCurrentCompany.getCandidateCurrentCompany());
+                jobHistory.setCandidate(candidate);
+                jobHistory.setJobRole(jobRole);
+                Logger.info(candidateCurrentCompany.getCandidateCurrentCompany() + " + " + candidateCurrentCompany.getCandidateCurrentJobRoleId() + " ============");
+                jobHistoryList.add(jobHistory);
             }
         }
 
@@ -848,6 +860,7 @@ public class CandidateService
                     /* adding session details */
                     AuthService.addSession(existingAuth,existingCandidate);
                     existingAuth.update();
+                    InteractionService.createInteractionForLoginCandidate(existingCandidate.getCandidateUUId(), false);
                     Logger.info("Login Successful");
                 }
                 else {
@@ -875,7 +888,7 @@ public class CandidateService
             } else {
                 int randomPIN = generateOtp();
                 existingCandidate.update();
-                SmsUtil.sendOTPSms(randomPIN, existingCandidate.getCandidateMobile());
+                SmsUtil.sendResetPasswordOTPSms(randomPIN, existingCandidate.getCandidateMobile());
 
                 resetPasswordResponse.setOtp(randomPIN);
                 resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);

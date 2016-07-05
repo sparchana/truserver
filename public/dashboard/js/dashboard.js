@@ -458,6 +458,7 @@ function checkInstitute() {
 
 function processDataAndFillAllFields(returnedData) {
     candidateInformation = returnedData;
+    $("#jobCount").html(Object.keys(candidateInformation.jobApplicationList).length);
     /* get Candidate's job preference */
     try {
         var jobPref = returnedData.jobPreferencesList;
