@@ -3,8 +3,8 @@
  */
 
 function processDataAddCompany(returnedData) {
-    alert("Company added Successfully");
-    window.location = "/support/addCompany"
+    alert("Company Updated Successfully");
+    window.close();
 }
 
 // company_form ajax script
@@ -20,8 +20,10 @@ $(function() {
             status=0;
         }
         if(status == 1){
+            console.log("inside js : " + $("#companyId").val());
             try {
                 var d = {
+                    companyId: $("#companyId").val(),
                     companyName: $("#companyName").val(),
                     companyEmployeeCount: $("#companyEmployeeCount").val(),
                     companyWebsite: $("#companyWebsite").val(),

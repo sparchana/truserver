@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+  <head>
+    <meta charset="UTF-8">
+    <title>Company and Jobs</title>
+    <link rel="stylesheet" href="/assets/support/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/support/css/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="/assets/support/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="/assets/support/css/nprogress.css">
+    <script type="text/javascript" src="/assets/support/js/jquery-1.12.0.min.js"></script>
+
+
+    <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
+    <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css">
+
+    <style>
+    .btn-default.active {
+      background-color: #337ab7;
+      color: white;
+    }
+    .btn-default.active:hover{
+      background-color: #337ab7;
+      color: white;
+    }
+    .btn-default.active:focus{
+      background-color: #337ab7;
+      color: white;
+    }
+
+    </style>
+  </head>
+  <body style="font-size: 13px;">
+
+    <div class="container">
+
+      <h2> Company and Jobs :<a href="/logout"><button class="btn btn-danger" style="align-items: flex-end"> Logout</button></a></h2>
+      <button id="showCandidate" class="btn btn-default active" onclick="renderDashboard()">Show All Job Posts</button>
+      <button id="showCompany" class="btn btn-default" onclick="getAllCompany()">Show All Company</button>
+      <button id="addCompanyOrJob" class="btn btn-default" onclick="window.open('/jobPostDetails/0','_blank')">Add New Job</button>
+      <button id="addCompanyOrJob" class="btn btn-default" onclick="window.open('/companyDetails/0','_blank')">Add New Company</button>
+      <div style="margin-top: 16px"></div>
+      <table id="jobTable" class="table table-striped table-bordered" style="margin-top: 16px" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>Job ID</th>
+            <th>Job Creation Date</th>
+            <th>Company</th>
+            <th>Job Title</th>
+            <th>Salary</th>
+            <th>Job Location(s)</th>
+            <th>Job Role</th>
+            <th>Job Experience</th>
+            <th>Job Is Hot?</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <table id="companyTable" class="table table-striped table-bordered" style="display: none; margin-top: 16px" cellspacing="0" width="100%">
+        <thead>
+          <tr>
+            <th>Company ID</th>
+            <th>Company Creation Date</th>
+            <th>Company Name</th>
+            <th>Company Website</th>
+            <th>Company Address</th>
+            <th>Company Type</th>
+            <th>Company Status</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <script type="text/javascript" src="/assets/support/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/support/js/datatables.min.js"></script>
+    <script type="text/javascript" src="/assets/support/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="/assets/support/js/nprogress.js"></script>
+    <script type="text/javascript" src="/assets/support/js/companyJobController.js"></script>
+  </body>
+</html>

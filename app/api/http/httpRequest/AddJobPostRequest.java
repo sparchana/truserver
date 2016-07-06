@@ -6,8 +6,10 @@ import java.util.List;
  * Created by batcoder1 on 18/6/16.
  */
 public class AddJobPostRequest {
+    public Long jobPostId;
     public Long jobPostMinSalary;
     public Long jobPostMaxSalary;
+    public String jobPostWorkingDays;
     public Integer jobPostStartTime;
     public Integer jobPostEndTime;
     public Boolean jobPostIsHot;
@@ -29,6 +31,22 @@ public class AddJobPostRequest {
     public Integer jobPostEducationId;
 
     public List<Integer> jobPostLocalities;
+
+    public String getJobPostWorkingDays() {
+        return jobPostWorkingDays;
+    }
+
+    public void setJobPostWorkingDays(String jobPostWorkingDays) {
+        this.jobPostWorkingDays = jobPostWorkingDays;
+    }
+
+    public Long getJobPostId() {
+        return jobPostId;
+    }
+
+    public void setJobPostId(Long jobPostId) {
+        this.jobPostId = jobPostId;
+    }
 
     public Long getJobPostMinSalary() {
         return jobPostMinSalary;
