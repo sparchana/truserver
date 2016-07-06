@@ -97,11 +97,11 @@ function getLanguageKnown(languageKnownList){
     return languageString;
 }
 
-function getCurrentSalary(salary) {
+function getLastWithdrawnSalary(salary) {
     if(salary == null){
         return "-";
     } else {
-        return salary.candidateCurrentSalary;
+        return salary;
     }
 
 }
@@ -167,7 +167,7 @@ function getHomeLocality(locality) {
 }
 
 function getDateTime(value) {
-    var dateTime = new Date(value).toLocaleDateString() +" "+ new Date(value).getHours() +":"+new Date(value).getMinutes()+":"+new Date(value).getSeconds();
+    var dateTime = new Date(value).toLocaleDateString() +" "+ ("0" + new Date(value).getHours()).slice(-2) + ":" + ("0" + new Date(value).getMinutes()).slice(-2) +":"+("0" + new Date(value).getSeconds()).slice(-2) ;
     return dateTime;
 }
 
@@ -185,12 +185,11 @@ function renderSearchResult(returnedData) {
             if(newCandidate.locality != null){
                 locality = newCandidate.locality.localityName;
             }
-
             returnedDataArray.push({
                 'cLID': '<a href="/candidateSignupSupport/'+newCandidate.lead.leadId+'" target="_blank">'+newCandidate.lead.leadId+'</a>',
                 "candidateFirstName" : newCandidate.candidateFirstName,
                 'candidateMobile' : newCandidate.candidateMobile,
-                'candidateCurrentSalary' : getCurrentSalary(newCandidate.candidateCurrentJobDetail),
+                'candidateLastWithdrawnSalary' : getLastWithdrawnSalary(newCandidate.candidateLastWithdrawnSalary),
                 'candidateJobPref' :  getJobPref(newCandidate.jobPreferencesList),
                 'candidateLocalityPref'  :getLocalityPref(newCandidate.localityPreferenceList),
                 'locality'  :getHomeLocality(newCandidate.locality),
@@ -225,7 +224,7 @@ function renderSearchResult(returnedData) {
                 { "data": "locality" },
                 { "data": "candidateExperience" },
                 { "data": "candidateIsEmployed" },
-                { "data": "candidateCurrentSalary" },
+                { "data": "candidateLastWithdrawnSalary" },
                 { "data": "candidateLanguage" },
                 { "data": "candidateEducation" },
                 { "data": "candidateSkillList" },

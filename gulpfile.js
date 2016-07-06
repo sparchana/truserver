@@ -1,13 +1,32 @@
+/*
+
+* Install npm
+* package.json contain all dependencies specified
+@@ $ npm install
+* Production file generation
+@@ $ gulp --prod
+* in dev mode just use:
+@@ $ gulp
+
+*/
+
+
+
+
 // include gulp
 var gulp = require('gulp');
 
 // include plug-ins
-var jshint = require('gulp-jshint');
-var stripDebug = require('gulp-strip-debug');
-var uglify = require('gulp-uglify');
-var concat = require('gulp-concat');
-var autoprefix = require('gulp-autoprefixer');
-var minifyCSS = require('gulp-minify-css');
+var jshint = require('gulp-jshint'),
+    stripDebug = require('gulp-strip-debug'),
+    uglify = require('gulp-uglify'),
+    concat = require('gulp-concat'),
+    autoprefix = require('gulp-autoprefixer'),
+    minifyCSS = require('gulp-minify-css'),
+    argv = require('yargs').argv,
+    gulpif = require('gulp-if'),
+    beautify = require('gulp-beautify');
+
 
 // Handy file paths also handler order of file compilation
 paths = {
@@ -68,9 +87,9 @@ gulp.task('styles', function() {
 // JS concat, strip debugging and minify
 gulp.task('supportScripts', function() {
     gulp.src([jsOrder.bootstrap, jsOrder.jquery, jsOrder.jqDt, jsOrder.npProgress, jsOrder.tokenInput, jsOrder.btnDt, jsOrder.btnFlash, jsOrder.jsZip, jsOrder.vfsFonts, jsOrder.btnHtml5, jsOrder.searchController])
-        .pipe(uglify())
         .pipe(concat('sapp.min.js'))
-        .pipe(stripDebug())
+        .pipe(gulpif(argv.prod, uglify(), beautify()))
+        .pipe(gulpif(argv.prod, stripDebug()))
         .pipe(gulp.dest('./public/build/support/'));
 });
 
@@ -78,7 +97,7 @@ gulp.task('supportScripts', function() {
 gulp.task('supportStyles', function() {
     gulp.src([cssOrder.bootstrap, cssOrder.dtBootstrap, cssOrder.jqDt, cssOrder.search, cssOrder.npProgress, cssOrder.tokenFb, cssOrder.btnDt])
         .pipe(concat('sapp.min.css'))
-        .pipe(minifyCSS())
+        .pipe(gulpif(argv.prod, minifyCSS()))
         .pipe(gulp.dest('./public/build/support/'));
 });
 
