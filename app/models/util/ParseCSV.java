@@ -70,7 +70,11 @@ public class ParseCSV {
                         overLappingRecordCount++;
                         interaction.setObjectAType(existingLead.getLeadType());
                         interaction.setObjectAUUId(existingLead.getLeadUUId());
-                        interaction.setResult(ServerConstants.INTERACTION_RESULT_EXISTING_LEAD_CALLED_BACK);
+                        if(existingLead.getLeadStatus() == ServerConstants.LEAD_STATUS_WON){
+                            interaction.setResult(ServerConstants.INTERACTION_RESULT_EXISTING_CANDIDATE_CALLED_BACK);
+                        } else {
+                            interaction.setResult(ServerConstants.INTERACTION_RESULT_EXISTING_LEAD_CALLED_BACK);
+                        }
                     }
 
                     // gives total no of old leads

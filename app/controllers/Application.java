@@ -4,7 +4,6 @@ import api.ServerConstants;
 import api.http.httpRequest.*;
 import api.http.httpResponse.*;
 import com.avaje.ebean.Ebean;
-import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.Query;
 import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -404,7 +403,7 @@ public class Application extends Controller {
         return ok(toJson(responses));
     }
     @Security.Authenticated(Secured.class)
-    public static Result getUserInfo(long id) {
+    public static Result getLeadMobile(long id) {
         try{
             Lead lead = Lead.find.where().eq("leadId",id).findUnique();
             String leadMobile = lead.getLeadMobile();
@@ -441,6 +440,7 @@ public class Application extends Controller {
         return ok("0");
     }
 
+    @Security.Authenticated(Secured.class)
     public static Result getCompanyInfo(long companyId) {
         Company company = Company.find.where().eq("companyId", companyId).findUnique();
         if(company!=null){
@@ -457,20 +457,13 @@ public class Application extends Controller {
         return ok("0");
     }
 
+    @Security.Authenticated(Secured.class)
     public static Result getJobPostInfo(long jobPostId) {
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
         if(jobPost!=null){
             return ok(toJson(jobPost));
         }
         return ok("0");
-    }
-
-    @Security.Authenticated(SecuredUser.class)
-    public static Result getCandidateLocality(long candidateId) {
-        List<LocalityPreference> candidateLocalities = LocalityPreference.find.where().eq("candidateId", candidateId).findList();
-        if(candidateLocalities == null)
-            return ok("0");
-        return ok(toJson(candidateLocalities));
     }
 
     @Security.Authenticated(SecuredUser.class)
@@ -485,12 +478,6 @@ public class Application extends Controller {
         }
     }
 
-    public static Result checkMinProfile(long id) {
-        Candidate existingCandidate = Candidate.find.where().eq("candidateId", id).findUnique();
-        return ok(toJson(existingCandidate.getIsMinProfileComplete()));
-    }
-
-    @Security.Authenticated(Secured.class)
     public static Result getAllSkills(String ids) {
         List<String> jobPrefIdList = Arrays.asList(ids.split("\\s*,\\s*"));
         List<JobToSkill> response = new ArrayList<>();
@@ -568,7 +555,7 @@ public class Application extends Controller {
         return redirect(routes.Application.supportAuth());
     }
 
-
+    @Security.Authenticated(SecuredUser.class)
     public static Result updateIsAssessedToAssessed() {
         if(session().get("candidateId") != null){
             Candidate existingCandidate = Candidate.find.where().eq("candidateId", session().get("candidateId")).findUnique();
@@ -706,6 +693,7 @@ public class Application extends Controller {
         return ok(toJson(jobPosts));
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result getJobApplicationDetailsForGoogleSheet(Integer jobPostId) {
         JobApplicationGoogleSheetResponse jobApplicationGoogleSheetResponse = new JobApplicationGoogleSheetResponse();
 
@@ -816,37 +804,31 @@ public class Application extends Controller {
         return ok(toJson(jobs));
     }
 
-    @Security.Authenticated(Secured.class)
     public static Result getAllShift() {
         List<TimeShift> timeShifts = TimeShift.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(timeShifts));
     }
 
-    @Security.Authenticated(Secured.class)
     public static Result getAllTransportation() {
         List<TransportationMode> transportationModes = TransportationMode.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(transportationModes));
     }
 
-    @Security.Authenticated(Secured.class)
     public static Result getAllEducation() {
         List<Education> educations = Education.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(educations));
     }
 
-    @Security.Authenticated(Secured.class)
     public static Result getAllLanguage() {
         List<Language> languages = Language.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(languages));
     }
 
-    @Security.Authenticated(Secured.class)
     public static Result getAllIdProof() {
         List<IdProof> idProofs = IdProof.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(idProofs));
     }
 
-    @Security.Authenticated(Secured.class)
     public static Result getAllDegree() {
         List<Degree> degreeList = Degree.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(degreeList));
@@ -887,6 +869,7 @@ public class Application extends Controller {
         return ok(views.html.signup_support.render(candidateId));
     }
 
+    @Security.Authenticated(Secured.class)
     public static Result createCandidateForm() {
         return redirect("/candidateSignupSupport/"+"0");
     }

@@ -243,6 +243,14 @@
                             </div>
 
                             <div id="totalWorkExperience" style="display: none; margin-top: 4px">
+                                <div class="row" style="margin-top: 4px">
+                                    <div class="col-sm-3"><h5>Are you currently Working?:</h5></div>
+                                    <div class="col-sm-9" style="margin-top: 6px;">
+                                        <input type="radio" name="employed" id="employed" value="1" onclick="employedYes()">&nbsp;Yes&nbsp;&nbsp;
+                                        <input type="radio" name="employed" id="employedNot" value="0" onclick="employedNo()">&nbsp;No
+                                    </div>
+                                </div>
+
                                 <div class="row">
                                     <div class="col-sm-3"><h5>Total Experience:</h5></div>
                                     <div class="col-sm-9">
@@ -250,6 +258,7 @@
                                         <input id="candidateTotalExperienceMonth" value="0" style="width: 15%; display: inline-block" placeholder="Months" type="number" min="0" max="11" step="1"  class="form-control input-md">&nbsp; Months
                                     </div>
                                 </div>
+
 
                                     <!-- expDuration details -->
                                 <div class="panel panel-primary" style="margin-top: 5px;" id="panel-expDuration">
@@ -282,48 +291,16 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-
-
-                            <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-3"><h5>Do you have a Job?:</h5></div>
-                                <div class="col-sm-9" style="margin-top: 6px;">
-                                    <input type="radio" name="employed" id="employed" value="1" onclick="employedYes()">&nbsp;Yes&nbsp;&nbsp;
-                                    <input type="radio" name="employed" id="employedNot" value="0" onclick="employedNo()">&nbsp;No
-                                </div>
-                            </div>
-
-                            <div id="employedForm" style="display: none">
 
                                 <div class="row" style="margin-top: 4px">
-                                    <div class="col-sm-3"><h5>Current Company:</h5></div>
+                                    <div class="col-sm-3"><h5>Current/Last Drawn Salary:</h5></div>
                                     <div class="col-sm-9">
-                                        <input id="candidateCurrentCompany" placeholder="What is your Company name?" type="text" class="form-control input-md">
-                                    </div>
-                                </div>
-
-                                <div class="row" style="margin-top: 4px">
-                                    <div class="col-sm-3"><h5>Current Job Salary:</h5></div>
-                                    <div class="col-sm-9">
-                                        <input id="candidateCurrentJobSalary" placeholder="What is your current Salary?" type="number" class="form-control input-md">
+                                        <input id="candidateLastWithdrawnSalary" placeholder="What was your LastWithdrawn Salary?" type="number" class="form-control input-md">
                                     </div>
                                 </div>
 
                             </div>
 
-                            <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-3"><h5>Past Company:</h5></div>
-                                <div class="col-sm-9">
-                                    <input id="candidatePastCompany" placeholder="What was your previous company Name?" type="text" class="form-control input-md">
-                                </div>
-                            </div>
-
-                            <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-3"><h5>Past Job Salary:</h5></div>
-                                <div class="col-sm-9">
-                                    <input id="candidatePastJobSalary" placeholder="What was your previous job salary?" type="number" class="form-control input-md">
-                                </div>
-                            </div>
                         </div>
 
                         <hr>
@@ -336,6 +313,14 @@
                                 <div class="col-sm-9">
                                     <div style="width: 100%; height: 34px;" id="candidateHighestEducation"  class="btn-group" data-toggle="buttons">
                                     </div>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 4px;">
+                                <div class="col-sm-3"><h5>Have you successfully completed this course?</h5></div>
+                                <div class="col-sm-9" style="margin-top: 5%">
+                                    <input type="radio" name="candidateEducationCompletionStatus" id="eduCompleted" value="1">&nbsp;Yes&nbsp;&nbsp;
+                                    <input type="radio" name="candidateEducationCompletionStatus" id="eduCompletedNot" value="0">&nbsp;No
                                 </div>
                             </div>
 
@@ -377,10 +362,6 @@
                             <table class="table table-striped" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
-                                        <th>Language Name</th>
-                                        <th>Read</th>
-                                        <th>Write</th>
-                                        <th>Speak</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -431,18 +412,10 @@
                             </div>
 
                             <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-5"><h5>Do you get Monthly Pay Slip?:</h5></div>
+                                <div class="col-sm-5"><h5>Do you have an Experience Letter for your Current job?:</h5></div>
                                 <div class="col-sm-7" style="margin-top: 6px;">
-                                    <input type="radio" name="payslip" id="payslipY" value="1">&nbsp;Yes&nbsp;&nbsp;
-                                    <input type="radio" name="payslip" id="payslipN" value="0">&nbsp;No
-                                </div>
-                            </div>
-
-                            <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-5"><h5>Do you have an Appointment Letter for your Current job?:</h5></div>
-                                <div class="col-sm-7" style="margin-top: 6px;">
-                                    <input type="radio" name="appointmentLetter" id="appointmentLetterY" value="1">&nbsp;Yes&nbsp;&nbsp;
-                                    <input type="radio" name="appointmentLetter" id="appointmentLetterN" value="0">&nbsp;No
+                                    <input type="radio" name="experienceLetter" id="experienceLetterY" value="1">&nbsp;Yes&nbsp;&nbsp;
+                                    <input type="radio" name="experienceLetter" id="experienceLetterN" value="0">&nbsp;No
                                 </div>
                             </div>
                         </div>

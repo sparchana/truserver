@@ -9,17 +9,16 @@
     <meta name="description" content="TruJobs helps you find the right job! Give a missed call at 8880007799 for Best Jobs. We pre-screen, match and schedule interviews for Jobs" />
     <title>Edit Profile - Trujobs</title>
 
-      <!-- Bootstrap Core CSS -->
     <link rel="icon" type="image/png" href="/assets/img/icon.png">
-
     <link href="/assets/dashboard/css/bootstrap.min.css" rel="stylesheet">
     <script type="text/javascript" src="/assets/js/jquery.min_1_12_0.js"></script>
     <script type="text/javascript" src="/assets/dashboard/js/user_login.js"></script>
     <script type="text/javascript" src="/assets/dashboard/js/dashboard.js"></script>
 
-      <!-- Custom CSS -->
     <link rel="stylesheet" type="text/css" href="/assets/new/css/myStyle.css">
     <link href="/assets/dashboard/css/dashboard.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/materialDashboard.css">
+    <script type="text/javascript" src="/assets/dashboard/js/materialDashboard.js"></script>
     <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
     <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
 
@@ -44,66 +43,76 @@
       </div>
       <div id="status">&nbsp;</div>
     </div>
-    <div id="table" style="display: none;"></div>
-    <div id="wrapper">
-        <!-- Sidebar -->
-      <div id="sidebar-wrapper">
-        <ul class="sidebar-nav">
-          <li class="sidebar-brand">
-            <a href="#">
-              <img id="navLogo" src="/assets/dashboard/img/logo-main.gif" height="42px">
-            </a>
-          </li>
-          <li>
-            <center>
-              <div style="padding-top: 8%; padding-bottom: 3%">
-                <img id="userGenderIcon" src="/assets/dashboard/img/male.png" height="124px">
-              </div>
-            </center>
-          </li>
-          <li>
-            <center>
-              <h4><font color="white"><div id="helloMsg"></div></font></h4>
-            </center>
-          </li>
-          <li>
-            <div class="sideNav">
-              <a href="/dashboard">Dashboard</a>
-            </div>
-          </li>
-          <li>
-            <div class="sideNav">
-              <a href="#" onclick="showAppliedJobs()">My Jobs</a>
-            </div>
-          </li>
-          <li>
-            <div class="sideNav">
-              <a href="/dashboard/editProfile">Profile</a>
-            </div>
-          </li>
-          <li>
-            <div class="sideNav">
-              <a href="/dashboard#hotJobs">Apply to Jobs</a>
-            </div>
-          </li>
-          <li>
-            <div class="sideNav">
-              <a href="#" onclick="logoutUser()">Log Out</a>
-            </div>
-          </li>
-        </ul>
-      </div>
-        <!-- /#sidebar-wrapper -->
 
-        <!-- Page Content -->
-      <div id="page-content-wrapper">
-        <a href="#menu-toggle" class="visible-xs btn btn-default" style="width: 30%" id="menu-toggle">Menu</a>
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigationbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+
+          </button>
+          <div itemscope itemtype ="http://schema.org/logo">
+            <a class="navbar-brand" href="/dashboard"><img id="navLogo" itemprop="Brand" src="/assets/new/img/logo-main.gif" alt="TruJobs Logo" height="32px" style="margin-top: -8px;"></a>
+          </div>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navigationbar">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/dashboard">Dashboard</a></li>
+            <li><a href="/dashboard/appliedJobs">My Jobs</a></li>
+            <li><a href="/dashboard/editProfile" id="activeLink">Profile</a></li>
+            <li><a href="/dashboard#applyJobs">Apply to Jobs</a></li>
+            <li><a href="#" onclick="logoutUser()">Log Out</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div id="blurred-image-container">
+      <div class="img-src"></div>
+      <div class="img-src blurred-image"></div>
+      <div id="overlay"></div>
+    </div>
+
+    <div id="sectionHead">
+      <img src="/assets/dashboard/img/userMale.svg" id="userImg">
+      <h4>
+        <b>
+          <div id="userName" style="display : inline-block"></div>
+          <div id="userAge" style="display : inline-block"></div>
+          <div id="userGender" style="display : inline-block"></div>
+        </b>
+      </h4>
+      <h5><div id="userMobile" style="display : inline-block"></div>, Bangalore</h5>
+
+      <div id="darkPanel">
+        <div id="inblockDiv">
+          Jobs Applied<br><b id="jobCount">6</b>
+        </div>
+
+        <div id="inblockDiv" style="margin-left: 16px">Profile<br>
+          <a href="/dashboard/editProfile"><div id="indicatorBtnRed" class="profileIncomplete" style="display:none"><b><font color="#fff">Incomplete</font></b></div></a>
+          <div class="profileComplete" style="display:none"><b>Complete</b></div>
+        </div>
+
+        <div id="inblockDiv" style="margin-left: 16px">Assessment<br>
+          <a href="http://bit.ly/trujobstest" target="_blank"><div class="assessmentIncomplete" id="indicatorBtnRed" style="display: none"><b><font color="#fff">Incomplete</font></b></div></a>
+          <div class="assessmentComplete" style="display: none"><b>Complete</b></div>
+        </div>
+
+      </div>
+    </div>
+    <div id="sectionBody" class="startBody" style="padding-left: 6%; padding-right: 6%; padding-top: 2%; padding-bottom: 2%">
+      <div id="editProfileBody">
         <div class="container-fluid">
           <div class="row">
             <div style="display: inline-block">
               <h2>Edit Profile</h2>
             </div>
-            <div style="display: inline-block; margin-left: 12%">
+            <div style="display: inline-block; margin-left: 16%">
               <center class="visible-lg">
                 <div>
                   <div id="editBasic" style="display: inline-block; cursor: pointer" >
@@ -152,8 +161,8 @@
             <div id="basicProfileSection">
               <h4>Let’s create your profile in 3 easy steps!</h4>
               <form id="candidateUpdateBasicProfile" method="post">
-                <div id="profileUpdateHeader"><h4>Basic Details</h4></div>
-                <div class=profileBody>
+                <div id="profileTitleEditProfile"><font size="2"><b>BASIC DETAILS</b></font></div>
+                <div class="profileBodyEditProfile">
                   <div class="row">
                     <div class="col-sm-3" ><h5>Name<font color="red">*</font></h5></div>
                     <div class="col-sm-5">
@@ -180,18 +189,18 @@
                     <div class="col-sm-5">
                       <input type="text" id="candidateJobPref">
                       <script type="text/javascript">
-                                    $(document).ready(function() {
-                                      $("#candidateJobPref").tokenInput(getJob(), {
-                                        theme: "facebook",
-                                        placeholder: "What job roles are you interested?",
-                                        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-                                        minChars: 0,
-                                        tokenLimit: 3,
-                                        prePopulate: jobPrefArray,
-                                        preventDuplicates: true
-                                      });
-                                    });
-                                </script>
+                        $(document).ready(function() {
+                          $("#candidateJobPref").tokenInput(getJob(), {
+                            theme: "facebook",
+                            placeholder: "What job roles are you interested?",
+                            hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                            minChars: 0,
+                            tokenLimit: 3,
+                            prePopulate: jobPrefArray,
+                            preventDuplicates: true
+                          });
+                        });
+                    </script>
                     </div>
                   </div>
 
@@ -200,17 +209,17 @@
                     <div class="col-sm-5">
                       <input type="text" id="candidateLocalityPref" placeholder="Where do you want to work?">
                       <script type="text/javascript">
-                                      $(document).ready(function() {
-                                        $("#candidateLocalityPref").tokenInput(getLocality(), {
-                                          theme: "facebook",
-                                          placeholder: "Where do you want to work?",
-                                          hintText: "Start typing Area (eg. BTM Layout, Bellandur..)",
-                                          minChars: 0,
-                                          prePopulate: localityPrefArray,
-                                          preventDuplicates: true
-                                        });
-                                      });
-                                </script>
+                          $(document).ready(function() {
+                            $("#candidateLocalityPref").tokenInput(getLocality(), {
+                              theme: "facebook",
+                              placeholder: "Where do you want to work?",
+                              hintText: "Start typing Area (eg. BTM Layout, Bellandur..)",
+                              minChars: 0,
+                              prePopulate: localityPrefArray,
+                              preventDuplicates: true
+                            });
+                          });
+                      </script>
                     </div>
                   </div>
 
@@ -252,6 +261,7 @@
                     </div>
                   </div>
                 </div>
+                <br>
                   <!-- next/save btn -->
                 <button type="submit" id="saveBtn" class="btn btn-primary" style="float: right">
                   <div style="display: inline-block">Next</div>
@@ -265,8 +275,8 @@
             <div id="skillProfileSection">
               <h4>Let us know about your work experience</h4>
               <form id="candidateUpdateLanguageAndSkills" method="post">
-                <div id="profileUpdateHeader"><h4>Work Experience</h4></div>
-                <div class=profileBody>
+                <div id="profileTitleEditProfile"><font size="2"><b>WORK EXPERIENCE</b></font></div>
+                <div class="profileBodyEditProfile">
                   <div id="language_details">
                     <div class="row">
                       <div class="col-sm-3"><h5>Your Work Experience<font color="red">*</font></h5></div>
@@ -313,11 +323,17 @@
                           <input id="candidateCurrentCompany" placeholder="What is your Company name?" maxLength="99" style="width: 275px" type="text" class="form-control input-md">
                         </div>
                       </div>
+                      <div class="row" style="margin-top: 8px">
+                        <div class="col-sm-3"><h5>What Job Role are you in ?<div style="color : #9f9f9f; font-size: 12px">(optional)</div></h5></div>
+                        <div class="col-sm-5">
+                          <input type="text" id="candidateCurrentJobRole">
+                        </div>
+                      </div>
 
                       <div class="row" style="margin-top: 8px">
-                        <div class="col-sm-3"><h5>Current Job Salary<font color="red">*</font></h5></div>
+                        <div class="col-sm-3"><h5>Last Withdrawn Salary<font color="red">*</font></h5></div>
                         <div class="col-sm-2">
-                          <input id="candidateCurrentJobSalary" placeholder="Salary" type="number" class="form-control input-md">
+                          <input id="candidateLastWithdrawnSalary" placeholder="Salary" type="number" class="form-control input-md">
                         </div>
                         <div class="col-sm-2" style="margin-top: 8px">₹/month</div>
                       </div>
@@ -325,15 +341,8 @@
                   </div>
                 </div>
                 <br>
-                <div id="profileUpdateHeader"><h4>Language Details</h4></div>
-                <div class=profileBody>
-                  <div class="row">
-                    <div class="col-sm-3"><h5>Mother Tongue?<div style="color : #9f9f9f; font-size: 12px">(optional)</div></h5></div>
-                    <div class="col-sm-9">
-                      <select id="candidateMotherTongue" style="width: 137.5px" class="selectDropdown" ></select>
-                    </div>
-                  </div>
-                  <br>
+                <div id="profileTitleEditProfile"><font size="2"><b>LANGUAGE DETAILS</b></font></div>
+                <div class="profileBodyEditProfile">
                   <table id="languageTable" class="table table-striped" cellspacing="0" width="100%">
                     <h5>Languages you know</h5>
                     <thead></thead>
@@ -342,8 +351,8 @@
                 </div>
                 <br>
                 <div class="skillSection">
-                  <div id="profileUpdateHeader"><h4>Skills/Requirements</h4></div>
-                  <div class=profileBody>
+                  <div id="profileTitleEditProfile"><font size="2"><b>SKILLS/REQUIREMENTS</b></font></div>
+                  <div class="profileBodyEditProfile">
                     <div class="row">
                       <div class="col-sm-12">
                         <div id="skill_details">
@@ -377,8 +386,8 @@
             <div id="educationProfileSection">
               <h4>Tell us about your educational background!</h4>
               <form id="candidateUpdateEducationDetails" method="post">
-                <div class=profileBody>
-                  <div id="profileUpdateHeader"><h4>Your Education</h4></div>
+                <div class="profileBodyEditProfile">
+                  <div id="profileTitleEditProfile"><font size="2"><b>YOUR EDUCATION</b></font></div>
                   <hr>
 
                   <div class="row" style="margin-top: 4px">
@@ -386,6 +395,14 @@
                     <div class="col-sm-9">
                       <div style="width: 100%; height: 34px;" id="candidateHighestEducation" class="btn-group" data-toggle="buttons">
                         </div>
+                    </div>
+                  </div>
+
+                  <div class="row" style="margin-top: 4px;">
+                    <div class="col-sm-3"><h5>Have you successfully completed this course?</h5></div>
+                    <div class="col-sm-9" style="margin-top: 1%">
+                      <input type="radio" name="candidateEducationCompletionStatus" id="eduCompleted" value="1">&nbsp;Yes&nbsp;&nbsp;
+                      <input type="radio" name="candidateEducationCompletionStatus" id="eduCompletedNot" value="0">&nbsp;No
                     </div>
                   </div>
 
@@ -423,25 +440,23 @@
                 </div>
               </form>
             </div>
-
-
           </div>
         </div>
       </div>
     </div>
-      <!-- /#page-content-wrapper -->
+
+    <div class="footer" itemscope itemtype ="http://schema.org/contactPoint">
+                © 2016 Trujobs.in | Bengaluru, India. All Right Reserved.
+      <a href="/privacy" target="/privacy" title="Privacy Policy"> <font color="#f0f8ff">
+                    Privacy Policy&nbsp;&nbsp;</font> </a>
+    </div>
 
       <!-- Including Bootstrap -->
-    <script src="/assets/dashboard/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/assets/js/validation.js"></script>
     <script type="text/javascript" src="/assets/dashboard/js/dashboard_prefill.js"></script>
-    <!-- Menu Toggle Script -->
+      <!-- Menu Toggle Script -->
     <script>
-        $("#menu-toggle").click(function(e) {
-          e.preventDefault();
-          $("#wrapper").toggleClass("toggled");
-        });
-
         function showBasicSection(){
           $("#basicProfileSection").show();
           $("#skillProfileSection").hide();
@@ -454,18 +469,18 @@
           $("#educationProfileSection").hide();
         }
 
-        function showEducationSection(){
+        function showEducationSection() {
           $("#basicProfileSection").hide();
           $("#skillProfileSection").hide();
           $("#educationProfileSection").show();
         }
 
-        function clickFresher(){
+        function clickFresher() {
           $("#totalWorkExperience").hide();
           $("#isEmployedForm").hide();
           $("#isEmployedSelect").hide();
         }
-        function clickExperienced(){
+        function clickExperienced() {
           $("#totalWorkExperience").show();
           $("#isEmployedSelect").show();
         }

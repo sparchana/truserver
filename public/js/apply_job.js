@@ -18,9 +18,8 @@ function processDataApplyJob(returnedData) {
         $('#customMsgIcon').attr('src', "/assets/img/jobApplied.png");
         $("#customMsg").html("Your Job Application is Successful");
         try{
-            $("#" + applyJobId).addClass("appliedBtn").removeClass("btn-primary");
-            $("#" + applyJobId).prop('disabled',true);
-            $("#apply_btn_" + applyJobId).html("Already Applied");
+            $("#apply_btn_" + applyJobId).addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Already Applied");
+            $("#applyBtnDiv_" + applyJobId).prop('disabled',true);
         } catch(err){
             console.log(err);
         }
@@ -94,6 +93,11 @@ function processDataGetJobGoogleSheetDetails(returnedData) {
     var value = returnedData.candidateCreationTimestamp;
     var candidateCreateTimestamp = new Date(value).toLocaleDateString() +" "+ new Date(value).getHours() +":"+new Date(value).getMinutes()+":"+new Date(value).getSeconds();
     var formUrl = returnedData.formUrl;
+    var totalExperienceInYrs = "";
+    var totalExperience = returnedData.candidateTotalExp;
+    if(totalExperience != null || totalExperience != undefined){
+        totalExperienceInYrs = getInYearMonthFormat(totalExperience);
+    }
     try {
         $.ajax({
             url: formUrl,
@@ -105,7 +109,7 @@ function processDataGetJobGoogleSheetDetails(returnedData) {
                 "entry.1345077393": ((returnedData.candidateName != null) ? returnedData.candidateName : ""),
                 "entry.1859090779": ((returnedData.candidateMobile != null) ? returnedData.candidateMobile : ""),
                 "entry.2079461892": candidateGender,
-                "entry.2071290015": ((returnedData.candidateTotalExp != null) ? returnedData.candidateTotalExp : ""),
+                "entry.2071290015": totalExperienceInYrs,
                 "entry.179139422": isEmployed,
                 "entry.1488146275": isAssessed,
                 "entry.67497584": ((returnedData.languageKnown != null) ? returnedData.languageKnown : ""),
@@ -123,5 +127,14 @@ function processDataGetJobGoogleSheetDetails(returnedData) {
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
+    }
+}
+
+function getInYearMonthFormat(d){
+    if(d == null) {
+        return "-";
+    } else {
+        var totalYear = Math.round((parseInt(d)/12)*100)/100;
+        return totalYear;
     }
 }

@@ -374,11 +374,9 @@ function processDataCheckShift(returnedData) {
 }
 
 function processDataCheckLanguage(returnedData) {
-    $('#candidateMotherTongue').html('');
     var arrayLang =[];
     var arrayLangId =[];
     var defaultOption=$('<option value="-1"></option>').text("Select");
-    $('#candidateMotherTongue').append(defaultOption);
     returnedData.forEach(function(language)
     {
         var id = language.languageId;
@@ -389,7 +387,6 @@ function processDataCheckLanguage(returnedData) {
         arrayLang.push(name);
         arrayLangId.push(id);
         var option=$('<option value=' + id + '></option>').text(name);
-        $('#candidateMotherTongue').append(option);
 
         languageArray.push(item);
     });
@@ -410,9 +407,9 @@ function populateLanguages(l, lId) {
             var cell4 = row.insertCell(3);
 
             cell1.innerHTML = l[i];
-            cell2.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" id=\"languageBtn\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"r\" value=0 >Read</label></div>";
-            cell3.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" id=\"languageBtn\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"w\" value=0 >Write</label></div>";
-            cell4.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" id=\"languageBtn\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >Speak</label></div>";
+            cell2.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"u\" value=0 >Understand</label></div>";
+            cell3.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >Speak</label></div>";
+            cell4.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"rw\" value=0 >Read/Write</label></div>";
         }
     }
 
@@ -461,6 +458,7 @@ function checkInstitute() {
 
 function processDataAndFillAllFields(returnedData) {
     candidateInformation = returnedData;
+    $("#jobCount").html(Object.keys(candidateInformation.jobApplicationList).length);
     /* get Candidate's job preference */
     try {
         var jobPref = returnedData.jobPreferencesList;
@@ -478,7 +476,7 @@ function processDataAndFillAllFields(returnedData) {
 
     try {
         var localityPref = returnedData.localityPreferenceList;
-        if(localityPref != null){
+        if(localityPref != null) {
             localityPref.forEach(function (individualLocality){
                 var id = individualLocality.locality.localityId;
                 var name = individualLocality.locality.localityName;

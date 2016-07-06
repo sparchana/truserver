@@ -43,6 +43,9 @@ public class CandidateEducation extends Model{
     @JoinColumn(name = "DegreeId", referencedColumnName = "DegreeId")
     private Degree degree;
 
+    @Column(name = "CandidateEducationCompletionStatus", columnDefinition = "int(1) null")
+    private Integer candidateEducationCompletionStatus;
+
     public static Model.Finder<String, CandidateEducation> find = new Model.Finder(CandidateEducation.class);
 
     public int getCandidateEducationId() {
@@ -91,5 +94,13 @@ public class CandidateEducation extends Model{
 
     public void setDegree(Degree degree) {
         this.degree = degree;
+    }
+
+    public Integer getCandidateEducationCompletionStatus() {
+        return candidateEducationCompletionStatus;
+    }
+
+    public void setCandidateEducationCompletionStatus(Integer candidateEducationCompletionStatus) {
+        this.candidateEducationCompletionStatus = candidateEducationCompletionStatus;
     }
 }

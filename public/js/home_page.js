@@ -46,7 +46,6 @@ $(function() {
                 $('html, body').animate({
                     scrollTop: target.offset().top - 92
                 }, 1000);
-                return false;
             }
         }
     });
