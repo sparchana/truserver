@@ -45,21 +45,21 @@ public class Application extends Controller {
     }
 
     @Security.Authenticated(Secured.class)
-    public static Result support() {
+    public static Result showCompanyAndJob() {
         String sessionId = session().get("sessionId");
         Developer developer = Developer.find.where().eq("developerSessionId", sessionId ).findUnique();
         if(developer != null && developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE) {
-            return ok(views.html.support.render());
+            return ok(views.html.company_and_job.render());
         }
         return redirect("/street");
     }
 
     @Security.Authenticated(Secured.class)
-    public static Result companyAndJob() {
+    public static Result support() {
         String sessionId = session().get("sessionId");
         Developer developer = Developer.find.where().eq("developerSessionId", sessionId ).findUnique();
         if(developer != null && developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE) {
-            return ok(views.html.add_company.render());
+            return ok(views.html.support.render());
         }
         return redirect("/street");
     }
@@ -244,6 +244,7 @@ public class Application extends Controller {
         return ok(toJson(JobService.applyJob(userMobile, jobId)));
     }
 
+    @Security.Authenticated(Secured.class)
     public static Result addJobPost() {
         JsonNode req = request().body().asJson();
         Logger.info(req + " == ");
@@ -257,8 +258,10 @@ public class Application extends Controller {
         return ok(toJson(JobService.addJobPost(addJobPostRequest)));
     }
 
+    @Security.Authenticated(Secured.class)
     public static Result addCompany() {
         JsonNode req = request().body().asJson();
+        Logger.info(req + " == ");
         AddCompanyRequest addCompanyRequest = new AddCompanyRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -504,6 +507,16 @@ public class Application extends Controller {
         return ok(toJson(response));
     }
 
+    @Security.Authenticated(Secured.class)
+    public static Result companyInfoHome(Long id) {
+        return ok(views.html.company_details.render());
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result jobPostInfoHome(Long id) {
+        return ok(views.html.job_post_details.render());
+    }
+
     public static Result supportAuth() {
         return ok(views.html.supportAuth.render());
     }
@@ -524,7 +537,7 @@ public class Application extends Controller {
         }
         else{
             Logger.info("Candidate Logged Out");
-            return ok(views.html.index.render());
+            return ok(views.html.main.render());
         }
     }
     public static Result auth() {
@@ -690,6 +703,12 @@ public class Application extends Controller {
 
     public static Result getAllHotJobPosts() {
         List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").findList();
+        return ok(toJson(jobPosts));
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result getAllJobPosts() {
+        List<JobPost> jobPosts = JobPost.find.all();
         return ok(toJson(jobPosts));
     }
 

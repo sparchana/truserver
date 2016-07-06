@@ -22,10 +22,29 @@ import java.util.List;
 public class JobService {
     public static Integer addJobPost(AddJobPostRequest addJobPostRequest) {
         List<Integer> jobPostLocalityList = addJobPostRequest.getJobPostLocalities();
-        JobPost newJobPost = new JobPost();
+        /* checking if jobPost already exists or not */
+        JobPost existingJobPost = JobPost.find.where().eq("jobPostId", addJobPostRequest.getJobPostId()).findUnique();
+        if(existingJobPost == null){
+            Logger.info("Job post does not exists. Creating a new job Post");
+            JobPost newJobPost = new JobPost();
+            newJobPost = getAndSetJobPostValues(addJobPostRequest, newJobPost,jobPostLocalityList);
+            newJobPost.save();
+            Logger.info("JobPost with jobId: " + newJobPost.getJobPostId() + " and job title: " + newJobPost.getJobPostTitle() + " created successfully");
+        } else{
+            Logger.info("Job post already exists. Updating existing job Post");
+            existingJobPost = getAndSetJobPostValues(addJobPostRequest, existingJobPost, jobPostLocalityList);
+            existingJobPost.update();
+            Logger.info("JobPost with jobId: " + existingJobPost.getJobPostId() + " and job title: " + existingJobPost.getJobPostTitle() + " updated successfully");
+        }
+        return 0;
+    }
 
+    public static JobPost getAndSetJobPostValues(AddJobPostRequest addJobPostRequest, JobPost newJobPost, List<Integer> jobPostLocalityList){
         newJobPost.setJobPostMinSalary(addJobPostRequest.getJobPostMinSalary());
         newJobPost.setJobPostMaxSalary(addJobPostRequest.getJobPostMaxSalary());
+        newJobPost.setJobPostStartTime(addJobPostRequest.getJobPostStartTime());
+        newJobPost.setJobPostEndTime(addJobPostRequest.getJobPostEndTime());
+        newJobPost.setJobPostIsHot(addJobPostRequest.getJobPostIsHot());
         newJobPost.setJobPostIsHot(addJobPostRequest.getJobPostIsHot());
         newJobPost.setJobPostDescription(addJobPostRequest.getJobPostDescription());
         newJobPost.setJobPostTitle(addJobPostRequest.getJobPostTitle());
@@ -37,6 +56,10 @@ public class JobService {
         newJobPost.setJobPostDescriptionAudio(addJobPostRequest.getJobPostDescriptionAudio());
         newJobPost.setJobPostWorkFromHome(addJobPostRequest.getJobPostWorkFromHome());
 
+        if (addJobPostRequest.getJobPostWorkingDays() != null) {
+            Byte workingDayByte = Byte.parseByte(addJobPostRequest.getJobPostWorkingDays(), 2);
+            newJobPost.setJobPostWorkingDays(workingDayByte);
+        }
         newJobPost.setJobPostToLocalityList(getJobPostLocality(jobPostLocalityList, newJobPost));
 
         JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", addJobPostRequest.getJobPostStatusId()).findUnique();
@@ -57,9 +80,7 @@ public class JobService {
         Education education = Education.find.where().eq("educationId", addJobPostRequest.getJobPostEducationId()).findUnique();
         newJobPost.setJobPostEducation(education);
 
-        newJobPost.save();
-        Logger.info("JobPost with jobId: " + newJobPost.getJobPostId() + " and job title: " + newJobPost.getJobPostTitle() + " created successfully");
-        return 0;
+        return newJobPost;
     }
 
     public static ApplyJobResponse applyJob(String candidateMobile, Integer jobId) {

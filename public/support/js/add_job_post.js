@@ -4,8 +4,8 @@
 
 
 function processDataAddJobPost(returnedData) {
-    alert("Job Post added Successfully");
-    window.location = "/support/addCompany"
+    alert("Job Post Updated Successfully");
+    window.close();
 }
 
 // job_post_form ajax script
@@ -55,12 +55,23 @@ $(function() {
                 maxSalary = null;
             }
 
+            var workingDays = "";
+            for(i=1;i<=7;i++){
+                if($("#working_" + i).is(":checked")){
+                    workingDays += "1";
+                } else{
+                    workingDays += "0";
+                }
+            }
+
             try {
                 var d = {
+                    jobPostId: $("#jobPostId").val(),
                     jobPostMinSalary: $("#jobPostMinSalary").val(),
                     jobPostMaxSalary: $("#jobPostMaxSalary").val(),
                     jobPostStartTime: parseInt($("#jobPostStartTime").val()),
                     jobPostEndTime: parseInt($("#jobPostEndTime").val()),
+                    jobPostWorkingDays: workingDays,
                     jobPostIsHot: jobPostIsHot,
                     jobPostDescription: $("#jobPostDescription").val(),
                     jobPostTitle: $("#jobPostTitle").val(),

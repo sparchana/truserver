@@ -12,8 +12,24 @@ import play.Logger;
  */
 public class CompanyService {
     public static Integer addCompany(AddCompanyRequest addCompanyRequest) {
-        Company newCompany = new Company();
+        Logger.info(addCompanyRequest.getCompanyId() + " --");
+        Company existingCompany = Company.find.where().eq("companyId", addCompanyRequest.getCompanyId()).findUnique();
+        if(existingCompany == null){
+            Logger.info("Company does not exists. Creating a new Company");
+            Company newCompany = new Company();
+            newCompany  = getAndAddCompanyValues(addCompanyRequest,newCompany);
+            newCompany.save();
+            Logger.info("Company: " + newCompany.getCompanyName() + " successfully created");
+        } else {
+            Logger.info("Company already exists. Updating existing Company");
+            existingCompany = getAndAddCompanyValues(addCompanyRequest, existingCompany);
+            existingCompany.update();
+            Logger.info("Company: " + existingCompany.getCompanyName() + " successfully updated");
+        }
+        return 0;
+    }
 
+    public static Company getAndAddCompanyValues(AddCompanyRequest addCompanyRequest, Company newCompany){
         newCompany.setCompanyName(addCompanyRequest.getCompanyName());
         newCompany.setCompanyEmployeeCount(addCompanyRequest.getCompanyEmployeeCount());
         newCompany.setCompanyWebsite(addCompanyRequest.getCompanyWebsite());
@@ -30,8 +46,8 @@ public class CompanyService {
 
         Locality locality = Locality.find.where().eq("localityId", addCompanyRequest.getCompanyLocality()).findUnique();
         newCompany.setCompanyLocality(locality);
-        newCompany.save();
-        Logger.info("Company: " + newCompany.getCompanyName() + " successfully created");
-        return 0;
+
+        return newCompany;
     }
 }
+

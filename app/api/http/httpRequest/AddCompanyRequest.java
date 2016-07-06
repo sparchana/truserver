@@ -4,6 +4,7 @@ package api.http.httpRequest;
  * Created by batcoder1 on 22/6/16.
  */
 public class AddCompanyRequest {
+    public Long companyId;
     public String companyName;
     public String companyEmployeeCount;
     public String companyWebsite;
@@ -14,6 +15,14 @@ public class AddCompanyRequest {
     public Integer companyLocality;
     public Integer companyType;
     public Integer companyStatus;
+
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
+    }
 
     public String getCompanyName() {
         return companyName;
