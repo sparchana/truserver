@@ -1,7 +1,9 @@
 package models.entity;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.PrivateOwned;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Static.RecruiterStatus;
 
@@ -49,6 +51,11 @@ public class RecruiterProfile extends Model {
     @JsonManagedReference
     @JoinColumn(name = "RecStatus")
     private RecruiterStatus recStatus;
+
+    @JsonBackReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "recruiterJobPost", cascade = CascadeType.ALL)
+    private JobPost jobPost;
 
     @ManyToOne
     @JsonManagedReference

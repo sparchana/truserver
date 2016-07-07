@@ -135,7 +135,7 @@ public class JobPost extends Model {
 
     @ManyToOne
     @JsonManagedReference
-    @JoinColumn(name = "JobrecruiterId")
+    @JoinColumn(name = "JobRecruiterId")
     private RecruiterProfile recruiterProfile;
 
     @JsonBackReference
