@@ -50,9 +50,24 @@ public class RecruiterProfile extends Model {
     @JoinColumn(name = "RecStatus")
     private RecruiterStatus recStatus;
 
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "RecCompany")
+    private Company company;
+
+    public static Finder<String, RecruiterProfile> find = new Finder(RecruiterProfile.class);
+
     public RecruiterProfile() {
         this.recruiterProfileUUId = UUID.randomUUID().toString();
         this.recruiterProfileCreateTimestamp = new Timestamp(System.currentTimeMillis());
+    }
+
+    public Company getRecCompany() {
+        return company;
+    }
+
+    public void setRecCompany(Company company) {
+        this.company = company;
     }
 
     public Long getRecruiterProfileId() {

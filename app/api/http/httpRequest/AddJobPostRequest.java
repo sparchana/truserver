@@ -23,17 +23,34 @@ public class AddJobPostRequest {
     public String jobPostDescriptionAudio;
     public Boolean jobPostWorkFromHome;
     public Integer jobPostStatusId;
-    public Integer pricingPlanTypeId;
     public Integer jobPostJobRoleId;
     public Integer jobPostCompanyId;
     public Integer jobPostShiftId;
     public Integer jobPostExperienceId;
     public Integer jobPostEducationId;
+    public Integer jobPostPricingPlanId;
+    public Long jobPostRecruiterId;
 
     public List<Integer> jobPostLocalities;
 
+    public Long getJobPostRecruiterId() {
+        return jobPostRecruiterId;
+    }
+
+    public void setJobPostRecruiterId(Long jobPostRecruiterId) {
+        this.jobPostRecruiterId = jobPostRecruiterId;
+    }
+
     public String getJobPostWorkingDays() {
         return jobPostWorkingDays;
+    }
+
+    public Integer getJobPostPricingPlanId() {
+        return jobPostPricingPlanId;
+    }
+
+    public void setJobPostPricingPlanId(Integer jobPostPricingPlanId) {
+        this.jobPostPricingPlanId = jobPostPricingPlanId;
     }
 
     public void setJobPostWorkingDays(String jobPostWorkingDays) {
@@ -166,14 +183,6 @@ public class AddJobPostRequest {
 
     public void setJobPostStatusId(Integer jobPostStatusId) {
         this.jobPostStatusId = jobPostStatusId;
-    }
-
-    public Integer getPricingPlanTypeId() {
-        return pricingPlanTypeId;
-    }
-
-    public void setPricingPlanTypeId(Integer pricingPlanTypeId) {
-        this.pricingPlanTypeId = pricingPlanTypeId;
     }
 
     public Integer getJobPostJobRoleId() {

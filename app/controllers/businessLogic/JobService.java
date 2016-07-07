@@ -8,6 +8,7 @@ import models.entity.Company;
 import models.entity.JobPost;
 import models.entity.OM.JobApplication;
 import models.entity.OM.JobPostToLocality;
+import models.entity.RecruiterProfile;
 import models.entity.Static.*;
 import models.util.SmsUtil;
 import play.Logger;
@@ -62,6 +63,9 @@ public class JobService {
         }
         newJobPost.setJobPostToLocalityList(getJobPostLocality(jobPostLocalityList, newJobPost));
 
+        PricingPlanType pricingPlanType = PricingPlanType.find.where().eq("pricingPlanTypeId", addJobPostRequest.getJobPostPricingPlanId()).findUnique();
+        newJobPost.setPricingPlanType(pricingPlanType);
+
         JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", addJobPostRequest.getJobPostStatusId()).findUnique();
         newJobPost.setJobPostStatus(jobStatus);
 
@@ -79,6 +83,9 @@ public class JobService {
 
         Education education = Education.find.where().eq("educationId", addJobPostRequest.getJobPostEducationId()).findUnique();
         newJobPost.setJobPostEducation(education);
+
+        RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", addJobPostRequest.getJobPostRecruiterId()).findUnique();
+        newJobPost.setRecruiterProfile(recruiterProfile);
 
         return newJobPost;
     }

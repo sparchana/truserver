@@ -10,6 +10,7 @@ public class AddCompanyResponse {
     public static final int STATUS_EXISTS = 4;
 
     public int status;
+    public Long companyId;
 
     public int getStatus() {
         return status;
@@ -17,5 +18,13 @@ public class AddCompanyResponse {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
     }
 }

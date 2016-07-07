@@ -265,7 +265,14 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(CompanyService.addCompany(addCompanyRequest)));
+        if(addCompanyRequest.getRecruiterCompany() == -1){
+            Logger.info("This");
+            AddCompanyResponse addCompanyResponse = CompanyService.addCompany(addCompanyRequest);
+            return ok(toJson(RecruiterService.addRecruiter(addCompanyRequest, addCompanyResponse.getCompanyId())));
+        } else{
+            Logger.info("That");
+            return ok(toJson(RecruiterService.addRecruiter(addCompanyRequest, addCompanyRequest.getRecruiterCompany())));
+        }
     }
 
     public static Result loginSubmit() {
@@ -444,6 +451,15 @@ public class Application extends Controller {
         Company company = Company.find.where().eq("companyId", companyId).findUnique();
         if(company!=null){
             return ok(toJson(company));
+        }
+        return ok("0");
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result getRecruiterInfo(long companyId) {
+        List<RecruiterProfile> recruiterProfileList = RecruiterProfile.find.where().eq("company", companyId).findList();
+        if(recruiterProfileList != null){
+            return ok(toJson(recruiterProfileList));
         }
         return ok("0");
     }
@@ -853,6 +869,18 @@ public class Application extends Controller {
     public static Result getAllCompany() {
         List<Company> companyList = Company.find.orderBy("companyName").findList();
         return ok(toJson(companyList));
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result getAllRecruiters() {
+        List<RecruiterProfile> recruiterProfileList = RecruiterProfile.find.findList();
+        return ok(toJson(recruiterProfileList));
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result getAllPricingPlans() {
+        List<PricingPlanType> pricingPlanTypeList = PricingPlanType.find.findList();
+        return ok(toJson(pricingPlanTypeList));
     }
 
     @Security.Authenticated(Secured.class)

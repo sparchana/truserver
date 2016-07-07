@@ -86,10 +86,12 @@ $(function() {
                     jobPostDescriptionAudio: "",
                     jobPostWorkFromHome: jobPostWorkFromHome,
                     jobPostShiftId: $("#jobPostWorkShift").val(),
+                    jobPostPricingPlanId: $("#jobPostPricingPlan").val(),
                     jobPostEducationId: $("#jobPostEducation").val(),
                     jobPostStatusId: $("#jobPostStatus").val(),
                     pricingPlanTypeId: 1,
-                    jobPostExperienceId: $("#jobPostExperience").val()
+                    jobPostExperienceId: $("#jobPostExperience").val(),
+                    jobPostRecruiterId: $("#jobPostRecruiter").val()
                 };
                 $.ajax({
                     type: "POST",

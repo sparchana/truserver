@@ -9,11 +9,6 @@ function getLocality() {
     return localityArray;
 }
 
-function getCompanyLocality() {
-    console.log("called");
-    return companyLocality;
-}
-
 function processDataCheckLocality(returnedData) {
     if (returnedData != null) {
         returnedData.forEach(function (locality) {
@@ -49,6 +44,17 @@ function processDataCheckCompanyType(returnedData) {
     });
 }
 
+function processDataGetCompanies(returnedData) {
+    var defaultOption = $('<option value=""></option>').text("Select a company");
+    $('#recruiterCompany').append(defaultOption);
+    returnedData.forEach(function (company) {
+        var id = company.companyId;
+        var name = company.companyName;
+        var option = $('<option value=' + id + '></option>').text(name);
+        $('#recruiterCompany').append(option);
+    });
+}
+
 $(function(){
     var pathname = window.location.pathname; // Returns path only
     var companyIdUrl = pathname.split('/');
@@ -64,6 +70,20 @@ $(function(){
             contentType: false,
             processData: false,
             success: processDataCheckLocality
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/getAllCompany",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetCompanies
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
@@ -96,7 +116,20 @@ $(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-    
+
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/getRecruiterInfo/" + recruiterId,
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataForCompanyInfo
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
     try {
         $.ajax({
             type: "GET",
