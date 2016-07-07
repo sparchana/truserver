@@ -1,6 +1,7 @@
 package controllers.businessLogic;
 
 import api.http.httpRequest.AddCompanyRequest;
+import api.http.httpResponse.AddCompanyResponse;
 import models.entity.Company;
 import models.entity.Static.CompanyStatus;
 import models.entity.Static.CompanyType;
@@ -11,22 +12,30 @@ import play.Logger;
  * Created by batcoder1 on 22/6/16.
  */
 public class CompanyService {
-    public static Integer addCompany(AddCompanyRequest addCompanyRequest) {
-        Logger.info(addCompanyRequest.getCompanyId() + " --");
+    public static AddCompanyResponse addCompany(AddCompanyRequest addCompanyRequest) {
+        AddCompanyResponse addCompanyResponse = new AddCompanyResponse();
         Company existingCompany = Company.find.where().eq("companyId", addCompanyRequest.getCompanyId()).findUnique();
         if(existingCompany == null){
-            Logger.info("Company does not exists. Creating a new Company");
-            Company newCompany = new Company();
-            newCompany  = getAndAddCompanyValues(addCompanyRequest,newCompany);
-            newCompany.save();
-            Logger.info("Company: " + newCompany.getCompanyName() + " successfully created");
+            Company existingCompanyWithName = Company.find.where().eq("companyName", addCompanyRequest.getCompanyName()).findUnique();
+            if(existingCompanyWithName == null){
+                Logger.info("Company does not exists. Creating a new Company");
+                Company newCompany = new Company();
+                newCompany  = getAndAddCompanyValues(addCompanyRequest,newCompany);
+                newCompany.save();
+                addCompanyResponse.setStatus(AddCompanyResponse.STATUS_SUCCESS);
+                Logger.info("Company: " + newCompany.getCompanyName() + " successfully created");
+            } else{
+                addCompanyResponse.setStatus(AddCompanyResponse.STATUS_EXISTS);
+                Logger.info("Company already exists");
+            }
         } else {
             Logger.info("Company already exists. Updating existing Company");
             existingCompany = getAndAddCompanyValues(addCompanyRequest, existingCompany);
             existingCompany.update();
+            addCompanyResponse.setStatus(AddCompanyResponse.STATUS_UPDATE_SUCCESS);
             Logger.info("Company: " + existingCompany.getCompanyName() + " successfully updated");
         }
-        return 0;
+        return addCompanyResponse;
     }
 
     public static Company getAndAddCompanyValues(AddCompanyRequest addCompanyRequest, Company newCompany){

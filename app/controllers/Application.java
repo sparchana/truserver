@@ -47,11 +47,7 @@ public class Application extends Controller {
     @Security.Authenticated(Secured.class)
     public static Result showCompanyAndJob() {
         String sessionId = session().get("sessionId");
-        Developer developer = Developer.find.where().eq("developerSessionId", sessionId ).findUnique();
-        if(developer != null && developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE) {
-            return ok(views.html.company_and_job.render());
-        }
-        return redirect("/street");
+        return ok(views.html.company_and_job.render());
     }
 
     @Security.Authenticated(Secured.class)

@@ -3,7 +3,13 @@
  */
 
 function processDataAddCompany(returnedData) {
-    alert("Company Updated Successfully");
+    if(returnedData.status == 1){
+        alert("Company Added Successfully");
+    } else if(returnedData.status == 2){
+        alert("Company Updated Successfully");
+    } else{
+        alert("Company already exists");
+    }
     window.close();
 }
 
