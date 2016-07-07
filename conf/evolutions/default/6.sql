@@ -1,6 +1,6 @@
 # --- !Ups
 
-alter table jobpost add column jobrecruiterid bigint signed not null default 0;
+alter table jobpost add column jobrecruiterid bigint signed null;
 alter table recruiterprofile add column reccompany bigint signed not null;
 
 alter table jobpost add constraint fk_jobpost_jobrecruiterid foreign key (jobrecruiterid) references recruiterprofile (recruiterprofileid) on delete restrict on update restrict;
