@@ -89,7 +89,7 @@ function renderDashboard(viewType) {
                         'leadChannel' : newLead.leadChannel,
                         'leadMobile' : newLead.leadMobile,
                         'leadName' :  newLead.leadName,
-                        'leadFollowUpTimestamp' :  function(){
+                        'leadFollowUpTimestamp' :  function() {
                             if (newLead.followUpStatus != null || newLead.followUpStatus == true){
                                 return newLead.followUpTimeStamp
                             } else {

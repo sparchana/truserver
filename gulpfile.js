@@ -47,7 +47,9 @@ jsOrder = {
     jsZip: paths.supportJs+"btnExport/jszip.min.js",
     vfsFonts: paths.supportJs+"btnExport/vfs_fonts.js",
     btnHtml5: paths.supportJs+"btnExport/buttons.html5.min.js",
-    searchController: paths.supportJs+"searchController.js",
+    momentJs: paths.supportJs+"moment-2.8.4.min.js",
+    datetimeMomentJs: paths.supportJs+"datetime-moment.js",
+    searchController: paths.supportJs+"searchController.js"
 };
 
 cssOrder = {
@@ -86,7 +88,7 @@ gulp.task('styles', function() {
 
 // JS concat, strip debugging and minify
 gulp.task('supportScripts', function() {
-    gulp.src([jsOrder.bootstrap, jsOrder.jquery, jsOrder.jqDt, jsOrder.npProgress, jsOrder.tokenInput, jsOrder.btnDt, jsOrder.btnFlash, jsOrder.jsZip, jsOrder.vfsFonts, jsOrder.btnHtml5, jsOrder.searchController])
+    gulp.src([jsOrder.bootstrap, jsOrder.jquery, jsOrder.jqDt, jsOrder.npProgress, jsOrder.tokenInput, jsOrder.btnDt, jsOrder.btnFlash, jsOrder.jsZip, jsOrder.vfsFonts, jsOrder.btnHtml5, jsOrder.momentJs, jsOrder.datetimeMomentJs, jsOrder.searchController])
         .pipe(concat('sapp.min.js'))
         .pipe(gulpif(argv.prod, uglify(), beautify()))
         .pipe(gulpif(argv.prod, stripDebug()))

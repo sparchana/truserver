@@ -9,6 +9,10 @@
 
         <link rel="stylesheet" href="/assets/build/support/sapp.min.css">
 
+            <!-- Include the plugin's CSS and JS: -->
+        <link rel="stylesheet" href="/assets/support/css/bootstrap-multiselect.css" type="text/css"/>
+
+
         <style>
         tfoot input {
             width: 100%;
@@ -45,8 +49,8 @@
         </nav>
         <div id="searchPane">
             <div class="panel panel-primary">
-                <div class="panel-heading">Search Options</div>
-                <div class="panel-body">
+                <div class="panel-heading" data-toggle="collapse" data-target="#searchPaneBody" onmouseover="" style="cursor: pointer;">Search Options</div>
+                <div class="panel-body collapse in" id="searchPaneBody">
                     <form id="candidateSearchForm">
                         <div class="row">
                             <div class="col-sm-1"><h6>Candidate Name:</h6></div>
@@ -55,7 +59,7 @@
                             </div>
                             <div class="col-sm-1"><h6>Candidate Mobile:</h6></div>
                             <div class="col-sm-5">
-                                <input id="candidateMobile" placeholder="Mobile no.?" name="candidateMobile" pattern="[0-9$,.]*" type="text" maxlength="10" class="form-control input-md">
+                                <input id="candidateMobile" placeholder="Mobile no.?" name="candidateMobile" type="text" class="form-control input-md">
                             </div>
                         </div>
 
@@ -102,8 +106,16 @@
                                 <input id="toThisDate" name="toThisDate" type="date" class="form-control input-md"  data-date-inline-picker="true"/>
                             </div>
                         </div>
+
+                        <div class="row" style="margin-top: 16px">
+                            <div class="col-sm-1"><h6>Language </h6></div>
+                            <div class="col-sm-1" id="languageMultiSelectDiv">
+                                <select id="languageMultiSelect" multiple="multiple"></select>
+                            </div>
+                        </div>
+
                         <br>
-                        <button type="submit" id="searchBtn" class="btn btn-primary ">Search</button>
+                        <button type="submit" data-toggle="collapse" data-target="#searchPaneBody" id="searchBtn" class="btn btn-primary ">Search</button>
                     </form>
                     <div style="margin-top: 16px"></div>
                     <div class="panel panel-default">
@@ -123,14 +135,53 @@
                                             <td>Maximum Salary:</td>
                                             <td><input type="text" id="maxSal" placeholder="Max Salary" name="maxSal"></td>
                                         </tr>
+                                        <tr>
+                                            <td>Minimum Job Application:</td>
+                                            <td><input type="text" id="minJobApplication" placeholder="Min Job Application" name="minJobApp"></td>
+                                            <td>Maximum Job Application:</td>
+                                            <td><input type="text" id="maxJobApplication" placeholder="Max Job Application" name="maxJobApp"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Minimum Age:</td>
+                                            <td><input type="text" id="minAge" placeholder="Min Age" name="minAge"></td>
+                                            <td>Maximum Age:</td>
+                                            <td><input type="text" id="maxAge" placeholder="Max Age" name="maxAge"></td>
+                                        </tr>
                                     </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
-            <table id="candidateSearchResultTable" class="table table-striped table-bordered" style="margin-top: 16px; table-layout: fixed; overflow-x:scroll;" cellspacing="0" width="100%">
+            <table id="candidateSearchResultTable" class="table table-striped table-bordered" style="margin-top: 16px; display: none; table-layout: fixed; overflow-x:scroll;" cellspacing="0" width="100%">
                 <thead>
+                    <tr>
+                        <th>CLID</th>
+                        <th>Candidate Name</th>
+                        <th>Mobile</th>
+                        <th>JobRole Pref</th>
+                        <th>Locality Pref</th>
+                        <th>Home Location</th>
+                        <th>Exp (Year)</th>
+                        <th>isEmployed?</th>
+                        <th>Current/Lastdrawn Salary</th>
+                        <th>Language Known</th>
+                        <th>Education</th>
+                        <th>Skills</th>
+                        <th>Gender</th>
+                        <th>isAssessed?</th>
+                        <th>TimeShift Pref</th>
+                        <th>Created On</th>
+                        <th>Past Company</th>
+                        <th>MinProfile?</th>
+                        <th>FollowUp?</th>
+                        <th>No.ofJobApp?</th>
+                        <th>Experience</th>
+                        <th>Age</th>
+                        <th>Experience/Relieving Letter</th>
+                    </tr>
+                </thead>
+                <tfoot>
                     <tr>
                         <th>CLID</th>
                         <th>Name</th>
@@ -148,12 +199,20 @@
                         <th>isAssessed?</th>
                         <th>TimeShift Pref</th>
                         <th>Created On</th>
+                        <th>Past Company</th>
+                        <th>MinProfile?</th>
+                        <th>FollowUp?</th>
+                        <th>No.ofJobApp?</th>
+                        <th>Experience</th>
+                        <th>Age</th>
+                        <th>Experience/Relieving Letter</th>
                     </tr>
-                </thead>
+                </tfoot>
                 <tbody>
                 </tbody>
             </table>
         </div>
         <script type="text/javascript" src="/assets/build/support/sapp.min.js"></script>
+        <script type="text/javascript" src="/assets/support/js/bootstrap-multiselect.js"></script>
     </body>
 </html>
