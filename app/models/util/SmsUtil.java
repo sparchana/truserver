@@ -9,8 +9,10 @@ import java.net.*;
 /**
  * Created by batcoder1 on 26/4/16.
  */
+
 public class SmsUtil {
     public static String sendSms(String toPhone, String msg) {
+        boolean isDevMode = play.api.Play.isDev(play.api.Play.current());
 
         String uname = Play.application().configuration().getString("sms.gateway.user");
         String id = Play.application().configuration().getString("sms.gateway.password");
@@ -31,15 +33,19 @@ public class SmsUtil {
 
         String smsResponse = "";
 
-        try {
-            URL url = new URL(requestString);
-            BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
-            smsResponse = br.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if(isDevMode){
+            Logger.info("DevMode: No sms sent");
+            return "DevMode: No sms sent";
+        } else {
+            try {
+                URL url = new URL(requestString);
+                BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()));
+                smsResponse = br.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return smsResponse;
         }
-
-        return smsResponse;
     }
 
     public static void sendTryingToCallSms(String mobile) {

@@ -11,6 +11,7 @@ import com.avaje.ebean.Query;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
 import models.entity.Auth;
 import models.entity.Candidate;
+import models.entity.Interaction;
 import models.entity.Lead;
 import models.entity.OM.*;
 import models.entity.OO.CandidateEducation;
@@ -20,6 +21,7 @@ import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
 
+import javax.persistence.NonUniqueResultException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,10 +55,52 @@ public class CandidateService
     }
 
     public static Candidate isCandidateExists(String mobile) {
-        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", mobile).findUnique();
-        if(existingCandidate != null) {
-            return existingCandidate;
-        } else {return null;}
+        try{
+            Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", mobile).findUnique();
+            if(existingCandidate != null) {
+                return existingCandidate;
+            }
+        } catch (NonUniqueResultException nu){
+            // this method takes care of multiple candidate, lead, auth, interaction
+            Candidate candidate = DeleteCandidateButPreserveOldest(mobile);
+            if(candidate != null) {
+                return candidate;
+            }
+        }
+        return null;
+    }
+
+    public static Candidate DeleteCandidateButPreserveOldest(String mobile) {
+        List<Candidate> existingCandidateList = Candidate.find.where().eq("candidateMobile", mobile).findList();
+        if(existingCandidateList != null && existingCandidateList.size() > 1){
+            existingCandidateList.sort((l1, l2) -> l1.getCandidateId() <= l2.getCandidateId() ? 1 : 0);
+            int candidateListSize = existingCandidateList.size();
+
+            // perish all duplicate candidate data but preserve oldest one
+            for(int i =1; i<candidateListSize ; i++) {
+                // leave the old one and delete the rest
+                // delete auth
+                Auth auth = Auth.find.where().eq("candidateId", existingCandidateList.get(i).getCandidateId()).findUnique();
+                if(auth != null){
+                    auth.delete();
+                }
+                // delete interaction
+                List<Interaction> interactionList = Interaction.find.where().eq("objectAUUId", existingCandidateList.get(i).getCandidateUUId()).findList();
+                for(Interaction interactionToDelete : interactionList){
+                    interactionToDelete.delete();
+                }
+                // candidate perish
+                existingCandidateList.get(i).delete();
+            }
+            Candidate nonPerishedCandidate = existingCandidateList.get(0);
+            if(nonPerishedCandidate == null ){
+                Logger.info("something terribly went wrong in deletion of candidate ");
+            } else {
+                LeadService.DeleteLeadButPreserveOldestFromCandidate(nonPerishedCandidate);
+            }
+            return nonPerishedCandidate;
+        }
+        return null;
     }
 
     public static CandidateSignUpResponse signUpCandidate(CandidateSignUpRequest candidateSignUpRequest,
@@ -952,48 +996,5 @@ public class CandidateService
         }
         existingCandidate.setLocalityPreferenceList(localityPreferenceList);
         existingCandidate.setJobPreferencesList(jobPreferencesList);
-    }
-
-    public static List<Candidate> searchCandidateBySupport(SearchCandidateRequest searchCandidateRequest) {
-        // TODO:check searchCandidateRequest member variable for special char, null value
-        List<Integer> jobInterestIdList = searchCandidateRequest.candidateJobInterest;
-        List<Integer> localityPreferenceIdList = searchCandidateRequest.candidateLocality;
-
-       // Logger.info("fromdate :" + searchCandidateRequest.getFromThisDate().getTime() + "-" + " toThisDate" + searchCandidateRequest.getToThisDate().getTime());
-        Query<Candidate> query = Candidate.find.query();
-
-        if(jobInterestIdList != null && jobInterestIdList.get(0) != null) {
-           query = query.select("*").fetch("jobPreferencesList")
-                    .where()
-                    .in("jobPreferencesList.jobRole.jobRoleId", jobInterestIdList)
-                    .query();
-        }
-        if(localityPreferenceIdList != null && localityPreferenceIdList.get(0) != null) {
-            query = query.select("*").fetch("localityPreferenceList")
-                    .where()
-                    .in("localityPreferenceList.locality.localityId", localityPreferenceIdList)
-                    .query();
-        }
-        if(searchCandidateRequest.getCandidateFirstName() != null && !searchCandidateRequest.getCandidateFirstName().isEmpty()) {
-            query = query.where().like("candidateFirstName",
-                    searchCandidateRequest.getCandidateFirstName() + "%").query();
-        }
-
-        if(searchCandidateRequest.getCandidateMobile() != null && !searchCandidateRequest.getCandidateMobile().isEmpty()) {
-            query = query.where().like("candidateMobile",
-                    "%" + searchCandidateRequest.getCandidateMobile() + "%").query();
-        }
-        if(searchCandidateRequest.getFromThisDate() != null) {
-            query = query.where()
-                    .ge("candidateCreateTimestamp", searchCandidateRequest.getFromThisDate())
-                    .query();
-        }
-        if(searchCandidateRequest.getToThisDate() != null) {
-            query = query.where()
-                    .le("candidateCreateTimestamp", searchCandidateRequest.getToThisDate())
-                    .query();
-        }
-        List<Candidate> candidateResponseList = query.findList();
-        return candidateResponseList;
     }
 }

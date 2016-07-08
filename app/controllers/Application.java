@@ -886,13 +886,14 @@ public class Application extends Controller {
 
         SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
         ObjectMapper newMapper = new ObjectMapper();
+
         try {
             searchCandidateRequest = newMapper.readValue(searchReq.toString(), SearchCandidateRequest.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return ok(toJson(CandidateService.searchCandidateBySupport(searchCandidateRequest)));
+        return ok(toJson(SupportSearchService.searchCandidateBySupport(searchCandidateRequest)));
     }
     @Security.Authenticated(Secured.class)
     public static Result getAllLeadSource() {

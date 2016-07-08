@@ -1,10 +1,14 @@
 package controllers.businessLogic;
 
 import api.ServerConstants;
+import models.entity.Candidate;
 import models.entity.Interaction;
 import models.entity.Lead;
 import models.entity.Static.LeadSource;
 import play.Logger;
+
+import javax.persistence.NonUniqueResultException;
+import java.util.List;
 
 import static play.mvc.Controller.session;
 
@@ -44,10 +48,18 @@ public class LeadService {
     }
 
     public static Lead isLeadExists(String mobile){
-        Lead existingLead = Lead.find.where().eq("leadMobile", mobile).findUnique();
-        if(existingLead != null) {
-            return existingLead;
-        } else {return null;}
+        try {
+            Lead existingLead = Lead.find.where().eq("leadMobile", mobile).findUnique();
+            if(existingLead != null) {
+                return existingLead;
+            }
+        } catch (NonUniqueResultException nu){
+            List<Lead> existingLeadList = Lead.find.where().eq("leadMobile", mobile).findList();
+            if(existingLeadList !=  null && existingLeadList.size() > 1) {
+                return LeadService.DeleteLeadButPreserveOldest(mobile);
+            }
+        }
+        return null;
     }
 
     public static void createLead(Lead lead, boolean isSupport){
@@ -95,4 +107,47 @@ public class LeadService {
         return leadSource;
     }
 
+
+
+    public static void DeleteLeadButPreserveOldestFromCandidate(Candidate candidate) {
+        List<Lead> existingLeadList = Lead.find.where().eq("leadMobile", candidate.getCandidateMobile()).findList();
+        Lead nonPerishedLead = new Lead();
+        if(existingLeadList != null && existingLeadList.size() >1){
+            // existingLeadList.sort((l1, l2) -> l1.getLeadId() >= l2.getLeadId() ? 1 : 0);
+            for(Lead lead : existingLeadList) {
+                // delete lead records only when its not tied up to the nonPerishCandidate
+                if(lead.getLeadId() != candidate.getLead().getLeadId()){
+                    List<Interaction> interactionList = Interaction.find.where().eq("objectAUUId", lead.getLeadUUId()).findList();
+                    // delete lead interaction forever
+                    for (Interaction interactionToDelete : interactionList) {
+                        interactionToDelete.delete();
+                    }
+                    // delete lead forever
+                    lead.delete();
+                } else {
+                    nonPerishedLead = lead;
+                }
+            }
+        }
+    }
+
+    public static Lead DeleteLeadButPreserveOldest(String mobile) {
+        CandidateService.DeleteCandidateButPreserveOldest(mobile);
+
+        List<Lead> existingLeadList = Lead.find.where().eq("leadMobile", mobile).findList();
+        if(existingLeadList != null && existingLeadList.size() > 1){
+            existingLeadList.sort((l1, l2) -> l1.getLeadId() >= l2.getLeadId() ? 1 : 0);
+            for(int i=1; i<existingLeadList.size(); i++) {
+                // delete lead records only when its not tied up to the nonPerishCandidate
+                List<Interaction> interactionList = Interaction.find.where().eq("objectAUUId", existingLeadList.get(i).getLeadUUId()).findList();
+                // delete lead interaction forever
+                for (Interaction interactionToDelete : interactionList) {
+                    interactionToDelete.delete();
+                }
+                // delete lead forever
+                existingLeadList.get(i).delete();
+            }
+        }
+        return existingLeadList.get(0);
+    }
 }
