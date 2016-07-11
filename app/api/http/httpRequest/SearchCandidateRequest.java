@@ -74,7 +74,7 @@ public class SearchCandidateRequest {
         this.candidateLocality = candidateLocality;
     }
 
-    public List<Integer> getLanguageKnown() {
+    public List<Integer> getLanguageKnownList() {
         return languageKnown;
     }
 

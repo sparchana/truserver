@@ -3,14 +3,21 @@ package models.util;
 import play.Logger;
 import play.Play;
 
-import java.io.*;
-import java.net.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.URLEncoder;
+
+import static api.ServerConstants.devTeamMobile;
 
 /**
  * Created by batcoder1 on 26/4/16.
  */
 
 public class SmsUtil {
+
     public static String sendSms(String toPhone, String msg) {
         boolean isDevMode = play.api.Play.isDev(play.api.Play.current());
 
@@ -88,6 +95,39 @@ public class SmsUtil {
         sendSms(mobile, msg);
     }
 
+    public static void sendDuplicateLeadSmsToDevTeam(String leadMobile)
+    {
+        // Idea is to keep getting irritated by receiving msg until issue is resolved :D
+
+        String msg = "Hi DevTeam, Duplicate Lead found with phone number " + leadMobile + "! "
+                + "Please remove the Duplicate Entry";
+
+        sendSms(devTeamMobile.get("Sandy"), msg);
+        sendSms(devTeamMobile.get("Adarsh"), msg);
+        sendSms(devTeamMobile.get("Archana"), msg);
+    }
+
+    public static void sendDuplicateCandidateSmsToDevTeam(String mobile)
+    {
+        // Idea is to keep getting irritated by receiving msg until issue is resolved :D
+
+        String msg = "Hi DevTeam, Duplicate Candidate found with phone number " + mobile + "! "
+                + "Please remove the Duplicate Entry";
+
+        sendSms(devTeamMobile.get("Sandy"), msg);
+        sendSms(devTeamMobile.get("Adarsh"), msg);
+        sendSms(devTeamMobile.get("Archana"), msg);
+    }
+    public static void sendDuplicateLeadOrCandidateDeleteActionSmsToDevTeam(String mobile)
+    {
+        // Idea is to keep getting irritated by receiving msg until issue is resolved :D
+
+        String msg = "Hi DevTeam, This is to inform you that a Duplicate Candidate delete action has been executed for mobile number " + mobile + "! ";
+
+        sendSms(devTeamMobile.get("Sandy"), msg);
+        sendSms(devTeamMobile.get("Adarsh"), msg);
+        sendSms(devTeamMobile.get("Archana"), msg);
+    }
 
     public static String checkDeliveryReport(String scheduleId){
 

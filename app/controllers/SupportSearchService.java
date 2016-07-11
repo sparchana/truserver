@@ -1,4 +1,4 @@
-package controllers.businessLogic;
+package controllers;
 
 import api.http.httpRequest.SearchCandidateRequest;
 import com.avaje.ebean.Query;
@@ -52,8 +52,8 @@ public class SupportSearchService {
                     .le("candidateCreateTimestamp", searchCandidateRequest.getToThisDate())
                     .query();
         }
-        if(searchCandidateRequest.getLanguageKnown() != null && !searchCandidateRequest.getLanguageKnown().isEmpty()) {
-            List<Integer> languageIdList = searchCandidateRequest.getLanguageKnown();
+        if(searchCandidateRequest.getLanguageKnownList() != null && !searchCandidateRequest.getLanguageKnownList().isEmpty()) {
+            List<Integer> languageIdList = searchCandidateRequest.getLanguageKnownList();
             query = query.select("*").fetch("languageKnownList")
                     .where()
                     .in("languageKnownList.language.languageId", languageIdList)
@@ -62,7 +62,7 @@ public class SupportSearchService {
 
         List<Candidate> candidateResponseList = query.findList();
         if(candidateResponseList.size() <1){
-            Logger.info("Nothing........");
+            Logger.info("Search Response empty");
         }
         return candidateResponseList;
     }

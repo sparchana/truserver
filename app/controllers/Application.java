@@ -1,6 +1,7 @@
 package controllers;
 
 import api.ServerConstants;
+import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpResponse.*;
 import com.avaje.ebean.Ebean;
@@ -46,22 +47,12 @@ public class Application extends Controller {
 
     @Security.Authenticated(Secured.class)
     public static Result support() {
-        String sessionId = session().get("sessionId");
-        Developer developer = Developer.find.where().eq("developerSessionId", sessionId ).findUnique();
-        if(developer != null && developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE) {
-            return ok(views.html.support.render());
-        }
-        return redirect("/street");
+        return ok(views.html.support.render());
     }
 
     @Security.Authenticated(Secured.class)
     public static Result companyAndJob() {
-        String sessionId = session().get("sessionId");
-        Developer developer = Developer.find.where().eq("developerSessionId", sessionId ).findUnique();
-        if(developer != null && developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE) {
-            return ok(views.html.add_company.render());
-        }
-        return redirect("/street");
+        return ok(views.html.add_company.render());
     }
 
     @Security.Authenticated(Secured.class)
@@ -419,7 +410,7 @@ public class Application extends Controller {
     public static Result getCandidateInfoDashboard() {
         Lead lead = Lead.find.where().eq("leadId", session().get("leadId")).findUnique();
         if(lead != null) {
-            Candidate candidate = Candidate.find.where().eq("lead_leadId", lead.getLeadId()).findUnique();
+            Candidate candidate = CandidateService.isCandidateExists(lead.getLeadMobile());
             if(candidate!=null){
                 return ok(toJson(candidate));
             }
@@ -432,7 +423,7 @@ public class Application extends Controller {
     public static Result getCandidateInfo(long leadId) {
             Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
             if(lead != null) {
-                Candidate candidate = Candidate.find.where().eq("lead_leadId", lead.getLeadId()).findUnique();
+                Candidate candidate = CandidateService.isCandidateExists(lead.getLeadMobile());
                 if(candidate!=null){
                     return ok(toJson(candidate));
                 }
@@ -542,12 +533,16 @@ public class Application extends Controller {
                 session("sessionUsername", developer.getDeveloperName());
                 session("sessionUserId", "" + developer.getDeveloperId());
                 session("sessionExpiry", String.valueOf(developer.getDeveloperSessionIdExpiryMillis()));
-                if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE){
+                if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN) {
+                    return redirect("/support/administrator");
+                }
+                if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE || developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN){
                     return redirect(routes.Application.support());
                 }
-                if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_ADMIN) {
+                if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_ADMIN || developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN) {
                     return ok(views.html.uploadcsv.render());
                 }
+
             }
         } else {
             return badRequest("Account Doesn't exists!!");
@@ -1001,5 +996,25 @@ public class Application extends Controller {
             return ok("Cleared Static Cache");
         }
         return redirect("/street");
+    }
+
+    @Security.Authenticated(SuperSecured.class)
+    public static Result removeDuplicateLeadOrCandidate(String mobile) {
+        mobile = FormValidator.convertToIndianMobileFormat(mobile);
+        if(mobile != null  && mobile.length() == 13 ){
+            if(DeleteService.DeleteLeadServiceButPreserveOne(mobile) == null){
+                return ok("Given Mobile number "+mobile+" was not found in DB");
+            }
+            String sessionUser = session().get("sessionUsername");
+            Logger.info("A duplicated data delete action has been executed by " + sessionUser + " for mobile number" + mobile);
+            SmsUtil.sendDuplicateLeadOrCandidateDeleteActionSmsToDevTeam(mobile);
+            return ok("Duplicate removal operation for Mobile number:"+mobile+" has been successfully completed");
+        }
+        return ok("Invalid Mobile number !!");
+    }
+
+    @Security.Authenticated(SuperSecured.class)
+    public static Result administrator() {
+        return ok(views.html.admin.render());
     }
 }

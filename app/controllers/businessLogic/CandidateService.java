@@ -11,7 +11,6 @@ import com.avaje.ebean.Query;
 import com.google.api.client.repackaged.com.google.common.base.Strings;
 import models.entity.Auth;
 import models.entity.Candidate;
-import models.entity.Interaction;
 import models.entity.Lead;
 import models.entity.OM.*;
 import models.entity.OO.CandidateEducation;
@@ -61,44 +60,18 @@ public class CandidateService
                 return existingCandidate;
             }
         } catch (NonUniqueResultException nu){
-            // this method takes care of multiple candidate, lead, auth, interaction
-            Candidate candidate = DeleteCandidateButPreserveOldest(mobile);
-            if(candidate != null) {
-                return candidate;
-            }
-        }
-        return null;
-    }
+            // get the list of candidate and sort by candidateId
+            // return the lowest primary key candidate Object
+            // register the event with proper info
 
-    public static Candidate DeleteCandidateButPreserveOldest(String mobile) {
-        List<Candidate> existingCandidateList = Candidate.find.where().eq("candidateMobile", mobile).findList();
-        if(existingCandidateList != null && existingCandidateList.size() > 1){
-            existingCandidateList.sort((l1, l2) -> l1.getCandidateId() <= l2.getCandidateId() ? 1 : 0);
-            int candidateListSize = existingCandidateList.size();
-
-            // perish all duplicate candidate data but preserve oldest one
-            for(int i =1; i<candidateListSize ; i++) {
-                // leave the old one and delete the rest
-                // delete auth
-                Auth auth = Auth.find.where().eq("candidateId", existingCandidateList.get(i).getCandidateId()).findUnique();
-                if(auth != null){
-                    auth.delete();
-                }
-                // delete interaction
-                List<Interaction> interactionList = Interaction.find.where().eq("objectAUUId", existingCandidateList.get(i).getCandidateUUId()).findList();
-                for(Interaction interactionToDelete : interactionList){
-                    interactionToDelete.delete();
-                }
-                // candidate perish
-                existingCandidateList.get(i).delete();
+            List<Candidate> existingCandidateList = Candidate.find.where().eq("candidateMobile", mobile).findList();
+            if(!existingCandidateList.isEmpty()){
+                existingCandidateList.sort((l1, l2) -> l1.getCandidateId() <= l2.getCandidateId() ? 1 : 0);
+                Logger.info("Duplicate Candidate Encountered with mobile no: "+ mobile + "- Returned CandidateId = "
+                        + existingCandidateList.get(0).getCandidateId() + " UUID-:"+existingCandidateList.get(0).getCandidateUUId());
+                SmsUtil.sendDuplicateCandidateSmsToDevTeam(mobile);
+                return existingCandidateList.get(0);
             }
-            Candidate nonPerishedCandidate = existingCandidateList.get(0);
-            if(nonPerishedCandidate == null ){
-                Logger.info("something terribly went wrong in deletion of candidate ");
-            } else {
-                LeadService.DeleteLeadButPreserveOldestFromCandidate(nonPerishedCandidate);
-            }
-            return nonPerishedCandidate;
         }
         return null;
     }
@@ -261,7 +234,7 @@ public class CandidateService
             }
         }
 
-        // Now we check if we are dealing with the reqeust to update basic profile details from website (or)
+        // Now we check if we are dealing with the request to update basic profile details from website (or)
         // dealing with a create/update candidate profile request from support
         if(profileUpdateFlag == ServerConstants.UPDATE_BASIC_PROFILE ||
                 profileUpdateFlag == ServerConstants.UPDATE_ALL_BY_SUPPORT) {
