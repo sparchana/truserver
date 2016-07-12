@@ -16,11 +16,10 @@ function getJob() {
 }
 
 function getRecruiters(selectedCompanyId) {
-    console.log(selectedCompanyId);
-/*    try {
+    try {
         $.ajax({
-            type: "POST",
-            url: "/getRecruiterInfo/" + selectedCompanyId,
+            type: "GET",
+            url: "/getCompanyRecruiters/" + selectedCompanyId,
             data: false,
             async: false,
             contentType: false,
@@ -29,7 +28,7 @@ function getRecruiters(selectedCompanyId) {
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
-    }*/
+    }
 }
 
 function processDataCheckLocality(returnedData) {
@@ -43,6 +42,12 @@ function processDataCheckLocality(returnedData) {
             localityArray.push(item);
         });
     }
+    $("#jobPostLocalities").tokenInput(getLocality(), {
+        theme: "facebook",
+        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+        minChars: 0,
+        preventDuplicates: true
+    });
 }
 
 function processDataCheckJobs(returnedData) {
@@ -54,10 +59,16 @@ function processDataCheckJobs(returnedData) {
         item ["name"] = name;
         jobArray.push(item);
     });
+    $("#jobPostJobRole").tokenInput(getJob(), {
+        theme: "facebook",
+        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+        minChars: 0,
+        tokenLimit: 1,
+        preventDuplicates: true
+    });
 }
 
 function processDataCheckRecruiters(returnedData) {
-    console.log(returnedData);
     if (returnedData != null) {
         var defaultOption = $('<option value=""></option>').text("Select a Recruiter");
         $('#jobPostRecruiter').append(defaultOption);
@@ -274,18 +285,20 @@ $(document).ready(function () {
     var pathname = window.location.pathname; // Returns path only
     var jobPostIdUrl = pathname.split('/');
     var jobPostId = jobPostIdUrl[(jobPostIdUrl.length)-1];
-
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/getJobPostInfo/" + jobPostId,
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataForJobPost
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
+    if(jobPostId != 0){
+        console.log("running");
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/getJobPostInfo/" + jobPostId,
+                data: false,
+                contentType: false,
+                processData: false,
+                success: processDataForJobPost
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
     }
 });
 
@@ -296,6 +309,10 @@ function processDataForJobPost(returnedData) {
         $("#jobPostCompany").val(returnedData.company.companyId);
     }
 
+    getRecruiters(returnedData.company.companyId);
+    if(returnedData.recruiterProfile != null){
+        $('#jobPostRecruiter').val(returnedData.recruiterProfile.recruiterProfileId);
+    }
     $("#jobPostTitle").val(returnedData.jobPostTitle);
 
     $("#jobPostDescription").val(returnedData.jobPostDescription);

@@ -31,13 +31,15 @@
   </head>
   <body style="font-size: 13px;">
 
-    <div class="container">
+    <div style="margin: 20px">
 
-      <h2> Company and Jobs :<a href="/logout"><button class="btn btn-danger" style="align-items: flex-end"> Logout</button></a></h2>
+      <h2> Company and Jobs :
+      <a href="/support"><button class="btn" style="align-items: flex-end">Support Home</button></a>
+      <a href="/logout"><button class="btn btn-danger" style="align-items: flex-end"> Logout</button></a></h2>
       <button id="showCandidate" class="btn btn-default active" onclick="renderDashboard()">Show All Job Posts</button>
       <button id="showCompany" class="btn btn-default" onclick="getAllCompany()">Show All Company</button>
+      <button id="addCompanyOrJob" class="btn btn-default" onclick="window.open('/createCompany','_blank')">Add New Company/New Recruiter</button>
       <button id="addCompanyOrJob" class="btn btn-default" onclick="window.open('/jobPostDetails/0','_blank')">Add New Job</button>
-      <button id="addCompanyOrJob" class="btn btn-default" onclick="window.open('/companyDetails/0','_blank')">Add New Company</button>
       <div style="margin-top: 16px"></div>
       <table id="jobTable" class="table table-striped table-bordered" style="margin-top: 16px" cellspacing="0" width="100%">
         <thead>
@@ -46,6 +48,7 @@
             <th>Job Creation Date</th>
             <th>Company</th>
             <th>Job Title</th>
+            <th>Recruiter</th>
             <th>Salary</th>
             <th>Job Location(s)</th>
             <th>Job Role</th>

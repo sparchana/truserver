@@ -28,7 +28,7 @@ public class JobService {
         if(existingJobPost == null){
             Logger.info("Job post does not exists. Creating a new job Post");
             JobPost newJobPost = new JobPost();
-            newJobPost = getAndSetJobPostValues(addJobPostRequest, newJobPost,jobPostLocalityList);
+            newJobPost = getAndSetJobPostValues(addJobPostRequest, newJobPost, jobPostLocalityList);
             newJobPost.save();
             Logger.info("JobPost with jobId: " + newJobPost.getJobPostId() + " and job title: " + newJobPost.getJobPostTitle() + " created successfully");
         } else{

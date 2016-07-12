@@ -39,7 +39,20 @@ function renderDashboard() {
                             'company': '<a href="'+"/companyDetails/"+jobPost.company.companyId+'" id="'+jobPost.company.companyId+'" style="cursor:pointer;" target="_blank">'+jobPost.company.companyName+'</a>',
                             'jobTitle': '<a href="'+"/jobPostDetails/"+jobPost.jobPostId+'" id="'+jobPost.jobPostId+'" style="cursor:pointer;" target="_blank">'+jobPost.jobPostTitle+'</a>',
                             'jobTitle1' : jobPost.jobPostTitle,
-                            'jobSalary' : ((jobPost.jobPostMinSalary != null) ? jobPost.jobPostMinSalary : "0") + " - " + ((jobPost.jobPostMaxSalary != null) ? jobPost.jobPostMaxSalary : "0"),
+                            'jobSalary' : function () {
+                                if(jobPost.jobPostMaxSalary == 0){
+                                    return ((jobPost.jobPostMinSalary != null) ? "₹" + jobPost.jobPostMinSalary : "0");
+                                } else{
+                                    return ((jobPost.jobPostMinSalary != null) ? "₹" + jobPost.jobPostMinSalary : "0") + " - ₹" + ((jobPost.jobPostMaxSalary != null) ? jobPost.jobPostMaxSalary : "0");
+                                }
+                            },
+                            'jobRecruiter': function () {
+                                if(jobPost.recruiterProfile != null){
+                                    return '<a href="'+"/recruiterDetails/"+jobPost.recruiterProfile.recruiterProfileId+'" id="'+jobPost.recruiterProfile.recruiterProfileId+'" style="cursor:pointer;" target="_blank">'+jobPost.recruiterProfile.recruiterProfileName+'</a>';
+                                } else{
+                                    return " - ";
+                                }
+                            },
                             'jobLocation' : function(){
                                 var jobLocality = "";
                                 if(jobPost.jobPostToLocalityList){
@@ -68,6 +81,7 @@ function renderDashboard() {
                 { "data": "jobCreationTimestamp" },
                 { "data": "company" },
                 { "data": "jobTitle" },
+                { "data": "jobRecruiter" },
                 { "data": "jobSalary" },
                 { "data": "jobLocation" },
                 { "data": "jobRole" },
@@ -78,7 +92,11 @@ function renderDashboard() {
             "language": {
                 "emptyTable": "No data available"
             },
-            "destroy": true
+            "destroy": true,
+            "dom": 'Bfrtip',
+            "buttons": [
+                'copy', 'csv', 'excel'
+            ]
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
@@ -96,6 +114,10 @@ function getAllCompany() {
             $('table#companyTable').DataTable().clear();
         }
         var table = $('table#companyTable').DataTable({
+            "dom": 'Bfrtip',
+            "buttons": [
+                'copy', 'csv', 'excel'
+            ],
             "ajax": {
                 "url": "/getAllCompany",
                 "dataSrc": function (returnedData) {

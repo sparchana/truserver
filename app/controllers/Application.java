@@ -130,6 +130,7 @@ public class Application extends Controller {
                 ServerConstants.TYPE_LEAD,
                 ServerConstants.LEAD_SOURCE_UNKNOWN
         );
+        lead.setLeadType(addLeadRequest.getLeadType());
         boolean isSupport = false;
         LeadService.createLead(lead, isSupport);
         addLeadResponse.setStatus(AddLeadResponse.STATUS_SUCCESS);
@@ -246,6 +247,7 @@ public class Application extends Controller {
         Logger.info(req + " == ");
         AddJobPostRequest addJobPostRequest = new AddJobPostRequest();
         ObjectMapper newMapper = new ObjectMapper();
+        newMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         try {
             addJobPostRequest = newMapper.readValue(req.toString(), AddJobPostRequest.class);
         } catch (IOException e) {
@@ -266,11 +268,13 @@ public class Application extends Controller {
             e.printStackTrace();
         }
         if(addCompanyRequest.getRecruiterCompany() == -1){
-            Logger.info("This");
             AddCompanyResponse addCompanyResponse = CompanyService.addCompany(addCompanyRequest);
-            return ok(toJson(RecruiterService.addRecruiter(addCompanyRequest, addCompanyResponse.getCompanyId())));
+            if(addCompanyResponse.getStatus() == 1){
+                return ok(toJson(RecruiterService.addRecruiter(addCompanyRequest, addCompanyResponse.getCompanyId())));
+            } else{
+                return ok(toJson(AddCompanyResponse.STATUS_FAILURE));
+            }
         } else{
-            Logger.info("That");
             return ok(toJson(RecruiterService.addRecruiter(addCompanyRequest, addCompanyRequest.getRecruiterCompany())));
         }
     }
@@ -456,18 +460,19 @@ public class Application extends Controller {
     }
 
     @Security.Authenticated(Secured.class)
-    public static Result getRecruiterInfo(long companyId) {
-        List<RecruiterProfile> recruiterProfileList = RecruiterProfile.find.where().eq("company", companyId).findList();
+    public static Result getCompanyRecruiters(long companyId) {
+        List<RecruiterProfile> recruiterProfileList = RecruiterProfile.find.where().eq("company.companyId", companyId).findList();
         if(recruiterProfileList != null){
             return ok(toJson(recruiterProfileList));
         }
         return ok("0");
     }
 
-    public static Result GetCompanyJobList(long companyId){
-        List<JobPost> jobPostList = JobPost.find.where().eq("company.companyId", companyId).findList();
-        if(jobPostList!=null){
-            return ok(toJson(jobPostList));
+    @Security.Authenticated(Secured.class)
+    public static Result getRecruiterInfo(long recId) {
+        RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", recId).findUnique();
+        if(recruiterProfile != null){
+            return ok(toJson(recruiterProfile));
         }
         return ok("0");
     }
@@ -525,6 +530,11 @@ public class Application extends Controller {
     }
 
     @Security.Authenticated(Secured.class)
+    public static Result recruiterInfoHome(Long id) {
+        return ok(views.html.recruiter_details.render());
+    }
+
+    @Security.Authenticated(Secured.class)
     public static Result jobPostInfoHome(Long id) {
         return ok(views.html.job_post_details.render());
     }
@@ -543,14 +553,8 @@ public class Application extends Controller {
 
     public static Result logoutUser() {
         session().clear();
-        String sessionId = session().get("sessionId");
-        if(sessionId != null){
-            return ok(views.html.candidate_home.render());
-        }
-        else{
-            Logger.info("Candidate Logged Out");
-            return ok(views.html.main.render());
-        }
+        Logger.info("Candidate Logged Out");
+        return ok(views.html.main.render());
     }
     public static Result auth() {
         Form<DevLoginRequest> userForm = Form.form(DevLoginRequest.class);
@@ -910,6 +914,11 @@ public class Application extends Controller {
     @Security.Authenticated(Secured.class)
     public static Result candidateSignupSupport(Long candidateId) {
         return ok(views.html.signup_support.render(candidateId));
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result createCompany() {
+        return ok(views.html.create_company.render());
     }
 
     @Security.Authenticated(Secured.class)
