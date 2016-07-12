@@ -955,7 +955,7 @@ function processDataCheckExp(returnedData) {
                 trPastCompany.id = "expPastCompanyHead_" + jobRoleId;
                 trPastCompany.setAttribute("style", "background-color:#80CBC4; color:white;");
                 var tdPastCompany = trPastCompany.insertCell(0);
-                trPastCompany.insertCell(1);
+                tdPastCompany.setAttribute("colspan", "2");
                 tdPastCompany.innerHTML = '<div style="font-weight: bold;"> In which company have you worked before as '+singleQuestion.jobRole.jobName+'</div>';
                 tdPastCompany.setAttribute("width", "100%");
                 $('#expOtherTable tr:last').after(trPastCompany);
@@ -963,8 +963,8 @@ function processDataCheckExp(returnedData) {
                 var trPastCompanyName = tableExpOther.insertRow(2);
                 trPastCompanyName.id = "expPastCompanyBody_" +jobRoleId;
                 var tdCompanyName = trPastCompanyName.insertCell(0);
-                var tdIsCurrentJob = trPastCompanyName.insertCell(1);
                 tdCompanyName.id = "expPastCompany_" + jobRoleId;
+                tdCompanyName.setAttribute("colspan", "2");
                 tdCompanyName.innerHTML =
                     '<div class="form-group col-xs-4" ><input id="candidatePastCompany_'+jobRoleId+'_1" type="text" class="form-control col-xs-4" "><input type="radio" id="radio_'+jobRoleId+'_1" name="currentJob" value="'+jobRoleId+'_1" onclick="validateCurrentJob($(this).val())" disabled>&nbsp; Current Job?</div>'+
                     '<div class="form-group col-xs-4" ><input id="candidatePastCompany_'+jobRoleId+'_2" type="text" class="form-control col-xs-4" "><input type="radio" id="radio_'+jobRoleId+'_2" name="currentJob" value="'+jobRoleId+'_2" onclick="validateCurrentJob($(this).val())" disabled>&nbsp; Current Job?</div>'+
@@ -998,7 +998,6 @@ function processDataCheckExp(returnedData) {
             cell2.appendChild(selectList);
             $('#expOtherTable tr:last').after(row);
         }
-
     });
     if (count == 0) {
     }

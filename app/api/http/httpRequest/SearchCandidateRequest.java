@@ -2,20 +2,19 @@ package api.http.httpRequest;
 
 import api.http.FormValidator;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by zero on 23/5/16.
  */
 public class SearchCandidateRequest {
     public String candidateFirstName;
-    public String candidateMobile;
-    public List<Integer> candidateJobInterest; // ',' separated jobRoleId values
-    public List<Integer> candidateLocality; // ',' separated candidateLocalityId values
+    public String candidateMobile; //',' separated Mobile No values
+    public List<Integer> candidateJobInterest;
+    public List<Integer> candidateLocality;
     public Date fromThisDate;
     public Date toThisDate;
+    public List<Integer> languageKnown;
 
     public Date getFromThisDate() {
         return fromThisDate;
@@ -49,8 +48,18 @@ public class SearchCandidateRequest {
         this.candidateFirstName = candidateFirstName;
     }
 
-    public String getCandidateMobile() {
-        return FormValidator.convertToIndianMobileFormat(candidateMobile);
+    public List<String> getCandidateMobile() {
+        if(candidateMobile.isEmpty() || candidateMobile == null){
+            return null;
+        }
+        List<String> mobileList = Arrays.asList(candidateMobile.split("\\s*,\\s*"));
+        List<String> with91 = new ArrayList<>();
+        for(String tempMobile : mobileList){
+            tempMobile.replaceAll("\\s+", "").trim();
+            tempMobile = FormValidator.convertToIndianMobileFormat(tempMobile);
+            with91.add(tempMobile);
+        }
+        return with91;
     }
 
     public void setCandidateMobile(String candidateMobile) {
@@ -63,5 +72,13 @@ public class SearchCandidateRequest {
 
     public void setCandidateLocality(List<Integer> candidateLocality) {
         this.candidateLocality = candidateLocality;
+    }
+
+    public List<Integer> getLanguageKnownList() {
+        return languageKnown;
+    }
+
+    public void setLanguageKnown(List<Integer> languageKnown) {
+        this.languageKnown = languageKnown;
     }
 }
