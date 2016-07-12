@@ -824,7 +824,6 @@ public class Application extends Controller {
             jobApplicationGoogleSheetResponse.setFormUrl(ServerConstants.PROD_GOOGLE_FORM_FOR_JOB_APPLICATION);
         } else{
             jobApplicationGoogleSheetResponse.setFormUrl(ServerConstants.DEV_GOOGLE_FORM_FOR_JOB_APPLICATION);
-
         }
         return ok(toJson(jobApplicationGoogleSheetResponse));
     }

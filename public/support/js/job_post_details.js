@@ -69,6 +69,7 @@ function processDataCheckJobs(returnedData) {
 }
 
 function processDataCheckRecruiters(returnedData) {
+    $('#jobPostRecruiter').html('');
     if (returnedData != null) {
         var defaultOption = $('<option value=""></option>').text("Select a Recruiter");
         $('#jobPostRecruiter').append(defaultOption);

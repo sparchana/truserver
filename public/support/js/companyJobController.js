@@ -114,10 +114,6 @@ function getAllCompany() {
             $('table#companyTable').DataTable().clear();
         }
         var table = $('table#companyTable').DataTable({
-            "dom": 'Bfrtip',
-            "buttons": [
-                'copy', 'csv', 'excel'
-            ],
             "ajax": {
                 "url": "/getAllCompany",
                 "dataSrc": function (returnedData) {
@@ -154,7 +150,11 @@ function getAllCompany() {
             "language": {
                 "emptyTable": "No data available"
             },
-            "destroy": true
+            "destroy": true,
+            "dom": 'Bfrtip',
+            "buttons": [
+                'copy', 'csv', 'excel'
+            ]
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);

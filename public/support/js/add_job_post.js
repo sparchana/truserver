@@ -4,8 +4,53 @@
 
 
 function processDataAddJobPost(returnedData) {
-    alert("Job Post Updated Successfully");
-    window.close();
+    console.log(returnedData);
+    if(returnedData.status == 1){
+        var jobPostLocalities = "";
+        var jobPostSalary = "";
+        var localities = returnedData.jobPost.jobPostToLocalityList;
+        localities.forEach(function (locality) {
+           jobPostLocalities += locality.locality.localityName + ", ";
+        });
+
+        if(returnedData.jobPost.jobPostMaxSalary == 0){
+            jobPostSalary = returnedData.jobPost.jobPostMinSalary;
+        } else{
+            jobPostSalary = returnedData.jobPost.jobPostMinSalary + " - " + returnedData.jobPost.jobPostMaxSalary;
+        }
+
+        try {
+            $.ajax({
+                url: returnedData.formUrl,
+                data: {
+                    "entry.790894440": returnedData.jobPost.jobPostId, //jobId
+                    "entry.682057856": returnedData.jobPost.company.companyName,
+                    "entry.121610050": returnedData.jobPost.jobRole.jobName,
+                    "entry.349225135": returnedData.jobPost.recruiterProfile.recruiterProfileName,
+                    "entry.243172250": returnedData.jobPost.recruiterProfile.recruiterProfileMobile,
+                    "entry.1348583202": returnedData.jobPost.recruiterProfile.recruiterProfileEmail,
+                    "entry.499293401": jobPostLocalities,
+                    "entry.1169285578": jobPostSalary,
+                    "entry.156865881": returnedData.jobPost.jobPostIncentives,
+                    "entry.518884370": returnedData.jobPost.jobPostShift.timeShiftName,
+                    "entry.1610465251": returnedData.jobPost.jobPostDescription,
+                    "entry.839049104": returnedData.jobPost.jobPostMinRequirement,
+                    "entry.988939191": returnedData.jobPost.jobPostAddress,
+                    "entry.731772103": returnedData.jobPost.jobPostVacancies,
+                    "entry.599645579": returnedData.jobPost.pricingPlanType.pricingPlanTypeName
+                },
+                type: "POST",
+                dataType: "xml",
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+        alert("Job Post Created Successfully");
+    } else{
+        alert("Job Post Updated Successfully");
+
+    }
+/*    window.close();*/
 }
 
 // job_post_form ajax script

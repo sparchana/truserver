@@ -2,6 +2,7 @@ package controllers.businessLogic;
 
 import api.ServerConstants;
 import api.http.httpRequest.AddJobPostRequest;
+import api.http.httpResponse.AddJobPostResponse;
 import api.http.httpResponse.ApplyJobResponse;
 import models.entity.Candidate;
 import models.entity.Company;
@@ -12,6 +13,7 @@ import models.entity.RecruiterProfile;
 import models.entity.Static.*;
 import models.util.SmsUtil;
 import play.Logger;
+import play.api.Play;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -21,7 +23,8 @@ import java.util.List;
  * Created by batcoder1 on 17/6/16.
  */
 public class JobService {
-    public static Integer addJobPost(AddJobPostRequest addJobPostRequest) {
+    public static AddJobPostResponse addJobPost(AddJobPostRequest addJobPostRequest) {
+        AddJobPostResponse addJobPostResponse = new AddJobPostResponse();
         List<Integer> jobPostLocalityList = addJobPostRequest.getJobPostLocalities();
         /* checking if jobPost already exists or not */
         JobPost existingJobPost = JobPost.find.where().eq("jobPostId", addJobPostRequest.getJobPostId()).findUnique();
@@ -30,14 +33,23 @@ public class JobService {
             JobPost newJobPost = new JobPost();
             newJobPost = getAndSetJobPostValues(addJobPostRequest, newJobPost, jobPostLocalityList);
             newJobPost.save();
+            addJobPostResponse.setJobPost(newJobPost);
+            addJobPostResponse.setStatus(AddJobPostResponse.STATUS_SUCCESS);
             Logger.info("JobPost with jobId: " + newJobPost.getJobPostId() + " and job title: " + newJobPost.getJobPostTitle() + " created successfully");
         } else{
             Logger.info("Job post already exists. Updating existing job Post");
             existingJobPost = getAndSetJobPostValues(addJobPostRequest, existingJobPost, jobPostLocalityList);
             existingJobPost.update();
+            addJobPostResponse.setJobPost(existingJobPost);
+            addJobPostResponse.setStatus(AddJobPostResponse.STATUS_UPDATE_SUCCESS);
             Logger.info("JobPost with jobId: " + existingJobPost.getJobPostId() + " and job title: " + existingJobPost.getJobPostTitle() + " updated successfully");
         }
-        return 0;
+        if(Play.isDev(Play.current()) == false){
+            addJobPostResponse.setFormUrl(ServerConstants.PROD_GOOGLE_FORM_FOR_JOB_POSTS);
+        } else{
+            addJobPostResponse.setFormUrl(ServerConstants.DEV_GOOGLE_FORM_FOR_JOB_POSTS);
+        }
+        return addJobPostResponse;
     }
 
     public static JobPost getAndSetJobPostValues(AddJobPostRequest addJobPostRequest, JobPost newJobPost, List<Integer> jobPostLocalityList){
