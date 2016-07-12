@@ -1,5 +1,8 @@
 package api;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by zero on 27/4/16.
  */
@@ -102,6 +105,7 @@ public class ServerConstants {
 
     public static final int DEV_ACCESS_LEVEL_SUPPORT_ROLE = 1;
     public static final int DEV_ACCESS_LEVEL_ADMIN = 2;
+    public static final int DEV_ACCESS_LEVEL_SUPER_ADMIN = 3;
 
     public static final String SDF_FORMAT = "yyyy-MM-dd hh:mm:ss a";
     public static final String SDF_FORMAT_FOLLOWUP = "d MMM hh:mm a";
@@ -110,5 +114,13 @@ public class ServerConstants {
     public static final String PROD_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/1NIGQC5jmSDuQaGUF0Jw1UG-Dz_3huFtZf9Bo7ncPl4g/formResponse";
     public static final String DEV_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/1KI3ZjRtQfduX_MgsZqUr_NqHowf1JLaHFZB4XlO5Kfg/formResponse";
 
-
+    public static Map<String, String> devTeamMobile;
+    static {
+        devTeamMobile = new HashMap<String, String>();
+        devTeamMobile.put("Archana", "+918197222248");
+        devTeamMobile.put("Avishek", "+918886000928");
+        devTeamMobile.put("Chillu", "+919035164363");
+        devTeamMobile.put("Adarsh", "+918971739586");
+        devTeamMobile.put("Sandy", "+919019672209");
+    }
 }
