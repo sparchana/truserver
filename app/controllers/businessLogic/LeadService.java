@@ -4,7 +4,11 @@ import api.ServerConstants;
 import models.entity.Interaction;
 import models.entity.Lead;
 import models.entity.Static.LeadSource;
+import models.util.SmsUtil;
 import play.Logger;
+
+import javax.persistence.NonUniqueResultException;
+import java.util.List;
 
 import static play.mvc.Controller.session;
 
@@ -44,10 +48,22 @@ public class LeadService {
     }
 
     public static Lead isLeadExists(String mobile){
-        Lead existingLead = Lead.find.where().eq("leadMobile", mobile).findUnique();
-        if(existingLead != null) {
-            return existingLead;
-        } else {return null;}
+        try {
+            Lead existingLead = Lead.find.where().eq("leadMobile", mobile).findUnique();
+            if(existingLead != null) {
+                return existingLead;
+            }
+        } catch (NonUniqueResultException nu){
+            List<Lead> existingLeadList = Lead.find.where().eq("leadMobile", mobile).findList();
+            if(existingLeadList !=  null && existingLeadList.size() > 1) {
+                existingLeadList.sort((l1, l2) -> l1.getLeadId() >= l2.getLeadId() ? 1 : 0);
+                Logger.info("Duplicate Candidate Encountered with mobile no: "+ mobile + "- Returned CandidateId = "
+                        + existingLeadList.get(0).getLeadId() + " UUID-:"+existingLeadList.get(0).getLeadUUId());
+                SmsUtil.sendDuplicateLeadSmsToDevTeam(mobile);
+                return existingLeadList.get(0);
+            }
+        }
+        return null;
     }
 
     public static void createLead(Lead lead, boolean isSupport){

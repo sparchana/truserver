@@ -998,7 +998,6 @@ function processDataCheckExp(returnedData) {
             cell2.appendChild(selectList);
             $('#expOtherTable tr:last').after(row);
         }
-
     });
     if (count == 0) {
     }

@@ -20,6 +20,7 @@ import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
 
+import javax.persistence.NonUniqueResultException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,10 +54,26 @@ public class CandidateService
     }
 
     public static Candidate isCandidateExists(String mobile) {
-        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", mobile).findUnique();
-        if(existingCandidate != null) {
-            return existingCandidate;
-        } else {return null;}
+        try{
+            Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", mobile).findUnique();
+            if(existingCandidate != null) {
+                return existingCandidate;
+            }
+        } catch (NonUniqueResultException nu){
+            // get the list of candidate and sort by candidateId
+            // return the lowest primary key candidate Object
+            // register the event with proper info
+
+            List<Candidate> existingCandidateList = Candidate.find.where().eq("candidateMobile", mobile).findList();
+            if(!existingCandidateList.isEmpty()){
+                existingCandidateList.sort((l1, l2) -> l1.getCandidateId() <= l2.getCandidateId() ? 1 : 0);
+                Logger.info("Duplicate Candidate Encountered with mobile no: "+ mobile + "- Returned CandidateId = "
+                        + existingCandidateList.get(0).getCandidateId() + " UUID-:"+existingCandidateList.get(0).getCandidateUUId());
+                SmsUtil.sendDuplicateCandidateSmsToDevTeam(mobile);
+                return existingCandidateList.get(0);
+            }
+        }
+        return null;
     }
 
     public static CandidateSignUpResponse signUpCandidate(CandidateSignUpRequest candidateSignUpRequest,
@@ -217,7 +234,7 @@ public class CandidateService
             }
         }
 
-        // Now we check if we are dealing with the reqeust to update basic profile details from website (or)
+        // Now we check if we are dealing with the request to update basic profile details from website (or)
         // dealing with a create/update candidate profile request from support
         if(profileUpdateFlag == ServerConstants.UPDATE_BASIC_PROFILE ||
                 profileUpdateFlag == ServerConstants.UPDATE_ALL_BY_SUPPORT) {
@@ -952,48 +969,5 @@ public class CandidateService
         }
         existingCandidate.setLocalityPreferenceList(localityPreferenceList);
         existingCandidate.setJobPreferencesList(jobPreferencesList);
-    }
-
-    public static List<Candidate> searchCandidateBySupport(SearchCandidateRequest searchCandidateRequest) {
-        // TODO:check searchCandidateRequest member variable for special char, null value
-        List<Integer> jobInterestIdList = searchCandidateRequest.candidateJobInterest;
-        List<Integer> localityPreferenceIdList = searchCandidateRequest.candidateLocality;
-
-       // Logger.info("fromdate :" + searchCandidateRequest.getFromThisDate().getTime() + "-" + " toThisDate" + searchCandidateRequest.getToThisDate().getTime());
-        Query<Candidate> query = Candidate.find.query();
-
-        if(jobInterestIdList != null && jobInterestIdList.get(0) != null) {
-           query = query.select("*").fetch("jobPreferencesList")
-                    .where()
-                    .in("jobPreferencesList.jobRole.jobRoleId", jobInterestIdList)
-                    .query();
-        }
-        if(localityPreferenceIdList != null && localityPreferenceIdList.get(0) != null) {
-            query = query.select("*").fetch("localityPreferenceList")
-                    .where()
-                    .in("localityPreferenceList.locality.localityId", localityPreferenceIdList)
-                    .query();
-        }
-        if(searchCandidateRequest.getCandidateFirstName() != null && !searchCandidateRequest.getCandidateFirstName().isEmpty()) {
-            query = query.where().like("candidateFirstName",
-                    searchCandidateRequest.getCandidateFirstName() + "%").query();
-        }
-
-        if(searchCandidateRequest.getCandidateMobile() != null && !searchCandidateRequest.getCandidateMobile().isEmpty()) {
-            query = query.where().like("candidateMobile",
-                    "%" + searchCandidateRequest.getCandidateMobile() + "%").query();
-        }
-        if(searchCandidateRequest.getFromThisDate() != null) {
-            query = query.where()
-                    .ge("candidateCreateTimestamp", searchCandidateRequest.getFromThisDate())
-                    .query();
-        }
-        if(searchCandidateRequest.getToThisDate() != null) {
-            query = query.where()
-                    .le("candidateCreateTimestamp", searchCandidateRequest.getToThisDate())
-                    .query();
-        }
-        List<Candidate> candidateResponseList = query.findList();
-        return candidateResponseList;
     }
 }
