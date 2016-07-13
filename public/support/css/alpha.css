@@ -1,0 +1,33 @@
+.tru-card-event.mdl-card {
+    margin: 2px;
+    width: auto;
+    height: auto;
+    background: #3E4EB8;
+}
+h1.tru-font-large {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 100px;
+}
+.tru-card-event > .mdl-card__actions {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+.tru-card-event > .mdl-card__title {
+    align-items: flex-start;
+}
+.tru-card-event > .mdl-card__title > h4 {
+    margin-top: 0;
+}
+.tru-card-event > .mdl-card__actions {
+    display: flex;
+    box-sizing:border-box;
+    align-items: center;
+}
+.tru-card-event > .mdl-card__actions > .material-icons {
+    padding-right: 10px;
+}
+.tru-card-event > .mdl-card__title,
+.tru-card-event > .mdl-card__actions,
+.tru-card-event > .mdl-card__actions > .mdl-button {
+    color: #fff;
+}

@@ -6,8 +6,10 @@ import java.util.List;
  * Created by batcoder1 on 18/6/16.
  */
 public class AddJobPostRequest {
+    public Long jobPostId;
     public Long jobPostMinSalary;
     public Long jobPostMaxSalary;
+    public String jobPostWorkingDays;
     public Integer jobPostStartTime;
     public Integer jobPostEndTime;
     public Boolean jobPostIsHot;
@@ -21,14 +23,47 @@ public class AddJobPostRequest {
     public String jobPostDescriptionAudio;
     public Boolean jobPostWorkFromHome;
     public Integer jobPostStatusId;
-    public Integer pricingPlanTypeId;
     public Integer jobPostJobRoleId;
     public Integer jobPostCompanyId;
     public Integer jobPostShiftId;
     public Integer jobPostExperienceId;
     public Integer jobPostEducationId;
+    public Integer jobPostPricingPlanId;
+    public Long jobPostRecruiterId;
 
     public List<Integer> jobPostLocalities;
+
+    public Long getJobPostRecruiterId() {
+        return jobPostRecruiterId;
+    }
+
+    public void setJobPostRecruiterId(Long jobPostRecruiterId) {
+        this.jobPostRecruiterId = jobPostRecruiterId;
+    }
+
+    public String getJobPostWorkingDays() {
+        return jobPostWorkingDays;
+    }
+
+    public Integer getJobPostPricingPlanId() {
+        return jobPostPricingPlanId;
+    }
+
+    public void setJobPostPricingPlanId(Integer jobPostPricingPlanId) {
+        this.jobPostPricingPlanId = jobPostPricingPlanId;
+    }
+
+    public void setJobPostWorkingDays(String jobPostWorkingDays) {
+        this.jobPostWorkingDays = jobPostWorkingDays;
+    }
+
+    public Long getJobPostId() {
+        return jobPostId;
+    }
+
+    public void setJobPostId(Long jobPostId) {
+        this.jobPostId = jobPostId;
+    }
 
     public Long getJobPostMinSalary() {
         return jobPostMinSalary;
@@ -148,14 +183,6 @@ public class AddJobPostRequest {
 
     public void setJobPostStatusId(Integer jobPostStatusId) {
         this.jobPostStatusId = jobPostStatusId;
-    }
-
-    public Integer getPricingPlanTypeId() {
-        return pricingPlanTypeId;
-    }
-
-    public void setPricingPlanTypeId(Integer pricingPlanTypeId) {
-        this.pricingPlanTypeId = pricingPlanTypeId;
     }
 
     public Integer getJobPostJobRoleId() {
