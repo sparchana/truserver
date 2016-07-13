@@ -137,7 +137,8 @@
           <div class="row">
             <div class="col-sm-3"><h5>Company Logo:</h5></div>
             <div class="col-sm-9">
-              <input type="file" id="companyLogo">
+              <img id="companyLogoOld" width="120px">
+              <input type="file" id="companyLogo" onchange="readURL(this)">
             </div>
           </div>
 

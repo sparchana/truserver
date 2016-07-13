@@ -9,6 +9,21 @@ $('input[type=file]').change(function () {
     console.log(f.name);
 });
 
+function readURL(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            $('#companyLogoOld')
+                .attr('src', e.target.result)
+                .width(150)
+                .height(200);
+        };
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
 function uploadLogo(){
     var x = document.getElementById("companyLogo");
     if ('files' in x) {
@@ -52,7 +67,13 @@ function processDataAddCompany(returnedData) {
 
 function updateForm() {
     try {
-        d = {
+        var logo;
+        if(($("#companyLogo").val()).substring(0,4) == "http"){
+            logo = $("#companyLogo").val();
+        } else{
+            logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/" + f.name;
+        }
+        var d = {
             companyId: $("#companyId").val(),
             companyName: $("#companyName").val(),
             companyEmployeeCount: $("#companyEmployeeCount").val(),
@@ -60,7 +81,7 @@ function updateForm() {
             companyDescription: $("#companyDescription").val(),
             companyAddress: $("#companyAddress").val(),
             companyPinCode: $("#companyPinCode").val(),
-            companyLogo: $("#companyLogo").val(),
+            companyLogo: logo,
             companyLocality: parseInt($("#companyLocality").val()),
             companyType: $("#companyType").val(),
             companyStatus: $("#companyStatus").val()
@@ -79,6 +100,7 @@ function updateForm() {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+    uploadLogo();
 }
 
 // company_form ajax script
@@ -116,11 +138,7 @@ function saveForm(){
             alert("Enter 10 digit mobile number");
             statusCheck=0;
         } else if(recruiterMobile == "") {
-            alert("Please Enter your Job Localities");
-            statusCheck=0;
-        }
-        else if(recruiterMobile == "") {
-            alert("Please Enter the Jobs you are Interested");
+            alert("Please Enter recruiter Contact");
             statusCheck=0;
         }
 

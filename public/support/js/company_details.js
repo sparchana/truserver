@@ -176,7 +176,7 @@ function processDataForCompanyInfo(returnedData) {
     }
 
     if(returnedData.companyLogo != null ){
-        $("#companyLogo").val(returnedData.companyLogo);
+        $('#companyLogoOld').attr("src",returnedData.companyLogo);
     }
 
     if(returnedData.companyDescription != null ){

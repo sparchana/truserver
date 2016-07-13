@@ -30,7 +30,7 @@ function renderDashboard() {
                     var returned_data = new Array();
                     returnedData.forEach(function (jobPost) {
                         returned_data.push({
-                            'jobId': jobPost.jobPostId,
+                            'jobId': '<a href="'+"/jobPostDetails/"+jobPost.jobPostId+'" id="'+jobPost.jobPostId+'" style="cursor:pointer;" target="_blank">'+jobPost.jobPostId+'</a>',
                             'jobCreationTimestamp' : function() {
                                 var returnedCreationDate = new Date(jobPost.jobPostCreateTimestamp);
                                 var creationDate = new Date(returnedCreationDate).toLocaleDateString();
@@ -38,7 +38,6 @@ function renderDashboard() {
                             },
                             'company': '<a href="'+"/companyDetails/"+jobPost.company.companyId+'" id="'+jobPost.company.companyId+'" style="cursor:pointer;" target="_blank">'+jobPost.company.companyName+'</a>',
                             'jobTitle': '<a href="'+"/jobPostDetails/"+jobPost.jobPostId+'" id="'+jobPost.jobPostId+'" style="cursor:pointer;" target="_blank">'+jobPost.jobPostTitle+'</a>',
-                            'jobTitle1' : jobPost.jobPostTitle,
                             'jobSalary' : function () {
                                 if(jobPost.jobPostMaxSalary == 0){
                                     return ((jobPost.jobPostMinSalary != null) ? "₹" + jobPost.jobPostMinSalary : "0");

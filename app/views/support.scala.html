@@ -26,10 +26,16 @@
         .mdl-layout__header-row, .mdl-layout__header .mdl-layout__drawer-button {
             background: #1c3aae;
         }
-        .mdl-layout__header-row .mdl-navigation__link:hover, .mdl-layout__header-row .mdl-navigation__link:active{
+        .activeLink, .mdl-layout__header-row .mdl-navigation__link:hover, .mdl-layout__header-row .mdl-navigation__link:active{
             background: #142875;
         }
+
         </style>
+        <script>
+      function setActive(x){
+          $(x).addClass('activeLink').siblings().removeClass('activeLink');
+      }
+    </script>
     </head>
     <body style="font-size: 13px;">
         <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
@@ -44,12 +50,12 @@
                         <!-- Navigation -->
                     <div class="android-navigation-container">
                         <nav class="android-navigation mdl-navigation">
-                            <a class="mdl-navigation__link" href="#" onclick="getThis(1)">All Leads</a>
-                            <a class="mdl-navigation__link" href="#" onclick="getThis(2)">All Candidates</a>
-                            <a class="mdl-navigation__link" href="#" onclick="getThis(3)">Show All</a>
-                            <a class="mdl-navigation__link" href="#" onclick="window.location.href='/candidateSignupSupport/0'">Create Candidate</a>
-                            <a class="mdl-navigation__link" href="#" onclick="window.location.href='/searchCandidate'">Search Candidate</a>
-                            <a class="mdl-navigation__link" href="#" onclick="window.location.href='/showCompanyAndJob'">Recs</a>
+                            <a class="mdl-navigation__link activeLink" href="#" onclick="getThis(1); setActive(this)">All Leads</a>
+                            <a class="mdl-navigation__link" href="#" onclick="getThis(2); setActive(this)">All Candidates</a>
+                            <a class="mdl-navigation__link" href="#" onclick="getThis(3); setActive(this)">Show All</a>
+                            <a class="mdl-navigation__link" href="#" onclick="window.location.href='/candidateSignupSupport/0'; setActive(this)">Create Candidate</a>
+                            <a class="mdl-navigation__link" href="#" onclick="window.location.href='/searchCandidate'; setActive(this)">Search Candidate</a>
+                            <a class="mdl-navigation__link" href="#" onclick="window.location.href='/showCompanyAndJob'; setActive(this)">Recs</a>
                             <a class="mdl-navigation__link" href="/logout">Logout</a>
                         </nav>
                     </div>

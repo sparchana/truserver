@@ -26,11 +26,16 @@
     .mdl-layout__header-row, .mdl-layout__header .mdl-layout__drawer-button {
       background: #1c3aae;
     }
-    .mdl-layout__header-row .mdl-navigation__link:hover, .mdl-layout__header-row .mdl-navigation__link:active{
+    .activeLink, .mdl-layout__header-row .mdl-navigation__link:hover, .mdl-layout__header-row .mdl-navigation__link:active{
       background: #142875;
     }
 
     </style>
+    <script>
+      function setActive(x){
+          $(x).addClass('activeLink').siblings().removeClass('activeLink');
+      }
+    </script>
   </head>
   <body style="font-size: 13px;">
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
@@ -46,10 +51,10 @@
           <div class="android-navigation-container">
             <nav class="android-navigation mdl-navigation">
               <a class="mdl-navigation__link" href="/support">Support Home</a>
-              <a class="mdl-navigation__link" href="#" onclick="renderDashboard()">All JobPosts</a>
-              <a class="mdl-navigation__link" href="#" onclick="getAllCompany()">All Companies</a>
-              <a class="mdl-navigation__link" href="#" onclick="window.open('/createCompany','_blank')">Create New Company/Recruiter</a>
-              <a class="mdl-navigation__link" href="#" onclick="window.open('/jobPostDetails/0','_blank')">Create New Job</a>
+              <a class="mdl-navigation__link activeLink" href="#" onclick="renderDashboard(); setActive(this);">All JobPosts</a>
+              <a class="mdl-navigation__link" href="#" onclick="getAllCompany(); setActive(this);">All Companies</a>
+              <a class="mdl-navigation__link" href="#" onclick="window.open('/createCompany','_blank'); setActive(this);">Create New Company/Recruiter</a>
+              <a class="mdl-navigation__link" href="#" onclick="window.open('/jobPostDetails/0','_blank'); setActive(this);">Create New Job</a>
               <a class="mdl-navigation__link" href="/logout">Logout</a>
             </nav>
           </div>
