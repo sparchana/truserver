@@ -83,6 +83,10 @@ POST        /getAllLocality                                                     
 POST        /getAllShift                                                         controllers.Application.getAllShift()
 POST        /getAllTransportation                                                controllers.Application.getAllTransportation()
 
+# Analytics
+# ~~~~~~~~~
+POST        /api/alpha/:vId                                                       controllers.AnalyticsController.alphaHandler(vId: Integer)
+
 # Map static resources from the /public folder to the /assets URL path
 GET         /robots.txt                                                          controllers.Assets.at(path="/public", file="robots.txt")
 GET         /assets/*file                                                        controllers.Assets.at(path="/public", file)
