@@ -26,6 +26,7 @@ public class ServerConstants {
     public static final String INTERACTION_RESULT_EXISTING_CANDIDATE_CALLED_BACK = "Existing Candidate Called Back";
     public static final String INTERACTION_RESULT_FIRST_INBOUND_CALL = "First Inbound Call";
     public static final String INTERACTION_RESULT_SELF_SIGNEDIN = "Candidate Self Signed In";
+    public static final String INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE = "System updated leadtype to ";
 
     public static final String INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB = "Candidate applied to a job :";
     public static final String INTERACTION_CREATED_SELF = "Self";
