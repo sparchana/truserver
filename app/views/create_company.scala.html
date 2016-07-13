@@ -84,6 +84,18 @@
       </div>
 
       <div id="companySection" style="display: none; width: 68%; padding: 2%; background: #f8f2f8 ; margin: 2%">
+@*
+        <form id="company_logo_form">
+          <div class="row">
+            <div class="col-sm-3"><h5>Company Logo:</h5></div>
+            <div class="col-sm-9">
+              <input type="file" id="companyLogo">
+            </div>
+          </div>
+            <input id="button" onclick="testClick()" value="upload" />
+        </form>
+*@
+
         <form id="company_form">
             <!-- hidden field -->
           <input id="companyId" style="display: none">
@@ -125,7 +137,7 @@
           <div class="row">
             <div class="col-sm-3"><h5>Company Logo:</h5></div>
             <div class="col-sm-9">
-              <input id="companyLogo" name="companyLogo" placeholder="Company Logo" type="text" class="form-control input-md" >
+              <input type="file" id="companyLogo">
             </div>
           </div>
 

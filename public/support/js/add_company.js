@@ -2,6 +2,37 @@
  * Created by batcoder1 on 22/6/16.
  */
 
+var f;
+
+$('input[type=file]').change(function () {
+    f = this.files[0];
+    console.log(f.name);
+});
+
+function uploadLogo(){
+    var x = document.getElementById("companyLogo");
+    if ('files' in x) {
+        if (x.files.length == 0) {
+        } else {
+            for (var i = 0; i < x.files.length; i++) {
+                var file = x.files[i];
+
+                var data = new FormData();
+                data.append('picture', file);
+                $.ajax({
+                    type: "POST",
+                    url: "/addCompanyLogo",
+                    async: true,
+                    data: data,
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            }
+        }
+    }
+}
+
 function processDataAddCompany(returnedData) {
     if(returnedData.status == 1){
         alert("Creation Successful");
@@ -17,6 +48,37 @@ function processDataAddCompany(returnedData) {
         alert("Company already exists");
     }
     window.close();
+}
+
+function updateForm() {
+    try {
+        d = {
+            companyId: $("#companyId").val(),
+            companyName: $("#companyName").val(),
+            companyEmployeeCount: $("#companyEmployeeCount").val(),
+            companyWebsite: $("#companyWebsite").val(),
+            companyDescription: $("#companyDescription").val(),
+            companyAddress: $("#companyAddress").val(),
+            companyPinCode: $("#companyPinCode").val(),
+            companyLogo: $("#companyLogo").val(),
+            companyLocality: parseInt($("#companyLocality").val()),
+            companyType: $("#companyType").val(),
+            companyStatus: $("#companyStatus").val()
+        };
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/addCompany",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(d),
+            success: processDataAddCompany
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
 }
 
 // company_form ajax script
@@ -37,6 +99,7 @@ function saveForm(){
     var statusCheck = 1;
 
     if(status > 0){
+        console.log("this");
         var recruiterName = validateName($("#recruiterName").val());
         var recruiterMobile = validateMobile($("#recruiterMobile").val());
         //checking first name
@@ -64,6 +127,12 @@ function saveForm(){
         if(statusCheck == 1){
             var d;
             if(status == 1){
+                var logo;
+                if(($("#companyLogo").val()).substring(0,4) == "http"){
+                    logo = $("#companyLogo").val();
+                } else{
+                    logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/" + f.name;
+                }
                 try {
                     d = {
                         recruiterName: $("#recruiterName").val(),
@@ -78,7 +147,7 @@ function saveForm(){
                         companyDescription: $("#companyDescription").val(),
                         companyAddress: $("#companyAddress").val(),
                         companyPinCode: $("#companyPinCode").val(),
-                        companyLogo: $("#companyLogo").val(),
+                        companyLogo: logo,
                         companyLocality: parseInt($("#companyLocality").val()),
                         companyType: $("#companyType").val(),
                         companyStatus: $("#companyStatus").val()
@@ -110,6 +179,7 @@ function saveForm(){
             } catch (exception) {
                 console.log("exception occured!!" + exception);
             }
+            uploadLogo();
         }
     } else{
         

@@ -50,7 +50,7 @@ function processDataAddJobPost(returnedData) {
         alert("Job Post Updated Successfully");
 
     }
-/*    window.close();*/
+    window.close();
 }
 
 // job_post_form ajax script

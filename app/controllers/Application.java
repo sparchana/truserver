@@ -20,6 +20,7 @@ import play.Logger;
 import play.api.Play;
 import play.data.Form;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
 
@@ -256,6 +257,22 @@ public class Application extends Controller {
         return ok(toJson(JobService.addJobPost(addJobPostRequest)));
     }
 
+    public static Result addCompanyLogo() {
+        Http.MultipartFormData body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart picture = body.getFile("picture");
+        if (picture != null) {
+            String fileName = picture.getFilename();
+            String contentType = picture.getContentType();
+            File file = (File) picture.getFile();
+            Logger.info("uploaded! " + file);
+            JobService.uploadCompanyLogo(file, fileName);
+            return ok("File uploaded");
+        } else {
+            flash("error", "Missing file");
+            return redirect(routes.Application.index());
+        }
+    }
+
     @Security.Authenticated(Secured.class)
     public static Result addCompany() {
         JsonNode req = request().body().asJson();
@@ -267,15 +284,19 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if(addCompanyRequest.getRecruiterCompany() == -1){
-            AddCompanyResponse addCompanyResponse = CompanyService.addCompany(addCompanyRequest);
-            if(addCompanyResponse.getStatus() == 1){
-                return ok(toJson(RecruiterService.addRecruiter(addCompanyRequest, addCompanyResponse.getCompanyId())));
-            } else{
-                return ok(toJson(AddCompanyResponse.STATUS_FAILURE));
-            }
+        if(addCompanyRequest.getRecruiterCompany() == null){ //this means we are updating a company details
+            return ok(toJson(CompanyService.addCompany(addCompanyRequest)));
         } else{
-            return ok(toJson(RecruiterService.addRecruiter(addCompanyRequest, addCompanyRequest.getRecruiterCompany())));
+            if(addCompanyRequest.getRecruiterCompany() == -1){
+                AddCompanyResponse addCompanyResponse = CompanyService.addCompany(addCompanyRequest);
+                if(addCompanyResponse.getStatus() == 1){
+                    return ok(toJson(RecruiterService.addRecruiter(addCompanyRequest, addCompanyResponse.getCompanyId())));
+                } else{
+                    return ok(toJson(AddCompanyResponse.STATUS_FAILURE));
+                }
+            } else{
+                return ok(toJson(RecruiterService.addRecruiter(addCompanyRequest, addCompanyRequest.getRecruiterCompany())));
+            }
         }
     }
 
