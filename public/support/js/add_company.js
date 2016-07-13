@@ -6,7 +6,7 @@ var f;
 
 $('input[type=file]').change(function () {
     f = this.files[0];
-    console.log(f.name);
+    console.log((f.type).substring(0,1));
 });
 
 function readURL(input) {
@@ -15,9 +15,7 @@ function readURL(input) {
 
         reader.onload = function (e) {
             $('#companyLogoOld')
-                .attr('src', e.target.result)
-                .width(150)
-                .height(200);
+                .attr('src', e.target.result);
         };
 
         reader.readAsDataURL(input.files[0]);
@@ -51,28 +49,42 @@ function uploadLogo(){
 function processDataAddCompany(returnedData) {
     if(returnedData.status == 1){
         alert("Creation Successful");
+        window.close();
     } else if(returnedData.status == 2){
         alert("Updated Successful");
+        window.close();
     } else if(returnedData.status == 3){
         alert("Something went wrong, please try again later!");
+        window.close();
     } else if(returnedData.status == 5){
         alert("Company Updated Successfully");
+        window.close();
     } else if(returnedData.status == 6){
         alert("Update Successful");
+        window.close();
     } else{
         alert("Company already exists");
     }
-    window.close();
 }
 
 function updateForm() {
-    try {
-        var logo;
-        if(document.getElementById("companyLogo").value != "") {
-            logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/" + f.name;
-        } else{
-            logo = $("#companyOldLogo").val();
+    var status = 1;
+    var logo;
+    if(document.getElementById("companyLogo").value != "") {
+        if((f.type).substring(0,1) != "i"){
+            alert("Please select a valid image for logo");
+            status=0;
         }
+        else{
+            logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/" + f.name;
+            status = 1;
+        }
+    } else{
+        status = 1;
+        logo = $("#companyOldLogo").val();
+    }
+
+    if(status == 1){
         var d = {
             companyId: $("#companyId").val(),
             companyName: $("#companyName").val(),
@@ -86,22 +98,21 @@ function updateForm() {
             companyType: $("#companyType").val(),
             companyStatus: $("#companyStatus").val()
         };
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/addCompany",
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(d),
-            success: processDataAddCompany
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-    if(document.getElementById("companyLogo").value != "") {
-        uploadLogo();
+
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/addCompany",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: processDataAddCompany
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+        if(document.getElementById("companyLogo").value != "") {
+            uploadLogo();
+        }
     }
 }
 
@@ -115,7 +126,10 @@ function saveForm(){
         } else if($("#companyLogo").val() == ""){
             alert("Please Enter company Logo");
             status=0;
-        }        
+        } else if((f.type).substring(0,1) != "i"){
+            alert("Please select a valid image for logo");
+            status=0;
+        }
     } else{
         status=2;
     }

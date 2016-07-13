@@ -19,6 +19,14 @@ function processDataAddJobPost(returnedData) {
             jobPostSalary = returnedData.jobPost.jobPostMinSalary + " - " + returnedData.jobPost.jobPostMaxSalary;
         }
 
+        var timeShift = "";
+        var pricingPlan = "";
+        if(returnedData.jobPost.jobPostShift != null){
+            timeShift = returnedData.jobPost.jobPostShift.timeShiftName;
+        }
+        if(returnedData.jobPost.pricingPlanType != null){
+            pricingPlan = returnedData.jobPost.pricingPlanType.pricingPlanTypeName;
+        }
         try {
             $.ajax({
                 url: returnedData.formUrl,
@@ -32,12 +40,12 @@ function processDataAddJobPost(returnedData) {
                     "entry.499293401": jobPostLocalities,
                     "entry.1169285578": jobPostSalary,
                     "entry.156865881": returnedData.jobPost.jobPostIncentives,
-                    "entry.518884370": returnedData.jobPost.jobPostShift.timeShiftName,
+                    "entry.518884370": timeShift,
                     "entry.1610465251": returnedData.jobPost.jobPostDescription,
                     "entry.839049104": returnedData.jobPost.jobPostMinRequirement,
                     "entry.988939191": returnedData.jobPost.jobPostAddress,
                     "entry.731772103": returnedData.jobPost.jobPostVacancies,
-                    "entry.599645579": returnedData.jobPost.pricingPlanType.pricingPlanTypeName
+                    "entry.599645579": pricingPlan
                 },
                 type: "POST",
                 dataType: "xml",
@@ -46,11 +54,11 @@ function processDataAddJobPost(returnedData) {
             console.log("exception occured!!" + exception);
         }
         alert("Job Post Created Successfully");
+        window.close();
     } else{
         alert("Job Post Updated Successfully");
-
+        window.close();
     }
-    window.close();
 }
 
 // job_post_form ajax script
@@ -62,25 +70,47 @@ $(function() {
         var locality = $('#jobPostLocalities').val().split(",");
         if($("#jobPostCompany").val() == ""){
             alert("Please enter Job Post Company");
+            $("#jobPostCompany").addClass('selectDropdownInvalid').removeClass('selectDropdown');
+            status = 0;
+        } else if($("#jobPostRecruiter").val() == ""){
+            alert("Please select a recruiter");
+            $("#jobPostCompany").addClass('selectDropdown').removeClass('selectDropdownInvalid');
+            $("#jobPostRecruiter").addClass('selectDropdownInvalid').removeClass('selectDropdown');
             status = 0;
         } else if($("#jobPostTitle").val() == ""){
+            $("#jobPostRecruiter").addClass('selectDropdown').removeClass('selectDropdownInvalid');
             alert("Please enter Job Post Title");
+            $("#jobPostTitle").addClass('invalid');
             status = 0;
         } else if($("#jobPostMinSalary").val() == "0"){
             alert("Please enter Job Post Minimum salary");
+            $("#jobPostTitle").removeClass('invalid');
+            $("#jobPostMinSalary").addClass('invalid');
             status = 0;
         } else if($("#jobPostJobRole").val() == ""){
+            $("#jobPostMinSalary").removeClass('invalid');
             alert("Please enter job roles");
+            $("#jobPostJobRole").addClass('invalid');
+            status = 0;
+        } else if($("#jobPostVacancies").val() == "" || $("#jobPostVacancies").val() == 0){
+            alert("Please enter no. of vacancies");
+            $("#jobPostJobRole").removeClass('invalid');
+            $("#jobPostVacancies").addClass('invalid');
             status = 0;
         }
         else if(locality == ""){
+            $("#jobPostVacancies").removeClass('invalid');
+            $("#jobPostLocalities").addClass('invalid');
             alert("Please enter localities");
             status = 0;
         } else if($("#jobPostExperience").val() == ""){
+            $("#jobPostLocalities").removeClass('invalid');
+            $("#jobPostExperience").addClass('selectDropdownInvalid').removeClass('selectDropdown');
             alert("Please enter Job Post Experience required");
             status = 0;
         }
         if(status == 1){
+            $("#jobPostExperience").addClass('selectDropdown').removeClass('selectDropdownInvalid');
             var i;
             for(i=0;i<locality.length; i++){
                 jobPostLocalities.push(parseInt(locality[i]));
