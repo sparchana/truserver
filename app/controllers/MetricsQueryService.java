@@ -30,6 +30,11 @@ public class MetricsQueryService
         gCal.setTime(startDate);
         endDate = DateUtils.addDays(endDate, 1);
 
+        Date currentDate = new Date();
+        if(endDate.after(currentDate)){
+            endDate = currentDate;
+        }
+
         String header;
         Date metricDate;
         Date nextDate;
@@ -37,9 +42,10 @@ public class MetricsQueryService
         while (gCal.getTime().before(endDate)) {
 
             metricDate = gCal.getTime();
+            /* date take the on day in future and returned value that are -ve and 0 */
             nextDate = DateUtils.addDays(metricDate, 1);
 
-            //Logger.info("Getting statistics from " + metricDate.toString() + " to " + nextDate.toString());
+            Logger.info("Getting statistics from " + metricDate.toString() + " to " + nextDate.toString());
 
             mapOfHeaderToValueMap.clear();
             ListIterator<String> headerItr = metricHeaders.listIterator();

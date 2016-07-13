@@ -32,8 +32,15 @@ public class AnalyticsController extends Controller {
             e.printStackTrace();
         }
 
-        if(analyticsJsonNode == null){
+        if(analyticsJsonNode == null)
+        {
             return badRequest();
+        } else {
+            Logger.info("FromDate" + analyticsRequest.getFromThisDate());
+            Logger.info("toDate" + analyticsRequest.getToThisDate());
+            if(analyticsRequest.getMetrics() != null){
+                Logger.info("sizeOfMetricsArray" + analyticsRequest.getMetrics().size());
+            }
         }
 
         switch (vId) {
@@ -41,7 +48,7 @@ public class AnalyticsController extends Controller {
                 return ok(toJson(GlobalAnalyticsService.getGlobalStatsService(analyticsRequest)));
             case 1:
                 // other analytics
-                Logger.info("testing metrice service");
+                Logger.info("testing metrics service");
                 Date sd = analyticsRequest.getFromThisDate();
                 Date ed = analyticsRequest.getToThisDate();
 

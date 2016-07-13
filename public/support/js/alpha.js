@@ -39,10 +39,21 @@ function executeAlphaRequest(mobile){
     }
 }
 
+function constructTable(key, value) {
+    console.log("constructTable for Metrics " + JSON.stringify(value));
+    if(value != null){
+        $.each( value, function( key, value ) {
+            console.log( key + ": " + value );
+        });
+    }
+}
+
 function renderAnalyticsResult(analyticsResult) {
     console.log(JSON.stringify(analyticsResult));
     if(analyticsResult != null){
-        $('#totalNumberOfCandidate').text(analyticsResult.totalNumberOfCandidate);
+        $.each( analyticsResult, function( key, value ) {
+            constructTable(key, value);
+        });
     }
 }
 
@@ -50,7 +61,7 @@ function queryForm() {
     var d = {
         fromThisDate: $('#fromThisDate').val(),
         toThisDate: $('#toThisDate').val(),
-        queryIndex: $('#selectMultiSelect').val()
+        Metrics: $('#queryMultiSelect').val()
     };
     try {
         $.ajax({
@@ -66,10 +77,14 @@ function queryForm() {
 }
 
 function constructMultiSelect(){
+    // Callback that creates and populates a data table,
+    // instantiates the pie chart, passes in the data and
+    // draws it.
+
     var data = [
-        {label: "Candidate", value: "All Metrics"},
-        {label: "Lead", value: "Support Metrics"},
-        {label: "Interaction", value: "Lead Sources"}
+        {label: "All Metrics", value: "All Metrics"},
+        {label: "Support Metrics", value: "Support Metrics"},
+        {label: "Lead Sources", value: "Lead Sources"}
     ];
 
     var selectList = $('#queryMultiSelect');
@@ -79,6 +94,29 @@ function constructMultiSelect(){
     });
     selectList.multiselect('dataprovider', data);
     selectList.multiselect('rebuild');
+}
+
+function googleChartplot() {
+    google.charts.load("current", {packages:["corechart"]});
+    google.charts.setOnLoadCallback(drawChart);
+}
+function drawChart() {
+    var data = google.visualization.arrayToDataTable([
+        ['Task', 'Hours per Day'],
+        ['Work',     11],
+        ['Eat',      2],
+        ['Commute',  2],
+        ['Watch TV', 2],
+        ['Sleep',    7]
+    ]);
+
+    var options = {
+        title: 'My Daily Activities',
+        pieHole: 0.4,
+    };
+
+    var chart = new google.visualization.PieChart(document.getElementById('donutchart'));
+    chart.draw(data, options);
 }
 
 $(function(){
@@ -96,6 +134,8 @@ $(function(){
     });
 
     constructMultiSelect();
+    //<script src="/assets/support/js/google-chart-loader.js" type="text/javascript"></script>
+    //googleChartplot();
 
     $("#perish-form").submit(function(eventObj) {
         eventObj.preventDefault();
