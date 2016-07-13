@@ -68,10 +68,10 @@ function processDataAddCompany(returnedData) {
 function updateForm() {
     try {
         var logo;
-        if(($("#companyLogo").val()).substring(0,4) == "http"){
-            logo = $("#companyLogo").val();
-        } else{
+        if(document.getElementById("companyLogo").value != "") {
             logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/" + f.name;
+        } else{
+            logo = $("#companyOldLogo").val();
         }
         var d = {
             companyId: $("#companyId").val(),
@@ -100,7 +100,9 @@ function updateForm() {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-    uploadLogo();
+    if(document.getElementById("companyLogo").value != "") {
+        uploadLogo();
+    }
 }
 
 // company_form ajax script
