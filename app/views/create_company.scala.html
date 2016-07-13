@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/html">
   <head>
     <meta charset="UTF-8">
-    <title>Recruiter and Company Details - Support | Trujobs.in</title>
+    <title>Create Company & Recruiter - Support | Trujobs.in</title>
     <link rel="stylesheet" href="/assets/support/css/material.indigo-pink.min.css">
 
     <link rel="stylesheet" href="/assets/support/css/bootstrap.min.css">
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="/assets/support/js/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
 
-    <script type="text/javascript" src="/assets/support/js/company_details.js"></script>
+    <script type="text/javascript" src="/assets/support/js/create_company.js"></script>
     <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
     <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css">
   </head>
@@ -32,7 +32,7 @@
   <body style="font-size: 13px;">
     <div class="container">
       <h2>
-        Company Section
+        Company and Recruiter Section
         <a href="/support">
           <button class="btn" style="align-items: flex-end">Support Home</button>
         </a>
@@ -42,7 +42,60 @@
       </h2>
       <hr>
 
-      <div id="companySection" style="width: 68%; padding: 2%; background: #f8f2f8 ; margin: 2%">
+      <div id="recruiterSection" style="width: 68%">
+        <form id="recruiter_form">
+          <div class="row">
+            <div class="col-sm-3"><h5>Recruiter Name:</h5></div>
+            <div class="col-sm-9">
+              <input id="recruiterName" name="recruiterName" placeholder="Recruiter Name" type="text" class="form-control input-md" >
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Recruiter Mobile:</h5></div>
+            <div class="col-sm-9">
+              <input id="recruiterMobile" name="recruiterMobile" maxlength="10" placeholder="Recruiter Mobile" type="text" class="form-control input-md" >
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Recruiter Landline (optional) :</h5></div>
+            <div class="col-sm-9">
+              <input id="recruiterLandline" name="recruiterLandline" placeholder="Recruiter Landline" type="text" class="form-control input-md" >
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Recruiter Email:</h5></div>
+            <div class="col-sm-9">
+              <input id="recruiterEmail" name="recruiterEmail" placeholder="Recruiter Email" type="text" class="form-control input-md" >
+            </div>
+          </div>
+
+          <div class="row" style="margin-top: 4px">
+            <div class="col-sm-3"><h5>Your Company:</h5></div>
+            <div class="col-sm-9">
+              <select id="recruiterCompany" class="selectDropdown" ></select>
+              Company Not listed? <a onclick="showCompanyForm()">Click Here</a>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <div id="companySection" style="display: none; width: 68%; padding: 2%; background: #f8f2f8 ; margin: 2%">
+@*
+        <form id="company_logo_form">
+          <div class="row">
+            <div class="col-sm-3"><h5>Company Logo:</h5></div>
+            <div class="col-sm-9">
+              <input type="file" id="companyLogo">
+            </div>
+          </div>
+            <input id="button" onclick="testClick()" value="upload" />
+        </form>
+*@
+
         <form id="company_form">
             <!-- hidden field -->
           <input id="companyId" style="display: none">
@@ -84,10 +137,8 @@
           <div class="row">
             <div class="col-sm-3"><h5>Company Logo:</h5></div>
             <div class="col-sm-9">
-              <br>
-              <input style="display: none" id="companyOldLogo" type="text" class="form-control input-md" >
               <img id="companyLogoOld" width="120px">
-              <input type="file" id="companyLogo" onchange="readURL(this)" accept='image/*'><br>
+              <input type="file" id="companyLogo" onchange="readURL(this)" accept='image/*'>
             </div>
           </div>
 
@@ -120,17 +171,24 @@
           </div>
         </form>
       </div>
-      <button class="btn btn-default" onclick="updateForm()">Save</button>
+      <button class="btn btn-default" onclick="saveForm()">Save</button>
       <br>
     </div>
       <!-- Javascript import -->
     <script>
       function showCompanyForm(){
+        $("#recruiterCompany").val("");
+        if($("#recruiterCompany").is(':enabled')){
+          $("#recruiterCompany").prop('disabled', true);
+        } else{
+          $("#recruiterCompany").prop('disabled', false);
+        }
         $("#companySection").toggle();
       }
     </script>
     <script type="text/javascript" src="/assets/js/validation.js"></script>
     <script type="text/javascript" src="/assets/support/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/js/apply_job.js"></script>
     <script type="text/javascript" src="/assets/support/js/add_company.js"></script>
     <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
     <script type="text/javascript" src="/assets/support/js/bootstrap-datetimepicker.min.js"></script>

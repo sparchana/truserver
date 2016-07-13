@@ -15,6 +15,22 @@ function getJob() {
     return jobArray;
 }
 
+function getRecruiters(selectedCompanyId) {
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/getCompanyRecruiters/" + selectedCompanyId,
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckRecruiters
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
 function processDataCheckLocality(returnedData) {
     if (returnedData != null) {
         returnedData.forEach(function (locality) {
@@ -26,6 +42,12 @@ function processDataCheckLocality(returnedData) {
             localityArray.push(item);
         });
     }
+    $("#jobPostLocalities").tokenInput(getLocality(), {
+        theme: "facebook",
+        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+        minChars: 0,
+        preventDuplicates: true
+    });
 }
 
 function processDataCheckJobs(returnedData) {
@@ -37,6 +59,27 @@ function processDataCheckJobs(returnedData) {
         item ["name"] = name;
         jobArray.push(item);
     });
+    $("#jobPostJobRole").tokenInput(getJob(), {
+        theme: "facebook",
+        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+        minChars: 0,
+        tokenLimit: 1,
+        preventDuplicates: true
+    });
+}
+
+function processDataCheckRecruiters(returnedData) {
+    $('#jobPostRecruiter').html('');
+    if (returnedData != null) {
+        var defaultOption = $('<option value=""></option>').text("Select a Recruiter");
+        $('#jobPostRecruiter').append(defaultOption);
+        returnedData.forEach(function (recruiter) {
+            var id = recruiter.recruiterProfileId;
+            var name = recruiter.recruiterProfileName;
+            var option = $('<option value=' + id + '></option>').text(name);
+            $('#jobPostRecruiter').append(option);
+        });
+    }
 }
 
 function processDataCheckShift(returnedData) {
@@ -85,6 +128,17 @@ function processDataCheckExperience(returnedData) {
     });
 }
 
+function processDataCheckPricingPlan(returnedData) {
+    var defaultOption = $('<option value=""></option>').text("Select Pricing Plan");
+    $('#jobPostPricingPlan').append(defaultOption);
+    returnedData.forEach(function (plan) {
+        var id = plan.pricingPlanTypeId;
+        var name = plan.pricingPlanTypeName;
+        var option = $('<option value=' + id + '></option>').text(name);
+        $('#jobPostPricingPlan').append(option);
+    });
+}
+
 function processDataCheckJobStatus(returnedData) {
     var defaultOption = $('<option value=""></option>').text("Select Job status");
     $('#jobPostStatus').append(defaultOption);
@@ -96,27 +150,6 @@ function processDataCheckJobStatus(returnedData) {
     });
 }
 
-function processDataCheckCompanyStatus(returnedData) {
-    var defaultOption = $('<option value=""></option>').text("Select Company status");
-    $('#companyStatus').append(defaultOption);
-    returnedData.forEach(function (status) {
-        var id = status.companyStatusId;
-        var name = status.companyStatusName;
-        var option = $('<option value=' + id + '></option>').text(name);
-        $('#companyStatus').append(option);
-    });
-}
-
-function processDataCheckCompanyType(returnedData) {
-    var defaultOption = $('<option value=""></option>').text("Select Company type");
-    $('#companyType').append(defaultOption);
-    returnedData.forEach(function (type) {
-        var id = type.companyTypeId;
-        var name = type.companyTypeName;
-        var option = $('<option value=' + id + '></option>').text(name);
-        $('#companyType').append(option);
-    });
-}
 $(document).ready(function () {
     /* ajax commands to fetch all localities and jobs*/
     try {
@@ -206,6 +239,20 @@ $(document).ready(function () {
     try {
         $.ajax({
             type: "POST",
+            url: "/getAllPricingPlans",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckPricingPlan
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+    try {
+        $.ajax({
+            type: "POST",
             url: "/getAllJobStatus",
             data: false,
             async: false,
@@ -239,18 +286,20 @@ $(document).ready(function () {
     var pathname = window.location.pathname; // Returns path only
     var jobPostIdUrl = pathname.split('/');
     var jobPostId = jobPostIdUrl[(jobPostIdUrl.length)-1];
-
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/getJobPostInfo/" + jobPostId,
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataForJobPost
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
+    if(jobPostId != 0){
+        console.log("running");
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/getJobPostInfo/" + jobPostId,
+                data: false,
+                contentType: false,
+                processData: false,
+                success: processDataForJobPost
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
     }
 });
 
@@ -261,6 +310,10 @@ function processDataForJobPost(returnedData) {
         $("#jobPostCompany").val(returnedData.company.companyId);
     }
 
+    getRecruiters(returnedData.company.companyId);
+    if(returnedData.recruiterProfile != null){
+        $('#jobPostRecruiter').val(returnedData.recruiterProfile.recruiterProfileId);
+    }
     $("#jobPostTitle").val(returnedData.jobPostTitle);
 
     $("#jobPostDescription").val(returnedData.jobPostDescription);

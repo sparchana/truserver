@@ -9,7 +9,12 @@ public class AddCompanyResponse {
     public static final int STATUS_FAILURE = 3;
     public static final int STATUS_EXISTS = 4;
 
+    public static final int RECRUITER_CREATED = 5;
+    public static final int RECRUITER_UPDATED = 6;
+    public static final int RECRUITER_NO_COMPANY = 7;
+
     public int status;
+    public Long companyId;
 
     public int getStatus() {
         return status;
@@ -17,5 +22,13 @@ public class AddCompanyResponse {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public Long getCompanyId() {
+        return companyId;
+    }
+
+    public void setCompanyId(Long companyId) {
+        this.companyId = companyId;
     }
 }

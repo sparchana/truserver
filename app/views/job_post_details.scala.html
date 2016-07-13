@@ -61,9 +61,17 @@
           <div class="row" style="margin-top: 4px">
             <div class="col-sm-3"><h5>Job Providing company?: </h5></div>
             <div class="col-sm-9" style="margin-top: 8px">
-              <select id="jobPostCompany" class="selectDropdown" ></select>
+              <select id="jobPostCompany" onchange="getRecruiters($('#jobPostCompany').val())" class="selectDropdown" ></select>
             </div>
           </div>
+
+          <div class="row" style="margin-top: 4px">
+            <div class="col-sm-3"><h5>Select Recruiter?: </h5></div>
+            <div class="col-sm-9" style="margin-top: 8px">
+              <select id="jobPostRecruiter" class="selectDropdown" ></select>
+            </div>
+          </div>
+
 
           <div class="row">
             <div class="col-sm-3"><h5>Job Post Title:</h5></div>
@@ -108,7 +116,7 @@
           </div>
 
           <div class="row">
-            <div class="col-sm-3"><h5>Job Post Address:</h5></div>
+            <div class="col-sm-3"><h5>Interview Address:</h5></div>
             <div class="col-sm-9">
               <textarea rows="4" cols="80" id="jobPostAddress" class="form-control input-md" maxlength="5000"></textarea>
             </div>
@@ -180,6 +188,13 @@
             <div class="col-sm-3"><h5>Total Vacancies:</h5></div>
             <div class="col-sm-9">
               <input id="jobPostVacancies" value="0" style="width: 15%; display: inline-block" placeholder="Total Vacancies" type="number" class="form-control input-md">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Job Pricing Plan:</h5></div>
+            <div class='col-sm-5'>
+              <select id="jobPostPricingPlan" class="selectDropdown" ></select>
             </div>
           </div>
 

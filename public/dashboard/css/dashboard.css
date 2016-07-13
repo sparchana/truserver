@@ -149,6 +149,16 @@ input::-webkit-inner-spin-button {
     background: #ffffff;
 }
 
+.selectDropdownInvalid{
+    overflow:scroll;
+    margin-top: 2px;
+    display: inline-block;
+    height: 34px;
+    border: 1px solid #eaeaea;
+    border-radius: 4px;
+    background: #ffb07f;
+}
+
 #editProfileSteps{
     display: inline-block;
     border-radius: 100px;

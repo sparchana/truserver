@@ -133,6 +133,11 @@ public class JobPost extends Model {
     @JoinColumn(name = "JobEducationId")
     private Education jobPostEducation;
 
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "JobRecruiterId")
+    private RecruiterProfile recruiterProfile;
+
     @JsonBackReference
     @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
     private List<JobApplication> jobPostApplicationList;
@@ -142,6 +147,14 @@ public class JobPost extends Model {
     public JobPost() {
         this.jobPostUUId = UUID.randomUUID().toString();
         this.jobPostCreateTimestamp = new Timestamp(System.currentTimeMillis());
+    }
+
+    public RecruiterProfile getRecruiterProfile() {
+        return recruiterProfile;
+    }
+
+    public void setRecruiterProfile(RecruiterProfile recruiterProfile) {
+        this.recruiterProfile = recruiterProfile;
     }
 
     public Boolean getJobPostIsHot() {

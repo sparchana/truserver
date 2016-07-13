@@ -1,4 +1,8 @@
 /**
+ * Created by batcoder1 on 12/7/16.
+ */
+
+/**
  * Created by batcoder1 on 6/7/16.
  */
 
@@ -20,6 +24,13 @@ function processDataCheckLocality(returnedData) {
             localityArray.push(item);
         });
     }
+    $("#companyLocality").tokenInput(getLocality(), {
+        theme: "facebook",
+        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+        minChars: 0,
+        tokenLimit: 1,
+        preventDuplicates: true
+    });
 }
 
 function processDataCheckCompanyStatus(returnedData) {
@@ -56,10 +67,6 @@ function processDataGetCompanies(returnedData) {
 }
 
 $(function(){
-    var pathname = window.location.pathname; // Returns path only
-    var companyIdUrl = pathname.split('/');
-    var companyId = companyIdUrl[(companyIdUrl.length)-1];
-
     /* ajax commands to fetch all localities and jobs*/
     try {
         $.ajax({
@@ -117,83 +124,4 @@ $(function(){
         console.log("exception occured!!" + exception);
     }
 
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/getCompanyRecruiters/" + recruiterId,
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataForCompanyInfo
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/getCompanyInfo/" + companyId,
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataForCompanyInfo
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
 });
-
-function processDataForCompanyInfo(returnedData) {
-    $("#companyId").val(returnedData.companyId);
-    $("#companyName").val(returnedData.companyName);
-    if(returnedData.companyLocality != null){
-        var item = {};
-        item ["id"] = returnedData.companyLocality.localityId;
-        item ["name"] = returnedData.companyLocality.localityName;
-        companyLocality.push(item);
-    }
-    if($("#companyLocality").val() == ""){
-        $("#companyLocality").tokenInput(getLocality(), {
-            theme: "facebook",
-            hintText: "Start typing Locality (eg. Marathahalli, Whitefield..)",
-            minChars: 0,
-            tokenLimit: 1,
-            prePopulate: companyLocality,
-            preventDuplicates: true
-        });
-    }
-    if(returnedData.companyAddress != null ){
-        $("#companyAddress").val(returnedData.companyAddress);
-    }
-
-    if(returnedData.companyPinCode != null ){
-        $("#companyPinCode").val(returnedData.companyPinCode);
-    }
-
-    if(returnedData.companyWebsite != null ){
-        $("#companyWebsite").val(returnedData.companyWebsite);
-    }
-
-    if(returnedData.companyLogo != null ){
-        $("#companyOldLogo").val(returnedData.companyLogo);
-        $('#companyLogoOld').attr("src",returnedData.companyLogo);
-    }
-
-    if(returnedData.companyDescription != null ){
-        $("#companyDescription").val(returnedData.companyDescription);
-    }
-    
-    if(returnedData.companyEmployeeCount != null ){
-        $("#companyEmployeeCount").val(returnedData.companyEmployeeCount);
-    }
-
-    if(returnedData.compType != null ){
-        $("#companyType").val(returnedData.compType.companyTypeId);
-    }
-
-    if(returnedData.compStatus != null ){
-        $("#companyStatus").val(returnedData.compStatus.companyStatusId);
-    }
-
-}

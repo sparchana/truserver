@@ -22,6 +22,7 @@ public class CompanyService {
                 Company newCompany = new Company();
                 newCompany  = getAndAddCompanyValues(addCompanyRequest,newCompany);
                 newCompany.save();
+                addCompanyResponse.setCompanyId(newCompany.getCompanyId());
                 addCompanyResponse.setStatus(AddCompanyResponse.STATUS_SUCCESS);
                 Logger.info("Company: " + newCompany.getCompanyName() + " successfully created");
             } else{

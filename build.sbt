@@ -18,9 +18,9 @@ libraryDependencies ++= Seq(
   "mysql" % "mysql-connector-java" % "5.1.27",
   "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.0" % "test",
   "junit" % "junit" % "4.12",
-  "com.novocode" % "junit-interface" % "0.11" % "test"
+  "com.novocode" % "junit-interface" % "0.11" % "test",
+  "com.amazonaws" % "aws-java-sdk" % "1.3.11"
   )
-
 
 libraryDependencies += "com.google.api-client" % "google-api-client" % "1.20.0"
 
