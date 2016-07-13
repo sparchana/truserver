@@ -18,6 +18,8 @@ public class PricingPlanType extends Model {
     @Column(name = "PricingPlanTypeName", columnDefinition = "varchar(50) not null")
     private String pricingPlanTypeName;
 
+    public static Finder<String, PricingPlanType> find = new Finder(PricingPlanType.class);
+
     public Integer getPricingPlanTypeId() {
         return pricingPlanTypeId;
     }

@@ -154,6 +154,10 @@ body{
     text-align: center;
 }
 
+.invalid {
+    border-color: rgba(255, 50, 25, 0.84);
+}
+
 #hot_job_section {
     margin-top: -6%;
 }

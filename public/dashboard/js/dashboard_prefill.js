@@ -196,8 +196,7 @@ function prefillSkillProfile(){
                 preventDuplicates: true
             });
         }
-
-
+        
     } catch(err){
         console.log(err);
     }

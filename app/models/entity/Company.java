@@ -82,6 +82,11 @@ public class Company extends Model {
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
     private List<JobPost> jobPostList;
 
+    @JsonBackReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "recruiterProfile", cascade = CascadeType.ALL)
+    private RecruiterProfile recruiterProfile;
+
     public static Finder<String, Company> find = new Finder(Company.class);
 
     public Company() {

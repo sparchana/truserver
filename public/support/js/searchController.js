@@ -292,12 +292,7 @@ function renderSearchResult(returnedData) {
             "language": {
                 "emptyTable": "No data available"
             },
-            "destroy": true,
-            "autoWidth": true,
-            "dom": 'Bfrtip',
-            "buttons": [
-                'copy', 'csv', 'excel'
-            ]
+            "destroy": true
         });
 
         // Apply the search filter

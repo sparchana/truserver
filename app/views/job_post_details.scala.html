@@ -2,7 +2,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/html">
   <head>
     <meta charset="UTF-8">
-    <title>Jobs and Company - Support | Trujobs.in</title>
+    <title>Job Post Details - Support | Trujobs.in</title>
     <link rel="stylesheet" href="/assets/support/css/material.indigo-pink.min.css">
 
     <link rel="stylesheet" href="/assets/support/css/bootstrap.min.css">
@@ -24,9 +24,9 @@
     <script type="text/javascript" src="/assets/support/js/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
 
+    <script type="text/javascript" src="/assets/support/js/job_post_details.js"></script>
     <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
     <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css">
-    <script type="text/javascript" src="/assets/support/js/company_and_job.js"></script>
     <script type="text/javascript" src="/assets/support/js/add_job_post.js"></script>
 
     <script type="text/javascript">
@@ -44,115 +44,34 @@
   <body style="font-size: 13px;">
     <div class="container">
       <h2>
-        Company and Job Section
-          <a href="/support">
-            <button class="btn" style="align-items: flex-end">Support Home</button>
-          </a>
-          <a href="/logout">
-            <button class="btn btn-danger" style="align-items: flex-end">Logout</button>
-          </a>
+        Job Post Details
+        <a href="/support">
+          <button class="btn" style="align-items: flex-end">Support Home</button>
+        </a>
+        <a href="/logout">
+          <button class="btn btn-danger" style="align-items: flex-end">Logout</button>
+        </a>
       </h2>
       <hr>
-      <button id="addCompany" class="btn btn-default" onclick="showCompanyForm()">Add Company</button>
-      <button id="addJobPost" class="btn btn-default" onclick="showJobPostForm()">Add Job Post</button>
-
-      <hr>
-      <div id="companySection" style="display: none; width: 68%">
-        <form id="company_form">
-          <div class="row">
-            <div class="col-sm-3"><h5>Company Name:</h5></div>
-            <div class="col-sm-9">
-              <input id="companyName" name="companyName" placeholder="Company Name" type="text" class="form-control input-md" >
-            </div>
-          </div>
-
-          <div class="row" style="margin-top: 4px">
-            <div class="col-sm-3"><h5>Company Locality:</h5></div>
-            <div class="col-sm-9">
-              <input type="text" id="companyLocality">
-              <script type="text/javascript">
-                $(document).ready(function() {
-                  $("#companyLocality").tokenInput(getLocality(), {
-                    theme: "facebook",
-                    placeholder: "Company Localities?",
-                    hintText: "Start typing Area (eg. BTM Layout, Bellandur..)",
-                    minChars: 0,
-                    tokenLimit: 1,
-                    preventDuplicates: true
-                  });
-                });
-              </script>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Company Address:</h5></div>
-            <div class="col-sm-9">
-                <textarea rows="4" cols="80" id="companyAddress" class="form-control input-md" maxlength="1000"></textarea>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Company Pincode:</h5></div>
-            <div class="col-sm-9">
-              <input id="companyPinCode" name="companyPinCode" placeholder="Company PinCode" type="number" max="999999" class="form-control input-md" >
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Company Website:</h5></div>
-            <div class="col-sm-9">
-              <input id="companyWebsite" name="companyWebsite" placeholder="Company Website" type="text" class="form-control input-md" >
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Company Logo:</h5></div>
-            <div class="col-sm-9">
-              <input id="companyLogo" name="companyLogo" placeholder="Company Logo" type="text" class="form-control input-md" >
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Company Description:</h5></div>
-            <div class="col-sm-9">
-                <textarea rows="4" cols="80" id="companyDescription" class="form-control input-md" maxlength="5000"></textarea>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Company Employee Count:</h5></div>
-            <div class="col-sm-9">
-              <input id="companyEmployeeCount" maxlength="14" placeholder="Company Employee Count" type="text" class="form-control input-md">
-            </div>
-          </div>
-
-          <div class="row" style="margin-top: 4px">
-            <div class="col-sm-3"><h5>Company Type:</h5></div>
-            <div class="col-sm-9">
-              <select id="companyType" class="selectDropdown" ></select>
-            </div>
-          </div>
-
-          <div class="row" style="margin-top: 4px">
-            <div class="col-sm-3"><h5>Company Status:</h5></div>
-            <div class="col-sm-9">
-              <select id="companyStatus" class="selectDropdown" ></select>
-            </div>
-          </div>
-          <button class="btn btn-default">Add Company</button>
-        </form>
-      </div>
-
-      <div id="jobPostSection" style="display: none; width: 68%">
+      <div id="jobPostSection" style="width: 68%">
         <form id="job_post_form">
+          <!-- hidden field -->
+          <input id="jobPostId" style="display: none">
 
           <div class="row" style="margin-top: 4px">
             <div class="col-sm-3"><h5>Job Providing company?: </h5></div>
             <div class="col-sm-9" style="margin-top: 8px">
-              <select id="jobPostCompany" class="selectDropdown" ></select>
+              <select id="jobPostCompany" onchange="getRecruiters($('#jobPostCompany').val())" class="selectDropdown" ></select>
             </div>
           </div>
+
+          <div class="row" style="margin-top: 4px">
+            <div class="col-sm-3"><h5>Select Recruiter?: </h5></div>
+            <div class="col-sm-9" style="margin-top: 8px">
+              <select id="jobPostRecruiter" class="selectDropdown" ></select>
+            </div>
+          </div>
+
 
           <div class="row">
             <div class="col-sm-3"><h5>Job Post Title:</h5></div>
@@ -164,7 +83,7 @@
           <div class="row">
             <div class="col-sm-3"><h5>Job Post Description:</h5></div>
             <div class="col-sm-9">
-                <textarea rows="4" cols="80" id="jobPostDescription" class="form-control input-md" maxlength="5000"></textarea>
+              <textarea rows="4" cols="80" id="jobPostDescription" class="form-control input-md" maxlength="5000"></textarea>
             </div>
           </div>
 
@@ -185,19 +104,7 @@
           <div class="row" style="margin-top: 4px">
             <div class="col-sm-3"><h5>Job Post Job Role:</h5></div>
             <div class="col-sm-9">
-              <input type="text" id="jobPostJobRole" >
-              <script type="text/javascript">
-                $(document).ready(function() {
-                  $("#jobPostJobRole").tokenInput(getJob(), {
-                    theme: "facebook",
-                    placeholder: "Job Role?",
-                    hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-                    minChars: 0,
-                    tokenLimit: 1,
-                    preventDuplicates: true
-                  });
-                });
-              </script>
+              <input type="text" id="jobPostJobRole">
             </div>
           </div>
 
@@ -205,24 +112,13 @@
             <div class="col-sm-3"><h5>Job Post Locality(s):</h5></div>
             <div class="col-sm-9">
               <input type="text" id="jobPostLocalities">
-              <script type="text/javascript">
-                $(document).ready(function() {
-                  $("#jobPostLocalities").tokenInput(getLocality(), {
-                    theme: "facebook",
-                    placeholder: "job Localities?",
-                    hintText: "Start typing Area (eg. BTM Layout, Bellandur..)",
-                    minChars: 0,
-                    preventDuplicates: true
-                  });
-                });
-              </script>
             </div>
           </div>
 
           <div class="row">
-            <div class="col-sm-3"><h5>Job Post Address:</h5></div>
+            <div class="col-sm-3"><h5>Interview Address:</h5></div>
             <div class="col-sm-9">
-                <textarea rows="4" cols="80" id="jobPostAddress" class="form-control input-md" maxlength="5000"></textarea>
+              <textarea rows="4" cols="80" id="jobPostAddress" class="form-control input-md" maxlength="5000"></textarea>
             </div>
           </div>
 
@@ -243,21 +139,34 @@
           <div class="row">
             <div class="col-sm-3"><h5>Job Post Min Requirement:</h5></div>
             <div class="col-sm-9">
-                <textarea rows="4" cols="80" id="jobPostMinRequirement" class="form-control input-md" maxlength="5000"></textarea>
+              <textarea rows="4" cols="80" id="jobPostMinRequirement" class="form-control input-md" maxlength="5000"></textarea>
             </div>
           </div>
 
           <div class="row">
             <div class="col-sm-3"><h5>Job Start Time:</h5></div>
             <div class='col-sm-5'>
-                <select id="jobPostStartTime" class="selectDropdown" ></select>
+              <select id="jobPostStartTime" class="selectDropdown" ></select>
             </div>
           </div>
 
           <div class="row">
             <div class="col-sm-3"><h5>Job End Time:</h5></div>
             <div class='col-sm-5'>
-                <select id="jobPostEndTime" class="selectDropdown" ></select>
+              <select id="jobPostEndTime" class="selectDropdown" ></select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Working Days</h5></div>
+            <div class="col-sm-9">
+              <input id="working_1" type="checkbox">Monday &nbsp;&nbsp;&nbsp;
+              <input id="working_2" type="checkbox">Tuesday &nbsp;&nbsp;&nbsp;
+              <input id="working_3" type="checkbox">Wednesday &nbsp;&nbsp;&nbsp;
+              <input id="working_4" type="checkbox">Thursday &nbsp;&nbsp;&nbsp;
+              <input id="working_5" type="checkbox">Friday &nbsp;&nbsp;&nbsp;
+              <input id="working_6" type="checkbox">Saturday &nbsp;&nbsp;&nbsp;
+              <input id="working_7" type="checkbox">Sunday &nbsp;&nbsp;&nbsp;
             </div>
           </div>
 
@@ -279,6 +188,13 @@
             <div class="col-sm-3"><h5>Total Vacancies:</h5></div>
             <div class="col-sm-9">
               <input id="jobPostVacancies" value="0" style="width: 15%; display: inline-block" placeholder="Total Vacancies" type="number" class="form-control input-md">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Job Pricing Plan:</h5></div>
+            <div class='col-sm-5'>
+              <select id="jobPostPricingPlan" class="selectDropdown" ></select>
             </div>
           </div>
 
@@ -311,29 +227,16 @@
           </div>
 
           <br><br>
-          <button class="btn btn-default">Add Job Post</button>
+          <button class="btn btn-default">Save</button>
         </form>
       </div>
     </div>
-
-    <!-- Javascript import -->
+      <!-- Javascript import -->
     <script type="text/javascript" src="/assets/js/validation.js"></script>
     <script type="text/javascript" src="/assets/support/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/assets/js/apply_job.js"></script>
     <script type="text/javascript" src="/assets/support/js/add_company.js"></script>
     <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
     <script type="text/javascript" src="/assets/support/js/bootstrap-datetimepicker.min.js"></script>
-
-
-    <script>
-      function showCompanyForm() {
-        $("#companySection").show();
-        $("#jobPostSection").hide();
-      }
-      function showJobPostForm() {
-        $("#companySection").hide();
-        $("#jobPostSection").show();
-      }
-    </script>
   </body>
 </html>

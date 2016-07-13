@@ -21,6 +21,7 @@ import play.Logger;
 import play.api.Play;
 import play.data.Form;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
 
@@ -45,14 +46,14 @@ public class Application extends Controller {
         return ok(views.html.index.render());
     }
 
-    @Security.Authenticated(Secured.class)
-    public static Result support() {
-        return ok(views.html.support.render());
+    @Security.Authenticated(RecSecured.class)
+    public static Result showCompanyAndJob() {
+        return ok(views.html.company_and_job.render());
     }
 
     @Security.Authenticated(Secured.class)
-    public static Result companyAndJob() {
-        return ok(views.html.add_company.render());
+    public static Result support() {
+        return ok(views.html.support.render());
     }
 
     @Security.Authenticated(Secured.class)
@@ -125,6 +126,7 @@ public class Application extends Controller {
                 ServerConstants.TYPE_LEAD,
                 ServerConstants.LEAD_SOURCE_UNKNOWN
         );
+        lead.setLeadType(addLeadRequest.getLeadType());
         boolean isSupport = false;
         LeadService.createLead(lead, isSupport);
         addLeadResponse.setStatus(AddLeadResponse.STATUS_SUCCESS);
@@ -235,11 +237,13 @@ public class Application extends Controller {
         return ok(toJson(JobService.applyJob(userMobile, jobId)));
     }
 
+    @Security.Authenticated(Secured.class)
     public static Result addJobPost() {
         JsonNode req = request().body().asJson();
         Logger.info(req + " == ");
         AddJobPostRequest addJobPostRequest = new AddJobPostRequest();
         ObjectMapper newMapper = new ObjectMapper();
+        newMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         try {
             addJobPostRequest = newMapper.readValue(req.toString(), AddJobPostRequest.class);
         } catch (IOException e) {
@@ -248,8 +252,26 @@ public class Application extends Controller {
         return ok(toJson(JobService.addJobPost(addJobPostRequest)));
     }
 
+    public static Result addCompanyLogo() {
+        Http.MultipartFormData body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart picture = body.getFile("picture");
+        if (picture != null) {
+            String fileName = picture.getFilename();
+            String contentType = picture.getContentType();
+            File file = (File) picture.getFile();
+            Logger.info("uploaded! " + file);
+            JobService.uploadCompanyLogo(file, fileName);
+            return ok("File uploaded");
+        } else {
+            flash("error", "Missing file");
+            return redirect(routes.Application.index());
+        }
+    }
+
+    @Security.Authenticated(Secured.class)
     public static Result addCompany() {
         JsonNode req = request().body().asJson();
+        Logger.info(req + " == ");
         AddCompanyRequest addCompanyRequest = new AddCompanyRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -257,7 +279,20 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(CompanyService.addCompany(addCompanyRequest)));
+        if(addCompanyRequest.getRecruiterCompany() == null){ //this means we are updating a company details
+            return ok(toJson(CompanyService.addCompany(addCompanyRequest)));
+        } else{
+            if(addCompanyRequest.getRecruiterCompany() == -1){
+                AddCompanyResponse addCompanyResponse = CompanyService.addCompany(addCompanyRequest);
+                if(addCompanyResponse.getStatus() == 1){
+                    return ok(toJson(RecruiterService.addRecruiter(addCompanyRequest, addCompanyResponse.getCompanyId())));
+                } else{
+                    return ok(toJson(AddCompanyResponse.STATUS_FAILURE));
+                }
+            } else{
+                return ok(toJson(RecruiterService.addRecruiter(addCompanyRequest, addCompanyRequest.getRecruiterCompany())));
+            }
+        }
     }
 
     public static Result loginSubmit() {
@@ -440,10 +475,20 @@ public class Application extends Controller {
         return ok("0");
     }
 
-    public static Result GetCompanyJobList(long companyId){
-        List<JobPost> jobPostList = JobPost.find.where().eq("company.companyId", companyId).findList();
-        if(jobPostList!=null){
-            return ok(toJson(jobPostList));
+    @Security.Authenticated(Secured.class)
+    public static Result getCompanyRecruiters(long companyId) {
+        List<RecruiterProfile> recruiterProfileList = RecruiterProfile.find.where().eq("company.companyId", companyId).findList();
+        if(recruiterProfileList != null){
+            return ok(toJson(recruiterProfileList));
+        }
+        return ok("0");
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result getRecruiterInfo(long recId) {
+        RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", recId).findUnique();
+        if(recruiterProfile != null){
+            return ok(toJson(recruiterProfile));
         }
         return ok("0");
     }
@@ -495,6 +540,21 @@ public class Application extends Controller {
         return ok(toJson(response));
     }
 
+    @Security.Authenticated(Secured.class)
+    public static Result companyInfoHome(Long id) {
+        return ok(views.html.company_details.render());
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result recruiterInfoHome(Long id) {
+        return ok(views.html.recruiter_details.render());
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result jobPostInfoHome(Long id) {
+        return ok(views.html.job_post_details.render());
+    }
+
     public static Result supportAuth() {
         return ok(views.html.supportAuth.render());
     }
@@ -509,14 +569,8 @@ public class Application extends Controller {
 
     public static Result logoutUser() {
         session().clear();
-        String sessionId = session().get("sessionId");
-        if(sessionId != null){
-            return ok(views.html.candidate_home.render());
-        }
-        else{
-            Logger.info("Candidate Logged Out");
-            return ok(views.html.index.render());
-        }
+        Logger.info("Candidate Logged Out");
+        return ok(views.html.main.render());
     }
     public static Result auth() {
         Form<DevLoginRequest> userForm = Form.form(DevLoginRequest.class);
@@ -536,10 +590,10 @@ public class Application extends Controller {
                 if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN) {
                     return redirect("/support/administrator");
                 }
-                if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE || developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN){
+                if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE || developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN || developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_REC){
                     return redirect(routes.Application.support());
                 }
-                if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_ADMIN || developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN) {
+                if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN) {
                     return ok(views.html.uploadcsv.render());
                 }
 
@@ -688,6 +742,12 @@ public class Application extends Controller {
         return ok(toJson(jobPosts));
     }
 
+    @Security.Authenticated(Secured.class)
+    public static Result getAllJobPosts() {
+        List<JobPost> jobPosts = JobPost.find.all();
+        return ok(toJson(jobPosts));
+    }
+
     @Security.Authenticated(SecuredUser.class)
     public static Result getJobApplicationDetailsForGoogleSheet(Integer jobPostId) {
         JobApplicationGoogleSheetResponse jobApplicationGoogleSheetResponse = new JobApplicationGoogleSheetResponse();
@@ -784,7 +844,6 @@ public class Application extends Controller {
             jobApplicationGoogleSheetResponse.setFormUrl(ServerConstants.PROD_GOOGLE_FORM_FOR_JOB_APPLICATION);
         } else{
             jobApplicationGoogleSheetResponse.setFormUrl(ServerConstants.DEV_GOOGLE_FORM_FOR_JOB_APPLICATION);
-
         }
         return ok(toJson(jobApplicationGoogleSheetResponse));
     }
@@ -836,6 +895,18 @@ public class Application extends Controller {
     }
 
     @Security.Authenticated(Secured.class)
+    public static Result getAllRecruiters() {
+        List<RecruiterProfile> recruiterProfileList = RecruiterProfile.find.findList();
+        return ok(toJson(recruiterProfileList));
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result getAllPricingPlans() {
+        List<PricingPlanType> pricingPlanTypeList = PricingPlanType.find.findList();
+        return ok(toJson(pricingPlanTypeList));
+    }
+
+    @Security.Authenticated(Secured.class)
     public static Result getAllExperience() {
         List<Experience> experienceList = Experience.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(experienceList));
@@ -862,6 +933,11 @@ public class Application extends Controller {
     @Security.Authenticated(Secured.class)
     public static Result candidateSignupSupport(Long candidateId) {
         return ok(views.html.signup_support.render(candidateId));
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result createCompany() {
+        return ok(views.html.create_company.render());
     }
 
     @Security.Authenticated(Secured.class)
@@ -990,7 +1066,7 @@ public class Application extends Controller {
 
         String sessionId = session().get("sessionId");
         Developer developer = Developer.find.where().eq("developerSessionId", sessionId ).findUnique();
-        if(developer != null && developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_ADMIN) {
+        if(developer != null && developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_REC) {
             ServerCacheManager serverCacheManager = Ebean.getServerCacheManager();
             serverCacheManager.clearAll();
             return ok("Cleared Static Cache");
@@ -1016,5 +1092,10 @@ public class Application extends Controller {
     @Security.Authenticated(SuperSecured.class)
     public static Result administrator() {
         return ok(views.html.admin.render());
+    }
+
+    @Security.Authenticated(SuperSecured.class)
+    public static Result uploadCSV() {
+        return ok(views.html.uploadcsv.render());
     }
 }
