@@ -17,7 +17,7 @@ public class Secured extends Security.Authenticator {
         String sessionId = ctx.session().get("sessionId");
         if(sessionId != null){
             Developer developer = Developer.find.where().eq("developerSessionId", sessionId ).findUnique();
-            if(developer != null && developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE) {
+            if(developer != null && (developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE ||  developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN ||  developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_REC)) {
                 return ctx.session().get("sessionId");
             } else {
                 return null;

@@ -23,7 +23,7 @@ public class InteractionService {
                     ServerConstants.OBJECT_TYPE_CANDIDATE,
                     ServerConstants.INTERACTION_TYPE_WEBSITE,
                     ServerConstants.INTERACTION_NOTE_BLANK,
-                    result + " & " + ServerConstants.INTERACTION_NOTE_SELF_SIGNEDUP,
+                    result,
                     ServerConstants.INTERACTION_CREATED_SELF
             );
             InteractionService.createInteraction(interaction);

@@ -1,5 +1,8 @@
 package api;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by zero on 27/4/16.
  */
@@ -9,23 +12,17 @@ public class ServerConstants {
     public static final String INTERACTION_RESULT_NEW_LEAD = "New Lead Added";
     public static final String INTERACTION_RESULT_NEW_CANDIDATE = "New Candidate Added";
     public static final String INTERACTION_RESULT_NEW_CANDIDATE_SUPPORT = "New Candidate Added by support";
-    public static final String INTERACTION_RESULT_CANDIDATE_UPDATED_LOCALITY_JOBS = "Candidate updated jobPref and locality pref";
     public static final String INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM = "Candidate Info got updated by System";
-    public static final String INTERACTION_RESULT_CANDIDATE_BASIC_PROFILE_INFO_UPDATED_SYSTEM = "Candidate Basic Profile Info got updated by System";
     public static final String INTERACTION_RESULT_CANDIDATE_BASIC_PROFILE_INFO_UPDATED_SELF = "Candidate Self Updated Basic Profile Info";
-    public static final String INTERACTION_RESULT_CANDIDATE_SKILLS_PROFILE_INFO_UPDATED_SYSTEM = "Candidate Skill Profile Info got updated by System";
     public static final String INTERACTION_RESULT_CANDIDATE_SKILLS_PROFILE_INFO_UPDATED_SELF = "Candidate Self Updated Skill Profile Info";
-    public static final String INTERACTION_RESULT_CANDIDATE_EDUCATION_PROFILE_INFO_UPDATED_SYSTEM = "Candidate Education Profile Info got updated by System";
     public static final String INTERACTION_RESULT_CANDIDATE_EDUCATION_PROFILE_INFO_UPDATED_SELF = "Candidate Self Updated Education Profile Info";
     public static final String INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SELF = "Candidate Info got updated by Self";
     public static final String INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE = "System Updated LeadType to ";
-    public static final String INTERACTION_RESULT_SYSTEM_UPDATED_LEADSTATUS = "System Updated LeadStatus to ";
     public static final String INTERACTION_RESULT_EXISTING_CANDIDATE_SIGNUP = "Existing Candidate Tried to Signup";
     public static final String INTERACTION_RESULT_EXISTING_CANDIDATE_VERIFICATION = "Existing Candidate trying to complete self signup";
     public static final String INTERACTION_RESULT_EXISTING_LEAD = "Existing lead made contact through website";
     public static final String INTERACTION_RESULT_CANDIDATE_FOLLOWED_UP_REQUEST = "Existing candidate requested for a follow up call on ";
     public static final String INTERACTION_RESULT_LEAD_FOLLOWED_UP_REQUEST = "Existing lead requested for a follow up call on ";
-    public static final String INTERACTION_RESULT_FOLLOWUP_DEACTIVATED = "Follow Up deactivated";
     public static final String INTERACTION_RESULT_EXISTING_LEAD_CALLED_BACK = "Existing Lead Called Back";
     public static final String INTERACTION_RESULT_EXISTING_CANDIDATE_CALLED_BACK = "Existing Candidate Called Back";
     public static final String INTERACTION_RESULT_FIRST_INBOUND_CALL = "First Inbound Call";
@@ -39,13 +36,8 @@ public class ServerConstants {
     public static final String INTERACTION_CREATED_ERROR = "Error";
     public static final String INTERACTION_NOTE_DUMMY_PASSWORD_CREATED = "Candidate got Registered with Mandatory Info and dummy password by system";
     public static final String INTERACTION_NOTE_SELF_PASSWORD_CHANGED = "Candidate Self Updated Password";
-    public static final String INTERACTION_NOTE_CALL_OUTBOUNDS = "Out Bound Call";
-    public static final String INTERACTION_NOTE_FOLLOW_UP_CALL_REQUESTED = "Callee requested for a follow up call at ";
-    public static final String INTERACTION_NOTE_LEAD_TYPE_CHANGED = "Lead Type Changed";
-    public static final String INTERACTION_NOTE_LEAD_STATUS_CHANGED = "Lead Status Changed";
     public static final String INTERACTION_NOTE_SELF_SIGNEDUP = "Candidate Self Signed Up";
     public static final String INTERACTION_NOTE_CREATED_BY_ERROR = "Session Username is null";
-    public static final String INTERACTION_NOTE_SELF_PROFILE_CREATION = "Candidate self updated profile details";
     public static final String INTERACTION_NOTE_BLANK = "";
 
     public static final int TYPE_LEAD = 1;
@@ -113,7 +105,8 @@ public class ServerConstants {
     public static final String STREET_LOGIN_PASS = "9875321";
 
     public static final int DEV_ACCESS_LEVEL_SUPPORT_ROLE = 1;
-    public static final int DEV_ACCESS_LEVEL_ADMIN = 2;
+    public static final int DEV_ACCESS_LEVEL_REC = 2;
+    public static final int DEV_ACCESS_LEVEL_SUPER_ADMIN = 3;
 
     public static final String SDF_FORMAT = "yyyy-MM-dd hh:mm:ss a";
     public static final String SDF_FORMAT_FOLLOWUP = "d MMM hh:mm a";
@@ -125,7 +118,13 @@ public class ServerConstants {
     public static final String PROD_GOOGLE_FORM_FOR_JOB_POSTS = "https://docs.google.com/forms/d/1QVHzqnts0IkD3Wk8in4urqb70BseI9YWZm9B_MgGXUE/formResponse";
     public static final String DEV_GOOGLE_FORM_FOR_JOB_POSTS = "https://docs.google.com/forms/d/e/1FAIpQLSc-Fr7bO7M5HCjNYyC-dnIyzTMiXiywTEaD9twKkCQDeB7Qtg/formResponse";
 
-
-
-
+    public static Map<String, String> devTeamMobile;
+    static {
+        devTeamMobile = new HashMap<String, String>();
+        devTeamMobile.put("Archana", "+918197222248");
+        devTeamMobile.put("Avishek", "+918886000928");
+        devTeamMobile.put("Chillu", "+919035164363");
+        devTeamMobile.put("Adarsh", "+918971739586");
+        devTeamMobile.put("Sandy", "+919019672209");
+    }
 }
