@@ -8,8 +8,13 @@
 
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link href="/assets/support/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/assets/support/css/bootstrap-multiselect.css" rel="stylesheet"/>
         <link href="/assets/support/css/material.min.css" rel="stylesheet">
         <link href="/assets/support/css/dialog-polyfill.css" rel="stylesheet">
+        <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
+        <link rel="stylesheet" href="/assets/support/css/pace-dataloader-analytics.css"/>
+        <link href="/assets/support/css/alpha.css" rel="stylesheet">
         <style>
         #view-source {
             position: fixed;
@@ -23,8 +28,8 @@
         </style>
     </head>
     <body>
-        <div class="mdl-layout mdl-js-layout">
-            <header class="mdl-layout__header mdl-layout__header--scroll">
+        <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-tabs">
+            <header class="mdl-layout__header mdl-layout__header--scroll  mdl-layout__header--waterfall">
                 <div class="mdl-layout__header-row">
                         <!-- Title -->
                     <span class="mdl-layout-title">Admin Dashboard</span>
@@ -32,25 +37,72 @@
                     <div class="mdl-layout-spacer"></div>
                         <!-- Navigation -->
                     <nav class="mdl-navigation">
+                        <a class="mdl-navigation__link" href="/support">Support</a>
+                        <a class="mdl-navigation__link" href="/searchCandidate">Search Candidate</a>
                         <a class="mdl-navigation__link show-modal" href="#">Perish</a>
                         <a class="mdl-navigation__link" href="/logout">Logout</a>
                     </nav>
                 </div>
+                    <!-- Tabs -->
+                <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
+                    <a href="#visual-tab" class="mdl-layout__tab is-active">Visual</a>
+                    <a href="#tabular-tab" class="mdl-layout__tab">Tabular</a>
+                </div>
             </header>
+
             <div class="mdl-layout__drawer">
-                <span class="mdl-layout-title">Other Links</span>
+                <span class="mdl-layout-title">Query Drawer</span>
                 <nav class="mdl-navigation">
-                    <a class="mdl-navigation__link" href="/support">Support</a>
-                    <a class="mdl-navigation__link" href="/searchCandidate">Search Candidate</a>
+                    <form id="globalStatsForm">
+                        <div class="mdl-grid">
+                            <div class="mdl-cell mdl-cell--3-col">To: </div>
+                            <div class="mdl-cell mdl-cell--9-col">
+                                <input id="fromThisDate" name="fromThisDate" type="date" class="form-control input-md"  data-date-inline-picker="true"/>
+                            </div>
+                        </div>
+                        <div class="mdl-grid">
+                            <div class="mdl-cell mdl-cell--3-col">From: </div>
+                            <div class="mdl-cell mdl-cell--9-col">
+                                <input id="toThisDate" name="toThisDate" type="date" class="form-control input-md"  data-date-inline-picker="true"/>
+                            </div>
+                        </div>
+                        <div class="mdl-grid">
+                            <div class="mdl-cell mdl-cell--3-col">Query: </div>
+                            <div class="mdl-cell mdl-cell--9-col">
+                                <select id="queryMultiSelect" multiple="multiple">
+                            </select>
+                            </div>
+                        </div>
+                        <br>
+                        <button type="submit" id="queryBtn" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+                            <i class="material-icons">search</i>
+                        </button>
+                    </form>
                 </nav>
             </div>
             <main class="mdl-layout__content">
-                <div class="page-content">
-                    <div id="perish-snackbar" class="mdl-js-snackbar mdl-snackbar">
-                        <div class="mdl-snackbar__text"></div>
-                        <button class="mdl-snackbar__action" type="button"></button>
-                    </div>
-                </div>
+                <!-- Tab Content -->
+                <section class="mdl-layout__tab-panel is-active" id="visual-tab">
+                    <div class="page-content"><div class="mdl-grid">
+                        <div class="mdl-cell mdl-cell--3-col">
+                            <div class="tru-card-event mdl-card mdl-shadow--2dp">
+                                <div class="mdl-card__title mdl-card--expand">
+                                    <h1 class="tru-font-large" id="totalNumberOfCandidate">5255</h1>
+                                </div>
+                                <div class="mdl-card__actions mdl-card--border">
+                            Total Number of Candidates
+                                </div>
+                            </div>
+                        </div>
+                        <div id="perish-snackbar" class="mdl-js-snackbar mdl-snackbar">
+                            <div class="mdl-snackbar__text"></div>
+                            <button class="mdl-snackbar__action" type="button"></button>
+                        </div>
+                    </div></div>
+                </section>
+                <section class="mdl-layout__tab-panel" id="tabular-tab">
+                    <div class="page-content"><!-- Your content goes here --></div>
+                </section>
             </main>
         </div>
         <dialog class="mdl-dialog">
@@ -63,7 +115,7 @@
                         <span class="mdl-textfield__error">Input is not a Mobile number!</span>
                     </div>
                 </div>
-                <div class="mdl-dialog__actions mdl-dialog__actions">
+                <div class="mdl-dialog__actions ">
                     <div class="mdl-spinner mdl-js-spinner" id="perishable-spinner"></div>
                     <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">Perish</button>
                     <button type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored close">Cancel</button>
