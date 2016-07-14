@@ -14,6 +14,7 @@ var homeLocality;
 function processDataApplyJob(returnedData) {
     $("#messagePromptModal").modal("show");
     if(returnedData.status == 1){
+        $("#jobApplyConfirm").modal("hide");
         postToGoogle();
         $('#customMsgIcon').attr('src', "/assets/img/jobApplied.png");
         $("#customMsg").html("Your Job Application is Successful");
@@ -43,6 +44,7 @@ function applyJob(id){
     applyJobId = id;
     var phone = localStorage.getItem("mobile");
     if(phone == null){ // not logged in
+        $("#jobApplyConfirm").modal("hide");
         openLogin();
         $("#myLoginModal").modal("show");
         $("#signInPopup").html("Sign In to Apply");

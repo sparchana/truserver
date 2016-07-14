@@ -329,7 +329,10 @@ function processDataAllJobPosts(returnedData) {
                 var applyBtnDiv = document.createElement("div");
                 applyBtnDiv.className = "col-sm-2";
                 applyBtnDiv.onclick = function () {
-                    applyJob(jobPost.jobPostId);
+                    $('#jobApplyConfirm').modal();
+                    jobPostId = jobPost.jobPostId;
+                    jobLocalityArray = [];
+                    addLocalitiesToModal();
                 };
                 rowDiv.appendChild(applyBtnDiv);
 
@@ -341,6 +344,51 @@ function processDataAllJobPosts(returnedData) {
         });
     }
 }
+
+function addLocalitiesToModal() {
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getJobPostInfo/" + jobPostId,
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataForJobPostLocation
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function processDataForJobPostLocation(returnedData) {
+    var i;
+    $('#jobLocality').html('');
+    var defaultOption=$('<option value="-1"></option>').text("Select Preferred Location");
+    $('#jobLocality').append(defaultOption);
+    var jobLocality = returnedData.jobPostToLocalityList;
+    jobLocality.forEach(function (locality) {
+        var item = {};
+        item ["id"] = locality.locality.localityId;
+        item ["name"] = " " + locality.locality.localityName;
+        jobLocalityArray.push(item);
+        var option=$('<option value=' + locality.locality.localityId + '></option>').text(locality.locality.localityName);
+        $('#jobLocality').append(option);
+    });
+}
+
+function confirmApply() {
+    applyJob(jobPostId);
+}
+
+$(function() {
+    $("#jobLocality").change(function (){
+        if($(this).val() != -1){
+            $("#applyButton").show();
+        } else{
+            $("#applyButton").hide();
+        }
+    });
+});
 
 function processCheckLeadStatus() {
     $("#addLeadMobile").val("");

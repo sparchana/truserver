@@ -493,7 +493,6 @@ public class Application extends Controller {
         return ok("0");
     }
 
-    @Security.Authenticated(Secured.class)
     public static Result getJobPostInfo(long jobPostId) {
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
         if(jobPost!=null){
