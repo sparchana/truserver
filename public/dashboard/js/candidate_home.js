@@ -6,6 +6,7 @@ var jobPostId = 0;
 var jobLocalityArray = [];
 var minProfileComplete = 0;
 var prefLocation;
+var prefLocationName;
 
 $(window).load(function() {
     $('html, body').css({
@@ -300,7 +301,9 @@ function confirmApply() {
 $(function() {
     $("#jobLocality").change(function (){
         if($(this).val() != -1){
+            console.log($("#jobLocality option:selected").text());
             prefLocation = $(this).val();
+            prefLocationName = $("#jobLocality option:selected").text();
             $("#applyButton").show();
         } else{
             $("#applyButton").hide();
