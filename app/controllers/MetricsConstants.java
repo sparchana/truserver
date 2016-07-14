@@ -19,6 +19,7 @@ public class MetricsConstants
     public static String METRIC_HEADER_SUPPORT_CANDIDATES = "Support-Signups";
 
     public static String METRIC_HEADER_OTP_VERIFICATIONS = "Mobile Verifications";
+    public static String METRIC_HEADER_LOGS_INS = "Log-ins";
     public static String METRIC_HEADER_BASIC_PROFILE_UPDATES = "Basic Profile Updates";
     public static String METRIC_HEADER_EXP_PROFILE_UPDATES = "Experience Profile Updates";
     public static String METRIC_HEADER_EDU_PROFILE_UPDATES = "Education Profile Updates";

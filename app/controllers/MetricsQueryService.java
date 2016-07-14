@@ -209,6 +209,9 @@ public class MetricsQueryService
         // Total OTP Verifications
         getOTPVerifications(headerToValueMap, metricDate, nextDate);
 
+        // Get self log-ins
+        getSelfLogins(headerToValueMap, metricDate, nextDate);
+
         // Basic profile Updates
         getSelfBasicProfileUpdates(headerToValueMap, metricDate, nextDate);
 
@@ -247,7 +250,7 @@ public class MetricsQueryService
         List<SqlRow> otpVerificationResults = otpVerificationSqlQuery.findList();
 
         // if we dint get any results, simply return
-        if (otpVerificationSqlQuery == null) {
+        if (otpVerificationResults == null) {
             Logger.error("Error: No otp verification results found for date: " + metricDate);
             return;
         }
@@ -256,6 +259,41 @@ public class MetricsQueryService
 
         headerToValueMap.put(MetricsConstants.METRIC_HEADER_OTP_VERIFICATIONS,
                 otpVerificationResults.get(0).getInteger("count(*)"));
+
+    }
+
+    private static void getSelfLogins(Map<String, Object> headerToValueMap, String metricDate, String nextDate)
+    {
+        // Build the query string
+        StringBuilder loginQueryBuilder =
+                new StringBuilder("select count(*) from interaction join candidate " +
+                        "on interaction.objectauuid = candidate.candidateuuid " +
+                        "where result like '%Candidate Self Signed In%' ");
+
+        if (metricDate != null) {
+            loginQueryBuilder.append("and creationtimestamp  >= '" + metricDate + "' ");
+        }
+
+        if (nextDate != null) {
+            loginQueryBuilder.append(" and  creationtimestamp <= '" + nextDate + "' ");
+        }
+
+        Logger.debug(" Login Query: " + loginQueryBuilder.toString());
+
+        // Execute Query
+        SqlQuery loginSqlQuery = Ebean.createSqlQuery(loginQueryBuilder.toString());
+        List<SqlRow> loginResults = loginSqlQuery.findList();
+
+        // if we dint get any results, simply return
+        if (loginResults == null) {
+            Logger.error("Error: No otp verification results found for date: " + metricDate);
+            return;
+        }
+
+        Logger.debug(" Login results " + loginResults.toString());
+
+        headerToValueMap.put(MetricsConstants.METRIC_HEADER_LOGS_INS,
+                loginResults.get(0).getInteger("count(*)"));
 
     }
 
