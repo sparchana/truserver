@@ -117,8 +117,8 @@ public class JobApplication extends Model {
         return screeningComments;
     }
 
-    public void setScreeningComments(String screeningnComments) {
-        this.screeningComments = screeningnComments;
+    public void setScreeningComments(String screeningComments) {
+        this.screeningComments = screeningComments;
     }
 
     public ScreeningStatus getScreeningStatus() {
