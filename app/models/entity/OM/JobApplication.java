@@ -33,6 +33,12 @@ public class JobApplication extends Model {
     @Column(name = "ScreeningComments", columnDefinition = "varchar(1000) null")
     private String screeningComments;
 
+    @Column(name = "JobSalaryIsOk", columnDefinition = "int signed null")
+    private Boolean jobSalaryIsOk;
+
+    @Column(name = "JobTimingsIsOk", columnDefinition = "int signed null")
+    private Boolean jobTimingsIsOk;
+
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "JobPostId", referencedColumnName = "JobPostId")
@@ -85,6 +91,22 @@ public class JobApplication extends Model {
 
     public Timestamp getJobApplicationCreateTimeStamp() {
         return jobApplicationCreateTimeStamp;
+    }
+
+    public Boolean getJobSalaryIsOk() {
+        return jobSalaryIsOk;
+    }
+
+    public void setJobSalaryIsOk(Boolean jobSalaryIsOk) {
+        this.jobSalaryIsOk = jobSalaryIsOk;
+    }
+
+    public Boolean getJobTimingsIsOk() {
+        return jobTimingsIsOk;
+    }
+
+    public void setJobTimingsIsOk(Boolean jobTimingsIsOk) {
+        this.jobTimingsIsOk = jobTimingsIsOk;
     }
 
     public void setJobApplicationCreateTimeStamp(Timestamp jobApplicationCreateTimeStamp) {
