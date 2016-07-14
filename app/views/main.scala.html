@@ -382,12 +382,15 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="myModalLabel">TruJobs</h4>
+                        <h4 class="modal-title" id="myModalLabel">Job Application Confirmation</h4>
                     </div>
                     <div class="modal-body">
-                        <h5>Please select your preferred location</h5>
+                        <h5>You are applying for <b><div style="display: inline-block" id="jobNameConfirmation"></div></b> job at <b><div style="display: inline-block" id="companyNameConfirmation"></div></b>. Please select the location where you can work:</h5>
+                        <h6>Please select your preferred location</h6>
                         <select id="jobLocality" class="selectDropdown" style="margin: 6px"></select>
-                        <button type="submit" onclick="confirmApply()" id="applyButton" class="jobApplyBtnModal" style="display : none; margin: 6px">Apply</button>
+                        <center>
+                            <button type="submit" onclick="confirmApply()" id="applyButton" class="jobApplyBtnModal" style="display : none; margin: 6px">Apply</button>
+                        </center>
                     </div>
                 </div>
             </div>

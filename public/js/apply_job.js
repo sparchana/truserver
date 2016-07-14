@@ -40,6 +40,7 @@ function processDataApplyJob(returnedData) {
 }
 // apply_job ajax script
 function applyJob(id, localityId){
+    $("#applyButton").addClass("appliedBtn").removeClass("jobApplyBtnModal").prop('disabled',true).html("Applying");
     applyJobFlag = 1;
     applyJobId = id;
     var phone = localStorage.getItem("mobile");

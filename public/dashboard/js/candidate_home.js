@@ -280,6 +280,8 @@ function addLocalitiesToModal() {
 
 function processDataForJobPostLocation(returnedData) {
     var i;
+    $("#jobNameConfirmation").html(returnedData.jobPostTitle);
+    $("#companyNameConfirmation").html(returnedData.company.companyName);
     $('#jobLocality').html('');
     var defaultOption=$('<option value="-1"></option>').text("Select Preferred Location");
     $('#jobLocality').append(defaultOption);
@@ -499,7 +501,6 @@ function processDataAndFillMinProfile(returnedData) {
         $("#apply_btn_" + jobApplication.jobPost.jobPostId).addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Already Applied");
         $("#applyBtnDiv_" + jobApplication.jobPost.jobPostId).prop('disabled',true);
     });
-    /* /assets/dashboard/img/right.png */
 
 }
 

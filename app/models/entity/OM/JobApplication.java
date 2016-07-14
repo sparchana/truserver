@@ -33,6 +33,12 @@ public class JobApplication extends Model {
     @Column(name = "ScreeningComments", columnDefinition = "varchar(1000) null")
     private String screeningComments;
 
+    @Column(name = "PreScreenSalary", columnDefinition = "int signed null")
+    private Boolean preScreenSalary;
+
+    @Column(name = "PreScreenTimings", columnDefinition = "int signed null")
+    private Boolean preScreenTimings;
+
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "JobPostId", referencedColumnName = "JobPostId")
@@ -50,7 +56,7 @@ public class JobApplication extends Model {
 
     @ManyToOne
     @JsonManagedReference
-    @JoinColumn(name = "LocationPreferenceId")
+    @JoinColumn(name = "PreScreenLocation")
     private Locality locality;
 
     public JobApplication() {
@@ -87,6 +93,22 @@ public class JobApplication extends Model {
         return jobApplicationCreateTimeStamp;
     }
 
+    public Boolean getPreScreenSalary() {
+        return preScreenSalary;
+    }
+
+    public void setPreScreenSalary(Boolean preScreenSalary) {
+        this.preScreenSalary = preScreenSalary;
+    }
+
+    public Boolean getPreScreenTimings() {
+        return preScreenTimings;
+    }
+
+    public void setPreScreenTimings(Boolean preScreenTimings) {
+        this.preScreenTimings = preScreenTimings;
+    }
+
     public void setJobApplicationCreateTimeStamp(Timestamp jobApplicationCreateTimeStamp) {
         this.jobApplicationCreateTimeStamp = jobApplicationCreateTimeStamp;
     }
@@ -95,8 +117,8 @@ public class JobApplication extends Model {
         return screeningComments;
     }
 
-    public void setScreeningComments(String screeningnComments) {
-        this.screeningComments = screeningnComments;
+    public void setScreeningComments(String screeningComments) {
+        this.screeningComments = screeningComments;
     }
 
     public ScreeningStatus getScreeningStatus() {
