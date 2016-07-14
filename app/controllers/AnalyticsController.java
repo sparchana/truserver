@@ -50,22 +50,21 @@ public class AnalyticsController extends Controller {
                 // other analytics
                 Date sd = analyticsRequest.getFromThisDate();
                 Date ed = analyticsRequest.getToThisDate();
-                if(analyticsRequest.getUpdateGoogleSheet() == null){
-                    analyticsRequest.setUpdateGoogleSheet(false);
+                Boolean shouldUploadToGs = false;
+                if(analyticsRequest.getUpdateGoogleSheet() != null && analyticsRequest.getUpdateGoogleSheet() ){
+                    shouldUploadToGs = true;
                 }
 
                 List<String> headerList = new ArrayList<>();
                 if(analyticsRequest.getMetrics() != null && !analyticsRequest.getMetrics().isEmpty()){
-                    for(String METRIC_INPUT : analyticsRequest.getMetrics()){
-                        headerList.add(METRIC_INPUT);
-                    }
+                    headerList.addAll(analyticsRequest.getMetrics());
                 } else {
                     headerList.add(MetricsConstants.METRIC_INPUT_ALL);
                     headerList.add(MetricsConstants.METRIC_INPUT_SUPPORT);
                     headerList.add(MetricsConstants.METRIC_INPUT_LEAD_SOURCES);
                 }
 
-                Map<String, Map<Date, Map<String, Object>>> mapOfHeaderMap = MetricsQueryService.queryAndUpdateMetrics(headerList, sd, ed, analyticsRequest.getUpdateGoogleSheet());
+                Map<String, Map<Date, Map<String, Object>>> mapOfHeaderMap = MetricsQueryService.queryAndUpdateMetrics(headerList, sd, ed, shouldUploadToGs);
                 Logger.info("Metrics Query JSON Result:" + toJson(mapOfHeaderMap));
                 return ok(toJson(mapOfHeaderMap));
         }
