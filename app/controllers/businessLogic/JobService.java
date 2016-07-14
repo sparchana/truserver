@@ -2,6 +2,7 @@ package controllers.businessLogic;
 
 import api.ServerConstants;
 import api.http.httpRequest.AddJobPostRequest;
+import api.http.httpRequest.ApplyJobRequest;
 import api.http.httpResponse.AddJobPostResponse;
 import api.http.httpResponse.ApplyJobResponse;
 import com.amazonaws.auth.AWSCredentials;
@@ -131,22 +132,27 @@ public class JobService {
         return newJobPost;
     }
 
-    public static ApplyJobResponse applyJob(String candidateMobile, Integer jobId) {
-        Logger.info("checking user and jobId: " + candidateMobile + " + " + jobId);
+    public static ApplyJobResponse applyJob(ApplyJobRequest applyJobRequest) {
+        Logger.info("checking user and jobId: " + applyJobRequest.getCandidateMobile() + " + " + applyJobRequest.getJobId());
         ApplyJobResponse applyJobResponse = new ApplyJobResponse();
-        Candidate existingCandidate = CandidateService.isCandidateExists(candidateMobile);
+        Candidate existingCandidate = CandidateService.isCandidateExists(applyJobRequest.getCandidateMobile());
         if(existingCandidate != null){
-            JobPost existingJobPost = JobPost.find.where().eq("jobPostId",jobId).findUnique();
+            JobPost existingJobPost = JobPost.find.where().eq("jobPostId",applyJobRequest.getJobId()).findUnique();
             if(existingJobPost == null ){
                 applyJobResponse.setStatus(ApplyJobResponse.STATUS_NO_JOB);
-                Logger.info("JobPost with jobId: " + jobId + " does not exists");
+                Logger.info("JobPost with jobId: " + applyJobRequest.getJobId() + " does not exists");
             }
             else{
-                JobApplication existingJobApplication = JobApplication.find.where().eq("candidateId", existingCandidate.getCandidateId()).eq("jobPostId", jobId).findUnique();
+                JobApplication existingJobApplication = JobApplication.find.where().eq("candidateId", existingCandidate.getCandidateId()).eq("jobPostId", applyJobRequest.getJobId()).findUnique();
                 if(existingJobApplication == null){
                     JobApplication jobApplication = new JobApplication();
                     jobApplication.setCandidate(existingCandidate);
                     jobApplication.setJobPost(existingJobPost);
+
+                    Locality locality = Locality.find.where().eq("localityId", applyJobRequest.getLocalityId()).findUnique();
+                    if(locality != null){
+                        jobApplication.setLocality(locality);
+                    }
 
                     String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB;
                     InteractionService.createInteractionForJobApplication(existingCandidate.getCandidateUUId(), existingJobPost.getJobPostUUId(), interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName());

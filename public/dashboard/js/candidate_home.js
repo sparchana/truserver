@@ -5,6 +5,9 @@
 var jobPostId = 0;
 var jobLocalityArray = [];
 var minProfileComplete = 0;
+var prefLocation;
+var prefLocationName;
+
 $(window).load(function() {
     $('html, body').css({
         'overflow': 'auto',
@@ -292,12 +295,15 @@ function processDataForJobPostLocation(returnedData) {
 }
 
 function confirmApply() {
-    applyJob(jobPostId);
+    applyJob(jobPostId, prefLocation);
 }
 
 $(function() {
     $("#jobLocality").change(function (){
         if($(this).val() != -1){
+            console.log($("#jobLocality option:selected").text());
+            prefLocation = $(this).val();
+            prefLocationName = $("#jobLocality option:selected").text();
             $("#applyButton").show();
         } else{
             $("#applyButton").hide();

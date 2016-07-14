@@ -39,7 +39,7 @@ function processDataApplyJob(returnedData) {
     }
 }
 // apply_job ajax script
-function applyJob(id){
+function applyJob(id, localityId){
     applyJobFlag = 1;
     applyJobId = id;
     var phone = localStorage.getItem("mobile");
@@ -52,7 +52,8 @@ function applyJob(id){
         try {
             var d = {
                 jobId: id,
-                candidateMobile: phone
+                candidateMobile: phone,
+                localityId: localityId
             };
             $.ajax({
                 type: "POST",
@@ -122,7 +123,8 @@ function processDataGetJobGoogleSheetDetails(returnedData) {
                 "entry.125850326": ((returnedData.candidateCurrentSalary != null) ? returnedData.candidateCurrentSalary : ""),
                 "entry.240702722": ((returnedData.candidateEducation != null) ? returnedData.candidateEducation : ""),
                 "entry.190053755": ((returnedData.candidateSkill != null) ? returnedData.candidateSkill : ""),
-                "entry.971982828": candidateCreateTimestamp
+                "entry.971982828": candidateCreateTimestamp,
+                "entry.98308337": prefLocationName
             },
             type: "POST",
             dataType: "xml",
