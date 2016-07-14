@@ -1,4 +1,6 @@
 
+var gTableDataContainer = [];
+
 function processAlphaResponse(alphaResponse){
     var dialog = document.querySelector('dialog');
     if (!dialog.showModal) {
@@ -39,20 +41,70 @@ function executeAlphaRequest(mobile){
     }
 }
 
-function constructTable(key, value) {
-    console.log("constructTable for Metrics " + JSON.stringify(value));
-    if(value != null){
-        $.each( value, function( key, value ) {
-            console.log( key + ": " + value );
+function constructDataForTable(tableName, row) {
+    // generates every thing only for one table
+    var data = new google.visualization.DataTable();
+
+    var rowArray = [];
+    var f = true;
+    var tableDivId ='tableDiv_'+tableName;
+    var googleTableRows = [];
+    $('div[id="csv_'+tableName+'"]').remove();
+    $('div[id="'+tableDivId+'"]').remove();
+    $('#tabular-content').append($('<div id="csv_'+tableName+'"></div><div id="'+tableDivId+'"></div>'));
+    $('#chart_container').append($('<div id="chart_'+tableName+'"></div>'));
+
+    if(row != null){
+        $.each( row, function( rName, postData) {
+            var formatedDate = new Date(rName).toLocaleDateString();
+            var rValue = {"FormattedDate": formatedDate};
+            $.extend(rValue, postData);
+            rowArray.push(rValue);
+            var googleRowOneRow = [];
+            $.each( rValue  , function( cName, value ) {
+                //console.log( "cValue:"+value );
+                googleRowOneRow.push(""+value);
+                /* Add the column name once */
+                if(f){
+                    data.addColumn('string', cName);
+                }
+            });
+            googleTableRows.push(googleRowOneRow);
+            f=false;
         });
+        data.addRows(googleTableRows);
+
+        var csv = google.visualization.dataTableToCsv(data);
+        var csvString = csv;
+        var a         = document.createElement('a');
+        a.href        = 'data:attachment/csv,' +  encodeURIComponent(csvString);
+        a.target      = '_blank';
+        a.download    = 'truAnalytics_'+tableName+'.csv';
+        a.textContent = tableName;
+        console.log("data: " + JSON.stringify(data) + " csvString: " + JSON.stringify(csv))
+        $('div[id="csv_'+tableName+'"]').append(a);
+/*        var components = [
+            {type: 'csv', datasource: 'https://spreadsheets.google.com/tq?key=pCQbetd-CptHnwJEfo8tALA'}
+        ];
+        var container = document.getElementById('toolbar_div_'+tableDivId);
+        google.visualization.drawToolbar(container, components);*/
+
+        var table = new google.visualization.Table(document.getElementById(tableDivId ));
+        table.draw(data, {showRowNumber: true, width: '100%', height: '100%'});
+
+
+       /* var chart = new google.visualization.ComboChart(document.getElementById('chart_'+tableName));
+        chart.draw(data, options);*/
     }
 }
 
+
 function renderAnalyticsResult(analyticsResult) {
-    console.log(JSON.stringify(analyticsResult));
     if(analyticsResult != null){
+        $('#tabular-content').empty();
         $.each( analyticsResult, function( key, value ) {
-            constructTable(key, value);
+            //console.log("ar: " + key);
+            constructDataForTable(key, value);
         });
     }
 }
@@ -61,12 +113,13 @@ function queryForm() {
     var d = {
         fromThisDate: $('#fromThisDate').val(),
         toThisDate: $('#toThisDate').val(),
-        Metrics: $('#queryMultiSelect').val()
+        Metrics: $('#queryMultiSelect').val(),
+        updateGoogleSheet: $('#pushToGoogleSheet').is(":checked")
     };
     try {
         $.ajax({
             type: "POST",
-            url: "/api/alpha/1",
+            url: "/api/alpha/2",
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(d),
             success: renderAnalyticsResult
@@ -96,27 +149,10 @@ function constructMultiSelect(){
     selectList.multiselect('rebuild');
 }
 
-function googleChartplot() {
-    google.charts.load("current", {packages:["corechart"]});
-    google.charts.setOnLoadCallback(drawChart);
-}
-function drawChart() {
-    var data = google.visualization.arrayToDataTable([
-        ['Task', 'Hours per Day'],
-        ['Work',     11],
-        ['Eat',      2],
-        ['Commute',  2],
-        ['Watch TV', 2],
-        ['Sleep',    7]
-    ]);
+function googleTableplot() {
+    google.charts.load('current', {'packages':['table']});
+    google.charts.setOnLoadCallback(queryForm());
 
-    var options = {
-        title: 'My Daily Activities',
-        pieHole: 0.4,
-    };
-
-    var chart = new google.visualization.PieChart(document.getElementById('donutchart'));
-    chart.draw(data, options);
 }
 
 $(function(){
@@ -134,8 +170,7 @@ $(function(){
     });
 
     constructMultiSelect();
-    //<script src="/assets/support/js/google-chart-loader.js" type="text/javascript"></script>
-    //googleChartplot();
+    googleTableplot();
 
     $("#perish-form").submit(function(eventObj) {
         eventObj.preventDefault();

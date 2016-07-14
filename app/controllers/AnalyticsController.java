@@ -22,7 +22,7 @@ import static play.libs.Json.toJson;
 public class AnalyticsController extends Controller {
 
     public static Result alphaHandler(Integer vId) {
-        Logger.info("json:- " + request().body().asJson());
+
         JsonNode analyticsJsonNode = request().body().asJson();
         ObjectMapper newMapper = new ObjectMapper();
         AnalyticsRequest analyticsRequest = new AnalyticsRequest();
@@ -44,21 +44,29 @@ public class AnalyticsController extends Controller {
         }
 
         switch (vId) {
-            case 2:
-                return ok(toJson(GlobalAnalyticsService.getGlobalStatsService(analyticsRequest)));
             case 1:
+                return ok(toJson(GlobalAnalyticsService.getGlobalStatsService(analyticsRequest)));
+            case 2:
                 // other analytics
-                Logger.info("testing metrics service");
                 Date sd = analyticsRequest.getFromThisDate();
                 Date ed = analyticsRequest.getToThisDate();
+                if(analyticsRequest.getUpdateGoogleSheet() == null){
+                    analyticsRequest.setUpdateGoogleSheet(false);
+                }
 
-                List<String> headerList = new ArrayList<String>();
-                headerList.add(MetricsConstants.METRIC_INPUT_ALL);
-                headerList.add(MetricsConstants.METRIC_INPUT_SUPPORT);
-                headerList.add(MetricsConstants.METRIC_INPUT_LEAD_SOURCES);
+                List<String> headerList = new ArrayList<>();
+                if(analyticsRequest.getMetrics() != null && !analyticsRequest.getMetrics().isEmpty()){
+                    for(String METRIC_INPUT : analyticsRequest.getMetrics()){
+                        headerList.add(METRIC_INPUT);
+                    }
+                } else {
+                    headerList.add(MetricsConstants.METRIC_INPUT_ALL);
+                    headerList.add(MetricsConstants.METRIC_INPUT_SUPPORT);
+                    headerList.add(MetricsConstants.METRIC_INPUT_LEAD_SOURCES);
+                }
 
-                Map<String, Map<String, Object>> mapOfHeaderMap = MetricsQueryService.queryAndUpdateLeads(headerList, sd, ed, false);
-                Logger.info("mapofHeaderMap:" + toJson(mapOfHeaderMap));
+                Map<String, Map<Date, Map<String, Object>>> mapOfHeaderMap = MetricsQueryService.queryAndUpdateMetrics(headerList, sd, ed, analyticsRequest.getUpdateGoogleSheet());
+                Logger.info("Metrics Query JSON Result:" + toJson(mapOfHeaderMap));
                 return ok(toJson(mapOfHeaderMap));
         }
         return ok("test");

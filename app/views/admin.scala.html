@@ -14,7 +14,6 @@
         <link href="/assets/support/css/dialog-polyfill.css" rel="stylesheet">
         <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
         <link rel="stylesheet" href="/assets/support/css/pace-dataloader-analytics.css"/>
-        <link rel="stylesheet" href="/assets/build/support/datatableBundle.min.css"/>
         <link href="/assets/support/css/alpha.css" rel="stylesheet">
 
         <style>
@@ -47,11 +46,12 @@
                 </div>
                     <!-- Tabs -->
                 <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
-                    <a href="#visual-tab" class="mdl-layout__tab is-active">Visual</a>
+                    <!-- <a href="#visual-tab" class="mdl-layout__tab is-active">Visual</a> -->
                     <a href="#tabular-tab" class="mdl-layout__tab">Tabular</a>
                 </div>
             </header>
 
+            <!-- side drawer -->
             <div class="mdl-layout__drawer">
                 <span class="mdl-layout-title">Query Drawer</span>
                 <nav class="mdl-navigation">
@@ -59,13 +59,13 @@
                         <div class="mdl-grid">
                             <div class="mdl-cell mdl-cell--3-col">To: </div>
                             <div class="mdl-cell mdl-cell--9-col">
-                                <input id="fromThisDate" name="fromThisDate" type="date" class="form-control input-md"  data-date-inline-picker="true"/>
+                                <input id="fromThisDate" name="fromThisDate" type="date" class="mdl-textfield__input"  data-date-inline-picker="true"/>
                             </div>
                         </div>
                         <div class="mdl-grid">
                             <div class="mdl-cell mdl-cell--3-col">From: </div>
                             <div class="mdl-cell mdl-cell--9-col">
-                                <input id="toThisDate" name="toThisDate" type="date" class="form-control input-md"  data-date-inline-picker="true"/>
+                                <input id="toThisDate" name="toThisDate" type="date" class="mdl-textfield__input"  data-date-inline-picker="true"/>
                             </div>
                         </div>
                         <div class="mdl-grid">
@@ -75,16 +75,21 @@
                             </select>
                             </div>
                         </div>
+                        <label for="pushToGoogleSheet" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" style="margin: 8px 16px;">
+                            <span class="mdl-switch__label">Update GS</span>
+                            <input type="checkbox" id="pushToGoogleSheet" class="mdl-switch__input" disabled>
+                        </label>
                         <br>
-                        <button type="submit" id="queryBtn" class="mdl-button mdl-js-button mdl-button--fab mdl-js-ripple-effect">
+                        <button type="submit" id="queryBtn" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored" style="margin-left: 60%">
                             <i class="material-icons">search</i>
                         </button>
                     </form>
                 </nav>
             </div>
+
             <main class="mdl-layout__content">
                 <!-- Tab Content -->
-                <section class="mdl-layout__tab-panel is-active" id="visual-tab">
+                <section class="mdl-layout__tab-panel" id="visual-tab">
                     <div class="page-content">
                         <div class="mdl-grid">
                             <div class="mdl-cell mdl-cell--3-col">
@@ -97,10 +102,13 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="mdl-cell mdl-cell--3-col">
                                     <!--Div that will hold the pie chart-->
                                 <div id="donutchart" style="width: 900px; height: 500px;"></div>
                             </div>
+
+                            <!-- bottom notification snackbar -->
                             <div id="perish-snackbar" class="mdl-js-snackbar mdl-snackbar">
                                 <div class="mdl-snackbar__text"></div>
                                 <button class="mdl-snackbar__action" type="button"></button>
@@ -108,8 +116,9 @@
                         </div>
                     </div>
                 </section>
-                <section class="mdl-layout__tab-panel" id="tabular-tab">
+                <section class="mdl-layout__tab-panel is-active" id="tabular-tab">
                     <div class="page-content" id="tabular-content">
+                        <div id="table_div"></div>
                     </div>
                 </section>
             </main>
@@ -134,10 +143,10 @@
 
         <script src="/assets/support/js/jquery-1.12.0.min.js" type="text/javascript"></script>
         <script src="/assets/support/js/bootstrap.min.js" type="text/javascript"></script>
-        <script src="/assets/build/support/datatableBundle.min.js" type="text/javascript"></script>
         <script src="/assets/support/js/material.min.js" type="text/javascript"></script>
         <script src="/assets/support/js/dialog-polyfill.js" type="text/javascript"></script>
         <script src="/assets/support/js/bootstrap-multiselect.js" type="text/javascript"></script>
+        <script src="/assets/support/js/google-chart-loader.js" type="text/javascript"></script>
         <script src="/assets/support/js/alpha.js" type="text/javascript"></script>
     </body>
 </html>

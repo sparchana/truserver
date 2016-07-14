@@ -231,7 +231,7 @@ function renderSearchResult(returnedData) {
             }
             returnedDataArray.push({
                 'cLID': '<a href="/candidateSignupSupport/'+newCandidate.lead.leadId+'" target="_blank">'+newCandidate.lead.leadId+'</a>',
-                "candidateFirstName" : newCandidate.candidateFirstName,
+                'candidateFirstName' : newCandidate.candidateFirstName,
                 'candidateMobile' : newCandidate.candidateMobile,
                 'candidateLastWithdrawnSalary' : getLastWithdrawnSalary(newCandidate.candidateLastWithdrawnSalary),
                 'candidateJobPref' :  getJobPref(newCandidate.jobPreferencesList),
@@ -255,6 +255,8 @@ function renderSearchResult(returnedData) {
                 'candidateExperienceLetter' : getYesNo(newCandidate.candidateExperienceLetter)
             })
         });
+        
+        $('#candidateSearchResultTable').show();
 
         var table = $('table#candidateSearchResultTable').DataTable({
             "data": returnedDataArray,
@@ -334,7 +336,6 @@ function renderSearchResult(returnedData) {
 
 
 function searchForm(){
-    $('#candidateSearchResultTable').show();
     var localityArray = [];
     var jobArray = [];
     

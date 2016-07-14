@@ -12,6 +12,7 @@ public class AnalyticsRequest {
     public Date fromThisDate;
     public Date toThisDate;
     public List<String> Metrics;
+    public Boolean updateGoogleSheet;
 
     public Date getFromThisDate() {
 
@@ -20,7 +21,7 @@ public class AnalyticsRequest {
             Logger.info("No FromDate Supplied to Analytics hence setting from date to " + this.fromThisDate);
         }
 
-        if(this.fromThisDate.after(this.toThisDate)){
+        if(this.toThisDate != null && this.fromThisDate.after(this.toThisDate)){
             fromThisDate = toThisDate;
             Logger.info("FromDate is greater than toDate hence from date = toDate");
         }
@@ -55,5 +56,13 @@ public class AnalyticsRequest {
 
     public void setMetrics(List<String> metrics) {
         Metrics = metrics;
+    }
+
+    public Boolean getUpdateGoogleSheet() {
+        return updateGoogleSheet;
+    }
+
+    public void setUpdateGoogleSheet(Boolean updateGoogleSheet) {
+        this.updateGoogleSheet = updateGoogleSheet;
     }
 }
