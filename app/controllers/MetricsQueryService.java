@@ -33,11 +33,14 @@ public class MetricsQueryService
         Map<String, Map<Date, Map<String, Object>>> metricToDateToHeaderToValues =
                 new LinkedHashMap<String, Map<Date, Map<String, Object>>>();
 
+
         for (String metricCategory : metricCategories) {
 
             gCal.setTime(startDate);
             Date toDate = DateUtils.addDays(endDate, 1);
-
+            if(endDate.after(new Date())){
+                endDate = new Date();
+            }
             Date metricDate;
             Date nextDate;
             Map<Date, Map<String, Object>> dateToHeaderToValueMap = new LinkedHashMap<>();
@@ -119,9 +122,9 @@ public class MetricsQueryService
         // iterate and fine leads by channel
         Iterator<SqlRow> leadResultsItr = leadResults.listIterator();
 
-        Integer websiteLeadsCount = -1;
-        Integer knowlarityLeadsCount = -1;
-        Integer supportLeadsCount = -1;
+        Integer websiteLeadsCount = 0;
+        Integer knowlarityLeadsCount = 0;
+        Integer supportLeadsCount = 0;
 
         while (leadResultsItr.hasNext()) {
             SqlRow leadRow = leadResultsItr.next();
