@@ -1,7 +1,9 @@
 package models.entity;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.PrivateOwned;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Static.RecruiterStatus;
 
@@ -50,9 +52,29 @@ public class RecruiterProfile extends Model {
     @JoinColumn(name = "RecStatus")
     private RecruiterStatus recStatus;
 
+    @JsonBackReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "recruiterJobPost", cascade = CascadeType.ALL)
+    private JobPost jobPost;
+
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "RecCompany")
+    private Company company;
+
+    public static Finder<String, RecruiterProfile> find = new Finder(RecruiterProfile.class);
+
     public RecruiterProfile() {
         this.recruiterProfileUUId = UUID.randomUUID().toString();
         this.recruiterProfileCreateTimestamp = new Timestamp(System.currentTimeMillis());
+    }
+
+    public Company getRecCompany() {
+        return company;
+    }
+
+    public void setRecCompany(Company company) {
+        this.company = company;
     }
 
     public Long getRecruiterProfileId() {
