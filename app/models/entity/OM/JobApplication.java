@@ -33,11 +33,11 @@ public class JobApplication extends Model {
     @Column(name = "ScreeningComments", columnDefinition = "varchar(1000) null")
     private String screeningComments;
 
-    @Column(name = "JobSalaryIsOk", columnDefinition = "int signed null")
-    private Boolean jobSalaryIsOk;
+    @Column(name = "PreScreenSalary", columnDefinition = "int signed null")
+    private Boolean preScreenSalary;
 
-    @Column(name = "JobTimingsIsOk", columnDefinition = "int signed null")
-    private Boolean jobTimingsIsOk;
+    @Column(name = "PreScreenTimings", columnDefinition = "int signed null")
+    private Boolean preScreenTimings;
 
     @ManyToOne
     @JsonManagedReference
@@ -56,7 +56,7 @@ public class JobApplication extends Model {
 
     @ManyToOne
     @JsonManagedReference
-    @JoinColumn(name = "LocationPreferenceId")
+    @JoinColumn(name = "PreScreenLocation")
     private Locality locality;
 
     public JobApplication() {
@@ -93,20 +93,20 @@ public class JobApplication extends Model {
         return jobApplicationCreateTimeStamp;
     }
 
-    public Boolean getJobSalaryIsOk() {
-        return jobSalaryIsOk;
+    public Boolean getPreScreenSalary() {
+        return preScreenSalary;
     }
 
-    public void setJobSalaryIsOk(Boolean jobSalaryIsOk) {
-        this.jobSalaryIsOk = jobSalaryIsOk;
+    public void setPreScreenSalary(Boolean preScreenSalary) {
+        this.preScreenSalary = preScreenSalary;
     }
 
-    public Boolean getJobTimingsIsOk() {
-        return jobTimingsIsOk;
+    public Boolean getPreScreenTimings() {
+        return preScreenTimings;
     }
 
-    public void setJobTimingsIsOk(Boolean jobTimingsIsOk) {
-        this.jobTimingsIsOk = jobTimingsIsOk;
+    public void setPreScreenTimings(Boolean preScreenTimings) {
+        this.preScreenTimings = preScreenTimings;
     }
 
     public void setJobApplicationCreateTimeStamp(Timestamp jobApplicationCreateTimeStamp) {
