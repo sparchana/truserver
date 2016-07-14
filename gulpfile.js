@@ -103,8 +103,25 @@ gulp.task('supportStyles', function() {
         .pipe(gulp.dest('./public/build/support/'));
 });
 
+// JS concat, strip debugging and minify for datatable bundle
+gulp.task('datatableBundleScript', function() {
+    gulp.src([jsOrder.jqDt, jsOrder.btnDt, jsOrder.btnFlash, jsOrder.jsZip, jsOrder.vfsFonts, jsOrder.btnHtml5])
+        .pipe(concat('datatableBundle.min.js'))
+        .pipe(gulpif(argv.prod, uglify(), beautify()))
+        .pipe(gulpif(argv.prod, stripDebug()))
+        .pipe(gulp.dest('./public/build/support/'));
+});
+
+// datatable style minify
+gulp.task('datatableBundleStyle', function() {
+    gulp.src([cssOrder.dtBootstrap, cssOrder.jqDt, cssOrder.btnDt])
+        .pipe(concat('datatableBundle.min.css'))
+        .pipe(gulpif(argv.prod, minifyCSS()))
+        .pipe(gulp.dest('./public/build/support/'));
+});
+
 // default gulp task
-gulp.task('default', ['scripts', 'styles', 'supportScripts', 'supportStyles'], function() {
+gulp.task('default', ['scripts', 'styles', 'supportScripts', 'supportStyles', 'datatableBundleScript', 'datatableBundleStyle'], function() {
     // watch for CSS changes
     gulp.watch(paths.css+'*.css', function() {
         gulp.run('styles');
@@ -120,6 +137,14 @@ gulp.task('default', ['scripts', 'styles', 'supportScripts', 'supportStyles'], f
     // watch for support js changes
     gulp.watch(paths.supportJs+'*.js', function() {
         gulp.run('supportScripts');
+    });
+    // watch for datatable bundle css changes
+    gulp.watch(paths.supportJs+'*.css', function() {
+        gulp.run('datatableBundleStyles');
+    });
+    // watch for datatable bundle js changes
+    gulp.watch(paths.supportJs+'*.js', function() {
+        gulp.run('datatableBundleScript');
     });
 });
 
