@@ -223,6 +223,7 @@ public class Application extends Controller {
 
     public static Result applyJob() {
         JsonNode req = request().body().asJson();
+        Logger.info(req + " sent data");
         ApplyJobRequest applyJobRequest = new ApplyJobRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -234,7 +235,7 @@ public class Application extends Controller {
         String userMobile = applyJobRequest.getCandidateMobile();
         Integer jobId = applyJobRequest.getJobId();
 
-        return ok(toJson(JobService.applyJob(userMobile, jobId)));
+        return ok(toJson(JobService.applyJob(applyJobRequest)));
     }
 
     @Security.Authenticated(Secured.class)

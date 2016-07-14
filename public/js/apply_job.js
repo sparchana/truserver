@@ -39,7 +39,7 @@ function processDataApplyJob(returnedData) {
     }
 }
 // apply_job ajax script
-function applyJob(id){
+function applyJob(id, localityId){
     applyJobFlag = 1;
     applyJobId = id;
     var phone = localStorage.getItem("mobile");
@@ -52,7 +52,8 @@ function applyJob(id){
         try {
             var d = {
                 jobId: id,
-                candidateMobile: phone
+                candidateMobile: phone,
+                localityId: localityId
             };
             $.ajax({
                 type: "POST",

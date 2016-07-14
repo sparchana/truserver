@@ -4,6 +4,7 @@
 
 var localityArray = [];
 var jobArray = [];
+var prefLocation;
 
 function getLocality(){
     return localityArray;
@@ -377,12 +378,13 @@ function processDataForJobPostLocation(returnedData) {
 }
 
 function confirmApply() {
-    applyJob(jobPostId);
+    applyJob(jobPostId, prefLocation);
 }
 
 $(function() {
     $("#jobLocality").change(function (){
         if($(this).val() != -1){
+            prefLocation = $(this).val();
             $("#applyButton").show();
         } else{
             $("#applyButton").hide();

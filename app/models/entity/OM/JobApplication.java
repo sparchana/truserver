@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
 import models.entity.JobPost;
+import models.entity.Static.Locality;
 import models.entity.Static.ScreeningStatus;
 
 import javax.persistence.*;
@@ -47,8 +48,21 @@ public class JobApplication extends Model {
     @JoinColumn(name = "CandidateId", referencedColumnName = "CandidateId")
     private Candidate candidate;
 
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "LocationPreferenceId")
+    private Locality locality;
+
     public JobApplication() {
         this.jobApplicationCreateTimeStamp = new Timestamp(System.currentTimeMillis());
+    }
+
+    public Locality getLocality() {
+        return locality;
+    }
+
+    public void setLocality(Locality locality) {
+        this.locality = locality;
     }
 
     public static Model.Finder<String, JobApplication> find = new Model.Finder(JobApplication.class);

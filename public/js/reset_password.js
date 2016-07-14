@@ -29,7 +29,7 @@ function processDataPostReset(returnedData) {
         localStorage.setItem("minProfile", returnedData.minProfile);
         if(applyJobFlag == 1){
             $("#myLoginModal").modal("hide");
-            applyJob(applyJobId);
+            applyJob(applyJobId, prefLocation);
             applyJobFlag = 0;
             applyJobId = 0;
             $("#customSubMsg").html("Logging in ...");
