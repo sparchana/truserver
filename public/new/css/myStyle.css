@@ -390,6 +390,18 @@ a:hover{
     text-align: left;
 }
 
+.appliedBtn {
+    box-shadow: none;
+    cursor: crosshair;
+    color: #fff;
+    border-color: #f4e3a4;
+    background-color: #f4cb6c;
+}
+.appliedBtn:hover{
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
 .jobApplyBtn{
     border: none;
     color: white;
