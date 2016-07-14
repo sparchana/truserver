@@ -92,9 +92,6 @@ function constructDataForTable(tableName, row) {
         var table = new google.visualization.Table(document.getElementById(tableDivId ));
         table.draw(data, {showRowNumber: true, width: '100%', height: '100%'});
 
-
-       /* var chart = new google.visualization.ComboChart(document.getElementById('chart_'+tableName));
-        chart.draw(data, options);*/
     }
 }
 
