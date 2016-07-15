@@ -287,10 +287,9 @@ $(document).ready(function () {
     var jobPostIdUrl = pathname.split('/');
     var jobPostId = jobPostIdUrl[(jobPostIdUrl.length)-1];
     if(jobPostId != 0){
-        console.log("running");
         try {
             $.ajax({
-                type: "GET",
+                type: "POST",
                 url: "/getJobPostInfo/" + jobPostId,
                 data: false,
                 contentType: false,

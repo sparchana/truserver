@@ -29,6 +29,7 @@
         <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/materialDashboard.css">
         <script type="text/javascript" src="/assets/dashboard/js/user_login.js"></script>
         <script type="text/javascript" src="/assets/dashboard/js/materialDashboard.js"></script>
+
         <link rel="icon" type="image/png" href="/assets/img/icon.png">
         <script>
             google.load('visualization', '1', {packages: ['table']});
@@ -62,6 +63,31 @@
                             <img id="customMsgIcon" width="48px">
                             <div id="customMsg" style="padding: 16px"></div>
                         </center>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <!-- custom message modal -->
+        <div class="modal fade" id="jobApplyConfirm" tabindex="-1" role="dialog" aria-labelledby="jobApplyConfirm">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Job Application Confirmation</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="confirmationMsg">
+                            <center>
+                                <img src="/assets/img/jobApply.png" width="48px">
+                            </center>
+                            <h5>You are applying for <b><div style="display: inline-block" id="jobNameConfirmation"></div></b> job at <b><div style="display: inline-block" id="companyNameConfirmation"></div></b>.</h5>
+                            <center>
+                                <h5>Please select the location where you can work:</h5>
+                                <select id="jobLocality" class="selectDropdown" style="margin: 6px"></select>
+                                <button type="submit" onclick="confirmApply()" id="applyButton" class="jobApplyBtnModal" style="display : none; margin: 6px">Apply</button>
+                            </center>
+                        </div>
                     </div>
                 </div>
             </div>

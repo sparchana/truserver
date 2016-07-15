@@ -51,7 +51,7 @@ function processDataAddAuth(returnedData) {
 
         if(applyJobFlag == 1){
             $("#myRegistrationModal").modal("hide");
-            applyJob(applyJobId);
+            applyJob(applyJobId, prefLocation);
             applyJobFlag = 0;
             applyJobId = 0;
             $("#customSubMsg").html("Logging in ...");

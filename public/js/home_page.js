@@ -4,6 +4,8 @@
 
 var localityArray = [];
 var jobArray = [];
+var prefLocation;
+var prefLocationName;
 
 function getLocality(){
     return localityArray;
@@ -329,7 +331,11 @@ function processDataAllJobPosts(returnedData) {
                 var applyBtnDiv = document.createElement("div");
                 applyBtnDiv.className = "col-sm-2";
                 applyBtnDiv.onclick = function () {
-                    applyJob(jobPost.jobPostId);
+                    $('#jobApplyConfirm').modal();
+                    jobPostId = jobPost.jobPostId;
+                    jobLocalityArray = [];
+                    $('#applyButton').hide();
+                    addLocalitiesToModal();
                 };
                 rowDiv.appendChild(applyBtnDiv);
 
@@ -341,6 +347,56 @@ function processDataAllJobPosts(returnedData) {
         });
     }
 }
+
+function addLocalitiesToModal() {
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getJobPostInfo/" + jobPostId,
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataForJobPostLocation
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function processDataForJobPostLocation(returnedData) {
+    $("#jobNameConfirmation").html(returnedData.jobPostTitle);
+    $("#companyNameConfirmation").html(returnedData.company.companyName);
+
+    $('#jobLocality').html('');
+    var defaultOption=$('<option value="-1"></option>').text("Select Preferred Location");
+    $('#jobLocality').append(defaultOption);
+    var jobLocality = returnedData.jobPostToLocalityList;
+    jobLocality.forEach(function (locality) {
+        var item = {};
+        item ["id"] = locality.locality.localityId;
+        item ["name"] = " " + locality.locality.localityName;
+        jobLocalityArray.push(item);
+        var option=$('<option value=' + locality.locality.localityId + '></option>').text(locality.locality.localityName);
+        $('#jobLocality').append(option);
+    });
+}
+
+function confirmApply() {
+    applyJob(jobPostId, prefLocation);
+}
+
+$(function() {
+    $("#jobLocality").change(function (){
+        if($(this).val() != -1){
+            console.log($("#jobLocality option:selected").text());
+            prefLocation = $(this).val();
+            prefLocationName = $("#jobLocality option:selected").text();
+            $("#applyButton").show();
+        } else{
+            $("#applyButton").hide();
+        }
+    });
+});
 
 function processCheckLeadStatus() {
     $("#addLeadMobile").val("");

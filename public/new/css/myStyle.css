@@ -390,6 +390,18 @@ a:hover{
     text-align: left;
 }
 
+.appliedBtn {
+    box-shadow: none;
+    cursor: crosshair;
+    color: #fff;
+    border-color: #f4e3a4;
+    background-color: #f4cb6c;
+}
+.appliedBtn:hover{
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
 .jobApplyBtn{
     border: none;
     color: white;
@@ -403,6 +415,30 @@ a:hover{
 .jobApplyBtn:hover{
     cursor: pointer;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
+}
+
+.jobApplyBtnModal{
+    border: none;
+    color: white;
+    background: #09ac58;
+    padding: 3%;
+    width: 120px;
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.16);
+}
+
+.jobApplyBtnModal:hover{
+    cursor: pointer;
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
+}
+
+.selectDropdown{
+    overflow:scroll;
+    margin-top: 2px;
+    display: inline-block;
+    height: 34px;
+    border: 1px solid #eaeaea;
+    border-radius: 4px;
+    background: #ffffff;
 }
 
 hr{
