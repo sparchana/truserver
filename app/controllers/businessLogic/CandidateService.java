@@ -103,6 +103,12 @@ public class CandidateService
                 if(candidateSignUpRequest.getCandidateMobile()!= null){
                     candidate.setCandidateMobile(candidateSignUpRequest.getCandidateMobile());
                 }
+                if(candidateSignUpRequest.getCandidateSecondMobile()!= null){
+                    candidate.setCandidateSecondMobile(candidateSignUpRequest.getCandidateSecondMobile());
+                }
+                if(candidateSignUpRequest.getCandidateThirdMobile()!= null){
+                    candidate.setCandidateThirdMobile(candidateSignUpRequest.getCandidateThirdMobile());
+                }
                 candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(localityList, candidate));
                 candidate.setJobPreferencesList(getCandidateJobPreferenceList(jobsList, candidate));
                 candidateSignUpResponse = createNewCandidate(candidate, lead);
@@ -205,6 +211,15 @@ public class CandidateService
             }
 
         } else {
+            if(request.getCandidateSecondMobile()!= null){
+                candidate.setCandidateSecondMobile(request.getCandidateSecondMobile());
+                Logger.info("Candidate with 2nd mobile number : " + request.getCandidateSecondMobile() + " added/updated");
+            }
+            if(request.getCandidateThirdMobile()!= null){
+                candidate.setCandidateThirdMobile(request.getCandidateThirdMobile());
+                Logger.info("Candidate with 3rd mobile number : " + request.getCandidateThirdMobile() + " added/updated");
+            }
+
             Logger.info("Candidate with mobile number: " + request.getCandidateMobile() + " already exists");
 
             // update new job preferences

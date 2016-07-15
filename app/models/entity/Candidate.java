@@ -174,6 +174,13 @@ public class Candidate extends Model {
     @OneToOne(cascade = CascadeType.ALL)
     private ColdTable coldTable;
 
+    @Column(name = "CandidateSecondMobile", columnDefinition = "varchar(13) null")
+    private String candidateSecondMobile;
+
+    @Column(name = "CandidateThirdMobile", columnDefinition = "varchar(13) null")
+    private String candidateThirdMobile;
+
+
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
     public Candidate() {
@@ -495,6 +502,22 @@ public class Candidate extends Model {
 
     public void setColdTable(ColdTable coldTable) {
         this.coldTable = coldTable;
+    }
+
+    public String getCandidateSecondMobile() {
+        return candidateSecondMobile;
+    }
+
+    public void setCandidateSecondMobile(String candidateSecondMobile) {
+        this.candidateSecondMobile = candidateSecondMobile;
+    }
+
+    public String getCandidateThirdMobile() {
+        return candidateThirdMobile;
+    }
+
+    public void setCandidateThirdMobile(String candidateThirdMobile) {
+        this.candidateThirdMobile = candidateThirdMobile;
     }
 }
 

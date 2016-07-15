@@ -1,5 +1,7 @@
 # --- !Ups
 alter table candidate add column coldtableid int null;
+alter table candidate add column candidatesecondmobile varchar(13) null;
+alter table candidate add column candidatethirdmobile varchar(13) null;
 
 create table coldtable (
   coldtableid                   int signed auto_increment not null,
@@ -18,5 +20,7 @@ alter table candidate add constraint fk_candidate_coldtableid foreign key (coldt
 alter table candidate drop foreign key fk_candidate_coldtableid;
 
 alter table candidate drop column coldtableid;
+alter table candidate drop column candidatesecondmobile;
+alter table candidate drop column candidatethirdmobile;
 
 drop table if exists coldtable;

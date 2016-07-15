@@ -208,7 +208,15 @@ function processDataAndFillAllFields(returnedData) {
         } else {
             $("#candidateSecondName").val(returnedData.candidateLastName);
         }
+
         $("#candidateMobile").val(returnedData.candidateMobile.substring(3, 13));
+        if(returnedData.candidateSecondMobile != null){
+            $("#candidateSecondMobile").val(returnedData.candidateSecondMobile.substring(3, 13));
+        }
+        if(returnedData.candidateThirdMobile){
+            $("#candidateThirdMobile").val(returnedData.candidateThirdMobile.substring(3, 13));
+        }
+
 
         /* get Candidate's job preference */
         try {
@@ -1208,6 +1216,8 @@ function saveProfileForm() {
     var firstName = $('#candidateFirstName').val();
     var lastName = $('#candidateSecondName').val();
     var phone = $('#candidateMobile').val();
+    var secondPhone = $('#candidateSecondMobile').val();
+    var thirdPhone = $('#candidateThirdMobile').val();
     var firstNameCheck = validateName(firstName);
     if (lastName != "") {
         var lastNameCheck = validateName(lastName);
@@ -1245,6 +1255,18 @@ function saveProfileForm() {
 
     if (selectedDate > todayDate) {
         dobCheck = 0;
+    }
+
+    // check alternate number format
+    var secondMobile = validateMobile(secondPhone);
+    if(secondMobile != 2 && secondPhone != ""){
+        statusCheck = 0;
+        alert("Alternate number should be 10 digit ")
+    }
+    var thirdMobile= validateMobile(thirdPhone);
+    if(thirdMobile != 2 && thirdPhone != ""){
+        statusCheck = 0;
+        alert("Alternate number should be 10 digit ")
     }
 
     //checking first name
@@ -1472,6 +1494,8 @@ function saveProfileForm() {
                 candidateFirstName: $('#candidateFirstName').val(),
                 candidateSecondName: $('#candidateSecondName').val(),
                 candidateMobile: $('#candidateMobile').val(),
+                candidateSecondMobile: $('#candidateSecondMobile').val(),
+                candidateThirdMobile: $('#candidateThirdMobile').val(),
                 candidateLocality: candidatePreferredLocality,
                 candidateJobPref: candidatePreferredJob,
 
