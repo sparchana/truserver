@@ -1589,6 +1589,11 @@ function clickExperienced(){
         unlockcurrentJobRadio();
     }
 }
+function ifMobileExists(returnedId) {
+    if(returnedId != null && returnedId != "0"){
+        window.location = "/candidateSignupSupport/"+returnedId;
+    }
+}
 
 // form_candidate ajax script
 $(function () {
@@ -1601,6 +1606,13 @@ $(function () {
         if ($('#candidateMobile').val().length == 10) {
             $('#panel-note').show();
             $('#btnFloatFollowUp').prop('disabled', false);
+
+            $.ajax({
+                type: "GET",
+                url: "/support/ifExists/"+$('#candidateMobile').val(),
+                contentType: "application/json; charset=utf-8",
+                success: ifMobileExists
+            });
         }
     });
 
