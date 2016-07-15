@@ -208,7 +208,15 @@ function processDataAndFillAllFields(returnedData) {
         } else {
             $("#candidateSecondName").val(returnedData.candidateLastName);
         }
+
         $("#candidateMobile").val(returnedData.candidateMobile.substring(3, 13));
+        if(returnedData.candidateSecondMobile != null){
+            $("#candidateSecondMobile").val(returnedData.candidateSecondMobile.substring(3, 13));
+        }
+        if(returnedData.candidateThirdMobile){
+            $("#candidateThirdMobile").val(returnedData.candidateThirdMobile.substring(3, 13));
+        }
+
 
         /* get Candidate's job preference */
         try {
@@ -415,6 +423,11 @@ function processDataAndFillAllFields(returnedData) {
         } catch (err) {
             console.log(err);
         }
+
+        if(returnedData.coldTable != null){
+            prefillCandidateDeActiveStatus(returnedData.coldTable);
+        }
+
         if (returnedData.languageKnownList != null) {
             prefillLanguageTable(returnedData.languageKnownList);
         }
@@ -428,6 +441,20 @@ function processDataAndFillAllFields(returnedData) {
                 candidateSkill.push(obj);
             });
         }
+    }
+}
+
+
+function prefillCandidateDeActiveStatus(coldTable){
+    if(coldTable != null){
+        $('#deactivationStatus').attr('checked', true);
+        $('#deactivation-sub-options').collapse('show');
+        $('#deactivationReason').val(coldTable.reason);
+        var months = parseInt(coldTable.duration/30);
+        var days = parseInt(coldTable.duration) % 30;
+        $('#deactivationDurationInMonths').val(months);
+        $("#deactivationDurationInDays").val(days);
+        console.log("months: " + months + " days:" + days);
     }
 }
 
@@ -1189,6 +1216,8 @@ function saveProfileForm() {
     var firstName = $('#candidateFirstName').val();
     var lastName = $('#candidateSecondName').val();
     var phone = $('#candidateMobile').val();
+    var secondPhone = $('#candidateSecondMobile').val();
+    var thirdPhone = $('#candidateThirdMobile').val();
     var firstNameCheck = validateName(firstName);
     if (lastName != "") {
         var lastNameCheck = validateName(lastName);
@@ -1209,8 +1238,35 @@ function saveProfileForm() {
     var expYear = parseInt($('#candidateTotalExperienceYear').val());
     var totalExp = expMonth + (12 * expYear);
 
+    /* deactivation requirements */
+    if($('#deactivationStatus').is(':checked')){
+        var mnths = $("#deactivationDurationInMonths").val();
+        var dys = $("#deactivationDurationInDays").val();
+        if($('#deactivationReason').val() == ""){
+            alert("Please fill out the reason for De-Activation");
+            statusCheck = 0;
+        } else {
+            if(mnths == "0" && dys == "0"){
+                alert("Please provide the duration for De-Activation");
+                statusCheck = 0;
+            }
+        }
+    }
+
     if (selectedDate > todayDate) {
         dobCheck = 0;
+    }
+
+    // check alternate number format
+    var secondMobile = validateMobile(secondPhone);
+    if(secondMobile != 2 && secondPhone != ""){
+        statusCheck = 0;
+        alert("Alternate number should be 10 digit ")
+    }
+    var thirdMobile= validateMobile(thirdPhone);
+    if(thirdMobile != 2 && thirdPhone != ""){
+        statusCheck = 0;
+        alert("Alternate number should be 10 digit ")
     }
 
     //checking first name
@@ -1427,11 +1483,19 @@ function saveProfileForm() {
                 };
             });
 
+            /* De-Activation details */
+            var months = parseInt($("#deactivationDurationInMonths").val());
+            var days = parseInt($("#deactivationDurationInDays").val());
+            var totalDays = parseInt((months*30) + days);
+            var deactivationReason = $('#deactivationReason').val();
+            console.log("totalDays: " + totalDays);
             var d = {
                 //mandatory fields
                 candidateFirstName: $('#candidateFirstName').val(),
                 candidateSecondName: $('#candidateSecondName').val(),
                 candidateMobile: $('#candidateMobile').val(),
+                candidateSecondMobile: $('#candidateSecondMobile').val(),
+                candidateThirdMobile: $('#candidateThirdMobile').val(),
                 candidateLocality: candidatePreferredLocality,
                 candidateJobPref: candidatePreferredJob,
 
@@ -1462,8 +1526,10 @@ function saveProfileForm() {
                 expList: expList,
                 candidateEducationCompletionStatus: parseInt($('input:radio[name="candidateEducationCompletionStatus"]:checked').val()),
                 pastCompanyList: pastJobArray,
-                candidateLastWithdrawnSalary: parseInt($('#candidateLastWithdrawnSalary').val())
-
+                candidateLastWithdrawnSalary: parseInt($('#candidateLastWithdrawnSalary').val()),
+                DeactivationStatus: $('#deactivationStatus').is(':checked'),
+                DeactivationReason: $('#deactivationReason').val(),
+                DeActivationDurationInDays: totalDays
             };
 
             $.ajax({

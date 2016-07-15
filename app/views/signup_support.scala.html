@@ -127,6 +127,18 @@
                                 <input id="candidateMobile" placeholder="What is your mobile no.?" name="candidateMobile" type="text" maxlength="10" class="form-control input-md" >
                             </div>
                         </div>
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h5>Candidate Second Mobile (Optional):</h5></div>
+                            <div class="col-sm-9">
+                                <input id="candidateSecondMobile" placeholder="What is your Alternate mobile no.?" name="candidateSecondMobile" type="text" maxlength="10" class="form-control input-md" >
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h5>Candidate Third Mobile (Optional):</h5></div>
+                            <div class="col-sm-9">
+                                <input id="candidateThirdMobile" placeholder="What is your Another Alternate mobile no.?" name="candidateThirdMobile" type="text" maxlength="10" class="form-control input-md" >
+                            </div>
+                        </div>
 
                         <div class="row" style="margin-top: 4px">
                             <div class="col-sm-3"><h5>Job Role Preference:</h5></div>
@@ -417,6 +429,31 @@
                                     <input type="radio" name="experienceLetter" id="experienceLetterY" value="1">&nbsp;Yes&nbsp;&nbsp;
                                     <input type="radio" name="experienceLetter" id="experienceLetterN" value="0">&nbsp;No
                                 </div>
+                            </div>
+                        </div>
+
+                        <h4 style="background: #E57373;color: white;padding: 2%; border-radius: 8px">Activate/De-Activate Panel</h4>
+                        <div id="coldTable_panel">
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-5"><h5>Mark as Active/De-Active?:</h5></div>
+                                <div class="col-sm-7" style="margin-top: 6px;">
+                                    <input type="checkbox" name="deactivationStatus" id="deactivationStatus" value="1" data-toggle="collapse" data-target="#deactivation-sub-options" >&nbsp;Deactivate&nbsp;&nbsp;
+                                </div>
+                            </div>
+                            <div id="deactivation-sub-options" class="panel-collapse collapse">
+                            <div id="deactivation-reason-panel" class="row" style="margin-top: 4px;">
+                                <div class="col-sm-5"><h5>* Reason for Deactivation?:</h5></div>
+                                <div class="col-sm-7" style="margin-top: 6px;">
+                                    <textarea class="form-control" id="deactivationReason" name="deactivationReason" rows="3"></textarea>
+                                </div>
+                            </div>
+                            <div id="deactivation-duration-panel"  class="row" style="margin-top: 4px;">
+                                <div class="col-sm-5"><h5>* De-Activation Duration :</h5></div>
+                                <div class="col-sm-7">
+                                    <input id="deactivationDurationInMonths" value="0" style="width: 15%; display: inline-block" placeholder="Months" type="number" class="form-control input-md">&nbsp;Months&nbsp;&nbsp;
+                                    <input id="deactivationDurationInDays" value="0" style="width: 15%; display: inline-block" placeholder="Days" type="number" min="0" max="30" step="1"  class="form-control input-md">&nbsp; Days
+                                </div>
+                            </div>
                             </div>
                         </div>
                         <hr>
