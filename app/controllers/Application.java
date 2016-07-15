@@ -1098,4 +1098,16 @@ public class Application extends Controller {
     public static Result uploadCSV() {
         return ok(views.html.uploadcsv.render());
     }
+
+    @Security.Authenticated(Secured.class)
+    public static Result ifExists(String mobile) {
+        if(mobile != null){
+            mobile = FormValidator.convertToIndianMobileFormat(mobile);
+            Lead existingLead = LeadService.isLeadExists(mobile);
+            if(existingLead != null) {
+                return ok(toJson(existingLead.getLeadId()));
+            }
+        }
+        return ok("0");
+    }
 }
