@@ -265,6 +265,7 @@ function processDataAllJobPosts(returnedData) {
 }
 
 function addLocalitiesToModal() {
+    $("#applyButton").addClass("jobApplyBtnModal").removeClass("appliedBtn").prop('disabled',false).html("Apply");
     try {
         $.ajax({
             type: "POST",
