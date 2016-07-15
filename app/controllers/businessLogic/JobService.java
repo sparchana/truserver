@@ -152,6 +152,8 @@ public class JobService {
                     Locality locality = Locality.find.where().eq("localityId", applyJobRequest.getLocalityId()).findUnique();
                     if(locality != null){
                         jobApplication.setLocality(locality);
+                    } else{
+                        Logger.info("Location with locality ID: " + applyJobRequest.getLocalityId() + " does not exists");
                     }
 
                     String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB;

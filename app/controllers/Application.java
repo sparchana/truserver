@@ -223,7 +223,6 @@ public class Application extends Controller {
 
     public static Result applyJob() {
         JsonNode req = request().body().asJson();
-        Logger.info(req + " sent data");
         ApplyJobRequest applyJobRequest = new ApplyJobRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {

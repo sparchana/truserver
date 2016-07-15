@@ -2,9 +2,7 @@ package models.entity.Static;
 
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.CacheStrategy;
-import com.avaje.ebean.annotation.PrivateOwned;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import models.entity.OM.JobApplication;
 import models.entity.OM.LocalityPreference;
 import models.entity.OO.CandidateCurrentJobDetail;
 
@@ -50,11 +48,6 @@ public class Locality extends Model {
     @JsonBackReference
     @OneToMany(mappedBy = "candidateCurrentJobLocation", cascade = CascadeType.REMOVE)
     private List<CandidateCurrentJobDetail> currentJobDetailList;
-
-    @JsonBackReference
-    @PrivateOwned
-    @OneToMany(mappedBy = "jobApplication", cascade = CascadeType.ALL)
-    private JobApplication jobApplication;
 
     public static Finder<String, Locality> find = new Finder(Locality.class);
 

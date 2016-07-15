@@ -334,6 +334,7 @@ function processDataAllJobPosts(returnedData) {
                     $('#jobApplyConfirm').modal();
                     jobPostId = jobPost.jobPostId;
                     jobLocalityArray = [];
+                    $('#applyButton').hide();
                     addLocalitiesToModal();
                 };
                 rowDiv.appendChild(applyBtnDiv);
@@ -363,9 +364,9 @@ function addLocalitiesToModal() {
 }
 
 function processDataForJobPostLocation(returnedData) {
-    var i;
     $("#jobNameConfirmation").html(returnedData.jobPostTitle);
     $("#companyNameConfirmation").html(returnedData.company.companyName);
+
     $('#jobLocality').html('');
     var defaultOption=$('<option value="-1"></option>').text("Select Preferred Location");
     $('#jobLocality').append(defaultOption);

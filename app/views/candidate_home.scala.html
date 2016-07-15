@@ -77,12 +77,17 @@
                         <h4 class="modal-title" id="myModalLabel">Job Application Confirmation</h4>
                     </div>
                     <div class="modal-body">
-                        <h5>You are applying for <b><div style="display: inline-block" id="jobNameConfirmation"></div></b> job at <b><div style="display: inline-block" id="companyNameConfirmation"></div></b>. Please select the location where you can work:</h5>
-                        <h6>Please select your preferred location</h6>
-                        <select id="jobLocality" class="selectDropdown" style="margin: 6px"></select>
-                        <center>
-                            <button type="submit" onclick="confirmApply()" id="applyButton" class="jobApplyBtnModal" style="display : none; margin: 6px">Apply</button>
-                        </center>
+                        <div id="confirmationMsg">
+                            <center>
+                                <img src="/assets/img/jobApply.png" width="48px">
+                            </center>
+                            <h5>You are applying for <b><div style="display: inline-block" id="jobNameConfirmation"></div></b> job at <b><div style="display: inline-block" id="companyNameConfirmation"></div></b>.</h5>
+                            <center>
+                                <h5>Please select the location where you can work:</h5>
+                                <select id="jobLocality" class="selectDropdown" style="margin: 6px"></select>
+                                <button type="submit" onclick="confirmApply()" id="applyButton" class="jobApplyBtnModal" style="display : none; margin: 6px">Apply</button>
+                            </center>
+                        </div>
                     </div>
                 </div>
             </div>
