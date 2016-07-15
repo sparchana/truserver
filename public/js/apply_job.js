@@ -13,8 +13,8 @@ var homeLocality;
 
 function processDataApplyJob(returnedData) {
     $("#messagePromptModal").modal("show");
+    $("#jobApplyConfirm").modal("hide");
     if(returnedData.status == 1){
-        $("#jobApplyConfirm").modal("hide");
         postToGoogle();
         $('#customMsgIcon').attr('src', "/assets/img/jobApplied.png");
         $("#customMsg").html("Your Job Application is Successful");
