@@ -14,6 +14,7 @@ import models.entity.Candidate;
 import models.entity.Lead;
 import models.entity.OM.*;
 import models.entity.OO.CandidateEducation;
+import models.entity.OO.ColdTable;
 import models.entity.OO.TimeShiftPreference;
 import models.entity.Static.*;
 import models.util.SmsUtil;
@@ -40,7 +41,7 @@ public class CandidateService
     private static CandidateSignUpResponse createNewCandidate(Candidate candidate, Lead lead) {
 
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
-        CandidateProfileStatus candidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_NEW).findUnique();
+        CandidateProfileStatus candidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE).findUnique();
         if(candidateProfileStatus != null){
             candidate.setCandidateprofilestatus(candidateProfileStatus);
             candidate.setLead(lead);
@@ -224,7 +225,6 @@ public class CandidateService
             }
 
             if(request.getCandidateMobile() != null){
-
                 // If a lead already exists for this candiate, update its status to 'WON'. If not create a new lead
                 // with status 'WON'
                 Lead lead = createOrUpdateConvertedLead(request.getCandidateFirstName() +" " + request.getCandidateSecondName(), request.getCandidateMobile(), request.getLeadSource(), isSupport);
@@ -424,6 +424,13 @@ public class CandidateService
         }
 
         try{
+            candidate.setColdTable(getColdTableData(supportCandidateRequest, candidate));
+        } catch(Exception e){
+            Logger.info(" Exception while setting salary slip flag type");
+            e.printStackTrace();
+        }
+
+        try{
             candidate.setCandidateSalarySlip(supportCandidateRequest.getCandidateSalarySlip());
         } catch(Exception e){
             Logger.info(" Exception while setting salary slip flag type");
@@ -451,6 +458,31 @@ public class CandidateService
             e.printStackTrace();
         }
 
+    }
+
+    private static ColdTable getColdTableData(AddSupportCandidateRequest supportCandidateRequest, Candidate candidate) {
+        ColdTable coldTable = candidate.getColdTable();
+        if(coldTable == null && supportCandidateRequest.getDeactivationStatus()) {
+            coldTable = new ColdTable();
+        }
+
+        if(supportCandidateRequest != null
+                && supportCandidateRequest.getDeactivationStatus()
+                && supportCandidateRequest.getDeactivationReason() != ""
+                && supportCandidateRequest.getDeActivationDurationInDays() != 0){
+            /* Add Canidate to coldTable and Change candidateStatus to Cold */
+            candidate.setCandidateprofilestatus(CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_COLD).findUnique());
+            coldTable.setReason(supportCandidateRequest.getDeactivationReason());
+            coldTable.setDuration(supportCandidateRequest.getDeActivationDurationInDays());
+            InteractionService.InteractionForDeactivateCandidate(candidate.getCandidateUUId(), true);
+            return coldTable;
+        } else if(candidate.getColdTable() != null && !supportCandidateRequest.getDeactivationStatus()){
+            /* Remove from coldTable and change candidateStatus to Active */
+            candidate.setCandidateprofilestatus(CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE).findUnique());
+            InteractionService.InteractionForActivateCandidate(candidate.getCandidateUUId(), true);
+            return null;
+        }
+        return null;
     }
 
     private static List<CandidateExp> getCandidateExpListFromAddSupportCandidate(List<AddSupportCandidateRequest.ExpList> expList, Candidate candidate) {

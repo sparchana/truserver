@@ -415,6 +415,11 @@ function processDataAndFillAllFields(returnedData) {
         } catch (err) {
             console.log(err);
         }
+
+        if(returnedData.coldTable != null){
+            prefillCandidateDeActiveStatus(returnedData.coldTable);
+        }
+
         if (returnedData.languageKnownList != null) {
             prefillLanguageTable(returnedData.languageKnownList);
         }
@@ -428,6 +433,20 @@ function processDataAndFillAllFields(returnedData) {
                 candidateSkill.push(obj);
             });
         }
+    }
+}
+
+
+function prefillCandidateDeActiveStatus(coldTable){
+    if(coldTable != null){
+        $('#deactivationStatus').attr('checked', true);
+        $('#deactivation-sub-options').collapse('show');
+        $('#deactivationReason').val(coldTable.reason);
+        var months = parseInt(coldTable.duration/30);
+        var days = parseInt(coldTable.duration) % 30;
+        $('#deactivationDurationInMonths').val(months);
+        $("#deactivationDurationInDays").val(days);
+        console.log("months: " + months + " days:" + days);
     }
 }
 
@@ -1209,6 +1228,21 @@ function saveProfileForm() {
     var expYear = parseInt($('#candidateTotalExperienceYear').val());
     var totalExp = expMonth + (12 * expYear);
 
+    /* deactivation requirements */
+    if($('#deactivationStatus').is(':checked')){
+        var mnths = $("#deactivationDurationInMonths").val();
+        var dys = $("#deactivationDurationInDays").val();
+        if($('#deactivationReason').val() == ""){
+            alert("Please fill out the reason for De-Activation");
+            statusCheck = 0;
+        } else {
+            if(mnths == "0" && dys == "0"){
+                alert("Please provide the duration for De-Activation");
+                statusCheck = 0;
+            }
+        }
+    }
+
     if (selectedDate > todayDate) {
         dobCheck = 0;
     }
@@ -1427,6 +1461,12 @@ function saveProfileForm() {
                 };
             });
 
+            /* De-Activation details */
+            var months = parseInt($("#deactivationDurationInMonths").val());
+            var days = parseInt($("#deactivationDurationInDays").val());
+            var totalDays = parseInt((months*30) + days);
+            var deactivationReason = $('#deactivationReason').val();
+            console.log("totalDays: " + totalDays);
             var d = {
                 //mandatory fields
                 candidateFirstName: $('#candidateFirstName').val(),
@@ -1462,8 +1502,10 @@ function saveProfileForm() {
                 expList: expList,
                 candidateEducationCompletionStatus: parseInt($('input:radio[name="candidateEducationCompletionStatus"]:checked').val()),
                 pastCompanyList: pastJobArray,
-                candidateLastWithdrawnSalary: parseInt($('#candidateLastWithdrawnSalary').val())
-
+                candidateLastWithdrawnSalary: parseInt($('#candidateLastWithdrawnSalary').val()),
+                DeactivationStatus: $('#deactivationStatus').is(':checked'),
+                DeactivationReason: $('#deactivationReason').val(),
+                DeActivationDurationInDays: totalDays
             };
 
             $.ajax({

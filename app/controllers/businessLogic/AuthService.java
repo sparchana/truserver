@@ -82,7 +82,7 @@ public class AuthService {
                 );
                 InteractionService.createInteraction(interaction);
                 try {
-                    existingCandidate.setCandidateprofilestatus(CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_NEW).findUnique());
+                    existingCandidate.setCandidateprofilestatus(CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE).findUnique());
                     candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
                 }catch (NullPointerException n) {
                     Logger.info("Oops ProfileStatusId"+ " doesnot exists");

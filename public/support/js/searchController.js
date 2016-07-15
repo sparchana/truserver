@@ -231,7 +231,7 @@ function renderSearchResult(returnedData) {
             }
             returnedDataArray.push({
                 'cLID': '<a href="/candidateSignupSupport/'+newCandidate.lead.leadId+'" target="_blank">'+newCandidate.lead.leadId+'</a>',
-                'candidateFirstName' : newCandidate.candidateFirstName,
+                'candidateFirstName' : newCandidate.candidateFirstName +" "+newCandidate.candidateLastName,
                 'candidateMobile' : newCandidate.candidateMobile,
                 'candidateLastWithdrawnSalary' : getLastWithdrawnSalary(newCandidate.candidateLastWithdrawnSalary),
                 'candidateJobPref' :  getJobPref(newCandidate.jobPreferencesList),
