@@ -14,7 +14,7 @@ import models.entity.Candidate;
 import models.entity.Lead;
 import models.entity.OM.*;
 import models.entity.OO.CandidateEducation;
-import models.entity.OO.ColdTable;
+import models.entity.OO.CandidateStatusDetail;
 import models.entity.OO.TimeShiftPreference;
 import models.entity.Static.*;
 import models.util.SmsUtil;
@@ -22,8 +22,10 @@ import models.util.Util;
 import play.Logger;
 
 import javax.persistence.NonUniqueResultException;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
@@ -439,9 +441,9 @@ public class CandidateService
         }
 
         try{
-            candidate.setColdTable(getColdTableData(supportCandidateRequest, candidate));
+            candidate.setCandidateStatusDetail(getCandidateStatusDetail(supportCandidateRequest, candidate));
         } catch(Exception e){
-            Logger.info(" Exception while setting salary slip flag type");
+            Logger.info(" Exception while setting CandidateStatusDetail data");
             e.printStackTrace();
         }
 
@@ -475,27 +477,41 @@ public class CandidateService
 
     }
 
-    private static ColdTable getColdTableData(AddSupportCandidateRequest supportCandidateRequest, Candidate candidate) {
-        ColdTable coldTable = candidate.getColdTable();
-        if(coldTable == null && supportCandidateRequest.getDeactivationStatus()) {
-            coldTable = new ColdTable();
+    private static CandidateStatusDetail getCandidateStatusDetail(AddSupportCandidateRequest supportCandidateRequest, Candidate candidate) {
+        CandidateStatusDetail candidateStatusDetail = candidate.getCandidateStatusDetail();
+        if(candidateStatusDetail == null && supportCandidateRequest.getDeactivationStatus()) {
+            candidateStatusDetail = new CandidateStatusDetail();
         }
 
         if(supportCandidateRequest != null
                 && supportCandidateRequest.getDeactivationStatus()
                 && supportCandidateRequest.getDeactivationReason() != ""
                 && supportCandidateRequest.getDeActivationDurationInDays() != 0){
-            /* Add Canidate to coldTable and Change candidateStatus to Cold */
+            /* Add Canidate to candidateStatusDetail and Change candidateStatus to Cold */
             candidate.setCandidateprofilestatus(CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_COLD).findUnique());
-            coldTable.setReason(supportCandidateRequest.getDeactivationReason());
-            coldTable.setDuration(supportCandidateRequest.getDeActivationDurationInDays());
-            InteractionService.InteractionForDeactivateCandidate(candidate.getCandidateUUId(), true);
-            return coldTable;
-        } else if(candidate.getColdTable() != null && !supportCandidateRequest.getDeactivationStatus()){
-            /* Remove from coldTable and change candidateStatus to Active */
+            candidateStatusDetail.setReason(supportCandidateRequest.getDeactivationReason());
+            candidateStatusDetail.setDuration(supportCandidateRequest.getDeActivationDurationInDays());
+            candidateStatusDetail.setStatusExpiryDate(CalculateExpiry(candidateStatusDetail.getCreateTimeStamp(), supportCandidateRequest.getDeActivationDurationInDays()));
+            InteractionService.CreateInteractionForDeactivateCandidate(candidate.getCandidateUUId(), true);
+            return candidateStatusDetail;
+        } else if(candidate.getCandidateStatusDetail() != null && !supportCandidateRequest.getDeactivationStatus()){
+            /* Remove from candidateStatusDetail and change candidateStatus to Active */
             candidate.setCandidateprofilestatus(CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE).findUnique());
-            InteractionService.InteractionForActivateCandidate(candidate.getCandidateUUId(), true);
+
+            InteractionService.CreateInteractionForActivateCandidate(candidate.getCandidateUUId(), true);
             return null;
+        }
+        return null;
+    }
+
+    public static Date CalculateExpiry(Timestamp createTimeStamp, Integer deActivationDurationInDays) {
+        if(createTimeStamp != null && deActivationDurationInDays != null){
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(createTimeStamp);
+            cal.add(Calendar.DAY_OF_WEEK, deActivationDurationInDays);
+            Timestamp tempTimeStamp = new Timestamp(cal.getTime().getTime());
+            Date expiryStatusDate = new Date(tempTimeStamp.getTime());
+            return expiryStatusDate;
         }
         return null;
     }

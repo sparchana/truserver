@@ -4,18 +4,21 @@ import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 
 import javax.persistence.*;
+import java.sql.Date;
 import java.sql.Timestamp;
+
+import static controllers.businessLogic.CandidateService.CalculateExpiry;
 
 /**
  * Created by zero on 15/7/16.
  */
-@Entity(name = "coldtable")
-@Table(name = "coldtable")
-public class ColdTable  extends Model {
+@Entity(name = "candidatestatusdetail")
+@Table(name = "candidatestatusdetail")
+public class CandidateStatusDetail extends Model {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name = "ColdTableId", columnDefinition = "int signed", unique = true)
-    private int coldTableId;
+    @Column(name = "CandidateStatusDetailId", columnDefinition = "int signed", unique = true)
+    private int candidateStatusDetailId;
 
     @Column(name = "CreateTimeStamp", columnDefinition = "timestamp not null default current_timestamp")
     private Timestamp createTimeStamp;
@@ -24,21 +27,24 @@ public class ColdTable  extends Model {
     @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp null")
     private Timestamp updateTimeStamp;
 
+    @Column(name = "StatusExpiryDate", columnDefinition = "date null")
+    private Date statusExpiryDate;
+
     @Column(name = "Reason", columnDefinition = "text null")
     private String reason;
 
     @Column(name = "Duration", columnDefinition = "int signed null")
     private Integer duration; // in days
 
-    public ColdTable(){
+    public CandidateStatusDetail(){
         this.createTimeStamp = new Timestamp(System.currentTimeMillis());
     }
 
-    public static Finder<String, ColdTable> find = new Finder(ColdTable.class);
+    public static Finder<String, CandidateStatusDetail> find = new Finder(CandidateStatusDetail.class);
 
     /* getter */
-    public int getColdTableId() {
-        return coldTableId;
+    public int getCandidateStatusDetailId() {
+        return candidateStatusDetailId;
     }
 
     public Timestamp getCreateTimeStamp() {
@@ -68,5 +74,16 @@ public class ColdTable  extends Model {
 
     public void setDuration(Integer duration) {
         this.duration = duration;
+    }
+
+    public Date getStatusExpiryDate() {
+        if(statusExpiryDate == null){
+            setStatusExpiryDate(CalculateExpiry(createTimeStamp, duration));
+        }
+        return statusExpiryDate;
+    }
+
+    public void setStatusExpiryDate(Date statusExpiryDate) {
+        this.statusExpiryDate = statusExpiryDate;
     }
 }

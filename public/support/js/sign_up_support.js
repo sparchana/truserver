@@ -424,8 +424,8 @@ function processDataAndFillAllFields(returnedData) {
             console.log(err);
         }
 
-        if(returnedData.coldTable != null){
-            prefillCandidateDeActiveStatus(returnedData.coldTable);
+        if(returnedData.candidateStatusDetail != null){
+            prefillCandidateDeActiveStatus(returnedData.candidateStatusDetail);
         }
 
         if (returnedData.languageKnownList != null) {
@@ -445,15 +445,17 @@ function processDataAndFillAllFields(returnedData) {
 }
 
 
-function prefillCandidateDeActiveStatus(coldTable){
-    if(coldTable != null){
+function prefillCandidateDeActiveStatus(candidateStatusDetail){
+    if(candidateStatusDetail != null){
         $('#deactivationStatus').attr('checked', true);
         $('#deactivation-sub-options').collapse('show');
-        $('#deactivationReason').val(coldTable.reason);
-        var months = parseInt(coldTable.duration/30);
-        var days = parseInt(coldTable.duration) % 30;
+        $('#deactivationReason').val(candidateStatusDetail.reason);
+        var months = parseInt(candidateStatusDetail.duration/30);
+        var days = parseInt(candidateStatusDetail.duration) % 30;
         $('#deactivationDurationInMonths').val(months);
         $("#deactivationDurationInDays").val(days);
+        $("#deactivation-expiry-panel").show();
+        $('#deactivationExpiry').text(candidateStatusDetail.statusExpiryDate);
         console.log("months: " + months + " days:" + days);
     }
 }

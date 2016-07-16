@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.OM.*;
 import models.entity.OO.CandidateCurrentJobDetail;
 import models.entity.OO.CandidateEducation;
-import models.entity.OO.ColdTable;
+import models.entity.OO.CandidateStatusDetail;
 import models.entity.OO.TimeShiftPreference;
 import models.entity.Static.CandidateProfileStatus;
 import models.entity.Static.Language;
@@ -170,9 +170,9 @@ public class Candidate extends Model {
     private Boolean candidateExperienceLetter;
 
     @JsonManagedReference
-    @JoinColumn(name = "coldTableId", referencedColumnName = "coldTableId")
+    @JoinColumn(name = "candidateStatusDetailId", referencedColumnName = "candidateStatusDetailId")
     @OneToOne(cascade = CascadeType.ALL)
-    private ColdTable coldTable;
+    private CandidateStatusDetail candidateStatusDetail;
 
     @Column(name = "CandidateSecondMobile", columnDefinition = "varchar(13) null")
     private String candidateSecondMobile;
@@ -496,12 +496,12 @@ public class Candidate extends Model {
         this.candidateExperienceLetter = candidateExperienceLetter;
     }
 
-    public ColdTable getColdTable() {
-        return coldTable;
+    public CandidateStatusDetail getCandidateStatusDetail() {
+        return candidateStatusDetail;
     }
 
-    public void setColdTable(ColdTable coldTable) {
-        this.coldTable = coldTable;
+    public void setCandidateStatusDetail(CandidateStatusDetail candidateStatusDetail) {
+        this.candidateStatusDetail = candidateStatusDetail;
     }
 
     public String getCandidateSecondMobile() {

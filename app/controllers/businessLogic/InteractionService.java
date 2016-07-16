@@ -113,12 +113,12 @@ public class InteractionService {
         }
     }
 
-    public static void InteractionForDeactivateCandidate(String objectAUUId, boolean isSupport){
+    public static void CreateInteractionForDeactivateCandidate(String objectAUUId, boolean isSupport){
         if(!isSupport){
             Interaction interaction = new Interaction(
                     objectAUUId,
                     ServerConstants.OBJECT_TYPE_CANDIDATE,
-                    ServerConstants.INTERACTION_TYPE_WEBSITE,
+                    ServerConstants.INTERACTION_TYPE_CALL_OUT,
                     ServerConstants.INTERACTION_NOTE_BLANK,
                     ServerConstants.INTERACTION_RESULT_CANDIDATE_DEACTIVATED,
                     session().get("sessionUsername")
@@ -127,12 +127,12 @@ public class InteractionService {
         }
     }
 
-    public static void InteractionForActivateCandidate(String objectAUUId, boolean isSupport) {
+    public static void CreateInteractionForActivateCandidate(String objectAUUId, boolean isSupport) {
         if(!isSupport){
             Interaction interaction = new Interaction(
                     objectAUUId,
                     ServerConstants.OBJECT_TYPE_CANDIDATE,
-                    ServerConstants.INTERACTION_TYPE_WEBSITE,
+                    ServerConstants.INTERACTION_TYPE_CALL_OUT,
                     ServerConstants.INTERACTION_NOTE_BLANK,
                     ServerConstants.INTERACTION_RESULT_CANDIDATE_ACTIVATED,
                     session().get("sessionUsername")
