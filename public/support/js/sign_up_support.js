@@ -1248,9 +1248,13 @@ function saveProfileForm() {
             alert("Please fill out the reason for De-Activation");
             statusCheck = 0;
         } else {
-            if(mnths == "0" && dys == "0"){
+            if(mnths == "0" && dys == "0" || (mnths =="" && dys == "")){
                 alert("Please provide the duration for De-Activation");
                 statusCheck = 0;
+            }
+            var tds = parseInt((parseInt(mnths)*30) + parseInt(dys));
+            if(tds < 1){
+                alert("Please provide the duration for De-Activation");
             }
         }
     }
@@ -1529,9 +1533,9 @@ function saveProfileForm() {
                 candidateEducationCompletionStatus: parseInt($('input:radio[name="candidateEducationCompletionStatus"]:checked').val()),
                 pastCompanyList: pastJobArray,
                 candidateLastWithdrawnSalary: parseInt($('#candidateLastWithdrawnSalary').val()),
-                DeactivationStatus: $('#deactivationStatus').is(':checked'),
-                DeactivationReason: $('#deactivationReason').val(),
-                DeActivationDurationInDays: totalDays
+                deactivationStatus: $('#deactivationStatus').is(':checked'),
+                deactivationReason: $('#deactivationReason').val(),
+                deActivationDurationInDays: totalDays
             };
 
             $.ajax({
