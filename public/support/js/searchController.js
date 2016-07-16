@@ -214,6 +214,23 @@ function getAge(birthday) { // birthday is in milisec
     return Math.abs(ageDate.getUTCFullYear() - 1970);
 }
 
+function getProperProfileStatus(profileStatus) {
+    if(profileStatus != null){
+        if(profileStatus.profileStatusId == "1"){ // new or active return active
+            return "Active";
+        } else {
+            return profileStatus.profileStatusName;
+        }
+    }
+    return "-";
+}
+function getExpiry(expiryObject) {
+    if(expiryObject != null){
+        return expiryObject.statusExpiryDate;
+    }
+    return "-";
+}
+
 function renderSearchResult(returnedData) {
 
     var returnedDataArray = [];
@@ -231,7 +248,7 @@ function renderSearchResult(returnedData) {
             }
             returnedDataArray.push({
                 'cLID': '<a href="/candidateSignupSupport/'+newCandidate.lead.leadId+'" target="_blank">'+newCandidate.lead.leadId+'</a>',
-                'candidateFirstName' : newCandidate.candidateFirstName,
+                'candidateFirstName' : newCandidate.candidateFirstName +" "+newCandidate.candidateLastName,
                 'candidateMobile' : newCandidate.candidateMobile,
                 'candidateLastWithdrawnSalary' : getLastWithdrawnSalary(newCandidate.candidateLastWithdrawnSalary),
                 'candidateJobPref' :  getJobPref(newCandidate.jobPreferencesList),
@@ -252,7 +269,9 @@ function renderSearchResult(returnedData) {
                 'noOfJobApplication' : newCandidate.jobApplicationList.length,
                 'experience' : getExperience(newCandidate.candidateExpList),
                 'age' : getAge(newCandidate.candidateDOB),
-                'candidateExperienceLetter' : getYesNo(newCandidate.candidateExperienceLetter)
+                'candidateExperienceLetter' : getYesNo(newCandidate.candidateExperienceLetter),
+                'isActive' : getProperProfileStatus(newCandidate.candidateprofilestatus),
+                'candidateExpiry' : getExpiry(newCandidate.candidateStatusDetail)
             })
         });
         
@@ -285,7 +304,9 @@ function renderSearchResult(returnedData) {
                 { "data": "noOfJobApplication" },
                 { "data": "experience" },
                 { "data": "age" },
-                { "data": "candidateExperienceLetter" }
+                { "data": "candidateExperienceLetter" },
+                { "data": "isActive" },
+                { "data": "candidateExpiry" }
             ],
             "deferRender": true,
             "scroller": true,

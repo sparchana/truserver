@@ -14,6 +14,7 @@ import models.entity.Candidate;
 import models.entity.Lead;
 import models.entity.OM.*;
 import models.entity.OO.CandidateEducation;
+import models.entity.OO.CandidateStatusDetail;
 import models.entity.OO.TimeShiftPreference;
 import models.entity.Static.*;
 import models.util.SmsUtil;
@@ -21,8 +22,10 @@ import models.util.Util;
 import play.Logger;
 
 import javax.persistence.NonUniqueResultException;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,7 +43,7 @@ public class CandidateService
     private static CandidateSignUpResponse createNewCandidate(Candidate candidate, Lead lead) {
 
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
-        CandidateProfileStatus candidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_NEW).findUnique();
+        CandidateProfileStatus candidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE).findUnique();
         if(candidateProfileStatus != null){
             candidate.setCandidateprofilestatus(candidateProfileStatus);
             candidate.setLead(lead);
@@ -101,6 +104,12 @@ public class CandidateService
                 }
                 if(candidateSignUpRequest.getCandidateMobile()!= null){
                     candidate.setCandidateMobile(candidateSignUpRequest.getCandidateMobile());
+                }
+                if(candidateSignUpRequest.getCandidateSecondMobile()!= null){
+                    candidate.setCandidateSecondMobile(candidateSignUpRequest.getCandidateSecondMobile());
+                }
+                if(candidateSignUpRequest.getCandidateThirdMobile()!= null){
+                    candidate.setCandidateThirdMobile(candidateSignUpRequest.getCandidateThirdMobile());
                 }
                 candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(localityList, candidate));
                 candidate.setJobPreferencesList(getCandidateJobPreferenceList(jobsList, candidate));
@@ -204,6 +213,15 @@ public class CandidateService
             }
 
         } else {
+            if(request.getCandidateSecondMobile()!= null){
+                candidate.setCandidateSecondMobile(request.getCandidateSecondMobile());
+                Logger.info("Candidate with 2nd mobile number : " + request.getCandidateSecondMobile() + " added/updated");
+            }
+            if(request.getCandidateThirdMobile()!= null){
+                candidate.setCandidateThirdMobile(request.getCandidateThirdMobile());
+                Logger.info("Candidate with 3rd mobile number : " + request.getCandidateThirdMobile() + " added/updated");
+            }
+
             Logger.info("Candidate with mobile number: " + request.getCandidateMobile() + " already exists");
 
             // update new job preferences
@@ -224,7 +242,6 @@ public class CandidateService
             }
 
             if(request.getCandidateMobile() != null){
-
                 // If a lead already exists for this candiate, update its status to 'WON'. If not create a new lead
                 // with status 'WON'
                 Lead lead = createOrUpdateConvertedLead(request.getCandidateFirstName() +" " + request.getCandidateSecondName(), request.getCandidateMobile(), request.getLeadSource(), isSupport);
@@ -424,6 +441,13 @@ public class CandidateService
         }
 
         try{
+            candidate.setCandidateStatusDetail(getCandidateStatusDetail(supportCandidateRequest, candidate));
+        } catch(Exception e){
+            Logger.info(" Exception while setting CandidateStatusDetail data");
+            e.printStackTrace();
+        }
+
+        try{
             candidate.setCandidateSalarySlip(supportCandidateRequest.getCandidateSalarySlip());
         } catch(Exception e){
             Logger.info(" Exception while setting salary slip flag type");
@@ -451,6 +475,45 @@ public class CandidateService
             e.printStackTrace();
         }
 
+    }
+
+    private static CandidateStatusDetail getCandidateStatusDetail(AddSupportCandidateRequest supportCandidateRequest, Candidate candidate) {
+        CandidateStatusDetail candidateStatusDetail = candidate.getCandidateStatusDetail();
+        if(candidateStatusDetail == null && supportCandidateRequest.getDeactivationStatus()) {
+            candidateStatusDetail = new CandidateStatusDetail();
+        }
+
+        if(supportCandidateRequest != null
+                && supportCandidateRequest.getDeactivationStatus()
+                && supportCandidateRequest.getDeactivationReason() != ""
+                && supportCandidateRequest.getDeActivationDurationInDays() != 0){
+            /* Add Canidate to candidateStatusDetail and Change candidateStatus to Cold */
+            candidate.setCandidateprofilestatus(CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_COLD).findUnique());
+            candidateStatusDetail.setReason(supportCandidateRequest.getDeactivationReason());
+            candidateStatusDetail.setDuration(supportCandidateRequest.getDeActivationDurationInDays());
+            candidateStatusDetail.setStatusExpiryDate(CalculateExpiry(candidateStatusDetail.getCreateTimeStamp(), supportCandidateRequest.getDeActivationDurationInDays()));
+            InteractionService.CreateInteractionForDeactivateCandidate(candidate.getCandidateUUId(), true);
+            return candidateStatusDetail;
+        } else if(candidate.getCandidateStatusDetail() != null && !supportCandidateRequest.getDeactivationStatus()){
+            /* Remove from candidateStatusDetail and change candidateStatus to Active */
+            candidate.setCandidateprofilestatus(CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE).findUnique());
+
+            InteractionService.CreateInteractionForActivateCandidate(candidate.getCandidateUUId(), true);
+            return null;
+        }
+        return null;
+    }
+
+    public static Date CalculateExpiry(Timestamp createTimeStamp, Integer deActivationDurationInDays) {
+        if(createTimeStamp != null && deActivationDurationInDays != null){
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(createTimeStamp);
+            cal.add(Calendar.DAY_OF_WEEK, deActivationDurationInDays);
+            Timestamp tempTimeStamp = new Timestamp(cal.getTime().getTime());
+            Date expiryStatusDate = new Date(tempTimeStamp.getTime());
+            return expiryStatusDate;
+        }
+        return null;
     }
 
     private static List<CandidateExp> getCandidateExpListFromAddSupportCandidate(List<AddSupportCandidateRequest.ExpList> expList, Candidate candidate) {

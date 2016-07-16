@@ -8,10 +8,12 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.OM.*;
 import models.entity.OO.CandidateCurrentJobDetail;
 import models.entity.OO.CandidateEducation;
+import models.entity.OO.CandidateStatusDetail;
 import models.entity.OO.TimeShiftPreference;
 import models.entity.Static.CandidateProfileStatus;
 import models.entity.Static.Language;
 import models.entity.Static.Locality;
+import org.apache.commons.lang3.text.WordUtils;
 import play.Logger;
 
 import javax.persistence.*;
@@ -166,6 +168,18 @@ public class Candidate extends Model {
 
     @Column(name = "CandidateExperienceLetter", columnDefinition = "bit null")
     private Boolean candidateExperienceLetter;
+
+    @JsonManagedReference
+    @JoinColumn(name = "candidateStatusDetailId", referencedColumnName = "candidateStatusDetailId")
+    @OneToOne(cascade = CascadeType.ALL)
+    private CandidateStatusDetail candidateStatusDetail;
+
+    @Column(name = "CandidateSecondMobile", columnDefinition = "varchar(13) null")
+    private String candidateSecondMobile;
+
+    @Column(name = "CandidateThirdMobile", columnDefinition = "varchar(13) null")
+    private String candidateThirdMobile;
+
 
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
@@ -323,11 +337,11 @@ public class Candidate extends Model {
     }
 
     public String getCandidateFirstName() {
-        return candidateFirstName;
+        return WordUtils.capitalize(candidateFirstName);
     }
 
     public String getCandidateLastName() {
-        return candidateLastName;
+        return WordUtils.capitalize(candidateLastName);
     }
 
     public Integer getCandidateGender() {
@@ -480,6 +494,30 @@ public class Candidate extends Model {
 
     public void setCandidateExperienceLetter(Boolean candidateExperienceLetter) {
         this.candidateExperienceLetter = candidateExperienceLetter;
+    }
+
+    public CandidateStatusDetail getCandidateStatusDetail() {
+        return candidateStatusDetail;
+    }
+
+    public void setCandidateStatusDetail(CandidateStatusDetail candidateStatusDetail) {
+        this.candidateStatusDetail = candidateStatusDetail;
+    }
+
+    public String getCandidateSecondMobile() {
+        return candidateSecondMobile;
+    }
+
+    public void setCandidateSecondMobile(String candidateSecondMobile) {
+        this.candidateSecondMobile = candidateSecondMobile;
+    }
+
+    public String getCandidateThirdMobile() {
+        return candidateThirdMobile;
+    }
+
+    public void setCandidateThirdMobile(String candidateThirdMobile) {
+        this.candidateThirdMobile = candidateThirdMobile;
     }
 }
 

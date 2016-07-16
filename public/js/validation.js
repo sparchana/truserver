@@ -5,12 +5,12 @@
 function validateMobile(mobile) {
     var validMobile = /^[7-9]{1}[0-9]{9}$/i;
     if (mobile.length > 0 && validMobile.test(mobile) === false) {
-        return 0;
+        return 0; // format is wrong
     } else if (mobile.length == 0) {
-        return 1;
+        return 1; // not 10 digits
     }
     else{
-        return 2;
+        return 2; // passed
     }
 }
 
