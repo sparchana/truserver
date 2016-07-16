@@ -1103,9 +1103,9 @@ public class Application extends Controller {
     public static Result ifExists(String mobile) {
         if(mobile != null){
             mobile = FormValidator.convertToIndianMobileFormat(mobile);
-            Lead existingLead = LeadService.isLeadExists(mobile);
-            if(existingLead != null) {
-                return ok(toJson(existingLead.getLeadId()));
+            Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
+            if(existingCandidate != null) {
+                return ok(toJson(existingCandidate.getLead().getLeadId()));
             }
         }
         return ok("0");
