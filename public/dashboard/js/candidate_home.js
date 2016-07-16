@@ -2,7 +2,12 @@
  * Created by batcoder1 on 4/6/16.
  */
 
+var jobPostId = 0;
+var jobLocalityArray = [];
 var minProfileComplete = 0;
+var prefLocation;
+var prefLocationName;
+
 $(window).load(function() {
     $('html, body').css({
         'overflow': 'auto',
@@ -241,7 +246,11 @@ function processDataAllJobPosts(returnedData) {
                 applyBtnDiv.className = "col-sm-2";
                 applyBtnDiv.id = "applyBtnDiv_" + jobPost.jobPostId;
                 applyBtnDiv.onclick = function () {
-                    applyJob(jobPost.jobPostId);
+                    $('#jobApplyConfirm').modal();
+                    jobPostId = jobPost.jobPostId;
+                    jobLocalityArray = [];
+                    $('#applyButton').hide();
+                    addLocalitiesToModal();
                 };
                 rowDiv.appendChild(applyBtnDiv);
 
@@ -254,6 +263,56 @@ function processDataAllJobPosts(returnedData) {
         });
     }
 }
+
+function addLocalitiesToModal() {
+    $("#applyButton").addClass("jobApplyBtnModal").removeClass("appliedBtn").prop('disabled',false).html("Apply");
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getJobPostInfo/" + jobPostId,
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataForJobPostLocation
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function processDataForJobPostLocation(returnedData) {
+    $("#jobNameConfirmation").html(returnedData.jobPostTitle);
+    $("#companyNameConfirmation").html(returnedData.company.companyName);
+    $('#jobLocality').html('');
+    var defaultOption=$('<option value="-1"></option>').text("Select Preferred Location");
+    $('#jobLocality').append(defaultOption);
+    var jobLocality = returnedData.jobPostToLocalityList;
+    jobLocality.forEach(function (locality) {
+        var item = {};
+        item ["id"] = locality.locality.localityId;
+        item ["name"] = " " + locality.locality.localityName;
+        jobLocalityArray.push(item);
+        var option=$('<option value=' + locality.locality.localityId + '></option>').text(locality.locality.localityName);
+        $('#jobLocality').append(option);
+    });
+}
+
+function confirmApply() {
+    applyJob(jobPostId, prefLocation);
+}
+
+$(function() {
+    $("#jobLocality").change(function (){
+        if($(this).val() != -1){
+            console.log($("#jobLocality option:selected").text());
+            prefLocation = $(this).val();
+            prefLocationName = $("#jobLocality option:selected").text();
+            $("#applyButton").show();
+        } else{
+            $("#applyButton").hide();
+        }
+    });
+});
 
 function processDataAndFillMinProfile(returnedData) {
     minProfileComplete = returnedData.isMinProfileComplete;
@@ -443,7 +502,6 @@ function processDataAndFillMinProfile(returnedData) {
         $("#apply_btn_" + jobApplication.jobPost.jobPostId).addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Already Applied");
         $("#applyBtnDiv_" + jobApplication.jobPost.jobPostId).prop('disabled',true);
     });
-    /* /assets/dashboard/img/right.png */
 
 }
 

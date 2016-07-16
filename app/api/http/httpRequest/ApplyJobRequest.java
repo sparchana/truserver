@@ -8,6 +8,7 @@ import api.http.FormValidator;
 public class ApplyJobRequest {
     public String candidateMobile ;
     public Integer jobId;
+    public Integer localityId;
 
     public String getCandidateMobile() {
         return candidateMobile;
@@ -15,6 +16,14 @@ public class ApplyJobRequest {
 
     public void setCandidateMobile(String candidateMobile) {
         this.candidateMobile = FormValidator.convertToIndianMobileFormat(candidateMobile);
+    }
+
+    public Integer getLocalityId() {
+        return localityId;
+    }
+
+    public void setLocalityId(Integer localityId) {
+        this.localityId = localityId;
     }
 
     public Integer getJobId() {
