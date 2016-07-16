@@ -22,7 +22,6 @@ GET      /jobPostDetails/:id                                      controllers.Ap
 GET      /getCandidateInteraction/:id                             controllers.Application.getCandidateInteraction(id : Long)
 GET      /getCompanyInfo/:id                                      controllers.Application.getCompanyInfo(id : Long)
 GET      /getInteractionNote/:leadId/:limit                       controllers.Application.getInteractionNote(leadId: Long,limit: Long)
-GET      /getJobPostInfo/:id                                      controllers.Application.getJobPostInfo(id : Long)
 GET      /getSupportAgent                                         controllers.Application.getSupportAgent()
 GET      /getLeadMobile/:id                                       controllers.Application.getLeadMobile(id : Long)
 GET      /logout                                                  controllers.Application.logout()
@@ -94,6 +93,7 @@ POST        /getAllLanguage                                                     
 POST        /getAllLocality                                                      controllers.Application.getAllLocality()
 POST        /getAllShift                                                         controllers.Application.getAllShift()
 POST        /getAllTransportation                                                controllers.Application.getAllTransportation()
+POST        /getJobPostInfo/:id                                      controllers.Application.getJobPostInfo(id : Long)
 
 # Analytics
 # ~~~~~~~~~
