@@ -418,7 +418,6 @@ function saveCandidateBasicProfile(){
     var selectedDate = new Date(c_dob);
     var todayDate = new Date();
     var dobCheck=1;
-    console.log(selectedDate + " " + todayDate);
     if(selectedDate>todayDate){
         dobCheck=0;
     }
