@@ -57,10 +57,6 @@ body{
     border: none;
     background-color: #286ab6;
     box-shadow: 0 2px 4px #333;
-    -webkit-transition: background-color 0.2s;
-    transition: background-color 0.2s;
-    -webkit-transition: box-shadow 0.2s;
-    transition: box-shadow 0.2s;
 }
 
 .profileSectionOne{
@@ -249,6 +245,7 @@ body{
 
 .jobApplyBtn:hover{
     cursor: pointer;
+    background: #028d38;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
 }
 
