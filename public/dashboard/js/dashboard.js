@@ -281,7 +281,7 @@ function createBtn(singleSkill, type){
 }
 
 function processDataCheckSkills(returnedData) {
-
+    $(".skillSection").show();
     var count =0;
     var table = document.getElementById("skillTable");
     $('#skillTable').empty();

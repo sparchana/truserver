@@ -22,7 +22,6 @@ GET      /jobPostDetails/:id                                      controllers.Ap
 GET      /getCandidateInteraction/:id                             controllers.Application.getCandidateInteraction(id : Long)
 GET      /getCompanyInfo/:id                                      controllers.Application.getCompanyInfo(id : Long)
 GET      /getInteractionNote/:leadId/:limit                       controllers.Application.getInteractionNote(leadId: Long,limit: Long)
-GET      /getJobPostInfo/:id                                      controllers.Application.getJobPostInfo(id : Long)
 GET      /getSupportAgent                                         controllers.Application.getSupportAgent()
 GET      /getLeadMobile/:id                                       controllers.Application.getLeadMobile(id : Long)
 GET      /logout                                                  controllers.Application.logout()
@@ -35,6 +34,7 @@ GET      /updateLeadType/:leadId/:newStatus                       controllers.Ap
 GET      /updateLeadStatus/:leadId/:leadStatus/:res               controllers.Application.updateLeadStatus(leadId: Long, leadStatus: Integer,res: String)
 GET      /support/administrator/alphaRequest/:mobile              controllers.Application.removeDuplicateLeadOrCandidate(mobile: String)
 GET      /support/administrator/uploadCSV                         controllers.Application.uploadCSV()
+GET      /support/ifExists/:mobile                                controllers.Application.ifExists(mobile: String)
 
 POST     /addCompany                                              controllers.Application.addCompany()
 POST     /addCompanyLogo                                          controllers.Application.addCompanyLogo()
@@ -93,6 +93,7 @@ POST        /getAllLanguage                                                     
 POST        /getAllLocality                                                      controllers.Application.getAllLocality()
 POST        /getAllShift                                                         controllers.Application.getAllShift()
 POST        /getAllTransportation                                                controllers.Application.getAllTransportation()
+POST        /getJobPostInfo/:id                                      controllers.Application.getJobPostInfo(id : Long)
 
 # Analytics
 # ~~~~~~~~~

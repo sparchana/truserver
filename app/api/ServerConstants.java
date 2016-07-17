@@ -27,6 +27,8 @@ public class ServerConstants {
     public static final String INTERACTION_RESULT_EXISTING_CANDIDATE_CALLED_BACK = "Existing Candidate Called Back";
     public static final String INTERACTION_RESULT_FIRST_INBOUND_CALL = "First Inbound Call";
     public static final String INTERACTION_RESULT_SELF_SIGNEDIN = "Candidate Self Signed In";
+    public static final String INTERACTION_RESULT_CANDIDATE_DEACTIVATED= "Candidate Deactivated";
+    public static final String INTERACTION_RESULT_CANDIDATE_ACTIVATED= "Candidate Activated";
 
     public static final String INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB = "Candidate applied to a job :";
     public static final String INTERACTION_CREATED_SELF = "Self";
@@ -97,7 +99,8 @@ public class ServerConstants {
 
     public static final String LEAD_INTEREST_UNKNOWN = "Unknown";
 
-    public static final int CANDIDATE_STATE_NEW = 1;
+    public static final int CANDIDATE_STATE_ACTIVE = 1;
+    public static final int CANDIDATE_STATE_COLD = 2;
 
     public static final String INTERACTION_CREATED_BY_AGENT = "AGENT 1";
 
@@ -113,7 +116,7 @@ public class ServerConstants {
     public static final String SDF_FORMAT_ENTRY = "yyyy-MM-dd hh:mm:ss";
 
     public static final String PROD_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/1NIGQC5jmSDuQaGUF0Jw1UG-Dz_3huFtZf9Bo7ncPl4g/formResponse";
-    public static final String DEV_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/1KI3ZjRtQfduX_MgsZqUr_NqHowf1JLaHFZB4XlO5Kfg/formResponse";
+    public static final String DEV_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/e/1FAIpQLSfZ6mnNOZShe2kbsvIXzvA7rT7aHokveZ669IJ0-j5pPzWAsA/formResponse";
 
     public static final String PROD_GOOGLE_FORM_FOR_JOB_POSTS = "https://docs.google.com/forms/d/1QVHzqnts0IkD3Wk8in4urqb70BseI9YWZm9B_MgGXUE/formResponse";
     public static final String DEV_GOOGLE_FORM_FOR_JOB_POSTS = "https://docs.google.com/forms/d/e/1FAIpQLSc-Fr7bO7M5HCjNYyC-dnIyzTMiXiywTEaD9twKkCQDeB7Qtg/formResponse";

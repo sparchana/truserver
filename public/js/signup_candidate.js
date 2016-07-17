@@ -51,7 +51,7 @@ function processDataAddAuth(returnedData) {
 
         if(applyJobFlag == 1){
             $("#myRegistrationModal").modal("hide");
-            applyJob(applyJobId);
+            applyJob(applyJobId, prefLocation);
             applyJobFlag = 0;
             applyJobId = 0;
             $("#customSubMsg").html("Logging in ...");
@@ -118,6 +118,8 @@ $(function() {
         
         if(statusCheck == 1){
             candidateMobile = phone;
+            $("#registerBtnSubmit").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Please Wait");
+            $("#registerBtnSubmit").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Please Wait");
             document.getElementById("registerBtnSubmit").disabled = true;
             try {
                 var candidatePreferredJob = [];
@@ -286,7 +288,7 @@ $(function() {
                 var d = {
                     candidatePassword: authPassword,
                     candidateAuthMobile: authMobile
-                }
+                };
                 console.log("userMobile: " + authMobile);
                 $.ajax({
                     type: "POST",

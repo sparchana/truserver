@@ -16,6 +16,9 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
     public Integer candidateAppointmentLetter ;
     public Integer candidateExperienceLetter ;
     public String supportNote;
+    public Boolean deactivationStatus;
+    public String deactivationReason;
+    public Integer deActivationDurationInDays;
 
     public static class ExpList {
         Integer jobExpQuestionId;
@@ -176,5 +179,29 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
 
     public void setCandidateExperienceLetter(Integer candidateExperienceLetter) {
         this.candidateExperienceLetter = candidateExperienceLetter;
+    }
+
+    public Boolean getDeactivationStatus() {
+        return deactivationStatus;
+    }
+
+    public void setDeactivationStatus(Boolean deactivationStatus) {
+        this.deactivationStatus = deactivationStatus;
+    }
+
+    public String getDeactivationReason() {
+        return deactivationReason;
+    }
+
+    public void setDeactivationReason(String deactivationReason) {
+        this.deactivationReason = deactivationReason;
+    }
+
+    public Integer getDeActivationDurationInDays() {
+        return deActivationDurationInDays;
+    }
+
+    public void setDeActivationDurationInDays(Integer deActivationDurationInDays) {
+        this.deActivationDurationInDays = deActivationDurationInDays;
     }
 }

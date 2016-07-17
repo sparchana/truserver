@@ -13,6 +13,8 @@ public class CandidateSignUpRequest{
     protected String candidateFirstName;
     protected String candidateSecondName;
     protected String candidateMobile;
+    protected String candidateSecondMobile;
+    protected String candidateThirdMobile;
     protected List<Integer> candidateLocality;
     protected List<Integer> candidateJobPref;
 
@@ -71,4 +73,20 @@ public class CandidateSignUpRequest{
     }
 
     public String getCandidateAuthMobile() { return FormValidator.convertToIndianMobileFormat(candidateAuthMobile); }
+
+    public String getCandidateSecondMobile() {
+        return FormValidator.convertToIndianMobileFormat(candidateSecondMobile);
+    }
+
+    public void setCandidateSecondMobile(String candidateSecondMobile) {
+        this.candidateSecondMobile = FormValidator.convertToIndianMobileFormat(candidateSecondMobile);
+    }
+
+    public String getCandidateThirdMobile() {
+        return FormValidator.convertToIndianMobileFormat(candidateThirdMobile);
+    }
+
+    public void setCandidateThirdMobile(String candidateThirdMobile) {
+        this.candidateThirdMobile = FormValidator.convertToIndianMobileFormat(candidateThirdMobile);
+    }
 }

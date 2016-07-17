@@ -234,7 +234,7 @@ public class Application extends Controller {
         String userMobile = applyJobRequest.getCandidateMobile();
         Integer jobId = applyJobRequest.getJobId();
 
-        return ok(toJson(JobService.applyJob(userMobile, jobId)));
+        return ok(toJson(JobService.applyJob(applyJobRequest)));
     }
 
     @Security.Authenticated(Secured.class)
@@ -493,7 +493,6 @@ public class Application extends Controller {
         return ok("0");
     }
 
-    @Security.Authenticated(Secured.class)
     public static Result getJobPostInfo(long jobPostId) {
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
         if(jobPost!=null){
@@ -1097,5 +1096,17 @@ public class Application extends Controller {
     @Security.Authenticated(SuperSecured.class)
     public static Result uploadCSV() {
         return ok(views.html.uploadcsv.render());
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result ifExists(String mobile) {
+        if(mobile != null){
+            mobile = FormValidator.convertToIndianMobileFormat(mobile);
+            Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
+            if(existingCandidate != null) {
+                return ok(toJson(existingCandidate.getLead().getLeadId()));
+            }
+        }
+        return ok("0");
     }
 }
