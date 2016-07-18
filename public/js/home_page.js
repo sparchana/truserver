@@ -322,6 +322,9 @@ function processDataAllJobPosts(returnedData) {
                 }
 
                 $("#locationMsg_" + jobPost.jobPostId).attr("data-toggle", "tooltip");
+                $(function () {
+                    $('[data-toggle="tooltip"]').tooltip()
+                });
                 /*  apply button */
 
                 var applyBtnDiv = document.createElement("div");
