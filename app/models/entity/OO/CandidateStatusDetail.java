@@ -2,12 +2,12 @@ package models.entity.OO;
 
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import models.entity.Static.Reason;
 
 import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Timestamp;
-
-import static controllers.businessLogic.CandidateService.CalculateExpiry;
 
 /**
  * Created by zero on 15/7/16.
@@ -30,11 +30,10 @@ public class CandidateStatusDetail extends Model {
     @Column(name = "StatusExpiryDate", columnDefinition = "date null")
     private Date statusExpiryDate;
 
-    @Column(name = "Reason", columnDefinition = "text null")
-    private String reason;
-
-    @Column(name = "Duration", columnDefinition = "int signed null")
-    private Integer duration; // in days
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "ReasonId", referencedColumnName = "ReasonId")
+    private Reason reason;
 
     public CandidateStatusDetail(){
         this.createTimeStamp = new Timestamp(System.currentTimeMillis());
@@ -55,12 +54,12 @@ public class CandidateStatusDetail extends Model {
         return updateTimeStamp;
     }
 
-    public String getReason() {
+    public Reason getReason() {
         return reason;
     }
 
-    public Integer getDuration() {
-        return duration;
+    public Date getStatusExpiryDate() {
+        return statusExpiryDate;
     }
 
     /* setter */
@@ -68,22 +67,16 @@ public class CandidateStatusDetail extends Model {
         this.updateTimeStamp = updateTimeStamp;
     }
 
-    public void setReason(String reason) {
+    public void setReason(Reason reason) {
         this.reason = reason;
-    }
-
-    public void setDuration(Integer duration) {
-        this.duration = duration;
-    }
-
-    public Date getStatusExpiryDate() {
-        if(statusExpiryDate == null){
-            setStatusExpiryDate(CalculateExpiry(createTimeStamp, duration));
-        }
-        return statusExpiryDate;
     }
 
     public void setStatusExpiryDate(Date statusExpiryDate) {
         this.statusExpiryDate = statusExpiryDate;
     }
+
+    public void setCreateTimeStamp(Timestamp createTimeStamp) {
+        this.createTimeStamp = createTimeStamp;
+    }
+
 }

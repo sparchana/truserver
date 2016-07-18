@@ -100,7 +100,7 @@ public class ServerConstants {
     public static final String LEAD_INTEREST_UNKNOWN = "Unknown";
 
     public static final int CANDIDATE_STATE_ACTIVE = 1;
-    public static final int CANDIDATE_STATE_COLD = 2;
+    public static final int CANDIDATE_STATE_DEACTIVE = 2;
 
     public static final String INTERACTION_CREATED_BY_AGENT = "AGENT 1";
 

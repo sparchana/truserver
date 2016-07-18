@@ -22,10 +22,8 @@ import models.util.Util;
 import play.Logger;
 
 import javax.persistence.NonUniqueResultException;
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
@@ -428,11 +426,7 @@ public class CandidateService
         try{
             Boolean hasExperienceLetter = null;
             if(supportCandidateRequest.getCandidateExperienceLetter() != null){
-                if(supportCandidateRequest.getCandidateExperienceLetter() == 1){
-                    hasExperienceLetter = true;
-                } else {
-                    hasExperienceLetter = false;
-                }
+                hasExperienceLetter = supportCandidateRequest.getCandidateExperienceLetter() == 1;
             }
             candidate.setCandidateExperienceLetter(hasExperienceLetter);
         } catch(Exception e){
@@ -485,13 +479,12 @@ public class CandidateService
 
         if(supportCandidateRequest != null
                 && supportCandidateRequest.getDeactivationStatus()
-                && supportCandidateRequest.getDeactivationReason() != ""
-                && supportCandidateRequest.getDeActivationDurationInDays() != 0){
+                && supportCandidateRequest.getDeactivationReason() > 0
+                && supportCandidateRequest.getDeactivationExpiryDate() != null ){
             /* Add Canidate to candidateStatusDetail and Change candidateStatus to Cold */
-            candidate.setCandidateprofilestatus(CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_COLD).findUnique());
-            candidateStatusDetail.setReason(supportCandidateRequest.getDeactivationReason());
-            candidateStatusDetail.setDuration(supportCandidateRequest.getDeActivationDurationInDays());
-            candidateStatusDetail.setStatusExpiryDate(CalculateExpiry(candidateStatusDetail.getCreateTimeStamp(), supportCandidateRequest.getDeActivationDurationInDays()));
+            candidate.setCandidateprofilestatus(CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_DEACTIVE).findUnique());
+            candidateStatusDetail.setReason(Reason.find.where().eq("ReasonId", supportCandidateRequest.getDeactivationReason()).findUnique());
+            candidateStatusDetail.setStatusExpiryDate(supportCandidateRequest.getDeactivationExpiryDate());
             InteractionService.CreateInteractionForDeactivateCandidate(candidate.getCandidateUUId(), true);
             return candidateStatusDetail;
         } else if(candidate.getCandidateStatusDetail() != null && !supportCandidateRequest.getDeactivationStatus()){
@@ -500,18 +493,6 @@ public class CandidateService
 
             InteractionService.CreateInteractionForActivateCandidate(candidate.getCandidateUUId(), true);
             return null;
-        }
-        return null;
-    }
-
-    public static Date CalculateExpiry(Timestamp createTimeStamp, Integer deActivationDurationInDays) {
-        if(createTimeStamp != null && deActivationDurationInDays != null){
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(createTimeStamp);
-            cal.add(Calendar.DAY_OF_WEEK, deActivationDurationInDays);
-            Timestamp tempTimeStamp = new Timestamp(cal.getTime().getTime());
-            Date expiryStatusDate = new Date(tempTimeStamp.getTime());
-            return expiryStatusDate;
         }
         return null;
     }
