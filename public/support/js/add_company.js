@@ -3,10 +3,12 @@
  */
 
 var f;
+var companyId = 0;
+var companyStatus = -1;
+var recruiterStatus = -1;
 
 $('input[type=file]').change(function () {
     f = this.files[0];
-    console.log((f.type).substring(0,1));
 });
 
 function readURL(input) {
@@ -47,24 +49,8 @@ function uploadLogo(){
 }
 
 function processDataAddCompany(returnedData) {
-    if(returnedData.status == 1){
-        alert("Creation Successful");
-        window.close();
-    } else if(returnedData.status == 2){
-        alert("Updated Successful");
-        window.close();
-    } else if(returnedData.status == 3){
-        alert("Something went wrong, please try again later!");
-        window.close();
-    } else if(returnedData.status == 5){
-        alert("Company Updated Successfully");
-        window.close();
-    } else if(returnedData.status == 6){
-        alert("Update Successful");
-        window.close();
-    } else{
-        alert("Company already exists");
-    }
+    companyId = returnedData.companyId;
+    companyStatus = returnedData.status;
 }
 
 function updateForm() {
@@ -105,7 +91,7 @@ function updateForm() {
                 url: "/addCompany",
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(d),
-                success: processDataAddCompany
+                success: processDataUpdateCompany
             });
         } catch (exception) {
             console.log("exception occured!!" + exception);
@@ -116,10 +102,24 @@ function updateForm() {
     }
 }
 
+function processDataAddRecruiter(returnedData) {
+    recruiterStatus = returnedData.status;
+}
+
+function processDataUpdateCompany(returnedData) {
+    if(returnedData.status == 2){
+        alert("Company successfully updated");
+        window.close();
+    } else{
+        alert("Something went wrong! Please try again later");
+    }
+}
+
 // company_form ajax script
 function saveForm(){
     var status = 1;
-    if($("#recruiterCompany").val() == ""){
+    if($("#recruiterCompany").val() == "" && $("#companySection").is(':visible') == true) {
+        // add a new company
         if($("#companyName").val() == ""){
             alert("Please Enter company Name");
             status=0;
@@ -130,82 +130,32 @@ function saveForm(){
             alert("Please select a valid image for logo");
             status=0;
         }
-    } else{
-        status=2;
-    }
-
-    var statusCheck = 1;
-
-    if(status > 0){
-        console.log("this");
-        var recruiterName = validateName($("#recruiterName").val());
-        var recruiterMobile = validateMobile($("#recruiterMobile").val());
-        //checking first name
-        switch(recruiterName){
-            case 0: alert("First name contains number. Please Enter a valid First Name"); statusCheck=0; break;
-            case 2: alert("First Name cannot be blank spaces. Enter a valid first name"); statusCheck=0; break;
-            case 3: alert("First name contains special symbols. Enter a valid first name"); statusCheck=0; break;
-            case 4: alert("Please enter your first name"); statusCheck=0; break;
-        }
-        if(recruiterMobile == 0){
-            alert("Enter a valid mobile number");
-            statusCheck=0;
-        } else if(recruiterMobile == 1){
-            alert("Enter 10 digit mobile number");
-            statusCheck=0;
-        } else if(recruiterMobile == "") {
-            alert("Please Enter recruiter Contact");
-            statusCheck=0;
-        }
-
-        if(statusCheck == 1){
+        if(status == 1){
             var d;
-            if(status == 1){
-                var logo;
-                if(($("#companyLogo").val()).substring(0,4) == "http"){
-                    logo = $("#companyLogo").val();
-                } else{
-                    logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/" + f.name;
-                }
-                try {
-                    d = {
-                        recruiterName: $("#recruiterName").val(),
-                        recruiterMobile: $("#recruiterMobile").val(),
-                        recruiterLandline: $("#recruiterLandline").val(),
-                        recruiterEmail: $("#recruiterEmail").val(),
-                        recruiterCompany: -1,
-                        companyId: $("#companyId").val(),
-                        companyName: $("#companyName").val(),
-                        companyEmployeeCount: $("#companyEmployeeCount").val(),
-                        companyWebsite: $("#companyWebsite").val(),
-                        companyDescription: $("#companyDescription").val(),
-                        companyAddress: $("#companyAddress").val(),
-                        companyPinCode: $("#companyPinCode").val(),
-                        companyLogo: logo,
-                        companyLocality: parseInt($("#companyLocality").val()),
-                        companyType: $("#companyType").val(),
-                        companyStatus: $("#companyStatus").val()
-                    };
-                } catch (exception) {
-                    console.log("exception occured!!" + exception);
-                }
+            var logo;
+            if(($("#companyLogo").val()).substring(0,4) == "http"){
+                logo = $("#companyLogo").val();
             } else{
-                try{
-                    d = {
-                        recruiterName: $("#recruiterName").val(),
-                        recruiterMobile: $("#recruiterMobile").val(),
-                        recruiterLandline: $("#recruiterLandline").val(),
-                        recruiterEmail: $("#recruiterEmail").val(),
-                        recruiterCompany: $("#recruiterCompany").val()
-                    };
-                } catch (exception) {
-                    console.log("exception occured!!" + exception);
-                }
+                logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/" + f.name;
             }
+            d = {
+                companyId: $("#companyId").val(),
+                companyName: $("#companyName").val(),
+                companyEmployeeCount: $("#companyEmployeeCount").val(),
+                companyWebsite: $("#companyWebsite").val(),
+                companyDescription: $("#companyDescription").val(),
+                companyAddress: $("#companyAddress").val(),
+                companyPinCode: $("#companyPinCode").val(),
+                companyLogo: logo,
+                companyLocality: parseInt($("#companyLocality").val()),
+                companyType: $("#companyType").val(),
+                companyStatus: $("#companyStatus").val()
+            };
             try {
                 $.ajax({
                     type: "POST",
                     url: "/addCompany",
+                    async: false,
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(d),
                     success: processDataAddCompany
@@ -213,9 +163,77 @@ function saveForm(){
             } catch (exception) {
                 console.log("exception occured!!" + exception);
             }
-            uploadLogo();
+
+            if(companyStatus == 4){
+                companyStatus = -1;
+                $("#recruiterCompany").prop('disabled', false);
+                $("#recruiterCompany").val(companyId);
+                $("#companySection").hide();
+            } else{
+                uploadLogo();
+            }
         }
-    } else{
-        
+    }
+
+    status = 1;
+    var recruiterName = validateName($("#recruiterName").val());
+    var recruiterMobile = validateMobile($("#recruiterMobile").val());
+    //checking first name
+    switch(recruiterName){
+        case 0: alert("First name contains number. Please Enter a valid First Name"); status=0; break;
+        case 2: alert("First Name cannot be blank spaces. Enter a valid first name"); status=0; break;
+        case 3: alert("First name contains special symbols. Enter a valid first name"); status=0; break;
+        case 4: alert("Please enter your first name"); status=0; break;
+    }
+    if(recruiterMobile == 0){
+        alert("Enter a valid mobile number");
+        status=0;
+    } else if(recruiterMobile == 1){
+        alert("Enter 10 digit mobile number");
+        status=0;
+    } else if(recruiterMobile == "") {
+        alert("Please Enter recruiter Contact");
+        status=0;
+    }
+
+    console.log("here status: " + status + " company status: " + companyStatus);
+
+    if(status == 1 && companyStatus != 4){
+        console.log("Inside");
+        if($("#recruiterCompany").val() != ""){
+            companyId = $("#recruiterCompany").val();
+        }
+        try{
+            var rec = {
+                recruiterName: $("#recruiterName").val(),
+                recruiterMobile: $("#recruiterMobile").val(),
+                recruiterLandline: $("#recruiterLandline").val(),
+                recruiterEmail: $("#recruiterEmail").val(),
+                recruiterCompany: companyId
+            };
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/addRecruiter",
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(rec),
+            success: processDataAddRecruiter
+        });
+    }
+
+    console.log(companyStatus + " -- " + recruiterStatus);
+    if(companyStatus == 1 && recruiterStatus == 1){
+        alert("New Company and New Recruiter Created successfully created");
+        window.close();
+    } else if(companyStatus == 1 && recruiterStatus == 4){
+        alert("Company Created and Existing Recruiter Updated");
+        window.close();
+    } else if(companyStatus == -1 && recruiterStatus == 4){
+        alert("Existing Recruiter Updated");
+        window.close();
     }
 } // end of submit

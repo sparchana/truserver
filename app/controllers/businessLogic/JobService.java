@@ -5,12 +5,6 @@ import api.http.httpRequest.AddJobPostRequest;
 import api.http.httpRequest.ApplyJobRequest;
 import api.http.httpResponse.AddJobPostResponse;
 import api.http.httpResponse.ApplyJobResponse;
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
@@ -22,7 +16,6 @@ import models.util.SmsUtil;
 import play.Logger;
 import play.api.Play;
 
-import java.io.File;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,28 +24,6 @@ import java.util.List;
  * Created by batcoder1 on 17/6/16.
  */
 public class JobService {
-    private static final String SUFFIX = "/";
-
-    public static void uploadCompanyLogo(File newFile, String imgName){
-        try{
-            AWSCredentials credentials = new BasicAWSCredentials(
-                    play.Play.application().configuration().getString("aws.accesskey"),
-                    play.Play.application().configuration().getString("aws.secretAccesskey"));
-
-            AmazonS3 s3client = new AmazonS3Client(credentials);
-            String bucketName = "trujobs.in";
-
-            String folderName = "companyLogos";
-
-            String fileName = folderName + SUFFIX + imgName;
-            s3client.putObject(new PutObjectRequest(bucketName, fileName, newFile)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
-            Logger.info("Logo updated successfully");
-        } catch (Exception e){
-            Logger.info("Exception while uploading logo " + e);
-        }
-    }
-
     public static AddJobPostResponse addJobPost(AddJobPostRequest addJobPostRequest) {
         AddJobPostResponse addJobPostResponse = new AddJobPostResponse();
         List<Integer> jobPostLocalityList = addJobPostRequest.getJobPostLocalities();
@@ -157,12 +128,12 @@ public class JobService {
                     }
 
                     String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB;
-                    InteractionService.createInteractionForJobApplication(existingCandidate.getCandidateUUId(), existingJobPost.getJobPostUUId(), interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName());
+                    InteractionService.createInteractionForJobApplication(existingCandidate.getCandidateUUId(), existingJobPost.getJobPostUUId(), interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName() + "@" + locality.getLocalityName() );
 
                     jobApplication.save();
                     Logger.info("candidate: " + existingCandidate.getCandidateFirstName() + " with mobile: " + existingCandidate.getCandidateMobile() + " applied to the jobPost of JobPostId:" + existingJobPost.getJobPostId());
 
-                    SmsUtil.sendJobApplicationSms(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), existingCandidate.getCandidateMobile());
+                    SmsUtil.sendJobApplicationSms(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), existingCandidate.getCandidateMobile(), jobApplication.getLocality().getLocalityName());
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_SUCCESS);
                 } else{
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_EXISTS);

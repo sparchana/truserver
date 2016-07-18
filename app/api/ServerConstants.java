@@ -27,8 +27,11 @@ public class ServerConstants {
     public static final String INTERACTION_RESULT_EXISTING_CANDIDATE_CALLED_BACK = "Existing Candidate Called Back";
     public static final String INTERACTION_RESULT_FIRST_INBOUND_CALL = "First Inbound Call";
     public static final String INTERACTION_RESULT_SELF_SIGNEDIN = "Candidate Self Signed In";
+    public static final String INTERACTION_RESULT_CANDIDATE_DEACTIVATED= "Candidate Deactivated";
+    public static final String INTERACTION_RESULT_CANDIDATE_ACTIVATED= "Candidate Activated";
 
-    public static final String INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB = "Candidate applied to a job :";
+    public static final String INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB = "Candidate applied to a job: ";
+    public static final String INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB = "Candidate tried to apply to a job: ";
     public static final String INTERACTION_CREATED_SELF = "Self";
     public static final String INTERACTION_CREATED_SYSTEM = "System";
     public static final String INTERACTION_CREATED_SYSTEM_KNOWLARITY = "System - Knowlarity";
@@ -88,6 +91,7 @@ public class ServerConstants {
     public static final int INTERACTION_TYPE_WEBSITE= 5;
     public static final int INTERACTION_TYPE_FOLLOWUP_CALL= 6;
     public static final int INTERACTION_TYPE_APPLIED_JOB= 7;
+    public static final int INTERACTION_TYPE_TRIED_JOB_APPLY= 8;
 
     public static final boolean FOLLOW_UP_DEACTIVATE = false;
     public static final boolean FOLLOW_UP_ACTIVATE = true;
@@ -97,7 +101,12 @@ public class ServerConstants {
 
     public static final String LEAD_INTEREST_UNKNOWN = "Unknown";
 
-    public static final int CANDIDATE_STATE_NEW = 1;
+    public static final String LOGO_UPLOAD_SUFFIX = "/";
+    public static final String AWS_S3_BUCKET_NAME = "trujobs.in";
+    public static final String AWS_S3_COMPANY_LOGO_FOLDER = "companyLogos";
+
+    public static final int CANDIDATE_STATE_ACTIVE = 1;
+    public static final int CANDIDATE_STATE_DEACTIVE = 2;
 
     public static final String INTERACTION_CREATED_BY_AGENT = "AGENT 1";
 
@@ -113,7 +122,7 @@ public class ServerConstants {
     public static final String SDF_FORMAT_ENTRY = "yyyy-MM-dd hh:mm:ss";
 
     public static final String PROD_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/1NIGQC5jmSDuQaGUF0Jw1UG-Dz_3huFtZf9Bo7ncPl4g/formResponse";
-    public static final String DEV_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/e/1FAIpQLSfZ6mnNOZShe2kbsvIXzvA7rT7aHokveZ669IJ0-j5pPzWAsA/formResponse";
+    public static final String DEV_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/e/1FAIpQLSe2owE6RMlW8Ynk8p-dWWBuQl0EclR2Go2ua9HGUIXxwMt0cg/formResponse";
 
     public static final String PROD_GOOGLE_FORM_FOR_JOB_POSTS = "https://docs.google.com/forms/d/1QVHzqnts0IkD3Wk8in4urqb70BseI9YWZm9B_MgGXUE/formResponse";
     public static final String DEV_GOOGLE_FORM_FOR_JOB_POSTS = "https://docs.google.com/forms/d/e/1FAIpQLSc-Fr7bO7M5HCjNYyC-dnIyzTMiXiywTEaD9twKkCQDeB7Qtg/formResponse";

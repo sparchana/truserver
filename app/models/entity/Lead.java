@@ -5,6 +5,7 @@ import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.OO.FollowUp;
 import models.entity.Static.LeadSource;
+import org.apache.commons.lang3.text.WordUtils;
 import play.Logger;
 
 import javax.persistence.*;
@@ -95,7 +96,7 @@ public class Lead extends Model {
     }
 
     public String getLeadName(){
-        return this.leadName;
+        return WordUtils.capitalize(this.leadName);
     }
     public String getLeadMobile(){
         return this.leadMobile;

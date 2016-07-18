@@ -1,5 +1,6 @@
 package api.http.httpRequest;
 
+import java.sql.Date;
 import java.util.List;
 
 /**
@@ -16,6 +17,9 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
     public Integer candidateAppointmentLetter ;
     public Integer candidateExperienceLetter ;
     public String supportNote;
+    public Boolean deactivationStatus;
+    public Integer deactivationReason;
+    public Date deactivationExpiryDate;
 
     public static class ExpList {
         Integer jobExpQuestionId;
@@ -176,5 +180,29 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
 
     public void setCandidateExperienceLetter(Integer candidateExperienceLetter) {
         this.candidateExperienceLetter = candidateExperienceLetter;
+    }
+
+    public Boolean getDeactivationStatus() {
+        return deactivationStatus;
+    }
+
+    public void setDeactivationStatus(Boolean deactivationStatus) {
+        this.deactivationStatus = deactivationStatus;
+    }
+
+    public Integer getDeactivationReason() {
+        return deactivationReason;
+    }
+
+    public void setDeactivationReason(Integer deactivationReason) {
+        this.deactivationReason = deactivationReason;
+    }
+
+    public Date getDeactivationExpiryDate() {
+        return deactivationExpiryDate;
+    }
+
+    public void setDeactivationExpiryDate(Date deactivationExpiryDate) {
+        this.deactivationExpiryDate = deactivationExpiryDate;
     }
 }

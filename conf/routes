@@ -34,11 +34,13 @@ GET      /updateLeadType/:leadId/:newStatus                       controllers.Ap
 GET      /updateLeadStatus/:leadId/:leadStatus/:res               controllers.Application.updateLeadStatus(leadId: Long, leadStatus: Integer,res: String)
 GET      /support/administrator/alphaRequest/:mobile              controllers.Application.removeDuplicateLeadOrCandidate(mobile: String)
 GET      /support/administrator/uploadCSV                         controllers.Application.uploadCSV()
+GET      /support/ifExists/:mobile                                controllers.Application.ifExists(mobile: String)
 
 POST     /addCompany                                              controllers.Application.addCompany()
 POST     /addCompanyLogo                                          controllers.Application.addCompanyLogo()
 POST     /addJobPost                                              controllers.Application.addJobPost()
 POST     /addOrUpdateFollowUp                                     controllers.Application.addOrUpdateFollowUp()
+POST     /addRecruiter                                            controllers.Application.addRecruiter()
 POST     /api/kw/cdr                                              controllers.Application.kwCdrInput()
 POST     /auth                                                    controllers.Application.auth()
 POST     /getAllCompanyStatus                                     controllers.Application.getAllCompanyStatus()
@@ -51,6 +53,7 @@ POST     /getJobExpQuestion/:jobRoleIdList                        controllers.Ap
 POST     /getSearchCandidateResult                                controllers.Application.getSearchCandidateResult()
 POST     /processCsv                                              controllers.Application.processcsv()
 POST     /signUpSupport                                           controllers.Application.signUpSupport()
+POST     /getAllDeactivationReason                                controllers.Application.getAllDeactivationReason()
 
 # user dashboard
 # ~~~~~~~~~~~~~~
@@ -92,7 +95,7 @@ POST        /getAllLanguage                                                     
 POST        /getAllLocality                                                      controllers.Application.getAllLocality()
 POST        /getAllShift                                                         controllers.Application.getAllShift()
 POST        /getAllTransportation                                                controllers.Application.getAllTransportation()
-POST        /getJobPostInfo/:id                                      controllers.Application.getJobPostInfo(id : Long)
+POST        /getJobPostInfo/:id/:isSupport                                       controllers.Application.getJobPostInfo(id : Long, isSupport : Integer)
 
 # Analytics
 # ~~~~~~~~~
@@ -102,4 +105,5 @@ POST        /api/alpha/:vId                                                     
 GET         /robots.txt                                                          controllers.Assets.at(path="/public", file="robots.txt")
 GET         /assets/*file                                                        controllers.Assets.at(path="/public", file)
 GET         /sitemap.xml                                                         controllers.Assets.at(path="/public", file="sitemap.xml")
+GET         /favicon.ico                                                         controllers.Assets.at(path="/public/img/", file="icon.png")
 #GET   /webjars/*file                           controllers.WebJarAssets.at(file)
