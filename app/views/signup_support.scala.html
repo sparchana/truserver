@@ -4,6 +4,7 @@
   <head>
     <meta charset="UTF-8">
     <title>Create Candidate - Support | Trujobs.in</title>
+
           <!-- Material Design Lite -->
       <link rel="stylesheet" href="/assets/support/css/material.indigo-pink.min.css"/>
 
@@ -30,6 +31,7 @@
       <script type="text/javascript" src="/assets/support/js/bootstrap-multiselect.js"></script>
       <link rel="stylesheet" href="/assets/support/css/bootstrap-multiselect.css" type="text/css"/>
 
+      <script type="text/javascript" src="/assets/support/js/bootstrap-notify.min.js"></script>
       <script type="text/javascript" src="/assets/support/js/sign_up_support.js"></script>
 
       <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
@@ -39,6 +41,11 @@
       <script type="text/javascript" src="/assets/support/js/material.min.js"></script>
       <!-- Material Design icon font -->
       <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+
+          <!-- Offline Check -->
+      <link rel="icon" type="image/png" href="/assets/img/icon.png">
+      <script type="text/javascript" src="/assets/support/js/offline.min.js"></script>
+      <link rel="stylesheet" href="/assets/support/css/offline-theme-chrome.css"/>
 
   </head>
 
@@ -447,17 +454,10 @@
                                     <textarea class="form-control" id="deactivationReason" name="deactivationReason" rows="3"></textarea>
                                 </div>
                             </div>
-                            <div id="deactivation-duration-panel"  class="row" style="margin-top: 4px;">
-                                <div class="col-sm-5"><h5>* De-Activation Duration :</h5></div>
-                                <div class="col-sm-7">
-                                    <input id="deactivationDurationInMonths" value="0" style="width: 15%; display: inline-block" placeholder="Months" type="number" class="form-control input-md">&nbsp;Months&nbsp;&nbsp;
-                                    <input id="deactivationDurationInDays" value="0" style="width: 15%; display: inline-block" placeholder="Days" type="number" min="0" max="30" step="1"  class="form-control input-md">&nbsp; Days
-                                </div>
-                            </div>
-                                <div id="deactivation-expiry-panel"  class="row" style="margin-top: 4px; display: none;">
+                                <div id="deactivation-expiry-panel"  class="row" style="margin-top: 4px;">
                                     <div class="col-sm-5"><h5>De-Activation Expiry Date:</h5></div>
                                     <div class="col-sm-7">
-                                        <label id="deactivationExpiry" placeholder="expiry" type="text" class="form-control" disabled></label>
+                                        <input id="deactivationExpiryDate" name="deactivationExpiryDate" type="date" class="form-control input-md"  data-date-inline-picker="true"/>
                                     </div>
                                 </div>
                             </div>

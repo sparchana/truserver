@@ -1062,15 +1062,9 @@ public class Application extends Controller {
 
     @Security.Authenticated(Secured.class)
     public static Result invalidateDbCache() {
-
-        String sessionId = session().get("sessionId");
-        Developer developer = Developer.find.where().eq("developerSessionId", sessionId ).findUnique();
-        if(developer != null && developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_REC) {
-            ServerCacheManager serverCacheManager = Ebean.getServerCacheManager();
-            serverCacheManager.clearAll();
-            return ok("Cleared Static Cache");
-        }
-        return redirect("/street");
+        ServerCacheManager serverCacheManager = Ebean.getServerCacheManager();
+        serverCacheManager.clearAll();
+        return ok("Cleared Static Cache");
     }
 
     @Security.Authenticated(SuperSecured.class)

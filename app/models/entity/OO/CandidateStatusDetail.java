@@ -7,8 +7,6 @@ import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Timestamp;
 
-import static controllers.businessLogic.CandidateService.CalculateExpiry;
-
 /**
  * Created by zero on 15/7/16.
  */
@@ -33,9 +31,6 @@ public class CandidateStatusDetail extends Model {
     @Column(name = "Reason", columnDefinition = "text null")
     private String reason;
 
-    @Column(name = "Duration", columnDefinition = "int signed null")
-    private Integer duration; // in days
-
     public CandidateStatusDetail(){
         this.createTimeStamp = new Timestamp(System.currentTimeMillis());
     }
@@ -59,8 +54,8 @@ public class CandidateStatusDetail extends Model {
         return reason;
     }
 
-    public Integer getDuration() {
-        return duration;
+    public Date getStatusExpiryDate() {
+        return statusExpiryDate;
     }
 
     /* setter */
@@ -72,18 +67,12 @@ public class CandidateStatusDetail extends Model {
         this.reason = reason;
     }
 
-    public void setDuration(Integer duration) {
-        this.duration = duration;
-    }
-
-    public Date getStatusExpiryDate() {
-        if(statusExpiryDate == null){
-            setStatusExpiryDate(CalculateExpiry(createTimeStamp, duration));
-        }
-        return statusExpiryDate;
-    }
-
     public void setStatusExpiryDate(Date statusExpiryDate) {
         this.statusExpiryDate = statusExpiryDate;
     }
+
+    public void setCreateTimeStamp(Timestamp createTimeStamp) {
+        this.createTimeStamp = createTimeStamp;
+    }
+
 }

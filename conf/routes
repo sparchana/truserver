@@ -103,4 +103,5 @@ POST        /api/alpha/:vId                                                     
 GET         /robots.txt                                                          controllers.Assets.at(path="/public", file="robots.txt")
 GET         /assets/*file                                                        controllers.Assets.at(path="/public", file)
 GET         /sitemap.xml                                                         controllers.Assets.at(path="/public", file="sitemap.xml")
+GET         /favicon.ico                                                         controllers.Assets.at(path="/public/img/", file="icon.png")
 #GET   /webjars/*file                           controllers.WebJarAssets.at(file)

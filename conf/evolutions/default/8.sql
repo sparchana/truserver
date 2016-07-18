@@ -6,7 +6,6 @@ alter table candidate add column candidatethirdmobile varchar(13) null;
 create table candidatestatusdetail (
   candidatestatusdetailid       int signed auto_increment not null,
   reason                        text null,
-  duration                      int signed null,
   createtimestamp               timestamp not null default current_timestamp,
   updatetimestamp               timestamp null,
   statusexpirydate              date null,
