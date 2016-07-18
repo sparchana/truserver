@@ -79,8 +79,6 @@ public class JobService {
         PricingPlanType pricingPlanType = PricingPlanType.find.where().eq("pricingPlanTypeId", addJobPostRequest.getJobPostPricingPlanId()).findUnique();
         newJobPost.setPricingPlanType(pricingPlanType);
 
-        Logger.info("pricing plan: " + pricingPlanType.getPricingPlanTypeName());
-
         JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", addJobPostRequest.getJobPostStatusId()).findUnique();
         newJobPost.setJobPostStatus(jobStatus);
 

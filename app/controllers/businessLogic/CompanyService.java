@@ -1,5 +1,6 @@
 package controllers.businessLogic;
 
+import api.ServerConstants;
 import api.http.httpRequest.AddCompanyRequest;
 import api.http.httpResponse.AddCompanyResponse;
 import com.amazonaws.auth.AWSCredentials;
@@ -21,16 +22,16 @@ import java.io.File;
  */
 public class CompanyService {
     public static void uploadCompanyLogo(File newFile, String imgName){
-        String SUFFIX = "/";
+        String SUFFIX = ServerConstants.LOGO_UPLOAD_SUFFIX;
         try{
             AWSCredentials credentials = new BasicAWSCredentials(
                     play.Play.application().configuration().getString("aws.accesskey"),
                     play.Play.application().configuration().getString("aws.secretAccesskey"));
 
             AmazonS3 s3client = new AmazonS3Client(credentials);
-            String bucketName = "trujobs.in";
+            String bucketName = ServerConstants.AWS_S3_BUCKET_NAME;
 
-            String folderName = "companyLogos";
+            String folderName = ServerConstants.AWS_S3_COMPANY_LOGO_FOLDER;
 
             String fileName = folderName + SUFFIX + imgName;
             s3client.putObject(new PutObjectRequest(bucketName, fileName, newFile)

@@ -113,7 +113,7 @@ public class InteractionService {
         }
     }
 
-    public static void createInteractionWhenJobLocationCalled(String objectAUUId, String objectBUUId, String result) {
+    public static void createInteractionForHobApplicationAttempt(String objectAUUId, String objectBUUId, String result) {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_JOB_POST,

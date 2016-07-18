@@ -101,6 +101,10 @@ public class ServerConstants {
 
     public static final String LEAD_INTEREST_UNKNOWN = "Unknown";
 
+    public static final String LOGO_UPLOAD_SUFFIX = "/";
+    public static final String AWS_S3_BUCKET_NAME = "trujobs.in";
+    public static final String AWS_S3_COMPANY_LOGO_FOLDER = "companyLogos";
+
     public static final int CANDIDATE_STATE_ACTIVE = 1;
     public static final int CANDIDATE_STATE_DEACTIVE = 2;
 

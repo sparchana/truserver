@@ -161,7 +161,7 @@ function processDataAllJobPosts(returnedData) {
 
 
                 var salaryDiv = document.createElement("div");
-                salaryDiv.style = "display: inline-block; font-size: 14px";
+                salaryDiv.style = "display: inline-block; font-size: 13px";
                 if(jobPost.jobPostMaxSalary == "0"){
                     salaryDiv.textContent = jobPost.jobPostMinSalary + " monthly";
                 } else{
@@ -196,7 +196,7 @@ function processDataAllJobPosts(returnedData) {
                 expIconDiv.appendChild(expIcon);
 
                 var expDiv = document.createElement("div");
-                expDiv.style = "display: inline-block; font-size: 14px";
+                expDiv.style = "display: inline-block; font-size: 13px";
                 expDiv.textContent = "Exp: " + jobPost.jobPostExperience.experienceType;
                 jobBodySubRowColExp.appendChild(expDiv);
 
@@ -226,7 +226,7 @@ function processDataAllJobPosts(returnedData) {
                 locIconDiv.appendChild(locIcon);
 
                 var locDiv = document.createElement("div");
-                locDiv.style = "display: inline-block; font-size: 14px";
+                locDiv.style = "display: inline-block; font-size: 13px";
                 locDiv.textContent = localities;
                 jobBodySubRowColLoc.appendChild(locDiv);
 
@@ -234,7 +234,7 @@ function processDataAllJobPosts(returnedData) {
                     var tooltip = document.createElement("a");
                     tooltip.id = "locationMsg_" + jobPost.jobPostId;
                     tooltip.title = allLocalities;
-                    tooltip.style = "color: #2980b9";
+                    tooltip.style = "color: #2980b9; font-size: 13px";
                     tooltip.textContent = " more";
                     jobBodySubRowColLoc.appendChild(tooltip);
                 }
@@ -499,7 +499,7 @@ function processDataAndFillMinProfile(returnedData) {
     var appliedJobs = returnedData.jobApplicationList;
     $("#jobCount").html(Object.keys(appliedJobs).length);
     appliedJobs.forEach(function (jobApplication) {
-        $("#apply_btn_" + jobApplication.jobPost.jobPostId).addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Already Applied");
+        $("#apply_btn_" + jobApplication.jobPost.jobPostId).addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
         $("#applyBtnDiv_" + jobApplication.jobPost.jobPostId).prop('disabled',true);
     });
 

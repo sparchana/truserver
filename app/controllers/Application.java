@@ -504,7 +504,7 @@ public class Application extends Controller {
                     Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")). findUnique();
                     objBUUID = candidate.getCandidateUUId();
                 }
-                InteractionService.createInteractionWhenJobLocationCalled(jobPost.getJobPostUUId(), objBUUID, interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName());
+                InteractionService.createInteractionForHobApplicationAttempt(jobPost.getJobPostUUId(), objBUUID, interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName());
             }
 
             return ok(toJson(jobPost));
@@ -801,21 +801,25 @@ public class Application extends Controller {
                 if(candidate.getLanguageKnownList() != null && candidate.getLanguageKnownList().size() > 0) {
                     List<LanguageKnown> languageKnownList = candidate.getLanguageKnownList();
 
-                    Integer canRead;
-                    Integer canWrite;
-                    Integer canSpeak;
+                    String canRead = "";
+                    String canWrite = "";
+                    String canSpeak = "";
+
                     for(LanguageKnown l : languageKnownList){
-                        canRead = l.getReadingAbility();
-                        if(canRead == null){
-                            canRead = 0;
+                        if(l.getReadingAbility() == null){
+                            canRead = "na";
+                        } else{
+                            canRead = l.getReadingAbility() + "";
                         }
-                        canWrite = l.getWritingAbility();
-                        if(canWrite == null){
-                            canWrite = 0;
+                        if(l.getWritingAbility() == null){
+                            canWrite = "na";
+                        } else{
+                            canWrite = l.getWritingAbility() + "";
                         }
-                        canSpeak = l.getVerbalAbility();
-                        if(canSpeak == null){
-                            canSpeak = 0;
+                        if(l.getVerbalAbility() == null){
+                            canSpeak = "na";
+                        } else{
+                            canSpeak = l.getVerbalAbility() + "";
                         }
 
                         languagesKnown += l.getLanguage().getLanguageName() + "(" + canRead + ", " +
@@ -860,9 +864,13 @@ public class Application extends Controller {
                     candidateLocalityPref += locality.getLocality().getLocalityName() + ", ";
                 }
                 jobApplicationGoogleSheetResponse.setCandidateProfileStatus(candidate.getCandidateprofilestatus().getProfileStatusName());
-                if(candidate.getCandidateprofilestatus().getProfileStatusId() == 2){
+                if(candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE){
                     Date expDate = candidate.getCandidateStatusDetail().getStatusExpiryDate();
-                    jobApplicationGoogleSheetResponse.setCandidateExpiryDate(String.valueOf(expDate));
+                    if(expDate != null){
+                        jobApplicationGoogleSheetResponse.setCandidateExpiryDate(String.valueOf(expDate));
+                    } else{
+                        jobApplicationGoogleSheetResponse.setCandidateExpiryDate("-");
+                    }
                 } else{
                     jobApplicationGoogleSheetResponse.setCandidateExpiryDate("-");
                 }
