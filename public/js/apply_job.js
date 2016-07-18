@@ -39,15 +39,6 @@ function processDataApplyJob(returnedData) {
     }
 }
 
-function loginCheckJobApply(){
-    var phone = localStorage.getItem("mobile");
-    if(phone == null){ // not logged in
-        isMainPageJobApplication = true;
-        openLogin();
-        $("#myLoginModal").modal("show");
-        $("#signInPopup").html("Sign In to Apply");
-    }
-}
 // apply_job ajax script
 function applyJob(id, localityId){
     $("#applyButton").addClass("appliedBtn").removeClass("jobApplyBtnModal").prop('disabled',true).html("Applying");
