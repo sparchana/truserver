@@ -552,10 +552,8 @@ $(function() {
         });
     }); // end of submit
 
-    $.browser.chrome = /chrom(e|ium)/.test(navigator.userAgent.toLowerCase());
 
-    if($.browser.chrome){
-        $( "#toThisDate").datepicker({ dateFormat: 'yy-mm-dd', changeYear: true});
-        $( "#fromThisDate").datepicker({ dateFormat: 'yy-mm-dd', changeYear: true});
-    }
+    $( "#toThisDate").datepicker({ dateFormat: 'yy-mm-dd', changeYear: true});
+    $( "#fromThisDate").datepicker({ dateFormat: 'yy-mm-dd', changeYear: true});
+
 });
