@@ -146,7 +146,7 @@ $(document).ready(function () {
         try {
             $.ajax({
                 type: "POST",
-                url: "/getJobPostInfo/" + jobPostId,
+                url: "/getJobPostInfo/" + jobPostId + "/1",
                 data: false,
                 contentType: false,
                 processData: false,
@@ -167,7 +167,8 @@ $(document).ready(function () {
 
         $("#jobPostLocalities").tokenInput(getLocality(), {
             theme: "facebook",
-            hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+            placeholder: "Job Location?",
+            hintText: "Start typing jobs (eg. Marathahallli, Agara..)",
             minChars: 0,
             preventDuplicates: true
         });
@@ -315,7 +316,6 @@ function processDataForJobPost(returnedData) {
     }
 
     getRecruiters(returnedData.company.companyId);
-    console.log(returnedData.recruiterProfile + " ====");
     if(returnedData.recruiterProfile != null){
         $('#jobPostRecruiter').val(returnedData.recruiterProfile.recruiterProfileId);
     }
@@ -425,6 +425,10 @@ function processDataForJobPost(returnedData) {
 
     if(returnedData.jobPostVacancies != null ){
         $("#jobPostVacancies").val(returnedData.jobPostVacancies);
+    }
+
+    if(returnedData.pricingPlanType != null ){
+        $("#jobPostPricingPlan").val(returnedData.pricingPlanType.pricingPlanTypeId);
     }
 
     if(returnedData.jobPostExperience != null ){

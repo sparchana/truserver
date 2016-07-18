@@ -494,9 +494,19 @@ public class Application extends Controller {
         return ok("0");
     }
 
-    public static Result getJobPostInfo(long jobPostId) {
+    public static Result getJobPostInfo(long jobPostId, Integer isSupport) {
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
         if(jobPost!=null){
+            if(isSupport == 0){
+                String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB;
+                String objBUUID = "";
+                if(session().get("candidateId") != null){
+                    Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")). findUnique();
+                    objBUUID = candidate.getCandidateUUId();
+                }
+                InteractionService.createInteractionWhenJobLocationCalled(jobPost.getJobPostUUId(), objBUUID, interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName());
+            }
+
             return ok(toJson(jobPost));
         }
         return ok("0");

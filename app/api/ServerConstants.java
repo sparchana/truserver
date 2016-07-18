@@ -28,7 +28,8 @@ public class ServerConstants {
     public static final String INTERACTION_RESULT_FIRST_INBOUND_CALL = "First Inbound Call";
     public static final String INTERACTION_RESULT_SELF_SIGNEDIN = "Candidate Self Signed In";
 
-    public static final String INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB = "Candidate applied to a job :";
+    public static final String INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB = "Candidate applied to a job: ";
+    public static final String INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB = "Candidate tried to apply to a job: ";
     public static final String INTERACTION_CREATED_SELF = "Self";
     public static final String INTERACTION_CREATED_SYSTEM = "System";
     public static final String INTERACTION_CREATED_SYSTEM_KNOWLARITY = "System - Knowlarity";
@@ -88,6 +89,7 @@ public class ServerConstants {
     public static final int INTERACTION_TYPE_WEBSITE= 5;
     public static final int INTERACTION_TYPE_FOLLOWUP_CALL= 6;
     public static final int INTERACTION_TYPE_APPLIED_JOB= 7;
+    public static final int INTERACTION_TYPE_TRIED_JOB_APPLY= 8;
 
     public static final boolean FOLLOW_UP_DEACTIVATE = false;
     public static final boolean FOLLOW_UP_ACTIVATE = true;

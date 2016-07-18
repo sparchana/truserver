@@ -93,7 +93,7 @@ POST        /getAllLanguage                                                     
 POST        /getAllLocality                                                      controllers.Application.getAllLocality()
 POST        /getAllShift                                                         controllers.Application.getAllShift()
 POST        /getAllTransportation                                                controllers.Application.getAllTransportation()
-POST        /getJobPostInfo/:id                                      controllers.Application.getJobPostInfo(id : Long)
+POST        /getJobPostInfo/:id/:isSupport                                       controllers.Application.getJobPostInfo(id : Long, isSupport : Integer)
 
 # Analytics
 # ~~~~~~~~~

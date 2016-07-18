@@ -269,7 +269,7 @@ function addLocalitiesToModal() {
     try {
         $.ajax({
             type: "POST",
-            url: "/getJobPostInfo/" + jobPostId,
+            url: "/getJobPostInfo/" + jobPostId + "/0",
             data: false,
             contentType: false,
             processData: false,

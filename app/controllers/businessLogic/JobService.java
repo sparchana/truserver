@@ -79,6 +79,8 @@ public class JobService {
         PricingPlanType pricingPlanType = PricingPlanType.find.where().eq("pricingPlanTypeId", addJobPostRequest.getJobPostPricingPlanId()).findUnique();
         newJobPost.setPricingPlanType(pricingPlanType);
 
+        Logger.info("pricing plan: " + pricingPlanType.getPricingPlanTypeName());
+
         JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", addJobPostRequest.getJobPostStatusId()).findUnique();
         newJobPost.setJobPostStatus(jobStatus);
 
@@ -128,7 +130,7 @@ public class JobService {
                     }
 
                     String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB;
-                    InteractionService.createInteractionForJobApplication(existingCandidate.getCandidateUUId(), existingJobPost.getJobPostUUId(), interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName());
+                    InteractionService.createInteractionForJobApplication(existingCandidate.getCandidateUUId(), existingJobPost.getJobPostUUId(), interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName() + "@" + locality.getLocalityName() );
 
                     jobApplication.save();
                     Logger.info("candidate: " + existingCandidate.getCandidateFirstName() + " with mobile: " + existingCandidate.getCandidateMobile() + " applied to the jobPost of JobPostId:" + existingJobPost.getJobPostId());

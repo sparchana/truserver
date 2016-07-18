@@ -112,4 +112,17 @@ public class InteractionService {
             InteractionService.createInteraction(interaction);
         }
     }
+
+    public static void createInteractionWhenJobLocationCalled(String objectAUUId, String objectBUUId, String result) {
+        Interaction interaction = new Interaction(
+                objectAUUId,
+                ServerConstants.OBJECT_TYPE_JOB_POST,
+                objectBUUId,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                ServerConstants.INTERACTION_TYPE_TRIED_JOB_APPLY,
+                result,
+                ServerConstants.INTERACTION_CREATED_SELF
+        );
+        InteractionService.createInteraction(interaction);
+    }
 }
