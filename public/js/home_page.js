@@ -107,7 +107,6 @@ $(document).ready(function(){
             type: "POST",
             url: "/getAllLocality",
             data: false,
-            async: false,
             contentType: false,
             processData: false,
             success: processDataCheckLocality
@@ -121,7 +120,6 @@ $(document).ready(function(){
             type: "POST",
             url: "/getAllJobs",
             data: false,
-            async: false,
             contentType: false,
             processData: false,
             success: processDataCheckJobs
@@ -135,7 +133,6 @@ $(document).ready(function(){
             type: "POST",
             url: "/getAllHotJobPosts",
             data: false,
-            async: false,
             contentType: false,
             processData: false,
             success: processDataAllJobPosts
@@ -198,7 +195,6 @@ function processDataAllJobPosts(returnedData) {
 
                 var jobLogo = document.createElement("img");
                 jobLogo.src = jobPost.company.companyLogo;
-/*                jobLogo.src = "/assets/new/img/" + jobPost.company.companyLogo + ".png";*/
                 jobLogo.setAttribute('width', '80%');
                 jobLogo.id = "jobLogo";
                 col.appendChild(jobLogo);
@@ -326,6 +322,9 @@ function processDataAllJobPosts(returnedData) {
                 }
 
                 $("#locationMsg_" + jobPost.jobPostId).attr("data-toggle", "tooltip");
+                $(function () {
+                    $('[data-toggle="tooltip"]').tooltip()
+                });
                 /*  apply button */
 
                 var applyBtnDiv = document.createElement("div");
@@ -353,7 +352,7 @@ function addLocalitiesToModal() {
     try {
         $.ajax({
             type: "POST",
-            url: "/getJobPostInfo/" + jobPostId,
+            url: "/getJobPostInfo/" + jobPostId + "/0",
             data: false,
             contentType: false,
             processData: false,

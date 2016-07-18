@@ -66,13 +66,23 @@ function saveRecruiter() {
     try {
         $.ajax({
             type: "POST",
-            url: "/addCompany",
+            url: "/addRecruiter",
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(d),
-            success: processDataAddCompany
+            success: processDataAddRecruiter
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
+    }
+}
+
+function processDataAddRecruiter(returnedData) {
+    console.log(returnedData);
+    if(returnedData.status == 4){
+        alert("Recruiter Update Successful!");
+        window.close();
+    } else{
+        alert("Something went wrong, Please try again");
     }
 }
 
@@ -90,8 +100,4 @@ function processDataForCompanyInfo(returnedData) {
     if(returnedData.company != null ){
         $("#recruiterCompany").val(returnedData.company.companyId);
     }
-
-
-}/**
- * Created by batcoder1 on 12/7/16.
- */
+}

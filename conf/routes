@@ -40,6 +40,7 @@ POST     /addCompany                                              controllers.Ap
 POST     /addCompanyLogo                                          controllers.Application.addCompanyLogo()
 POST     /addJobPost                                              controllers.Application.addJobPost()
 POST     /addOrUpdateFollowUp                                     controllers.Application.addOrUpdateFollowUp()
+POST     /addRecruiter                                            controllers.Application.addRecruiter()
 POST     /api/kw/cdr                                              controllers.Application.kwCdrInput()
 POST     /auth                                                    controllers.Application.auth()
 POST     /getAllCompanyStatus                                     controllers.Application.getAllCompanyStatus()
@@ -94,7 +95,7 @@ POST        /getAllLanguage                                                     
 POST        /getAllLocality                                                      controllers.Application.getAllLocality()
 POST        /getAllShift                                                         controllers.Application.getAllShift()
 POST        /getAllTransportation                                                controllers.Application.getAllTransportation()
-POST        /getJobPostInfo/:id                                      controllers.Application.getJobPostInfo(id : Long)
+POST        /getJobPostInfo/:id/:isSupport                                       controllers.Application.getJobPostInfo(id : Long, isSupport : Integer)
 
 # Analytics
 # ~~~~~~~~~
