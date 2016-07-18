@@ -70,26 +70,48 @@ $(function() {
     $("#job_post_form").submit(function(eventObj) {
         eventObj.preventDefault();
         if($("#jobPostRecruiter").val() == "" && $("#recruiterSection").is(':visible') == true){
-            try{
-                var rec = {
-                    recruiterName: $("#recruiterName").val(),
-                    recruiterMobile: $("#recruiterMobile").val(),
-                    recruiterLandline: $("#recruiterLandline").val(),
-                    recruiterEmail: $("#recruiterEmail").val(),
-                    recruiterCompany: $("#jobPostCompany").val()
-                };
-            } catch (exception) {
-                console.log("exception occured!!" + exception);
+            var status = 1;
+            var recruiterName = validateName($("#recruiterName").val());
+            var recruiterMobile = validateMobile($("#recruiterMobile").val());
+            //checking first name
+            switch(recruiterName){
+                case 0: alert("First name contains number. Please Enter a valid First Name"); status=0; break;
+                case 2: alert("First Name cannot be blank spaces. Enter a valid first name"); status=0; break;
+                case 3: alert("First name contains special symbols. Enter a valid first name"); status=0; break;
+                case 4: alert("Please enter your first name"); status=0; break;
             }
+            if(recruiterMobile == 0){
+                alert("Enter a valid mobile number");
+                status=0;
+            } else if(recruiterMobile == 1){
+                alert("Enter 10 digit mobile number");
+                status=0;
+            } else if(recruiterMobile == "") {
+                alert("Please Enter recruiter Contact");
+                status=0;
+            }
+            if(status == 1){
+                try{
+                    var rec = {
+                        recruiterName: $("#recruiterName").val(),
+                        recruiterMobile: $("#recruiterMobile").val(),
+                        recruiterLandline: $("#recruiterLandline").val(),
+                        recruiterEmail: $("#recruiterEmail").val(),
+                        recruiterCompany: $("#jobPostCompany").val()
+                    };
+                } catch (exception) {
+                    console.log("exception occured!!" + exception);
+                }
 
-            $.ajax({
-                type: "POST",
-                url: "/addRecruiter",
-                async: false,
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(rec),
-                success: processDataAddRecruiterAndUpdateRecId
-            });
+                $.ajax({
+                    type: "POST",
+                    url: "/addRecruiter",
+                    async: false,
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(rec),
+                    success: processDataAddRecruiterAndUpdateRecId
+                });
+            }
         }
         var jobPostLocalities = [];
         var status = 1;
