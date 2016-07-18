@@ -702,6 +702,11 @@ function activateEdit() {
     $("#saveBtn").prop("disabled", false);
     $("#cancelBtn").prop("disabled", false);
     $("#candidateSignUpSupportForm *").prop("disabled", false);
+    if($("#candidateSecondMobile").val().length == 10){
+        $("#candidateThirdMobile").prop("disabled", false);
+    } else {
+        $("#candidateThirdMobile").prop("disabled", true);
+    }
     $('#btnFloatFollowUp').prop('disabled', false);
     $('#callNoClass').hide();
 }
@@ -1866,6 +1871,11 @@ $(function () {
         generateExperience($('#candidateJobPref').val());
         prefillCandidatePastJobExp(candidatePastJobExp);
         unlockcurrentJobRadio();
+    });
+    $('#candidateSecondMobile').change(function () {
+        if($(this).val().length == 10){
+            $("#candidateThirdMobile").prop("disabled", false);
+        }
     });
     // auto save code : incomplete
     /*  $('#candidateSignUpSupportForm').change(function () {
