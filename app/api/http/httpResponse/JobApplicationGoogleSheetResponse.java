@@ -25,6 +25,24 @@ public class JobApplicationGoogleSheetResponse {
     public String candidateSkill;
     public String formUrl;
     public Timestamp candidateCreationTimestamp;
+    public String candidateProfileStatus;
+    public String candidateExpiryDate;
+
+    public String getCandidateProfileStatus() {
+        return candidateProfileStatus;
+    }
+
+    public void setCandidateProfileStatus(String candidateProfileStatus) {
+        this.candidateProfileStatus = candidateProfileStatus;
+    }
+
+    public String getCandidateExpiryDate() {
+        return candidateExpiryDate;
+    }
+
+    public void setCandidateExpiryDate(String candidateExpiryDate) {
+        this.candidateExpiryDate = candidateExpiryDate;
+    }
 
     public String getFormUrl() {
         return formUrl;

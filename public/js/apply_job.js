@@ -135,7 +135,9 @@ function processDataGetJobGoogleSheetDetails(returnedData) {
                 "entry.240702722": ((returnedData.candidateEducation != null) ? returnedData.candidateEducation : ""),
                 "entry.190053755": ((returnedData.candidateSkill != null) ? returnedData.candidateSkill : ""),
                 "entry.971982828": candidateCreateTimestamp,
-                "entry.98308337": prefLocationName
+                "entry.98308337": prefLocationName,
+                "entry.46689276": returnedData.candidateProfileStatus,
+                "entry.1180627971": returnedData.candidateExpiryDate
             },
             type: "POST",
             dataType: "xml",

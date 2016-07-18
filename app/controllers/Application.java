@@ -859,6 +859,13 @@ public class Application extends Controller {
                 for(LocalityPreference locality : localityPrefList){
                     candidateLocalityPref += locality.getLocality().getLocalityName() + ", ";
                 }
+                jobApplicationGoogleSheetResponse.setCandidateProfileStatus(candidate.getCandidateprofilestatus().getProfileStatusName());
+                if(candidate.getCandidateprofilestatus().getProfileStatusId() == 2){
+                    Date expDate = candidate.getCandidateStatusDetail().getStatusExpiryDate();
+                    jobApplicationGoogleSheetResponse.setCandidateExpiryDate(String.valueOf(expDate));
+                } else{
+                    jobApplicationGoogleSheetResponse.setCandidateExpiryDate("-");
+                }
 
                 jobApplicationGoogleSheetResponse.setLanguageKnown(languagesKnown);
                 jobApplicationGoogleSheetResponse.setCandidateJobPref(candidateJobPref);

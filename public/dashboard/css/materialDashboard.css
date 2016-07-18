@@ -294,6 +294,8 @@ hr{
 }
 .appliedBtn:hover{
     cursor: not-allowed;
+    border-color: #f4e3a4;
+    background-color: #f4cb6c;
     box-shadow: none;
 }
 
