@@ -1970,4 +1970,7 @@ $(function () {
         toolbarPlacement: 'default',
         showClose: true
     });
+
+    $( "#candidateDob").datepicker({ dateFormat: 'yy-mm-dd', changeYear: true});
+    $( "#deactivationExpiryDate").datepicker({ dateFormat: 'yy-mm-dd', changeYear: true});
 }); // end of function

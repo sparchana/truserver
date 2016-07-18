@@ -551,4 +551,9 @@ $(function() {
             $(this).html( '<input type="text" name="'+title+'"  id="'+title+'" placeholder="'+title+'" />' );
         });
     }); // end of submit
+
+
+    $( "#toThisDate").datepicker({ dateFormat: 'yy-mm-dd', changeYear: true});
+    $( "#fromThisDate").datepicker({ dateFormat: 'yy-mm-dd', changeYear: true});
+
 });
