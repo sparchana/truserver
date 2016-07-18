@@ -260,12 +260,26 @@ public class Application extends Controller {
             String contentType = picture.getContentType();
             File file = (File) picture.getFile();
             Logger.info("uploaded! " + file);
-            JobService.uploadCompanyLogo(file, fileName);
+            CompanyService.uploadCompanyLogo(file, fileName);
             return ok("File uploaded");
         } else {
             flash("error", "Missing file");
             return redirect(routes.Application.index());
         }
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result addRecruiter() {
+        JsonNode req = request().body().asJson();
+        Logger.info(req + " == ");
+        AddRecruiterRequest addRecruiterRequest = new AddRecruiterRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addRecruiterRequest = newMapper.readValue(req.toString(), AddRecruiterRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ok(toJson(RecruiterService.addRecruiter(addRecruiterRequest)));
     }
 
     @Security.Authenticated(Secured.class)
@@ -279,20 +293,7 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if(addCompanyRequest.getRecruiterCompany() == null){ //this means we are updating a company details
-            return ok(toJson(CompanyService.addCompany(addCompanyRequest)));
-        } else{
-            if(addCompanyRequest.getRecruiterCompany() == -1){
-                AddCompanyResponse addCompanyResponse = CompanyService.addCompany(addCompanyRequest);
-                if(addCompanyResponse.getStatus() == 1){
-                    return ok(toJson(RecruiterService.addRecruiter(addCompanyRequest, addCompanyResponse.getCompanyId())));
-                } else{
-                    return ok(toJson(AddCompanyResponse.STATUS_FAILURE));
-                }
-            } else{
-                return ok(toJson(RecruiterService.addRecruiter(addCompanyRequest, addCompanyRequest.getRecruiterCompany())));
-            }
-        }
+        return ok(toJson(CompanyService.addCompany(addCompanyRequest)));
     }
 
     public static Result loginSubmit() {

@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="/assets/support/css/style.css">
     <link rel="stylesheet" type="text/css" href="/assets/new/css/myStyle.css">
     <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/dashboard.css">
+    <script type="text/javascript" src="/assets/support/js/job_post_details.js"></script>
 
     <link rel="stylesheet" href="/assets/support/css/bootstrap-datetimepicker.min.css">
     <script type="text/javascript" src="/assets/support/js/Moment.js"></script>
@@ -24,7 +25,6 @@
     <script type="text/javascript" src="/assets/support/js/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
 
-    <script type="text/javascript" src="/assets/support/js/job_post_details.js"></script>
     <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
     <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css">
     <script type="text/javascript" src="/assets/support/js/add_job_post.js"></script>
@@ -68,11 +68,39 @@
           <div class="row" style="margin-top: 4px">
             <div class="col-sm-3"><h5>Select Recruiter?:<font color="red">*</font> </h5></div>
             <div class="col-sm-9" style="margin-top: 8px">
-              <select id="jobPostRecruiter" class="selectDropdown" ></select>
-              <div style="padding: 8px; margin: 6px; background: rgba(244, 227, 164, 0.48)"><font size="2">(If there is no recruiter for the selected company, plesae create a recruiter by clicking <a href="/createCompany" target="_blank">here</a></font></div>
+              <select id="jobPostRecruiter" class="selectDropdown"></select>
+              <div style="padding: 8px; margin: 6px; background: rgba(244, 227, 164, 0.48)"><font size="2">(If there is no recruiter for the selected company, please create a recruiter by clicking <a onclick="showRecruiterForm()">here</a></font></div>
             </div>
           </div>
+          <div id="recruiterSection" style="display: none; width: 68%; padding: 2%; background: #f8f2f8 ; margin: 2%">
+            <div class="row">
+              <div class="col-sm-3"><h5>Recruiter Name:</h5></div>
+              <div class="col-sm-9">
+                <input id="recruiterName" name="recruiterName" placeholder="Recruiter Name" type="text" class="form-control input-md" >
+              </div>
+            </div>
 
+            <div class="row">
+              <div class="col-sm-3"><h5>Recruiter Mobile:</h5></div>
+              <div class="col-sm-9">
+                <input id="recruiterMobile" name="recruiterMobile" maxlength="10" placeholder="Recruiter Mobile" type="text" class="form-control input-md" >
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-3"><h5>Recruiter Landline (optional) :</h5></div>
+              <div class="col-sm-9">
+                <input id="recruiterLandline" name="recruiterLandline" placeholder="Recruiter Landline" type="text" class="form-control input-md" >
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-3"><h5>Recruiter Email:</h5></div>
+              <div class="col-sm-9">
+                <input id="recruiterEmail" name="recruiterEmail" placeholder="Recruiter Email" type="text" class="form-control input-md" >
+              </div>
+            </div>
+          </div>
 
           <div class="row">
             <div class="col-sm-3"><h5>Job Post Title:<font color="red">*</font></h5></div>
@@ -232,7 +260,18 @@
         </form>
       </div>
     </div>
-      <!-- Javascript import -->
+    <script>
+      function showRecruiterForm(){
+        $("#jobPostRecruiter").val("");
+        if($("#jobPostRecruiter").is(':enabled')){
+            $("#jobPostRecruiter").prop('disabled', true);
+        } else{
+            $("#jobPostRecruiter").prop('disabled', false);
+        }
+        $("#recruiterSection").toggle();
+      }
+    </script>
+    <!-- Javascript import -->
     <script type="text/javascript" src="/assets/js/validation.js"></script>
     <script type="text/javascript" src="/assets/support/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/assets/js/apply_job.js"></script>
