@@ -52,6 +52,7 @@ POST     /getJobExpQuestion/:jobRoleIdList                        controllers.Ap
 POST     /getSearchCandidateResult                                controllers.Application.getSearchCandidateResult()
 POST     /processCsv                                              controllers.Application.processcsv()
 POST     /signUpSupport                                           controllers.Application.signUpSupport()
+POST     /getAllDeactivationReason                                controllers.Application.getAllDeactivationReason()
 
 # user dashboard
 # ~~~~~~~~~~~~~~

@@ -2,6 +2,8 @@ package models.entity.OO;
 
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import models.entity.Static.Reason;
 
 import javax.persistence.*;
 import java.sql.Date;
@@ -28,8 +30,10 @@ public class CandidateStatusDetail extends Model {
     @Column(name = "StatusExpiryDate", columnDefinition = "date null")
     private Date statusExpiryDate;
 
-    @Column(name = "Reason", columnDefinition = "text null")
-    private String reason;
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "ReasonId", referencedColumnName = "ReasonId")
+    private Reason reason;
 
     public CandidateStatusDetail(){
         this.createTimeStamp = new Timestamp(System.currentTimeMillis());
@@ -50,7 +54,7 @@ public class CandidateStatusDetail extends Model {
         return updateTimeStamp;
     }
 
-    public String getReason() {
+    public Reason getReason() {
         return reason;
     }
 
@@ -63,7 +67,7 @@ public class CandidateStatusDetail extends Model {
         this.updateTimeStamp = updateTimeStamp;
     }
 
-    public void setReason(String reason) {
+    public void setReason(Reason reason) {
         this.reason = reason;
     }
 

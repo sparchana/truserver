@@ -1103,4 +1103,10 @@ public class Application extends Controller {
         }
         return ok("0");
     }
+
+    @Security.Authenticated(Secured.class)
+    public static Result getAllDeactivationReason() {
+        List<Reason> deactivationReasons = Reason.find.all();
+        return ok(toJson(deactivationReasons));
+    }
 }

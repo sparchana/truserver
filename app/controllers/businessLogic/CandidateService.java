@@ -479,11 +479,11 @@ public class CandidateService
 
         if(supportCandidateRequest != null
                 && supportCandidateRequest.getDeactivationStatus()
-                && !supportCandidateRequest.getDeactivationReason().trim().isEmpty()
+                && supportCandidateRequest.getDeactivationReason() > 0
                 && supportCandidateRequest.getDeactivationExpiryDate() != null ){
             /* Add Canidate to candidateStatusDetail and Change candidateStatus to Cold */
             candidate.setCandidateprofilestatus(CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_DEACTIVE).findUnique());
-            candidateStatusDetail.setReason(supportCandidateRequest.getDeactivationReason());
+            candidateStatusDetail.setReason(Reason.find.where().eq("ReasonId", supportCandidateRequest.getDeactivationReason()).findUnique());
             candidateStatusDetail.setStatusExpiryDate(supportCandidateRequest.getDeactivationExpiryDate());
             InteractionService.CreateInteractionForDeactivateCandidate(candidate.getCandidateUUId(), true);
             return candidateStatusDetail;

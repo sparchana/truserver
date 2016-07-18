@@ -18,7 +18,7 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
     public Integer candidateExperienceLetter ;
     public String supportNote;
     public Boolean deactivationStatus;
-    public String deactivationReason;
+    public Integer deactivationReason;
     public Date deactivationExpiryDate;
 
     public static class ExpList {
@@ -190,11 +190,11 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
         this.deactivationStatus = deactivationStatus;
     }
 
-    public String getDeactivationReason() {
+    public Integer getDeactivationReason() {
         return deactivationReason;
     }
 
-    public void setDeactivationReason(String deactivationReason) {
+    public void setDeactivationReason(Integer deactivationReason) {
         this.deactivationReason = deactivationReason;
     }
 

@@ -9,6 +9,7 @@ var jobArray = [];
 var transportationArray = [];
 var educationArray = [];
 var leadSourceArray = [];
+var deactivationReasonArray = [];
 var languageArray = [];
 var idProofArray = [];
 var check = 0;
@@ -138,6 +139,20 @@ $(document).ready(function () {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+    
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllDeactivationReason",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckDeactivationReason
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
 
     try {
         $.ajax({
@@ -181,6 +196,21 @@ $(document).ready(function () {
         console.log("exception occured!!" + exception);
     }
 });
+
+function processDataCheckDeactivationReason(reasonList) {
+    var defaultOption = $('<option value="-1" selected></option>').text("Select");
+    $('#deactivationReason').append(defaultOption);
+    reasonList.forEach(function (reason) {
+        var id = reason.reasonId;
+        var name = reason.reasonName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        var option = $('<option value=' + id + '></option>').text(name);
+        $('#deactivationReason').append(option);
+        deactivationReasonArray.push(item);
+    });
+}
 
 function getLocality() {
     return localityArray;
@@ -449,7 +479,7 @@ function prefillCandidateDeActiveStatus(candidateStatusDetail){
     if(candidateStatusDetail != null){
         $('#deactivationStatus').attr('checked', true);
         $('#deactivation-sub-options').collapse('show');
-        $('#deactivationReason').val(candidateStatusDetail.reason);
+        $('#deactivationReason').val(candidateStatusDetail.reason.reasonId);
         $("#deactivation-expiry-panel").show();
         $('#deactivationExpiryDate').val(candidateStatusDetail.statusExpiryDate);
     }
@@ -1293,7 +1323,7 @@ function saveProfileForm() {
         if(expiryDate == ""){
             $.notify({
             title: "Invalid Input: ",
-            message: "Please fill out the reason for De-Activation",
+            message: "Please provide De-Activation expiry Date",
             animate: {
                 enter: 'animated lightSpeedIn',
                 exit: 'animated lightSpeedOut'
@@ -1305,7 +1335,7 @@ function saveProfileForm() {
         } else if(currentDate.getTime() >= new Date(expiryDate).getTime()) {
             $.notify({
             title: "Invalid Input: ",
-            message: "Please provide a valid expiry date",
+            message: "Please provide a valid De-Activation expiry date",
             animate: {
                 enter: 'animated lightSpeedIn',
                 exit: 'animated lightSpeedOut'
@@ -1316,7 +1346,7 @@ function saveProfileForm() {
             statusCheck = 0;
         }
         var deactivationReason = $('#deactivationReason').val();
-        if(deactivationReason.length < 3 ){
+        if(deactivationReason < 0){
             $.notify({
             title: "Invalid Input: ",
             message: "Please provide a valid reason for deactivation",
@@ -1579,6 +1609,21 @@ function saveProfileForm() {
         statusCheck = validateExpDuration();
         console.log("statusCheck for statusCheck: " + statusCheck);
     }
+    if(Offline.state == "down"){
+        $.notify({
+                title: "Error !!:",
+                message: "Check Your Internet Connection and Please press save again",
+                animate: {
+                    enter: 'animated lightSpeedIn',
+                    exit: 'animated lightSpeedOut'
+                }
+            },{
+                type: 'danger'
+            });
+            $("#saveBtn").attr("disabled", false);
+        statusCheck = 0;
+    };
+
 
     if (statusCheck == 1) {
         var languageKnown = $('#languageTable input:checked').map(function () {
@@ -1901,10 +1946,10 @@ $(function () {
     $("#candidateSignUpSupportForm").submit(function (eventObj) {
         eventObj.preventDefault();
         saveProfileForm();
-        setTimeout(function(){
+        setTimeout(function () {
             $.notify({
-                title: "Error !!:",
-                message: "Please press save again",
+                title: "Opps Something Went Wrong! ",
+                message: "Please Press Save Button Again",
                 animate: {
                     enter: 'animated lightSpeedIn',
                     exit: 'animated lightSpeedOut'
@@ -1913,7 +1958,7 @@ $(function () {
                 type: 'danger'
             });
             $("#saveBtn").attr("disabled", false);
-        }, 10000);
+        }, 15000);
     }); // end of submit
 
     $('#datetimepicker').datetimepicker({
