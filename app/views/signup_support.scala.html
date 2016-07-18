@@ -4,6 +4,7 @@
   <head>
     <meta charset="UTF-8">
     <title>Create Candidate - Support | Trujobs.in</title>
+
           <!-- Material Design Lite -->
       <link rel="stylesheet" href="/assets/support/css/material.indigo-pink.min.css"/>
 
@@ -30,6 +31,7 @@
       <script type="text/javascript" src="/assets/support/js/bootstrap-multiselect.js"></script>
       <link rel="stylesheet" href="/assets/support/css/bootstrap-multiselect.css" type="text/css"/>
 
+      <script type="text/javascript" src="/assets/support/js/bootstrap-notify.min.js"></script>
       <script type="text/javascript" src="/assets/support/js/sign_up_support.js"></script>
 
       <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
@@ -39,6 +41,11 @@
       <script type="text/javascript" src="/assets/support/js/material.min.js"></script>
       <!-- Material Design icon font -->
       <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+
+          <!-- Offline Check -->
+      <link rel="icon" type="image/png" href="/assets/img/icon.png">
+      <script type="text/javascript" src="/assets/support/js/offline.min.js"></script>
+      <link rel="stylesheet" href="/assets/support/css/offline-theme-chrome.css"/>
 
   </head>
 
@@ -125,6 +132,18 @@
                             <div class="col-sm-3"><h5>Candidate Mobile:</h5></div>
                             <div class="col-sm-9">
                                 <input id="candidateMobile" placeholder="What is your mobile no.?" name="candidateMobile" type="text" maxlength="10" class="form-control input-md" >
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h5>Candidate Alt Mobile_1 (Optional):</h5></div>
+                            <div class="col-sm-9">
+                                <input id="candidateSecondMobile" placeholder="What is your Alternate mobile no.?" name="candidateSecondMobile" type="text" maxlength="10" class="form-control input-md" >
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h5>Candidate Alt Mobile_2 (Optional):</h5></div>
+                            <div class="col-sm-9">
+                                <input id="candidateThirdMobile" placeholder="What is your Another Alternate mobile no.?" name="candidateThirdMobile" type="text" maxlength="10" class="form-control input-md" >
                             </div>
                         </div>
 
@@ -416,6 +435,31 @@
                                 <div class="col-sm-7" style="margin-top: 6px;">
                                     <input type="radio" name="experienceLetter" id="experienceLetterY" value="1">&nbsp;Yes&nbsp;&nbsp;
                                     <input type="radio" name="experienceLetter" id="experienceLetterN" value="0">&nbsp;No
+                                </div>
+                            </div>
+                        </div>
+
+                        <h4 style="background: #E57373;color: white;padding: 2%; border-radius: 8px">Activate/De-Activate Panel</h4>
+                        <div id="CandidateStatusDetail_panel">
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-5"><h5>Mark as Active/De-Active?:</h5></div>
+                                <div class="col-sm-7" style="margin-top: 6px;">
+                                    <input type="checkbox" name="deactivationStatus" id="deactivationStatus" value="1" data-toggle="collapse" data-target="#deactivation-sub-options" >&nbsp;Deactivate&nbsp;&nbsp;
+                                </div>
+                            </div>
+                            <div id="deactivation-sub-options" class="panel-collapse collapse">
+                            <div id="deactivation-reason-panel" class="row" style="margin-top: 4px;">
+                                <div class="col-sm-5"><h5>* Select Reason for Deactivation?:</h5></div>
+                                <div class="col-sm-7" style="margin-top: 6px;">
+                                    <select id="deactivationReason" required>
+                                    </select>
+                                </div>
+                            </div>
+                                <div id="deactivation-expiry-panel"  class="row" style="margin-top: 4px;">
+                                    <div class="col-sm-5"><h5>De-Activation Expiry Date:</h5></div>
+                                    <div class="col-sm-7">
+                                        <input id="deactivationExpiryDate" name="deactivationExpiryDate" type="date" class="form-control input-md"  data-date-inline-picker="true"/>
+                                    </div>
                                 </div>
                             </div>
                         </div>

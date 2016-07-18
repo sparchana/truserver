@@ -9,6 +9,7 @@ var jobArray = [];
 var transportationArray = [];
 var educationArray = [];
 var leadSourceArray = [];
+var deactivationReasonArray = [];
 var languageArray = [];
 var idProofArray = [];
 var check = 0;
@@ -138,6 +139,20 @@ $(document).ready(function () {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+    
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllDeactivationReason",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckDeactivationReason
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
 
     try {
         $.ajax({
@@ -182,6 +197,21 @@ $(document).ready(function () {
     }
 });
 
+function processDataCheckDeactivationReason(reasonList) {
+    var defaultOption = $('<option value="-1" selected></option>').text("Select");
+    $('#deactivationReason').append(defaultOption);
+    reasonList.forEach(function (reason) {
+        var id = reason.reasonId;
+        var name = reason.reasonName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        var option = $('<option value=' + id + '></option>').text(name);
+        $('#deactivationReason').append(option);
+        deactivationReasonArray.push(item);
+    });
+}
+
 function getLocality() {
     return localityArray;
 }
@@ -208,7 +238,15 @@ function processDataAndFillAllFields(returnedData) {
         } else {
             $("#candidateSecondName").val(returnedData.candidateLastName);
         }
+
         $("#candidateMobile").val(returnedData.candidateMobile.substring(3, 13));
+        if(returnedData.candidateSecondMobile != null){
+            $("#candidateSecondMobile").val(returnedData.candidateSecondMobile.substring(3, 13));
+        }
+        if(returnedData.candidateThirdMobile){
+            $("#candidateThirdMobile").val(returnedData.candidateThirdMobile.substring(3, 13));
+        }
+
 
         /* get Candidate's job preference */
         try {
@@ -415,6 +453,11 @@ function processDataAndFillAllFields(returnedData) {
         } catch (err) {
             console.log(err);
         }
+
+        if(returnedData.candidateStatusDetail != null){
+            prefillCandidateDeActiveStatus(returnedData.candidateStatusDetail);
+        }
+
         if (returnedData.languageKnownList != null) {
             prefillLanguageTable(returnedData.languageKnownList);
         }
@@ -428,6 +471,17 @@ function processDataAndFillAllFields(returnedData) {
                 candidateSkill.push(obj);
             });
         }
+    }
+}
+
+
+function prefillCandidateDeActiveStatus(candidateStatusDetail){
+    if(candidateStatusDetail != null){
+        $('#deactivationStatus').attr('checked', true);
+        $('#deactivation-sub-options').collapse('show');
+        $('#deactivationReason').val(candidateStatusDetail.reason.reasonId);
+        $("#deactivation-expiry-panel").show();
+        $('#deactivationExpiryDate').val(candidateStatusDetail.statusExpiryDate);
     }
 }
 
@@ -660,7 +714,16 @@ function processLeadUpdate(returnedData) {
         // existing data hence pre fill form
     } else {
         clearModal();
-        alert('Unable to show data');
+        $.notify({
+            title: "Invalid Input: ",
+            message: "Unable to show data",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
     }
     window.location = "/support";
 }
@@ -669,6 +732,11 @@ function activateEdit() {
     $("#saveBtn").prop("disabled", false);
     $("#cancelBtn").prop("disabled", false);
     $("#candidateSignUpSupportForm *").prop("disabled", false);
+    if($("#candidateSecondMobile").val().length == 10){
+        $("#candidateThirdMobile").prop("disabled", false);
+    } else {
+        $("#candidateThirdMobile").prop("disabled", true);
+    }
     $('#btnFloatFollowUp').prop('disabled', false);
     $('#callNoClass').hide();
 }
@@ -870,7 +938,16 @@ function validateExpDuration(){
     });
     console.log("totalSelectedExpValue: " + totalSelectedExpValue + " totalExpInMonths:" + totalExpInMonths);
     if (totalSelectedExpValue > totalExpInMonths) {
-        alert('Total Experience does not match with individual experience');
+        $.notify({
+            title: "Invalid Input: ",
+            message: "Total Experience does not match with individual experience",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
         return 0;
     } else {
         return 1;
@@ -1113,13 +1190,32 @@ function prefillInteractionNote(leadId) {
 function validateCurrentJob(currentJobValue) {
     var cellValue = $('#candidatePastCompany_'+currentJobValue).val();
     if(cellValue == "") {
-        alert("Please specify company name");
+
+        $.notify({
+            title: "Invalid Input: ",
+            message: "Please specify company name",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
         $('input:radio[name="currentJob"]:checked').attr('checked',false);
     }
     if($('input:radio[name="employed"]:checked').val() == "0"){
         $('input:radio[name="currentJob"]:checked').attr('checked',false);
         $('input:radio[name="currentJob"]').attr('disabled',true);
-        alert("Please mark Currently Employed as Yes to specify current company")
+        $.notify({
+            title: "Invalid Input: ",
+            message: "Please mark Currently Employed as Yes to specify current compan",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
     }
 }
 
@@ -1176,7 +1272,16 @@ function updateFollowUpValue() {
     if ($('#followUpRequired').is(':checked') && scheduleTime.length != 0) {
         updateFollowUpApiTrigger();
     } else {
-        alert('Please specify Follow Up Date/Time');
+        $.notify({
+            title: "Invalid Input: ",
+            message: "Please specify Follow Up Date/Time",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
     }
 }
 
@@ -1189,6 +1294,8 @@ function saveProfileForm() {
     var firstName = $('#candidateFirstName').val();
     var lastName = $('#candidateSecondName').val();
     var phone = $('#candidateMobile').val();
+    var secondPhone = $('#candidateSecondMobile').val();
+    var thirdPhone = $('#candidateThirdMobile').val();
     var firstNameCheck = validateName(firstName);
     if (lastName != "") {
         var lastNameCheck = validateName(lastName);
@@ -1209,80 +1316,314 @@ function saveProfileForm() {
     var expYear = parseInt($('#candidateTotalExperienceYear').val());
     var totalExp = expMonth + (12 * expYear);
 
+    /* deactivation requirements */
+    if($('#deactivationStatus').is(':checked')){
+        var expiryDate = $("#deactivationExpiryDate").val();
+        var currentDate = new Date();
+        if(expiryDate == ""){
+            $.notify({
+            title: "Invalid Input: ",
+            message: "Please provide De-Activation expiry Date",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
+            statusCheck = 0;
+        } else if(currentDate.getTime() >= new Date(expiryDate).getTime()) {
+            $.notify({
+            title: "Invalid Input: ",
+            message: "Please provide a valid De-Activation expiry date",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
+            statusCheck = 0;
+        }
+        var deactivationReason = $('#deactivationReason').val();
+        if(deactivationReason < 0){
+            $.notify({
+            title: "Invalid Input: ",
+            message: "Please provide a valid reason for deactivation",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
+            statusCheck = 0;
+        }
+    }
+
     if (selectedDate > todayDate) {
         dobCheck = 0;
+    }
+
+    // check alternate number format
+    var secondMobile = validateMobile(secondPhone);
+    if(secondMobile != 2 && secondPhone != ""){
+        statusCheck = 0;
+        $.notify({
+            title: "Invalid Input: ",
+            message: "Alternate number should be 10 digit",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
+    }
+    var thirdMobile= validateMobile(thirdPhone);
+    if(thirdMobile != 2 && thirdPhone != ""){
+        statusCheck = 0;
+        $.notify({
+            title: "Invalid Input: ",
+            message: "Alternate number should be 10 digit",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
     }
 
     //checking first name
     switch (firstNameCheck) {
         case 0:
-            alert("First name contains number. Please Enter a valid First Name");
+            $.notify({
+            title: "Invalid Input: ",
+            message: "First name contains number. Please Enter a valid First Name",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
             statusCheck = 0;
             break;
         case 2:
-            alert("First Name cannot be blank spaces. Enter a valid first name");
+            $.notify({
+            title: "Invalid Input: ",
+            message: "First Name cannot be blank spaces. Enter a valid first name",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
             statusCheck = 0;
             break;
         case 3:
-            alert("First name contains special symbols. Enter a valid first name");
+            $.notify({
+            title: "Invalid Input: ",
+            message: "First name contains special symbols. Enter a valid first name",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
             statusCheck = 0;
             break;
         case 4:
-            alert("Please enter your first name");
+            $.notify({
+            title: "Invalid Input: ",
+            message: "Please enter your first name",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
             statusCheck = 0;
             break;
     }
 
     if (res == 0) {
-        alert("Enter a valid mobile number");
+        $.notify({
+            title: "Invalid Input: ",
+            message: "Enter a valid mobile number",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
         statusCheck = 0;
     } else if (res == 1) {
-        alert("Enter 10 digit mobile number");
+        $.notify({
+            title: "Invalid Input: ",
+            message: "Enter 10 digit mobile number",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
         statusCheck = 0;
     } else if (localitySelected == "") {
-        alert("Please Enter your Job Localities");
+        $.notify({
+            title: "Invalid Input: ",
+            message: "Please Enter your Job Localities",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
         statusCheck = 0;
     } else if (jobSelected == "") {
-        alert("Please Enter the Jobs you are Interested");
+        $.notify({
+            title: "Invalid Input: ",
+            message: "Please Enter the Jobs you are Interested",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
         statusCheck = 0;
     } else if (dobCheck == 0) {
-        alert("Please enter valid date of birth");
+        $.notify({
+            title: "Invalid Input: ",
+            message: "Please enter valid date of birth",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
         statusCheck = 0;
     } else if ($('#candidateTotalExperienceYear').val() > 30) {
-        alert("Please enter valid years of experience");
+        $.notify({
+            title: "Invalid Input: ",
+            message: "Please enter valid years of experience",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
         statusCheck = 0;
     } else if (($('input:radio[name="workExperience"]:checked').val() == 1) && totalExp == 0) {
-        alert("Please select total years of experience");
+        $.notify({
+            title: "Invalid Input: ",
+            message: "Please select total years of experience",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
         statusCheck = 0;
     }
 
     //checking last name
     switch (lastNameCheck) {
         case 0:
-            alert("Last name contains number. Please Enter a valid Last Name");
+            $.notify({
+            title: "Invalid Input: ",
+            message: "Last name contains number. Please Enter a valid Last Name",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
             statusCheck = 0;
             break;
         case 2:
-            alert("Last Name cannot be blank spaces. Enter a valid Last name");
+            $.notify({
+            title: "Invalid Input: ",
+            message: "Last Name cannot be blank spaces. Enter a valid Last name",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
             statusCheck = 0;
             break;
         case 3:
-            alert("Last name contains special symbols. Enter a valid Last name");
+            $.notify({
+            title: "Invalid Input: ",
+            message: "Last name contains special symbols. Enter a valid Last name",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
             statusCheck = 0;
             break;
         case 4:
-            alert("Please enter your Last name");
+            $.notify({
+            title: "Invalid Input: ",
+            message: "Please enter your Last name",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
             statusCheck = 0;
             break;
     }
     if($('#leadSource').val() == '-1'){
-        alert('Please select a Lead Source');
+        $.notify({
+            title: "Invalid Input: ",
+            message: "Please select a Lead Source",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
+        });
         statusCheck = 0;
     }
     if(statusCheck != 0){
         statusCheck = validateExpDuration();
         console.log("statusCheck for statusCheck: " + statusCheck);
     }
+    if(Offline.state == "down"){
+        $.notify({
+                title: "Error !!:",
+                message: "Check Your Internet Connection and Please press save again",
+                animate: {
+                    enter: 'animated lightSpeedIn',
+                    exit: 'animated lightSpeedOut'
+                }
+            },{
+                type: 'danger'
+            });
+            $("#saveBtn").attr("disabled", false);
+        statusCheck = 0;
+    };
+
 
     if (statusCheck == 1) {
         var languageKnown = $('#languageTable input:checked').map(function () {
@@ -1432,6 +1773,8 @@ function saveProfileForm() {
                 candidateFirstName: $('#candidateFirstName').val(),
                 candidateSecondName: $('#candidateSecondName').val(),
                 candidateMobile: $('#candidateMobile').val(),
+                candidateSecondMobile: $('#candidateSecondMobile').val(),
+                candidateThirdMobile: $('#candidateThirdMobile').val(),
                 candidateLocality: candidatePreferredLocality,
                 candidateJobPref: candidatePreferredJob,
 
@@ -1462,8 +1805,10 @@ function saveProfileForm() {
                 expList: expList,
                 candidateEducationCompletionStatus: parseInt($('input:radio[name="candidateEducationCompletionStatus"]:checked').val()),
                 pastCompanyList: pastJobArray,
-                candidateLastWithdrawnSalary: parseInt($('#candidateLastWithdrawnSalary').val())
-
+                candidateLastWithdrawnSalary: parseInt($('#candidateLastWithdrawnSalary').val()),
+                deactivationStatus: $('#deactivationStatus').is(':checked'),
+                deactivationReason: $('#deactivationReason').val(),
+                deactivationExpiryDate: $('#deactivationExpiryDate').val()
             };
 
             $.ajax({
@@ -1523,9 +1868,22 @@ function clickExperienced(){
         unlockcurrentJobRadio();
     }
 }
+function ifMobileExists(returnedId) {
+    if(returnedId != null && returnedId != "0"){
+        window.location = "/candidateSignupSupport/"+returnedId;
+    }
+}
 
 // form_candidate ajax script
 $(function () {
+
+    /* offline check init */
+    var run = function(){
+        if (Offline.state === 'up')
+            Offline.check();
+    };
+    setInterval(run, 3000);
+
     var pathname = window.location.pathname; // Returns path only
     var pathElement = pathname.split('/');
     pathElement = pathElement[(pathElement.length) - 1];
@@ -1535,6 +1893,21 @@ $(function () {
         if ($('#candidateMobile').val().length == 10) {
             $('#panel-note').show();
             $('#btnFloatFollowUp').prop('disabled', false);
+            $.notify({
+                message: "Please wait while we check if the candidate already exists.",
+                animate: {
+                    enter: 'animated lightSpeedIn',
+                    exit: 'animated lightSpeedOut'
+                }
+            },{
+                type: 'warning'
+            });
+            $.ajax({
+                type: "GET",
+                url: "/support/ifExists/"+$('#candidateMobile').val(),
+                contentType: "application/json; charset=utf-8",
+                success: ifMobileExists
+            });
         }
     });
 
@@ -1543,6 +1916,11 @@ $(function () {
         generateExperience($('#candidateJobPref').val());
         prefillCandidatePastJobExp(candidatePastJobExp);
         unlockcurrentJobRadio();
+    });
+    $('#candidateSecondMobile').change(function () {
+        if($(this).val().length == 10){
+            $("#candidateThirdMobile").prop("disabled", false);
+        }
     });
     // auto save code : incomplete
     /*  $('#candidateSignUpSupportForm').change(function () {
@@ -1568,6 +1946,19 @@ $(function () {
     $("#candidateSignUpSupportForm").submit(function (eventObj) {
         eventObj.preventDefault();
         saveProfileForm();
+        setTimeout(function () {
+            $.notify({
+                title: "Opps Something Went Wrong! ",
+                message: "Please Press Save Button Again",
+                animate: {
+                    enter: 'animated lightSpeedIn',
+                    exit: 'animated lightSpeedOut'
+                }
+            },{
+                type: 'danger'
+            });
+            $("#saveBtn").attr("disabled", false);
+        }, 15000);
     }); // end of submit
 
     $('#datetimepicker').datetimepicker({

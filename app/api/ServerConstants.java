@@ -27,6 +27,8 @@ public class ServerConstants {
     public static final String INTERACTION_RESULT_EXISTING_CANDIDATE_CALLED_BACK = "Existing Candidate Called Back";
     public static final String INTERACTION_RESULT_FIRST_INBOUND_CALL = "First Inbound Call";
     public static final String INTERACTION_RESULT_SELF_SIGNEDIN = "Candidate Self Signed In";
+    public static final String INTERACTION_RESULT_CANDIDATE_DEACTIVATED= "Candidate Deactivated";
+    public static final String INTERACTION_RESULT_CANDIDATE_ACTIVATED= "Candidate Activated";
 
     public static final String INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB = "Candidate applied to a job: ";
     public static final String INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB = "Candidate tried to apply to a job: ";
@@ -99,7 +101,8 @@ public class ServerConstants {
 
     public static final String LEAD_INTEREST_UNKNOWN = "Unknown";
 
-    public static final int CANDIDATE_STATE_NEW = 1;
+    public static final int CANDIDATE_STATE_ACTIVE = 1;
+    public static final int CANDIDATE_STATE_DEACTIVE = 2;
 
     public static final String INTERACTION_CREATED_BY_AGENT = "AGENT 1";
 

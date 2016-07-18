@@ -288,7 +288,7 @@ $(function() {
                 var d = {
                     candidatePassword: authPassword,
                     candidateAuthMobile: authMobile
-                }
+                };
                 console.log("userMobile: " + authMobile);
                 $.ajax({
                     type: "POST",

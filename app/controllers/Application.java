@@ -1089,15 +1089,9 @@ public class Application extends Controller {
 
     @Security.Authenticated(Secured.class)
     public static Result invalidateDbCache() {
-
-        String sessionId = session().get("sessionId");
-        Developer developer = Developer.find.where().eq("developerSessionId", sessionId ).findUnique();
-        if(developer != null && developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_REC) {
-            ServerCacheManager serverCacheManager = Ebean.getServerCacheManager();
-            serverCacheManager.clearAll();
-            return ok("Cleared Static Cache");
-        }
-        return redirect("/street");
+        ServerCacheManager serverCacheManager = Ebean.getServerCacheManager();
+        serverCacheManager.clearAll();
+        return ok("Cleared Static Cache");
     }
 
     @Security.Authenticated(SuperSecured.class)
@@ -1123,5 +1117,23 @@ public class Application extends Controller {
     @Security.Authenticated(SuperSecured.class)
     public static Result uploadCSV() {
         return ok(views.html.uploadcsv.render());
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result ifExists(String mobile) {
+        if(mobile != null){
+            mobile = FormValidator.convertToIndianMobileFormat(mobile);
+            Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
+            if(existingCandidate != null) {
+                return ok(toJson(existingCandidate.getLead().getLeadId()));
+            }
+        }
+        return ok("0");
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result getAllDeactivationReason() {
+        List<Reason> deactivationReasons = Reason.find.all();
+        return ok(toJson(deactivationReasons));
     }
 }

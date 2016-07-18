@@ -34,6 +34,7 @@ GET      /updateLeadType/:leadId/:newStatus                       controllers.Ap
 GET      /updateLeadStatus/:leadId/:leadStatus/:res               controllers.Application.updateLeadStatus(leadId: Long, leadStatus: Integer,res: String)
 GET      /support/administrator/alphaRequest/:mobile              controllers.Application.removeDuplicateLeadOrCandidate(mobile: String)
 GET      /support/administrator/uploadCSV                         controllers.Application.uploadCSV()
+GET      /support/ifExists/:mobile                                controllers.Application.ifExists(mobile: String)
 
 POST     /addCompany                                              controllers.Application.addCompany()
 POST     /addCompanyLogo                                          controllers.Application.addCompanyLogo()
@@ -52,6 +53,7 @@ POST     /getJobExpQuestion/:jobRoleIdList                        controllers.Ap
 POST     /getSearchCandidateResult                                controllers.Application.getSearchCandidateResult()
 POST     /processCsv                                              controllers.Application.processcsv()
 POST     /signUpSupport                                           controllers.Application.signUpSupport()
+POST     /getAllDeactivationReason                                controllers.Application.getAllDeactivationReason()
 
 # user dashboard
 # ~~~~~~~~~~~~~~
@@ -103,4 +105,5 @@ POST        /api/alpha/:vId                                                     
 GET         /robots.txt                                                          controllers.Assets.at(path="/public", file="robots.txt")
 GET         /assets/*file                                                        controllers.Assets.at(path="/public", file)
 GET         /sitemap.xml                                                         controllers.Assets.at(path="/public", file="sitemap.xml")
+GET         /favicon.ico                                                         controllers.Assets.at(path="/public/img/", file="icon.png")
 #GET   /webjars/*file                           controllers.WebJarAssets.at(file)
