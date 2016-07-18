@@ -1970,4 +1970,11 @@ $(function () {
         toolbarPlacement: 'default',
         showClose: true
     });
+
+    $.browser.chrome = /chrom(e|ium)/.test(navigator.userAgent.toLowerCase());
+
+    if($.browser.chrome){
+        $( "#candidateDob").datepicker({ dateFormat: 'yy-mm-dd', changeYear: true});
+        $( "#deactivationExpiryDate").datepicker({ dateFormat: 'yy-mm-dd', changeYear: true});
+    }
 }); // end of function
