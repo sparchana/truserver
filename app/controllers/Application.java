@@ -791,9 +791,25 @@ public class Application extends Controller {
                 if(candidate.getLanguageKnownList() != null && candidate.getLanguageKnownList().size() > 0) {
                     List<LanguageKnown> languageKnownList = candidate.getLanguageKnownList();
 
+                    Integer canRead;
+                    Integer canWrite;
+                    Integer canSpeak;
                     for(LanguageKnown l : languageKnownList){
-                        languagesKnown += l.getLanguage().getLanguageName() + "(" + l.getReadingAbility() + ", " +
-                                l.getWritingAbility() + ", " + l.getVerbalAbility() + "), ";
+                        canRead = l.getReadingAbility();
+                        if(canRead == null){
+                            canRead = 0;
+                        }
+                        canWrite = l.getWritingAbility();
+                        if(canWrite == null){
+                            canWrite = 0;
+                        }
+                        canSpeak = l.getVerbalAbility();
+                        if(canSpeak == null){
+                            canSpeak = 0;
+                        }
+
+                        languagesKnown += l.getLanguage().getLanguageName() + "(" + canRead + ", " +
+                                canWrite + ", " + canSpeak + "), ";
                     }
                 }
 
