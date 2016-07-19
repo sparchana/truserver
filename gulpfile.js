@@ -49,6 +49,7 @@ jsOrder = {
     btnHtml5: paths.supportJs+"btnExport/buttons.html5.min.js",
     momentJs: paths.supportJs+"moment-2.8.4.min.js",
     datetimeMomentJs: paths.supportJs+"datetime-moment.js",
+    jqueryUi: paths.supportJs+"jquery-ui.js",
     searchController: paths.supportJs+"searchController.js"
 };
 
@@ -59,7 +60,8 @@ cssOrder = {
     search: paths.supportCss+"search.css",
     npProgress: paths.supportCss+"nprogress.css",
     tokenFb: paths.supportCss+"token-input-facebook.css",
-    btnDt: paths.supportCss+"buttons.dataTables.min.css"
+    btnDt: paths.supportCss+"buttons.dataTables.min.css",
+    jqueryUi: paths.supportCss+"jquery-ui.css"
 };
 
 
@@ -88,7 +90,7 @@ gulp.task('styles', function() {
 
 // JS concat, strip debugging and minify
 gulp.task('supportScripts', function() {
-    gulp.src([jsOrder.bootstrap, jsOrder.jquery, jsOrder.jqDt, jsOrder.npProgress, jsOrder.tokenInput, jsOrder.btnDt, jsOrder.btnFlash, jsOrder.jsZip, jsOrder.vfsFonts, jsOrder.btnHtml5, jsOrder.momentJs, jsOrder.datetimeMomentJs, jsOrder.searchController])
+    gulp.src([jsOrder.bootstrap, jsOrder.jquery, jsOrder.jqDt, jsOrder.npProgress, jsOrder.tokenInput, jsOrder.btnDt, jsOrder.btnFlash, jsOrder.jsZip, jsOrder.vfsFonts, jsOrder.btnHtml5, jsOrder.momentJs, jsOrder.datetimeMomentJs, jsOrder.jqueryUi, jsOrder.searchController])
         .pipe(concat('sapp.min.js'))
         .pipe(gulpif(argv.prod, uglify(), beautify()))
         .pipe(gulpif(argv.prod, stripDebug()))
@@ -97,7 +99,7 @@ gulp.task('supportScripts', function() {
 
 // style minify
 gulp.task('supportStyles', function() {
-    gulp.src([cssOrder.bootstrap, cssOrder.dtBootstrap, cssOrder.jqDt, cssOrder.search, cssOrder.npProgress, cssOrder.tokenFb, cssOrder.btnDt])
+    gulp.src([cssOrder.bootstrap, cssOrder.dtBootstrap, cssOrder.jqDt, cssOrder.search, cssOrder.npProgress, cssOrder.tokenFb, cssOrder.btnDt, cssOrder.jqueryUi])
         .pipe(concat('sapp.min.css'))
         .pipe(gulpif(argv.prod, minifyCSS()))
         .pipe(gulp.dest('./public/build/support/'));
