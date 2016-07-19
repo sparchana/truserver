@@ -70,9 +70,7 @@ input::-webkit-inner-spin-button {
     background: #2980b9;
 }
 
-.profileBody{
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
+.profileBodyEditProfile{
     background: #fafafa;
     padding: 2%;
 }
@@ -151,6 +149,16 @@ input::-webkit-inner-spin-button {
     background: #ffffff;
 }
 
+.selectDropdownInvalid{
+    overflow:scroll;
+    margin-top: 2px;
+    display: inline-block;
+    height: 34px;
+    border: 1px solid #eaeaea;
+    border-radius: 4px;
+    background: #ffb07f;
+}
+
 #editProfileSteps{
     display: inline-block;
     border-radius: 100px;
@@ -218,11 +226,6 @@ input::-webkit-inner-spin-button {
     margin-right: -250px;
 }
 
-.appliedBtn {
-    color: #fff;
-    border-color: #138025;
-    background-color: #138025;
-}
 
 /* Sidebar Styles */
 

@@ -4,36 +4,54 @@
   <head>
     <meta charset="UTF-8">
     <title>Create Candidate - Support | Trujobs.in</title>
-          <!-- Material Design Lite -->
-      <link rel="stylesheet" href="/assets/support/css/material.indigo-pink.min.css">
 
-      <link rel="stylesheet" href="/assets/support/css/bootstrap.min.css">
+          <!-- Material Design Lite -->
+      <link rel="stylesheet" href="/assets/support/css/material.indigo-pink.min.css"/>
+
+      <link rel="stylesheet" href="/assets/support/css/bootstrap.min.css"/>
 
       <script type="text/javascript" src="/assets/support/js/jquery-1.12.0.min.js"></script>
       <link rel="stylesheet" href="/assets/css/token-input.css" type="text/css" />
       <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
 
-      <link rel="stylesheet" href="/assets/support/css/style.css">
-      <link rel="stylesheet" type="text/css" href="/assets/new/css/myStyle.css">
-      <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/dashboard.css">
+      <link rel="stylesheet" href="/assets/support/css/style.css"/>
+      <link rel="stylesheet" type="text/css" href="/assets/new/css/myStyle.css"/>
+      <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/dashboard.css"/>
 
-      <link rel="stylesheet" href="/assets/support/css/bootstrap-datetimepicker.min.css">
+      <link rel="stylesheet" href="/assets/support/css/bootstrap-datetimepicker.min.css"/>
       <script type="text/javascript" src="/assets/support/js/Moment.js"></script>
 
       <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lato" />
       <link rel="stylesheet" href="/assets/support/css/nprogress.css">
       <link rel="stylesheet" href="/assets/support/css/animate.css">
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+      <script type="text/javascript" src="/assets/support/js/jquery-1.11.1.min.js"></script>
       <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
-    <script type="text/javascript" src="/assets/support/js/sign_up_support.js"></script>
 
-    <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
-    <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css">
+          <!-- Include the plugin's CSS and JS: -->
+      <script type="text/javascript" src="/assets/support/js/bootstrap-multiselect.js"></script>
+      <link rel="stylesheet" href="/assets/support/css/bootstrap-multiselect.css" type="text/css"/>
+
+      <script type="text/javascript" src="/assets/support/js/bootstrap-notify.min.js"></script>
+
+          <!-- Making datepicker easy for firefox lovers -->
+      <link rel="stylesheet" href="/assets/support/css/jquery-ui.css">
+      <script src="/assets/support/js/jquery-ui.js"></script>
+
+      <script type="text/javascript" src="/assets/support/js/sign_up_support.js"></script>
+
+      <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
+      <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css"/>
 
       <!-- Material Design Lite -->
       <script type="text/javascript" src="/assets/support/js/material.min.js"></script>
       <!-- Material Design icon font -->
-      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons"/>
+
+          <!-- Offline Check -->
+      <link rel="icon" type="image/png" href="/assets/img/icon.png">
+      <script type="text/javascript" src="/assets/support/js/offline.min.js"></script>
+      <link rel="stylesheet" href="/assets/support/css/offline-theme-chrome.css"/>
+
   </head>
 
   <body style="font-size: 13px;">
@@ -121,6 +139,18 @@
                                 <input id="candidateMobile" placeholder="What is your mobile no.?" name="candidateMobile" type="text" maxlength="10" class="form-control input-md" >
                             </div>
                         </div>
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h5>Candidate Alt Mobile_1 (Optional):</h5></div>
+                            <div class="col-sm-9">
+                                <input id="candidateSecondMobile" placeholder="What is your Alternate mobile no.?" name="candidateSecondMobile" type="text" maxlength="10" class="form-control input-md" >
+                            </div>
+                        </div>
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h5>Candidate Alt Mobile_2 (Optional):</h5></div>
+                            <div class="col-sm-9">
+                                <input id="candidateThirdMobile" placeholder="What is your Another Alternate mobile no.?" name="candidateThirdMobile" type="text" maxlength="10" class="form-control input-md" >
+                            </div>
+                        </div>
 
                         <div class="row" style="margin-top: 4px">
                             <div class="col-sm-3"><h5>Job Role Preference:</h5></div>
@@ -168,7 +198,7 @@
                         <div class="row" style="margin-top: 4px">
                             <div class="col-sm-3"><h5>How did you find out about Us :</h5></div>
                             <div class="col-sm-9" style="margin-top: 6px;">
-                                <select id="leadSource">
+                                <select id="leadSource" required>
                                 </select>
                             </div>
                         </div>
@@ -180,13 +210,6 @@
                                 <div class="col-sm-3"><h5>Date of Birth:</h5></div>
                                 <div class="col-sm-9">
                                     <input id="candidateDob" name="candidateDob" placeholder="When is your Birthday?" type="date" class="form-control input-md"  data-date-inline-picker="true"/>
-                                </div>
-                            </div>
-
-                            <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-3"><h5>Phone Type:</h5></div>
-                                <div class="col-sm-9">
-                                    <input id="candidatePhoneType" placeholder="Which phone do you use? (Eg. Samsung Galaxy S3)" type="text" class="form-control input-md">
                                 </div>
                             </div>
 
@@ -219,15 +242,6 @@
                             </div>
 
                             <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-3"><h5>Married?:</h5></div>
-                                <div class="col-sm-9" style="margin-top: 6px;">
-
-                                    <input type="radio" name="married" id="married" value="0">&nbsp;Married&nbsp;&nbsp;
-                                    <input type="radio" name="married" id="marriedNot" value="1">&nbsp;Not Married
-                                </div>
-                            </div>
-
-                            <div class="row" style="margin-top: 4px">
                                 <div class="col-sm-3"><h5>Candidate Email:</h5></div>
                                 <div class="col-sm-9">
                                     <input id="candidateEmail" placeholder="What is your email ID?" name="candidateEmail" type="email" class="form-control input-md">
@@ -237,7 +251,7 @@
 
                         <hr>
                         <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Employment Status and Experience</h4>
-                        <div id="">
+                        <div>
                             <div class="row" style="margin-top: 4px">
                                 <div class="col-sm-3"><h5>Your Work Experience:</h5></div>
                                 <div class="col-sm-9">
@@ -252,142 +266,65 @@
                                 </div>
                             </div>
 
-                            <div class="row" id="totalWorkExperience" style="display: none; margin-top: 4px">
-                                <div class="col-sm-3"><h5>Total Experience:</h5></div>
-                                <div class="col-sm-9">
-                                    <input id="candidateTotalExperienceYear" value="0" style="width: 15%; display: inline-block" placeholder="Years" type="number" class="form-control input-md">&nbsp;Years&nbsp;&nbsp;
-                                    <input id="candidateTotalExperienceMonth" value="0" style="width: 15%; display: inline-block" placeholder="Months" type="number" min="0" max="11" step="1"  class="form-control input-md">&nbsp; Months
+                            <div id="totalWorkExperience" style="display: none; margin-top: 4px">
+                                <div class="row" style="margin-top: 4px">
+                                    <div class="col-sm-3"><h5>Are you currently Working?:</h5></div>
+                                    <div class="col-sm-9" style="margin-top: 6px;">
+                                        <input type="radio" name="employed" id="employed" value="1" onclick="employedYes()">&nbsp;Yes&nbsp;&nbsp;
+                                        <input type="radio" name="employed" id="employedNot" value="0" onclick="employedNo()">&nbsp;No
+                                    </div>
                                 </div>
+
+                                <div class="row">
+                                    <div class="col-sm-3"><h5>Total Experience:</h5></div>
+                                    <div class="col-sm-9">
+                                        <input id="candidateTotalExperienceYear" value="0" style="width: 15%; display: inline-block" placeholder="Years" type="number" class="form-control input-md">&nbsp;Years&nbsp;&nbsp;
+                                        <input id="candidateTotalExperienceMonth" value="0" style="width: 15%; display: inline-block" placeholder="Months" type="number" min="0" max="11" step="1"  class="form-control input-md">&nbsp; Months
+                                    </div>
+                                </div>
+
+
+                                    <!-- expDuration details -->
+                                <div class="panel panel-primary" style="margin-top: 5px;" id="panel-expDuration">
+                                    <div class="panel-body" s>
+                                        <div class="row" style="margin-top: 8px;">
+                                            <div class="col-sm-12">
+                                                <div id="exp_duration_details">
+                                                    <table id="expDurationTable" class="table table-striped" cellspacing="0" width="100%">
+                                                        <thead></thead>
+                                                        <tbody></tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                    <!-- expOther details -->
+                                <div class="panel panel-primary" style="margin-top: 8px;" id="panel-expOther">
+                                    <div class="panel-body">
+                                        <div class="row" style="margin-top: 8px;">
+                                            <div class="col-sm-12">
+                                                <div id="exp_other_details">
+                                                    <table id="expOtherTable" class="table table-striped" cellspacing="0" width="100%">
+                                                        <thead></thead>
+                                                        <tbody></tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row" style="margin-top: 4px">
+                                    <div class="col-sm-3"><h5>Current/Last Drawn Salary:</h5></div>
+                                    <div class="col-sm-9">
+                                        <input id="candidateLastWithdrawnSalary" placeholder="What was your LastWithdrawn Salary?" type="number" class="form-control input-md">
+                                    </div>
+                                </div>
+
                             </div>
 
-                            <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-3"><h5>Do you have a Job?:</h5></div>
-                                <div class="col-sm-9" style="margin-top: 6px;">
-                                    <input type="radio" name="employed" id="employed" value="1" onclick="employedYes()">&nbsp;Yes&nbsp;&nbsp;
-                                    <input type="radio" name="employed" id="employedNot" value="0" onclick="employedNo()">&nbsp;No
-                                </div>
-                            </div>
-
-                            <div id="employedForm" style="display: none">
-
-                                <div class="row" style="margin-top: 4px">
-                                    <div class="col-sm-3"><h5>Current Company:</h5></div>
-                                    <div class="col-sm-9">
-                                        <input id="candidateCurrentCompany" placeholder="What is your Company name?" type="text" class="form-control input-md">
-                                    </div>
-                                </div>
-
-                                <div class="row" style="margin-top: 8px">
-                                    <div class="col-sm-3"><h5>Current Job Location:</h5></div>
-                                    <div class="col-sm-9">
-                                        <input type="text" id="candidateCurrentJobLocation" >
-                                        <script type="text/javascript">
-                                                $(document).ready(function() {
-                                                    $("#candidateCurrentJobLocation").tokenInput(getLocality(), {
-                                                        theme: "facebook",
-                                                        placeholder: "Office Location",
-                                                        minChars: 0,
-                                                        prePopulate: currentJobLocationArray,
-                                                        tokenLimit: 1,
-                                                        preventDuplicates: true
-                                                    });
-                                                });
-                                        </script>
-                                    </div>
-                                </div>
-
-                                <div class="row" style="margin-top: 4px">
-                                    <div class="col-sm-3"><h5>Current Job Role:</h5></div>
-                                    <div class="col-sm-9">
-                                        <input type="text" id="candidateCurrentJobRole" >
-                                        <script type="text/javascript">
-                                                $(document).ready(function() {
-                                                    $("#candidateCurrentJobRole").tokenInput(getJob(), {
-                                                        theme: "facebook",
-                                                        placeholder: "Current Jobrole?",
-                                                        minChars: 0,
-                                                        tokenLimit: 1,
-                                                        prePopulate: currentJobRoleArray,
-                                                        preventDuplicates: true
-                                                    });
-                                                });
-                                        </script>
-                                    </div>
-                                </div>
-
-                                <div class="row" style="margin-top: 4px">
-                                    <div class="col-sm-3"><h5>Current Job Designation:</h5></div>
-                                    <div class="col-sm-9">
-                                        <input id="candidateCurrentJobDesignation" placeholder="What is your Designation?" type="text" class="form-control input-md">
-                                    </div>
-                                </div>
-
-                                <div class="row" style="margin-top: 4px">
-                                    <div class="col-sm-3"><h5>Current Job Salary:</h5></div>
-                                    <div class="col-sm-9">
-                                        <input id="candidateCurrentJobSalary" placeholder="What is your current Salary?" type="number" class="form-control input-md">
-                                    </div>
-                                </div>
-
-                                <div class="row" style="margin-top: 4px">
-                                    <div class="col-sm-3"><h5>Current Job Duration:</h5></div>
-                                    <div class="col-sm-9">
-                                        <input id="candidateCurrentJobDurationYear" value="0" style="width: 15%; display: inline-block" placeholder="Years" type="number" class="form-control input-md">&nbsp;Years&nbsp;&nbsp;
-                                        <input id="candidateCurrentJobDurationMonth"  value="0" style="width: 15%; display: inline-block"  type="number" min="0" max="11" step="1" placeholder="Months" class="form-control input-md" >&nbsp; Months
-                                    </div>
-                                </div>
-
-                                <div class="row" style="margin-top: 4px">
-                                    <div class="col-sm-3"><h5>Mode of Transport:</h5></div>
-                                    <div class="col-sm-9" style="margin-top: 8px">
-                                        <select id="selectTransportation" class="selectDropdown" >
-
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="row" style="margin-top: 4px">
-                                    <div class="col-sm-3"><h5>Current work shift?: </h5></div>
-                                    <div class="col-sm-9" style="margin-top: 8px">
-                                        <select id="currentWorkShift" class="selectDropdown" >
-
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-3"><h5>Past Company:</h5></div>
-                                <div class="col-sm-9">
-                                    <input id="candidatePastCompany" placeholder="What was your previous company Name?" type="text" class="form-control input-md">
-                                </div>
-                            </div>
-
-                            <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-3"><h5>Past Job Role:</h5></div>
-                                <div class="col-sm-9">
-                                    <input type="text" id="candidatePastJobRole" >
-                                    <script type="text/javascript">
-                                            $(document).ready(function() {
-                                                $("#candidatePastJobRole").tokenInput(getJob(), {
-                                                    theme: "facebook",
-                                                    placeholder: "What was your past Job Role?",
-                                                    minChars: 0,
-                                                    prePopulate: pastJobRoleArray,
-                                                    tokenLimit: 1,
-                                                    preventDuplicates: true
-                                                });
-                                            });
-                                    </script>
-                                </div>
-                            </div>
-
-                            <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-3"><h5>Past Job Salary:</h5></div>
-                                <div class="col-sm-9">
-                                    <input id="candidatePastJobSalary" placeholder="What was your previous job salary?" type="number" class="form-control input-md">
-                                </div>
-                            </div>
                         </div>
 
                         <hr>
@@ -400,6 +337,14 @@
                                 <div class="col-sm-9">
                                     <div style="width: 100%; height: 34px;" id="candidateHighestEducation"  class="btn-group" data-toggle="buttons">
                                     </div>
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 4px;">
+                                <div class="col-sm-3"><h5>Have you successfully completed this course?</h5></div>
+                                <div class="col-sm-9" style="margin-top: 5%">
+                                    <input type="radio" name="candidateEducationCompletionStatus" id="eduCompleted" value="1">&nbsp;Yes&nbsp;&nbsp;
+                                    <input type="radio" name="candidateEducationCompletionStatus" id="eduCompletedNot" value="0">&nbsp;No
                                 </div>
                             </div>
 
@@ -437,21 +382,10 @@
                             <!-- Language details -->
                         <h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Language Details</h4>
                         <div id="language_details">
-                            <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-3"><h5>Mother Tongue?: </h5></div>
-                                <div class="col-sm-9" style="margin-top: 8px">
-                                    <select id="candidateMotherTongue" class="selectDropdown" >
-                                    </select>
-                                </div>
-                            </div>
                             <h5><u>Language Details:</u></h5>
                             <table class="table table-striped" cellspacing="0" width="100%">
                                 <thead>
                                     <tr>
-                                        <th>Language Name</th>
-                                        <th>Read</th>
-                                        <th>Write</th>
-                                        <th>Speak</th>
                                     </tr>
                                 </thead>
                             </table>
@@ -502,18 +436,35 @@
                             </div>
 
                             <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-5"><h5>Do you get Monthly Pay Slip?:</h5></div>
+                                <div class="col-sm-5"><h5>Do you have an Experience Letter for your Current job?:</h5></div>
                                 <div class="col-sm-7" style="margin-top: 6px;">
-                                    <input type="radio" name="payslip" id="payslipY" value="1">&nbsp;Yes&nbsp;&nbsp;
-                                    <input type="radio" name="payslip" id="payslipN" value="0">&nbsp;No
+                                    <input type="radio" name="experienceLetter" id="experienceLetterY" value="1">&nbsp;Yes&nbsp;&nbsp;
+                                    <input type="radio" name="experienceLetter" id="experienceLetterN" value="0">&nbsp;No
                                 </div>
                             </div>
+                        </div>
 
+                        <h4 style="background: #E57373;color: white;padding: 2%; border-radius: 8px">Activate/De-Activate Panel</h4>
+                        <div id="CandidateStatusDetail_panel">
                             <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-5"><h5>Do you have an Appointment Letter for your Current job?:</h5></div>
+                                <div class="col-sm-5"><h5>Mark as Active/De-Active?:</h5></div>
                                 <div class="col-sm-7" style="margin-top: 6px;">
-                                    <input type="radio" name="appointmentLetter" id="appointmentLetterY" value="1">&nbsp;Yes&nbsp;&nbsp;
-                                    <input type="radio" name="appointmentLetter" id="appointmentLetterN" value="0">&nbsp;No
+                                    <input type="checkbox" name="deactivationStatus" id="deactivationStatus" value="1" data-toggle="collapse" data-target="#deactivation-sub-options" >&nbsp;Deactivate&nbsp;&nbsp;
+                                </div>
+                            </div>
+                            <div id="deactivation-sub-options" class="panel-collapse collapse">
+                            <div id="deactivation-reason-panel" class="row" style="margin-top: 4px;">
+                                <div class="col-sm-5"><h5>* Select Reason for Deactivation?:</h5></div>
+                                <div class="col-sm-7" style="margin-top: 6px;">
+                                    <select id="deactivationReason" required>
+                                    </select>
+                                </div>
+                            </div>
+                                <div id="deactivation-expiry-panel"  class="row" style="margin-top: 4px;">
+                                    <div class="col-sm-5"><h5>* De-Activation Expiry Date:</h5></div>
+                                    <div class="col-sm-7">
+                                        <input id="deactivationExpiryDate" name="deactivationExpiryDate" type="date" class="form-control input-md"  data-date-inline-picker="true"/>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -565,19 +516,11 @@
         </div>
     </div>
       <!-- Including Bootstrap -->
+
       <script type="text/javascript" src="/assets/js/validation.js"></script>
-      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
       <script type="text/javascript" src="/assets/support/js/bootstrap.min.js"></script>
       <script type="text/javascript" src="/assets/support/js/nprogress.js"></script>
       <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
-      <script>
-              function clickFresher(){
-                  $("#totalWorkExperience").hide();
-              }
-              function clickExperienced(){
-                  $("#totalWorkExperience").show();
-              }
-      </script>
       <script type="text/javascript" src="/assets/support/js/bootstrap-datetimepicker.min.js"></script>
   </body>
 </html>

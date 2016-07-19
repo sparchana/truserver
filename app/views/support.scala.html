@@ -9,62 +9,105 @@
         <link rel="stylesheet" href="/assets/support/css/nprogress.css">
         <script type="text/javascript" src="/assets/support/js/jquery-1.12.0.min.js"></script>
 
+        <!-- Page styles -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.min.css">
+
 
         <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
         <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css">
 
         <style>
-        .btn-default.active {
-            background-color: #337ab7;
-            color: white;
+        a, a:hover{
+            text-decoration: none;
+            color: #0B4063;
         }
-        .btn-default.active:hover{
-            background-color: #337ab7;
-            color: white;
+        .mdl-layout__header-row, .mdl-layout__header .mdl-layout__drawer-button {
+            background: #1c3aae;
         }
-        .btn-default.active:focus{
-            background-color: #337ab7;
-            color: white;
+        .activeLink, .mdl-layout__header-row .mdl-navigation__link:hover, .mdl-layout__header-row .mdl-navigation__link:active{
+            background: #142875;
         }
 
         </style>
+        <script>
+      function setActive(x){
+          $(x).addClass('activeLink').siblings().removeClass('activeLink');
+      }
+    </script>
     </head>
     <body style="font-size: 13px;">
+        <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
 
-        <div class="container">
+            <div class="android-header mdl-layout__header mdl-layout__header--waterfall">
+                <div class="mdl-layout__header-row">
+                    <span class="android-title mdl-layout-title">
+                        <img class="android-logo-image" src="/assets/dashboard/img/logo-main.gif" width="140px">
+                    </span>
+                        <!-- Add spacer, to align navigation to the right in desktop -->
+                    <div class="android-header-spacer mdl-layout-spacer"></div>
+                        <!-- Navigation -->
+                    <div class="android-navigation-container">
+                        <nav class="android-navigation mdl-navigation">
+                            <a class="mdl-navigation__link activeLink" href="#" onclick="getThis(1); setActive(this)">All Leads</a>
+                            <a class="mdl-navigation__link" href="#" onclick="getThis(2); setActive(this)">All Candidates</a>
+                            <a class="mdl-navigation__link" href="#" onclick="getThis(3); setActive(this)">Show All</a>
+                            <a class="mdl-navigation__link" href="#" onclick="window.location.href='/candidateSignupSupport/0'; setActive(this)">Create Candidate</a>
+                            <a class="mdl-navigation__link" href="#" onclick="window.location.href='/searchCandidate'; setActive(this)">Search Candidate</a>
+                            <a class="mdl-navigation__link" href="#" onclick="window.location.href='/showCompanyAndJob'; setActive(this)">Recs</a>
+                            <a class="mdl-navigation__link" href="/logout">Logout</a>
+                        </nav>
+                    </div>
 
-            <h2> Support Dashboard :<a href="/logout"><button class="btn btn-danger" style="align-items: flex-end"> Logout</button></a></h2>
-            <button id="showLead" class="btn btn-default active" onclick="getThis(1)">Show Lead</button>
-            <button id="showCandidate" class="btn btn-default " onclick="getThis(2)">Show Candidates</button>
-            <button id="showAll" class="btn btn-default " onclick="getThis(3)">Show All</button>
-            <button id="createNewCandidate" class="btn btn-default " onclick="window.location.href='/createCandidateForm'">Create Candidate</button>
-            <button id="searchCandidate" class="btn btn-default" onclick="window.location.href='/searchCandidate'">Search Candidate</button>
-            <div style="margin-top: 16px"></div>
-            <table id="leadTable" class="table table-striped table-bordered" style="margin-top: 16px" cellspacing="0" width="100%">
-                <thead>
-                    <tr>
-                        <th>GID</th>
-                        <th>Record Type</th>
-                        <th>Status</th>
-                        <th>First Inbound</th>
-                        <th>Total Inbounds </th>
-                        <th>Recent Inbound</th>
-                        <th>Channel</th>
-                        <th>Mobile</th>
-                        <th>Name</th>
-                        <th>Schedule</th>
-                        <th>FUA</th>
-                    </tr>
-                </thead>
-                <tbody>
+                </div>
+            </div>
 
-                </tbody>
-            </table>
+            <div class="android-drawer mdl-layout__drawer">
+                <span class="mdl-layout-title">
+                    <img class="android-logo-image" src="/assets/dashboard/img/logo-color.gif" width="140px">
+                </span>
+                <nav class="mdl-navigation">
+                    <a class="mdl-navigation__link" href="#" onclick="getThis(1)">All Leads</a>
+                    <a class="mdl-navigation__link" href="#" onclick="getThis(2)">All Candidates</a>
+                    <a class="mdl-navigation__link" href="#" onclick="getThis(3)">Show All</a>
+                    <a class="mdl-navigation__link" href="#" onclick="window.location.href='/searchCandidate'">Search Candidate</a>
+                    <a class="mdl-navigation__link" href="#" onclick="window.location.href='/showCompanyAndJob'">Recs</a>
+                    <a class="mdl-navigation__link" href="/logout">Logout</a>
+                </nav>
+            </div>
+
+            <div class="android-content mdl-layout__content">
+                <div style="margin: 16px">
+                    <h4> Support Dashboard</h4>
+                    <div style="margin-top: 16px"></div>
+                    <table id="leadTable" class="table table-striped table-bordered" style="margin-top: 16px" cellspacing="0" width="100%">
+                        <thead>
+                            <tr>
+                                <th>GID</th>
+                                <th>Record Type</th>
+                                <th>Status</th>
+                                <th>First Inbound</th>
+                                <th>Total Inbounds </th>
+                                <th>Recent Inbound</th>
+                                <th>Channel</th>
+                                <th>Mobile</th>
+                                <th>Name</th>
+                                <th>Schedule</th>
+                                <th>FUA</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
         <script type="text/javascript" src="/assets/support/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="/assets/support/js/datatables.min.js"></script>
         <script type="text/javascript" src="/assets/support/js/jquery.dataTables.min.js"></script>
         <script type="text/javascript" src="/assets/support/js/nprogress.js"></script>
         <script type="text/javascript" src="/assets/support/js/controller.js"></script>
+            <script src="https://code.getmdl.io/1.1.3/material.min.js"></script>
+
     </body>
 </html>

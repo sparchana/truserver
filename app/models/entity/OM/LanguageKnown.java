@@ -1,6 +1,7 @@
 package models.entity.OM;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
@@ -29,8 +30,9 @@ public class LanguageKnown extends Model {
     @Column(name = "WritingAbility", columnDefinition = "int signed null")
     private Integer writingAbility;
 
+    @UpdatedTimestamp
     @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp null")
-    private Timestamp updateTimeStamp = new Timestamp(System.currentTimeMillis());
+    private Timestamp updateTimeStamp;
 
     @ManyToOne
     @JsonManagedReference
@@ -42,9 +44,15 @@ public class LanguageKnown extends Model {
     @JoinColumn(name = "CandidateId", referencedColumnName= "CandidateId")
     private Candidate candidate;
 
+    @Column(name = "Understanding", columnDefinition = "int(1) null")
+    private Integer understanding;
+
+    @Column(name = "ReadWrite", columnDefinition = "int(1) null")
+    private Integer readWrite;
+
     public static Finder<String, LanguageKnown> find = new Finder(LanguageKnown.class);
 
-    public int getLanguageKnownId() {
+    public Integer getLanguageKnownId() {
         return languageKnownId;
     }
 
@@ -52,7 +60,7 @@ public class LanguageKnown extends Model {
         this.languageKnownId = languageKnownId;
     }
 
-    public int getVerbalAbility() {
+    public Integer getVerbalAbility() {
         return verbalAbility;
     }
 
@@ -60,7 +68,7 @@ public class LanguageKnown extends Model {
         this.verbalAbility = verbalAbility;
     }
 
-    public int getReadingAbility() {
+    public Integer getReadingAbility() {
         return readingAbility;
     }
 
@@ -68,7 +76,7 @@ public class LanguageKnown extends Model {
         this.readingAbility = readingAbility;
     }
 
-    public int getWritingAbility() {
+    public Integer getWritingAbility() {
         return writingAbility;
     }
 
@@ -98,5 +106,21 @@ public class LanguageKnown extends Model {
 
     public void setCandidate(Candidate candidate) {
         this.candidate = candidate;
+    }
+
+    public Integer getUnderstanding() {
+        return understanding;
+    }
+
+    public void setUnderstanding(Integer understanding) {
+        this.understanding = understanding;
+    }
+
+    public Integer getReadWrite() {
+        return readWrite;
+    }
+
+    public void setReadWrite(Integer readWrite) {
+        this.readWrite = readWrite;
     }
 }

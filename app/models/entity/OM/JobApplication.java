@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
 import models.entity.JobPost;
+import models.entity.Static.Locality;
 import models.entity.Static.ScreeningStatus;
 
 import javax.persistence.*;
@@ -22,7 +23,7 @@ public class JobApplication extends Model {
     @Column(name = "JobApplicationId", columnDefinition = "int signed", unique = true)
     private Integer jobApplicationId;
 
-    @Column(name = "JobApplicationCreateTimeStamp", columnDefinition = "timestamp not null")
+    @Column(name = "JobApplicationCreateTimeStamp", columnDefinition = "timestamp not null default current_timestamp")
     private Timestamp jobApplicationCreateTimeStamp = new Timestamp(System.currentTimeMillis());
 
     @UpdatedTimestamp
@@ -31,6 +32,12 @@ public class JobApplication extends Model {
 
     @Column(name = "ScreeningComments", columnDefinition = "varchar(1000) null")
     private String screeningComments;
+
+    @Column(name = "PreScreenSalary", columnDefinition = "int signed null")
+    private Boolean preScreenSalary;
+
+    @Column(name = "PreScreenTimings", columnDefinition = "int signed null")
+    private Boolean preScreenTimings;
 
     @ManyToOne
     @JsonManagedReference
@@ -47,8 +54,21 @@ public class JobApplication extends Model {
     @JoinColumn(name = "CandidateId", referencedColumnName = "CandidateId")
     private Candidate candidate;
 
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "PreScreenLocation")
+    private Locality locality;
+
     public JobApplication() {
         this.jobApplicationCreateTimeStamp = new Timestamp(System.currentTimeMillis());
+    }
+
+    public Locality getLocality() {
+        return locality;
+    }
+
+    public void setLocality(Locality locality) {
+        this.locality = locality;
     }
 
     public static Model.Finder<String, JobApplication> find = new Model.Finder(JobApplication.class);
@@ -73,6 +93,22 @@ public class JobApplication extends Model {
         return jobApplicationCreateTimeStamp;
     }
 
+    public Boolean getPreScreenSalary() {
+        return preScreenSalary;
+    }
+
+    public void setPreScreenSalary(Boolean preScreenSalary) {
+        this.preScreenSalary = preScreenSalary;
+    }
+
+    public Boolean getPreScreenTimings() {
+        return preScreenTimings;
+    }
+
+    public void setPreScreenTimings(Boolean preScreenTimings) {
+        this.preScreenTimings = preScreenTimings;
+    }
+
     public void setJobApplicationCreateTimeStamp(Timestamp jobApplicationCreateTimeStamp) {
         this.jobApplicationCreateTimeStamp = jobApplicationCreateTimeStamp;
     }
@@ -81,8 +117,8 @@ public class JobApplication extends Model {
         return screeningComments;
     }
 
-    public void setScreeningComments(String screeningnComments) {
-        this.screeningComments = screeningnComments;
+    public void setScreeningComments(String screeningComments) {
+        this.screeningComments = screeningComments;
     }
 
     public ScreeningStatus getScreeningStatus() {

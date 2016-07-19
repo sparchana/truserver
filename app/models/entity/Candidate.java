@@ -2,14 +2,18 @@ package models.entity;
 
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.PrivateOwned;
+import com.avaje.ebean.annotation.UpdatedTimestamp;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.OM.*;
 import models.entity.OO.CandidateCurrentJobDetail;
 import models.entity.OO.CandidateEducation;
+import models.entity.OO.CandidateStatusDetail;
 import models.entity.OO.TimeShiftPreference;
 import models.entity.Static.CandidateProfileStatus;
 import models.entity.Static.Language;
 import models.entity.Static.Locality;
+import org.apache.commons.lang3.text.WordUtils;
 import play.Logger;
 
 import javax.persistence.*;
@@ -69,6 +73,7 @@ public class Candidate extends Model {
     @Column(name = "CandidateCreateTimestamp", columnDefinition = "timestamp not null")
     private Timestamp candidateCreateTimestamp;
 
+    @UpdatedTimestamp
     @Column(name = "CandidateUpdateTimestamp", columnDefinition = "timestamp null")
     private Timestamp candidateUpdateTimestamp;
 
@@ -120,10 +125,15 @@ public class Candidate extends Model {
     private List<CandidateSkill> candidateSkillList;
 
     @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
+    private List<CandidateExp> candidateExpList;
+
+    @JsonManagedReference
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Lead lead;
 
-    @JsonManagedReference
+    @JsonBackReference
     @JoinColumn(name = "candidateCurrentJobId", referencedColumnName = "candidateCurrentJobId")
     @OneToOne(cascade = CascadeType.ALL)
     private CandidateCurrentJobDetail candidateCurrentJobDetail;
@@ -153,6 +163,23 @@ public class Candidate extends Model {
     @JoinColumn(name = "CandidateStatusId", referencedColumnName = "profileStatusId")
     private CandidateProfileStatus candidateprofilestatus;
 
+    @Column(name = "CandidateLastWithdrawnSalary", columnDefinition = "bigint signed null")
+    private Long candidateLastWithdrawnSalary;
+
+    @Column(name = "CandidateExperienceLetter", columnDefinition = "bit null")
+    private Boolean candidateExperienceLetter;
+
+    @JsonManagedReference
+    @JoinColumn(name = "candidateStatusDetailId", referencedColumnName = "candidateStatusDetailId")
+    @OneToOne(cascade = CascadeType.ALL)
+    private CandidateStatusDetail candidateStatusDetail;
+
+    @Column(name = "CandidateSecondMobile", columnDefinition = "varchar(13) null")
+    private String candidateSecondMobile;
+
+    @Column(name = "CandidateThirdMobile", columnDefinition = "varchar(13) null")
+    private String candidateThirdMobile;
+
 
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
@@ -168,6 +195,7 @@ public class Candidate extends Model {
 
     public void candidateUpdate() {
         Logger.info("inside CandidateUpdate(), Candidate updated" );
+        this.candidateUpdateTimestamp = new Timestamp(System.currentTimeMillis());
         this.update();
     }
 
@@ -309,11 +337,11 @@ public class Candidate extends Model {
     }
 
     public String getCandidateFirstName() {
-        return candidateFirstName;
+        return WordUtils.capitalize(candidateFirstName);
     }
 
     public String getCandidateLastName() {
-        return candidateLastName;
+        return WordUtils.capitalize(candidateLastName);
     }
 
     public Integer getCandidateGender() {
@@ -444,6 +472,53 @@ public class Candidate extends Model {
         return candidateEducation;
     }
 
+    public List<CandidateExp> getCandidateExpList() {
+        return candidateExpList;
+    }
+
+    public void setCandidateExpList(List<CandidateExp> candidateExpList) {
+        this.candidateExpList = candidateExpList;
+    }
+
+    public Long getCandidateLastWithdrawnSalary() {
+        return candidateLastWithdrawnSalary;
+    }
+
+    public void setCandidateLastWithdrawnSalary(Long candidateLastWithdrawnSalary) {
+        this.candidateLastWithdrawnSalary = candidateLastWithdrawnSalary;
+    }
+
+    public Boolean getCandidateExperienceLetter() {
+        return candidateExperienceLetter;
+    }
+
+    public void setCandidateExperienceLetter(Boolean candidateExperienceLetter) {
+        this.candidateExperienceLetter = candidateExperienceLetter;
+    }
+
+    public CandidateStatusDetail getCandidateStatusDetail() {
+        return candidateStatusDetail;
+    }
+
+    public void setCandidateStatusDetail(CandidateStatusDetail candidateStatusDetail) {
+        this.candidateStatusDetail = candidateStatusDetail;
+    }
+
+    public String getCandidateSecondMobile() {
+        return candidateSecondMobile;
+    }
+
+    public void setCandidateSecondMobile(String candidateSecondMobile) {
+        this.candidateSecondMobile = candidateSecondMobile;
+    }
+
+    public String getCandidateThirdMobile() {
+        return candidateThirdMobile;
+    }
+
+    public void setCandidateThirdMobile(String candidateThirdMobile) {
+        this.candidateThirdMobile = candidateThirdMobile;
+    }
 }
 
 

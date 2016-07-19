@@ -55,7 +55,7 @@ public class Company extends Model {
     @Column(name = "CompanyLogo", columnDefinition = "varchar(80) null")
     private String companyLogo;
 
-    @Column(name = "CompanyCreateTimestamp", columnDefinition = "timestamp not null")
+    @Column(name = "CompanyCreateTimestamp", columnDefinition = "timestamp not null default current_timestamp")
     private Timestamp companyCreateTimestamp;
 
     @UpdatedTimestamp
@@ -81,6 +81,11 @@ public class Company extends Model {
     @PrivateOwned
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
     private List<JobPost> jobPostList;
+
+    @JsonBackReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "recruiterProfile", cascade = CascadeType.ALL)
+    private RecruiterProfile recruiterProfile;
 
     public static Finder<String, Company> find = new Finder(Company.class);
 

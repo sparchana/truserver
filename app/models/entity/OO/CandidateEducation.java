@@ -1,6 +1,7 @@
 package models.entity.OO;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
@@ -21,8 +22,9 @@ public class CandidateEducation extends Model{
     @Column(name = "candidateEducationId", columnDefinition = "int signed", unique = true)
     private int candidateEducationId;
 
+    @UpdatedTimestamp
     @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp null")
-    private Timestamp updateTimeStamp = new Timestamp(System.currentTimeMillis());
+    private Timestamp updateTimeStamp;
 
     @Column(name = "CandidateLastInstitute", columnDefinition = "varchar(256) null")
     private String candidateLastInstitute;
@@ -40,6 +42,9 @@ public class CandidateEducation extends Model{
     @JsonManagedReference
     @JoinColumn(name = "DegreeId", referencedColumnName = "DegreeId")
     private Degree degree;
+
+    @Column(name = "CandidateEducationCompletionStatus", columnDefinition = "int(1) null")
+    private Integer candidateEducationCompletionStatus;
 
     public static Model.Finder<String, CandidateEducation> find = new Model.Finder(CandidateEducation.class);
 
@@ -89,5 +94,13 @@ public class CandidateEducation extends Model{
 
     public void setDegree(Degree degree) {
         this.degree = degree;
+    }
+
+    public Integer getCandidateEducationCompletionStatus() {
+        return candidateEducationCompletionStatus;
+    }
+
+    public void setCandidateEducationCompletionStatus(Integer candidateEducationCompletionStatus) {
+        this.candidateEducationCompletionStatus = candidateEducationCompletionStatus;
     }
 }

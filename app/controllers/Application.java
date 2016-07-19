@@ -1,26 +1,27 @@
 package controllers;
 
 import api.ServerConstants;
+import api.http.FormValidator;
 import api.http.httpRequest.*;
-import api.http.httpResponse.AddLeadResponse;
-import api.http.httpResponse.SupportDashboardElementResponse;
-import api.http.httpResponse.SupportInteractionNoteResponse;
-import api.http.httpResponse.SupportInteractionResponse;
+import api.http.httpResponse.*;
+import com.avaje.ebean.Ebean;
+import com.avaje.ebean.Query;
+import com.avaje.ebean.cache.ServerCacheManager;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
 import models.entity.*;
-import models.entity.OM.JobApplication;
-import models.entity.OM.JobToSkill;
-import models.entity.OM.LocalityPreference;
+import models.entity.OM.*;
 import models.entity.Static.*;
 import models.util.ParseCSV;
 import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
-import play.cache.Cached;
+import play.api.Play;
 import play.data.Form;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
 
@@ -35,6 +36,8 @@ import static play.libs.Json.toJson;
 
 public class Application extends Controller {
 
+    private static boolean isDevMode = Play.isDev(Play.current());
+
     public static Result index() {
         String sessionId = session().get("sessionId");
         if(sessionId != null){
@@ -43,24 +46,14 @@ public class Application extends Controller {
         return ok(views.html.index.render());
     }
 
-    @Security.Authenticated(Secured.class)
-    public static Result support() {
-        String sessionId = session().get("sessionId");
-        Developer developer = Developer.find.where().eq("developerSessionId", sessionId ).findUnique();
-        if(developer != null && developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE) {
-            return ok(views.html.support.render());
-        }
-        return redirect("/street");
+    @Security.Authenticated(RecSecured.class)
+    public static Result showCompanyAndJob() {
+        return ok(views.html.company_and_job.render());
     }
 
     @Security.Authenticated(Secured.class)
-    public static Result companyAndJob() {
-        String sessionId = session().get("sessionId");
-        Developer developer = Developer.find.where().eq("developerSessionId", sessionId ).findUnique();
-        if(developer != null && developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE) {
-            return ok(views.html.add_company.render());
-        }
-        return redirect("/street");
+    public static Result support() {
+        return ok(views.html.support.render());
     }
 
     @Security.Authenticated(Secured.class)
@@ -104,6 +97,7 @@ public class Application extends Controller {
                     case 4: response.setUserInteractionType("Out Going SMS"); break;
                     case 5: response.setUserInteractionType("Website Interaction"); break;
                     case 6: response.setUserInteractionType("Follow Up Call"); break;
+                    case 7: response.setUserInteractionType("New Job Application"); break;
                     default: response.setUserInteractionType("Interaction Undefined in getCandidateInteraction()"); break;
                 }
                 responses.add(response);
@@ -132,6 +126,7 @@ public class Application extends Controller {
                 ServerConstants.TYPE_LEAD,
                 ServerConstants.LEAD_SOURCE_UNKNOWN
         );
+        lead.setLeadType(addLeadRequest.getLeadType());
         boolean isSupport = false;
         LeadService.createLead(lead, isSupport);
         addLeadResponse.setStatus(AddLeadResponse.STATUS_SUCCESS);
@@ -157,6 +152,8 @@ public class Application extends Controller {
         JsonNode req = request().body().asJson();
         AddSupportCandidateRequest addSupportCandidateRequest = new AddSupportCandidateRequest();
         ObjectMapper newMapper = new ObjectMapper();
+        // since jsonReq has single/multiple values in array
+        newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
         try {
             addSupportCandidateRequest = newMapper.readValue(req.toString(), AddSupportCandidateRequest.class);
             Logger.info("json" + req.toString());
@@ -237,14 +234,16 @@ public class Application extends Controller {
         String userMobile = applyJobRequest.getCandidateMobile();
         Integer jobId = applyJobRequest.getJobId();
 
-        return ok(toJson(JobService.applyJob(userMobile, jobId)));
+        return ok(toJson(JobService.applyJob(applyJobRequest)));
     }
 
+    @Security.Authenticated(Secured.class)
     public static Result addJobPost() {
         JsonNode req = request().body().asJson();
         Logger.info(req + " == ");
         AddJobPostRequest addJobPostRequest = new AddJobPostRequest();
         ObjectMapper newMapper = new ObjectMapper();
+        newMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         try {
             addJobPostRequest = newMapper.readValue(req.toString(), AddJobPostRequest.class);
         } catch (IOException e) {
@@ -253,8 +252,40 @@ public class Application extends Controller {
         return ok(toJson(JobService.addJobPost(addJobPostRequest)));
     }
 
+    public static Result addCompanyLogo() {
+        Http.MultipartFormData body = request().body().asMultipartFormData();
+        Http.MultipartFormData.FilePart picture = body.getFile("picture");
+        if (picture != null) {
+            String fileName = picture.getFilename();
+            String contentType = picture.getContentType();
+            File file = (File) picture.getFile();
+            Logger.info("uploaded! " + file);
+            CompanyService.uploadCompanyLogo(file, fileName);
+            return ok("File uploaded");
+        } else {
+            flash("error", "Missing file");
+            return redirect(routes.Application.index());
+        }
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result addRecruiter() {
+        JsonNode req = request().body().asJson();
+        Logger.info(req + " == ");
+        AddRecruiterRequest addRecruiterRequest = new AddRecruiterRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addRecruiterRequest = newMapper.readValue(req.toString(), AddRecruiterRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ok(toJson(RecruiterService.addRecruiter(addRecruiterRequest)));
+    }
+
+    @Security.Authenticated(Secured.class)
     public static Result addCompany() {
         JsonNode req = request().body().asJson();
+        Logger.info(req + " == ");
         AddCompanyRequest addCompanyRequest = new AddCompanyRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -348,6 +379,7 @@ public class Application extends Controller {
 
         List<Interaction> interactionsOfLead = Interaction.find.where().in("objectAUUId", leadUUIDList).findList();
 
+        Logger.info("Entering Loop at " + new Timestamp(System.currentTimeMillis()));
         for(Lead lead : allLead) {
             SupportDashboardElementResponse response = new SupportDashboardElementResponse();
 
@@ -393,11 +425,12 @@ public class Application extends Controller {
             }
             responses.add(response);
         }
+        Logger.info("Exit Loop at " + new Timestamp(System.currentTimeMillis()));
 
         return ok(toJson(responses));
     }
     @Security.Authenticated(Secured.class)
-    public static Result getUserInfo(long id) {
+    public static Result getLeadMobile(long id) {
         try{
             Lead lead = Lead.find.where().eq("leadId",id).findUnique();
             String leadMobile = lead.getLeadMobile();
@@ -413,7 +446,7 @@ public class Application extends Controller {
     public static Result getCandidateInfoDashboard() {
         Lead lead = Lead.find.where().eq("leadId", session().get("leadId")).findUnique();
         if(lead != null) {
-            Candidate candidate = Candidate.find.where().eq("lead_leadId", lead.getLeadId()).findUnique();
+            Candidate candidate = CandidateService.isCandidateExists(lead.getLeadMobile());
             if(candidate!=null){
                 return ok(toJson(candidate));
             }
@@ -426,7 +459,7 @@ public class Application extends Controller {
     public static Result getCandidateInfo(long leadId) {
             Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
             if(lead != null) {
-                Candidate candidate = Candidate.find.where().eq("lead_leadId", lead.getLeadId()).findUnique();
+                Candidate candidate = CandidateService.isCandidateExists(lead.getLeadMobile());
                 if(candidate!=null){
                     return ok(toJson(candidate));
                 }
@@ -434,6 +467,7 @@ public class Application extends Controller {
         return ok("0");
     }
 
+    @Security.Authenticated(Secured.class)
     public static Result getCompanyInfo(long companyId) {
         Company company = Company.find.where().eq("companyId", companyId).findUnique();
         if(company!=null){
@@ -442,28 +476,40 @@ public class Application extends Controller {
         return ok("0");
     }
 
-    public static Result GetCompanyJobList(long companyId){
-        List<JobPost> jobPostList = JobPost.find.where().eq("company.companyId", companyId).findList();
-        if(jobPostList!=null){
-            return ok(toJson(jobPostList));
+    @Security.Authenticated(Secured.class)
+    public static Result getCompanyRecruiters(long companyId) {
+        List<RecruiterProfile> recruiterProfileList = RecruiterProfile.find.where().eq("company.companyId", companyId).findList();
+        if(recruiterProfileList != null){
+            return ok(toJson(recruiterProfileList));
         }
         return ok("0");
     }
 
-    public static Result getJobPostInfo(long jobPostId) {
+    @Security.Authenticated(Secured.class)
+    public static Result getRecruiterInfo(long recId) {
+        RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", recId).findUnique();
+        if(recruiterProfile != null){
+            return ok(toJson(recruiterProfile));
+        }
+        return ok("0");
+    }
+
+    public static Result getJobPostInfo(long jobPostId, Integer isSupport) {
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
         if(jobPost!=null){
+            if(isSupport == 0){
+                String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB;
+                String objBUUID = "";
+                if(session().get("candidateId") != null){
+                    Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")). findUnique();
+                    objBUUID = candidate.getCandidateUUId();
+                }
+                InteractionService.createInteractionForHobApplicationAttempt(jobPost.getJobPostUUId(), objBUUID, interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName());
+            }
+
             return ok(toJson(jobPost));
         }
         return ok("0");
-    }
-
-    @Security.Authenticated(SecuredUser.class)
-    public static Result getCandidateLocality(long candidateId) {
-        List<LocalityPreference> candidateLocalities = LocalityPreference.find.where().eq("candidateId", candidateId).findList();
-        if(candidateLocalities == null)
-            return ok("0");
-        return ok(toJson(candidateLocalities));
     }
 
     @Security.Authenticated(SecuredUser.class)
@@ -478,12 +524,6 @@ public class Application extends Controller {
         }
     }
 
-    public static Result checkMinProfile(long id) {
-        Candidate existingCandidate = Candidate.find.where().eq("candidateId", id).findUnique();
-        return ok(toJson(existingCandidate.getIsMinProfileComplete()));
-    }
-
-    @Security.Authenticated(Secured.class)
     public static Result getAllSkills(String ids) {
         List<String> jobPrefIdList = Arrays.asList(ids.split("\\s*,\\s*"));
         List<JobToSkill> response = new ArrayList<>();
@@ -510,6 +550,21 @@ public class Application extends Controller {
         return ok(toJson(response));
     }
 
+    @Security.Authenticated(Secured.class)
+    public static Result companyInfoHome(Long id) {
+        return ok(views.html.company_details.render());
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result recruiterInfoHome(Long id) {
+        return ok(views.html.recruiter_details.render());
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result jobPostInfoHome(Long id) {
+        return ok(views.html.job_post_details.render());
+    }
+
     public static Result supportAuth() {
         return ok(views.html.supportAuth.render());
     }
@@ -524,14 +579,8 @@ public class Application extends Controller {
 
     public static Result logoutUser() {
         session().clear();
-        String sessionId = session().get("sessionId");
-        if(sessionId != null){
-            return ok(views.html.candidate_home.render());
-        }
-        else{
-            Logger.info("Candidate Logged Out");
-            return ok(views.html.index.render());
-        }
+        Logger.info("Candidate Logged Out");
+        return ok(views.html.main.render());
     }
     public static Result auth() {
         Form<DevLoginRequest> userForm = Form.form(DevLoginRequest.class);
@@ -548,12 +597,16 @@ public class Application extends Controller {
                 session("sessionUsername", developer.getDeveloperName());
                 session("sessionUserId", "" + developer.getDeveloperId());
                 session("sessionExpiry", String.valueOf(developer.getDeveloperSessionIdExpiryMillis()));
-                if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE){
+                if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN) {
+                    return redirect("/support/administrator");
+                }
+                if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE || developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN || developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_REC){
                     return redirect(routes.Application.support());
                 }
-                if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_UPLOADER) {
+                if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN) {
                     return ok(views.html.uploadcsv.render());
                 }
+
             }
         } else {
             return badRequest("Account Doesn't exists!!");
@@ -561,6 +614,7 @@ public class Application extends Controller {
         return redirect(routes.Application.supportAuth());
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result updateIsAssessedToAssessed() {
         if(session().get("candidateId") != null){
             Candidate existingCandidate = Candidate.find.where().eq("candidateId", session().get("candidateId")).findUnique();
@@ -589,7 +643,7 @@ public class Application extends Controller {
                             lead.getLeadUUId(),
                             lead.getLeadType(),
                             ServerConstants.INTERACTION_TYPE_CALL_OUT,
-                            ServerConstants.INTERACTION_NOTE_LEAD_TYPE_CHANGED,
+                            ServerConstants.INTERACTION_NOTE_BLANK,
                             ServerConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
                             session().get("sessionUsername")
                     );
@@ -600,7 +654,7 @@ public class Application extends Controller {
                             lead.getLeadUUId(),
                             lead.getLeadType(),
                             ServerConstants.INTERACTION_TYPE_CALL_OUT,
-                            ServerConstants.INTERACTION_NOTE_LEAD_TYPE_CHANGED,
+                            ServerConstants.INTERACTION_NOTE_BLANK,
                             ServerConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
                             session().get("sessionUsername")
                     );
@@ -697,57 +751,181 @@ public class Application extends Controller {
         List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").findList();
         return ok(toJson(jobPosts));
     }
-    @Cached(key= "allLocalities")
+
+    @Security.Authenticated(Secured.class)
+    public static Result getAllJobPosts() {
+        List<JobPost> jobPosts = JobPost.find.all();
+        return ok(toJson(jobPosts));
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result getJobApplicationDetailsForGoogleSheet(Integer jobPostId) {
+        JobApplicationGoogleSheetResponse jobApplicationGoogleSheetResponse = new JobApplicationGoogleSheetResponse();
+
+        //get companyInfo + jobPostInfo
+        JobPost jobpost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        if(jobpost != null){
+            jobApplicationGoogleSheetResponse.setJobRoleName(jobpost.getJobPostTitle());
+            jobApplicationGoogleSheetResponse.setCompanyName(jobpost.getCompany().getCompanyName());
+        }
+
+        // get candidate information
+        Lead lead = Lead.find.where().eq("leadId", session().get("leadId")).findUnique();
+        if(lead != null) {
+            Candidate candidate = Candidate.find.where().eq("lead_leadId", lead.getLeadId()).findUnique();
+            if(candidate!=null){
+                jobApplicationGoogleSheetResponse.setCandidateCreationTimestamp(candidate.getCandidateCreateTimestamp());
+                jobApplicationGoogleSheetResponse.setCandidateMobile(candidate.getCandidateMobile());
+                if(candidate.getCandidateLastName() == null){
+                    jobApplicationGoogleSheetResponse.setCandidateName(candidate.getCandidateFirstName());
+                } else{
+                    jobApplicationGoogleSheetResponse.setCandidateName(candidate.getCandidateFirstName() + " " +candidate.getCandidateLastName() );
+                }
+                jobApplicationGoogleSheetResponse.setCandidateLeadId(candidate.getLead().getLeadId());
+                if(candidate.getCandidateGender() != null){
+                    jobApplicationGoogleSheetResponse.setCandidateGender(candidate.getCandidateGender());
+                }
+
+                if(candidate.getCandidateTotalExperience() != null){
+                    jobApplicationGoogleSheetResponse.setCandidateTotalExp(candidate.getCandidateTotalExperience());
+                }
+                jobApplicationGoogleSheetResponse.setCandidateIsAssessed(candidate.getCandidateIsAssessed());
+                jobApplicationGoogleSheetResponse.setCandidateIsEmployed(candidate.getCandidateIsEmployed());
+
+                String languagesKnown = "";
+                String candidateJobPref = "";
+                String candidateLocalityPref = "";
+                String candidateSkills = "";
+
+                //Languages Known
+                if(candidate.getLanguageKnownList() != null && candidate.getLanguageKnownList().size() > 0) {
+                    List<LanguageKnown> languageKnownList = candidate.getLanguageKnownList();
+
+                    String canRead = "";
+                    String canWrite = "";
+                    String canSpeak = "";
+
+                    for(LanguageKnown l : languageKnownList){
+                        if(l.getReadingAbility() == null){
+                            canRead = "na";
+                        } else{
+                            canRead = l.getReadingAbility() + "";
+                        }
+                        if(l.getWritingAbility() == null){
+                            canWrite = "na";
+                        } else{
+                            canWrite = l.getWritingAbility() + "";
+                        }
+                        if(l.getVerbalAbility() == null){
+                            canSpeak = "na";
+                        } else{
+                            canSpeak = l.getVerbalAbility() + "";
+                        }
+
+                        languagesKnown += l.getLanguage().getLanguageName() + "(" + canRead + ", " +
+                                canWrite + ", " + canSpeak + "), ";
+                    }
+                }
+
+                //Skill
+                if(candidate.getCandidateSkillList()!= null && candidate.getCandidateSkillList().size() > 0){
+                    List<CandidateSkill> candidateSkillList = candidate.getCandidateSkillList();
+
+                    for(CandidateSkill skill : candidateSkillList){
+                        candidateSkills += skill.getSkill().getSkillName() + ", ";
+                    }
+                }
+
+                if(candidate.getMotherTongue() != null){
+                    jobApplicationGoogleSheetResponse.setCandidateMotherTongue(candidate.getMotherTongue().getLanguageName());
+                }
+
+                if(candidate.getLocality() != null){
+                    jobApplicationGoogleSheetResponse.setCandidateHomeLocality(candidate.getLocality().getLocalityName());
+                }
+                if(candidate.getCandidateCurrentJobDetail() != null){
+                    jobApplicationGoogleSheetResponse.setCandidateCurrentSalary(candidate.getCandidateCurrentJobDetail().getCandidateCurrentSalary());
+                }
+                if(candidate.getCandidateEducation() != null){
+                    jobApplicationGoogleSheetResponse.setCandidateEducation(candidate.getCandidateEducation().getEducation().getEducationName());
+                }
+
+                //Job Pref
+                List<JobPreference> jobRolePrefList = candidate.getJobPreferencesList();
+
+                for(JobPreference job : jobRolePrefList){
+                    candidateJobPref += job.getJobRole().getJobName() + ", ";
+                }
+
+                //Locality Pref
+                List<LocalityPreference> localityPrefList = candidate.getLocalityPreferenceList();
+
+                for(LocalityPreference locality : localityPrefList){
+                    candidateLocalityPref += locality.getLocality().getLocalityName() + ", ";
+                }
+                jobApplicationGoogleSheetResponse.setCandidateProfileStatus(candidate.getCandidateprofilestatus().getProfileStatusName());
+                if(candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE){
+                    Date expDate = candidate.getCandidateStatusDetail().getStatusExpiryDate();
+                    if(expDate != null){
+                        jobApplicationGoogleSheetResponse.setCandidateExpiryDate(expDate);
+                    } else{
+                        jobApplicationGoogleSheetResponse.setCandidateExpiryDate(null);
+                    }
+                } else{
+                    jobApplicationGoogleSheetResponse.setCandidateExpiryDate(null);
+                }
+
+                jobApplicationGoogleSheetResponse.setLanguageKnown(languagesKnown);
+                jobApplicationGoogleSheetResponse.setCandidateJobPref(candidateJobPref);
+                jobApplicationGoogleSheetResponse.setCandidateLocalityPref(candidateLocalityPref);
+                jobApplicationGoogleSheetResponse.setCandidateSkill(candidateSkills);
+            }
+        }
+        if(Play.isDev(Play.current()) == false){
+            jobApplicationGoogleSheetResponse.setFormUrl(ServerConstants.PROD_GOOGLE_FORM_FOR_JOB_APPLICATION);
+        } else{
+            jobApplicationGoogleSheetResponse.setFormUrl(ServerConstants.DEV_GOOGLE_FORM_FOR_JOB_APPLICATION);
+        }
+        return ok(toJson(jobApplicationGoogleSheetResponse));
+    }
+
     public static Result getAllLocality() {
-        List<Locality> localities = Locality.find.findList();
+        List<Locality> localities = Locality.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(localities));
     }
 
-    @Cached(key= "allJobs")
     public static Result getAllJobs() {
-        List<JobRole> jobs = JobRole.find.findList();
+        List<JobRole> jobs = JobRole.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(jobs));
     }
 
-    @Cached(key= "allShifts")
-    @Security.Authenticated(Secured.class)
     public static Result getAllShift() {
-        List<TimeShift> timeShifts = TimeShift.find.findList();
+        List<TimeShift> timeShifts = TimeShift.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(timeShifts));
     }
 
-    @Cached(key= "allTransportModes")
-    @Security.Authenticated(Secured.class)
     public static Result getAllTransportation() {
-        List<TransportationMode> transportationModes = TransportationMode.find.findList();
+        List<TransportationMode> transportationModes = TransportationMode.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(transportationModes));
     }
 
-    @Cached(key= "allEducation")
-    @Security.Authenticated(Secured.class)
     public static Result getAllEducation() {
-        List<Education> educations = Education.find.findList();
+        List<Education> educations = Education.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(educations));
     }
 
-    @Cached(key= "allLanguages")
-    @Security.Authenticated(Secured.class)
     public static Result getAllLanguage() {
-        List<Language> languages = Language.find.findList();
+        List<Language> languages = Language.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(languages));
     }
 
-    @Cached(key= "allIDProof")
-    @Security.Authenticated(Secured.class)
     public static Result getAllIdProof() {
-        List<IdProof> idProofs = IdProof.find.findList();
+        List<IdProof> idProofs = IdProof.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(idProofs));
     }
 
-    @Cached(key= "allDegree")
-    @Security.Authenticated(Secured.class)
     public static Result getAllDegree() {
-        List<Degree> degreeList = Degree.find.findList();
+        List<Degree> degreeList = Degree.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(degreeList));
     }
 
@@ -758,8 +936,20 @@ public class Application extends Controller {
     }
 
     @Security.Authenticated(Secured.class)
+    public static Result getAllRecruiters() {
+        List<RecruiterProfile> recruiterProfileList = RecruiterProfile.find.findList();
+        return ok(toJson(recruiterProfileList));
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result getAllPricingPlans() {
+        List<PricingPlanType> pricingPlanTypeList = PricingPlanType.find.findList();
+        return ok(toJson(pricingPlanTypeList));
+    }
+
+    @Security.Authenticated(Secured.class)
     public static Result getAllExperience() {
-        List<Experience> experienceList = Experience.find.findList();
+        List<Experience> experienceList = Experience.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(experienceList));
     }
 
@@ -786,6 +976,12 @@ public class Application extends Controller {
         return ok(views.html.signup_support.render(candidateId));
     }
 
+    @Security.Authenticated(Secured.class)
+    public static Result createCompany() {
+        return ok(views.html.create_company.render());
+    }
+
+    @Security.Authenticated(Secured.class)
     public static Result createCandidateForm() {
         return redirect("/candidateSignupSupport/"+"0");
     }
@@ -802,13 +998,14 @@ public class Application extends Controller {
 
         SearchCandidateRequest searchCandidateRequest = new SearchCandidateRequest();
         ObjectMapper newMapper = new ObjectMapper();
+
         try {
             searchCandidateRequest = newMapper.readValue(searchReq.toString(), SearchCandidateRequest.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return ok(toJson(CandidateService.searchCandidateBySupport(searchCandidateRequest)));
+        return ok(toJson(SupportSearchService.searchCandidateBySupport(searchCandidateRequest)));
     }
     @Security.Authenticated(Secured.class)
     public static Result getAllLeadSource() {
@@ -883,5 +1080,75 @@ public class Application extends Controller {
         }
         else
             return ok("no records");
+    }
+
+    public static Result getAllJobExpQuestion() {
+        List<JobExpQuestion> jobExpQuestionList = JobExpQuestion.find.all();
+        return ok(toJson(jobExpQuestionList));
+    }
+
+    public static Result getJobExpQuestion(String jobRoleIds) {
+        List<String> jobRoleIdList = Arrays.asList(jobRoleIds.split("\\s*,\\s*"));
+        Query<JobExpQuestion> query = JobExpQuestion.find.query();
+        query = query.select("*").fetch("jobRole")
+                    .where()
+                    .in("jobRole.jobRoleId", jobRoleIdList)
+                    .query();
+        List<JobExpQuestion> response = query.findList();
+        if(response != null){
+            return ok(toJson(response));
+        }
+        return ok();
+    }
+
+
+    @Security.Authenticated(Secured.class)
+    public static Result invalidateDbCache() {
+        ServerCacheManager serverCacheManager = Ebean.getServerCacheManager();
+        serverCacheManager.clearAll();
+        return ok("Cleared Static Cache");
+    }
+
+    @Security.Authenticated(SuperSecured.class)
+    public static Result removeDuplicateLeadOrCandidate(String mobile) {
+        mobile = FormValidator.convertToIndianMobileFormat(mobile);
+        if(mobile != null  && mobile.length() == 13 ){
+            if(DeleteService.DeleteLeadServiceButPreserveOne(mobile) == null){
+                return ok("Given Mobile number "+mobile+" was not found in DB");
+            }
+            String sessionUser = session().get("sessionUsername");
+            Logger.info("A duplicated data delete action has been executed by " + sessionUser + " for mobile number" + mobile);
+            SmsUtil.sendDuplicateLeadOrCandidateDeleteActionSmsToDevTeam(mobile);
+            return ok("Duplicate removal operation for Mobile number:"+mobile+" has been successfully completed");
+        }
+        return ok("Invalid Mobile number !!");
+    }
+
+    @Security.Authenticated(SuperSecured.class)
+    public static Result administrator() {
+        return ok(views.html.admin.render());
+    }
+
+    @Security.Authenticated(SuperSecured.class)
+    public static Result uploadCSV() {
+        return ok(views.html.uploadcsv.render());
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result ifExists(String mobile) {
+        if(mobile != null){
+            mobile = FormValidator.convertToIndianMobileFormat(mobile);
+            Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
+            if(existingCandidate != null) {
+                return ok(toJson(existingCandidate.getLead().getLeadId()));
+            }
+        }
+        return ok("0");
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result getAllDeactivationReason() {
+        List<Reason> deactivationReasons = Reason.find.all();
+        return ok(toJson(deactivationReasons));
     }
 }

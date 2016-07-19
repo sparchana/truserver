@@ -6,9 +6,8 @@ package api.http;
 public class CandidateKnownLanguage {
     public String id;
     public int s;
-    public int r;
-    public int w;
-
+    public int rw;
+    public int u; // languageIntel in Model
 
     public String getId() {
         return id;
@@ -26,19 +25,19 @@ public class CandidateKnownLanguage {
         this.s = s;
     }
 
-    public int getR() {
-        return r;
+    public int getU() {
+        return u;
     }
 
-    public void setR(int r) {
-        this.r = r;
+    public void setU(int u) {
+        this.u = u;
     }
 
-    public int getW() {
-        return w;
+    public int getRw() {
+        return rw;
     }
 
-    public void setW(int w) {
-        this.w = w;
+    public void setRw(int rw) {
+        this.rw = rw;
     }
 }

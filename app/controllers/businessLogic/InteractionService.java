@@ -23,7 +23,7 @@ public class InteractionService {
                     ServerConstants.OBJECT_TYPE_CANDIDATE,
                     ServerConstants.INTERACTION_TYPE_WEBSITE,
                     ServerConstants.INTERACTION_NOTE_BLANK,
-                    result + " & " + ServerConstants.INTERACTION_NOTE_SELF_SIGNEDUP,
+                    result,
                     ServerConstants.INTERACTION_CREATED_SELF
             );
             InteractionService.createInteraction(interaction);
@@ -79,11 +79,78 @@ public class InteractionService {
         } catch (NullPointerException npe){
             Logger.info("Followup deactivated");
         }
+    }
 
+    public static void createInteractionForJobApplication(String objectAUUId, String objectBUUId, String result) {
+        Interaction interaction = new Interaction(
+                objectAUUId,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                objectBUUId,
+                ServerConstants.OBJECT_TYPE_JOB_POST,
+                ServerConstants.INTERACTION_TYPE_APPLIED_JOB,
+                result,
+                ServerConstants.INTERACTION_CREATED_SELF
+        );
+        InteractionService.createInteraction(interaction);
     }
 
     public static void createInteraction(Interaction interaction){
         Interaction.addInteraction(interaction);
         Logger.info("Interaction saved");
+    }
+
+    public static void createInteractionForLoginCandidate(String objectAUUId, boolean isSupport) {
+        if(!isSupport){
+            Interaction interaction = new Interaction(
+                    objectAUUId,
+                    ServerConstants.OBJECT_TYPE_CANDIDATE,
+                    ServerConstants.INTERACTION_TYPE_WEBSITE,
+                    ServerConstants.INTERACTION_NOTE_BLANK,
+                    ServerConstants.INTERACTION_RESULT_SELF_SIGNEDIN,
+                    ServerConstants.INTERACTION_CREATED_SELF
+            );
+            InteractionService.createInteraction(interaction);
+        }
+    }
+
+    public static void createInteractionForHobApplicationAttempt(String objectAUUId, String objectBUUId, String result) {
+        Interaction interaction = new Interaction(
+                objectAUUId,
+                ServerConstants.OBJECT_TYPE_JOB_POST,
+                objectBUUId,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                ServerConstants.INTERACTION_TYPE_TRIED_JOB_APPLY,
+                result,
+                ServerConstants.INTERACTION_CREATED_SELF
+        );
+        InteractionService.createInteraction(interaction);
+    }
+
+    public static void CreateInteractionForDeactivateCandidate(String objectAUUId, boolean isSupport){
+        if(!isSupport){
+            Interaction interaction = new Interaction(
+                    objectAUUId,
+                    ServerConstants.OBJECT_TYPE_CANDIDATE,
+                    ServerConstants.INTERACTION_TYPE_CALL_OUT,
+                    ServerConstants.INTERACTION_NOTE_BLANK,
+                    ServerConstants.INTERACTION_RESULT_CANDIDATE_DEACTIVATED,
+                    session().get("sessionUsername")
+            );
+            InteractionService.createInteraction(interaction);
+        }
+    }
+
+    public static void CreateInteractionForActivateCandidate(String objectAUUId, boolean isSupport) {
+        if(!isSupport){
+            Interaction interaction = new Interaction(
+                    objectAUUId,
+                    ServerConstants.OBJECT_TYPE_CANDIDATE,
+                    ServerConstants.INTERACTION_TYPE_CALL_OUT,
+                    ServerConstants.INTERACTION_NOTE_BLANK,
+                    ServerConstants.INTERACTION_RESULT_CANDIDATE_ACTIVATED,
+                    session().get("sessionUsername")
+            );
+            InteractionService.createInteraction(interaction);
+        }
     }
 }

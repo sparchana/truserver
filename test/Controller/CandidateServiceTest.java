@@ -98,14 +98,7 @@ public class CandidateServiceTest {
         supportCandidateRequest.setCandidateIsEmployed(testCandidateIsEmployed);
         supportCandidateRequest.setCandidateMotherTongue(testCandidateMotherTongue);
 
-        supportCandidateRequest.setCandidateCurrentJobDesignation(testCandidateCurrentJobDesignation);
         supportCandidateRequest.setCandidateCurrentCompany(testCandidateCurrentCompany);
-        supportCandidateRequest.setCandidateCurrentSalary(testCandidateCurrentSalary);
-        supportCandidateRequest.setCandidateCurrentJobDuration(testCandidateCurrentJobDuration);
-        supportCandidateRequest.setCandidateCurrentWorkShift(testCandidateCurrentWorkShift);
-        supportCandidateRequest.setCandidateCurrentJobRole(testCandidateCurrentJobRole);
-        supportCandidateRequest.setCandidateCurrentJobLocation(testCandidateCurrentJobLocation);
-        supportCandidateRequest.setCandidateTransportation(testCandidateTransportation);
 
         supportCandidateRequest.setCandidateSkills(testCandidateSkillList);
         supportCandidateRequest.setCandidateLanguageKnown(testCandidateLanguageKnownList);
@@ -130,9 +123,6 @@ public class CandidateServiceTest {
         supportCandidateRequest.setCandidateAppointmentLetter(testCandidateAppointmentLetter);
         supportCandidateRequest.setCandidateSalarySlip(testCandidateSalarySlip);
         supportCandidateRequest.setCandidateIdProof(testCandidateIdProof);
-        supportCandidateRequest.setCandidatePastJobCompany(testCandidatePastCompany);
-        supportCandidateRequest.setCandidatePastJobSalary(testCandidatePastJobSalary);
-        supportCandidateRequest.setCandidatePastJobRole(testCandidatePastJobRole);
         fakeApp = fakeApplication();
     }
 
@@ -155,6 +145,7 @@ public class CandidateServiceTest {
     }
 
 
+    @Test
     public void testSignUpSupportAllFields() {
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
         running(server, () -> {
@@ -287,7 +278,6 @@ public class CandidateServiceTest {
         }
     }
 
-    @Test
     public void cleanup(){
         cleanDB();
     }

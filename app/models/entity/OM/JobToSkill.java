@@ -1,6 +1,7 @@
 package models.entity.OM;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Static.JobRole;
@@ -21,9 +22,10 @@ public class JobToSkill  extends Model {
     @Column(name = "jobToSkillId", columnDefinition = "int signed", unique = true)
     private int jobToSkillId;
 
+    @UpdatedTimestamp
     @JsonBackReference
     @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp null")
-    private Timestamp updateTimeStamp = new Timestamp(System.currentTimeMillis());
+    private Timestamp updateTimeStamp;
 
     @ManyToOne
     @JsonBackReference

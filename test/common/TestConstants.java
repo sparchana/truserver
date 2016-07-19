@@ -61,11 +61,11 @@ public class TestConstants {
     public static final List<CandidateSkills> testCandidateSkillList = new ArrayList<CandidateSkills>() {{
         CandidateSkills candidateSkill1 = new CandidateSkills();
         candidateSkill1.setId("7");
-        candidateSkill1.setQualifier("Yes");
+        candidateSkill1.setAnswer(true);
 
         CandidateSkills candidateSkill2 = new CandidateSkills();
         candidateSkill2.setId("8");
-        candidateSkill2.setQualifier("No");
+        candidateSkill1.setAnswer(false);
 
         add(candidateSkill1);
         add(candidateSkill2);
@@ -75,9 +75,8 @@ public class TestConstants {
     public static final List<CandidateKnownLanguage> testCandidateLanguageKnownList = new ArrayList<CandidateKnownLanguage>() {{
         CandidateKnownLanguage candidateKnownLanguage1 = new CandidateKnownLanguage();
         candidateKnownLanguage1.setId("1");
-        candidateKnownLanguage1.setR(1);
+        candidateKnownLanguage1.setRw(1);
         candidateKnownLanguage1.setS(1);
-        candidateKnownLanguage1.setW(1);
 
         add(candidateKnownLanguage1);
     }};

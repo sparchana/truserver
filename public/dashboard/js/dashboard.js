@@ -26,6 +26,16 @@ var endPoint;
 /* candidate Data returned JSON */
 var candidateInformation;
 
+$(window).load(function() {
+    $('html, body').css({
+        'overflow': 'auto',
+        'height': 'auto'
+    });
+    $("#status").fadeOut();
+    $("#loaderLogo").fadeOut();
+    $("#preloader").delay(1000).fadeOut("slow");
+});
+
 $(document).ready(function(){
     /* Section Disable */
     $("#basicProfileSection").show();
@@ -42,7 +52,7 @@ $(document).ready(function(){
     /* ajax commands to fetch all localities and jobs*/
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllLocality",
             data: false,
             async: false,
@@ -56,7 +66,7 @@ $(document).ready(function(){
 
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllJobs",
             data: false,
             async: false,
@@ -70,7 +80,7 @@ $(document).ready(function(){
 
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllShift",
             data: false,
             async: false,
@@ -162,7 +172,7 @@ function fetchSkillAjaxApis() {
     }
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllLanguage",
             data: false,
             async: false,
@@ -180,7 +190,7 @@ function fetchSkillAjaxApis() {
 function fetchEducationAjaxApis() {
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllEducation",
             data: false,
             async: false,
@@ -194,7 +204,7 @@ function fetchEducationAjaxApis() {
 
     try {
         $.ajax({
-            type: "GET",
+            type: "POST",
             url: "/getAllDegree",
             data: false,
             async: false,
@@ -227,8 +237,51 @@ function generateSkills(){
     }
 }
 
-function processDataCheckSkills(returnedData) {
 
+function createBtn(singleSkill, type){
+    var headLbl = document.createElement("label");
+    headLbl.className = "btn btn-custom-check skillBtn";
+    headLbl.textContent = type;
+    var s = singleSkill.skill.skillName.split(" ");
+    headLbl.onclick = function () {
+        document.getElementById(s[0] + "_" + s[1] + "_"+type).checked = true;
+        document.getElementById(s[0] + "_" + s[1] + "_"+type).click();
+    };
+    var o = document.createElement("input");
+    o.type = "radio";
+    o.style = "display: inline-block";
+    o.name = singleSkill.skill.skillName;
+    o.id = s[0] + "_" + s[1] + "_"+type;
+
+    o.value = type=="Yes"? 1 : 0;
+    o.onclick = function () {
+        var id = singleSkill.skill.skillId;
+        var answer = type=="Yes"? true : false;
+        var item = {};
+        var pos;
+        check = 0;
+
+        item ["id"] = id;
+        item ["answer"] = answer;
+        for (var i in skillMap) {
+            if (skillMap[i].id == id) {
+                check = 1;
+                pos = i;
+                break;
+            }
+        }
+        if (check == 0)
+            skillMap.push(item);
+        else
+            skillMap[pos] = item;
+    };
+    headLbl.appendChild(o);
+
+    return headLbl;
+}
+
+function processDataCheckSkills(returnedData) {
+    $(".skillSection").show();
     var count =0;
     var table = document.getElementById("skillTable");
     $('#skillTable').empty();
@@ -248,50 +301,10 @@ function processDataCheckSkills(returnedData) {
         lbl.id = "skillOption";
 
         cell1.appendChild(ques);
+        lbl.appendChild(createBtn(singleSkill, "Yes"));
+        lbl.appendChild(createBtn(singleSkill, "No"));
         cell2.appendChild(lbl);
 
-        var object = singleSkill.skill.skillQualifierList;
-        object.forEach(function (x) {
-            var headLbl = document.createElement("label");
-            headLbl.style = "display: inline-block";
-            headLbl.className = "btn btn-custom-check skillBtn";
-            headLbl.textContent = x.qualifier;
-            headLbl.onclick = function () {
-                document.getElementById(s[0] + "_" + s[1] + "_" + x.qualifier).checked = true;
-                document.getElementById(s[0] + "_" + s[1] + "_" + x.qualifier).click();
-            };
-            
-            var o = document.createElement("input");
-            o.type = "radio";
-            o.style = "display: inline-block";
-            o.name = singleSkill.skill.skillName;
-            var s = singleSkill.skill.skillName.split(" ");
-            o.id = s[0] + "_" + s[1] + "_" + x.qualifier;
-            o.value = x.qualifier;
-            o.onclick = function () {
-                check=0;
-                var id = singleSkill.skill.skillId;
-                var name = x.qualifier;
-                var item = {};
-                var pos;
-
-                item ["id"] = id;
-                item ["qualifier"] = name;
-                for(var i in skillMap){
-                    if(skillMap[i].id == id){
-                        check = 1;
-                        pos=i;
-                        break;
-                    }
-                }
-                if(check == 0)
-                    skillMap.push(item);
-                else
-                    skillMap[pos] = item;
-            };
-            headLbl.appendChild(o);
-            lbl.appendChild(headLbl);
-        });
     });
     if(count == 0){
         $(".skillSection").hide();
@@ -364,7 +377,6 @@ function processDataCheckLanguage(returnedData) {
     var arrayLang =[];
     var arrayLangId =[];
     var defaultOption=$('<option value="-1"></option>').text("Select");
-    $('#candidateMotherTongue').append(defaultOption);
     returnedData.forEach(function(language)
     {
         var id = language.languageId;
@@ -375,7 +387,6 @@ function processDataCheckLanguage(returnedData) {
         arrayLang.push(name);
         arrayLangId.push(id);
         var option=$('<option value=' + id + '></option>').text(name);
-        $('#candidateMotherTongue').append(option);
 
         languageArray.push(item);
     });
@@ -396,9 +407,9 @@ function populateLanguages(l, lId) {
             var cell4 = row.insertCell(3);
 
             cell1.innerHTML = l[i];
-            cell2.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" id=\"languageBtn\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"r\" value=0 >Read</label></div>";
-            cell3.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" id=\"languageBtn\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"w\" value=0 >Write</label></div>";
-            cell4.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" id=\"languageBtn\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >Speak</label></div>";
+            cell2.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"u\" value=0 >Understand</label></div>";
+            cell3.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >Speak</label></div>";
+            cell4.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"rw\" value=0 >Read/Write</label></div>";
         }
     }
 
@@ -447,6 +458,7 @@ function checkInstitute() {
 
 function processDataAndFillAllFields(returnedData) {
     candidateInformation = returnedData;
+    $("#jobCount").html(Object.keys(candidateInformation.jobApplicationList).length);
     /* get Candidate's job preference */
     try {
         var jobPref = returnedData.jobPreferencesList;
@@ -464,7 +476,7 @@ function processDataAndFillAllFields(returnedData) {
 
     try {
         var localityPref = returnedData.localityPreferenceList;
-        if(localityPref != null){
+        if(localityPref != null) {
             localityPref.forEach(function (individualLocality){
                 var id = individualLocality.locality.localityId;
                 var name = individualLocality.locality.localityName;

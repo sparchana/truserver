@@ -58,21 +58,47 @@ input::-webkit-inner-spin-button {
     margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
 }
 
-.jobApplyBtn{
-    border: none;
-    background-color: #0065a4;
-    color: white;
-}
-
 .materialDash{
     height: 2px;
     width: 72px;
     background: #2980b9;
 }
 body{
+    background: #fcfcfc;
     font-family: Lato;
     color: #3a3c3b;
 }
+
+#preloader  {
+    position: absolute;
+    height: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #fefefe;
+    z-index: 99999999;
+    height: 100%;
+}
+
+#loaderLogo  {
+    width: 200px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: -100px 0 0 -100px;
+}
+
+#status  {
+    width: 200px;
+    height: 136px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background: url(../../img/main_loader.svg) no-repeat center;
+    margin: -100px 0 0 -100px;
+}
+
 
 .form-control{
     border: 1px solid #eaeaea;
@@ -84,7 +110,7 @@ body{
 }
 
 .btn-custom-check.active {
-    background: #2d8fb9;
+    background: #286ab6;
     border: 1px solid #2870a3;
     color: #ffffff;
 }
@@ -118,25 +144,49 @@ body{
 
 #sectionOne {
     background: linear-gradient(
-            rgba(24, 26, 45, 0.4),
-            rgba(24, 26, 45, 0.4)
-    ), url(../img/home-banner.jpg) no-repeat;
+            rgba(24, 26, 45, 0.6),
+            rgba(24, 26, 45, 0.6)
+    ), url(../img/back_design.png) no-repeat;
     background-size: 100%;
     color: #ffffff;
     font-weight: bold;
-    padding: 6% 5% 4%;
+    padding: 5% 3% 4% 3%;
     text-align: center;
 }
 
+.invalid {
+    border-color: rgba(255, 50, 25, 0.84);
+}
+
+#hot_job_section {
+    margin-top: -6%;
+}
+
+#jobseeker_img {
+    text-align: center;
+    margin-top: 10%;
+}
+
+#recruiter_form_section {
+    margin-top: 8%;
+    margin-left: 24%;
+    margin-right: 24%;
+    padding: 12px 10px;
+    border: 1px solid rgba(22, 46, 99, 0.24);
+    border-radius: 2px;
+}
+
 .leadBox {
-    box-shadow: 0px 0px 15px 1px black;
-    border-radius: 4px;
+    text-align: center;
+    position: relative;
+    width: 22%;
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.15);
+    border-radius: 2px;
     color: #0B4063;
-    background: rgba(255, 255, 255, 0.6);
-    padding: 1%;
-    margin-top: 20px;
-    margin-right: 0;
-    margin-left: 0;
+    background: #ffffff;
+    padding: 4px;
+    margin-left: 75%;
+    margin-top: -13%;
 }
 
 .sectionStats {
@@ -261,7 +311,7 @@ a:hover{
 
 #fixed-menu
 {
-    margin-top: -33px;
+    margin-top: 50px;
     margin-left: -9%;
     background: rgba(0, 0, 0, 0.175);
     position: fixed;
@@ -306,6 +356,116 @@ a:hover{
     text-align: left;
 }
 
+#jobLogo{
+    margin-top: 12%;
+}
+
+#hotJobs{
+    height: 66%;
+    overflow: scroll;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+#hotJobs::-webkit-scrollbar {
+    width: 0 !important;
+}
+
+#hotJobItem{
+    border-left: 2px rgba(46, 131, 213, 0.6) solid;
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.09);
+    padding: 1%;
+    margin-left: 13%;
+    margin-right: 13%;
+    margin-top: 8px;
+    background: #ffffff;
+}
+
+#jobBody {
+    margin-top: -8px;
+    text-align: left;
+}
+
+#jobBodyDetails {
+    text-align: left;
+}
+
+.appliedBtn {
+    box-shadow: none;
+    cursor: crosshair;
+    color: #fff;
+    border-color: #f4e3a4;
+    background-color: #f4cb6c;
+}
+.appliedBtn:hover{
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.jobApplyBtn{
+    border: none;
+    color: white;
+    margin-top: 12%;
+    background: #09ac58;
+    padding: 6%;
+    width: 120px;
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.16);
+}
+
+#customModal {
+    width: 28%;
+}
+
+.jobApplyBtn:hover{
+    cursor: pointer;
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
+}
+
+.jobApplyBtnModal{
+    border: none;
+    color: white;
+    background: #09ac58;
+    padding: 2%;
+    display: block;
+    width: 176px;
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.16);
+}
+
+.jobApplyBtnModal:hover{
+    cursor: pointer;
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
+}
+
+.selectDropdown{
+    overflow:scroll;
+    margin-top: 2px;
+    display: inline-block;
+    height: 34px;
+    border: 1px solid #eaeaea;
+    border-radius: 4px;
+    background: #ffffff;
+}
+
+hr{
+    margin: 6px;
+}
+
+#hotJobItem:hover{
+    background: #fbfbfb;
+}
+
+#jobSalary, #jobExp, #jobLocation {
+    padding: 8px;
+}
+
+#applyToJobs{
+    padding-top: 24px;
+    padding-left: 14%;
+    padding-bottom: 24px;
+    margin-top: -90px;
+}
+
+
 @media screen and (max-width: 280px) {
     .panel{
         padding: 0px;
@@ -322,7 +482,85 @@ a:hover{
     }
 }
 
+#forCandidate {
+    background: url(../img/call_center.jpg) no-repeat;
+    background-size: 100%;
+}
+
+#firstNameLastName {
+    height: 34px;
+}
+
 @media screen and (max-width: 768px) {
+    #customModal {
+        margin-left: 2%;
+        margin-right: 2%;
+        width: 96%;
+    }
+    #firstNameLastName {
+        height: 77px;
+    }
+    #forCandidate{
+        background: #fff;
+    }
+    #applyToJobs{
+        padding: 0;
+        margin: 0;
+        text-align: center;
+        margin-top: 24px;
+    }
+    #jobLogo{
+        margin-top: 4%;
+        margin-bottom: 4%;
+        width: 40%;
+    }
+
+    #hotJobItem{
+        border: none;
+        box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.09);
+        padding: 2%;
+        margin-left: 0%;
+        margin-right: 0%;
+        margin-top: 8px;
+        background: #ffffff;
+    }
+
+    #jobBodyDetails {
+        padding-top: 4%;
+        padding-left: 10%;
+        padding-right: 10%;
+        text-align: left;
+    }
+
+    #jobSalary, #jobExp, #jobLocation {
+        margin-left: 16%;
+    }
+
+    .jobApplyBtn{
+        margin-top: 12px;
+        padding: 12px;
+        width: 48%;
+        margin-bottom: 12px;
+    }
+
+    #jobBody{
+        text-align: center;
+    }
+
+    #fixed-menu {
+        padding-left: 3%;
+        padding-right: 3%;
+    }
+    #recruiter_form_section {
+        margin-top: 2%;
+        margin-left: 12%;
+        margin-right: 12%;
+        padding: 10px 8px;
+        box-shadow:0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
+    }
+    #hot_job_section {
+        margin-top: 8%;
+    }
     .panel{
         padding: 0px;
     }
@@ -332,9 +570,6 @@ a:hover{
     }
     #hot_box{
         margin: 0%;
-    }
-    #fixed-menu{
-        margin-top: 0px;
     }
     #candidateName {
         width: 96%;
@@ -360,13 +595,10 @@ a:hover{
         margin-top: 8px;
     }
 
-    #fixed-menu{
-        margin-top: -42px;
-    }
     #leadFormBox{
-        width: 68%;
-        margin-right: 10%;
-        margin-left: 10%;
+        width: 70%;
+        margin-right: 15%;
+        margin-left: 14%;
         height:30px;
     }
 
@@ -378,9 +610,9 @@ a:hover{
     }
 
     #sectionOne {
-        background-size: 220%;
-        margin-top: 48px;
-        padding-top: 12%;
+        background-size: 260%;
+        padding-top: 24%;
+        padding-bottom: 48%;
     }
 
     .sectionStats {
@@ -408,7 +640,8 @@ a:hover{
     }
 
     .leadBox {
-        margin-top: 40px;
+        width: 84%;
+        margin-top: -54%;
         margin-right: 8%;
         margin-left: 8%;
     }
@@ -543,7 +776,7 @@ li .dropdown-menu{
     background: linear-gradient(
             rgba(24, 26, 45, 0.7),
             rgba(24, 26, 45, 0.7)
-    ), url(../img/home-banner-2.jpg) no-repeat;
+    ), url(../img/back_design.png) no-repeat;
     background-size: 100%;
 }
 .sectionFive {
@@ -614,7 +847,6 @@ padding: 0px;
 }
 .navbar-default {
     height: 50px;
-    background-color: transparent;
     border: none;
 }
 

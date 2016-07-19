@@ -1,13 +1,32 @@
+/*
+
+* Install npm
+* package.json contain all dependencies specified
+@@ $ npm install
+* Production file generation
+@@ $ gulp --prod
+* in dev mode just use:
+@@ $ gulp
+
+*/
+
+
+
+
 // include gulp
 var gulp = require('gulp');
 
 // include plug-ins
-var jshint = require('gulp-jshint');
-var stripDebug = require('gulp-strip-debug');
-var uglify = require('gulp-uglify');
-var concat = require('gulp-concat');
-var autoprefix = require('gulp-autoprefixer');
-var minifyCSS = require('gulp-minify-css');
+var jshint = require('gulp-jshint'),
+    stripDebug = require('gulp-strip-debug'),
+    uglify = require('gulp-uglify'),
+    concat = require('gulp-concat'),
+    autoprefix = require('gulp-autoprefixer'),
+    minifyCSS = require('gulp-minify-css'),
+    argv = require('yargs').argv,
+    gulpif = require('gulp-if'),
+    beautify = require('gulp-beautify');
+
 
 // Handy file paths also handler order of file compilation
 paths = {
@@ -28,7 +47,10 @@ jsOrder = {
     jsZip: paths.supportJs+"btnExport/jszip.min.js",
     vfsFonts: paths.supportJs+"btnExport/vfs_fonts.js",
     btnHtml5: paths.supportJs+"btnExport/buttons.html5.min.js",
-    searchController: paths.supportJs+"searchController.js",
+    momentJs: paths.supportJs+"moment-2.8.4.min.js",
+    datetimeMomentJs: paths.supportJs+"datetime-moment.js",
+    jqueryUi: paths.supportJs+"jquery-ui.js",
+    searchController: paths.supportJs+"searchController.js"
 };
 
 cssOrder = {
@@ -38,7 +60,8 @@ cssOrder = {
     search: paths.supportCss+"search.css",
     npProgress: paths.supportCss+"nprogress.css",
     tokenFb: paths.supportCss+"token-input-facebook.css",
-    btnDt: paths.supportCss+"buttons.dataTables.min.css"
+    btnDt: paths.supportCss+"buttons.dataTables.min.css",
+    jqueryUi: paths.supportCss+"jquery-ui.css"
 };
 
 
@@ -67,23 +90,40 @@ gulp.task('styles', function() {
 
 // JS concat, strip debugging and minify
 gulp.task('supportScripts', function() {
-    gulp.src([jsOrder.bootstrap, jsOrder.jquery, jsOrder.jqDt, jsOrder.npProgress, jsOrder.tokenInput, jsOrder.btnDt, jsOrder.btnFlash, jsOrder.jsZip, jsOrder.vfsFonts, jsOrder.btnHtml5, jsOrder.searchController])
-        .pipe(uglify())
+    gulp.src([jsOrder.bootstrap, jsOrder.jquery, jsOrder.jqDt, jsOrder.npProgress, jsOrder.tokenInput, jsOrder.btnDt, jsOrder.btnFlash, jsOrder.jsZip, jsOrder.vfsFonts, jsOrder.btnHtml5, jsOrder.momentJs, jsOrder.datetimeMomentJs, jsOrder.jqueryUi, jsOrder.searchController])
         .pipe(concat('sapp.min.js'))
-        .pipe(stripDebug())
+        .pipe(gulpif(argv.prod, uglify(), beautify()))
+        .pipe(gulpif(argv.prod, stripDebug()))
         .pipe(gulp.dest('./public/build/support/'));
 });
 
 // style minify
 gulp.task('supportStyles', function() {
-    gulp.src([cssOrder.bootstrap, cssOrder.dtBootstrap, cssOrder.jqDt, cssOrder.search, cssOrder.npProgress, cssOrder.tokenFb, cssOrder.btnDt])
+    gulp.src([cssOrder.bootstrap, cssOrder.dtBootstrap, cssOrder.jqDt, cssOrder.search, cssOrder.npProgress, cssOrder.tokenFb, cssOrder.btnDt, cssOrder.jqueryUi])
         .pipe(concat('sapp.min.css'))
-        .pipe(minifyCSS())
+        .pipe(gulpif(argv.prod, minifyCSS()))
+        .pipe(gulp.dest('./public/build/support/'));
+});
+
+// JS concat, strip debugging and minify for datatable bundle
+gulp.task('datatableBundleScript', function() {
+    gulp.src([jsOrder.jqDt, jsOrder.btnDt, jsOrder.btnFlash, jsOrder.jsZip, jsOrder.vfsFonts, jsOrder.btnHtml5])
+        .pipe(concat('datatableBundle.min.js'))
+        .pipe(gulpif(argv.prod, uglify(), beautify()))
+        .pipe(gulpif(argv.prod, stripDebug()))
+        .pipe(gulp.dest('./public/build/support/'));
+});
+
+// datatable style minify
+gulp.task('datatableBundleStyle', function() {
+    gulp.src([cssOrder.dtBootstrap, cssOrder.jqDt, cssOrder.btnDt])
+        .pipe(concat('datatableBundle.min.css'))
+        .pipe(gulpif(argv.prod, minifyCSS()))
         .pipe(gulp.dest('./public/build/support/'));
 });
 
 // default gulp task
-gulp.task('default', ['scripts', 'styles', 'supportScripts', 'supportStyles'], function() {
+gulp.task('default', ['scripts', 'styles', 'supportScripts', 'supportStyles', 'datatableBundleScript', 'datatableBundleStyle'], function() {
     // watch for CSS changes
     gulp.watch(paths.css+'*.css', function() {
         gulp.run('styles');
@@ -99,6 +139,14 @@ gulp.task('default', ['scripts', 'styles', 'supportScripts', 'supportStyles'], f
     // watch for support js changes
     gulp.watch(paths.supportJs+'*.js', function() {
         gulp.run('supportScripts');
+    });
+    // watch for datatable bundle css changes
+    gulp.watch(paths.supportJs+'*.css', function() {
+        gulp.run('datatableBundleStyles');
+    });
+    // watch for datatable bundle js changes
+    gulp.watch(paths.supportJs+'*.js', function() {
+        gulp.run('datatableBundleScript');
     });
 });
 

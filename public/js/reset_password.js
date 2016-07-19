@@ -5,7 +5,6 @@
 var returnedOtp;
 var candidateMobile;
 function processDataResetCheckUser(returnedData) {
-    console.log("returedData :" + returnedData.status + " " + returnedData.otp);
     if(returnedData.status == 1) {
         returnedOtp = returnedData.otp;
         document.getElementById("helpText").innerHTML = "Enter OTP sent on " + $('#resetPasswordMobile').val();
@@ -30,7 +29,7 @@ function processDataPostReset(returnedData) {
         localStorage.setItem("minProfile", returnedData.minProfile);
         if(applyJobFlag == 1){
             $("#myLoginModal").modal("hide");
-            applyJob(applyJobId);
+            applyJob(applyJobId, prefLocation);
             applyJobFlag = 0;
             applyJobId = 0;
             $("#customSubMsg").html("Logging in ...");

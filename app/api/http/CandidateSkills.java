@@ -5,7 +5,7 @@ package api.http;
  */
 public class CandidateSkills {
     public String id;
-    public String qualifier;
+    public boolean answer;
 
     public String getId() {
         return id;
@@ -15,11 +15,11 @@ public class CandidateSkills {
         this.id = id;
     }
 
-    public String getQualifier() {
-        return qualifier;
+    public boolean getAnswer() {
+        return answer;
     }
 
-    public void setQualifier(String qualifier) {
-        this.qualifier = qualifier;
+    public void setAnswer(boolean answer) {
+        this.answer = answer;
     }
 }

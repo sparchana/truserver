@@ -1,5 +1,6 @@
 package api.http.httpRequest;
 
+import java.sql.Date;
 import java.util.List;
 
 /**
@@ -11,19 +12,75 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
     public Integer candidateHomeLocality;
     public Integer candidateMaritalStatus ;
     public String candidateEmail;
-    public String candidatePastJobCompany;
-    public Integer candidatePastJobRole;
-    public Long candidatePastJobSalary ;
-    public Integer candidateCurrentJobLocation;
-    public Integer candidateTransportation ;
-    public Integer candidateCurrentWorkShift ;
-    public Integer candidateCurrentJobRole;
-    public String candidateCurrentJobDesignation;
-    public Integer candidateCurrentJobDuration ;
     public List<Integer> candidateIdProof;
     public Integer candidateSalarySlip ;
     public Integer candidateAppointmentLetter ;
+    public Integer candidateExperienceLetter ;
     public String supportNote;
+    public Boolean deactivationStatus;
+    public Integer deactivationReason;
+    public Date deactivationExpiryDate;
+
+    public static class ExpList {
+        Integer jobExpQuestionId;
+        List<Integer> jobExpResponseIdArray;
+
+        public ExpList(){
+        }
+        public ExpList(ExpList expList){
+            //constructor Code
+        }
+
+        public Integer getJobExpQuestionId() {
+            return jobExpQuestionId;
+        }
+
+        public void setJobExpQuestionId(Integer jobExpQuestionId) {
+            this.jobExpQuestionId = jobExpQuestionId;
+        }
+
+        public List<Integer> getJobExpResponseIdArray() {
+            return jobExpResponseIdArray;
+        }
+
+        public void setJobExpResponseIdArray(List<Integer> jobExpResponseIdArray) {
+            this.jobExpResponseIdArray = jobExpResponseIdArray;
+        }
+    }
+
+    public static class PastCompany {
+        Integer jobRoleId;
+        String companyName;
+        Boolean current;
+
+        public PastCompany(){}
+
+        public Integer getJobRoleId() {
+            return jobRoleId;
+        }
+
+        public void setJobRoleId(Integer jobRoleId) {
+            this.jobRoleId = jobRoleId;
+        }
+
+        public String getCompanyName() {
+            return companyName;
+        }
+
+        public void setCompanyName(String companyName) {
+            this.companyName = companyName;
+        }
+
+        public Boolean getCurrent() {
+            return current;
+        }
+
+        public void setCurrent(Boolean current) {
+            this.current = current;
+        }
+    }
+    public List<ExpList> expList;
+    public List<PastCompany> pastCompanyList;
 
     public String getSupportNote() {
         return supportNote;
@@ -51,43 +108,6 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
 
     public String getCandidateEmail() {
         return candidateEmail;
-    }
-
-    public Integer getCandidateCurrentJobLocation() {
-        return candidateCurrentJobLocation;
-    }
-
-    public Integer getCandidateTransportation() {
-        return candidateTransportation;
-    }
-
-    public Integer getCandidateCurrentWorkShift() {
-        return candidateCurrentWorkShift;
-    }
-
-    public Integer getCandidateCurrentJobRole() {
-        return candidateCurrentJobRole;
-    }
-
-    public String getCandidateCurrentJobDesignation() {
-        return candidateCurrentJobDesignation;
-    }
-
-
-    public Integer getCandidateCurrentJobDuration() {
-        return candidateCurrentJobDuration;
-    }
-
-    public Integer getCandidatePastJobRole() {
-        return candidatePastJobRole;
-    }
-
-    public String getCandidatePastJobCompany() {
-        return candidatePastJobCompany;
-    }
-
-    public Long getCandidatePastJobSalary() {
-        return candidatePastJobSalary;
     }
 
     public String getCandidateTimeShiftPref() {
@@ -126,42 +146,6 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
         this.candidateEmail = candidateEmail;
     }
 
-    public void setCandidatePastJobCompany(String candidatePastJobCompany) {
-        this.candidatePastJobCompany = candidatePastJobCompany;
-    }
-
-    public void setCandidatePastJobRole(Integer candidatePastJobRole) {
-        this.candidatePastJobRole = candidatePastJobRole;
-    }
-
-    public void setCandidatePastJobSalary(Long candidatePastJobSalary) {
-        this.candidatePastJobSalary = candidatePastJobSalary;
-    }
-
-    public void setCandidateCurrentJobLocation(Integer candidateCurrentJobLocation) {
-        this.candidateCurrentJobLocation = candidateCurrentJobLocation;
-    }
-
-    public void setCandidateTransportation(Integer candidateTransportation) {
-        this.candidateTransportation = candidateTransportation;
-    }
-
-    public void setCandidateCurrentWorkShift(Integer candidateCurrentWorkShift) {
-        this.candidateCurrentWorkShift = candidateCurrentWorkShift;
-    }
-
-    public void setCandidateCurrentJobRole(Integer candidateCurrentJobRole) {
-        this.candidateCurrentJobRole = candidateCurrentJobRole;
-    }
-
-    public void setCandidateCurrentJobDesignation(String candidateCurrentJobDesignation) {
-        this.candidateCurrentJobDesignation = candidateCurrentJobDesignation;
-    }
-
-    public void setCandidateCurrentJobDuration(Integer candidateCurrentJobDuration) {
-        this.candidateCurrentJobDuration = candidateCurrentJobDuration;
-    }
-
     public void setCandidateIdProof(List<Integer> candidateIdProof) {
         this.candidateIdProof = candidateIdProof;
     }
@@ -172,5 +156,53 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
 
     public void setCandidateAppointmentLetter(Integer candidateAppointmentLetter) {
         this.candidateAppointmentLetter = candidateAppointmentLetter;
+    }
+
+    public List<ExpList> getExpList() {
+        return expList;
+    }
+
+    public void setExpList(List<ExpList> expList) {
+        this.expList = expList;
+    }
+
+    public List<PastCompany> getPastCompanyList() {
+        return pastCompanyList;
+    }
+
+    public void setPastCompanyList(List<PastCompany> pastCompany) {
+        this.pastCompanyList = pastCompany;
+    }
+
+    public Integer getCandidateExperienceLetter() {
+        return candidateExperienceLetter;
+    }
+
+    public void setCandidateExperienceLetter(Integer candidateExperienceLetter) {
+        this.candidateExperienceLetter = candidateExperienceLetter;
+    }
+
+    public Boolean getDeactivationStatus() {
+        return deactivationStatus;
+    }
+
+    public void setDeactivationStatus(Boolean deactivationStatus) {
+        this.deactivationStatus = deactivationStatus;
+    }
+
+    public Integer getDeactivationReason() {
+        return deactivationReason;
+    }
+
+    public void setDeactivationReason(Integer deactivationReason) {
+        this.deactivationReason = deactivationReason;
+    }
+
+    public Date getDeactivationExpiryDate() {
+        return deactivationExpiryDate;
+    }
+
+    public void setDeactivationExpiryDate(Date deactivationExpiryDate) {
+        this.deactivationExpiryDate = deactivationExpiryDate;
     }
 }

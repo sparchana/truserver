@@ -1,6 +1,7 @@
 package models.entity.OM;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
@@ -20,9 +21,10 @@ public class JobPreference extends Model {
     @Column(name = "JobPreferenceId", columnDefinition = "int signed", nullable = false, unique = true)
     private int jobPreferenceId;
 
+    @UpdatedTimestamp
     @JsonBackReference
     @Column(name = "UpdateTimeStamp", columnDefinition = "timestamp null")
-    private Timestamp updateTimeStamp = new Timestamp(System.currentTimeMillis());
+    private Timestamp updateTimeStamp;
 
     @ManyToOne
     @JsonManagedReference
