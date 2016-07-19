@@ -867,12 +867,12 @@ public class Application extends Controller {
                 if(candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE){
                     Date expDate = candidate.getCandidateStatusDetail().getStatusExpiryDate();
                     if(expDate != null){
-                        jobApplicationGoogleSheetResponse.setCandidateExpiryDate(String.valueOf(expDate));
+                        jobApplicationGoogleSheetResponse.setCandidateExpiryDate(expDate);
                     } else{
-                        jobApplicationGoogleSheetResponse.setCandidateExpiryDate("-");
+                        jobApplicationGoogleSheetResponse.setCandidateExpiryDate(null);
                     }
                 } else{
-                    jobApplicationGoogleSheetResponse.setCandidateExpiryDate("-");
+                    jobApplicationGoogleSheetResponse.setCandidateExpiryDate(null);
                 }
 
                 jobApplicationGoogleSheetResponse.setLanguageKnown(languagesKnown);
