@@ -388,7 +388,6 @@ function confirmApply() {
 $(function() {
     $("#jobLocality").change(function (){
         if($(this).val() != -1){
-            console.log($("#jobLocality option:selected").text());
             prefLocation = $(this).val();
             prefLocationName = $("#jobLocality option:selected").text();
             $("#applyButton").show();
