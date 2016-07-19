@@ -2,9 +2,9 @@
  * Created by batcoder1 on 29/6/16.
  */
 
+var recId = 0;
 
 function processDataAddJobPost(returnedData) {
-    console.log(returnedData);
     if(returnedData.status == 1){
         var jobPostLocalities = "";
         var jobPostSalary = "";
@@ -61,10 +61,58 @@ function processDataAddJobPost(returnedData) {
     }
 }
 
+function processDataAddRecruiterAndUpdateRecId(returnedData) {
+    recId = returnedData.recruiterId;
+}
+
 // job_post_form ajax script
 $(function() {
     $("#job_post_form").submit(function(eventObj) {
         eventObj.preventDefault();
+        if($("#jobPostRecruiter").val() == "" && $("#recruiterSection").is(':visible') == true){
+            var status = 1;
+            var recruiterName = validateName($("#recruiterName").val());
+            var recruiterMobile = validateMobile($("#recruiterMobile").val());
+            //checking first name
+            switch(recruiterName){
+                case 0: alert("First name contains number. Please Enter a valid First Name"); status=0; break;
+                case 2: alert("First Name cannot be blank spaces. Enter a valid first name"); status=0; break;
+                case 3: alert("First name contains special symbols. Enter a valid first name"); status=0; break;
+                case 4: alert("Please enter your first name"); status=0; break;
+            }
+            if(recruiterMobile == 0){
+                alert("Enter a valid mobile number");
+                status=0;
+            } else if(recruiterMobile == 1){
+                alert("Enter 10 digit mobile number");
+                status=0;
+            } else if(recruiterMobile == "") {
+                alert("Please Enter recruiter Contact");
+                status=0;
+            }
+            if(status == 1){
+                try{
+                    var rec = {
+                        recruiterName: $("#recruiterName").val(),
+                        recruiterMobile: $("#recruiterMobile").val(),
+                        recruiterLandline: $("#recruiterLandline").val(),
+                        recruiterEmail: $("#recruiterEmail").val(),
+                        recruiterCompany: $("#jobPostCompany").val()
+                    };
+                } catch (exception) {
+                    console.log("exception occured!!" + exception);
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "/addRecruiter",
+                    async: false,
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(rec),
+                    success: processDataAddRecruiterAndUpdateRecId
+                });
+            }
+        }
         var jobPostLocalities = [];
         var status = 1;
         var locality = $('#jobPostLocalities').val().split(",");
@@ -72,7 +120,7 @@ $(function() {
             alert("Please enter Job Post Company");
             $("#jobPostCompany").addClass('selectDropdownInvalid').removeClass('selectDropdown');
             status = 0;
-        } else if($("#jobPostRecruiter").val() == ""){
+        } else if($("#jobPostRecruiter").val() == "" && recId == 0){
             alert("Please select a recruiter");
             $("#jobPostCompany").addClass('selectDropdown').removeClass('selectDropdownInvalid');
             $("#jobPostRecruiter").addClass('selectDropdownInvalid').removeClass('selectDropdown');
@@ -110,6 +158,9 @@ $(function() {
             status = 0;
         }
         if(status == 1){
+            if($("#jobPostRecruiter").val() != ""){
+                recId = $("#jobPostRecruiter").val();
+            }
             $("#jobPostExperience").addClass('selectDropdown').removeClass('selectDropdownInvalid');
             var i;
             for(i=0;i<locality.length; i++){
@@ -166,7 +217,7 @@ $(function() {
                     jobPostStatusId: $("#jobPostStatus").val(),
                     pricingPlanTypeId: 1,
                     jobPostExperienceId: $("#jobPostExperience").val(),
-                    jobPostRecruiterId: $("#jobPostRecruiter").val()
+                    jobPostRecruiterId: recId
                 };
                 $.ajax({
                     type: "POST",

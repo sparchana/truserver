@@ -260,12 +260,26 @@ public class Application extends Controller {
             String contentType = picture.getContentType();
             File file = (File) picture.getFile();
             Logger.info("uploaded! " + file);
-            JobService.uploadCompanyLogo(file, fileName);
+            CompanyService.uploadCompanyLogo(file, fileName);
             return ok("File uploaded");
         } else {
             flash("error", "Missing file");
             return redirect(routes.Application.index());
         }
+    }
+
+    @Security.Authenticated(Secured.class)
+    public static Result addRecruiter() {
+        JsonNode req = request().body().asJson();
+        Logger.info(req + " == ");
+        AddRecruiterRequest addRecruiterRequest = new AddRecruiterRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addRecruiterRequest = newMapper.readValue(req.toString(), AddRecruiterRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ok(toJson(RecruiterService.addRecruiter(addRecruiterRequest)));
     }
 
     @Security.Authenticated(Secured.class)
@@ -279,20 +293,7 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        if(addCompanyRequest.getRecruiterCompany() == null){ //this means we are updating a company details
-            return ok(toJson(CompanyService.addCompany(addCompanyRequest)));
-        } else{
-            if(addCompanyRequest.getRecruiterCompany() == -1){
-                AddCompanyResponse addCompanyResponse = CompanyService.addCompany(addCompanyRequest);
-                if(addCompanyResponse.getStatus() == 1){
-                    return ok(toJson(RecruiterService.addRecruiter(addCompanyRequest, addCompanyResponse.getCompanyId())));
-                } else{
-                    return ok(toJson(AddCompanyResponse.STATUS_FAILURE));
-                }
-            } else{
-                return ok(toJson(RecruiterService.addRecruiter(addCompanyRequest, addCompanyRequest.getRecruiterCompany())));
-            }
-        }
+        return ok(toJson(CompanyService.addCompany(addCompanyRequest)));
     }
 
     public static Result loginSubmit() {
@@ -493,9 +494,19 @@ public class Application extends Controller {
         return ok("0");
     }
 
-    public static Result getJobPostInfo(long jobPostId) {
+    public static Result getJobPostInfo(long jobPostId, Integer isSupport) {
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
         if(jobPost!=null){
+            if(isSupport == 0){
+                String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB;
+                String objBUUID = "";
+                if(session().get("candidateId") != null){
+                    Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")). findUnique();
+                    objBUUID = candidate.getCandidateUUId();
+                }
+                InteractionService.createInteractionForHobApplicationAttempt(jobPost.getJobPostUUId(), objBUUID, interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName());
+            }
+
             return ok(toJson(jobPost));
         }
         return ok("0");
@@ -790,9 +801,29 @@ public class Application extends Controller {
                 if(candidate.getLanguageKnownList() != null && candidate.getLanguageKnownList().size() > 0) {
                     List<LanguageKnown> languageKnownList = candidate.getLanguageKnownList();
 
+                    String canRead = "";
+                    String canWrite = "";
+                    String canSpeak = "";
+
                     for(LanguageKnown l : languageKnownList){
-                        languagesKnown += l.getLanguage().getLanguageName() + "(" + l.getReadingAbility() + ", " +
-                                l.getWritingAbility() + ", " + l.getVerbalAbility() + "), ";
+                        if(l.getReadingAbility() == null){
+                            canRead = "na";
+                        } else{
+                            canRead = l.getReadingAbility() + "";
+                        }
+                        if(l.getWritingAbility() == null){
+                            canWrite = "na";
+                        } else{
+                            canWrite = l.getWritingAbility() + "";
+                        }
+                        if(l.getVerbalAbility() == null){
+                            canSpeak = "na";
+                        } else{
+                            canSpeak = l.getVerbalAbility() + "";
+                        }
+
+                        languagesKnown += l.getLanguage().getLanguageName() + "(" + canRead + ", " +
+                                canWrite + ", " + canSpeak + "), ";
                     }
                 }
 
@@ -831,6 +862,17 @@ public class Application extends Controller {
 
                 for(LocalityPreference locality : localityPrefList){
                     candidateLocalityPref += locality.getLocality().getLocalityName() + ", ";
+                }
+                jobApplicationGoogleSheetResponse.setCandidateProfileStatus(candidate.getCandidateprofilestatus().getProfileStatusName());
+                if(candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE){
+                    Date expDate = candidate.getCandidateStatusDetail().getStatusExpiryDate();
+                    if(expDate != null){
+                        jobApplicationGoogleSheetResponse.setCandidateExpiryDate(String.valueOf(expDate));
+                    } else{
+                        jobApplicationGoogleSheetResponse.setCandidateExpiryDate("-");
+                    }
+                } else{
+                    jobApplicationGoogleSheetResponse.setCandidateExpiryDate("-");
                 }
 
                 jobApplicationGoogleSheetResponse.setLanguageKnown(languagesKnown);
