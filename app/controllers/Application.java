@@ -98,6 +98,7 @@ public class Application extends Controller {
                     case 5: response.setUserInteractionType("Website Interaction"); break;
                     case 6: response.setUserInteractionType("Follow Up Call"); break;
                     case 7: response.setUserInteractionType("New Job Application"); break;
+                    case 8: response.setUserInteractionType("Tried to Apply to a job"); break;
                     default: response.setUserInteractionType("Interaction Undefined in getCandidateInteraction()"); break;
                 }
                 responses.add(response);
@@ -499,12 +500,12 @@ public class Application extends Controller {
         if(jobPost!=null){
             if(isSupport == 0){
                 String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB;
-                String objBUUID = "";
+                String objAUUID = "";
                 if(session().get("candidateId") != null){
                     Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")). findUnique();
-                    objBUUID = candidate.getCandidateUUId();
+                    objAUUID = candidate.getCandidateUUId();
                 }
-                InteractionService.createInteractionForHobApplicationAttempt(jobPost.getJobPostUUId(), objBUUID, interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName());
+                InteractionService.createInteractionForHobApplicationAttempt(objAUUID, jobPost.getJobPostUUId(), interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName());
             }
 
             return ok(toJson(jobPost));
