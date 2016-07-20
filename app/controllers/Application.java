@@ -99,6 +99,8 @@ public class Application extends Controller {
                     case 6: response.setUserInteractionType("Follow Up Call"); break;
                     case 7: response.setUserInteractionType("New Job Application"); break;
                     case 8: response.setUserInteractionType("Tried to Apply to a job"); break;
+                    case 9: response.setUserInteractionType("Tried to reset password"); break;
+                    case 10: response.setUserInteractionType("Reset password successful"); break;
                     default: response.setUserInteractionType("Interaction Undefined in getCandidateInteraction()"); break;
                 }
                 responses.add(response);
@@ -339,6 +341,7 @@ public class Application extends Controller {
         }
         String candidateMobile = resetPasswordResquest.getResetPasswordMobile();
         Logger.info("==> " + candidateMobile);
+
         return ok(toJson(CandidateService.findUserAndSendOtp(candidateMobile)));
     }
 
@@ -505,7 +508,7 @@ public class Application extends Controller {
                     Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")). findUnique();
                     objAUUID = candidate.getCandidateUUId();
                 }
-                InteractionService.createInteractionForHobApplicationAttempt(objAUUID, jobPost.getJobPostUUId(), interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName());
+                InteractionService.createInteractionForJobApplicationAttempt(objAUUID, jobPost.getJobPostUUId(), interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName());
             }
 
             return ok(toJson(jobPost));
