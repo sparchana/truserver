@@ -97,6 +97,14 @@ function processDataGetJobGoogleSheetDetails(returnedData) {
 
     var value = returnedData.candidateCreationTimestamp;
     var candidateCreateTimestamp = new Date(value).toLocaleDateString() +" "+ new Date(value).getHours() +":"+new Date(value).getMinutes()+":"+new Date(value).getSeconds();
+    value = returnedData.candidateExpiryDate;
+    var candidateExpiryDate;
+    if(value != null){
+        candidateExpiryDate = new Date(value).toLocaleDateString();
+    } else{
+        candidateExpiryDate = "-";
+    }
+
     var formUrl = returnedData.formUrl;
     var totalExperienceInYrs = "";
     var totalExperience = returnedData.candidateTotalExp;
@@ -128,7 +136,7 @@ function processDataGetJobGoogleSheetDetails(returnedData) {
                 "entry.971982828": candidateCreateTimestamp,
                 "entry.98308337": prefLocationName,
                 "entry.46689276": returnedData.candidateProfileStatus,
-                "entry.1180627971": returnedData.candidateExpiryDate
+                "entry.1180627971": candidateExpiryDate
             },
             type: "POST",
             dataType: "xml",
