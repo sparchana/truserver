@@ -113,7 +113,7 @@ public class InteractionService {
         }
     }
 
-    public static void createInteractionForHobApplicationAttempt(String objectAUUId, String objectBUUId, String result) {
+    public static void createInteractionForJobApplicationAttempt(String objectAUUId, String objectBUUId, String result) {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_JOB_POST,
@@ -152,5 +152,29 @@ public class InteractionService {
             );
             InteractionService.createInteraction(interaction);
         }
+    }
+
+    public static void CreateInteractionForResetPasswordAttempt(String objectAUUId, String result){
+        Interaction interaction = new Interaction(
+                objectAUUId,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                ServerConstants.INTERACTION_TYPE_TRIED_PASSWORD_RESET,
+                ServerConstants.INTERACTION_NOTE_BLANK,
+                result,
+                ServerConstants.INTERACTION_CREATED_SELF
+        );
+        InteractionService.createInteraction(interaction);
+    }
+
+    public static void CreateInteractionForResetPassword(String objectAUUId, String result){
+        Interaction interaction = new Interaction(
+                objectAUUId,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                ServerConstants.INTERACTION_TYPE_PASSWORD_RESET_SUCCESS,
+                ServerConstants.INTERACTION_NOTE_BLANK,
+                result,
+                ServerConstants.INTERACTION_CREATED_SELF
+        );
+        InteractionService.createInteraction(interaction);
     }
 }

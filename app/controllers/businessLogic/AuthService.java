@@ -45,6 +45,13 @@ public class AuthService {
                 Logger.info("Resetting password");
                 setNewPassword(existingAuth, password);
                 Auth.savePassword(existingAuth);
+                String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_RESET_PASSWORD_SUCCESS;
+                String objAUUID = "";
+                Candidate candidate = Candidate.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
+                if(candidate != null){
+                    objAUUID = candidate.getCandidateUUId();
+                }
+                InteractionService.CreateInteractionForResetPassword(objAUUID, interactionResult);
                 existingAuth.setAuthSessionId(UUID.randomUUID().toString());
                 existingAuth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
                 /* adding session details */

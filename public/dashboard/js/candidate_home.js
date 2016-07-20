@@ -64,6 +64,7 @@ function processDataAllJobPosts(returnedData) {
     if(jobPostCount > 0){
         var count = 0;
         var parent = $("#hotJobs");
+        returnedData.reverse();
         returnedData.forEach(function (jobPost){
             count++;
             if(count){
@@ -304,7 +305,6 @@ function confirmApply() {
 $(function() {
     $("#jobLocality").change(function (){
         if($(this).val() != -1){
-            console.log($("#jobLocality option:selected").text());
             prefLocation = $(this).val();
             prefLocationName = $("#jobLocality option:selected").text();
             $("#applyButton").show();

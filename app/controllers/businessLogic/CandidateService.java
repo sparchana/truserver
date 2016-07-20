@@ -951,6 +951,10 @@ public class CandidateService
                 existingCandidate.update();
                 SmsUtil.sendResetPasswordOTPSms(randomPIN, existingCandidate.getCandidateMobile());
 
+                String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_RESET_PASSWORD;
+                String objAUUID = "";
+                objAUUID = existingCandidate.getCandidateUUId();
+                InteractionService.CreateInteractionForResetPasswordAttempt(objAUUID, interactionResult);
                 resetPasswordResponse.setOtp(randomPIN);
                 resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);
             }

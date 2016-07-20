@@ -98,6 +98,9 @@ public class Application extends Controller {
                     case 5: response.setUserInteractionType("Website Interaction"); break;
                     case 6: response.setUserInteractionType("Follow Up Call"); break;
                     case 7: response.setUserInteractionType("New Job Application"); break;
+                    case 8: response.setUserInteractionType("Tried to Apply to a job"); break;
+                    case 9: response.setUserInteractionType("Tried to reset password"); break;
+                    case 10: response.setUserInteractionType("Reset password successful"); break;
                     default: response.setUserInteractionType("Interaction Undefined in getCandidateInteraction()"); break;
                 }
                 responses.add(response);
@@ -338,6 +341,7 @@ public class Application extends Controller {
         }
         String candidateMobile = resetPasswordResquest.getResetPasswordMobile();
         Logger.info("==> " + candidateMobile);
+
         return ok(toJson(CandidateService.findUserAndSendOtp(candidateMobile)));
     }
 
@@ -499,12 +503,12 @@ public class Application extends Controller {
         if(jobPost!=null){
             if(isSupport == 0){
                 String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB;
-                String objBUUID = "";
+                String objAUUID = "";
                 if(session().get("candidateId") != null){
                     Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")). findUnique();
-                    objBUUID = candidate.getCandidateUUId();
+                    objAUUID = candidate.getCandidateUUId();
                 }
-                InteractionService.createInteractionForHobApplicationAttempt(jobPost.getJobPostUUId(), objBUUID, interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName());
+                InteractionService.createInteractionForJobApplicationAttempt(objAUUID, jobPost.getJobPostUUId(), interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName());
             }
 
             return ok(toJson(jobPost));
@@ -867,12 +871,12 @@ public class Application extends Controller {
                 if(candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE){
                     Date expDate = candidate.getCandidateStatusDetail().getStatusExpiryDate();
                     if(expDate != null){
-                        jobApplicationGoogleSheetResponse.setCandidateExpiryDate(String.valueOf(expDate));
+                        jobApplicationGoogleSheetResponse.setCandidateExpiryDate(expDate);
                     } else{
-                        jobApplicationGoogleSheetResponse.setCandidateExpiryDate("-");
+                        jobApplicationGoogleSheetResponse.setCandidateExpiryDate(null);
                     }
                 } else{
-                    jobApplicationGoogleSheetResponse.setCandidateExpiryDate("-");
+                    jobApplicationGoogleSheetResponse.setCandidateExpiryDate(null);
                 }
 
                 jobApplicationGoogleSheetResponse.setLanguageKnown(languagesKnown);
@@ -1150,5 +1154,41 @@ public class Application extends Controller {
     public static Result getAllDeactivationReason() {
         List<Reason> deactivationReasons = Reason.find.all();
         return ok(toJson(deactivationReasons));
+    }
+
+    @Security.Authenticated(SuperSecured.class)
+    public static Result getDeactivatedCandidateList() {
+        JsonNode deactivatedCandidateJsonNode = request().body().asJson();
+        if(deactivatedCandidateJsonNode == null){
+            return badRequest();
+        }
+
+        DeactivatedCandidateRequest deactivatedCandidateRequest = new DeactivatedCandidateRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        Logger.info("deactivatedCandidateJsonNode: "+deactivatedCandidateJsonNode);
+        try {
+            deactivatedCandidateRequest = newMapper.readValue(deactivatedCandidateJsonNode.toString(), DeactivatedCandidateRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ok(toJson(DeactivationService.getDeactivatedCandidates(deactivatedCandidateRequest)));
+    }
+
+    public static Result deactiveToActive() {
+        JsonNode deactiveToActiveJson = request().body().asJson();
+        if(deactiveToActiveJson == null){
+            return badRequest();
+        }
+
+        DeactiveToActiveRequest deactiveToActiveRequest= new DeactiveToActiveRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        Logger.info("deactivatedCandidateJsonNode: "+deactiveToActiveJson);
+        try {
+            deactiveToActiveRequest = newMapper.readValue(deactiveToActiveJson.toString(), DeactiveToActiveRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ok(toJson(DeactivationService.deactivateToActive(deactiveToActiveRequest)));
     }
 }
