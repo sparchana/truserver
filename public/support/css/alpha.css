@@ -31,3 +31,6 @@ h1.tru-font-large {
 .tru-card-event > .mdl-card__actions > .mdl-button {
     color: #fff;
 }
+#tru-menu-lower-left {
+    margin-left: 40%;
+}

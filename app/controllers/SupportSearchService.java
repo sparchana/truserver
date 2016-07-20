@@ -60,6 +60,8 @@ public class SupportSearchService {
                     .query();
         }
 
+        Logger.info("fromThisDate+ " +searchCandidateRequest.getFromThisDate());
+
         List<Candidate> candidateResponseList = query.findList();
         if(candidateResponseList.size() <1){
             Logger.info("Search Response empty");

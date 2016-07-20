@@ -1155,4 +1155,40 @@ public class Application extends Controller {
         List<Reason> deactivationReasons = Reason.find.all();
         return ok(toJson(deactivationReasons));
     }
+
+    @Security.Authenticated(SuperSecured.class)
+    public static Result getDeactivatedCandidateList() {
+        JsonNode deactivatedCandidateJsonNode = request().body().asJson();
+        if(deactivatedCandidateJsonNode == null){
+            return badRequest();
+        }
+
+        DeactivatedCandidateRequest deactivatedCandidateRequest = new DeactivatedCandidateRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        Logger.info("deactivatedCandidateJsonNode: "+deactivatedCandidateJsonNode);
+        try {
+            deactivatedCandidateRequest = newMapper.readValue(deactivatedCandidateJsonNode.toString(), DeactivatedCandidateRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ok(toJson(DeactivationService.getDeactivatedCandidates(deactivatedCandidateRequest)));
+    }
+
+    public static Result deactiveToActive() {
+        JsonNode deactiveToActiveJson = request().body().asJson();
+        if(deactiveToActiveJson == null){
+            return badRequest();
+        }
+
+        DeactiveToActiveRequest deactiveToActiveRequest= new DeactiveToActiveRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        Logger.info("deactivatedCandidateJsonNode: "+deactiveToActiveJson);
+        try {
+            deactiveToActiveRequest = newMapper.readValue(deactiveToActiveJson.toString(), DeactiveToActiveRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ok(toJson(DeactivationService.deactivateToActive(deactiveToActiveRequest)));
+    }
 }

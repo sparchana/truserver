@@ -9,15 +9,20 @@ function processAlphaResponse(alphaResponse){
     dialog.close();
     $("#perishable-spinner").removeClass("is-active");
 
+    pushToSnackbar(alphaResponse);
+}
+
+function pushToSnackbar(msg) {
     'use strict';
-    var snackbarContainer = document.querySelector('#perish-snackbar');
+    var snackbarContainer = document.querySelector('#tru-snackbar');
 
     var data = {
-        message: JSON.stringify(alphaResponse),
+        message: JSON.stringify(msg),
         timeout: 4000
     };
+
     snackbarContainer.MaterialSnackbar.showSnackbar(data);
-    
+
 }
 
 function executeAlphaRequest(mobile){
@@ -81,7 +86,6 @@ function constructDataForTable(tableName, row) {
         a.target      = '_blank';
         a.download    = 'truAnalytics_'+tableName+'.csv';
         a.textContent = tableName;
-        console.log("data: " + JSON.stringify(data) + " csvString: " + JSON.stringify(csv))
         $('div[id="csv_'+tableName+'"]').append(a);
 /*        var components = [
             {type: 'csv', datasource: 'https://spreadsheets.google.com/tq?key=pCQbetd-CptHnwJEfo8tALA'}
@@ -106,6 +110,87 @@ function renderAnalyticsResult(analyticsResult) {
     }
 }
 
+function checkall(id) {
+    if($('#AllCheck').is(":checked")){
+        $('#deactivatedCandidateTable input[type=checkbox]').prop('checked', true);
+    } else {
+        $('#deactivatedCandidateTable input[type=checkbox]').prop('checked', false);
+    }
+}
+
+function constructCheckBox(leadId, profileStatus) {
+    if(leadId != null){
+        if(profileStatus.profileStatusId == "2"){ // new or active return active
+            return  '<input type="checkbox" id="'+leadId+'" name="cb" value="1" checked><br>';
+        } else {
+            return  '<input type="checkbox" name="cb" value="0"><br>';
+        }
+    }
+    return "-";
+}
+
+function getExpiry(expiryObject) {
+    if(expiryObject != null){
+        return expiryObject.statusExpiryDate;
+    }
+    return "-";
+}
+
+function renderConvertedData(returnedData) {
+    if(returnedData.status == "1"){
+        pushToSnackbar("Updated Successfully. Loading Changes...");
+        renderDeactivatedCandidateResult(returnedData.candidateList);
+    } else {
+        pushToSnackbar("Opps.. Something went wrong. Failed to Update changes. Try Again");
+    }
+}
+
+function renderDeactivatedCandidateResult(deactivatedCandidateList) {
+    if(deactivatedCandidateList != null){
+
+        var returnedDataArray = [];
+
+        console.log(JSON.stringify(deactivatedCandidateList));
+        deactivatedCandidateList.forEach(function (candidate) {
+            returnedDataArray.push({
+                'cLID': '<a href="/candidateSignupSupport/'+candidate.lead.leadId+'" target="_blank">'+candidate.lead.leadId+'</a>',
+                'candidateFirstName' : candidate.candidateFirstName +" "+candidate.candidateLastName,
+                'candidateMobile' : candidate.candidateMobile,
+                'isActive' : constructCheckBox(candidate.lead.leadId, candidate.candidateprofilestatus),
+                'candidateExpiry' : getExpiry(candidate.candidateStatusDetail)
+            });
+        });
+        $('#deactivatedCandidateTable').show();
+
+        var table = $('table#deactivatedCandidateTable').DataTable({
+            "data": returnedDataArray,
+            "order": [[4, "desc"]],
+            "scrollX": true,
+            "columns": [
+                { "data": "cLID" },
+                { "data": "candidateFirstName" },
+                { "data": "candidateMobile" },
+                { "data": "isActive" },
+                { "data": "candidateExpiry" }
+            ],
+            "deferRender": true,
+            "scroller": true,
+            "scrollY":'48vh',
+            "scrollCollapse": true,
+            "language": {
+                "emptyTable": "No data available"
+            },
+            "paging":false,
+            "destroy": true,
+            "dom": 'Bfrtip',
+            "buttons": [
+                'copy', 'csv', 'excel'
+            ]
+        });
+
+    }
+}
+
 function queryForm() {
     var d = {
         fromThisDate: $('#fromThisDate').val(),
@@ -120,6 +205,24 @@ function queryForm() {
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(d),
             success: renderAnalyticsResult
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function fetchDeactivatedCandidateList() {
+    var d = {
+        fromThisDate: $('#fromThisDate').val(),
+        toThisDate: $('#toThisDate').val()
+    };
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/api/getDeactivatedCandidateList",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(d),
+            success: renderDeactivatedCandidateResult
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
@@ -152,7 +255,54 @@ function googleTableplot() {
 
 }
 
+function hideDrawerElements() {
+    $('#queryMultiSelect-grid').hide();
+    $('#pushToGoogleSheet-lbl').hide();
+}
+function showDrawerElements() {
+    $('#queryMultiSelect-grid').show();
+    $('#pushToGoogleSheet-lbl').show();
+}
+function saveDeactivationChanges() {
+    var deactiveToActiveList = [];
+    $('#deactivatedCandidateTable input[type=checkbox]').each(function(){
+        if(!$(this).is(":checked") && $(this).attr('id') != null){
+            deactiveToActiveList.push(parseInt($(this).attr('id')));
+        }
+    });
+    console.log("deactiveToActiveList" + deactiveToActiveList);
+    if(deactiveToActiveList.length > 0){
+        var d = {
+            deactiveToActiveList: deactiveToActiveList
+        };
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/api/deactiveToActive",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: renderConvertedData
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    } else {
+        pushToSnackbar("Invalid Selection!");
+    }
+}
+
+
 $(function(){
+    $("#btnDeActiveToActive").click(function(){
+        saveDeactivationChanges();
+    });
+    $( "#deactivatedCandidateTab" ).click(function() {
+        pushToSnackbar("Select expiry time period from left Drawer and hit search");
+        hideDrawerElements();
+    });
+    $( "#tabularTab" ).click(function() {
+        showDrawerElements();
+    });
 
     var dialog = document.querySelector('dialog');
     var showModalButton = document.querySelector('.show-modal');
@@ -168,6 +318,7 @@ $(function(){
 
     constructMultiSelect();
     googleTableplot();
+    //drawerManipulator();
 
     $("#perish-form").submit(function(eventObj) {
         eventObj.preventDefault();
@@ -176,14 +327,23 @@ $(function(){
             executeAlphaRequest(mobile);
         }
     });
+    $("#deactivatedCandidate-form").submit(function(eventObj) {
+        eventObj.preventDefault();
+        fetchDeactivatedCandidateList();
+    });
     document.querySelector('#queryBtn').addEventListener('click', function () {
         document.querySelector('.mdl-layout__obfuscator').classList.remove('is-visible');
         document.querySelector('.mdl-layout__drawer').classList.remove('is-visible');
     }, false);
 
-    $("#globalStatsForm").submit(function(eventObj) {
+    $("#drawerInputForm").submit(function(eventObj) {
         eventObj.preventDefault();
-        queryForm();
+        /* identify query type */
+        if($( "#deactivatedCandidateTab" ).hasClass("is-active")){
+            fetchDeactivatedCandidateList();
+        } else if( $( "#tabularTab" ).hasClass("is-active") ){
+            queryForm();
+        }
     });
 });
 
