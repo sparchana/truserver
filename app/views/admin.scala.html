@@ -31,7 +31,7 @@
         </style>
     </head>
     <body>
-        <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-layout--fixed-tabs">
+        <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
             <header class="mdl-layout__header mdl-layout__header--scroll  mdl-layout__header--waterfall">
                 <div class="mdl-layout__header-row">
                         <!-- Title -->
@@ -54,8 +54,8 @@
                     <!-- Tabs -->
                 <div class="mdl-layout__tab-bar mdl-js-ripple-effect">
                     <!-- <a href="#visual-tab" class="mdl-layout__tab is-active">Visual</a> -->
-                    <a href="#tabular-tab" class="mdl-layout__tab" id="tabularTab">Tabular</a>
-                    <a href="#deactivated-candidate-tab" class="mdl-layout__tab" id="deactivatedCandidateTab">De-Active</a>
+                    <a href="#tabular-tab" class="mdl-layout__tab" id="tabularTab">Metrics Tab</a>
+                    <a href="#deactivated-candidate-tab" class="mdl-layout__tab" id="deactivatedCandidateTab">De-Active/Active Tab</a>
                 </div>
             </header>
 
@@ -97,27 +97,6 @@
 
             <main class="mdl-layout__content">
                 <!-- Tab Content -->
-                <section class="mdl-layout__tab-panel" id="visual-tab">
-                    <div class="page-content">
-                        <div class="mdl-grid">
-                            <div class="mdl-cell mdl-cell--3-col">
-                                <div class="tru-card-event mdl-card mdl-shadow--2dp">
-                                    <div class="mdl-card__title mdl-card--expand">
-                                        <h1 class="tru-font-large" id="totalNumberOfCandidate">5255</h1>
-                                    </div>
-                                    <div class="mdl-card__actions mdl-card--border">
-                            Total Number of Candidates
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="mdl-cell mdl-cell--3-col">
-                                    <!--Div that will hold the pie chart-->
-                                <div id="donutchart" style="width: 900px; height: 500px;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
                 <section class="mdl-layout__tab-panel is-active" id="tabular-tab">
                     <div class="page-content" id="tabular-content">
                         <div id="table_div"></div>
