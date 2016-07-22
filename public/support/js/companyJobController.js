@@ -37,7 +37,7 @@ function renderDashboard() {
                                 return creationDate;
                             },
                             'company': '<a href="'+"/companyDetails/"+jobPost.company.companyId+'" id="'+jobPost.company.companyId+'" style="cursor:pointer;" target="_blank">'+jobPost.company.companyName+'</a>',
-                            'jobTitle': '<a href="'+"/jobPostDetails/"+jobPost.jobPostId+'" id="'+jobPost.jobPostId+'" style="cursor:pointer;" target="_blank">'+jobPost.jobPostTitle+'</a>',
+                            'jobTitle': jobPost.jobPostTitle,
                             'jobSalary' : function () {
                                 if(jobPost.jobPostMaxSalary == 0){
                                     return ((jobPost.jobPostMinSalary != null) ? "₹" + jobPost.jobPostMinSalary : "0");
@@ -119,13 +119,13 @@ function getAllCompany() {
                     var returned_data = new Array();
                     returnedData.forEach(function (company) {
                         returned_data.push({
-                            'companyId': company.companyId,
+                            'companyId': '<a href="'+"/companyDetails/"+company.companyId+'" id="'+company.companyId+'" style="cursor:pointer;" target="_blank">' + company.companyId + '</a>',
                             'companyCreationTimestamp' : function() {
                                 var returnedCreationDate = new Date(company.companyCreateTimestamp);
                                 var creationDate = new Date(returnedCreationDate).toLocaleDateString();
                                 return creationDate;
                             },
-                            'companyName': '<a href="'+"/companyDetails/"+company.companyId+'" id="'+company.companyId+'" style="cursor:pointer;" target="_blank">'+company.companyName+'</a>',
+                            'companyName': company.companyName,
                             'companyWebsite' : ((company.companyWebsite != null) ? '<a href="'+"http://"+company.companyWebsite+'" style="cursor:pointer;" target="_blank">'+company.companyWebsite+'</a>' : ""),
                             'companyAddress' : ((company.companyAddress != null) ? company.companyAddress : ""),
                             'companyType' : ((company.compType != null) ? company.compType.companyTypeName : ""),
