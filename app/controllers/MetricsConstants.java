@@ -6,9 +6,10 @@ package controllers;
 public class MetricsConstants
 {
 
-    public static String METRIC_INPUT_ALL = "All Metrics";
+    public static String METRIC_INPUT_SUMMARY = "Summary Metrics";
     public static String METRIC_INPUT_SUPPORT = "Support Metrics";
     public static String METRIC_INPUT_LEAD_SOURCES = "Lead Sources";
+    public static String METRIC_INPUT_ACTIVE_CANDIDATES = "Active Candidates";
 
     public static String METRIC_HEADER_TOTAL_LEADS = "Total Leads";
     public static String METRIC_HEADER_WEBSITE_LEADS = "Website Leads";
@@ -24,8 +25,5 @@ public class MetricsConstants
     public static String METRIC_HEADER_EXP_PROFILE_UPDATES = "Experience Profile Updates";
     public static String METRIC_HEADER_EDU_PROFILE_UPDATES = "Education Profile Updates";
     public static String METRIC_HEADER_JOB_APPLICATIONS = "Self-Job Application";
-
-
-
 
 }

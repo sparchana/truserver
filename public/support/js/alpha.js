@@ -63,19 +63,22 @@ function constructDataForTable(tableName, row) {
         $.each( row, function( rName, postData) {
             var formatedDate = new Date(rName).toLocaleDateString();
             var rValue = {"FormattedDate": formatedDate};
-            $.extend(rValue, postData);
-            rowArray.push(rValue);
-            var googleRowOneRow = [];
-            $.each( rValue  , function( cName, value ) {
-                //console.log( "cValue:"+value );
-                googleRowOneRow.push(""+value);
-                /* Add the column name once */
-                if(f){
-                    data.addColumn('string', cName);
-                }
-            });
-            googleTableRows.push(googleRowOneRow);
-            f=false;
+
+            $.each ( postData, function (rowIndex, innerData){
+                $.extend(rValue, innerData);
+                //rowArray.push(rValue);
+                var googleRowOneRow = [];
+                $.each( rValue  , function( cName, value ) {
+                    //console.log( "cValue:"+value );
+                    googleRowOneRow.push(""+value);
+                    /* Add the column name once */
+                    if(f){
+                        data.addColumn('string', cName);
+                    }
+                });
+                googleTableRows.push(googleRowOneRow);
+                f=false;
+            })
         });
         data.addRows(googleTableRows);
 
@@ -235,10 +238,11 @@ function constructMultiSelect(){
     // draws it.
 
     var data = [
-        {label: "All Metrics", value: "All Metrics"},
+        {label: "Summary Metrics", value: "Summary Metrics"},
         {label: "Support Metrics", value: "Support Metrics"},
-        {label: "Lead Sources", value: "Lead Sources"}
-    ];
+        {label: "Lead Sources", value: "Lead Sources"},
+        {label: "Active Candidates", value: "Active Candidates"}
+        ];
 
     var selectList = $('#queryMultiSelect');
     selectList.multiselect({

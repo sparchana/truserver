@@ -12,9 +12,7 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
-import com.google.api.services.sheets.v4.model.BatchUpdateValuesRequest;
-import com.google.api.services.sheets.v4.model.BatchUpdateValuesResponse;
-import com.google.api.services.sheets.v4.model.ValueRange;
+import com.google.api.services.sheets.v4.model.*;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -40,9 +38,14 @@ public class TruJobsSheets {
             "TruJobsSheets";
 
     /**
-     * ID of the metrics sheet
+     * ID of the metrics sheet for test env
      */
-    private static final String SPREADSHEET_ID = "1FHksj6SSzBBOPYO-jTgRZ3iDoqP5X5doYT76e8T2pOE";
+    private static final String SPREADSHEET_ID_TEST = "1FHksj6SSzBBOPYO-jTgRZ3iDoqP5X5doYT76e8T2pOE";
+
+    /**
+     * ID of the metrics sheet for prod env
+     */
+    private static final String SPREADSHEET_ID_PROD = "1H4S2ncLRJUyRBxUFvA-jW3B6cMcp-pHbZ58w4";
 
     /**
      * Directory to store user credentials for this application.
@@ -102,6 +105,8 @@ public class TruJobsSheets {
 
     private static final GregorianCalendar gCal = new GregorianCalendar();
 
+    private static String spreadSheetId;
+
     static {
         try {
             HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
@@ -110,9 +115,16 @@ public class TruJobsSheets {
 
             service = getSheetsService();
 
-            topicToSheetName.put(MetricsConstants.METRIC_INPUT_ALL, MetricsConstants.METRIC_INPUT_ALL);
+            // redudant right now as we are maintaining same names for input parameters and sheet names
+            topicToSheetName.put(MetricsConstants.METRIC_INPUT_SUMMARY, MetricsConstants.METRIC_INPUT_SUMMARY);
             topicToSheetName.put(MetricsConstants.METRIC_INPUT_LEAD_SOURCES, MetricsConstants.METRIC_INPUT_LEAD_SOURCES);
             topicToSheetName.put(MetricsConstants.METRIC_INPUT_SUPPORT, MetricsConstants.METRIC_INPUT_SUPPORT);
+            topicToSheetName.put(MetricsConstants.METRIC_INPUT_ACTIVE_CANDIDATES, MetricsConstants.METRIC_INPUT_ACTIVE_CANDIDATES);
+
+
+            boolean isDevMode = true; //play.api.Play.isDev(play.api.Play.current());
+
+            spreadSheetId = isDevMode ? SPREADSHEET_ID_TEST : SPREADSHEET_ID_PROD;
 
         } catch (Throwable t) {
             t.printStackTrace();
@@ -127,8 +139,12 @@ public class TruJobsSheets {
      * @throws IOException
      */
     public static Credential authorize() throws IOException {
+
+        boolean isDevMode = true; //play.api.Play.isDev(play.api.Play.current());
+        String clientSecretFile = isDevMode? "client_secret.json" : "client_secret_prod.json";
+
         // Load client secrets.
-        FileInputStream fs = new FileInputStream(userHome + "/truserver/client_secret.json");
+        FileInputStream fs = new FileInputStream(userHome + "/truserver/" + clientSecretFile);
         GoogleClientSecrets clientSecrets =
                 GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(fs));
 
@@ -171,7 +187,7 @@ public class TruJobsSheets {
         try {
             String range = sheetName + "!A1:A1000";
             ValueRange response = service.spreadsheets().values()
-                    .get(SPREADSHEET_ID, range)
+                    .get(spreadSheetId, range)
                     .execute();
             List<List<Object>> values = response.getValues();
             if (values == null || values.size() == 0) {
@@ -201,7 +217,7 @@ public class TruJobsSheets {
         try {
             String range = sheetName + "!A1:AZ1";
             ValueRange response = service.spreadsheets().values()
-                    .get(SPREADSHEET_ID, range)
+                    .get(spreadSheetId, range)
                     .execute();
 
             List<List<Object>> values = response.getValues();
@@ -225,115 +241,208 @@ public class TruJobsSheets {
         }
     }
 
+    private static void writeMissingVerticalHeaders (String sheetName, Map<Date, Map<Integer, Map<String, Object>>> dateMap)
+    {
+        // read existing header data
+        readVertcialHeader(sheetName);
+
+        // retrieve already read vertical header data
+        TreeMap<Integer, Object> existingVerticalHeaderData = sheetToVerticalHeader.get(sheetName);
+        ArrayList<List<Object>> missingHeaders = new ArrayList<List<Object>>();
+
+
+        Iterator<Map.Entry<Date, Map<Integer, Map<String, Object>>>> dateMapItr = dateMap.entrySet().iterator();
+
+        while (dateMapItr.hasNext()) {
+            Map.Entry<Date, Map<Integer, Map<String, Object>>> entry = dateMapItr.next();
+            String header = sfd.format(entry.getKey());
+
+            if (existingVerticalHeaderData.containsValue(header)) {
+                continue;
+            }
+            else {
+                int countOfSameHeader = entry.getValue().keySet().size();
+
+                while (countOfSameHeader > 0) {
+                    ArrayList<Object> singleRow = new ArrayList<>();
+                    singleRow.add(header);
+                    missingHeaders.add(singleRow);
+                    --countOfSameHeader;
+
+                    play.Logger.info(" adding to missing list " + header);
+                }
+            }
+        }
+
+        int lastRowIndex = existingVerticalHeaderData.size();
+        lastRowIndex++;
+
+        String range = sheetName + "!A" + lastRowIndex + ":A" + lastRowIndex + missingHeaders.size();
+
+        writeRangeToSheet(range, missingHeaders);
+
+        // update the header map with details of new row that we just created
+        readVertcialHeader(sheetName);
+    }
+
     /**
      *
-     * @param metricToDateToHeaderToValueMap has values in the following construct. {Metric_type->{Date->{Header->Values}}}
+     * @param metricToDateToCountToHeaderToValueMap has values in the following construct:
+     *                                              {Metric_type->{Date->{RowCount->{Header->Values}}}}
      */
-        public static void updateMetricsSheet(Map<String,Map<Date, Map<String, Object>>> metricToDateToHeaderToValueMap)
+        public static void updateMetricsSheet(
+                Map<String,Map<Date, Map<Integer, Map<String, Object>>>> metricToDateToCountToHeaderToValueMap)
     {
-        // iterate on all metric types that we need to update. Example (All_metrics, Lead_sources etc)
-        for (Map.Entry<String, Map<Date,  Map<String, Object>>> metricMapEntry : metricToDateToHeaderToValueMap.entrySet())
+        // iterate on all metric types that we need to update. Example (All_Metrics, Lead_sources etc)
+        for (Map.Entry<String, Map<Date,  Map<Integer, Map<String, Object>>>> metricMapEntry :
+                metricToDateToCountToHeaderToValueMap.entrySet())
         {
             String metricCategory = metricMapEntry.getKey();
 
             // Get the tab name within the spreadsheet that correspond to the given metric category
             String sheetName = topicToSheetName.get(metricCategory);
 
-
-            // Get the entire range of values to be updated within the tab
-            // E.g., {19-Jun ->{Total Leads-> 100},{Total Candidates -> 200}}
-            Map<Date, Map<String, Object>> dateMap = metricMapEntry.getValue();
-
-
             if (sheetName == null) {
                 play.Logger.error(" Something went wrong. Could not find sheet corresponding to metrics type "
                         + metricCategory);
+
                 // TODO communicate error to front end
                 return;
             }
 
-            updateValuesInRange(dateMap, sheetName);
+            // Get the all the values to be updated within the tab
+            // E.g., {19-Jun ->{Total Leads-> 100},{Total Candidates -> 200}}
+            Map<Date, Map<Integer, Map<String, Object>>> dateMap = metricMapEntry.getValue();
+
+            // Aggregate queries are the ones that have a single date entry for a range of values
+            // eg, how many candidates where created by every support agent in a day
+            boolean isAggregateQuery = true;
+
+
+            if (sheetName.equals(MetricsConstants.METRIC_INPUT_ACTIVE_CANDIDATES)) {
+                // The query active_candidates is not an aggregate query, as we will write multiple date rows per
+                // date . each row will have details corresponding to a candidate that was active that day
+                isAggregateQuery = false;
+
+                // TODO : delete existing rows with given dates
+                //deleteRowsWithDates(dateToHeaderToValueMap.keySet());
+            }
+            else {
+                // In case of aggregate queries, we need to make sure of the following:
+                // 1. should have only one row per date entry
+                // 2. if a date row already exists, then need to retain that row and remember that index
+                writeMissingVerticalHeaders(sheetName, dateMap);
+            }
+
+            try {
+                findRangeAndUpdate(sheetName, dateMap, isAggregateQuery);
+            }
+            catch (IOException ioEX) {
+                ioEX.printStackTrace();
+            }
         }
     }
 
-
-    private static void updateValuesInRange(Map<Date, Map<String, Object>> dateToHeaderToValueMap,
-                                      String sheetName)
-    {
-        try {
-            //TreeMap<String, Object> cellAddrToValuesMap =
-                    //createCellAddressToValuesMap(sheetName, dateToHeaderToValueMap);
-
-            updateCellAddressToValuesMap(sheetName, dateToHeaderToValueMap);
-
-            //String range = cellAddrToValuesMap.keySet().toArray().
-            //play.Logger.info(" updateRC: Range:  " + range);
-
-            //writeSingleRowToSheet(range, Arrays.asList(cellAddrToValuesMap.values().toArray()));
-        }
-        catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-    }
-
-    private static void updateCellAddressToValuesMap(String sheetName,
-                                                     Map<Date, Map<String, Object>> dateToHeaderToValueMap)
+    private static void findRangeAndUpdate(String sheetName,
+                                                     Map<Date, Map <Integer, Map<String, Object>>> dateToIndexToHeaderToValueMap,
+                                                     boolean isAggregateQuery)
             throws IOException
     {
-        play.Logger.info("values to update " + dateToHeaderToValueMap.toString());
-        String range;
+        play.Logger.info("Values to update " + dateToIndexToHeaderToValueMap.toString());
+
+        // Mapping between row index and the corresponding value list
+        // Required esp for aggregate queries where we may have cases to update a date row that already exists
+        // and is not soretd wrt to the entire range of dates that we are itertaing now
+        TreeMap<Integer, List<Object>> rowIndexToValuesMap = new TreeMap<>();
+
+        // Holds the entire list of objects corresponding to list of rows we need to update
         List<List<Object>> valuesList = new ArrayList<List<Object>>();
 
-        Iterator<Map.Entry<Date, Map<String, Object>>> parentItr = dateToHeaderToValueMap.entrySet().iterator();
-
+        // some helper variables
         Date iterationDate;
-        String startCol = null;
-        String endCol = null;
+        int numHeaders = 0;
+        Integer dateRowIndex = 1;
 
-        int index = 0;
+        Iterator<Map.Entry<Date, Map< Integer, Map<String, Object>>>> parentItr =
+                  dateToIndexToHeaderToValueMap.entrySet().iterator();
 
-        // Iterate on date
+        // Iterate on each date map entyr
         while (parentItr.hasNext()) {
 
-            Map.Entry<Date, Map<String, Object>> entry = parentItr.next();
+            Map.Entry<Date, Map<Integer, Map<String, Object>>> entry = parentItr.next();
+
+            // Get the iteration date
             iterationDate = entry.getKey();
 
-            Map<String, Object> headerToValueMap = entry.getValue();
+            // Get the data corresponding to each date. for aggregate queries we will have only one row per dat
+            // for non-aggregate queries we will have multiple rows per date
+            Map<Integer, Map <String, Object>> countToHeaderToValueMap = entry.getValue();
 
-            // check if row with this date exists, if not create one
-            Integer dateRowIndex = getRowIndexFromVerticalHeaderValue(sheetName, sfd.format(iterationDate));
+            Iterator<Map.Entry<Integer, Map <String, Object>>> countToHeaderToValueItr =
+                    countToHeaderToValueMap.entrySet().iterator();
 
-            List<Object> innerValuesList = new ArrayList<Object>();
+            // iterate on each row corressponding to a date
+            while (countToHeaderToValueItr.hasNext()) {
 
-            // fetch the col name to horizontal header map corresponding to this sheet
+                Map.Entry<Integer, Map<String, Object>> countToHeaderToValueEntry = countToHeaderToValueItr.next();
 
-            // TODO, right now we are not creating a new column if the required column is not found
+                // Get the colheaderToValue entre for each row
+                Map<String, Object> headerToValueMap = countToHeaderToValueEntry.getValue();
 
-            Iterator<String> headerItr = headerToValueMap.keySet().iterator();
+                // will be used to hold a list of values corresponding to each row
+                List<Object> innerValuesList = new ArrayList<Object>();
 
-            // Iterate on all header values that we need to write
-            while (headerItr.hasNext()) {
-                String headerString = headerItr.next();
-
-                String colName = getColLabelFromHorizontalHeaderValue(sheetName, headerString);
-
-                if (colName == null) {
-                    play.Logger.error(" Error! Couldnt find header with value " + headerString + " . skipping this entry");
-                    continue;
+                if (isAggregateQuery) {
+                    // check if row with this date exists, if not create one
+                    dateRowIndex = getRowIndexFromVerticalHeaderValue(sheetName, sfd.format(iterationDate));
+                }
+                else {
+                    // for aggregate queries, dont retrieve existing row index. we are going to write the
+                    // vertical header (date) value also along with each row
+                    ++dateRowIndex;
+                    innerValuesList.add(sfd.format(iterationDate));
                 }
 
-                if (index == 0) {
-                    startCol = colName + dateRowIndex;
-                    index++;
+                Iterator<String> headerItr = headerToValueMap.keySet().iterator();
+                numHeaders = headerToValueMap.keySet().size();
+
+                // Iterate on all header values that we need to write
+                while (headerItr.hasNext()) {
+                    String headerString = headerItr.next();
+
+                    // fetch the col name to horizontal header map corresponding to this sheet
+                    // TODO, right now we are not creating a new column if the required column is not found
+                    String colName = getColLabelFromHorizontalHeaderValue(sheetName, headerString);
+
+                    if (colName == null) {
+                        play.Logger.error(" Error! Couldnt find header with value " + headerString + " . skipping this entry");
+                        continue;
+                    }
+
+                    // add the current value as an entry to the list corresponding to a single row
+                    innerValuesList.add(headerToValueMap.get(headerString) == null ? "" : headerToValueMap.get(headerString));
+
                 }
-                innerValuesList.add(headerToValueMap.get(headerString));
-                endCol = colName + dateRowIndex;
+
+                // remember the relationship between the row index and the corresponding row values
+                rowIndexToValuesMap.put(dateRowIndex, innerValuesList);
             }
+
             gCal.add(Calendar.DAY_OF_YEAR, 1);
-            valuesList.add(innerValuesList);
         }
 
-        range = sheetName + "!" + startCol + ":" + endCol;
+        // TODO: get rid of startcol hardcoding
+        String startCol = "B";
+        if (!   isAggregateQuery) {
+            startCol = "A";
+        }
+
+        // Form the range to which we need to write, by using the first key and last key of the rowIndexToValuesMap
+        String range = sheetName + "!" + startCol + rowIndexToValuesMap.firstKey()
+                + ":" + alphabetsList.get(numHeaders) + rowIndexToValuesMap.lastKey();
+
+        // create a list of object list. This is the format required to do a bulk write to the sheet
+        valuesList.addAll(rowIndexToValuesMap.values());
 
         play.Logger.info(" Writing Range: " + range + " values " + valuesList.toString());
 
@@ -431,7 +540,7 @@ public class TruJobsSheets {
 
             String range = sheetName + "!A1:A20000";
             ValueRange response = service.spreadsheets().values()
-                    .get(SPREADSHEET_ID, range)
+                    .get(spreadSheetId, range)
                     .execute();
 
             List<List<Object>> values = response.getValues();
@@ -464,6 +573,8 @@ public class TruJobsSheets {
     {
         TreeMap<Integer, Object> rowIndexToVerticalHeader = sheetToVerticalHeader.get(sheetName);
 
+        Integer rowIndex = -1;
+
         if (rowIndexToVerticalHeader == null) {
             readVertcialHeader(sheetName);
             rowIndexToVerticalHeader = sheetToVerticalHeader.get(sheetName);
@@ -473,7 +584,7 @@ public class TruJobsSheets {
         Set<Map.Entry<Integer, Object>> headerSet = rowIndexToVerticalHeader.entrySet();
         Iterator<Map.Entry<Integer, Object>> headerSetItr = headerSet.iterator();
 
-        Integer rowIndex = -1;
+
         while (headerSetItr.hasNext()) {
             Map.Entry<Integer, Object> headerEntry = headerSetItr.next();
 
@@ -490,13 +601,11 @@ public class TruJobsSheets {
             List<Object> data = new ArrayList<Object>();
             data.add(date);
 
-            writeSingleRowToSheet(sheetName + "!A"+rowIndex, data);
+            writeSingleRowToSheet(sheetName + "!A" + rowIndex, data);
 
             // update the header map with details of new row that we just created
             rowIndexToVerticalHeader.put(rowIndex, date);
         }
-
-        play.Logger.info("Returning row index " + rowIndex + " for " + date);
         return rowIndex;
     }
 
@@ -535,10 +644,10 @@ public class TruJobsSheets {
     // returns the row index where the text occurs
     private static Integer getRowIndexFromCellValue(String anchorText, String sheetName) throws IOException
     {
-        String range = sheetName + "!A1:A500";
+        String range = sheetName + "!A1:A1000";
 
         ValueRange response = service.spreadsheets().values()
-                .get(SPREADSHEET_ID, range)
+                .get(spreadSheetId, range)
                 .execute();
 
         List<List<Object>> values = response.getValues();
@@ -561,7 +670,7 @@ public class TruJobsSheets {
 
         if (indexOfAnchorText == -1) {
             play.Logger.error("Could not identify anchor text " + anchorText + " in sheet "
-                    + SPREADSHEET_ID + " within range " + range);
+                    + spreadSheetId + " within range " + range);
 
             return null;
         }
@@ -644,13 +753,15 @@ public class TruJobsSheets {
             oRequest.setData(oList);
 
             BatchUpdateValuesResponse oResp1 =
-                    service.spreadsheets().values().batchUpdate(SPREADSHEET_ID, oRequest).execute();
+                    service.spreadsheets().values().batchUpdate(spreadSheetId, oRequest).execute();
 
         }
         catch (IOException ioe) {
             ioe.printStackTrace();
         }
     }
+
+
 
     // Reads the horizontal header values within a sheet (A1 to AZ1)
     // and identifies the colIndex corresponding to the given string
@@ -660,7 +771,7 @@ public class TruJobsSheets {
 
         // read all values in the row-header
         ValueRange response = service.spreadsheets().values()
-                .get(SPREADSHEET_ID, range)
+                .get(spreadSheetId, range)
                 .execute();
 
         List<List<Object>> values = response.getValues();
@@ -678,7 +789,7 @@ public class TruJobsSheets {
         // Do error handling
         if (indexOfHeaderText == -1) {
             play.Logger.error("Could not identify anchor text " + headerText + " in sheet "
-                    + SPREADSHEET_ID + " within range " + range);
+                    + spreadSheetId + " within range " + range);
 
             return null;
         }
@@ -718,12 +829,10 @@ public class TruJobsSheets {
 
             Map<String, Object> headerToValueMap = entry.getValue();
 
-            // check if row with this date exists, if not create one
+            // retrieve index corressponding to this date header
             Integer dateRowIndex = getRowIndexFromVerticalHeaderValue(sheetName, sfd.format(iterationDate));
 
             play.Logger.info(" DateItr " + iterationDate + " rowIndex " + dateRowIndex);
-
-            // fetch the col name to horizontal header map corresponding to this sheet
 
             // TODO, right now we are not creating a new column if the required column is not found
 
@@ -733,6 +842,7 @@ public class TruJobsSheets {
             while (headerItr.hasNext()) {
                 String headerString = headerItr.next();
 
+                // fetch the col label corresponding to this horizontal header
                 String colName = getColLabelFromHorizontalHeaderValue(sheetName, headerString);
 
                 if (colName == null) {
