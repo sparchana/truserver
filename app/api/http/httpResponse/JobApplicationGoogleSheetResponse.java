@@ -1,6 +1,7 @@
 package api.http.httpResponse;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * Created by batcoder1 on 29/6/16.
@@ -25,6 +26,24 @@ public class JobApplicationGoogleSheetResponse {
     public String candidateSkill;
     public String formUrl;
     public Timestamp candidateCreationTimestamp;
+    public String candidateProfileStatus;
+    public Date candidateExpiryDate;
+
+    public String getCandidateProfileStatus() {
+        return candidateProfileStatus;
+    }
+
+    public void setCandidateProfileStatus(String candidateProfileStatus) {
+        this.candidateProfileStatus = candidateProfileStatus;
+    }
+
+    public Date getCandidateExpiryDate() {
+        return candidateExpiryDate;
+    }
+
+    public void setCandidateExpiryDate(Date candidateExpiryDate) {
+        this.candidateExpiryDate = candidateExpiryDate;
+    }
 
     public String getFormUrl() {
         return formUrl;

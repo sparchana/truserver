@@ -38,6 +38,7 @@ function processDataApplyJob(returnedData) {
         $("#customMsg").html("Oops! Looks like the job is no longer available");
     }
 }
+
 // apply_job ajax script
 function applyJob(id, localityId){
     $("#applyButton").addClass("appliedBtn").removeClass("jobApplyBtnModal").prop('disabled',true).html("Applying");
@@ -96,6 +97,14 @@ function processDataGetJobGoogleSheetDetails(returnedData) {
 
     var value = returnedData.candidateCreationTimestamp;
     var candidateCreateTimestamp = new Date(value).toLocaleDateString() +" "+ new Date(value).getHours() +":"+new Date(value).getMinutes()+":"+new Date(value).getSeconds();
+    value = returnedData.candidateExpiryDate;
+    var candidateExpiryDate;
+    if(value != null){
+        candidateExpiryDate = new Date(value).toLocaleDateString();
+    } else{
+        candidateExpiryDate = "-";
+    }
+
     var formUrl = returnedData.formUrl;
     var totalExperienceInYrs = "";
     var totalExperience = returnedData.candidateTotalExp;
@@ -125,7 +134,9 @@ function processDataGetJobGoogleSheetDetails(returnedData) {
                 "entry.240702722": ((returnedData.candidateEducation != null) ? returnedData.candidateEducation : ""),
                 "entry.190053755": ((returnedData.candidateSkill != null) ? returnedData.candidateSkill : ""),
                 "entry.971982828": candidateCreateTimestamp,
-                "entry.98308337": prefLocationName
+                "entry.98308337": prefLocationName,
+                "entry.46689276": returnedData.candidateProfileStatus,
+                "entry.1180627971": candidateExpiryDate
             },
             type: "POST",
             dataType: "xml",

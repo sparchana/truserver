@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="/assets/support/css/style.css">
     <link rel="stylesheet" type="text/css" href="/assets/new/css/myStyle.css">
     <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/dashboard.css">
+    <script type="text/javascript" src="/assets/support/js/job_post_details.js"></script>
 
     <link rel="stylesheet" href="/assets/support/css/bootstrap-datetimepicker.min.css">
     <script type="text/javascript" src="/assets/support/js/Moment.js"></script>
@@ -24,7 +25,6 @@
     <script type="text/javascript" src="/assets/support/js/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
 
-    <script type="text/javascript" src="/assets/support/js/job_post_details.js"></script>
     <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
     <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css">
     <script type="text/javascript" src="/assets/support/js/add_job_post.js"></script>
@@ -60,24 +60,54 @@
 
           <div class="row" style="margin-top: 4px">
             <div class="col-sm-3"><h5>Job Providing company?:<font color="red">*</font> </h5></div>
-            <div class="col-sm-9" style="margin-top: 8px">
-              <select id="jobPostCompany" onchange="getRecruiters($('#jobPostCompany').val())" class="selectDropdown" ></select>
+            <div class="col-sm-9">
+              <select id="jobPostCompany" onchange="getRecruiters($('#jobPostCompany').val())" style="display: inline-block;" class="selectDropdown" ></select>
+                <img src="/assets/support/images/webIcon.jpg" width="20px">
             </div>
           </div>
 
           <div class="row" style="margin-top: 4px">
             <div class="col-sm-3"><h5>Select Recruiter?:<font color="red">*</font> </h5></div>
-            <div class="col-sm-9" style="margin-top: 8px">
-              <select id="jobPostRecruiter" class="selectDropdown" ></select>
-              <div style="padding: 8px; margin: 6px; background: rgba(244, 227, 164, 0.48)"><font size="2">(If there is no recruiter for the selected company, plesae create a recruiter by clicking <a href="/createCompany" target="_blank">here</a></font></div>
+            <div class="col-sm-9">
+              <select id="jobPostRecruiter" class="selectDropdown"></select>
+              <div style="padding: 8px; margin: 6px; background: rgba(244, 227, 164, 0.48)"><font size="2">(If there is no recruiter for the selected company, please create a recruiter by clicking <a onclick="showRecruiterForm()">here</a></font></div>
             </div>
           </div>
+          <div id="recruiterSection" style="display: none; width: 68%; padding: 2%; background: #f8f2f8 ; margin: 2%">
+            <div class="row">
+              <div class="col-sm-3"><h5>Recruiter Name:</h5></div>
+              <div class="col-sm-9">
+                <input id="recruiterName" name="recruiterName" placeholder="Recruiter Name" type="text" class="form-control input-md" >
+              </div>
+            </div>
 
+            <div class="row">
+              <div class="col-sm-3"><h5>Recruiter Mobile:</h5></div>
+              <div class="col-sm-9">
+                <input id="recruiterMobile" name="recruiterMobile" maxlength="10" placeholder="Recruiter Mobile" type="text" class="form-control input-md" >
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-3"><h5>Recruiter Landline (optional) :</h5></div>
+              <div class="col-sm-9">
+                <input id="recruiterLandline" name="recruiterLandline" placeholder="Recruiter Landline" type="text" class="form-control input-md" >
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-3"><h5>Recruiter Email:</h5></div>
+              <div class="col-sm-9">
+                <input id="recruiterEmail" name="recruiterEmail" placeholder="Recruiter Email" type="text" class="form-control input-md" >
+              </div>
+            </div>
+          </div>
 
           <div class="row">
             <div class="col-sm-3"><h5>Job Post Title:<font color="red">*</font></h5></div>
             <div class="col-sm-9">
-              <input id="jobPostTitle" name="jobPostTitle" placeholder="job Post Title" type="text" class="form-control input-md" >
+                <input id="jobPostTitle" name="jobPostTitle" placeholder="job Post Title" style="width: 70%; display: inline-block" type="text" class="form-control input-md">
+                <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
             </div>
           </div>
 
@@ -92,30 +122,33 @@
             <div class="col-sm-3"><h5>Min Salary:<font color="red">*</font></h5></div>
             <div class="col-sm-9">
               <input id="jobPostMinSalary" value="0" style="width: 15%; display: inline-block" placeholder="Min Salary" type="number" class="form-control input-md">
+                <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
             </div>
           </div>
 
           <div class="row">
             <div class="col-sm-3"><h5>Max Salary:</h5></div>
             <div class="col-sm-9">
-              <input id="jobPostMaxSalary" value="0" style="width: 15%; display: inline-block" placeholder="Max Salary" type="number" class="form-control input-md">
+              <input id="jobPostMaxSalary" value="0" style="width: 15%" placeholder="Max Salary" type="number" class="form-control input-md">
             </div>
           </div>
 
           <div class="row" style="margin-top: 4px">
             <div class="col-sm-3"><h5>Job Post Job Role:<font color="red">*</font></h5></div>
-            <div class="col-sm-9">
-              <input type="text" id="jobPostJobRole">
+            <div class="col-sm-7">
+              <input type="text" id="jobPostJobRole" style="display: inline-block; width: 50%">
             </div>
-          </div>
+              </div>
 
           <div class="row" style="margin-top: 4px">
             <div class="col-sm-3"><h5>Job Post Locality(s):<font color="red">*</font></h5></div>
-            <div class="col-sm-9">
-              <input type="text" id="jobPostLocalities">
+            <div class="col-sm-7">
+              <input type="text" id="jobPostLocalities" style=";">
             </div>
+              <div class="col-sm-2" style="margin-top: 10px; margin-left: -24px">
+                  <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+              </div>
           </div>
-
           <div class="row">
             <div class="col-sm-3"><h5>Interview Address:</h5></div>
             <div class="col-sm-9">
@@ -174,7 +207,7 @@
           <div class="row">
             <div class="col-sm-3"><h5>Is this a Hot Job?</h5></div>
             <div class="col-sm-9">
-              <input id="jobPostIsHot" type="checkbox">
+              <input id="jobPostIsHot" type="checkbox" style="display: inline-block">
             </div>
           </div>
 
@@ -201,8 +234,10 @@
 
           <div class="row" style="margin-top: 4px">
             <div class="col-sm-3"><h5>Job Post Min Experience req:<font color="red">*</font> </h5></div>
-            <div class="col-sm-9" style="margin-top: 8px">
-              <select id="jobPostExperience" class="selectDropdown" ></select>
+            <div class="col-sm-9">
+              <select id="jobPostExperience" class="selectDropdown" style="display: inline-block"></select>
+              <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+
             </div>
           </div>
 
@@ -230,9 +265,21 @@
           <br><br>
           <button class="btn btn-default">Save</button>
         </form>
+          <br>
       </div>
     </div>
-      <!-- Javascript import -->
+    <script>
+      function showRecruiterForm(){
+        $("#jobPostRecruiter").val("");
+        if($("#jobPostRecruiter").is(':enabled')){
+            $("#jobPostRecruiter").prop('disabled', true);
+        } else{
+            $("#jobPostRecruiter").prop('disabled', false);
+        }
+        $("#recruiterSection").toggle();
+      }
+    </script>
+    <!-- Javascript import -->
     <script type="text/javascript" src="/assets/js/validation.js"></script>
     <script type="text/javascript" src="/assets/support/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/assets/js/apply_job.js"></script>

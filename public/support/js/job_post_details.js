@@ -42,12 +42,6 @@ function processDataCheckLocality(returnedData) {
             localityArray.push(item);
         });
     }
-    $("#jobPostLocalities").tokenInput(getLocality(), {
-        theme: "facebook",
-        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-        minChars: 0,
-        preventDuplicates: true
-    });
 }
 
 function processDataCheckJobs(returnedData) {
@@ -58,13 +52,6 @@ function processDataCheckJobs(returnedData) {
         item ["id"] = id;
         item ["name"] = name;
         jobArray.push(item);
-    });
-    $("#jobPostJobRole").tokenInput(getJob(), {
-        theme: "facebook",
-        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-        minChars: 0,
-        tokenLimit: 1,
-        preventDuplicates: true
     });
 }
 
@@ -96,7 +83,7 @@ function processDataCheckShift(returnedData) {
 }
 
 function processDataCheckCompany(returnedData) {
-    var defaultOption = $('<option value=""></option>').text("Select Company");
+    var defaultOption = $('<option value=""></option>').text("Select a Company");
     $('#jobPostCompany').append(defaultOption);
     returnedData.forEach(function (company) {
         var id = company.companyId;
@@ -151,6 +138,42 @@ function processDataCheckJobStatus(returnedData) {
 }
 
 $(document).ready(function () {
+    $('#jobPostRecruiter').append(defaultOption);
+    var pathname = window.location.pathname; // Returns path only
+    var jobPostIdUrl = pathname.split('/');
+    var jobPostId = jobPostIdUrl[(jobPostIdUrl.length)-1];
+    if(jobPostId != 0){
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/getJobPostInfo/" + jobPostId + "/1",
+                data: false,
+                contentType: false,
+                processData: false,
+                success: processDataForJobPost
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    } else{
+        $("#jobPostJobRole").tokenInput(getJob(), {
+            theme: "facebook",
+            placeholder: "Job Role?",
+            hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+            minChars: 0,
+            tokenLimit: 1,
+            preventDuplicates: true
+        });
+
+        $("#jobPostLocalities").tokenInput(getLocality(), {
+            theme: "facebook",
+            placeholder: "Job Location?",
+            hintText: "Start typing jobs (eg. Marathahallli, Agara..)",
+            minChars: 0,
+            preventDuplicates: true
+        });
+    }
+    
     /* ajax commands to fetch all localities and jobs*/
     try {
         $.ajax({
@@ -282,24 +305,7 @@ $(document).ready(function () {
         option.textContent = i + ":00 hrs";
         $('#jobPostEndTime').append(option);
     }
-
-    var pathname = window.location.pathname; // Returns path only
-    var jobPostIdUrl = pathname.split('/');
-    var jobPostId = jobPostIdUrl[(jobPostIdUrl.length)-1];
-    if(jobPostId != 0){
-        try {
-            $.ajax({
-                type: "POST",
-                url: "/getJobPostInfo/" + jobPostId,
-                data: false,
-                contentType: false,
-                processData: false,
-                success: processDataForJobPost
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
-        }
-    }
+    
 });
 
 
@@ -325,17 +331,15 @@ function processDataForJobPost(returnedData) {
         item ["name"] = returnedData.jobRole.jobName;
         jobPostJobRole.push(item);
     }
-    if($("#jobPostJobRole").val() == ""){
-        $("#jobPostJobRole").tokenInput(getJob(), {
-            theme: "facebook",
-            placeholder: "Job Role?",
-            hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-            minChars: 0,
-            tokenLimit: 1,
-            prePopulate: jobPostJobRole,
-            preventDuplicates: true
-        });
-    }
+    $("#jobPostJobRole").tokenInput(getJob(), {
+        theme: "facebook",
+        placeholder: "Job Role?",
+        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+        minChars: 0,
+        tokenLimit: 1,
+        prePopulate: jobPostJobRole,
+        preventDuplicates: true
+    });
 
     if(returnedData.jobPostToLocalityList != null){
         returnedData.jobPostToLocalityList.forEach(function (locality) {
@@ -421,6 +425,10 @@ function processDataForJobPost(returnedData) {
 
     if(returnedData.jobPostVacancies != null ){
         $("#jobPostVacancies").val(returnedData.jobPostVacancies);
+    }
+
+    if(returnedData.pricingPlanType != null ){
+        $("#jobPostPricingPlan").val(returnedData.pricingPlanType.pricingPlanTypeId);
     }
 
     if(returnedData.jobPostExperience != null ){

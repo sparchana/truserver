@@ -1,7 +1,7 @@
 package controllers.businessLogic;
 
-import api.http.httpRequest.AddCompanyRequest;
-import api.http.httpResponse.AddCompanyResponse;
+import api.http.httpRequest.AddRecruiterRequest;
+import api.http.httpResponse.AddRecruiterResponse;
 import models.entity.Company;
 import models.entity.RecruiterProfile;
 import play.Logger;
@@ -10,36 +10,38 @@ import play.Logger;
  * Created by batcoder1 on 7/7/16.
  */
 public class RecruiterService {
-    public static AddCompanyResponse addRecruiter(AddCompanyRequest addCompanyRequest, Long companyId) {
-        AddCompanyResponse addCompanyResponse = new AddCompanyResponse();
-        Company existingCompany = Company.find.where().eq("companyId", companyId).findUnique();
+    public static AddRecruiterResponse addRecruiter(AddRecruiterRequest addRecruiterRequest) {
+        AddRecruiterResponse addRecruiterResponse = new AddRecruiterResponse();
+        Company existingCompany = Company.find.where().eq("companyId", addRecruiterRequest.getRecruiterCompany()).findUnique();
         if(existingCompany != null){
-            RecruiterProfile existingRecruiter = RecruiterProfile.find.where().eq("recruiterProfileMobile", addCompanyRequest.getRecruiterMobile()).findUnique();
+            RecruiterProfile existingRecruiter = RecruiterProfile.find.where().eq("recruiterProfileMobile", addRecruiterRequest.getRecruiterMobile()).findUnique();
             if(existingRecruiter == null){
                 RecruiterProfile newRecruiter = new RecruiterProfile();
-                newRecruiter = getAndSetRecruiterValues(addCompanyRequest, newRecruiter, existingCompany);
+                newRecruiter = getAndSetRecruiterValues(addRecruiterRequest, newRecruiter, existingCompany);
                 newRecruiter.save();
-                addCompanyResponse.setStatus(AddCompanyResponse.RECRUITER_CREATED);
+                addRecruiterResponse.setStatus(AddRecruiterResponse.STATUS_SUCCESS);
+                addRecruiterResponse.setRecruiterId(newRecruiter.getRecruiterProfileId());
                 Logger.info("Recruiter successfully saved");
             } else{
-                existingRecruiter = getAndSetRecruiterValues(addCompanyRequest, existingRecruiter, existingCompany);
+                existingRecruiter = getAndSetRecruiterValues(addRecruiterRequest, existingRecruiter, existingCompany);
                 existingRecruiter.update();
-                addCompanyResponse.setStatus(AddCompanyResponse.RECRUITER_UPDATED);
+                addRecruiterResponse.setRecruiterId(existingRecruiter.getRecruiterProfileId());
+                addRecruiterResponse.setStatus(AddRecruiterResponse.STATUS_UPDATE);
                 Logger.info("Recruiter already exists. Updated The recruiter");
             }
         } else{
-            addCompanyResponse.setStatus(AddCompanyResponse.RECRUITER_NO_COMPANY);
+            addRecruiterResponse.setStatus(AddRecruiterResponse.STATUS_FAILURE);
             Logger.info("Company Does not exists");
         }
-        return addCompanyResponse;
+        return addRecruiterResponse;
     }
 
-    public static RecruiterProfile getAndSetRecruiterValues(AddCompanyRequest addCompanyRequest, RecruiterProfile newRecruiter, Company existingCompany){
+    public static RecruiterProfile getAndSetRecruiterValues(AddRecruiterRequest addRecruiterRequest, RecruiterProfile newRecruiter, Company existingCompany){
         newRecruiter.setRecCompany(existingCompany);
-        newRecruiter.setRecruiterProfileName(addCompanyRequest.getRecruiterName());
-        newRecruiter.setRecruiterProfileMobile(addCompanyRequest.getRecruiterMobile());
-        newRecruiter.setRecruiterProfileLandline(addCompanyRequest.getRecruiterLandline());
-        newRecruiter.setRecruiterProfileEmail(addCompanyRequest.getRecruiterEmail());
+        newRecruiter.setRecruiterProfileName(addRecruiterRequest.getRecruiterName());
+        newRecruiter.setRecruiterProfileMobile(addRecruiterRequest.getRecruiterMobile());
+        newRecruiter.setRecruiterProfileLandline(addRecruiterRequest.getRecruiterLandline());
+        newRecruiter.setRecruiterProfileEmail(addRecruiterRequest.getRecruiterEmail());
 
         return newRecruiter;
     }

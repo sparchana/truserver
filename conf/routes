@@ -40,6 +40,7 @@ POST     /addCompany                                              controllers.Ap
 POST     /addCompanyLogo                                          controllers.Application.addCompanyLogo()
 POST     /addJobPost                                              controllers.Application.addJobPost()
 POST     /addOrUpdateFollowUp                                     controllers.Application.addOrUpdateFollowUp()
+POST     /addRecruiter                                            controllers.Application.addRecruiter()
 POST     /api/kw/cdr                                              controllers.Application.kwCdrInput()
 POST     /auth                                                    controllers.Application.auth()
 POST     /getAllCompanyStatus                                     controllers.Application.getAllCompanyStatus()
@@ -52,6 +53,7 @@ POST     /getJobExpQuestion/:jobRoleIdList                        controllers.Ap
 POST     /getSearchCandidateResult                                controllers.Application.getSearchCandidateResult()
 POST     /processCsv                                              controllers.Application.processcsv()
 POST     /signUpSupport                                           controllers.Application.signUpSupport()
+POST     /getAllDeactivationReason                                controllers.Application.getAllDeactivationReason()
 
 # user dashboard
 # ~~~~~~~~~~~~~~
@@ -93,14 +95,24 @@ POST        /getAllLanguage                                                     
 POST        /getAllLocality                                                      controllers.Application.getAllLocality()
 POST        /getAllShift                                                         controllers.Application.getAllShift()
 POST        /getAllTransportation                                                controllers.Application.getAllTransportation()
-POST        /getJobPostInfo/:id                                      controllers.Application.getJobPostInfo(id : Long)
+POST        /getJobPostInfo/:id/:isSupport                                       controllers.Application.getJobPostInfo(id : Long, isSupport : Integer)
 
-# Analytics
+
+# Analytics/Super Admin Panel
 # ~~~~~~~~~
-POST        /api/alpha/:vId                                                       controllers.AnalyticsController.alphaHandler(vId: Integer)
+
+## 'R' of CRUD - API
+## ---------------
+POST         /api/alpha/:vId                                                     controllers.AnalyticsController.alphaHandler(vId: Integer)
+POST         /api/getDeactivatedCandidateList                                    controllers.Application.getDeactivatedCandidateList()
+
+## 'U' of CRUD - API
+## ---------------
+POST         /api/deactiveToActive                                               controllers.Application.deactiveToActive()
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /robots.txt                                                          controllers.Assets.at(path="/public", file="robots.txt")
 GET         /assets/*file                                                        controllers.Assets.at(path="/public", file)
 GET         /sitemap.xml                                                         controllers.Assets.at(path="/public", file="sitemap.xml")
+GET         /favicon.ico                                                         controllers.Assets.at(path="/public/img/", file="icon.png")
 #GET   /webjars/*file                           controllers.WebJarAssets.at(file)
