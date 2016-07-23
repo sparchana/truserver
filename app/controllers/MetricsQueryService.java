@@ -8,8 +8,10 @@ import com.avaje.ebean.SqlRow;
 import models.entity.Developer;
 import models.entity.Static.LeadSource;
 import org.apache.commons.lang3.time.DateUtils;
+import org.h2.tools.Server;
 import play.Logger;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -21,18 +23,24 @@ public class MetricsQueryService
     /**
      * date format for metrics sheets
      */
-    private static final String SDF_FORMAT = "yyyy-MM-dd";
-    private static final SimpleDateFormat sfd = new SimpleDateFormat(SDF_FORMAT);
+    private static final String SDF_FORMAT_YYYYMMDD = "yyyy-MM-dd";
+    private static final SimpleDateFormat sfd_yyyymmdd = new SimpleDateFormat(SDF_FORMAT_YYYYMMDD);
+
+    private static final String SDF_FORMAT_DD_MMM = "dd-MMM";
+    private static final SimpleDateFormat sfd_ddMMM = new SimpleDateFormat(SDF_FORMAT_DD_MMM);
+
+    private static final String SDF_FORMAT_HH_SS = "HH-SS";
+    private static final SimpleDateFormat sfd_hhss = new SimpleDateFormat(SDF_FORMAT_HH_SS);
+
     private static final GregorianCalendar gCal = new GregorianCalendar();
 
-    public static Map<String, Map<Date, Map<String, Object>>> queryAndUpdateMetrics(List<String> metricCategories,
+    public static Map<String, Map<Date, Map<Integer, Map<String, Object>>>> queryAndUpdateMetrics(List<String> metricCategories,
                                                                          Date startDate,
                                                                          Date endDate,
                                                                          boolean isWriteToSheet)
     {
-        Map<String, Map<Date, Map<String, Object>>> metricToDateToHeaderToValues =
-                new LinkedHashMap<String, Map<Date, Map<String, Object>>>();
-
+        Map<String, Map<Date, Map<Integer, Map<String, Object>>>> metricToDateToHeaderToValues =
+                new LinkedHashMap<String, Map<Date, Map <Integer, Map<String, Object>>>>();
 
         for (String metricCategory : metricCategories) {
 
@@ -43,38 +51,65 @@ public class MetricsQueryService
             }
             Date metricDate;
             Date nextDate;
-            Map<Date, Map<String, Object>> dateToHeaderToValueMap = new LinkedHashMap<>();
+
+            String metricDateString;
+            String nextDateString;
+
+            Map<Date, Map<Integer, Map<String, Object>>> dateToHeaderToValueMap = new LinkedHashMap<>();
+            Integer index = 1;
 
             while (gCal.getTime().before(toDate)) {
 
                 metricDate = gCal.getTime();
                 nextDate = DateUtils.addDays(metricDate, 1);
 
+                metricDateString = sfd_yyyymmdd.format(metricDate);
+                nextDateString = sfd_yyyymmdd.format(nextDate);
+
                 Logger.info("Getting statistics from " + metricDate.toString() + " to " + nextDate.toString());
 
-                if (metricCategory.equals(MetricsConstants.METRIC_INPUT_ALL)) {
+                if (metricCategory.equals(MetricsConstants.METRIC_INPUT_SUMMARY)) {
+
+                    Map<Integer, Map<String, Object>> indexToHeaderToValueMap = new LinkedHashMap<>();
                     Map<String, Object> headerToValueMap = new LinkedHashMap<>();
-                    getLeadsByChannel(headerToValueMap, sfd.format(metricDate), sfd.format(nextDate));
 
-                    getSignupsByChannel(headerToValueMap, sfd.format(metricDate), sfd.format(nextDate));
+                    indexToHeaderToValueMap.put(index, headerToValueMap);
 
-                    getCandidatesByActivityCount(headerToValueMap, sfd.format(metricDate), sfd.format(nextDate));
+                    getLeadsByChannel(indexToHeaderToValueMap, metricDateString, nextDateString, index);
 
-                    dateToHeaderToValueMap.put(metricDate, headerToValueMap);
+                    getSignupsByChannel(indexToHeaderToValueMap, metricDateString, nextDateString, index);
+
+                    getCandidatesByActivityCount(indexToHeaderToValueMap, metricDateString, nextDateString, index);
+
+                    dateToHeaderToValueMap.put(metricDate, indexToHeaderToValueMap);
 
                 } else if (metricCategory.equals(MetricsConstants.METRIC_INPUT_SUPPORT)) {
+
+                    Map<Integer, Map<String, Object>> indexToHeaderToValueMap = new LinkedHashMap<>();
                     Map<String, Object> headerToValueMap = new LinkedHashMap<>();
 
-                    getCandidatesBySupportAgents(headerToValueMap, sfd.format(metricDate), sfd.format(nextDate));
+                    indexToHeaderToValueMap.put(index, headerToValueMap);
 
-                    dateToHeaderToValueMap.put(metricDate, headerToValueMap);
+                    getCandidatesBySupportAgents(indexToHeaderToValueMap, metricDateString, nextDateString, index);
+
+                    dateToHeaderToValueMap.put(metricDate, indexToHeaderToValueMap);
 
                 } else if (metricCategory.equals(MetricsConstants.METRIC_INPUT_LEAD_SOURCES)) {
+
+                    Map<Integer, Map<String, Object>> indexToHeaderToValueMap = new LinkedHashMap<>();
                     Map<String, Object> headerToValueMap = new LinkedHashMap<>();
 
-                    getLeadSources(headerToValueMap, sfd.format(metricDate), sfd.format(nextDate));
+                    indexToHeaderToValueMap.put(index, headerToValueMap);
 
-                    dateToHeaderToValueMap.put(metricDate, headerToValueMap);
+                    getLeadSources(indexToHeaderToValueMap, metricDateString, nextDateString, index);
+
+                    dateToHeaderToValueMap.put(metricDate, indexToHeaderToValueMap);
+                } else if (metricCategory.equals(MetricsConstants.METRIC_INPUT_ACTIVE_CANDIDATES)) {
+                    Logger.info(" Querying active candidates ");
+                    Map<Integer, Map<String, Object>> indexToHeaderToValueMap = new LinkedHashMap<>();
+
+                    getActiveCandidates(indexToHeaderToValueMap, metricDateString, nextDateString, index);
+                    dateToHeaderToValueMap.put(metricDate, indexToHeaderToValueMap);
                 }
 
                 gCal.add(Calendar.DAY_OF_YEAR, 1);
@@ -85,14 +120,15 @@ public class MetricsQueryService
 
         if(isWriteToSheet){
             // if channel set to true, write to google sheet
-
+            Logger.info(" Results to write " + metricToDateToHeaderToValues.toString());
             TruJobsSheets.updateMetricsSheet(metricToDateToHeaderToValues);
         }
 
         return metricToDateToHeaderToValues;
     }
 
-    private static void getLeadsByChannel(Map<String, Object> headerToValueMap, String metricDate, String nextDate)
+    private static void getLeadsByChannel(Map<Integer, Map<String, Object>> indexToHeaderToValueMap,
+                                          String metricDate, String nextDate, Integer index)
     {
         // Build the query string
         StringBuilder leadQueryBuilder = new StringBuilder("select leadchannel, count(*) from lead ");
@@ -140,15 +176,20 @@ public class MetricsQueryService
         }
 
         Integer totalLeads = websiteLeadsCount + knowlarityLeadsCount + supportLeadsCount;
-        headerToValueMap.put(MetricsConstants.METRIC_HEADER_TOTAL_LEADS, totalLeads);
 
+        Map<String, Object> headerToValueMap = indexToHeaderToValueMap.get(index);
+
+        headerToValueMap.put(MetricsConstants.METRIC_HEADER_TOTAL_LEADS, totalLeads);
         headerToValueMap.put(MetricsConstants.METRIC_HEADER_WEBSITE_LEADS, websiteLeadsCount);
         headerToValueMap.put(MetricsConstants.METRIC_HEADER_KNOWLARITY_LEADS, knowlarityLeadsCount);
 
-        Logger.debug("Results map after getLeadsByChannel: " + headerToValueMap.toString());
+        indexToHeaderToValueMap.put(index, headerToValueMap);
+
+        Logger.debug("Results map after getLeadsByChannel: " + indexToHeaderToValueMap.toString());
     }
 
-    private static void getSignupsByChannel(Map<String, Object> headerToValueMap, String metricDate, String nextDate)
+    private static void getSignupsByChannel(Map<Integer, Map<String, Object>> indexToHeaderToValueMap, String metricDate,
+                                            String nextDate, Integer index)
     {
         // Build the query string
         StringBuilder interactionQueryBuilder =
@@ -185,7 +226,7 @@ public class MetricsQueryService
 
         Integer websiteSignupsCount = 0;
         Integer supportSignupsCount = 0;
-        Integer totalSignUpsCount = 0;
+        Integer totalSignUpsCount;
 
         while (signupResultsItr.hasNext()) {
             SqlRow signupRow = signupResultsItr.next();
@@ -198,37 +239,46 @@ public class MetricsQueryService
         }
 
         totalSignUpsCount = websiteSignupsCount + supportSignupsCount;
-        headerToValueMap.put(MetricsConstants.METRIC_HEADER_TOTAL_CANDIDATES, totalSignUpsCount);
 
+        Map<String, Object> headerToValueMap = indexToHeaderToValueMap.get(index);
+
+        headerToValueMap.put(MetricsConstants.METRIC_HEADER_TOTAL_CANDIDATES, totalSignUpsCount);
         headerToValueMap.put(MetricsConstants.METRIC_HEADER_WEBSITE_CANDIDATES, websiteSignupsCount);
         headerToValueMap.put(MetricsConstants.METRIC_HEADER_SUPPORT_CANDIDATES, supportSignupsCount);
 
-        Logger.debug("Results map after getSignupsByChannel: " + headerToValueMap.toString());
+        indexToHeaderToValueMap.put(index, headerToValueMap);
+
+        Logger.debug("Results map after getSignupsByChannel: " + indexToHeaderToValueMap.toString());
     }
 
-    private static void getCandidatesByActivityCount(Map<String, Object> headerToValueMap, String metricDate, String nextDate)
+    private static void getCandidatesByActivityCount(Map<Integer, Map<String, Object>> indexToHeaderToValueMap,
+                                                     String metricDate, String nextDate, Integer index)
     {
 
         // Total OTP Verifications
-        getOTPVerifications(headerToValueMap, metricDate, nextDate);
+        getOTPVerifications(indexToHeaderToValueMap, metricDate, nextDate, index);
+
+        // Get self log-ins
+        getSelfLogins(indexToHeaderToValueMap, metricDate, nextDate, index);
 
         // Basic profile Updates
-        getSelfBasicProfileUpdates(headerToValueMap, metricDate, nextDate);
+        getSelfBasicProfileUpdates(indexToHeaderToValueMap, metricDate, nextDate, index);
 
         // Experience profile updates
-        getSelfExperienceProfileUpdates(headerToValueMap, metricDate, nextDate);
+        getSelfExperienceProfileUpdates(indexToHeaderToValueMap, metricDate, nextDate, index);
 
         // Education profile updates
-        getSelfEducationProfileUpdates(headerToValueMap, metricDate, nextDate);
+        getSelfEducationProfileUpdates(indexToHeaderToValueMap, metricDate, nextDate, index);
 
         // Get Job Applications
-        getJobApplications(headerToValueMap, metricDate, nextDate);
+        getJobApplications(indexToHeaderToValueMap, metricDate, nextDate, index);
 
-        Logger.debug("Results map after getCandidatesByActivityCount: " + headerToValueMap.toString());
+        Logger.debug("Results map after getCandidatesByActivityCount: " + indexToHeaderToValueMap.toString());
 
     }
 
-    private static void getOTPVerifications(Map<String, Object> headerToValueMap, String metricDate, String nextDate)
+    private static void getOTPVerifications(Map<Integer, Map<String, Object>> indexToHeaderToValueMap, String metricDate,
+                                            String nextDate, Integer index)
     {
         // Build the query string
         StringBuilder otpVerificationQueryBuilder =
@@ -250,19 +300,63 @@ public class MetricsQueryService
         List<SqlRow> otpVerificationResults = otpVerificationSqlQuery.findList();
 
         // if we dint get any results, simply return
-        if (otpVerificationSqlQuery == null) {
+        if (otpVerificationResults == null) {
             Logger.error("Error: No otp verification results found for date: " + metricDate);
             return;
         }
 
         Logger.debug(" OTP Verification results " + otpVerificationResults.toString());
+        Map<String, Object> headerToValueMap = indexToHeaderToValueMap.get(index);
 
         headerToValueMap.put(MetricsConstants.METRIC_HEADER_OTP_VERIFICATIONS,
                 otpVerificationResults.get(0).getInteger("count(*)"));
 
+        indexToHeaderToValueMap.put(index, headerToValueMap);
+
     }
 
-    private static void getSelfBasicProfileUpdates(Map<String, Object> headerToValueMap, String metricDate, String nextDate)
+    private static void getSelfLogins(Map<Integer, Map<String, Object>> indexToHeaderToValueMap, String metricDate,
+                                      String nextDate, Integer index)
+    {
+        // Build the query string
+        StringBuilder loginQueryBuilder =
+                new StringBuilder("select count(*) from interaction join candidate " +
+                        "on interaction.objectauuid = candidate.candidateuuid " +
+                        "where result like '%Candidate Self Signed In%' ");
+
+        if (metricDate != null) {
+            loginQueryBuilder.append("and creationtimestamp  >= '" + metricDate + "' ");
+        }
+
+        if (nextDate != null) {
+            loginQueryBuilder.append(" and  creationtimestamp <= '" + nextDate + "' ");
+        }
+
+        Logger.debug(" Login Query: " + loginQueryBuilder.toString());
+
+        // Execute Query
+        SqlQuery loginSqlQuery = Ebean.createSqlQuery(loginQueryBuilder.toString());
+        List<SqlRow> loginResults = loginSqlQuery.findList();
+
+        // if we dint get any results, simply return
+        if (loginResults == null) {
+            Logger.error("Error: No otp verification results found for date: " + metricDate);
+            return;
+        }
+
+        Logger.debug(" Login results " + loginResults.toString());
+
+        Map<String, Object> headerToValueMap = indexToHeaderToValueMap.get(index);
+
+        headerToValueMap.put(MetricsConstants.METRIC_HEADER_LOGS_INS,
+                loginResults.get(0).getInteger("count(*)"));
+
+        indexToHeaderToValueMap.put(index, headerToValueMap);
+
+    }
+
+    private static void getSelfBasicProfileUpdates(Map<Integer, Map<String, Object>> indexToHeaderToValueMap, String metricDate,
+                                                   String nextDate, Integer index)
     {
         // Build the query string
         StringBuilder basicProfileQueryBuilder =
@@ -289,12 +383,18 @@ public class MetricsQueryService
             return;
         }
 
+        Map<String, Object> headerToValueMap = indexToHeaderToValueMap.get(index);
+
         Logger.debug(" Basic Profile Updates Results " + basicProfileResults.toString());
 
-        headerToValueMap.put(MetricsConstants.METRIC_HEADER_BASIC_PROFILE_UPDATES, basicProfileResults.get(0).getInteger("count(*)"));
+        headerToValueMap.put(MetricsConstants.METRIC_HEADER_BASIC_PROFILE_UPDATES,
+                basicProfileResults.get(0).getInteger("count(*)"));
+
+        indexToHeaderToValueMap.put(index, headerToValueMap);
     }
 
-    private static void getSelfExperienceProfileUpdates(Map<String, Object> headerToValueMap, String metricDate, String nextDate)
+    private static void getSelfExperienceProfileUpdates(Map<Integer, Map<String, Object>> indexToHeaderToValueMap,
+                                                        String metricDate, String nextDate, Integer index)
     {
         // Build the query string
         StringBuilder experienceProfileQueryBuilder =
@@ -323,11 +423,16 @@ public class MetricsQueryService
 
         Logger.debug(" Experience Profile Updates Results " + experienceProfileResults.toString());
 
+        Map<String, Object> headerToValueMap = indexToHeaderToValueMap.get(index);
+
         headerToValueMap.put(MetricsConstants.METRIC_HEADER_EXP_PROFILE_UPDATES,
                 experienceProfileResults.get(0).getInteger("count(*)"));
+
+        indexToHeaderToValueMap.put(index, headerToValueMap);
     }
 
-    private static void getSelfEducationProfileUpdates(Map<String, Object> headerToValueMap, String metricDate, String nextDate)
+    private static void getSelfEducationProfileUpdates(Map<Integer, Map<String, Object>> indexToHeaderToValueMap,
+                                                       String metricDate, String nextDate, Integer index)
     {
         // Build the query string
         StringBuilder educationProfileQueryBuilder =
@@ -356,11 +461,16 @@ public class MetricsQueryService
 
         Logger.debug("Education Profile Updates Results " + educationProfileResults.toString());
 
+        Map<String, Object> headerToValueMap = indexToHeaderToValueMap.get(index);
+
         headerToValueMap.put(MetricsConstants.METRIC_HEADER_EDU_PROFILE_UPDATES,
                 educationProfileResults.get(0).getInteger("count(*)"));
+
+        indexToHeaderToValueMap.put(index, headerToValueMap);
     }
 
-    private static void getJobApplications(Map<String, Object> headerToValueMap, String metricDate, String nextDate)
+    private static void getJobApplications(Map<Integer, Map<String, Object>> indexToHeaderToValueMap, String metricDate,
+                                           String nextDate, Integer index)
     {
         // Build the query string
         StringBuilder jobAppQueryBuilder =
@@ -388,12 +498,16 @@ public class MetricsQueryService
         }
 
         Logger.debug("Job Application Results " + jobAppResults.toString());
+        Map<String, Object> headerToValueMap = indexToHeaderToValueMap.get(index);
 
         headerToValueMap.put(MetricsConstants.METRIC_HEADER_JOB_APPLICATIONS,
                 jobAppResults.get(0).getInteger("count(*)"));
+
+        indexToHeaderToValueMap.put(index, headerToValueMap);
     }
 
-    private static void getCandidatesBySupportAgents (Map<String, Object> headerToValueMap, String metricDate, String nextDate)
+    private static void getCandidatesBySupportAgents (Map<Integer, Map<String, Object>> indexToHeaderToValueMap,
+                                                      String metricDate, String nextDate, Integer index)
     {
         // Build the query string
         StringBuilder supportActivityQueryBuilder =
@@ -411,7 +525,7 @@ public class MetricsQueryService
 
         supportActivityQueryBuilder.append("group by interaction.createdby ");
 
-        Logger.debug(" Support Activity Query: " + supportActivityQueryBuilder.toString());
+        Logger.info(" Support Activity Query: " + supportActivityQueryBuilder.toString());
 
         // Execute Query
         SqlQuery supportActivitySqlQuery = Ebean.createSqlQuery(supportActivityQueryBuilder.toString());
@@ -424,7 +538,9 @@ public class MetricsQueryService
             return;
         }
 
-        Logger.debug("Support activity results: " + supportActivityResults.toString());
+        Logger.info("Support activity results: " + supportActivityResults.toString());
+
+        Map<String, Object> headerToValueMap = indexToHeaderToValueMap.get(index);
 
         // iterate and find candidates added based on support agents
         Iterator<SqlRow> supportResultsItr = supportActivityResults.listIterator();
@@ -449,10 +565,13 @@ public class MetricsQueryService
 
         }
 
-        Logger.debug("Results map after getCandidatesBySupportAgents: " + headerToValueMap.toString());
+        indexToHeaderToValueMap.put(index, headerToValueMap);
+
+        Logger.info("Results map after getCandidatesBySupportAgents: " + indexToHeaderToValueMap.toString());
     }
 
-    private static void getLeadSources(Map<String, Object> headerToValueMap, String metricDate, String nextDate)
+    private static void getLeadSources(Map<Integer, Map<String, Object>> indexToHeaderToValueMap, String metricDate,
+                                       String nextDate, Integer index)
     {
         // Build the query string
         StringBuilder leadSourcesQueryBuilder =
@@ -501,6 +620,8 @@ public class MetricsQueryService
 
         Iterator<String> leadNamesItr = allSourceNames.iterator();
 
+        Map<String, Object> headerToValueMap = indexToHeaderToValueMap.get(index);
+
         while (leadNamesItr.hasNext()) {
 
             String leadSourceName = leadNamesItr.next();
@@ -509,8 +630,77 @@ public class MetricsQueryService
 
         }
 
-        Logger.debug("Results map after getLeadSources: " + headerToValueMap.toString());
+        indexToHeaderToValueMap.put(index, headerToValueMap);
 
+        Logger.debug("Results map after getLeadSources: " + indexToHeaderToValueMap.toString());
+    }
+
+    private static void getActiveCandidates(Map<Integer, Map<String, Object>> indexToHeaderToValueMap, String metricDate,
+                                            String nextDate, Integer index)
+    {
+        // Build the query string
+        StringBuilder activeCandidatesQueryBuilder =
+                new StringBuilder("select result, creationtimestamp, candidatename, candidatemobile, candidateid, localityname, candidate.candidatecreatetimestamp " +
+                        " from interaction join candidate " +
+                        " on interaction.objectauuid = candidate.candidateuuid " +
+                        " left join locality " +
+                        " on locality.localityid = candidate.candidatehomelocality " +
+                        " where createdby = '" + ServerConstants.INTERACTION_CREATED_SELF + "' ");
+
+        if (metricDate != null) {
+            activeCandidatesQueryBuilder.append("and creationtimestamp >= '" + metricDate + "' ");
+        }
+
+        if (nextDate != null) {
+            activeCandidatesQueryBuilder.append(" and creationtimestamp <= '" + nextDate + "' ");
+        }
+
+        activeCandidatesQueryBuilder.append(" order by result ");
+
+        Logger.debug(" Active Candidates Query: " + activeCandidatesQueryBuilder.toString());
+
+        // Execute Query
+        SqlQuery activeCandidatesSqlQuery = Ebean.createSqlQuery(activeCandidatesQueryBuilder.toString());
+        List<SqlRow> activeCandidatesResults = activeCandidatesSqlQuery.findList();
+
+
+        // if we dint get any results, simply return
+        if (activeCandidatesResults == null) {
+            Logger.error("Error: No active candidates data found for date: " + metricDate);
+            return;
+        }
+
+        Logger.debug("Active Candidates results: " + activeCandidatesResults.toString());
+
+        Map<String, Object> headerToValueMap;
+
+        // iterate and find candidates added based on support agents
+        Iterator<SqlRow> activeCandidatessResultsItr = activeCandidatesResults.listIterator();
+
+        Integer index1 = 0;
+        try {
+            while (activeCandidatessResultsItr.hasNext()) {
+                ++index1;
+                headerToValueMap = new LinkedHashMap<String, Object>();
+
+                SqlRow activeCandidateRow = activeCandidatessResultsItr.next();
+                headerToValueMap.put("Activity", (String) activeCandidateRow.get("result"));
+                headerToValueMap.put("Candidate Name", (String) activeCandidateRow.get("candidatename"));
+                headerToValueMap.put("Candidate Mobile", (String) activeCandidateRow.get("candidatemobile"));
+                headerToValueMap.put("Candidate ID", (Long) activeCandidateRow.get("candidateid"));
+                headerToValueMap.put("Candidate Home Locality", (String) activeCandidateRow.get("localityname"));
+                headerToValueMap.put("Interaction Timestamp", sfd_hhss.format(activeCandidateRow.get("creationtimestamp")));
+                headerToValueMap.put("Candidate Created Timestamp",
+                        sfd_ddMMM.format((activeCandidateRow.get("candidatecreatetimestamp"))));
+
+                indexToHeaderToValueMap.put(index1, headerToValueMap);
+            }
+        }
+        catch (Exception pEx) {
+            pEx.printStackTrace();
+        }
+
+        Logger.debug("Results map after getActiveCandidates: " + indexToHeaderToValueMap.toString());
     }
 
     private static List<String> getAllDeveloperLogins()
@@ -552,7 +742,5 @@ public class MetricsQueryService
         }
 
         return leadSourceNames;
-
     }
-
 }

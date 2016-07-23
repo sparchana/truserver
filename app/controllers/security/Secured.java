@@ -1,15 +1,19 @@
-package controllers;
+package controllers.security;
 
 /**
  * Created by zero on 30/4/16.
  */
 
 import api.ServerConstants;
+import controllers.routes;
 import models.entity.Developer;
 import play.mvc.Http.Context;
 import play.mvc.Result;
 import play.mvc.Security;
 
+/**
+ * Authenticator class for 'Support' role and above
+ */
 public class Secured extends Security.Authenticator {
 
     @Override
@@ -17,7 +21,14 @@ public class Secured extends Security.Authenticator {
         String sessionId = ctx.session().get("sessionId");
         if(sessionId != null){
             Developer developer = Developer.find.where().eq("developerSessionId", sessionId ).findUnique();
-            if(developer != null && (developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE ||  developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN ||  developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_REC)) {
+            play.Logger.info(" support access " + developer.getDeveloperAccessLevel());
+
+            if(developer != null && (developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN
+                    || developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_ADMIN
+                    || developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_REC
+                    || developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE))
+            {
+                play.Logger.info(" support session " + ctx.session().get("sessionId"));
                 return ctx.session().get("sessionId");
             } else {
                 return null;
