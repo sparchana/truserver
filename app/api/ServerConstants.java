@@ -119,7 +119,8 @@ public class ServerConstants {
 
     public static final int DEV_ACCESS_LEVEL_SUPPORT_ROLE = 1;
     public static final int DEV_ACCESS_LEVEL_REC = 2;
-    public static final int DEV_ACCESS_LEVEL_SUPER_ADMIN = 3;
+    public static final int DEV_ACCESS_LEVEL_ADMIN = 3;
+    public static final int DEV_ACCESS_LEVEL_SUPER_ADMIN = 4;
 
     public static final String SDF_FORMAT = "yyyy-MM-dd hh:mm:ss a";
     public static final String SDF_FORMAT_FOLLOWUP = "d MMM hh:mm a";

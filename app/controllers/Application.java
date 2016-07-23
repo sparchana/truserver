@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
+import controllers.security.*;
 import models.entity.*;
 import models.entity.OM.*;
 import models.entity.Static.*;
@@ -240,7 +241,7 @@ public class Application extends Controller {
         return ok(toJson(JobService.applyJob(applyJobRequest)));
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(RecSecured.class)
     public static Result addJobPost() {
         JsonNode req = request().body().asJson();
         Logger.info(req + " == ");
@@ -271,7 +272,7 @@ public class Application extends Controller {
         }
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(RecSecured.class)
     public static Result addRecruiter() {
         JsonNode req = request().body().asJson();
         Logger.info(req + " == ");
@@ -285,7 +286,7 @@ public class Application extends Controller {
         return ok(toJson(RecruiterService.addRecruiter(addRecruiterRequest)));
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(RecSecured.class)
     public static Result addCompany() {
         JsonNode req = request().body().asJson();
         Logger.info(req + " == ");
@@ -471,7 +472,7 @@ public class Application extends Controller {
         return ok("0");
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(RecSecured.class)
     public static Result getCompanyInfo(long companyId) {
         Company company = Company.find.where().eq("companyId", companyId).findUnique();
         if(company!=null){
@@ -480,7 +481,7 @@ public class Application extends Controller {
         return ok("0");
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(RecSecured.class)
     public static Result getCompanyRecruiters(long companyId) {
         List<RecruiterProfile> recruiterProfileList = RecruiterProfile.find.where().eq("company.companyId", companyId).findList();
         if(recruiterProfileList != null){
@@ -489,7 +490,7 @@ public class Application extends Controller {
         return ok("0");
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(RecSecured.class)
     public static Result getRecruiterInfo(long recId) {
         RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", recId).findUnique();
         if(recruiterProfile != null){
@@ -554,17 +555,17 @@ public class Application extends Controller {
         return ok(toJson(response));
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(RecSecured.class)
     public static Result companyInfoHome(Long id) {
         return ok(views.html.company_details.render());
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(RecSecured.class)
     public static Result recruiterInfoHome(Long id) {
         return ok(views.html.recruiter_details.render());
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(RecSecured.class)
     public static Result jobPostInfoHome(Long id) {
         return ok(views.html.job_post_details.render());
     }
@@ -586,6 +587,7 @@ public class Application extends Controller {
         Logger.info("Candidate Logged Out");
         return ok(views.html.main.render());
     }
+
     public static Result auth() {
         Form<DevLoginRequest> userForm = Form.form(DevLoginRequest.class);
         DevLoginRequest request = userForm.bindFromRequest().get();
@@ -604,9 +606,14 @@ public class Application extends Controller {
                 if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN) {
                     return redirect("/support/administrator");
                 }
-                if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE || developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN || developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_REC){
+                if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPPORT_ROLE ||
+                        developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN ||
+                        developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_REC ||
+                        developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_ADMIN)
+                {
                     return redirect(routes.Application.support());
                 }
+
                 if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN) {
                     return ok(views.html.uploadcsv.render());
                 }
@@ -933,43 +940,43 @@ public class Application extends Controller {
         return ok(toJson(degreeList));
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(RecSecured.class)
     public static Result getAllCompany() {
         List<Company> companyList = Company.find.orderBy("companyName").findList();
         return ok(toJson(companyList));
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(RecSecured.class)
     public static Result getAllRecruiters() {
         List<RecruiterProfile> recruiterProfileList = RecruiterProfile.find.findList();
         return ok(toJson(recruiterProfileList));
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(RecSecured.class)
     public static Result getAllPricingPlans() {
         List<PricingPlanType> pricingPlanTypeList = PricingPlanType.find.findList();
         return ok(toJson(pricingPlanTypeList));
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(RecSecured.class)
     public static Result getAllExperience() {
         List<Experience> experienceList = Experience.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(experienceList));
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(RecSecured.class)
     public static Result getAllCompanyStatus() {
         List<CompanyStatus> companyStatusList = CompanyStatus.find.findList();
         return ok(toJson(companyStatusList));
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(RecSecured.class)
     public static Result getAllCompanyType() {
         List<CompanyType> companyTypeList = CompanyType.find.findList();
         return ok(toJson(companyTypeList));
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(RecSecured.class)
     public static Result getAllJobStatus() {
         List<JobStatus> jobStatusList = JobStatus.find.findList();
         return ok(toJson(jobStatusList));
@@ -980,7 +987,7 @@ public class Application extends Controller {
         return ok(views.html.signup_support.render(candidateId));
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(RecSecured.class)
     public static Result createCompany() {
         return ok(views.html.create_company.render());
     }
@@ -989,7 +996,7 @@ public class Application extends Controller {
     public static Result createCandidateForm() {
         return redirect("/candidateSignupSupport/"+"0");
     }
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(AdminSecured.class)
     public static Result searchCandidate() {
         return ok(views.html.search.render());
     }
@@ -1106,14 +1113,14 @@ public class Application extends Controller {
     }
 
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(AdminSecured.class)
     public static Result invalidateDbCache() {
         ServerCacheManager serverCacheManager = Ebean.getServerCacheManager();
         serverCacheManager.clearAll();
         return ok("Cleared Static Cache");
     }
 
-    @Security.Authenticated(SuperSecured.class)
+    @Security.Authenticated(SuperAdminSecured.class)
     public static Result removeDuplicateLeadOrCandidate(String mobile) {
         mobile = FormValidator.convertToIndianMobileFormat(mobile);
         if(mobile != null  && mobile.length() == 13 ){
@@ -1128,12 +1135,12 @@ public class Application extends Controller {
         return ok("Invalid Mobile number !!");
     }
 
-    @Security.Authenticated(SuperSecured.class)
+    @Security.Authenticated(SuperAdminSecured.class)
     public static Result administrator() {
         return ok(views.html.admin.render());
     }
 
-    @Security.Authenticated(SuperSecured.class)
+    @Security.Authenticated(AdminSecured.class)
     public static Result uploadCSV() {
         return ok(views.html.uploadcsv.render());
     }
