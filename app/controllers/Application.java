@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
 import controllers.security.*;
+import in.trujobs.proto.*;
 import models.entity.*;
 import models.entity.OM.*;
 import models.entity.Static.*;
