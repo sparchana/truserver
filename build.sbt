@@ -10,6 +10,8 @@ testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a"))
 
 lazy val root = (project in file(".")).enablePlugins(PlayJava, PlayEbean)
 
+unmanagedJars in Compile += file(Path.userHome+"/truprojects/trucommon/tru-proto/repos/in.trujobs.proto/tru-proto/1.0.0/tru-proto-1.0.0.jar")
+
 libraryDependencies ++= Seq(
   javaJdbc,
   cache,
