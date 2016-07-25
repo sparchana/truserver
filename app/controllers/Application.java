@@ -1205,11 +1205,11 @@ public class Application extends Controller {
     public static Result getTestProto() {
         TestMessage testMessage = null;
         try {
-            TestMessage.Builder psudoTestMessage = TestMessage.newBuilder();
-            psudoTestMessage.setTestName("Testing");
-            psudoTestMessage.setTestPage("Page 1");
+            TestMessage.Builder pseudoTestMessage = TestMessage.newBuilder();
+            pseudoTestMessage.setTestName("Testing");
+            pseudoTestMessage.setTestPage("Page 1");
 
-            testMessage = testMessage.parseFrom(Base64.decodeBase64(Base64.encodeBase64String(psudoTestMessage.build().toByteArray())));
+            testMessage = testMessage.parseFrom(Base64.decodeBase64(Base64.encodeBase64String(pseudoTestMessage.build().toByteArray())));
         } catch (InvalidProtocolBufferException e) {
             Logger.info("Unable to parse message");
         }
