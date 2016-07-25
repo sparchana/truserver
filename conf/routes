@@ -96,6 +96,7 @@ POST        /getAllLocality                                                     
 POST        /getAllShift                                                         controllers.Application.getAllShift()
 POST        /getAllTransportation                                                controllers.Application.getAllTransportation()
 POST        /getJobPostInfo/:id/:isSupport                                       controllers.Application.getJobPostInfo(id : Long, isSupport : Integer)
+GET         /getTestProto                                                        controllers.Application.getTestProto()
 
 
 # Analytics/Super Admin Panel
