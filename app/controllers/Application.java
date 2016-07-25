@@ -1201,24 +1201,4 @@ public class Application extends Controller {
         }
         return ok(toJson(DeactivationService.deactivateToActive(deactiveToActiveRequest)));
     }
-
-    public static Result getTestProto() {
-        TestMessage testMessage = null;
-        try {
-            TestMessage.Builder pseudoTestMessage = TestMessage.newBuilder();
-            pseudoTestMessage.setTestName("Testing");
-            pseudoTestMessage.setTestPage("Page 1");
-
-            testMessage = testMessage.parseFrom(Base64.decodeBase64(Base64.encodeBase64String(pseudoTestMessage.build().toByteArray())));
-        } catch (InvalidProtocolBufferException e) {
-            Logger.info("Unable to parse message");
-        }
-
-        if (testMessage == null) {
-            Logger.info("Invalid message");
-            return badRequest();
-        }
-
-        return ok(Base64.encodeBase64String(testMessage.toByteArray()));
-    }
 }
