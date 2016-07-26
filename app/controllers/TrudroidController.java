@@ -4,15 +4,19 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.CandidateSignUpRequest;
 import api.http.httpRequest.LoginRequest;
-import api.http.httpResponse.*;
+import api.http.httpResponse.CandidateSignUpResponse;
+import api.http.httpResponse.LoginResponse;
 import com.google.api.client.util.Base64;
 import com.google.protobuf.InvalidProtocolBufferException;
 import controllers.businessLogic.AuthService;
 import controllers.businessLogic.CandidateService;
 import in.trujobs.proto.*;
-import in.trujobs.proto.ResetPasswordResponse;
+import in.trujobs.proto.JobRole;
 import play.Logger;
 import play.mvc.Result;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static play.mvc.Http.Context.Implicit.request;
 import static play.mvc.Results.badRequest;
@@ -155,6 +159,23 @@ public class TrudroidController {
             Logger.info("Invalid message");
             return badRequest();
         }
+        return ok(Base64.encodeBase64String(builder.build().toByteArray()));
+    }
+
+    public static Result mGetAllJobRoles() {
+        JobRoleResponse.Builder builder = JobRoleResponse.newBuilder();
+        List<models.entity.Static.JobRole> jobRoleList = models.entity.Static.JobRole.find.all();
+
+        List<JobRole> jobRoleListToReturn = new ArrayList<>();
+        for (models.entity.Static.JobRole jobRole: jobRoleList) {
+            JobRole.Builder jobRoleBuilder
+                    = JobRole.newBuilder();
+            jobRoleBuilder.setJobRoleId(String.valueOf(jobRole.getJobRoleId()));
+            jobRoleBuilder.setJobRoleName(jobRole.getJobName());
+
+            jobRoleListToReturn.add(jobRoleBuilder.build());
+        }
+        builder.addAllJobRole(jobRoleListToReturn);
         return ok(Base64.encodeBase64String(builder.build().toByteArray()));
     }
 }
