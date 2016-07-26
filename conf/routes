@@ -100,8 +100,11 @@ POST        /getJobPostInfo/:id/:isSupport                                      
 # Trudroid API
 # ~~~~~~~~~~~~
 
-GET         /getTestProto                                                        controllers.TrudroidController.getTestProto()
-
+GET          /getTestProto                                                       controllers.TrudroidController.getTestProto()
+POST         /mLoginSubmit                                                       controllers.TrudroidController.mLoginSubmit()
+POST         /mSignUp                                                            controllers.TrudroidController.mSignUp()
+POST         /mAddPassword                                                       controllers.TrudroidController.mAddPassword()
+POST         /mFindUserAndSendOtp                                                controllers.TrudroidController.mFindUserAndSendOtp()
 
 # Analytics/Super Admin Panel
 # ~~~~~~~~~
