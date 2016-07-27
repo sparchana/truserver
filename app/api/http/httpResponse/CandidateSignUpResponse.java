@@ -59,4 +59,36 @@ public class CandidateSignUpResponse {
     public int getStatus() {
         return status;
     }
+
+    public int getOtp() {
+        return otp;
+    }
+
+    public int getIsAssessed() {
+        return isAssessed;
+    }
+
+    public long getLeadId() {
+        return leadId;
+    }
+
+    public long getAccountStatus() {
+        return accountStatus;
+    }
+
+    public long getCandidateId() {
+        return candidateId;
+    }
+
+    public String getCandidateFirstName() {
+        return candidateFirstName;
+    }
+
+    public String getCandidateLastName() {
+        return candidateLastName;
+    }
+
+    public String getCandidateEmail() {
+        return candidateEmail;
+    }
 }

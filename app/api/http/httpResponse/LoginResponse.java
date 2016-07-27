@@ -47,4 +47,32 @@ public class LoginResponse {
     public void setCandidateEmail(String candidateEmail) {
         this.candidateEmail = candidateEmail;
     }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public int getIsAssessed() {
+        return isAssessed;
+    }
+
+    public long getCandidateId() {
+        return candidateId;
+    }
+
+    public long getLeadId() {
+        return leadId;
+    }
+
+    public String getCandidateFirstName() {
+        return candidateFirstName;
+    }
+
+    public String getCandidateLastName() {
+        return candidateLastName;
+    }
+
+    public String getCandidateEmail() {
+        return candidateEmail;
+    }
 }
