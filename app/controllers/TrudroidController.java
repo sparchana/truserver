@@ -59,11 +59,13 @@ public class TrudroidController {
 
             LoginResponse loginResponse = CandidateService.login(loginRequest.getCandidateLoginMobile(), loginRequest.getCandidateLoginPassword());
             builder.setStatus(LogInResponse.Status.valueOf(loginResponse.getStatus()));
-            builder.setCandidateFirstName(loginResponse.getCandidateFirstName());
-            builder.setCandidateLastName(loginResponse.getCandidateLastName());
-            builder.setCandidateId(loginResponse.getCandidateId());
-            builder.setCandidateIsAssessed(loginResponse.getIsAssessed());
-            builder.setLeadId(loginResponse.getLeadId());
+            if(loginResponse.getStatus() == 1){
+                builder.setCandidateFirstName(loginResponse.getCandidateFirstName());
+                builder.setCandidateLastName(loginResponse.getCandidateLastName());
+                builder.setCandidateId(loginResponse.getCandidateId());
+                builder.setCandidateIsAssessed(loginResponse.getIsAssessed());
+                builder.setLeadId(loginResponse.getLeadId());
+            }
 
             Logger.info("Status returned = " + builder.getStatus());
 
@@ -176,6 +178,26 @@ public class TrudroidController {
             jobRoleListToReturn.add(jobRoleBuilder.build());
         }
         builder.addAllJobRole(jobRoleListToReturn);
+        return ok(Base64.encodeBase64String(builder.build().toByteArray()));
+    }
+
+    public static Result mGetAllJobPosts() {
+        JobPostResponse.Builder builder = JobPostResponse.newBuilder();
+        List<models.entity.JobPost> jobPostList = models.entity.JobPost.find.all();
+
+        List<JobPost> jobPostListToReturn = new ArrayList<>();
+        for (models.entity.JobPost jobPost: jobPostList) {
+            JobPost.Builder jobPostBuilder
+                    = JobPost.newBuilder();
+            jobPostBuilder.setJobPostId(jobPost.getJobPostId());
+            jobPostBuilder.setJobPostTitle(jobPost.getJobPostTitle());
+            jobPostBuilder.setJobPostCompanyName(jobPost.getCompany().getCompanyName());
+            jobPostBuilder.setJobPostMinSalary(jobPost.getJobPostMinSalary());
+            jobPostBuilder.setJobPostMaxSalary(jobPost.getJobPostMaxSalary());
+
+            jobPostListToReturn.add(jobPostBuilder.build());
+        }
+        builder.addAllJobPost(jobPostListToReturn);
         return ok(Base64.encodeBase64String(builder.build().toByteArray()));
     }
 }
