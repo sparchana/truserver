@@ -10,11 +10,8 @@ import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.client.util.Base64;
-import com.google.protobuf.InvalidProtocolBufferException;
 import controllers.businessLogic.*;
 import controllers.security.*;
-import in.trujobs.proto.TestMessage;
 import models.entity.*;
 import models.entity.OM.*;
 import models.entity.Static.*;
@@ -904,12 +901,12 @@ public class Application extends Controller {
     }
 
     public static Result getAllLocality() {
-        List<Locality> localities = Locality.find.setUseQueryCache(!isDevMode).findList();
+        List<Locality> localities = Locality.find.setUseQueryCache(!isDevMode).orderBy("localityName").findList();
         return ok(toJson(localities));
     }
 
     public static Result getAllJobs() {
-        List<JobRole> jobs = JobRole.find.setUseQueryCache(!isDevMode).findList();
+        List<JobRole> jobs = JobRole.find.setUseQueryCache(!isDevMode).orderBy("jobName").findList();
         return ok(toJson(jobs));
     }
 
@@ -929,17 +926,17 @@ public class Application extends Controller {
     }
 
     public static Result getAllLanguage() {
-        List<Language> languages = Language.find.setUseQueryCache(!isDevMode).findList();
+        List<Language> languages = Language.find.setUseQueryCache(!isDevMode).orderBy("languageName").findList();
         return ok(toJson(languages));
     }
 
     public static Result getAllIdProof() {
-        List<IdProof> idProofs = IdProof.find.setUseQueryCache(!isDevMode).findList();
+        List<IdProof> idProofs = IdProof.find.setUseQueryCache(!isDevMode).orderBy("idProofName").findList();
         return ok(toJson(idProofs));
     }
 
     public static Result getAllDegree() {
-        List<Degree> degreeList = Degree.find.setUseQueryCache(!isDevMode).findList();
+        List<Degree> degreeList = Degree.find.setUseQueryCache(!isDevMode).orderBy("degreeName").findList();
         return ok(toJson(degreeList));
     }
 
@@ -1023,7 +1020,7 @@ public class Application extends Controller {
     }
     @Security.Authenticated(Secured.class)
     public static Result getAllLeadSource() {
-        List<LeadSource> leadSources = LeadSource.find.all();
+        List<LeadSource> leadSources = LeadSource.find.orderBy("leadSourceName").findList();
         return ok(toJson(leadSources));
     }
     @Security.Authenticated(Secured.class)
