@@ -11,7 +11,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import controllers.businessLogic.AuthService;
 import controllers.businessLogic.CandidateService;
 import in.trujobs.proto.*;
-import in.trujobs.proto.JobRole;
+import models.entity.Candidate;
 import play.Logger;
 import play.mvc.Result;
 
@@ -198,6 +198,40 @@ public class TrudroidController {
             jobPostListToReturn.add(jobPostBuilder.build());
         }
         builder.addAllJobPost(jobPostListToReturn);
+        return ok(Base64.encodeBase64String(builder.build().toByteArray()));
+    }
+
+    public static Result mAddHomeLocality() {
+        HomeLocalityRequest pHomeLocalityRequest = null;
+        HomeLocalityResponse.Builder builder = HomeLocalityResponse.newBuilder();
+
+        try {
+            String requestString = request().body().asText();
+            pHomeLocalityRequest = HomeLocalityRequest.parseFrom(Base64.decodeBase64(requestString));
+            if(pHomeLocalityRequest != null){
+                Logger.info("Received CandidateMobile:"+pHomeLocalityRequest.getCandidateMobile());
+                Candidate existingCandidate = CandidateService.isCandidateExists(pHomeLocalityRequest.getCandidateMobile());
+                if (existingCandidate != null){
+                    Logger.info("lat/lng:"+pHomeLocalityRequest.getLat()+"/"+pHomeLocalityRequest.getLng());
+                    existingCandidate.setCandidateLocalityLat(pHomeLocalityRequest.getLat());
+                    existingCandidate.setCandidateLocalityLng(pHomeLocalityRequest.getLng());
+                    existingCandidate.candidateUpdate();
+                    builder.setStatus(HomeLocalityResponse.Status.valueOf(HomeLocalityResponse.Status.SUCCESS_VALUE));
+                } else {
+                    builder.setStatus(HomeLocalityResponse.Status.valueOf(HomeLocalityResponse.Status.USER_NOT_FOUND_VALUE));
+                }
+            } else {
+                builder.setStatus(HomeLocalityResponse.Status.valueOf(HomeLocalityResponse.Status.FAILURE_VALUE));
+            }
+            Logger.info("Status returned = " + builder.getStatus());
+        } catch (InvalidProtocolBufferException e) {
+            Logger.info("Unable to parse message");
+        }
+
+        if (pHomeLocalityRequest == null) {
+            Logger.info("Invalid message");
+            return badRequest();
+        }
         return ok(Base64.encodeBase64String(builder.build().toByteArray()));
     }
 }

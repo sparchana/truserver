@@ -3,6 +3,7 @@ package controllers.businessLogic;
 import api.ServerConstants;
 import api.http.CandidateKnownLanguage;
 import api.http.CandidateSkills;
+import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
@@ -56,7 +57,7 @@ public class CandidateService
 
     public static Candidate isCandidateExists(String mobile) {
         try{
-            Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", mobile).findUnique();
+            Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", FormValidator.convertToIndianMobileFormat(mobile)).findUnique();
             if(existingCandidate != null) {
                 return existingCandidate;
             }
