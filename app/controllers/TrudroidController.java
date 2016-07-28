@@ -2,16 +2,18 @@ package controllers;
 
 import api.ServerConstants;
 import api.http.FormValidator;
-import api.http.httpRequest.CandidateSignUpRequest;
-import api.http.httpRequest.LoginRequest;
-import api.http.httpResponse.CandidateSignUpResponse;
-import api.http.httpResponse.LoginResponse;
+import api.http.httpRequest.*;
+import api.http.httpResponse.*;
 import com.google.api.client.util.Base64;
 import com.google.protobuf.InvalidProtocolBufferException;
 import controllers.businessLogic.AuthService;
 import controllers.businessLogic.CandidateService;
+import controllers.businessLogic.JobService;
 import in.trujobs.proto.*;
-import in.trujobs.proto.JobRole;
+import in.trujobs.proto.ApplyJobRequest;
+import in.trujobs.proto.ApplyJobResponse;
+import in.trujobs.proto.ResetPasswordResponse;
+import models.entity.OM.JobPostToLocality;
 import play.Logger;
 import play.mvc.Result;
 
@@ -183,7 +185,7 @@ public class TrudroidController {
 
     public static Result mGetAllJobPosts() {
         JobPostResponse.Builder builder = JobPostResponse.newBuilder();
-        List<models.entity.JobPost> jobPostList = models.entity.JobPost.find.all();
+        List<models.entity.JobPost> jobPostList = models.entity.JobPost.find.where().eq("jobPostIsHot", "1").findList();
 
         List<JobPost> jobPostListToReturn = new ArrayList<>();
         for (models.entity.JobPost jobPost: jobPostList) {
@@ -195,9 +197,59 @@ public class TrudroidController {
             jobPostBuilder.setJobPostMinSalary(jobPost.getJobPostMinSalary());
             jobPostBuilder.setJobPostMaxSalary(jobPost.getJobPostMaxSalary());
 
+            jobPostBuilder.setJobPostCompanyLogo(jobPost.getCompany().getCompanyLogo());
+
+            Experience.Builder experienceBuilder = Experience.newBuilder();
+            experienceBuilder.setExperienceId(jobPost.getJobPostExperience().getExperienceId());
+            experienceBuilder.setExperienceType(jobPost.getJobPostExperience().getExperienceType());
+            jobPostBuilder.setJobPostExperience(experienceBuilder);
+
+            TimeShift.Builder timeShiftBuilder = TimeShift.newBuilder();
+            timeShiftBuilder.setTimeShiftId(jobPost.getJobPostShift().getTimeShiftId());
+            timeShiftBuilder.setTimeShiftName(jobPost.getJobPostShift().getTimeShiftName());
+            jobPostBuilder.setJobPostShift(timeShiftBuilder);
+
+            List<Locality> jobPostLocalities = new ArrayList<>();
+            List<JobPostToLocality> localityList = jobPost.getJobPostToLocalityList();
+            for (JobPostToLocality locality: localityList) {
+                Locality.Builder localityBuilder
+                        = Locality.newBuilder();
+                localityBuilder.setLocalityId(locality.getLocality().getLocalityId());
+                localityBuilder.setLocalityName(locality.getLocality().getLocalityName());
+                jobPostLocalities.add(localityBuilder.build());
+            }
+            jobPostBuilder.addAllJobPostLocality(jobPostLocalities);
+
             jobPostListToReturn.add(jobPostBuilder.build());
         }
         builder.addAllJobPost(jobPostListToReturn);
+        return ok(Base64.encodeBase64String(builder.build().toByteArray()));
+    }
+
+    public static Result mApplyJob() {
+        ApplyJobRequest pApplyJobRequest = null;
+        ApplyJobResponse.Builder builder = ApplyJobResponse.newBuilder();
+
+        try {
+            String requestString = request().body().asText();
+            pApplyJobRequest = ApplyJobRequest.parseFrom(Base64.decodeBase64(requestString));
+            api.http.httpRequest.ApplyJobRequest applyJobRequest = new api.http.httpRequest.ApplyJobRequest();
+            applyJobRequest.setJobId(Math.toIntExact(pApplyJobRequest.getJobPostId()));
+            applyJobRequest.setLocalityId(Math.toIntExact(pApplyJobRequest.getLocalityId()));
+            applyJobRequest.setCandidateMobile(FormValidator.convertToIndianMobileFormat(pApplyJobRequest.getCandidateMobile()));
+            api.http.httpResponse.ApplyJobResponse applyJobResponse = JobService.applyJob(applyJobRequest);
+            builder.setStatus(ApplyJobResponse.Status.valueOf(applyJobResponse.getStatus()));
+
+            Logger.info("Status returned = " + builder.getStatus());
+
+        } catch (InvalidProtocolBufferException e) {
+            Logger.info("Unable to parse message");
+        }
+
+        if (pApplyJobRequest == null) {
+            Logger.info("Invalid message");
+            return badRequest();
+        }
         return ok(Base64.encodeBase64String(builder.build().toByteArray()));
     }
 }
