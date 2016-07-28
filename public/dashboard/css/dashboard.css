@@ -288,6 +288,10 @@ input::-webkit-inner-spin-button {
 }
 
 @media(max-width:768px) {
+    #eduConfirm{
+        margin-top: 28%;
+    }
+
     #languageBtn{
         width: 60px;
     }
@@ -299,7 +303,9 @@ input::-webkit-inner-spin-button {
         width: 80%;
     }
     .skillBtn{
-        width: 56px;
+        width: 50px;
+        padding: 8px 2px;
+        font-size: 9px;
     }
     #skillAnswer{
         margin-left: 0px;
