@@ -108,6 +108,7 @@ POST         /mFindUserAndSendOtp                                               
 POST         /mGetAllJobRoles                                                    controllers.TrudroidController.mGetAllJobRoles()
 POST         /mGetAllJobPosts                                                    controllers.TrudroidController.mGetAllJobPosts()
 POST         /mApplyJob                                                          controllers.TrudroidController.mApplyJob()
+POST         /mAddJobPref                                                        controllers.TrudroidController.mAddJobPref()
 
 # Analytics/Super Admin Panel
 # ~~~~~~~~~

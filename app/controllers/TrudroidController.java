@@ -2,17 +2,17 @@ package controllers;
 
 import api.ServerConstants;
 import api.http.FormValidator;
-import api.http.httpRequest.*;
-import api.http.httpResponse.*;
+import api.http.httpRequest.CandidateSignUpRequest;
+import api.http.httpRequest.LoginRequest;
+import api.http.httpResponse.CandidateSignUpResponse;
+import api.http.httpResponse.LoginResponse;
 import com.google.api.client.util.Base64;
 import com.google.protobuf.InvalidProtocolBufferException;
 import controllers.businessLogic.AuthService;
 import controllers.businessLogic.CandidateService;
 import controllers.businessLogic.JobService;
 import in.trujobs.proto.*;
-import in.trujobs.proto.ApplyJobRequest;
-import in.trujobs.proto.ApplyJobResponse;
-import in.trujobs.proto.ResetPasswordResponse;
+import models.entity.Candidate;
 import models.entity.OM.JobPostToLocality;
 import play.Logger;
 import play.mvc.Result;
@@ -174,7 +174,7 @@ public class TrudroidController {
         for (models.entity.Static.JobRole jobRole: jobRoleList) {
             JobRole.Builder jobRoleBuilder
                     = JobRole.newBuilder();
-            jobRoleBuilder.setJobRoleId(String.valueOf(jobRole.getJobRoleId()));
+            jobRoleBuilder.setJobRoleId(jobRole.getJobRoleId());
             jobRoleBuilder.setJobRoleName(jobRole.getJobName());
 
             jobRoleListToReturn.add(jobRoleBuilder.build());
@@ -247,6 +247,48 @@ public class TrudroidController {
         }
 
         if (pApplyJobRequest == null) {
+            Logger.info("Invalid message");
+            return badRequest();
+        }
+        return ok(Base64.encodeBase64String(builder.build().toByteArray()));
+    }
+
+    public static Result mAddJobPref() {
+        AddJobRoleRequest pAddJobPrefRequest = null;
+        AddJobRoleResponse.Builder builder = AddJobRoleResponse.newBuilder();
+
+        try {
+            String requestString = request().body().asText();
+            pAddJobPrefRequest = AddJobRoleRequest.parseFrom(Base64.decodeBase64(requestString));
+            List<Integer> jobPrefList = new ArrayList<Integer>();
+            if(pAddJobPrefRequest.getJobRolePrefOneId() != 0){
+                jobPrefList.add(Math.toIntExact(pAddJobPrefRequest.getJobRolePrefOneId()));
+            }
+            if(pAddJobPrefRequest.getJobRolePrefTwoId() != 0){
+                jobPrefList.add(Math.toIntExact(pAddJobPrefRequest.getJobRolePrefTwoId()));
+            }
+            if(pAddJobPrefRequest.getJobRolePrefThreeId() != 0){
+                jobPrefList.add(Math.toIntExact(pAddJobPrefRequest.getJobRolePrefThreeId()));
+            }
+
+            builder.setStatus(AddJobRoleResponse.Status.valueOf(2));
+
+            Logger.info("Checking for mobile number: " + FormValidator.convertToIndianMobileFormat(pAddJobPrefRequest.getCandidateMobile()));
+            Candidate candidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(pAddJobPrefRequest.getCandidateMobile()));
+            if(candidate != null){
+                Logger.info(CandidateService.getCandidateJobPreferenceList(jobPrefList, candidate).size() + " ---- ");
+                CandidateService.resetJobPref(candidate, CandidateService.getCandidateJobPreferenceList(jobPrefList, candidate));
+                candidate.setJobPreferencesList(CandidateService.getCandidateJobPreferenceList(jobPrefList, candidate));
+                candidate.update();
+                builder.setStatus(AddJobRoleResponse.Status.valueOf(1));
+            }
+            Logger.info("Status returned = " + builder.getStatus());
+
+        } catch (InvalidProtocolBufferException e) {
+            Logger.info("Unable to parse message");
+        }
+
+        if (pAddJobPrefRequest == null) {
             Logger.info("Invalid message");
             return badRequest();
         }
