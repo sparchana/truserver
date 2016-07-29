@@ -445,15 +445,9 @@ function saveCandidateBasicProfile(){
     } else if($('#candidateTimeShiftPref').val() == -1){
         statusCheck=0;
         alert("Please Enter Your Preferred Work Shift");
-    } else if($('#dob_day').val() == ""){
+    }  else if($('#dob_day').val() == "" || $('#dob_month').val() == "" || $('#dob_year').val() == ""){
         statusCheck=0;
-        alert("Please Select your Birth day");
-    } else if($('#dob_month').val() == ""){
-        statusCheck=0;
-        alert("Please Select your Birth month");
-    } else if($('#dob_year').val() == ""){
-        statusCheck=0;
-        alert("Please Select your Birth year");
+        alert("Please Select your Date of Birth");
     } else if(dobCheck == 0){
         alert("Please select a valid date of birth");
         statusCheck=0;
@@ -534,7 +528,7 @@ function saveCandidateExperienceDetails(){
         }
 
         if(experienceStatus == 1 && $('input:radio[name="isEmployed"]:checked').val() == null){
-            alert("Select Current Employment Status");
+            alert("Please answer \"Are you currently working?\"");
         } else if((experienceStatus == 1) && ($('input:radio[name="isEmployed"]:checked').val() == 1) && ($('#candidateLastWithdrawnSalary').val() == null || $('#candidateLastWithdrawnSalary').val() == "" || $('#candidateLastWithdrawnSalary').val() == "0")){
             alert("Enter your Last Withdrawn Salary");
         }
