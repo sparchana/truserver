@@ -1,4 +1,5 @@
 import models.entity.Candidate;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -20,6 +21,8 @@ public class ApplicationTest {
         assertEquals(2, 1 + 1); // A really important thing to test
     }
 
+
+    @Ignore
     @Test
     public void testUsers() {
         running(fakeApplication(), () -> {
