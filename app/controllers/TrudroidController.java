@@ -184,7 +184,6 @@ public class TrudroidController {
     public static Result mGetAllJobPosts() {
         JobPostResponse.Builder builder = JobPostResponse.newBuilder();
         List<models.entity.JobPost> jobPostList = models.entity.JobPost.find.all();
-
         List<JobPost> jobPostListToReturn = new ArrayList<>();
         for (models.entity.JobPost jobPost: jobPostList) {
             JobPost.Builder jobPostBuilder

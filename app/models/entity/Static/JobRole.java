@@ -42,6 +42,9 @@ public class JobRole extends Model {
     @OneToMany(mappedBy = "jobRole", cascade = CascadeType.REMOVE)
     private List<JobToSkill> jobToSkillList;
 
+    @Column(name = "JobRoleIcon", columnDefinition = "varchar(255) null")
+    private String jobRoleIcon;
+
     public static Finder<String, JobRole> find = new Finder(JobRole.class);
 
     public long getJobRoleId() {
@@ -90,5 +93,13 @@ public class JobRole extends Model {
 
     public void setJobToSkillList(List<JobToSkill> jobToSkillList) {
         this.jobToSkillList = jobToSkillList;
+    }
+
+    public String getJobRoleIcon() {
+        return jobRoleIcon;
+    }
+
+    public void setJobRoleIcon(String jobRoleIcon) {
+        this.jobRoleIcon = jobRoleIcon;
     }
 }

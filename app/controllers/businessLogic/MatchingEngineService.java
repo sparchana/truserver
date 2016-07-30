@@ -4,6 +4,17 @@ package controllers.businessLogic;
  * Created by zero on 29/7/16.
  */
 
+import api.ServerConstants;
+import models.entity.JobPost;
+import models.entity.OM.JobPostToLocality;
+import play.Logger;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import static play.libs.Json.toJson;
+
 /**
  * Matching Engine Service receives a {latitude, longitude} pair and try to determine list of jobPost
  * available within a defined radius rad. List is ordered by its distance from center.
@@ -15,6 +26,55 @@ package controllers.businessLogic;
  * @see <a href="https://en.wikipedia.org/wiki/Haversine_formula">Haversine formula</a>
  */
 public class MatchingEngineService {
+
+    private Double radius = ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS;
+
+    /**
+     * fetchMatchingJobPostForLatLng takes candidate's home locality latitude/longitude
+     * and generates a List<JobPost> lying within DEFAULT_MATCHING_ENGINE_RADIUS and JobPostToLocalityList
+     * are ordered by distance of each JobPostToLocality from candidate's home locality.
+     */
+    public List<JobPost> fetchMatchingJobPostForLatLng(Double lat, Double lng, Double r){
+        if(r!=null && r>0){
+            radius = r;
+        }
+        List<JobPost> jobPostList = JobPost.find.all();
+        if(lat != null && lng != null) {
+           List<JobPost> jobPostsResponseList = new ArrayList<>();
+           for (JobPost jobPost : jobPostList){
+               boolean shouldAdd = false;
+               List<JobPostToLocality> jobPostToLocalityList = new ArrayList<>();
+               /* TODO: entity manager should ignore it for other transactions */
+               JobPost tempJobPost = new JobPost(jobPost);
+               if(jobPost.getJobPostToLocalityList() != null){
+                  for(JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()){
+                      /* finds distance of this jobPost location from candidate's home location */
+                      Double distance = getDistanceFromCenter(lat, lng,
+                              jobPostToLocality.getLatitude(), jobPostToLocality.getLongitude());
+                      if(distance!= null && distance <= radius){
+                          shouldAdd = true;
+                          /* creates distance wise ordered list for
+                          *  this jobPost
+                          */
+                          jobPostToLocality.setDistance(distance);
+                          jobPostToLocalityList.add(jobPostToLocality);
+                      }
+                  }
+                   Collections.sort(jobPostToLocalityList, (a,b)->a.getDistance().compareTo(b.getDistance()));
+                   /* add ordered jobPostToLocalityList to temp jobPost */
+                   tempJobPost.setJobPostToLocalityList(jobPostToLocalityList);
+              }
+               /* add jobPost to response list if it satisfies the match criteria */
+               if(shouldAdd){
+                   jobPostsResponseList.add(new JobPost(tempJobPost));
+               }
+           }
+            Collections.sort(jobPostsResponseList, (a,b) -> a.getJobPostToLocalityList().get(0).getDistance()
+                    .compareTo(b.getJobPostToLocalityList().get(0).getDistance()));
+            return jobPostsResponseList;
+        }
+        return null;
+    }
 
 
     /**

@@ -1,16 +1,24 @@
 package Controller;
 
+import common.TestConstants;
 import controllers.businessLogic.MatchingEngineService;
+import models.entity.JobPost;
+import models.entity.OM.JobPostToLocality;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import play.Application;
+import play.Logger;
+import play.test.TestServer;
 
 import java.text.DecimalFormat;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static play.libs.Json.toJson;
+import static play.test.Helpers.*;
 
 /**
  * Created by zero on 29/7/16.
@@ -27,6 +35,7 @@ public class MatchingEngineServiceTest {
     private Double pointLat;
     private Double pointLng;
     private Double expectedResult;
+    private Double radius;
 
     private MatchingEngineService matchingEngineService;
     @Before
@@ -38,16 +47,17 @@ public class MatchingEngineServiceTest {
     // Every time runner triggers, it will pass the arguments
     // from parameters we defined in MatchingEngineService.getDistanceFromCenter() method
     public MatchingEngineServiceTest(Double centerLat, Double centerLng, Double pointLat,
-                                     Double pointLng, Double expectedResult) {
+                                     Double pointLng, Double expectedResult, Double radius) {
         this.centerLat = centerLat;
         this.centerLng = centerLng;
         this.pointLat = pointLat;
         this.pointLng = pointLng;
         this.expectedResult = expectedResult;
+        this.radius = radius;
     }
     /**
      * validated using following url
-     * http://www.movable-type.co.uk/scripts/latlong.html
+     * @see <a href="http://www.movable-type.co.uk/scripts/latlong.html"/>
      */
     public Double RoundTo2Decimals(Double val) {
         DecimalFormat df2 = new DecimalFormat("#####.##");
@@ -56,17 +66,51 @@ public class MatchingEngineServiceTest {
 
     @Parameterized.Parameters
     public static Collection getDistanceFromCenter(){
+        // bellandur {12.926031, 77.676246}
         return Arrays.asList(new Object[][]{
-                {12.926031, 77.676246, 12.927923, 77.627108, 5.33},
-                {12.826031, 77.276246, 12.927923, 77.627108, 39.68}
+                {12.926031, 77.676246, 12.927923, 77.627108, 5.33, 1.0},
+                {12.926031, 77.676246, 12.927923, 77.627108, 5.33, 5.0},
+                {12.926031, 77.676246, 12.927923, 77.627108, 5.33, 8.0},
+                {12.926031, 77.676246, 12.927923, 77.627108, 5.33, 9.5},
+                {12.926031, 77.676246, 12.927923, 77.627108, 5.33, 10.0},
+                {12.926031, 77.676246, 12.927923, 77.627108, 5.33, 12.0},
+                {12.926031, 77.676246, 12.927923, 77.627108, 5.33, 15.5},
+                {12.826031, 77.276246, 12.927923, 77.627108, 39.68, 1.0}
         });
     }
 
 
     @Test
     public void testMatchingEngineService() {
-        System.out.println("[test case] Parameter center(lat/lnt):"+centerLat+"/"+centerLng+", point(lat/lng): " + pointLat + "/"+pointLng);
+        System.out.println("[test case] testMatchingEngineService: Parameter center(lat/lnt):"+centerLat+"/"+centerLng
+                + ", point(lat/lng): " + pointLat + "/"+pointLng);
         assertEquals(expectedResult,
                 RoundTo2Decimals(matchingEngineService.getDistanceFromCenter(centerLat, centerLng, pointLat, pointLng)));
+    }
+
+    @Test
+    public void testFetcher(){
+        Application fakeApp = fakeApplication();
+        TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
+        running(server, () -> {
+            int totalLocations = 0;
+            List<String> matches = new ArrayList<>();
+            List<JobPost> jobPostList = matchingEngineService.fetchMatchingJobPostForLatLng(centerLat, centerLng, radius);
+            if(jobPostList == null) return;
+            for(JobPost jobPost: jobPostList) {
+                List<String> localityName = new ArrayList<>();
+                totalLocations += jobPost.getJobPostToLocalityList().size();
+                for(JobPostToLocality jobPostToLocality: jobPost.getJobPostToLocalityList()) {
+                    localityName.add(jobPostToLocality.getLocality().getLocalityName()
+                            +"("+RoundTo2Decimals(jobPostToLocality.getDistance())+" km)");
+                }
+                matches.add(jobPost.getCompany().getCompanyName() + "-"+jobPost.getJobPostTitle() +"<->"+
+                        StringUtils.join(localityName, ','));
+            }
+            System.out.println("[test case] testFetcher: Parameter center(lat/lnt):"+centerLat+"/"+centerLng
+                    + "-----------------------------------WITHIN "+radius+" KM ("+totalLocations
+                    +") -----------------------------------------------");
+            Logger.info(String.valueOf(toJson(matches)));
+        });
     }
 }
