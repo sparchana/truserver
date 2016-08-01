@@ -1,4 +1,4 @@
-@(id: Long)
+@(id: Long, isOnCallTrigger: String)
 <!doctype html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
   <head>
@@ -54,10 +54,24 @@
 
   </head>
 
-  <body style="font-size: 13px;">
-    <div class="container">
+  <body style="font-size:13px;">
 
-        <h2> Create Candidate Admin:&nbsp;<a href="/logout"><button class="btn btn-danger" style="align-items: flex-end"> Logout</button></a></h2>
+      <nav class="navbar navbar-custom navbar-fixed-top">
+          <div class="container">
+              <div class="navbar-header">
+                  <a class="navbar-brand" href="#">
+                      <img alt="Logo" class="android-logo-image" src="/assets/dashboard/img/logo-main.gif" width="140px">
+                  </a>
+              </div>
+              <a href="/logout" class="navbar-text navbar-right">Logout</a>
+
+          </div>
+      </nav>
+
+      <br>
+      <br>
+
+    <div class="container">
         <br>
         <h4 id="callConfirmation">Call Connected? :&nbsp;
             <input type="radio" name="callConnected" id="callYes" value="yes" onclick="onCallYes(@id)">&nbsp;Yes&nbsp;
@@ -114,6 +128,7 @@
                 </ul>
             </nav>
             <div class="col-sm-6">
+                <br>
                 <form id="candidateSignUpSupportForm">
                     <div>
                         <h3>Candidate Registration Form:</h3>
@@ -444,7 +459,7 @@
                             </div>
                         </div>
 
-                        <h4 style="background: #E57373;color: white;padding: 2%; border-radius: 8px">Activate/De-Activate Panel</h4>
+                        <h4 id ="header-deactivate" style="background: #E57373;color: white;padding: 2%; border-radius: 8px">Activate/De-Activate Panel</h4>
                         <div id="CandidateStatusDetail_panel">
                             <div class="row" style="margin-top: 4px">
                                 <div class="col-sm-5"><h5>Mark as Active/De-Active?:</h5></div>
@@ -480,7 +495,7 @@
             </div>
             <nav class="col-sm-2">
                 <ul class="nav nav-pills nav-stacked" data-spy="affix">
-                    <div class="panel-group">
+                    <div class="panel-group" id="panel-group-followup">
                         <div id="panel-followUp" class="panel panel-default collapse">
                             <div class="panel-heading">Schedule Follow Up</div>
                             <div class="panel-body">
@@ -515,6 +530,9 @@
             </div>
         </div>
     </div>
+
+      <input type="hidden" id="isOnCallTrigger" value=@isOnCallTrigger>
+
       <!-- Including Bootstrap -->
 
       <script type="text/javascript" src="/assets/js/validation.js"></script>

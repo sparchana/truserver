@@ -52,12 +52,12 @@ public class Application extends Controller {
         return ok(views.html.company_and_job.render());
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(PartnerSecured.class)
     public static Result support() {
         return ok(views.html.support.render());
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(PartnerSecured.class)
     public static Result candidateInteraction(long id) {
         return ok(views.html.candidate_interaction.render());
     }
@@ -151,7 +151,7 @@ public class Application extends Controller {
         boolean isSupport = false;
         return ok(toJson(CandidateService.signUpCandidate(candidateSignUpRequest, isSupport, ServerConstants.LEAD_SOURCE_UNKNOWN)));
     }
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(PartnerSecured.class)
     public static Result signUpSupport() {
         JsonNode req = request().body().asJson();
         AddSupportCandidateRequest addSupportCandidateRequest = new AddSupportCandidateRequest();
@@ -165,7 +165,9 @@ public class Application extends Controller {
             e.printStackTrace();
         }
         boolean isSupport = true;
-        return ok(toJson(CandidateService.createCandidateProfile(addSupportCandidateRequest, isSupport, ServerConstants.UPDATE_ALL_BY_SUPPORT)));
+        return ok(toJson(CandidateService.createCandidateProfile(addSupportCandidateRequest,
+                isSupport,
+                ServerConstants.UPDATE_ALL_BY_SUPPORT)));
     }
 
     public static Result candidateUpdateBasicProfile() {
@@ -434,14 +436,18 @@ public class Application extends Controller {
 
         return ok(toJson(responses));
     }
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(PartnerSecured.class)
     public static Result getLeadMobile(long id) {
-        try{
-            Lead lead = Lead.find.where().eq("leadId",id).findUnique();
-            String leadMobile = lead.getLeadMobile();
-            return ok(leadMobile);
-        } catch (NullPointerException n){
-            Logger.info("Create new candidate initiated");
+        if (id != 0) {
+            try {
+                Lead lead = Lead.find.where().eq("leadId", id).findUnique();
+                String leadMobile = lead.getLeadMobile();
+                return ok(leadMobile);
+            }
+            catch(NullPointerException n) {
+                Logger.error("Could not find lead with id :" + id );
+                n.printStackTrace();
+            }
         }
         return ok();
     }
@@ -460,7 +466,7 @@ public class Application extends Controller {
     }
 
     /* this method is used by support */
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(PartnerSecured.class)
     public static Result getCandidateInfo(long leadId) {
             Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
             if(lead != null) {
@@ -591,7 +597,7 @@ public class Application extends Controller {
     public static Result auth() {
         Form<DevLoginRequest> userForm = Form.form(DevLoginRequest.class);
         DevLoginRequest request = userForm.bindFromRequest().get();
-        Logger.info("inside support AdminId: " + request.getAdminid() + " AdminPass: " + request.getAdminpass());
+        Logger.info("Verifying credentials for support UserName : " + request.getAdminid() + " Password: " + request.getAdminpass());
         Developer developer = Developer.find.where().eq("developerId", request.getAdminid()).findUnique();
         if(developer!=null){
             Logger.info(Util.md5(request.getAdminpass() + developer.getDeveloperPasswordSalt()));
@@ -603,6 +609,8 @@ public class Application extends Controller {
                 session("sessionUsername", developer.getDeveloperName());
                 session("sessionUserId", "" + developer.getDeveloperId());
                 session("sessionExpiry", String.valueOf(developer.getDeveloperSessionIdExpiryMillis()));
+                session("sessionRDPK", String.valueOf(developer.getDeveloperAccessLevel()));
+
                 if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN) {
                     return redirect("/support/administrator");
                 }
@@ -614,13 +622,12 @@ public class Application extends Controller {
                     return redirect(routes.Application.support());
                 }
 
-                if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN) {
-                    return ok(views.html.uploadcsv.render());
+                if (developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_PARTNER_ROLE) {
+                    return redirect(routes.Application.createCandidateForm());
                 }
-
             }
         } else {
-            return badRequest("Account Doesn't exists!!");
+            return badRequest("Account Doesn't exist!!");
         }
         return redirect(routes.Application.supportAuth());
     }
@@ -982,9 +989,9 @@ public class Application extends Controller {
         return ok(toJson(jobStatusList));
     }
 
-    @Security.Authenticated(Secured.class)
-    public static Result candidateSignupSupport(Long candidateId) {
-        return ok(views.html.signup_support.render(candidateId));
+    @Security.Authenticated(PartnerSecured.class)
+    public static Result candidateSignupSupport(Long candidateId, String isCallTrigger) {
+        return ok(views.html.signup_support.render(candidateId, isCallTrigger));
     }
 
     @Security.Authenticated(RecSecured.class)
@@ -992,14 +999,16 @@ public class Application extends Controller {
         return ok(views.html.create_company.render());
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(PartnerSecured.class)
     public static Result createCandidateForm() {
-        return redirect("/candidateSignupSupport/"+"0");
+        return redirect("/candidateSignupSupport/0/false");
     }
+
     @Security.Authenticated(AdminSecured.class)
     public static Result searchCandidate() {
         return ok(views.html.search.render());
     }
+
     @Security.Authenticated(Secured.class)
     public static Result getSearchCandidateResult() {
         JsonNode searchReq = request().body().asJson();
@@ -1018,18 +1027,25 @@ public class Application extends Controller {
 
         return ok(toJson(SupportSearchService.searchCandidateBySupport(searchCandidateRequest)));
     }
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(PartnerSecured.class)
     public static Result getAllLeadSource() {
         List<LeadSource> leadSources = LeadSource.find.all();
         return ok(toJson(leadSources));
     }
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(PartnerSecured.class)
     public static Result getSupportAgent() {
+
         String agentMobile = "+91" + session().get("sessionUserId");
+        String accessLevel = session().get("sessionRDPK");
+
+        SupportAgentInfo agentInfo = new SupportAgentInfo();
+        agentInfo.setAgentAccessLevel(accessLevel);
+
         if(agentMobile.length() == 13){
-            return ok(toJson(agentMobile));
+            agentInfo.setAgentMobileNumber(agentMobile);
         }
-        return ok("0");
+
+        return ok(toJson(agentInfo));
     }
 
     @Security.Authenticated(Secured.class)
@@ -1049,7 +1065,7 @@ public class Application extends Controller {
         return ok(toJson(FollowUpService.CreateOrUpdateFollowUp(addOrUpdateFollowUpRequest)));
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(PartnerSecured.class)
     public static Result getInteractionNote(Long leadId, Long limit) {
         Lead lead = Lead.find.where().eq("leadId",leadId).findUnique();
         if(lead !=null){
@@ -1145,7 +1161,7 @@ public class Application extends Controller {
         return ok(views.html.uploadcsv.render());
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(PartnerSecured.class)
     public static Result ifExists(String mobile) {
         if(mobile != null){
             mobile = FormValidator.convertToIndianMobileFormat(mobile);
@@ -1157,7 +1173,7 @@ public class Application extends Controller {
         return ok("0");
     }
 
-    @Security.Authenticated(Secured.class)
+    @Security.Authenticated(PartnerSecured.class)
     public static Result getAllDeactivationReason() {
         List<Reason> deactivationReasons = Reason.find.all();
         return ok(toJson(deactivationReasons));

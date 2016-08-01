@@ -33,7 +33,7 @@ function processLeadUpdate(returnedData) {
 }
 
 function openCreateCandidate(id) {
-    window.location="/candidateSignupSupport/"+id;
+    window.location="/candidateSignupSupport/"+id+"/true";
 }
 
 function processCandidateReg(returnedData) {
@@ -146,13 +146,15 @@ function getThis(viewType){
 
 
 function processSupportAgentData(returnedData) {
-    if(returnedData != null){
-        globalAgentNumber = returnedData;
+    var mobileNum = returnedData.agentMobileNumber;
+
+    if(mobileNum != null){
+        globalAgentNumber = mobileNum;
     }
 }
 
 function myHandler (mobile, id) {
-    if(globalAgentNumber != '0'){
+    if(typeof globalAgentNumber != 'undefined'){
         console.log("Call Initiated for " +"+"+ mobile + " by " + globalAgentNumber);
         var s = {
             api_key: "dae93473-50a6-11e5-bbe8-067cf20e9301",
