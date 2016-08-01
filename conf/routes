@@ -6,7 +6,7 @@
 # ~~~~~~~~~~~~~~~~~
 
 GET      /candidateInteraction/:id                                controllers.Application.candidateInteraction(id : Long)
-GET      /candidateSignupSupport/:cId                             controllers.Application.candidateSignupSupport(cId: Long)
+GET      /candidateSignupSupport/:cId/:isCall                     controllers.Application.candidateSignupSupport(cId: Long,isCall: String)
 GET      /clearStaticCache                                        controllers.Application.invalidateDbCache()
 GET      /createCandidateForm                                     controllers.Application.createCandidateForm()
 GET      /getAll/:id                                              controllers.Application.getAll(id: Integer)
