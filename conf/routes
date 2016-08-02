@@ -97,6 +97,12 @@ POST        /getAllShift                                                        
 POST        /getAllTransportation                                                controllers.Application.getAllTransportation()
 POST        /getJobPostInfo/:id/:isSupport                                       controllers.Application.getJobPostInfo(id : Long, isSupport : Integer)
 
+# 3rd Party API
+# ~~~~~~~~~~~~~
+
+GET         /employer/postJob                                                    controllers.Application.postJob()
+
+
 # Trudroid API
 # ~~~~~~~~~~~~
 

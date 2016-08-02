@@ -7,13 +7,10 @@ package controllers.businessLogic;
 import api.ServerConstants;
 import models.entity.JobPost;
 import models.entity.OM.JobPostToLocality;
-import play.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import static play.libs.Json.toJson;
 
 /**
  * Matching Engine Service receives a {latitude, longitude} pair and try to determine list of jobPost

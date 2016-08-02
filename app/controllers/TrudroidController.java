@@ -12,12 +12,15 @@ import controllers.businessLogic.AuthService;
 import controllers.businessLogic.CandidateService;
 import in.trujobs.proto.*;
 import models.entity.Candidate;
+import models.entity.Static.Locality;
 import play.Logger;
 import play.mvc.Result;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import static models.util.Validator.isValidLocalityName;
 import static play.mvc.Http.Context.Implicit.request;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
@@ -212,6 +215,17 @@ public class TrudroidController {
                 Candidate existingCandidate = CandidateService.isCandidateExists(pHomeLocalityRequest.getCandidateMobile());
                 if (existingCandidate != null){
                     Logger.info("lat/lng:"+pHomeLocalityRequest.getLat()+"/"+pHomeLocalityRequest.getLng());
+                    Logger.info("Address"+pHomeLocalityRequest.getAddress());
+                    List<String> localityList = Arrays.asList(pHomeLocalityRequest.getAddress().split(","));
+                    if(localityList.size() >= 4) {
+                        String localityName = localityList.get(localityList.size() - 4);
+                        existingCandidate.setLocality(getOrCreateLocality(localityName));
+                        Logger.info("Locality:"+existingCandidate.getLocality().getLocalityName());
+                    } else if(localityList.size() == 2){
+                        String localityName = localityList.get(localityList.size() - 1);
+                        existingCandidate.setLocality(getOrCreateLocality(localityName));
+                        Logger.info("Locality:"+existingCandidate.getLocality().getLocalityName());
+                    }
                     existingCandidate.setCandidateLocalityLat(pHomeLocalityRequest.getLat());
                     existingCandidate.setCandidateLocalityLng(pHomeLocalityRequest.getLng());
                     existingCandidate.candidateUpdate();
@@ -232,5 +246,21 @@ public class TrudroidController {
             return badRequest();
         }
         return ok(Base64.encodeBase64String(builder.build().toByteArray()));
+    }
+
+    private static Locality getOrCreateLocality(String localityName) {
+        // validate localityName
+        localityName = localityName.trim();
+        if(localityName != null && isValidLocalityName(localityName)){
+            Locality locality = Locality.find.where().eq("localityName", localityName).findUnique();
+            if(locality != null){
+                return locality;
+            }
+        }
+        Locality locality = new Locality();
+        locality.setLocalityName(localityName);
+        locality.save();
+        locality = Locality.find.where().eq("localityName", localityName).findUnique();
+        return locality;
     }
 }
