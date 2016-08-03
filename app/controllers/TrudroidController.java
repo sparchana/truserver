@@ -183,6 +183,7 @@ public class TrudroidController {
                     = JobRoleObject.newBuilder();
             jobRoleBuilder.setJobRoleId(jobRole.getJobRoleId());
             jobRoleBuilder.setJobRoleName(jobRole.getJobName());
+            jobRoleBuilder.setJobRoleIcon(jobRole.getJobRoleIcon());
 
             jobRoleListToReturn.add(jobRoleBuilder.build());
         }
