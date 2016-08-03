@@ -545,15 +545,17 @@ public class TrudroidController {
             Logger.info("getMatchingJob for Mobile: " + mobile);
             Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
             if(existingCandidate != null){
-                List<JobPostObject> jobPostListToReturn  =
-                        getJobPostObjectListFromJobPostList(
-                                MatchingEngineService.fetchMatchingJobPostForLatLng(
-                                        existingCandidate.getCandidateLocalityLat(), existingCandidate.getCandidateLocalityLng(), null)
-                        );
-                Logger.info("Inside size: " + jobPostListToReturn.size());
-                jobPostResponseBuilder.addAllJobPost(jobPostListToReturn);
+                if(existingCandidate.getCandidateLocalityLat() == null || existingCandidate.getCandidateLocalityLng() == null){
+                    return mGetAllJobPosts();
+                } else {
+                    List<JobPostObject> jobPostListToReturn  =
+                            getJobPostObjectListFromJobPostList(
+                                    MatchingEngineService.fetchMatchingJobPostForLatLng(
+                                            existingCandidate.getCandidateLocalityLat(), existingCandidate.getCandidateLocalityLng(), null)
+                            );
+                    jobPostResponseBuilder.addAllJobPost(jobPostListToReturn);
+                }
             }
-            Logger.info("isBuilder: " + jobPostResponseBuilder.getJobPost(0).getJobPostTitle());
         }
         return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
     }
