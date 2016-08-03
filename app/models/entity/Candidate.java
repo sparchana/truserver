@@ -519,6 +519,8 @@ public class Candidate extends Model {
     public void setCandidateThirdMobile(String candidateThirdMobile) {
         this.candidateThirdMobile = candidateThirdMobile;
     }
+
+
 }
 
 

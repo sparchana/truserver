@@ -46,7 +46,7 @@ function processDataAndFetchAppliedJobs(returnedData) {
 
         var notAppliedMsg = document.createElement("div");
         notAppliedMsg.style = "padding: 16px";
-        notAppliedMsg.textContent = "Uh oh! Looks like you have not applied any of the job.";
+        notAppliedMsg.textContent = "Uh oh! Looks like you have not applied to any of the jobs yet!";
         centerDiv.appendChild(notAppliedMsg);
     }
 }

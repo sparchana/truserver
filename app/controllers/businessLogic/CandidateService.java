@@ -103,14 +103,20 @@ public class CandidateService
                 if(candidateSignUpRequest.getCandidateMobile()!= null){
                     candidate.setCandidateMobile(candidateSignUpRequest.getCandidateMobile());
                 }
-                if(candidateSignUpRequest.getCandidateSecondMobile()!= null){
+
+                if(candidateSignUpRequest.getCandidateSecondMobile() != null){
                     candidate.setCandidateSecondMobile(candidateSignUpRequest.getCandidateSecondMobile());
                 }
-                if(candidateSignUpRequest.getCandidateThirdMobile()!= null){
+                if(candidateSignUpRequest.getCandidateThirdMobile() != null){
                     candidate.setCandidateThirdMobile(candidateSignUpRequest.getCandidateThirdMobile());
                 }
-                candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(localityList, candidate));
-                candidate.setJobPreferencesList(getCandidateJobPreferenceList(jobsList, candidate));
+                if(localityList != null){
+                    candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(localityList, candidate));
+                }
+                if(jobsList != null){
+                    candidate.setJobPreferencesList(getCandidateJobPreferenceList(jobsList, candidate));
+                }
+
                 candidateSignUpResponse = createNewCandidate(candidate, lead);
                 if(!isSupport){
                     // triggers when candidate is self created
@@ -124,9 +130,9 @@ public class CandidateService
                     Logger.info("auth doesn't exists for this candidate");
                     candidate.setCandidateFirstName(candidateSignUpRequest.getCandidateFirstName());
                     candidate.setCandidateLastName(candidateSignUpRequest.getCandidateSecondName());
-
-                    resetLocalityAndJobPref(candidate, getCandidateLocalityPreferenceList(localityList, candidate), getCandidateJobPreferenceList(jobsList, candidate));
-
+                    if(localityList != null) {
+                        resetLocalityAndJobPref(candidate, getCandidateLocalityPreferenceList(localityList, candidate), getCandidateJobPreferenceList(jobsList, candidate));
+                    }
                     if(!isSupport){
                         triggerOtp(candidate, candidateSignUpResponse);
                         result = ServerConstants.INTERACTION_RESULT_EXISTING_CANDIDATE_VERIFICATION;
@@ -1003,7 +1009,8 @@ public class CandidateService
         SmsUtil.sendWelcomeSmsFromSupport(candidate.getCandidateFirstName(), candidate.getCandidateMobile(), dummyPassword);
         Logger.info("Dummy auth created + otp triggered + auth saved for " + candidate.getCandidateMobile());
     }
-    private static void resetLocalityAndJobPref(Candidate existingCandidate, List<LocalityPreference> localityPreferenceList, List<JobPreference> jobPreferencesList) {
+
+    public static void resetLocalityAndJobPref(Candidate existingCandidate, List<LocalityPreference> localityPreferenceList, List<JobPreference> jobPreferencesList) {
 
         // reset pref
         List<LocalityPreference> allLocality = LocalityPreference.find.where().eq("CandidateId", existingCandidate.getCandidateId()).findList();
@@ -1011,11 +1018,16 @@ public class CandidateService
             candidateLocality.delete();
         }
 
+        resetJobPref(existingCandidate, jobPreferencesList);
+        existingCandidate.setLocalityPreferenceList(localityPreferenceList);
+    }
+
+    public static void resetJobPref(Candidate existingCandidate, List<JobPreference> jobPreferencesList) {
+        Logger.info("Resetting existing jobPrefs");
         List<JobPreference> allJob = JobPreference.find.where().eq("CandidateId", existingCandidate.getCandidateId()).findList();
         for(JobPreference candidateJobs : allJob){
             candidateJobs.delete();
         }
-        existingCandidate.setLocalityPreferenceList(localityPreferenceList);
         existingCandidate.setJobPreferencesList(jobPreferencesList);
     }
 }
