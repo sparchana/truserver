@@ -17,6 +17,8 @@ public class LoginResponse {
     public String candidateFirstName;
     public String candidateLastName;
     public String candidateEmail;
+    public int candidateJobPrefStatus;
+    public int candidateHomeLocalityStatus;
     public String authSessionId;
     public Long sessionExpiryInMilliSecond;
 
@@ -84,6 +86,21 @@ public class LoginResponse {
         return candidateEmail;
     }
 
+    public int getCandidateJobPrefStatus() {
+        return candidateJobPrefStatus;
+    }
+
+    public void setCandidateJobPrefStatus(int candidateJobPrefStatus) {
+        this.candidateJobPrefStatus = candidateJobPrefStatus;
+    }
+
+    public int getCandidateHomeLocalityStatus() {
+        return candidateHomeLocalityStatus;
+    }
+
+    public void setCandidateHomeLocalityStatus(int candidateHomeLocalityStatus) {
+        this.candidateHomeLocalityStatus = candidateHomeLocalityStatus;
+    }
     public String getAuthSessionId() {
         return authSessionId;
     }
@@ -91,5 +108,4 @@ public class LoginResponse {
     public Long getSessionExpiryInMilliSecond() {
         return sessionExpiryInMilliSecond;
     }
-
 }
