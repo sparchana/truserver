@@ -138,6 +138,9 @@ public class TrudroidController {
             loginResponseBuilder.setCandidateIsAssessed(candidateSignUpResponse.getIsAssessed());
             loginResponseBuilder.setLeadId(candidateSignUpResponse.getLeadId());
             loginResponseBuilder.setMinProfile(candidateSignUpResponse.getMinProfile());
+            loginResponseBuilder.setCandidateJobPrefStatus(candidateSignUpResponse.getCandidateJobPrefStatus());
+            loginResponseBuilder.setCandidateHomeLocalityStatus(candidateSignUpResponse.getCandidateHomeLocalityStatus());
+
             Logger.info("Status returned = " + loginResponseBuilder.getStatus());
 
         } catch (InvalidProtocolBufferException e) {
