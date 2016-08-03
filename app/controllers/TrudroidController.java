@@ -75,7 +75,8 @@ public class TrudroidController {
                 loginResponseBuilder.setCandidateId(loginResponse.getCandidateId());
                 loginResponseBuilder.setCandidateIsAssessed(loginResponse.getIsAssessed());
                 loginResponseBuilder.setLeadId(loginResponse.getLeadId());
-
+                loginResponseBuilder.setCandidateJobPrefStatus(loginResponse.getCandidateJobPrefStatus());
+                loginResponseBuilder.setCandidateHomeLocalityStatus(loginResponse.getCandidateHomeLocalityStatus());
             }
 
             Logger.info("Status returned = " + loginResponseBuilder.getStatus());
