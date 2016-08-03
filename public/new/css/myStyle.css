@@ -118,9 +118,20 @@ body{
 	background-color: white;
 	border-radius: 0px;
 }
+.navbar-custom {
+    background-color: #0065a4;
+    border-color: #e7e7e7;
+}
+.navbar-text {
+    letter-spacing: 1px;
+    font-size: 15px;
+    font-family: DeLaFuente;
+    color: #ffffff;
+}
 .navbar-header{
 	margin-left: 20px;
 }
+
 .navbar-brand{
 	letter-spacing: 3px;
 	font-size: 43px;
