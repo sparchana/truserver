@@ -14,6 +14,7 @@ import models.entity.OM.JobHistory;
 import models.entity.Static.Locality;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import play.Application;
@@ -35,6 +36,7 @@ import static play.test.Helpers.*;
 /**
  * Created by zero on 7/6/16.
  */
+@Ignore
 public class CandidateServiceTest {
 
     @InjectMocks

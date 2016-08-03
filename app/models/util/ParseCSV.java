@@ -24,6 +24,7 @@ public class ParseCSV {
         ArrayList<Lead> leads = new ArrayList<>();
         int totalUniqueLead = 0;
         int overLappingRecordCount = 0;
+        /* TODO validate cell format of uploaded csv before parsing begins */
         SimpleDateFormat sdf = new SimpleDateFormat(ServerConstants.SDF_FORMAT_ENTRY);
         try {
             CSVReader reader = new CSVReader(new FileReader(file));

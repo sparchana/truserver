@@ -39,6 +39,19 @@ public class JobPostToLocality extends Model {
     @JoinColumn(name = "JobPostId", referencedColumnName= "JobPostId")
     private JobPost jobPost;
 
+    @Column(name = "Latitude", columnDefinition = "double null")
+    private Double latitude;
+
+    @Column(name = "Longitude", columnDefinition = "double null")
+    private Double longitude;
+
+    /**
+     *  distance - field is not persistable. It is used in matching-engine-distance calculation
+     *  There will be no column called distance in table.
+     */
+    @Transient
+    private Double distance;
+
     public JobPostToLocality(){
         this.jobPostToLocalityCreateTimeStamp = new Timestamp(System.currentTimeMillis());
     }
@@ -73,5 +86,29 @@ public class JobPostToLocality extends Model {
 
     public void setJobPost(JobPost jobPost) {
         this.jobPost = jobPost;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public Double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(Double distance) {
+        this.distance = distance;
     }
 }
