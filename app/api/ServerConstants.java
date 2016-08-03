@@ -117,6 +117,7 @@ public class ServerConstants {
     public static final String STREET_LOGIN_ID = "7895123";
     public static final String STREET_LOGIN_PASS = "9875321";
 
+    public static final int DEV_ACCESS_LEVEL_PARTNER_ROLE = 0;
     public static final int DEV_ACCESS_LEVEL_SUPPORT_ROLE = 1;
     public static final int DEV_ACCESS_LEVEL_REC = 2;
     public static final int DEV_ACCESS_LEVEL_ADMIN = 3;

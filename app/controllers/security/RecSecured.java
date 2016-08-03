@@ -2,6 +2,7 @@ package controllers.security;
 
 import api.ServerConstants;
 import models.entity.Developer;
+import play.Logger;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -20,23 +21,22 @@ public class RecSecured extends Security.Authenticator
 @Override
 public String getUsername(Http.Context ctx)
 {
-        String sessionId = ctx.session().get("sessionId");
-        if(sessionId != null) {
-            Developer developer = Developer.find.where().eq("developerSessionId", sessionId ).findUnique();
-
-            if(developer != null && (developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN
-                || developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_ADMIN
-                || developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_REC))
+    String sessionId = ctx.session().get("sessionId");
+    if(sessionId != null) {
+        Developer developer = Developer.find.where().eq("developerSessionId", sessionId ).findUnique();
+        if(developer != null) {
+            if (developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN
+                    || developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_ADMIN
+                    || developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_REC)
             {
                 return ctx.session().get("sessionId");
-            }
-            else {
+            } else {
+                Logger.warn("SECURITY WARNING: User " + developer.getDeveloperName() + " tried accessing " + ctx.request().uri());
                 return null;
             }
         }
-        else {
-            return null;
-        }
+    }
+    return null;
 }
 
 @Override

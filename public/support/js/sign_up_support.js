@@ -29,17 +29,18 @@ var candidateExps;
 var candidatePastJobExp;
 var jobPrefString = "";
 var check = 0;
+var agentAcLvl;
 
 $(document).ready(function () {
     var pathname = window.location.pathname; // Returns path only
     var leadId = pathname.split('/');
-    leadId = leadId[(leadId.length) - 1];
+    leadId = leadId[(leadId.length) - 2];
     if (leadId == "dashboard") {
         leadId = localStorage.getItem("leadId");
     }
 
     $("#candidateSignUpSupportForm *").prop("disabled", true);
-
+    
     /* ajax commands to fetch leads Info */
     try {
         $.ajax({
@@ -195,7 +196,36 @@ $(document).ready(function () {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+
+
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/getSupportAgent",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processSupportAgentData
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
 });
+
+function processSupportAgentData(supportAgentData) {
+    agentAcLvl = supportAgentData.agentAccessLevel;
+
+    if(agentAcLvl == 0){
+        // Hide Follow up
+        $('#btnFloatFollowUp').prop('disabled', true);
+
+        // Hide deactivation panel
+        $('#header-deactivate').hide();
+        $('#CandidateStatusDetail_panel').hide();
+    }
+}
 
 function processDataCheckDeactivationReason(reasonList) {
     var defaultOption = $('<option value="-1" selected></option>').text("Select");
@@ -732,13 +762,21 @@ function activateEdit() {
     $("#saveBtn").prop("disabled", false);
     $("#cancelBtn").prop("disabled", false);
     $("#candidateSignUpSupportForm *").prop("disabled", false);
-    if($("#candidateSecondMobile").val().length == 10){
+    if ($("#candidateSecondMobile").val().length == 10) {
         $("#candidateThirdMobile").prop("disabled", false);
     } else {
         $("#candidateThirdMobile").prop("disabled", true);
     }
-    $('#btnFloatFollowUp').prop('disabled', false);
+
+    // if this is not a partner who has logged-in, enable the follow up button
+    if (agentAcLvl != 0) {
+        $('#btnFloatFollowUp').prop('disabled', false);
+    }
     $('#callNoClass').hide();
+
+    if ($('#candidateMobile').val().length == 10) {
+        $('#panel-note').show();
+    }
 }
 
 function onInterestedNo(leadId) {
@@ -770,11 +808,7 @@ function onInterestedYes(leadId) {
 function onCallYes(leadId) {
     var pathname = window.location.pathname; // Returns path only
     var pathElement = pathname.split('/');
-    var urlSection = pathElement = pathElement[(pathElement.length) - 2];
-
-    if ($('#candidateMobile').val().length == 10) {
-        $('#panel-note').show();
-    }
+    var urlSection = pathElement = pathElement[(pathElement.length) - 3];
 
     $('#callYesClass').addClass('animated fadeIn');
     $('#callNoClass').hide();
@@ -787,7 +821,12 @@ function onCallYes(leadId) {
 }
 
 function cancelAndRedirect() {
-    window.location = "/support";
+    if (agentAcLvl != 0) {
+        window.location = "/support";
+    }
+    else {
+        window.location = "/createCandidateForm";
+    }
 }
 
 
@@ -1135,8 +1174,12 @@ function generateSkills() {
 
 function processDataSignUpSupportSubmit(returnedData) {
     if (returnedData.status == 1) { // save successful
-        console.log("Candidate record saved successfully");
-        window.location = "/support";
+        if (agentAcLvl == 0) {
+            window.location = "/createCandidateForm";
+        }
+        else {
+            window.location = "/support";
+        }
     }
     else if (returnedData.status == 2) { // save failed
         console.log("Unable to save the candidate record!");
@@ -1151,7 +1194,7 @@ function prefillAll() {
     /* ajax commands to fetch candidate's Info */
     var pathname = window.location.pathname; // Returns path only
     var leadId = pathname.split('/');
-    leadId = leadId[(leadId.length) - 1];
+    leadId = leadId[(leadId.length) - 2];
     if (leadId == "dashboard") {
         leadId = localStorage.getItem("leadId");
     }
@@ -1224,7 +1267,7 @@ function processInteractionNote(interactionNoteList) {
         var div = document.createElement('div');
         div.className = 'panel panel-default';
 
-        var dynamicHtml = '<div class="panel panel-default">'+
+        var dynamicHtml = '<br><div class="panel panel-default">'+
             '<div class="panel-heading"><h6 class="panel-title">'+
             '<a data-toggle="collapse" data-parent="#accordion" href="#collapse'+interaction.interactionId+'">'+interaction.userInteractionTimestamp+'</a>'+
             '</h6></div><div id="collapse'+interaction.interactionId+'" class="panel-collapse collapse">'+
@@ -1810,7 +1853,7 @@ function saveProfileForm() {
                 deactivationReason: $('#deactivationReason').val(),
                 deactivationExpiryDate: $('#deactivationExpiryDate').val()
             };
-
+            
             $.ajax({
                 type: "POST",
                 url: "/signUpSupport",
@@ -1870,7 +1913,7 @@ function clickExperienced(){
 }
 function ifMobileExists(returnedId) {
     if(returnedId != null && returnedId != "0"){
-        window.location = "/candidateSignupSupport/"+returnedId;
+        window.location = "/candidateSignupSupport/"+returnedId+"/false";
     }
 }
 
@@ -1886,13 +1929,16 @@ $(function () {
 
     var pathname = window.location.pathname; // Returns path only
     var pathElement = pathname.split('/');
-    pathElement = pathElement[(pathElement.length) - 1];
-
+    pathElement = pathElement[(pathElement.length) - 2];
 
     $('#candidateMobile').change(function () {
         if ($('#candidateMobile').val().length == 10) {
             $('#panel-note').show();
-            $('#btnFloatFollowUp').prop('disabled', false);
+
+            // if this is not a partner who has logged-in, enable the follow up button
+            if (agentAcLvl != 0) {
+                $('#btnFloatFollowUp').prop('disabled', false);
+            }
             $.notify({
                 message: "Please wait while we check if the candidate already exists.",
                 animate: {
@@ -1933,22 +1979,27 @@ $(function () {
      }
      }); */
 
+    disableOrEnableOnCallPanel();
+
+    // path element = 0 means the leadId = 0, which means the user has opened a new candidate create form
+    // and is not trying to edit an exiting candidate
+    // in this case we remove the prev-notes and follow-up sections.
     if (pathElement == 0) {
-        $('h4#callConfirmation').remove();
-        $('div#callYesClass').remove();
         $('div#panel-prevNotes').remove();
-        activateEdit();
         $('#btnFloatFollowUp').prop('disabled', true);
-    } else {
-        prefillInteractionNote(pathElement)
     }
+    else {
+        prefillInteractionNote(pathElement);
+    }
+
     prefillAll();
+
     $("#candidateSignUpSupportForm").submit(function (eventObj) {
         eventObj.preventDefault();
         saveProfileForm();
         setTimeout(function () {
             $.notify({
-                title: "Opps Something Went Wrong! ",
+                title: "Oops! Something Went Wrong! ",
                 message: "Please Press Save Button Again",
                 animate: {
                     enter: 'animated lightSpeedIn',
@@ -1974,3 +2025,17 @@ $(function () {
     $( "#candidateDob").datepicker({ dateFormat: 'yy-mm-dd', changeYear: true});
     $( "#deactivationExpiryDate").datepicker({ dateFormat: 'yy-mm-dd', changeYear: true});
 }); // end of function
+
+
+function disableOrEnableOnCallPanel() {
+    var isOnCallTrigger = $("#isOnCallTrigger").val();
+
+    if (isOnCallTrigger == "false") {
+        $('h4#callConfirmation').hide();
+        $('div#callYesClass').hide();
+        activateEdit();
+    }
+    else {
+        $('h4#callConfirmation').show();
+    }
+}
