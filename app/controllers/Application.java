@@ -908,12 +908,12 @@ public class Application extends Controller {
     }
 
     public static Result getAllLocality() {
-        List<Locality> localities = Locality.find.setUseQueryCache(!isDevMode).findList();
+        List<Locality> localities = Locality.find.setUseQueryCache(!isDevMode).orderBy("localityName").findList();
         return ok(toJson(localities));
     }
 
     public static Result getAllJobs() {
-        List<JobRole> jobs = JobRole.find.setUseQueryCache(!isDevMode).findList();
+        List<JobRole> jobs = JobRole.find.setUseQueryCache(!isDevMode).orderBy("jobName").findList();
         return ok(toJson(jobs));
     }
 
@@ -933,17 +933,17 @@ public class Application extends Controller {
     }
 
     public static Result getAllLanguage() {
-        List<Language> languages = Language.find.setUseQueryCache(!isDevMode).findList();
+        List<Language> languages = Language.find.setUseQueryCache(!isDevMode).orderBy("languageName").findList();
         return ok(toJson(languages));
     }
 
     public static Result getAllIdProof() {
-        List<IdProof> idProofs = IdProof.find.setUseQueryCache(!isDevMode).findList();
+        List<IdProof> idProofs = IdProof.find.setUseQueryCache(!isDevMode).orderBy("idProofName").findList();
         return ok(toJson(idProofs));
     }
 
     public static Result getAllDegree() {
-        List<Degree> degreeList = Degree.find.setUseQueryCache(!isDevMode).findList();
+        List<Degree> degreeList = Degree.find.setUseQueryCache(!isDevMode).orderBy("degreeName").findList();
         return ok(toJson(degreeList));
     }
 
@@ -1029,7 +1029,7 @@ public class Application extends Controller {
     }
     @Security.Authenticated(PartnerSecured.class)
     public static Result getAllLeadSource() {
-        List<LeadSource> leadSources = LeadSource.find.all();
+        List<LeadSource> leadSources = LeadSource.find.orderBy("leadSourceName").findList();
         return ok(toJson(leadSources));
     }
     @Security.Authenticated(PartnerSecured.class)
@@ -1213,5 +1213,9 @@ public class Application extends Controller {
             e.printStackTrace();
         }
         return ok(toJson(DeactivationService.deactivateToActive(deactiveToActiveRequest)));
+    }
+
+    public static Result postJob() {
+        return redirect("http://goo.gl/Dpsvcn");
     }
 }
