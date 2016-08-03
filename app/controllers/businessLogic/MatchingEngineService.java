@@ -7,6 +7,7 @@ package controllers.businessLogic;
 import api.ServerConstants;
 import models.entity.JobPost;
 import models.entity.OM.JobPostToLocality;
+import play.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,14 +25,14 @@ import java.util.List;
  */
 public class MatchingEngineService {
 
-    private Double radius = ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS;
+    private static Double radius = ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS;
 
     /**
      * fetchMatchingJobPostForLatLng takes candidate's home locality latitude/longitude
      * and generates a List<JobPost> lying within DEFAULT_MATCHING_ENGINE_RADIUS and JobPostToLocalityList
      * are ordered by distance of each JobPostToLocality from candidate's home locality.
      */
-    public List<JobPost> fetchMatchingJobPostForLatLng(Double lat, Double lng, Double r){
+    public static List<JobPost> fetchMatchingJobPostForLatLng(Double lat, Double lng, Double r){
         if(r!=null && r>0){
             radius = r;
         }
@@ -68,6 +69,7 @@ public class MatchingEngineService {
            }
             Collections.sort(jobPostsResponseList, (a,b) -> a.getJobPostToLocalityList().get(0).getDistance()
                     .compareTo(b.getJobPostToLocalityList().get(0).getDistance()));
+            Logger.info("jobPostResponseList:" + jobPostsResponseList);
             return jobPostsResponseList;
         }
         return null;
@@ -79,7 +81,7 @@ public class MatchingEngineService {
      * between the two co-ordinates {in kilometers}
      * for testing run MatchingEngineServiceTest.class
      */
-    public Double getDistanceFromCenter(Double centerLat, Double centerLng, Double pointLat, Double pointLng){
+    public static Double getDistanceFromCenter(Double centerLat, Double centerLng, Double pointLat, Double pointLng){
         if(centerLat == null || centerLng == null || pointLat == null || pointLng == null){
             return null;
         }
