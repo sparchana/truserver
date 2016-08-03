@@ -1214,4 +1214,8 @@ public class Application extends Controller {
         }
         return ok(toJson(DeactivationService.deactivateToActive(deactiveToActiveRequest)));
     }
+
+    public static Result postJob() {
+        return redirect("http://goo.gl/Dpsvcn");
+    }
 }
