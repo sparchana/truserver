@@ -904,7 +904,7 @@ public class CandidateService
     public static LoginResponse login(String loginMobile, String loginPassword){
         LoginResponse loginResponse = new LoginResponse();
         Logger.info(" login mobile: " + loginMobile);
-        Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", loginMobile).findUnique();
+        Candidate existingCandidate = CandidateService.isCandidateExists(loginMobile);
         if(existingCandidate == null){
             loginResponse.setStatus(loginResponse.STATUS_NO_USER);
             Logger.info("User Does not Exists");
@@ -933,6 +933,10 @@ public class CandidateService
 
                     existingAuth.setAuthSessionId(UUID.randomUUID().toString());
                     existingAuth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
+
+                    loginResponse.setAuthSessionId(existingAuth.getAuthSessionId());
+                    loginResponse.setSessionExpiryInMilliSecond(existingAuth.getAuthSessionIdExpiryMillis());
+
                     /* adding session details */
                     AuthService.addSession(existingAuth,existingCandidate);
                     existingAuth.update();
