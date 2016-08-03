@@ -120,6 +120,10 @@ POST         /mAddJobPref                                                       
 POST         /mGetCandidateInformation                                           controllers.TrudroidController.mGetCandidateInformation()
 POST         /mGetJobPostInfo                                                    controllers.TrudroidController.mGetJobPostInfo()
 
+# 3rd Party API
+# ~~~~~~~~~~~~~
+GET         /employer/postJob                                                    controllers.Application.postJob()
+
 # Analytics/Super Admin Panel
 # ~~~~~~~~~
 

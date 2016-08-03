@@ -75,6 +75,7 @@ public class TrudroidController {
                 loginResponseBuilder.setCandidateId(loginResponse.getCandidateId());
                 loginResponseBuilder.setCandidateIsAssessed(loginResponse.getIsAssessed());
                 loginResponseBuilder.setLeadId(loginResponse.getLeadId());
+
             }
 
             Logger.info("Status returned = " + loginResponseBuilder.getStatus());
@@ -183,6 +184,7 @@ public class TrudroidController {
                     = JobRoleObject.newBuilder();
             jobRoleBuilder.setJobRoleId(jobRole.getJobRoleId());
             jobRoleBuilder.setJobRoleName(jobRole.getJobName());
+            jobRoleBuilder.setJobRoleIcon(jobRole.getJobRoleIcon());
 
             jobRoleListToReturn.add(jobRoleBuilder.build());
         }
@@ -203,12 +205,21 @@ public class TrudroidController {
         for (models.entity.JobPost jobPost: jobPostList) {
             JobPostObject.Builder jobPostBuilder
                     = JobPostObject.newBuilder();
+            jobPostBuilder.setJobPostCreationMillis(jobPost.getJobPostCreateTimestamp().getTime());
             jobPostBuilder.setJobPostId(jobPost.getJobPostId());
             jobPostBuilder.setJobPostTitle(jobPost.getJobPostTitle());
             jobPostBuilder.setJobPostCompanyName(jobPost.getCompany().getCompanyName());
             jobPostBuilder.setJobPostMinSalary(jobPost.getJobPostMinSalary());
             jobPostBuilder.setJobPostMaxSalary(jobPost.getJobPostMaxSalary());
             jobPostBuilder.setVacancies(jobPost.getJobPostVacancies());
+
+            JobRoleObject.Builder jobRoleBuilder = JobRoleObject.newBuilder();
+
+            if(jobPost.getJobRole() != null){
+                jobRoleBuilder.setJobRoleName(jobPost.getJobRole().getJobName());
+                jobRoleBuilder.setJobRoleId(jobPost.getJobRole().getJobRoleId());
+                jobPostBuilder.setJobRole(jobRoleBuilder.build());
+            }
 
             jobPostBuilder.setJobPostCompanyLogo(jobPost.getCompany().getCompanyLogo());
 
@@ -404,8 +415,27 @@ public class TrudroidController {
             JobPost jobPost = JobPost.find.where().eq("jobPostId", pGetJobPostDetailsRequest.getJobPostId()).findUnique();
             if(jobPost != null){
                 getJobPostDetailsResponse.setStatus(GetJobPostDetailsResponse.Status.valueOf(1));
+                JobRoleObject.Builder jobRoleBuilder = JobRoleObject.newBuilder();
 
+                if(jobPost.getJobRole() != null){
+                    jobRoleBuilder.setJobRoleName(jobPost.getJobRole().getJobName());
+                    jobRoleBuilder.setJobRoleId(jobPost.getJobRole().getJobRoleId());
+                    jobPostBuilder.setJobRole(jobRoleBuilder.build());
+                }
+
+                jobPostBuilder.setJobPostCreationMillis(jobPost.getJobPostCreateTimestamp().getTime());
                 jobPostBuilder.setVacancies(jobPost.getJobPostVacancies());
+                if(jobPost.getJobPostStartTime() == null){
+                    jobPostBuilder.setJobPostStartTime(-1);
+                } else{
+                    jobPostBuilder.setJobPostStartTime(jobPost.getJobPostStartTime());
+                }
+                if(jobPost.getJobPostEndTime() == null){
+                    jobPostBuilder.setJobPostEndTime(-1);
+                } else{
+                    jobPostBuilder.setJobPostEndTime(jobPost.getJobPostEndTime());
+                }
+
                 jobPostBuilder.setJobPostId(jobPost.getJobPostId());
                 jobPostBuilder.setJobPostTitle(jobPost.getJobPostTitle());
                 jobPostBuilder.setJobPostMinSalary(jobPost.getJobPostMinSalary());
@@ -450,15 +480,71 @@ public class TrudroidController {
                     companyBuilder.setCompanyName(company.getCompanyName());
                     companyBuilder.setCompanyId(company.getCompanyId());
                     companyBuilder.setCompanyAddress(company.getCompanyAddress());
-                    companyBuilder.setCompanyDescription(company.getCompanyDescription());
-                    companyBuilder.setCompanyEmployeeCount(company.getCompanyEmployeeCount());
-                    companyBuilder.setCompanyLogo(company.getCompanyLogo());
-                    companyBuilder.setCompanyWebsite(company.getCompanyWebsite());
 
-                    CompanyTypeObject.Builder companyTypeBuilder = CompanyTypeObject.newBuilder();
-                    companyTypeBuilder.setCompanyTypeId(company.getCompType().getCompanyTypeId());
-                    companyTypeBuilder.setCompanyTypeName(company.getCompType().getCompanyTypeName());
-                    companyBuilder.setCompanyType(companyTypeBuilder);
+                    LocalityObject.Builder companyLocality = LocalityObject.newBuilder();
+
+                    if(company.getCompanyLocality() != null){
+                        companyLocality.setLocalityName(company.getCompanyLocality().getLocalityName());
+                        companyLocality.setLocalityId(company.getCompanyLocality().getLocalityId());
+                        companyBuilder.setCompanyLocality(companyLocality.build());
+                    }
+
+                    if(company.getCompanyDescription() != null){
+                        companyBuilder.setCompanyDescription(company.getCompanyDescription());
+                    }
+                    if(company.getCompanyEmployeeCount() != null){
+                        companyBuilder.setCompanyEmployeeCount(company.getCompanyEmployeeCount());
+                    }
+                    if(company.getCompanyLogo() != null){
+                        companyBuilder.setCompanyLogo(company.getCompanyLogo());
+                    }
+
+                    if(company.getCompType() != null){
+                        CompanyTypeObject.Builder companyTypeBuilder = CompanyTypeObject.newBuilder();
+                        companyTypeBuilder.setCompanyTypeId(company.getCompType().getCompanyTypeId());
+                        companyTypeBuilder.setCompanyTypeName(company.getCompType().getCompanyTypeName());
+                        companyBuilder.setCompanyType(companyTypeBuilder);
+                    }
+
+                    if(company.getCompanyWebsite() != null){
+                        companyBuilder.setCompanyWebsite(company.getCompanyWebsite());
+                    }
+
+                    List<JobPost> similarJobs = JobPost.find.where().eq("jobPostIsHot", "1").eq("companyId", company.getCompanyId()).findList();
+                    List<JobPostObject> similarJobPostListToReturn = new ArrayList<>();
+                    for (models.entity.JobPost companyJobPost: similarJobs) {
+                        if(companyJobPost.getJobPostId() != jobPost.getJobPostId()){
+                            JobPostObject.Builder companyJobPostBuilder
+                                    = JobPostObject.newBuilder();
+
+                            JobRoleObject.Builder similarJobRoleBuilder = JobRoleObject.newBuilder();
+
+                            if(companyJobPost.getJobRole() != null){
+                                similarJobRoleBuilder.setJobRoleName(jobPost.getJobRole().getJobName());
+                                similarJobRoleBuilder.setJobRoleId(jobPost.getJobRole().getJobRoleId());
+                                companyJobPostBuilder.setJobRole(similarJobRoleBuilder.build());
+                            }
+
+                            companyJobPostBuilder.setJobPostId(companyJobPost.getJobPostId());
+                            companyJobPostBuilder.setJobPostTitle(companyJobPost.getJobPostTitle());
+                            companyJobPostBuilder.setJobPostMinSalary(companyJobPost.getJobPostMinSalary());
+                            companyJobPostBuilder.setJobPostMaxSalary(companyJobPost.getJobPostMaxSalary());
+
+                            List<LocalityObject> similarJobPostLocalities = new ArrayList<>();
+                            List<JobPostToLocality> similarJobLocalityList = companyJobPost.getJobPostToLocalityList();
+                            for (JobPostToLocality locality: similarJobLocalityList) {
+                                LocalityObject.Builder localityBuilder
+                                        = LocalityObject.newBuilder();
+                                localityBuilder.setLocalityId(locality.getLocality().getLocalityId());
+                                localityBuilder.setLocalityName(locality.getLocality().getLocalityName());
+                                similarJobPostLocalities.add(localityBuilder.build());
+                            }
+                            companyJobPostBuilder.addAllJobPostLocality(jobPostLocalities);
+
+                            similarJobPostListToReturn.add(companyJobPostBuilder.build());
+                        }
+                    }
+                    companyBuilder.addAllCompanyOtherJobs(similarJobPostListToReturn);
                 }
                 getJobPostDetailsResponse.setJobPost(jobPostBuilder);
                 getJobPostDetailsResponse.setCompany(companyBuilder);
