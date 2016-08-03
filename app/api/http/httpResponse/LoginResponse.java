@@ -17,6 +17,8 @@ public class LoginResponse {
     public String candidateFirstName;
     public String candidateLastName;
     public String candidateEmail;
+    public String authSessionId;
+    public Long sessionExpiryInMilliSecond;
 
     public int getMinProfile() {
         return minProfile;
@@ -47,6 +49,12 @@ public class LoginResponse {
     public void setCandidateEmail(String candidateEmail) {
         this.candidateEmail = candidateEmail;
     }
+    public void setAuthSessionId(String authSessionId) {
+        this.authSessionId = authSessionId;
+    }
+    public void setSessionExpiryInMilliSecond(Long sessionExpiryInMilliSecond) {
+        this.sessionExpiryInMilliSecond = sessionExpiryInMilliSecond;
+    }
 
     public int getStatus() {
         return status;
@@ -75,4 +83,13 @@ public class LoginResponse {
     public String getCandidateEmail() {
         return candidateEmail;
     }
+
+    public String getAuthSessionId() {
+        return authSessionId;
+    }
+
+    public Long getSessionExpiryInMilliSecond() {
+        return sessionExpiryInMilliSecond;
+    }
+
 }

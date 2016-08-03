@@ -11,14 +11,15 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import controllers.businessLogic.AuthService;
 import controllers.businessLogic.CandidateService;
 import controllers.businessLogic.JobService;
+import controllers.businessLogic.MatchingEngineService;
 import in.trujobs.proto.*;
 import models.entity.Candidate;
-import models.entity.Static.Locality;
 import models.entity.Company;
 import models.entity.JobPost;
 import models.entity.OM.JobPostToLocality;
 import models.entity.OM.JobPreference;
 import models.entity.OM.LocalityPreference;
+import models.entity.Static.Locality;
 import play.Logger;
 import play.mvc.Result;
 
@@ -68,7 +69,7 @@ public class TrudroidController {
 
             LoginResponse loginResponse = CandidateService.login(loginRequest.getCandidateLoginMobile(), loginRequest.getCandidateLoginPassword());
             loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(loginResponse.getStatus()));
-            if(loginResponse.getStatus() == 1){
+            if(loginResponse.getStatus() == loginResponse.STATUS_SUCCESS){
                 loginResponseBuilder.setCandidateFirstName(loginResponse.getCandidateFirstName());
                 loginResponseBuilder.setCandidateLastName(loginResponse.getCandidateLastName());
                 loginResponseBuilder.setCandidateId(loginResponse.getCandidateId());
@@ -77,7 +78,6 @@ public class TrudroidController {
             }
 
             Logger.info("Status returned = " + loginResponseBuilder.getStatus());
-
         } catch (InvalidProtocolBufferException e) {
             Logger.info("Unable to parse message");
         }
@@ -193,8 +193,13 @@ public class TrudroidController {
     public static Result mGetAllJobPosts() {
         JobPostResponse.Builder jobPostResponseBuilder = JobPostResponse.newBuilder();
         List<JobPost> jobPostList = models.entity.JobPost.find.all();
-        List<JobPostObject> jobPostListToReturn = new ArrayList<>();
+        List<JobPostObject> jobPostListToReturn = getJobPostObjectListFromJobPostList(jobPostList);
+        jobPostResponseBuilder.addAllJobPost(jobPostListToReturn);
+        return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
+    }
 
+    private static List<JobPostObject> getJobPostObjectListFromJobPostList(List<JobPost> jobPostList) {
+        List<JobPostObject> jobPostListToReturn = new ArrayList<>();
         for (models.entity.JobPost jobPost: jobPostList) {
             JobPostObject.Builder jobPostBuilder
                     = JobPostObject.newBuilder();
@@ -230,8 +235,7 @@ public class TrudroidController {
 
             jobPostListToReturn.add(jobPostBuilder.build());
         }
-        jobPostResponseBuilder.addAllJobPost(jobPostListToReturn);
-        return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
+        return jobPostListToReturn;
     }
 
     public static Result mApplyJob() {
@@ -532,5 +536,25 @@ public class TrudroidController {
         locality.save();
         locality = Locality.find.where().eq("localityName", localityName).findUnique();
         return locality;
+    }
+
+    public static Result mGetMatchingJobPosts(String mobile) {
+        JobPostResponse.Builder jobPostResponseBuilder = JobPostResponse.newBuilder();
+        mobile = FormValidator.convertToIndianMobileFormat(mobile);
+        if(mobile != null) {
+            Logger.info("getMatchingJob for Mobile: " + mobile);
+            Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
+            if(existingCandidate != null){
+                List<JobPostObject> jobPostListToReturn  =
+                        getJobPostObjectListFromJobPostList(
+                                MatchingEngineService.fetchMatchingJobPostForLatLng(
+                                        existingCandidate.getCandidateLocalityLat(), existingCandidate.getCandidateLocalityLng(), null)
+                        );
+                Logger.info("Inside size: " + jobPostListToReturn.size());
+                jobPostResponseBuilder.addAllJobPost(jobPostListToReturn);
+            }
+            Logger.info("isBuilder: " + jobPostResponseBuilder.getJobPost(0).getJobPostTitle());
+        }
+        return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
     }
 }

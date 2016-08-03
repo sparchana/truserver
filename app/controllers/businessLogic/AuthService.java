@@ -124,9 +124,11 @@ public class AuthService {
         return candidateSignUpResponse;
     }
     public static void addSession(Auth existingAuth, Candidate existingCandidate){
-        session("sessionId", existingAuth.getAuthSessionId());
-        session("candidateId", String.valueOf(existingCandidate.getCandidateId()));
-        session("leadId", String.valueOf(existingCandidate.getLead().getLeadId()));
-        session("sessionExpiry", String.valueOf(existingAuth.getAuthSessionIdExpiryMillis()));
+        session().put("sessionId", existingAuth.getAuthSessionId());
+        session().put("candidateId", String.valueOf(existingCandidate.getCandidateId()));
+        session().put("candidateMobile", String.valueOf(existingCandidate.getCandidateMobile()));
+        session().put("leadId", String.valueOf(existingCandidate.getLead().getLeadId()));
+        session().put("sessionExpiry", String.valueOf(existingAuth.getAuthSessionIdExpiryMillis()));
+        Logger.info("set-sessionId"+ session().get("candidateMobile"));
     }
 }
