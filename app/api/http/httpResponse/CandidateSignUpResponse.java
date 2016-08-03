@@ -19,6 +19,24 @@ public class CandidateSignUpResponse {
     public String candidateFirstName;
     public String candidateLastName;
     public String candidateEmail;
+    public int candidateJobPrefStatus;
+    public int candidateHomeLocalityStatus;
+
+    public int getCandidateJobPrefStatus() {
+        return candidateJobPrefStatus;
+    }
+
+    public void setCandidateJobPrefStatus(int candidateJobPrefStatus) {
+        this.candidateJobPrefStatus = candidateJobPrefStatus;
+    }
+
+    public int getCandidateHomeLocalityStatus() {
+        return candidateHomeLocalityStatus;
+    }
+
+    public void setCandidateHomeLocalityStatus(int candidateHomeLocalityStatus) {
+        this.candidateHomeLocalityStatus = candidateHomeLocalityStatus;
+    }
 
     public void setStatus(int status) {
         this.status = status;

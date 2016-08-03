@@ -64,6 +64,16 @@ public class AuthService {
                 candidateSignUpResponse.setMinProfile(existingCandidate.getIsMinProfileComplete());
                 candidateSignUpResponse.setIsAssessed(existingCandidate.getCandidateIsAssessed());
                 candidateSignUpResponse.setLeadId(existingCandidate.getLead().getLeadId());
+
+                candidateSignUpResponse.setCandidateJobPrefStatus(0);
+                candidateSignUpResponse.setCandidateHomeLocalityStatus(0);
+                if(existingCandidate.getJobPreferencesList().size() > 0){
+                    candidateSignUpResponse.setCandidateJobPrefStatus(1);
+                }
+                if(existingCandidate.getLocality() != null){
+                    candidateSignUpResponse.setCandidateHomeLocalityStatus(1);
+                }
+
             }
 
             else{
