@@ -921,6 +921,14 @@ public class CandidateService
                     loginResponse.setIsAssessed(existingCandidate.getCandidateIsAssessed());
                     loginResponse.setMinProfile(existingCandidate.getIsMinProfileComplete());
                     loginResponse.setLeadId(existingCandidate.getLead().getLeadId());
+                    loginResponse.setCandidateJobPrefStatus(0);
+                    loginResponse.setCandidateHomeLocalityStatus(0);
+                    if(existingCandidate.getJobPreferencesList().size() > 0){
+                        loginResponse.setCandidateJobPrefStatus(1);
+                    }
+                    if(existingCandidate.getLocality() != null){
+                        loginResponse.setCandidateHomeLocalityStatus(1);
+                    }
                     loginResponse.setStatus(loginResponse.STATUS_SUCCESS);
 
                     existingAuth.setAuthSessionId(UUID.randomUUID().toString());

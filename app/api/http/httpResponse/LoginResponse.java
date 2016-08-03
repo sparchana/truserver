@@ -17,6 +17,8 @@ public class LoginResponse {
     public String candidateFirstName;
     public String candidateLastName;
     public String candidateEmail;
+    public int candidateJobPrefStatus;
+    public int candidateHomeLocalityStatus;
 
     public int getMinProfile() {
         return minProfile;
@@ -74,5 +76,21 @@ public class LoginResponse {
 
     public String getCandidateEmail() {
         return candidateEmail;
+    }
+
+    public int getCandidateJobPrefStatus() {
+        return candidateJobPrefStatus;
+    }
+
+    public void setCandidateJobPrefStatus(int candidateJobPrefStatus) {
+        this.candidateJobPrefStatus = candidateJobPrefStatus;
+    }
+
+    public int getCandidateHomeLocalityStatus() {
+        return candidateHomeLocalityStatus;
+    }
+
+    public void setCandidateHomeLocalityStatus(int candidateHomeLocalityStatus) {
+        this.candidateHomeLocalityStatus = candidateHomeLocalityStatus;
     }
 }
