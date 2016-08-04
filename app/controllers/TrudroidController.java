@@ -452,7 +452,11 @@ public class TrudroidController {
                 jobPostBuilder.setJobPostIncentives(jobPost.getJobPostIncentives());
                 jobPostBuilder.setJobPostMinRequirements(jobPost.getJobPostMinRequirement());
                 jobPostBuilder.setJobPostAddress(jobPost.getJobPostAddress());
-                jobPostBuilder.setJobPostWorkingDays(String.valueOf(jobPost.getJobPostWorkingDays()));
+                if(jobPost.getJobPostWorkingDays() != null ){
+                    jobPostBuilder.setJobPostWorkingDays(Integer.toString(jobPost.getJobPostWorkingDays(),2));
+                } else{
+                    jobPostBuilder.setJobPostWorkingDays("");
+                }
 
                 List<LocalityObject> jobPostLocalities = new ArrayList<>();
                 List<JobPostToLocality> localityList = jobPost.getJobPostToLocalityList();
