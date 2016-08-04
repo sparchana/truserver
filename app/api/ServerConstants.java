@@ -133,6 +133,8 @@ public class ServerConstants {
     public static final String PROD_GOOGLE_FORM_FOR_JOB_POSTS = "https://docs.google.com/forms/d/1QVHzqnts0IkD3Wk8in4urqb70BseI9YWZm9B_MgGXUE/formResponse";
     public static final String DEV_GOOGLE_FORM_FOR_JOB_POSTS = "https://docs.google.com/forms/d/e/1FAIpQLSc-Fr7bO7M5HCjNYyC-dnIyzTMiXiywTEaD9twKkCQDeB7Qtg/formResponse";
 
+    public static final Integer IS_HOT = 1;
+
     public static Map<String, String> devTeamMobile;
     static {
         devTeamMobile = new HashMap<String, String>();

@@ -202,7 +202,7 @@ public class TrudroidController {
 
     public static Result mGetAllJobPosts() {
         JobPostResponse.Builder jobPostResponseBuilder = JobPostResponse.newBuilder();
-        List<JobPost> jobPostList = models.entity.JobPost.find.all();
+        List<JobPost> jobPostList = JobPost.find.where().eq("jobPostIsHot", ServerConstants.IS_HOT).findList();
         List<JobPostObject> jobPostListToReturn = getJobPostObjectListFromJobPostList(jobPostList);
         jobPostResponseBuilder.addAllJobPost(jobPostListToReturn);
         return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));

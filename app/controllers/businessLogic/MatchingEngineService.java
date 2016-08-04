@@ -36,7 +36,7 @@ public class MatchingEngineService {
         if(r!=null && r>0){
             radius = r;
         }
-        List<JobPost> jobPostList = JobPost.find.all();
+        List<JobPost> jobPostList = JobPost.find.where().eq("jobPostIsHot", ServerConstants.IS_HOT).findList();
         if(lat != null && lng != null) {
            List<JobPost> jobPostsResponseList = new ArrayList<>();
            for (JobPost jobPost : jobPostList){
