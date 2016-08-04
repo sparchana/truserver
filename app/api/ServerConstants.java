@@ -145,5 +145,5 @@ public class ServerConstants {
         devTeamMobile.put("Sandy", "+919019672209");
     }
 
-    public static final Double DEFAULT_MATCHING_ENGINE_RADIUS = 15.0; // In Kilometers
+    public static final Double DEFAULT_MATCHING_ENGINE_RADIUS = 10.0; // In Kilometers
 }
