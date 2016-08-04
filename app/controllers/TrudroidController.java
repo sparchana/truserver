@@ -71,7 +71,11 @@ public class TrudroidController {
             loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(loginResponse.getStatus()));
             if(loginResponse.getStatus() == loginResponse.STATUS_SUCCESS){
                 loginResponseBuilder.setCandidateFirstName(loginResponse.getCandidateFirstName());
-                loginResponseBuilder.setCandidateLastName(loginResponse.getCandidateLastName());
+                if(loginResponse.getCandidateLastName() != null){
+                    loginResponseBuilder.setCandidateLastName(loginResponse.getCandidateLastName());
+                } else{
+                    loginResponseBuilder.setCandidateLastName("");
+                }
                 loginResponseBuilder.setCandidateId(loginResponse.getCandidateId());
                 loginResponseBuilder.setCandidateIsAssessed(loginResponse.getIsAssessed());
                 loginResponseBuilder.setLeadId(loginResponse.getLeadId());
