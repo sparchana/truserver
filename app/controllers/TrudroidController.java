@@ -71,7 +71,11 @@ public class TrudroidController {
             loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(loginResponse.getStatus()));
             if(loginResponse.getStatus() == loginResponse.STATUS_SUCCESS){
                 loginResponseBuilder.setCandidateFirstName(loginResponse.getCandidateFirstName());
-                loginResponseBuilder.setCandidateLastName(loginResponse.getCandidateLastName());
+                if(loginResponse.getCandidateLastName() != null){
+                    loginResponseBuilder.setCandidateLastName(loginResponse.getCandidateLastName());
+                } else{
+                    loginResponseBuilder.setCandidateLastName("");
+                }
                 loginResponseBuilder.setCandidateId(loginResponse.getCandidateId());
                 loginResponseBuilder.setCandidateIsAssessed(loginResponse.getIsAssessed());
                 loginResponseBuilder.setLeadId(loginResponse.getLeadId());
@@ -307,7 +311,6 @@ public class TrudroidController {
             Logger.info("Checking for mobile number: " + FormValidator.convertToIndianMobileFormat(pAddJobPrefRequest.getCandidateMobile()));
             Candidate candidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(pAddJobPrefRequest.getCandidateMobile()));
             if(candidate != null){
-                Logger.info(CandidateService.getCandidateJobPreferenceList(jobPrefList, candidate).size() + " ---- ");
                 CandidateService.resetJobPref(candidate, CandidateService.getCandidateJobPreferenceList(jobPrefList, candidate));
                 candidate.setJobPreferencesList(CandidateService.getCandidateJobPreferenceList(jobPrefList, candidate));
                 candidate.update();
@@ -340,8 +343,11 @@ public class TrudroidController {
                 candidateBuilder.setCandidateId(candidate.getCandidateId());
                 candidateBuilder.setCandidateMobile(candidate.getCandidateMobile());
                 candidateBuilder.setCandidateFirstName(candidate.getCandidateFirstName());
-                candidateBuilder.setCandidateLastName(candidate.getCandidateLastName());
-                candidateBuilder.setCandidateLastName(candidate.getCandidateLastName());
+                if(candidate.getCandidateLastName() != null){
+                    candidateBuilder.setCandidateLastName(candidate.getCandidateLastName());
+                } else{
+                    candidateBuilder.setCandidateLastName("");
+                }
                 candidateBuilder.setCandidateIsAssessed(candidate.getCandidateIsAssessed());
                 candidateBuilder.setCandidateMinProfileComplete(candidate.getIsMinProfileComplete());
                 if(candidate.getCandidateGender() != null){
