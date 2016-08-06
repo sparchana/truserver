@@ -16,6 +16,7 @@ import in.trujobs.proto.*;
 import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
+import models.entity.OM.JobHistory;
 import models.entity.OM.JobPostToLocality;
 import models.entity.OM.JobPreference;
 import models.entity.OM.LocalityPreference;
@@ -364,6 +365,38 @@ public class TrudroidController {
                     localityBuilder.setLocalityId(candidate.getLocality().getLocalityId());
                     localityBuilder.setLocalityName(candidate.getLocality().getLocalityName());
                     candidateBuilder.setCandidateHomelocality(localityBuilder);
+                }
+
+                if(candidate.getCandidateLastWithdrawnSalary() != null){
+                    candidateBuilder.setCandidateLastWithdrawnSalary(candidate.getCandidateLastWithdrawnSalary());
+                }
+
+                List<JobHistory> jobHistoryList = JobHistory.find.where().eq("candidateId", candidate.getCandidateId()).findList();
+                for(JobHistory jobHistory:jobHistoryList){
+                    if(jobHistory.getCurrentJob() == true){
+                        candidateBuilder.setCandidateCurrentCompany(jobHistory.getCandidatePastCompany());
+                        break;
+                    }
+                }
+
+                //getting education
+                CandidateEducationObject.Builder candidateEducationBuilder = CandidateEducationObject.newBuilder();
+
+                if(candidate.getCandidateEducation() != null){
+                    candidateEducationBuilder.setCandidateInstitute(candidate.getCandidateEducation().getCandidateLastInstitute());
+                    DegreeObject.Builder degreeBuilder = DegreeObject.newBuilder();
+                    if(candidate.getCandidateEducation().getDegree() != null){
+                        degreeBuilder.setDegreeId(candidate.getCandidateEducation().getDegree().getDegreeId());
+                        degreeBuilder.setDegreeName(candidate.getCandidateEducation().getDegree().getDegreeName());
+                        candidateEducationBuilder.setDegree(degreeBuilder);
+                    }
+                    EducationObject.Builder educationBuilder = EducationObject.newBuilder();
+                    if(candidate.getCandidateEducation().getEducation() != null){
+                        educationBuilder.setEducationId(candidate.getCandidateEducation().getEducation().getEducationId());
+                        educationBuilder.setEducationName(candidate.getCandidateEducation().getEducation().getEducationName());
+                        candidateEducationBuilder.setEducation(educationBuilder);
+                    }
+                    candidateBuilder.setCandidateEducation(candidateEducationBuilder);
                 }
 
                 //getting timeShift

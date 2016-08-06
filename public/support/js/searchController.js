@@ -233,6 +233,7 @@ function getExpiry(expiryObject) {
 
 function renderSearchResult(returnedData) {
 
+    console.log(returnedData);
     var returnedDataArray = [];
     try {
         returnedData.forEach(function (newCandidate) {
