@@ -247,7 +247,7 @@ function renderSearchResult(returnedData) {
                 locality = newCandidate.locality.localityName;
             }
             returnedDataArray.push({
-                'cLID': '<a href="/candidateSignupSupport/'+newCandidate.lead.leadId+'" target="_blank">'+newCandidate.lead.leadId+'</a>',
+                'cLID': '<a href="/candidateSignupSupport/' + newCandidate.lead.leadId + '/false' + '" target="_blank">'+newCandidate.lead.leadId+'</a>',
                 'candidateFirstName' : newCandidate.candidateFirstName +" "+newCandidate.candidateLastName,
                 'candidateMobile' : newCandidate.candidateMobile,
                 'candidateLastWithdrawnSalary' : getLastWithdrawnSalary(newCandidate.candidateLastWithdrawnSalary),
