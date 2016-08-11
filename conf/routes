@@ -117,6 +117,7 @@ POST         /mGetMatchingJobPosts/:mobile                                      
 POST         /mAddHomeLocality                                                   controllers.TrudroidController.mAddHomeLocality()
 POST         /mApplyJob                                                          controllers.TrudroidController.mApplyJob()
 POST         /mAddJobPref                                                        controllers.TrudroidController.mAddJobPref()
+POST         /mFetchCandidateAlert                                               controllers.TrudroidController.mFetchCandidateAlert()
 POST         /mGetCandidateInformation                                           controllers.TrudroidController.mGetCandidateInformation()
 POST         /mGetJobPostInfo                                                    controllers.TrudroidController.mGetJobPostInfo()
 

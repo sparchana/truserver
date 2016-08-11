@@ -57,7 +57,8 @@ public class CandidateService
 
     public static Candidate isCandidateExists(String mobile) {
         try{
-            Candidate existingCandidate = Candidate.find.where().eq("candidateMobile", FormValidator.convertToIndianMobileFormat(mobile)).findUnique();
+            Candidate existingCandidate = Candidate.find.where().eq("candidateMobile",
+                    FormValidator.convertToIndianMobileFormat(mobile)).findUnique();
             if(existingCandidate != null) {
                 return existingCandidate;
             }
@@ -1042,5 +1043,222 @@ public class CandidateService
             candidateJobs.delete();
         }
         existingCandidate.setJobPreferencesList(jobPreferencesList);
+    }
+
+    public static float getProfileCompletionPercent(String candidateMobile) {
+
+        Candidate candidate = CandidateService.isCandidateExists(candidateMobile);
+
+        // To keep track of % of fields filled in each priority group
+        float p0CompletionPercent = 0;
+        float p1CompletionPercent = 0;
+        float p2CompletionPercent = 0;
+        float profileCompletionPercent = 0;
+
+        float p0Weight = 0.7f;
+        float p1Weight = 0.25f;
+        float p2Weight = 0.05f;
+
+        if (candidate != null) {
+
+            p0CompletionPercent = getP0FieldsCompletionPercent(candidate);
+            p1CompletionPercent = getP1FieldsCompletionPercent(candidate);
+            p2CompletionPercent = getP2FieldsCompletionPercent(candidate);
+            // For now we do not care about fields in p3 category (last name, third mobile, locality pref list)
+        }
+
+        profileCompletionPercent = p0CompletionPercent * p0Weight
+                + p1CompletionPercent * p1Weight
+                + p2CompletionPercent * p2Weight;
+
+        Logger.info("Candidate with mobile number " + candidateMobile + " has % profile completion as "
+                + profileCompletionPercent);
+
+        return profileCompletionPercent;
+    }
+
+    public static float getP0FieldsCompletionPercent(Candidate candidate) {
+
+        float p0FieldCount = 0;
+        float p0CompletedFieldCount = 0;
+
+        if (candidate != null) {
+
+            // check for number of completed fields in P0 category
+
+            p0FieldCount++;
+            if (candidate.getCandidateFirstName() != null) {
+                p0CompletedFieldCount++;
+            }
+
+            p0FieldCount++;
+            if (candidate.getCandidateMobile() != null) {
+                p0CompletedFieldCount++;
+            }
+
+            p0FieldCount++;
+            if (candidate.getJobPreferencesList() != null && !candidate.getJobPreferencesList().isEmpty()) {
+                p0CompletedFieldCount++;
+            }
+
+            p0FieldCount++;
+            if (candidate.getLocality() != null) {
+                p0CompletedFieldCount++;
+            }
+
+            p0FieldCount++;
+            if (candidate.getCandidateGender() != null) {
+                p0CompletedFieldCount++;
+            }
+
+            p0FieldCount++;
+            if (candidate.getCandidateIsEmployed() != null) {
+                p0CompletedFieldCount++;
+            }
+
+            p0FieldCount++;
+            if (candidate.getCandidateTotalExperience() != null) {
+                p0CompletedFieldCount++;
+
+                if (candidate.getCandidateTotalExperience() > 0) {
+                    p0FieldCount++;
+                    if (candidate.getCandidateLastWithdrawnSalary() != null) {
+                        p0CompletedFieldCount++;
+                    }
+                }
+            }
+
+            p0FieldCount++;
+            if (candidate.getCandidateEducation() != null) {
+                CandidateEducation education = candidate.getCandidateEducation();
+
+                if (education.getEducation() != null) {
+                    p0CompletedFieldCount++;
+                }
+            }
+
+            p0FieldCount++;
+            if (candidate.getLanguageKnownList() != null) {
+                if (candidate.getLanguageKnownList().size() >= 2) {
+                    p0CompletedFieldCount++;
+                }
+            }
+
+            p0FieldCount++;
+            if (candidate.getCandidateSkillList() != null) {
+                if (candidate.getCandidateSkillList().size() >= 1) {
+                    p0CompletedFieldCount++;
+                }
+            }
+
+        }
+
+        Logger.info(" Candidate with mobile number " + candidate.getCandidateMobile()
+                + " has " + p0CompletedFieldCount + " p0 fields completed out of " + p0FieldCount);
+
+        return (p0CompletedFieldCount / p0FieldCount);
+    }
+
+    public static float getP1FieldsCompletionPercent(Candidate candidate) {
+
+        float p1FieldCount = 0;
+        float p1CompletedFieldCount = 0;
+
+        if (candidate != null) {
+
+            // check for number of completed fields in P1 category
+            if (candidate.getCandidateIsEmployed() != null) {
+                p1FieldCount++;
+                if (candidate.getCandidateCurrentJobDetail() != null) {
+                    p1CompletedFieldCount++;
+                }
+            }
+
+            if (candidate.getCandidateEducation() != null) {
+                CandidateEducation education = candidate.getCandidateEducation();
+
+                p1FieldCount++;
+                if (education.getCandidateEducationCompletionStatus() != null) {
+                    p1CompletedFieldCount++;
+                }
+
+                p1FieldCount++;
+                if (education.getDegree() != null) {
+                    p1CompletedFieldCount++;
+
+                }
+            }
+
+            p1FieldCount++;
+            if (candidate.getCandidateSecondMobile() != null) {
+                p1CompletedFieldCount++;
+            }
+
+            p1FieldCount++;
+            if (candidate.getTimeShiftPreference() != null) {
+                p1CompletedFieldCount++;
+            }
+
+            p1FieldCount++;
+            if (candidate.getCandidateDOB() != null) {
+                p1CompletedFieldCount++;
+            }
+        }
+
+        Logger.info(" Candidate with mobile number " + candidate.getCandidateMobile()
+                + " has " + p1CompletedFieldCount + " p1 fields completed out of " + p1FieldCount);
+
+        return (p1CompletedFieldCount / p1FieldCount);
+    }
+
+    public static float getP2FieldsCompletionPercent(Candidate candidate) {
+
+        float p2FieldCount = 0;
+        float p2CompletedFieldCount = 0;
+
+        if (candidate != null) {
+            // check for number of completed fields in P2 category
+
+            if (candidate.getCandidateTotalExperience() != null) {
+                if (candidate.getCandidateTotalExperience() > 0) {
+                    p2FieldCount++;
+                    if (candidate.getCandidateExpList() != null && candidate.getCandidateExpList().size() > 0) {
+                        p2CompletedFieldCount++;
+                    }
+                }
+            }
+
+            if (candidate.getCandidateEducation() != null) {
+                CandidateEducation education = candidate.getCandidateEducation();
+
+                p2FieldCount++;
+                if (education.getCandidateLastInstitute() != null) {
+                    p2CompletedFieldCount++;
+                }
+
+            }
+
+            p2FieldCount++;
+            if (candidate.getLanguageKnownList() != null) {
+                if (candidate.getLanguageKnownList().size() >= 3) {
+                    p2CompletedFieldCount++;
+                }
+            }
+
+            p2FieldCount++;
+            if (candidate.getIdProofReferenceList() != null) {
+                p2CompletedFieldCount++;
+            }
+
+            p2FieldCount++;
+            if (candidate.getCandidateExperienceLetter() != null) {
+                p2CompletedFieldCount++;
+            }
+        }
+
+        Logger.info(" Candidate with mobile number " + candidate.getCandidateMobile()
+                + " has " + p2CompletedFieldCount + " p2 fields completed out of " + p2FieldCount);
+
+        return (p2CompletedFieldCount / p2FieldCount);
     }
 }
