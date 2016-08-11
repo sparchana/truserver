@@ -80,7 +80,7 @@ public class LeadService {
             interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT; //TODO: Call Out/In need to be distinguished
             createdBy = session().get("sessionUsername");
         }
-        if(existingLead == null){
+        if(existingLead == null) {
             Lead.addLead(lead);
             result = ServerConstants.INTERACTION_RESULT_NEW_LEAD;
             Logger.info("Lead added");

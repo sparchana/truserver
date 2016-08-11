@@ -8,10 +8,7 @@ import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
 import com.google.api.client.util.Base64;
 import com.google.protobuf.InvalidProtocolBufferException;
-import controllers.businessLogic.AuthService;
-import controllers.businessLogic.CandidateService;
-import controllers.businessLogic.JobService;
-import controllers.businessLogic.MatchingEngineService;
+import controllers.businessLogic.*;
 import in.trujobs.proto.*;
 import models.entity.Candidate;
 import models.entity.Company;
@@ -217,6 +214,11 @@ public class TrudroidController {
 
     private static List<JobPostObject> getJobPostObjectListFromJobPostList(List<JobPost> jobPostList) {
         List<JobPostObject> jobPostListToReturn = new ArrayList<>();
+
+        if (jobPostList == null) {
+            return jobPostListToReturn;
+        }
+
         for (models.entity.JobPost jobPost: jobPostList) {
             JobPostObject.Builder jobPostBuilder
                     = JobPostObject.newBuilder();
@@ -243,10 +245,13 @@ public class TrudroidController {
             experienceBuilder.setExperienceType(jobPost.getJobPostExperience().getExperienceType());
             jobPostBuilder.setJobPostExperience(experienceBuilder);
 
-            TimeShiftObject.Builder timeShiftBuilder = TimeShiftObject.newBuilder();
-            timeShiftBuilder.setTimeShiftId(jobPost.getJobPostShift().getTimeShiftId());
-            timeShiftBuilder.setTimeShiftName(jobPost.getJobPostShift().getTimeShiftName());
-            jobPostBuilder.setJobPostShift(timeShiftBuilder);
+            if (jobPost.getJobPostShift() != null) {
+                TimeShiftObject.Builder timeShiftBuilder = TimeShiftObject.newBuilder();
+
+                timeShiftBuilder.setTimeShiftId(jobPost.getJobPostShift().getTimeShiftId());
+                timeShiftBuilder.setTimeShiftName(jobPost.getJobPostShift().getTimeShiftName());
+                jobPostBuilder.setJobPostShift(timeShiftBuilder);
+            }
 
             List<LocalityObject> jobPostLocalities = new ArrayList<>();
             List<JobPostToLocality> localityList = jobPost.getJobPostToLocalityList();
@@ -261,6 +266,7 @@ public class TrudroidController {
 
             jobPostListToReturn.add(jobPostBuilder.build());
         }
+
         return jobPostListToReturn;
     }
 
@@ -592,7 +598,6 @@ public class TrudroidController {
             String requestString = request().body().asText();
             pHomeLocalityRequest = HomeLocalityRequest.parseFrom(Base64.decodeBase64(requestString));
             if(pHomeLocalityRequest != null){
-                Logger.info("Received CandidateMobile:"+pHomeLocalityRequest.getCandidateMobile());
                 Candidate existingCandidate = CandidateService.isCandidateExists(pHomeLocalityRequest.getCandidateMobile());
                 if (existingCandidate != null){
                     Logger.info("lat/lng:"+pHomeLocalityRequest.getLat()+"/"+pHomeLocalityRequest.getLng());
@@ -601,7 +606,6 @@ public class TrudroidController {
                     if(localityList.size() >= 4) {
                         String localityName = localityList.get(localityList.size() - 4);
                         existingCandidate.setLocality(getOrCreateLocality(localityName));
-                        Logger.info("Locality:"+existingCandidate.getLocality().getLocalityName());
                     } else if(localityList.size() == 2){
                         String localityName = localityList.get(localityList.size() - 1);
                         existingCandidate.setLocality(getOrCreateLocality(localityName));
@@ -789,5 +793,22 @@ public class TrudroidController {
             default:
                 return 0L;
         }
+    }
+    public static Result mFetchCandidateAlert () {
+        String requestString = request().body().asText();
+
+        FetchCandidateAlertRequest fetchCandidateAlertProtoRequest = null;
+
+        try {
+            fetchCandidateAlertProtoRequest = FetchCandidateAlertRequest.parseFrom(Base64.decodeBase64(requestString));
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+
+        String candidateMobile = fetchCandidateAlertProtoRequest.getCandidateMobile();
+
+        FetchCandidateAlertResponse r = CandidateAlertService.getAlertForCandidate(candidateMobile);
+
+        return ok(Base64.encodeBase64String(r.toByteArray()));
     }
 }

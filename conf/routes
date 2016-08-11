@@ -120,6 +120,7 @@ POST        /mAddJobPref                                       controllers.Trudr
 POST        /mGetCandidateInformation                          controllers.TrudroidController.mGetCandidateInformation()
 POST        /mGetJobPostInfo                                   controllers.TrudroidController.mGetJobPostInfo()
 POST        /mGetFilteredJobPosts                              controllers.TrudroidController.mGetFilteredJobPosts()
+POST        /mFetchCandidateAlert                              controllers.TrudroidController.mFetchCandidateAlert()
 
 # 3rd Party API
 # ~~~~~~~~~~~~~
