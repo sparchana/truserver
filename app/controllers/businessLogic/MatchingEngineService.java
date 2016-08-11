@@ -71,8 +71,10 @@ public class MatchingEngineService {
                     .compareTo(b.getJobPostToLocalityList().get(0).getDistance()));
             Logger.info("jobPostResponseList:" + jobPostsResponseList);
             return jobPostsResponseList;
+        } else {
+            /* Don't handle the exception just throw it to the calling method */
+            throw new IllegalArgumentException();
         }
-        return null;
     }
 
 

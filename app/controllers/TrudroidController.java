@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static models.util.Validator.isValidLocalityName;
+import static play.libs.Json.toJson;
 import static play.mvc.Http.Context.Implicit.request;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
@@ -206,10 +207,12 @@ public class TrudroidController {
 
     public static Result mGetAllJobPosts() {
         JobPostResponse.Builder jobPostResponseBuilder = JobPostResponse.newBuilder();
-        List<JobPost> jobPostList = JobPost.find.where().eq("jobPostIsHot", ServerConstants.IS_HOT).findList();
-        List<JobPostObject> jobPostListToReturn = getJobPostObjectListFromJobPostList(jobPostList);
-        jobPostResponseBuilder.addAllJobPost(jobPostListToReturn);
+        jobPostResponseBuilder.addAllJobPost(getJobPostObjectListFromJobPostList(mGetAllJobPostsRaw()));
         return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
+    }
+
+    public static List<JobPost> mGetAllJobPostsRaw(){
+        return  JobPost.find.where().eq("jobPostIsHot", ServerConstants.IS_HOT).findList();
     }
 
     private static List<JobPostObject> getJobPostObjectListFromJobPostList(List<JobPost> jobPostList) {
@@ -593,7 +596,7 @@ public class TrudroidController {
                 Candidate existingCandidate = CandidateService.isCandidateExists(pHomeLocalityRequest.getCandidateMobile());
                 if (existingCandidate != null){
                     Logger.info("lat/lng:"+pHomeLocalityRequest.getLat()+"/"+pHomeLocalityRequest.getLng());
-                    Logger.info("Address"+pHomeLocalityRequest.getAddress());
+                    Logger.info("Address:"+pHomeLocalityRequest.getAddress());
                     List<String> localityList = Arrays.asList(pHomeLocalityRequest.getAddress().split(","));
                     if(localityList.size() >= 4) {
                         String localityName = localityList.get(localityList.size() - 4);
@@ -644,23 +647,147 @@ public class TrudroidController {
 
     public static Result mGetMatchingJobPosts(String mobile) {
         JobPostResponse.Builder jobPostResponseBuilder = JobPostResponse.newBuilder();
+        try {
+            jobPostResponseBuilder.addAllJobPost(getJobPostObjectListFromJobPostList(mGetMatchingJobPostsRaw(mobile)));
+        } catch (NullPointerException n){
+
+        }
+
+        return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
+    }
+
+    public static List<JobPost> mGetMatchingJobPostsRaw(String mobile){
         mobile = FormValidator.convertToIndianMobileFormat(mobile);
         if(mobile != null) {
             Logger.info("getMatchingJob for Mobile: " + mobile);
             Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
             if(existingCandidate != null){
                 if(existingCandidate.getCandidateLocalityLat() == null || existingCandidate.getCandidateLocalityLng() == null){
-                    return mGetAllJobPosts();
+                    return mGetAllJobPostsRaw();
                 } else {
-                    List<JobPostObject> jobPostListToReturn  =
-                            getJobPostObjectListFromJobPostList(
-                                    MatchingEngineService.fetchMatchingJobPostForLatLng(
-                                            existingCandidate.getCandidateLocalityLat(), existingCandidate.getCandidateLocalityLng(), null)
-                            );
-                    jobPostResponseBuilder.addAllJobPost(jobPostListToReturn);
+                    return MatchingEngineService.fetchMatchingJobPostForLatLng(
+                                    existingCandidate.getCandidateLocalityLat(), existingCandidate.getCandidateLocalityLng(), null);
                 }
             }
         }
+        return null;
+    }
+
+    public static Result mGetFilteredJobPosts() {
+        // filter req has candidate's mobile number
+        JobPostResponse.Builder jobPostResponseBuilder = JobPostResponse.newBuilder();
+        try {
+            String requestString = request().body().asText();
+            JobFilterRequest jobFilterRequest = JobFilterRequest.parseFrom(Base64.decodeBase64(requestString));
+            List<JobPost> filteredJobPostList = filterJobs(jobFilterRequest);
+            jobPostResponseBuilder.addAllJobPost(getJobPostObjectListFromJobPostList(filteredJobPostList));
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
         return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
+    }
+
+    public static List<JobPost> filterJobs(JobFilterRequest jobFilterRequest) {
+        List<JobPost> filteredJobPostList = new ArrayList<>();
+        if (jobFilterRequest != null) {
+            List<JobPost> jobPostList = mGetMatchingJobPostsRaw(jobFilterRequest.getCandidateMobile());
+            if(jobPostList != null){
+                Logger.info("jobFilterRequest sal: "+ toJson(jobFilterRequest.getSalary()));
+                Logger.info("jobFilterRequest exp: "+ toJson(jobFilterRequest.getExp()));
+                Logger.info("jobFilterRequest edu: "+ toJson(jobFilterRequest.getEdu()));
+                for(JobPost jobPost : jobPostList){
+                    boolean shouldContinue = false;
+                    if(jobFilterRequest.getSalary() != null){
+                        shouldContinue = (getSalaryValue(jobFilterRequest.getSalaryValue()) <= jobPost.getJobPostMinSalary())
+                                || (getSalaryValue(jobFilterRequest.getSalaryValue()) <= jobPost.getJobPostMaxSalary());
+                        Logger.info("jobFilterRequest.getSalary:"+getSalaryValue(jobFilterRequest.getSalaryValue()) + " isSatisfied");
+                    } else{
+                        Logger.info("getSalary is not provided");
+                        shouldContinue = true;
+                    }
+                    if(shouldContinue && jobPost.getJobPostExperience() != null
+                            && jobFilterRequest.getExp() != null){
+                        Logger.info("jobFilterRequest.getExp():" + jobFilterRequest.getExp() + "");
+                        if(jobFilterRequest.getExpValue() == JobFilterRequest.Experience.ANY_EXPERIENCE_VALUE
+                                && jobPost.getJobPostExperience().getExperienceId() == ServerConstants.EXPERIENCE_TYPE_ANY_ID){
+                            Logger.info("JobFilterRequest.Experience.ANY_EXPERIENCE_VALUE:");
+                            shouldContinue = true;
+                        } else if(jobFilterRequest.getExpValue() == JobFilterRequest.Experience.FRESHER_VALUE
+                                && jobPost.getJobPostExperience().getExperienceId() == ServerConstants.EXPERIENCE_TYPE_FRESHER_ID){
+                            Logger.info("Matched with JobFilterRequest.Experience.FRESHER_VALUE: ");
+                            shouldContinue = true;
+                        } else if(jobFilterRequest.getExpValue() == JobFilterRequest.Experience.EXPERIENCED_VALUE
+                                && jobPost.getJobPostExperience().getExperienceId() > ServerConstants.EXPERIENCE_TYPE_FRESHER_ID
+                                && jobPost.getJobPostExperience().getExperienceId() != ServerConstants.EXPERIENCE_TYPE_ANY_ID){
+                            Logger.info("JobFilterRequest.Experience.EXPERIENCED_VALUE: ");
+                            shouldContinue = true;
+                        } else {
+                            Logger.info("jobFilterRequest.getExp(): didn't match with this jobpost.exp:"
+                                    +jobPost.getJobPostExperience().getExperienceType()+ "");
+                            shouldContinue = false;
+                        }
+                    } else {
+                        shouldContinue = true;
+                    }
+                    if(shouldContinue && jobPost.getJobPostEducation() != null
+                            && jobFilterRequest.getEdu() != null){
+                        if(jobFilterRequest.getEduValue() == JobFilterRequest.Education.ANY_EDUCATION_VALUE
+                                && jobPost.getJobPostEducation().getEducationId() >= ServerConstants.EDUCATION_TYPE_ANY){
+                            Logger.info("JobFilterRequest.Education.ANY_EDUCATION_VALUE: ");
+                            shouldContinue = true;
+                        } else if(jobFilterRequest.getEduValue() == JobFilterRequest.Education.LT_TEN_VALUE
+                                && jobPost.getJobPostEducation().getEducationId() == ServerConstants.EDUCATION_TYPE_LT_10TH_ID){
+                            Logger.info("JobFilterRequest.Education.LT_TEN_VALUE: ");
+                            shouldContinue = true;
+                        } else if(jobFilterRequest.getEduValue() == JobFilterRequest.Education.TEN_PASS_VALUE
+                                && jobPost.getJobPostEducation().getEducationId() == ServerConstants.EDUCATION_TYPE_10TH_PASS_ID){
+                            Logger.info("JobFilterRequest.Education.TEN_PASS_VALUE: ");
+                            shouldContinue = true;
+                        } else if(jobFilterRequest.getEduValue() == JobFilterRequest.Education.TWELVE_PASS_VALUE
+                                && jobPost.getJobPostEducation().getEducationId() == ServerConstants.EDUCATION_TYPE_12TH_PASS_ID){
+                            Logger.info("JobFilterRequest.Education.TWELVE_PASS_VALUE: ");
+                            shouldContinue = true;
+                        } else if(jobFilterRequest.getEduValue() == JobFilterRequest.Education.UG_VALUE
+                                && jobPost.getJobPostEducation().getEducationId() == ServerConstants.EDUCATION_TYPE_UG){
+                            Logger.info("JobFilterRequest.Education.UG_VALUE: ");
+                            shouldContinue = true;
+                        } else if(jobFilterRequest.getEduValue() == JobFilterRequest.Education.PG_VALUE
+                                && jobPost.getJobPostEducation().getEducationId() == ServerConstants.EDUCATION_TYPE_PG){
+                            Logger.info("JobFilterRequest.Education.PG_VALUE: ");
+                            shouldContinue = true;
+                        } else {
+                            shouldContinue = false;
+                        }
+                    } else {
+                        shouldContinue = true;
+                    }
+                    if(shouldContinue){
+                        filteredJobPostList.add(jobPost);
+                    }
+                }
+                Logger.info("returned jobs:"+toJson(filteredJobPostList.size()));
+                return filteredJobPostList;
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    public static Long getSalaryValue(Integer id){
+        switch (id){
+            case JobFilterRequest.Salary.ANY_SALARY_VALUE:
+                return 0L;
+            case JobFilterRequest.Salary.EIGHT_K_PLUS_VALUE:
+                return 8000L;
+            case JobFilterRequest.Salary.TEN_K_PLUS_VALUE:
+                return 10000L;
+            case JobFilterRequest.Salary.TWELVE_K_PLUS_VALUE:
+                return 12000L;
+            case JobFilterRequest.Salary.FIFTEEN_K_PLUS_VALUE:
+                return 15000L;
+            case JobFilterRequest.Salary.TWENTY_K_PLUS_VALUE:
+                return 20000L;
+            default:
+                return 0L;
+        }
     }
 }
