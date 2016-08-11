@@ -28,57 +28,51 @@ public class TruControllerTest {
     private JobFilterRequest.Builder jobFilterRequest;
     private int expectedSize;
 
-    public TruControllerTest(String mobile,
-                             JobFilterRequest.Education education,
-                             JobFilterRequest.Experience experience,
-                             JobFilterRequest.Salary salary,
-                             Boolean sortByDate,
-                             Boolean sortBySalary,
-                             int expectedSize){
-
-        this.jobFilterRequest = JobFilterRequest.newBuilder();
-        this.jobFilterRequest.setCandidateMobile(mobile);
-        this.jobFilterRequest.setEdu(education);
-        this.jobFilterRequest.setExp(experience);
-        this.jobFilterRequest.setSalary(salary);
-        this.jobFilterRequest.setSortByDatePosted(sortByDate);
-        this.jobFilterRequest.setSortBySalary(sortBySalary);
+    public TruControllerTest(JobFilterRequest.Builder jobFilterRequest, int expectedSize) {
+        this.jobFilterRequest = jobFilterRequest;
         this.expectedSize = expectedSize;
     }
 
+    public static JobFilterRequest.Builder getFilterObjectFromParams(String mobile,
+                                                                     Object education,
+                                                                     Object experience,
+                                                                     Object salary,
+                                                                     Boolean sortByDate,
+                                                                     Boolean sortBySalary) {
+
+        JobFilterRequest.Builder jobFilterRequestobj = JobFilterRequest.newBuilder();
+        jobFilterRequestobj.setCandidateMobile(mobile);
+        if(education!=null) jobFilterRequestobj.setEdu((JobFilterRequest.Education ) education);
+        if(experience!=null) jobFilterRequestobj.setExp((JobFilterRequest.Experience ) experience);
+        if(salary!=null) jobFilterRequestobj.setSalary((JobFilterRequest.Salary ) salary);
+        if(sortByDate!=null) jobFilterRequestobj.setSortByDatePosted(sortByDate);
+        if(sortBySalary!=null) jobFilterRequestobj.setSortBySalary(sortBySalary);
+        return jobFilterRequestobj;
+    }
+
+
     @Parameterized.Parameters
-    public static Collection getFilterTestCases(){
+    public static Collection getFilterTestCases() {
         return Arrays.asList(new Object[][]{
-                {TestConstants.testCandidateMobile, JobFilterRequest.Education.ANY_EDUCATION, JobFilterRequest.Experience.ANY_EXPERIENCE,
-                        JobFilterRequest.Salary.ANY_SALARY, true, true, 3},
-                {TestConstants.testCandidateMobile, JobFilterRequest.Education.ANY_EDUCATION, JobFilterRequest.Experience.ANY_EXPERIENCE,
-                        JobFilterRequest.Salary.ANY_SALARY, true, true, 3},
-                {TestConstants.testCandidateMobile, JobFilterRequest.Education.TWELVE_PASS, JobFilterRequest.Experience.ANY_EXPERIENCE,
-                        JobFilterRequest.Salary.ANY_SALARY, true, false, 3},
-                {TestConstants.testCandidateMobile, JobFilterRequest.Education.UG, JobFilterRequest.Experience.ANY_EXPERIENCE,
-                        JobFilterRequest.Salary.ANY_SALARY, false, true, 3},
-                {TestConstants.testCandidateMobile, JobFilterRequest.Education.PG, JobFilterRequest.Experience.ANY_EXPERIENCE,
-                        JobFilterRequest.Salary.ANY_SALARY, false, false, 3},
-                {TestConstants.testCandidateMobile, JobFilterRequest.Education.ANY_EDUCATION, JobFilterRequest.Experience.FRESHER,
-                        JobFilterRequest.Salary.ANY_SALARY, true, true, 3},
-                {TestConstants.testCandidateMobile, JobFilterRequest.Education.ANY_EDUCATION, JobFilterRequest.Experience.EXPERIENCED,
-                        JobFilterRequest.Salary.ANY_SALARY, true, true, 3},
-                {TestConstants.testCandidateMobile, JobFilterRequest.Education.ANY_EDUCATION, JobFilterRequest.Experience.ANY_EXPERIENCE,
-                        JobFilterRequest.Salary.FIFTEEN_K_PLUS, true, true, 3},
-                {TestConstants.testCandidateMobile, JobFilterRequest.Education.ANY_EDUCATION, JobFilterRequest.Experience.ANY_EXPERIENCE,
-                        JobFilterRequest.Salary.TEN_K_PLUS, true, true, 3}
+                {getFilterObjectFromParams(TestConstants.testCandidateMobile, null, null,
+                        null, true, true), 3},
+                {getFilterObjectFromParams(TestConstants.testCandidateMobile, JobFilterRequest.Education.PG, null, null, true, true), 2},
+                {getFilterObjectFromParams(TestConstants.testCandidateMobile, null, JobFilterRequest.Experience.EXPERIENCED, null, true, true), 1},
+                {getFilterObjectFromParams(TestConstants.testCandidateMobile, null, null, JobFilterRequest.Salary.EIGHT_K_PLUS, true, true), 3},
+                {getFilterObjectFromParams(TestConstants.testCandidateMobile, null, null, JobFilterRequest.Salary.TWENTY_K_PLUS, true, true), 2},
+                {getFilterObjectFromParams(TestConstants.testCandidateMobile, null, null, JobFilterRequest.Salary.FIFTEEN_K_PLUS, true, true), 2}
         });
     }
 
     @Test
-    public void testFilterJobs(){
+    public void testFilterJobs() {
         Application fakeApp = fakeApplication();
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
         running(server, () -> {
             List<JobPost> jobPostList = TrudroidController.filterJobs(jobFilterRequest.build());
-            if(jobPostList == null) return;
+            if (jobPostList == null) return;
             assertEquals(expectedSize, jobPostList.size());
-            System.out.println("[test case] testFilterJobs: resultSize:-----------------------------------------------"+jobPostList.size());
+            System.out.println("[test case] testFilterJobs: resultSize:-----------------------------------------------" + jobPostList.size());
             Logger.info(String.valueOf(toJson(jobPostList.size())));
         });
     }

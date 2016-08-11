@@ -697,10 +697,16 @@ public class TrudroidController {
                 Logger.info("jobFilterRequest edu: "+ toJson(jobFilterRequest.getEdu()));
                 for(JobPost jobPost : jobPostList){
                     boolean shouldContinue = false;
-                    if(jobFilterRequest.getSalary() != null){
-                        shouldContinue = (getSalaryValue(jobFilterRequest.getSalaryValue()) <= jobPost.getJobPostMinSalary())
-                                || (getSalaryValue(jobFilterRequest.getSalaryValue()) <= jobPost.getJobPostMaxSalary());
-                        Logger.info("jobFilterRequest.getSalary:"+getSalaryValue(jobFilterRequest.getSalaryValue()) + " isSatisfied");
+                    if(jobFilterRequest.getSalary() != null && jobFilterRequest.getSalary() != JobFilterRequest.Salary.ANY_SALARY){
+                        if(jobPost.getJobPostMaxSalary()!= null && (getSalaryValue(jobFilterRequest.getSalaryValue()) <= jobPost.getJobPostMaxSalary())){
+                            Logger.info(jobPost.getJobPostId()+"-jobFilterRequest.getSalary: "+getSalaryValue(jobFilterRequest.getSalaryValue()) + "< Max:"+jobPost.getJobPostMaxSalary());
+                            shouldContinue = true;
+                        } else if(jobPost.getJobPostMinSalary() != null && getSalaryValue(jobFilterRequest.getSalaryValue()) <= jobPost.getJobPostMinSalary()){
+                            Logger.info(jobPost.getJobPostId()+"-jobFilterRequest.getSalary: "+getSalaryValue(jobFilterRequest.getSalaryValue()) + "< Min:"+jobPost.getJobPostMinSalary());
+                            shouldContinue = true;
+                        } else {
+                            shouldContinue = false;
+                        }
                     } else{
                         Logger.info("getSalary is not provided");
                         shouldContinue = true;
@@ -708,11 +714,7 @@ public class TrudroidController {
                     if(shouldContinue && jobPost.getJobPostExperience() != null
                             && jobFilterRequest.getExp() != null){
                         Logger.info("jobFilterRequest.getExp():" + jobFilterRequest.getExp() + "");
-                        if(jobFilterRequest.getExpValue() == JobFilterRequest.Experience.ANY_EXPERIENCE_VALUE
-                                && jobPost.getJobPostExperience().getExperienceId() == ServerConstants.EXPERIENCE_TYPE_ANY_ID){
-                            Logger.info("JobFilterRequest.Experience.ANY_EXPERIENCE_VALUE:");
-                            shouldContinue = true;
-                        } else if(jobFilterRequest.getExpValue() == JobFilterRequest.Experience.FRESHER_VALUE
+                        if(jobFilterRequest.getExpValue() == JobFilterRequest.Experience.FRESHER_VALUE
                                 && jobPost.getJobPostExperience().getExperienceId() == ServerConstants.EXPERIENCE_TYPE_FRESHER_ID){
                             Logger.info("Matched with JobFilterRequest.Experience.FRESHER_VALUE: ");
                             shouldContinue = true;
@@ -721,21 +723,17 @@ public class TrudroidController {
                                 && jobPost.getJobPostExperience().getExperienceId() != ServerConstants.EXPERIENCE_TYPE_ANY_ID){
                             Logger.info("JobFilterRequest.Experience.EXPERIENCED_VALUE: ");
                             shouldContinue = true;
+                        } else if(jobFilterRequest.getExp() == JobFilterRequest.Experience.ANY_EXPERIENCE){
+                            shouldContinue = true;
                         } else {
                             Logger.info("jobFilterRequest.getExp(): didn't match with this jobpost.exp:"
                                     +jobPost.getJobPostExperience().getExperienceType()+ "");
                             shouldContinue = false;
                         }
-                    } else {
-                        shouldContinue = true;
                     }
                     if(shouldContinue && jobPost.getJobPostEducation() != null
                             && jobFilterRequest.getEdu() != null){
-                        if(jobFilterRequest.getEduValue() == JobFilterRequest.Education.ANY_EDUCATION_VALUE
-                                && jobPost.getJobPostEducation().getEducationId() >= ServerConstants.EDUCATION_TYPE_ANY){
-                            Logger.info("JobFilterRequest.Education.ANY_EDUCATION_VALUE: ");
-                            shouldContinue = true;
-                        } else if(jobFilterRequest.getEduValue() == JobFilterRequest.Education.LT_TEN_VALUE
+                        if(jobFilterRequest.getEduValue() == JobFilterRequest.Education.LT_TEN_VALUE
                                 && jobPost.getJobPostEducation().getEducationId() == ServerConstants.EDUCATION_TYPE_LT_10TH_ID){
                             Logger.info("JobFilterRequest.Education.LT_TEN_VALUE: ");
                             shouldContinue = true;
@@ -755,13 +753,15 @@ public class TrudroidController {
                                 && jobPost.getJobPostEducation().getEducationId() == ServerConstants.EDUCATION_TYPE_PG){
                             Logger.info("JobFilterRequest.Education.PG_VALUE: ");
                             shouldContinue = true;
+                        } else if(jobFilterRequest.getEdu() == JobFilterRequest.Education.ANY_EDUCATION){
+                            shouldContinue = true;
                         } else {
                             shouldContinue = false;
                         }
-                    } else {
-                        shouldContinue = true;
                     }
                     if(shouldContinue){
+                        Logger.info("returned jobs min/max sal:"+toJson(jobPost.getJobPostMinSalary() +"/"+
+                                jobPost.getJobPostMaxSalary()));
                         filteredJobPostList.add(jobPost);
                     }
                 }
