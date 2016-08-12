@@ -712,19 +712,21 @@ public class TrudroidController {
                             shouldContinue = false;
                         }
                     } else{
-                        Logger.info("getSalary is not provided");
+                        Logger.info("Salary is not provided, hence salary filter not applied");
                         shouldContinue = true;
                     }
+                    /* filter result take Exp_Type:Any* in account */
                     if(shouldContinue && jobPost.getJobPostExperience() != null
                             && jobFilterRequest.getExp() != null){
                         Logger.info("jobFilterRequest.getExp():" + jobFilterRequest.getExp() + "");
                         if(jobFilterRequest.getExpValue() == JobFilterRequest.Experience.FRESHER_VALUE
-                                && jobPost.getJobPostExperience().getExperienceId() == ServerConstants.EXPERIENCE_TYPE_FRESHER_ID){
+                                && (jobPost.getJobPostExperience().getExperienceId() == ServerConstants.EXPERIENCE_TYPE_FRESHER_ID
+                                || jobPost.getJobPostExperience().getExperienceId() == ServerConstants.EXPERIENCE_TYPE_ANY_ID)){
                             Logger.info("Matched with JobFilterRequest.Experience.FRESHER_VALUE: ");
                             shouldContinue = true;
-                        } else if(jobFilterRequest.getExpValue() == JobFilterRequest.Experience.EXPERIENCED_VALUE
-                                && jobPost.getJobPostExperience().getExperienceId() > ServerConstants.EXPERIENCE_TYPE_FRESHER_ID
-                                && jobPost.getJobPostExperience().getExperienceId() != ServerConstants.EXPERIENCE_TYPE_ANY_ID){
+                        }
+                        else if(jobFilterRequest.getExpValue() == JobFilterRequest.Experience.EXPERIENCED_VALUE
+                                && jobPost.getJobPostExperience().getExperienceId() > ServerConstants.EXPERIENCE_TYPE_FRESHER_ID){
                             Logger.info("JobFilterRequest.Experience.EXPERIENCED_VALUE: ");
                             shouldContinue = true;
                         } else if(jobFilterRequest.getExp() == JobFilterRequest.Experience.ANY_EXPERIENCE){
