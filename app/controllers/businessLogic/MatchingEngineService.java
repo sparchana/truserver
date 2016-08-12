@@ -14,9 +14,9 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Matching Engine Service receives a {latitude, longitude} pair and try to determine list of jobPost
- * available within a defined radius rad. List is ordered by its distance from center.
- *
+ * Matching Engine Service receives a {latitude, longitude} pair along with jobRoleId list
+ * and try to determine list of jobPost available within a defined radius rad.
+ * List is ordered by its distance from center.
  * Distance between two co-ordinates in a spherical surface is calculate using Haversine formula.
  * Haversine formula is used in getDistanceFromCenter method to get distance from
  * given center co-ordinates {in KiloMeter}
@@ -28,15 +28,18 @@ public class MatchingEngineService {
     private static Double radius = ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS;
 
     /**
-     * fetchMatchingJobPostForLatLng takes candidate's home locality latitude/longitude
-     * and generates a List<JobPost> lying within DEFAULT_MATCHING_ENGINE_RADIUS and JobPostToLocalityList
+     * fetchMatchingJobPostForLatLng takes candidate's home locality latitude/longitude and list of preferred job's
+     * jobRole Id and generates a List<JobPost> lying within DEFAULT_MATCHING_ENGINE_RADIUS and JobPostToLocalityList
      * are ordered by distance of each JobPostToLocality from candidate's home locality.
      */
-    public static List<JobPost> fetchMatchingJobPostForLatLng(Double lat, Double lng, Double r){
+    public static List<JobPost> fetchMatchingJobPostForLatLng(Double lat, Double lng, Double r, List<Long> jobRoleIds){
         if(r!=null && r>0){
             radius = r;
         }
-        List<JobPost> jobPostList = JobPost.find.where().eq("jobPostIsHot", ServerConstants.IS_HOT).findList();
+        List<JobPost> jobPostList = JobPost.find.where()
+                .eq("jobPostIsHot", ServerConstants.IS_HOT)
+                .in("jobRole.jobRoleId", jobRoleIds)
+                .findList();
         if(lat != null && lng != null) {
            List<JobPost> jobPostsResponseList = new ArrayList<>();
            for (JobPost jobPost : jobPostList){

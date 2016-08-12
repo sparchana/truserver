@@ -4,7 +4,11 @@ import api.ServerConstants;
 import in.trujobs.proto.FetchCandidateAlertResponse;
 import models.entity.Candidate;
 import models.entity.JobPost;
+import models.entity.OM.JobPreference;
 import play.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Use this service to fetch the most important alert that needs to be displayed to a candidate at any point
@@ -53,10 +57,14 @@ public class CandidateAlertService {
                 Logger.error("Candidate with mobile " + candidateMobile + " doesnt have lat-long info");
                 jobsCount = JobPost.find.all().size();
             } else {
-                // fetch jobs near this candidate
+                // fetch jobs near this candidate according to its jobPreference
+                List<Long> jobPrefId = new ArrayList<>();
+                for(JobPreference jobPreference: candidate.getJobPreferencesList()){
+                    jobPrefId.add(jobPreference.getJobRole().getJobRoleId());
+                }
                 jobsCount = MatchingEngineService.fetchMatchingJobPostForLatLng(candidate.getCandidateLocalityLat(),
                         candidate.getCandidateLocalityLat(),
-                        ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS).size();
+                        ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, jobPrefId).size();
             }
 
             if (jobsCount > 0) {

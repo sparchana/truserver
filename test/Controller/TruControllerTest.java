@@ -56,11 +56,16 @@ public class TruControllerTest {
         return Arrays.asList(new Object[][]{
                 {getFilterObjectFromParams(TestConstants.testCandidateMobile, null, null,
                         null, true, true), 3},
-                {getFilterObjectFromParams(TestConstants.testCandidateMobile, JobFilterRequest.Education.PG, null, null, true, true), 2},
-                {getFilterObjectFromParams(TestConstants.testCandidateMobile, null, JobFilterRequest.Experience.EXPERIENCED, null, true, true), 3},
-                {getFilterObjectFromParams(TestConstants.testCandidateMobile, null, null, JobFilterRequest.Salary.EIGHT_K_PLUS, true, true), 3},
-                {getFilterObjectFromParams(TestConstants.testCandidateMobile, null, null, JobFilterRequest.Salary.TWENTY_K_PLUS, true, true), 2},
-                {getFilterObjectFromParams(TestConstants.testCandidateMobile, null, null, JobFilterRequest.Salary.FIFTEEN_K_PLUS, true, true), 2}
+                {getFilterObjectFromParams(TestConstants.testCandidateMobile, JobFilterRequest.Education.PG,
+                        null, null, true, true), 2},
+                {getFilterObjectFromParams(TestConstants.testCandidateMobile, null,
+                        JobFilterRequest.Experience.EXPERIENCED, null, true, true), 3},
+                {getFilterObjectFromParams(TestConstants.testCandidateMobile, null,
+                        null, JobFilterRequest.Salary.EIGHT_K_PLUS, true, true), 3},
+                {getFilterObjectFromParams(TestConstants.testCandidateMobile, null,
+                        null, JobFilterRequest.Salary.TWENTY_K_PLUS, true, true), 2},
+                {getFilterObjectFromParams(TestConstants.testCandidateMobile, null,
+                        null, JobFilterRequest.Salary.FIFTEEN_K_PLUS, true, true), 2}
         });
     }
 

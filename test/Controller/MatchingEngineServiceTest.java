@@ -36,10 +36,12 @@ public class MatchingEngineServiceTest {
     private Double pointLng;
     private Double expectedResult;
     private Double radius;
-
+    private List<Long> iDs;
     private MatchingEngineService matchingEngineService;
+
     @Before
     public void initialize() {
+        iDs = new ArrayList<>();
         matchingEngineService = new MatchingEngineService();
     }
 
@@ -47,13 +49,14 @@ public class MatchingEngineServiceTest {
     // Every time runner triggers, it will pass the arguments
     // from parameters we defined in MatchingEngineService.getDistanceFromCenter() method
     public MatchingEngineServiceTest(Double centerLat, Double centerLng, Double pointLat,
-                                     Double pointLng, Double expectedResult, Double radius) {
+                                     Double pointLng, Double expectedResult, Double radius, List<Long> ids) {
         this.centerLat = centerLat;
         this.centerLng = centerLng;
         this.pointLat = pointLat;
         this.pointLng = pointLng;
         this.expectedResult = expectedResult;
         this.radius = radius;
+        this.iDs.addAll(ids);
     }
     /**
      * validated using following url
@@ -68,14 +71,14 @@ public class MatchingEngineServiceTest {
     public static Collection getDistanceFromCenter(){
         // bellandur {12.926031, 77.676246}
         return Arrays.asList(new Object[][]{
-                {12.926031, 77.676246, 12.927923, 77.627108, 5.33, 1.0},
-                {12.926031, 77.676246, 12.927923, 77.627108, 5.33, 5.0},
-                {12.926031, 77.676246, 12.927923, 77.627108, 5.33, 8.0},
-                {12.926031, 77.676246, 12.927923, 77.627108, 5.33, 9.5},
-                {12.926031, 77.676246, 12.927923, 77.627108, 5.33, 10.0},
-                {12.926031, 77.676246, 12.927923, 77.627108, 5.33, 12.0},
-                {12.926031, 77.676246, 12.927923, 77.627108, 5.33, 15.5},
-                {12.826031, 77.276246, 12.927923, 77.627108, 39.68, 1.0}
+                {12.926031, 77.676246, 12.927923, 77.627108, 5.33, 1.0, Arrays.asList( 2, 5, 11)},
+                {12.926031, 77.676246, 12.927923, 77.627108, 5.33, 5.0, Arrays.asList( 2, 5, 11)},
+                {12.926031, 77.676246, 12.927923, 77.627108, 5.33, 8.0, Arrays.asList( 2, 5, 11)},
+                {12.926031, 77.676246, 12.927923, 77.627108, 5.33, 9.5, Arrays.asList( 2, 5, 11)},
+                {12.926031, 77.676246, 12.927923, 77.627108, 5.33, 10.0, Arrays.asList(2, 5, 11)},
+                {12.926031, 77.676246, 12.927923, 77.627108, 5.33, 12.0, Arrays.asList(2, 5, 11)},
+                {12.926031, 77.676246, 12.927923, 77.627108, 5.33, 15.5, Arrays.asList(2, 5, 11)},
+                {12.826031, 77.276246, 12.927923, 77.627108, 39.68, 1.0, Arrays.asList(2, 5, 11)}
         });
     }
 
@@ -95,7 +98,7 @@ public class MatchingEngineServiceTest {
         running(server, () -> {
             int totalLocations = 0;
             List<String> matches = new ArrayList<>();
-            List<JobPost> jobPostList = matchingEngineService.fetchMatchingJobPostForLatLng(centerLat, centerLng, radius);
+            List<JobPost> jobPostList = matchingEngineService.fetchMatchingJobPostForLatLng(centerLat, centerLng, radius, iDs);
             if(jobPostList == null) return;
             for(JobPost jobPost: jobPostList) {
                 List<String> localityName = new ArrayList<>();
