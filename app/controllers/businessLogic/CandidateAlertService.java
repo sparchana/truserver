@@ -64,7 +64,7 @@ public class CandidateAlertService {
                 }
                 jobsCount = MatchingEngineService.fetchMatchingJobPostForLatLng(candidate.getCandidateLocalityLat(),
                         candidate.getCandidateLocalityLat(),
-                        ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, jobPrefId).size();
+                        ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, jobPrefId, ServerConstants.SORT_DEFAULT).size();
             }
 
             if (jobsCount > 0) {

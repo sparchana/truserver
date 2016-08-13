@@ -142,6 +142,9 @@ public class JobPost extends Model {
     @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
     private List<JobApplication> jobPostApplicationList;
 
+    @Column(name = "Gender", columnDefinition = "int(1) null")
+    private Integer gender;
+
     public static Finder<String, JobPost> find = new Finder(JobPost.class);
 
     public JobPost() {
@@ -182,6 +185,7 @@ public class JobPost extends Model {
         this.jobPostEducation  = jobPost.jobPostEducation;
         this.recruiterProfile = jobPost.recruiterProfile;
         this.jobPostApplicationList = jobPost.jobPostApplicationList;
+        this.gender = jobPost.gender;
     }
 
     public RecruiterProfile getRecruiterProfile() {
@@ -442,5 +446,13 @@ public class JobPost extends Model {
 
     public void setJobPostEducation(Education jobPostEducation) {
         this.jobPostEducation = jobPostEducation;
+    }
+
+    public Integer getGender() {
+        return gender;
+    }
+
+    public void setGender(Integer gender) {
+        this.gender = gender;
     }
 }

@@ -98,7 +98,7 @@ public class MatchingEngineServiceTest {
         running(server, () -> {
             int totalLocations = 0;
             List<String> matches = new ArrayList<>();
-            List<JobPost> jobPostList = matchingEngineService.fetchMatchingJobPostForLatLng(centerLat, centerLng, radius, iDs);
+            List<JobPost> jobPostList = matchingEngineService.fetchMatchingJobPostForLatLng(centerLat, centerLng, radius, iDs, null);
             if(jobPostList == null) return;
             for(JobPost jobPost: jobPostList) {
                 List<String> localityName = new ArrayList<>();

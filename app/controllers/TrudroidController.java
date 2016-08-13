@@ -652,7 +652,8 @@ public class TrudroidController {
     public static Result mGetMatchingJobPosts(String mobile) {
         JobPostResponse.Builder jobPostResponseBuilder = JobPostResponse.newBuilder();
         try {
-            jobPostResponseBuilder.addAllJobPost(getJobPostObjectListFromJobPostList(mGetMatchingJobPostsRaw(mobile)));
+            jobPostResponseBuilder.addAllJobPost(getJobPostObjectListFromJobPostList(
+                    mGetMatchingJobPostsRaw(mobile, ServerConstants.SORT_DEFAULT)));
         } catch (NullPointerException n) {
 
         }
@@ -660,7 +661,7 @@ public class TrudroidController {
         return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
     }
 
-    public static List<JobPost> mGetMatchingJobPostsRaw(String mobile) {
+    public static List<JobPost> mGetMatchingJobPostsRaw(String mobile, Integer sortOrder) {
         mobile = FormValidator.convertToIndianMobileFormat(mobile);
         if (mobile != null) {
             Logger.info("getMatchingJob for Mobile: " + mobile);
@@ -675,7 +676,7 @@ public class TrudroidController {
                 } else {
                     return MatchingEngineService.fetchMatchingJobPostForLatLng(
                             existingCandidate.getCandidateLocalityLat(), existingCandidate.getCandidateLocalityLng(), null
-                            , jobPrefId);
+                            , jobPrefId, sortOrder);
                 }
             }
         }
@@ -698,12 +699,20 @@ public class TrudroidController {
 
     public static List<JobPost> filterJobs(JobFilterRequest jobFilterRequest) {
         List<JobPost> filteredJobPostList = new ArrayList<>();
+        Integer sortOrder = ServerConstants.SORT_DEFAULT;
         if (jobFilterRequest != null) {
-            List<JobPost> jobPostList = mGetMatchingJobPostsRaw(jobFilterRequest.getCandidateMobile());
+            if(jobFilterRequest.getSortByDatePosted()){
+                sortOrder = ServerConstants.SORT_BY_DATE_POSTED;
+            } else if (jobFilterRequest.getSortBySalary()){
+                sortOrder = ServerConstants.SORT_BY_SALARY;
+            }
+            List<JobPost> jobPostList = mGetMatchingJobPostsRaw(jobFilterRequest.getCandidateMobile(), sortOrder);
             if (jobPostList != null) {
                 Logger.info("jobFilterRequest sal: " + toJson(jobFilterRequest.getSalary()));
                 Logger.info("jobFilterRequest exp: " + toJson(jobFilterRequest.getExp()));
                 Logger.info("jobFilterRequest edu: " + toJson(jobFilterRequest.getEdu()));
+                Logger.info("jobFilterRequest sort_by_datePosted: " + toJson(jobFilterRequest.getSortByDatePosted()));
+                Logger.info("jobFilterRequest sort_by_sortBySalary: " + toJson(jobFilterRequest.getSortBySalary()));
                 for (JobPost jobPost : jobPostList) {
                     boolean shouldContinue = false;
                     if (jobFilterRequest.getSalary() != null && jobFilterRequest.getSalary() != JobFilterRequest.Salary.ANY_SALARY) {
@@ -720,7 +729,7 @@ public class TrudroidController {
                         Logger.info("Salary is not provided, hence salary filter not applied");
                         shouldContinue = true;
                     }
-                    /* filter result take Exp_Type:Any* in account */
+                    /* filter result take Exp_Type:Any* into-account */
                     if (shouldContinue && jobPost.getJobPostExperience() != null
                             && jobFilterRequest.getExp() != null) {
                         Logger.info("jobFilterRequest.getExp():" + jobFilterRequest.getExp() + "");
@@ -741,6 +750,7 @@ public class TrudroidController {
                             shouldContinue = false;
                         }
                     }
+                    /* filter education */
                     if (shouldContinue && jobPost.getJobPostEducation() != null
                             && jobFilterRequest.getEdu() != null) {
                         if (jobFilterRequest.getEduValue() == JobFilterRequest.Education.LT_TEN_VALUE
@@ -766,6 +776,21 @@ public class TrudroidController {
                         } else if (jobFilterRequest.getEdu() == JobFilterRequest.Education.ANY_EDUCATION) {
                             shouldContinue = true;
                         } else {
+                            shouldContinue = false;
+                        }
+                    }
+                    /* filter gender */
+                    if (shouldContinue && jobFilterRequest.getGender() != null && jobFilterRequest.getGender() != JobFilterRequest.Gender.ANY_GENDER) {
+                        if (jobPost.getGender()!= null  && (jobPost.getGender() == ServerConstants.GENDER_MALE
+                                || jobPost.getGender() == ServerConstants.GENDER_ANY)
+                                && jobFilterRequest.getGender() != JobFilterRequest.Gender.MALE) {
+                            shouldContinue = true;
+                        } else if (jobPost.getGender()!= null && (jobPost.getGender() == ServerConstants.GENDER_FEMALE
+                                || jobPost.getGender() == ServerConstants.GENDER_ANY)
+                                && jobFilterRequest.getGender() != JobFilterRequest.Gender.FEMALE) {
+                            shouldContinue = true;
+                        } else {
+                            Logger.info(jobPost.getGender()+" Gender specified in jobPostId:"+jobPost.getJobPostId());
                             shouldContinue = false;
                         }
                     }
@@ -849,7 +874,7 @@ public class TrudroidController {
                 }
                 return MatchingEngineService.fetchMatchingJobPostForLatLng(
                         jobSearchRequest.getLatitude(), jobSearchRequest.getLongitude(), null
-                        , jobPrefId);
+                        , jobPrefId, ServerConstants.SORT_DEFAULT);
             }
         }
         return null;
