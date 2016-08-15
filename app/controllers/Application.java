@@ -1012,7 +1012,7 @@ public class Application extends Controller {
     @Security.Authenticated(Secured.class)
     public static Result getSearchCandidateResult() {
         JsonNode searchReq = request().body().asJson();
-        if(searchReq == null){
+        if(searchReq == null) {
             return badRequest();
         }
 
@@ -1025,8 +1025,18 @@ public class Application extends Controller {
             e.printStackTrace();
         }
 
-        return ok(toJson(SupportSearchService.searchCandidateBySupport(searchCandidateRequest)));
+        String sessionId = session().get("sessionId");
+        Developer developer = null;
+
+        if(sessionId != null) {
+            developer = Developer.find.where().eq("developerSessionId", sessionId).findUnique();
+        }
+
+        JsonNode resp = toJson(SupportSearchService.searchCandidateBySupport(searchCandidateRequest, developer));
+
+        return ok(resp);
     }
+
     @Security.Authenticated(PartnerSecured.class)
     public static Result getAllLeadSource() {
         List<LeadSource> leadSources = LeadSource.find.all();

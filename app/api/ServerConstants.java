@@ -126,6 +126,7 @@ public class ServerConstants {
     public static final String SDF_FORMAT = "yyyy-MM-dd hh:mm:ss a";
     public static final String SDF_FORMAT_FOLLOWUP = "d MMM hh:mm a";
     public static final String SDF_FORMAT_ENTRY = "yyyy-MM-dd hh:mm:ss";
+    public static final String SDF_FORMAT_YYYYMMDD = "yyyy-MM-dd";
 
     public static final String PROD_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/1NIGQC5jmSDuQaGUF0Jw1UG-Dz_3huFtZf9Bo7ncPl4g/formResponse";
     public static final String DEV_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/e/1FAIpQLSe2owE6RMlW8Ynk8p-dWWBuQl0EclR2Go2ua9HGUIXxwMt0cg/formResponse";
