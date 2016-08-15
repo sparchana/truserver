@@ -19,4 +19,3 @@ alter table lead drop foreign key fk_lead_followupid;
 alter table lead drop column followupid;
 
 drop table if exists followup;
-

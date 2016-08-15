@@ -19,4 +19,3 @@ drop index ix_jobpost_jobrecruiterid on jobpost;
 
 alter table recruiterprofile drop column reccompany;
 alter table jobpost drop column jobrecruiterid;
-
