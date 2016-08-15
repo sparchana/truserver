@@ -505,4 +505,3 @@ drop table if exists timeshift;
 drop table if exists timeshiftpreference;
 
 drop table if exists transportationmodes;
-
