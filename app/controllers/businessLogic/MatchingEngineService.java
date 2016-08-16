@@ -5,6 +5,7 @@ package controllers.businessLogic;
  */
 
 import api.ServerConstants;
+import com.avaje.ebean.Query;
 import models.entity.JobPost;
 import models.entity.OM.JobPostToLocality;
 import play.Logger;
@@ -42,10 +43,20 @@ public class MatchingEngineService {
         if (sortOrder == null) {
             sortOrder = SORT_DEFAULT;
         }
-        List<JobPost> jobPostList = JobPost.find.where()
+        Query<JobPost> query = JobPost.find.query();
+
+        query = query
+                .where()
                 .eq("jobPostIsHot", IS_HOT)
-                .in("jobRole.jobRoleId", jobRoleIds)
-                .findList();
+                .query();
+
+        if(jobRoleIds != null && !jobRoleIds.isEmpty() ) {
+            query = query.select("*").fetch("jobRole")
+                    .where()
+                    .in("jobRole.jobRoleId", jobRoleIds)
+                    .query();
+        }
+        List<JobPost> jobPostList = query.findList();
         if (lat != null && lng != null) {
             List<JobPost> jobPostsResponseList = new ArrayList<>();
             for (JobPost jobPost : jobPostList) {

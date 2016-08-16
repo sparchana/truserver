@@ -16,7 +16,6 @@ import models.entity.JobPost;
 import models.entity.OM.JobPostToLocality;
 import models.entity.OM.JobPreference;
 import models.entity.OM.LocalityPreference;
-import models.entity.Static.Locality;
 import play.Logger;
 import play.mvc.Result;
 
@@ -24,8 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static models.util.Validator.isValidLocalityName;
-import static play.libs.Json.toJson;
+import static controllers.businessLogic.JobPostService.*;
 import static play.mvc.Http.Context.Implicit.request;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
@@ -206,68 +204,6 @@ public class TrudroidController {
         JobPostResponse.Builder jobPostResponseBuilder = JobPostResponse.newBuilder();
         jobPostResponseBuilder.addAllJobPost(getJobPostObjectListFromJobPostList(mGetAllJobPostsRaw()));
         return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
-    }
-
-    public static List<JobPost> mGetAllJobPostsRaw() {
-        return JobPost.find.where().eq("jobPostIsHot", ServerConstants.IS_HOT).findList();
-    }
-
-    private static List<JobPostObject> getJobPostObjectListFromJobPostList(List<JobPost> jobPostList) {
-        List<JobPostObject> jobPostListToReturn = new ArrayList<>();
-
-        if (jobPostList == null) {
-            return jobPostListToReturn;
-        }
-
-        for (models.entity.JobPost jobPost : jobPostList) {
-            JobPostObject.Builder jobPostBuilder
-                    = JobPostObject.newBuilder();
-            jobPostBuilder.setJobPostCreationMillis(jobPost.getJobPostCreateTimestamp().getTime());
-            jobPostBuilder.setJobPostId(jobPost.getJobPostId());
-            jobPostBuilder.setJobPostTitle(jobPost.getJobPostTitle());
-            jobPostBuilder.setJobPostCompanyName(jobPost.getCompany().getCompanyName());
-            jobPostBuilder.setJobPostMinSalary(jobPost.getJobPostMinSalary());
-            jobPostBuilder.setJobPostMaxSalary(jobPost.getJobPostMaxSalary());
-            jobPostBuilder.setVacancies(jobPost.getJobPostVacancies());
-
-            JobRoleObject.Builder jobRoleBuilder = JobRoleObject.newBuilder();
-
-            if (jobPost.getJobRole() != null) {
-                jobRoleBuilder.setJobRoleName(jobPost.getJobRole().getJobName());
-                jobRoleBuilder.setJobRoleId(jobPost.getJobRole().getJobRoleId());
-                jobPostBuilder.setJobRole(jobRoleBuilder.build());
-            }
-
-            jobPostBuilder.setJobPostCompanyLogo(jobPost.getCompany().getCompanyLogo());
-
-            ExperienceObject.Builder experienceBuilder = ExperienceObject.newBuilder();
-            experienceBuilder.setExperienceId(jobPost.getJobPostExperience().getExperienceId());
-            experienceBuilder.setExperienceType(jobPost.getJobPostExperience().getExperienceType());
-            jobPostBuilder.setJobPostExperience(experienceBuilder);
-
-            if (jobPost.getJobPostShift() != null) {
-                TimeShiftObject.Builder timeShiftBuilder = TimeShiftObject.newBuilder();
-
-                timeShiftBuilder.setTimeShiftId(jobPost.getJobPostShift().getTimeShiftId());
-                timeShiftBuilder.setTimeShiftName(jobPost.getJobPostShift().getTimeShiftName());
-                jobPostBuilder.setJobPostShift(timeShiftBuilder);
-            }
-
-            List<LocalityObject> jobPostLocalities = new ArrayList<>();
-            List<JobPostToLocality> localityList = jobPost.getJobPostToLocalityList();
-            for (JobPostToLocality locality : localityList) {
-                LocalityObject.Builder localityBuilder
-                        = LocalityObject.newBuilder();
-                localityBuilder.setLocalityId(locality.getLocality().getLocalityId());
-                localityBuilder.setLocalityName(locality.getLocality().getLocalityName());
-                jobPostLocalities.add(localityBuilder.build());
-            }
-            jobPostBuilder.addAllJobPostLocality(jobPostLocalities);
-
-            jobPostListToReturn.add(jobPostBuilder.build());
-        }
-
-        return jobPostListToReturn;
     }
 
     public static Result mApplyJob() {
@@ -633,22 +569,6 @@ public class TrudroidController {
         return ok(Base64.encodeBase64String(builder.build().toByteArray()));
     }
 
-    private static Locality getOrCreateLocality(String localityName) {
-        // validate localityName
-        localityName = localityName.trim();
-        if (localityName != null && isValidLocalityName(localityName)) {
-            Locality locality = Locality.find.where().eq("localityName", localityName).findUnique();
-            if (locality != null) {
-                return locality;
-            }
-        }
-        Locality locality = new Locality();
-        locality.setLocalityName(localityName);
-        locality.save();
-        locality = Locality.find.where().eq("localityName", localityName).findUnique();
-        return locality;
-    }
-
     public static Result mGetMatchingJobPosts(String mobile) {
         JobPostResponse.Builder jobPostResponseBuilder = JobPostResponse.newBuilder();
         try {
@@ -659,28 +579,6 @@ public class TrudroidController {
         }
 
         return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
-    }
-
-    public static List<JobPost> mGetMatchingJobPostsRaw(String mobile, Integer sortOrder) {
-        mobile = FormValidator.convertToIndianMobileFormat(mobile);
-        if (mobile != null) {
-            Logger.info("getMatchingJob for Mobile: " + mobile);
-            Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
-            if (existingCandidate != null) {
-                List<Long> jobPrefId = new ArrayList<>();
-                for (JobPreference jobPreference : existingCandidate.getJobPreferencesList()) {
-                    jobPrefId.add(jobPreference.getJobRole().getJobRoleId());
-                }
-                if (existingCandidate.getCandidateLocalityLat() == null || existingCandidate.getCandidateLocalityLng() == null) {
-                    return mGetAllJobPostsRaw();
-                } else {
-                    return MatchingEngineService.fetchMatchingJobPostForLatLng(
-                            existingCandidate.getCandidateLocalityLat(), existingCandidate.getCandidateLocalityLng(), null
-                            , jobPrefId, sortOrder);
-                }
-            }
-        }
-        return null;
     }
 
     public static Result mGetFilteredJobPosts() {
@@ -695,135 +593,6 @@ public class TrudroidController {
             e.printStackTrace();
         }
         return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
-    }
-
-    public static List<JobPost> filterJobs(JobFilterRequest jobFilterRequest) {
-        List<JobPost> filteredJobPostList = new ArrayList<>();
-        Integer sortOrder = ServerConstants.SORT_DEFAULT;
-        if (jobFilterRequest != null) {
-            if(jobFilterRequest.getSortByDatePosted()){
-                sortOrder = ServerConstants.SORT_BY_DATE_POSTED;
-            } else if (jobFilterRequest.getSortBySalary()){
-                sortOrder = ServerConstants.SORT_BY_SALARY;
-            }
-            List<JobPost> jobPostList = mGetMatchingJobPostsRaw(jobFilterRequest.getCandidateMobile(), sortOrder);
-            if (jobPostList != null) {
-                Logger.info("jobFilterRequest sal: " + toJson(jobFilterRequest.getSalary()));
-                Logger.info("jobFilterRequest exp: " + toJson(jobFilterRequest.getExp()));
-                Logger.info("jobFilterRequest edu: " + toJson(jobFilterRequest.getEdu()));
-                Logger.info("jobFilterRequest sort_by_datePosted: " + toJson(jobFilterRequest.getSortByDatePosted()));
-                Logger.info("jobFilterRequest sort_by_sortBySalary: " + toJson(jobFilterRequest.getSortBySalary()));
-                for (JobPost jobPost : jobPostList) {
-                    boolean shouldContinue = false;
-                    if (jobFilterRequest.getSalary() != null && jobFilterRequest.getSalary() != JobFilterRequest.Salary.ANY_SALARY) {
-                        if (jobPost.getJobPostMaxSalary() != null && (getSalaryValue(jobFilterRequest.getSalaryValue()) <= jobPost.getJobPostMaxSalary())) {
-                            Logger.info(jobPost.getJobPostId() + "-jobFilterRequest.getSalary: " + getSalaryValue(jobFilterRequest.getSalaryValue()) + "< Max:" + jobPost.getJobPostMaxSalary());
-                            shouldContinue = true;
-                        } else if (jobPost.getJobPostMinSalary() != null && getSalaryValue(jobFilterRequest.getSalaryValue()) <= jobPost.getJobPostMinSalary()) {
-                            Logger.info(jobPost.getJobPostId() + "-jobFilterRequest.getSalary: " + getSalaryValue(jobFilterRequest.getSalaryValue()) + "< Min:" + jobPost.getJobPostMinSalary());
-                            shouldContinue = true;
-                        } else {
-                            shouldContinue = false;
-                        }
-                    } else {
-                        Logger.info("Salary is not provided, hence salary filter not applied");
-                        shouldContinue = true;
-                    }
-                    /* filter result take Exp_Type:Any* into-account */
-                    if (shouldContinue && jobPost.getJobPostExperience() != null
-                            && jobFilterRequest.getExp() != null) {
-                        Logger.info("jobFilterRequest.getExp():" + jobFilterRequest.getExp() + "");
-                        if (jobFilterRequest.getExpValue() == JobFilterRequest.Experience.FRESHER_VALUE
-                                && (jobPost.getJobPostExperience().getExperienceId() == ServerConstants.EXPERIENCE_TYPE_FRESHER_ID
-                                || jobPost.getJobPostExperience().getExperienceId() == ServerConstants.EXPERIENCE_TYPE_ANY_ID)) {
-                            Logger.info("Matched with JobFilterRequest.Experience.FRESHER_VALUE: ");
-                            shouldContinue = true;
-                        } else if (jobFilterRequest.getExpValue() == JobFilterRequest.Experience.EXPERIENCED_VALUE
-                                && jobPost.getJobPostExperience().getExperienceId() > ServerConstants.EXPERIENCE_TYPE_FRESHER_ID) {
-                            Logger.info("JobFilterRequest.Experience.EXPERIENCED_VALUE: ");
-                            shouldContinue = true;
-                        } else if (jobFilterRequest.getExp() == JobFilterRequest.Experience.ANY_EXPERIENCE) {
-                            shouldContinue = true;
-                        } else {
-                            Logger.info("jobFilterRequest.getExp(): didn't match with this jobpost.exp:"
-                                    + jobPost.getJobPostExperience().getExperienceType() + "");
-                            shouldContinue = false;
-                        }
-                    }
-                    /* filter education */
-                    if (shouldContinue && jobPost.getJobPostEducation() != null
-                            && jobFilterRequest.getEdu() != null) {
-                        if (jobFilterRequest.getEduValue() == JobFilterRequest.Education.LT_TEN_VALUE
-                                && jobPost.getJobPostEducation().getEducationId() == ServerConstants.EDUCATION_TYPE_LT_10TH_ID) {
-                            Logger.info("JobFilterRequest.Education.LT_TEN_VALUE: ");
-                            shouldContinue = true;
-                        } else if (jobFilterRequest.getEduValue() == JobFilterRequest.Education.TEN_PASS_VALUE
-                                && jobPost.getJobPostEducation().getEducationId() == ServerConstants.EDUCATION_TYPE_10TH_PASS_ID) {
-                            Logger.info("JobFilterRequest.Education.TEN_PASS_VALUE: ");
-                            shouldContinue = true;
-                        } else if (jobFilterRequest.getEduValue() == JobFilterRequest.Education.TWELVE_PASS_VALUE
-                                && jobPost.getJobPostEducation().getEducationId() == ServerConstants.EDUCATION_TYPE_12TH_PASS_ID) {
-                            Logger.info("JobFilterRequest.Education.TWELVE_PASS_VALUE: ");
-                            shouldContinue = true;
-                        } else if (jobFilterRequest.getEduValue() == JobFilterRequest.Education.UG_VALUE
-                                && jobPost.getJobPostEducation().getEducationId() == ServerConstants.EDUCATION_TYPE_UG) {
-                            Logger.info("JobFilterRequest.Education.UG_VALUE: ");
-                            shouldContinue = true;
-                        } else if (jobFilterRequest.getEduValue() == JobFilterRequest.Education.PG_VALUE
-                                && jobPost.getJobPostEducation().getEducationId() == ServerConstants.EDUCATION_TYPE_PG) {
-                            Logger.info("JobFilterRequest.Education.PG_VALUE: ");
-                            shouldContinue = true;
-                        } else if (jobFilterRequest.getEdu() == JobFilterRequest.Education.ANY_EDUCATION) {
-                            shouldContinue = true;
-                        } else {
-                            shouldContinue = false;
-                        }
-                    }
-                    /* filter gender */
-                    if (shouldContinue && jobFilterRequest.getGender() != null && jobFilterRequest.getGender() != JobFilterRequest.Gender.ANY_GENDER) {
-                        if (jobPost.getGender()!= null  && (jobPost.getGender() == ServerConstants.GENDER_MALE
-                                || jobPost.getGender() == ServerConstants.GENDER_ANY)
-                                && jobFilterRequest.getGender() != JobFilterRequest.Gender.MALE) {
-                            shouldContinue = true;
-                        } else if (jobPost.getGender()!= null && (jobPost.getGender() == ServerConstants.GENDER_FEMALE
-                                || jobPost.getGender() == ServerConstants.GENDER_ANY)
-                                && jobFilterRequest.getGender() != JobFilterRequest.Gender.FEMALE) {
-                            shouldContinue = true;
-                        } else {
-                            Logger.info(jobPost.getGender()+" Gender specified in jobPostId:"+jobPost.getJobPostId());
-                            shouldContinue = false;
-                        }
-                    }
-                    if (shouldContinue) {
-                        Logger.info("returned jobs min/max sal:" + toJson(jobPost.getJobPostMinSalary() + "/" +
-                                jobPost.getJobPostMaxSalary()));
-                        filteredJobPostList.add(jobPost);
-                    }
-                }
-                Logger.info("returned jobs:" + toJson(filteredJobPostList.size()));
-                return filteredJobPostList;
-            }
-        }
-        return new ArrayList<>();
-    }
-
-    public static Long getSalaryValue(Integer id) {
-        switch (id) {
-            case JobFilterRequest.Salary.ANY_SALARY_VALUE:
-                return 0L;
-            case JobFilterRequest.Salary.EIGHT_K_PLUS_VALUE:
-                return 8000L;
-            case JobFilterRequest.Salary.TEN_K_PLUS_VALUE:
-                return 10000L;
-            case JobFilterRequest.Salary.TWELVE_K_PLUS_VALUE:
-                return 12000L;
-            case JobFilterRequest.Salary.FIFTEEN_K_PLUS_VALUE:
-                return 15000L;
-            case JobFilterRequest.Salary.TWENTY_K_PLUS_VALUE:
-                return 20000L;
-            default:
-                return 0L;
-        }
     }
 
     public static Result mFetchCandidateAlert() {
@@ -855,28 +624,13 @@ public class TrudroidController {
 
         JobPostResponse.Builder jobPostResponseBuilder = JobPostResponse.newBuilder();
         try {
-            jobPostResponseBuilder.addAllJobPost(getJobPostObjectListFromJobPostList(mGetMatchingJobPostsByLatLngRaw(jobSearchRequest)));
+            jobPostResponseBuilder.addAllJobPost(getJobPostObjectListFromJobPostList(
+                    mGetMatchingJobPostsByLatLngRaw(jobSearchRequest.getCandidateMobile()
+                    , jobSearchRequest.getLatitude(), jobSearchRequest.getLongitude(), ServerConstants.SORT_DEFAULT)));
         } catch (NullPointerException n) {
 
         }
         return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
     }
 
-    private static List<JobPost> mGetMatchingJobPostsByLatLngRaw(JobSearchRequest jobSearchRequest) {
-        String mobile = FormValidator.convertToIndianMobileFormat(jobSearchRequest.getCandidateMobile());
-        if (mobile != null) {
-            Logger.info("getMatchingJob for Mobile: " + mobile);
-            Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
-            if (existingCandidate != null) {
-                List<Long> jobPrefId = new ArrayList<>();
-                for (JobPreference jobPreference : existingCandidate.getJobPreferencesList()) {
-                    jobPrefId.add(jobPreference.getJobRole().getJobRoleId());
-                }
-                return MatchingEngineService.fetchMatchingJobPostForLatLng(
-                        jobSearchRequest.getLatitude(), jobSearchRequest.getLongitude(), null
-                        , jobPrefId, ServerConstants.SORT_DEFAULT);
-            }
-        }
-        return null;
-    }
 }
