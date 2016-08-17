@@ -1004,7 +1004,7 @@ public class Application extends Controller {
         return redirect("/candidateSignupSupport/0/false");
     }
 
-    @Security.Authenticated(AdminSecured.class)
+    @Security.Authenticated(RecSecured.class)
     public static Result searchCandidate() {
         return ok(views.html.search.render());
     }
