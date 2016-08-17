@@ -10,7 +10,7 @@ create table support_user_search_permissions (
 create table support_user_search_history (
   support_user_search_history_id bigint signed not null auto_increment not null,
   search_datetime               timestamp null,
-  search_query                  varchar(1000) null,
+  search_query                  text null,
   daily_search_sum              int signed null,
   developer_id                  bigint signed not null,
   constraint pk_support_user_search_history primary key (support_user_search_history_id)
