@@ -232,128 +232,153 @@ function getExpiry(expiryObject) {
 }
 
 function renderSearchResult(returnedData) {
+    var status = returnedData.status;
+    var candidateList = returnedData.candidateList;
 
-    var returnedDataArray = [];
-    try {
-        returnedData.forEach(function (newCandidate) {
-            // prep strings for display
+    if (status == 3) {
+        $('#searchErrorMsg').text("Looks like you have exhausted your search limit. Please contact your administrator.");
+        $('#searchError').show();
+        $('#candidateSearchResultTable').hide();
+    }
+    else {
+        $('#searchError').hide();
+        var returnedDataArray = [];
+        try {
+            candidateList.forEach(function (newCandidate) {
+                // prep strings for display
 
-            var timeShiftPref = "";
-            var locality = "";
-            if(newCandidate.timeShiftPreference != null){
-                timeShiftPref = newCandidate.timeShiftPreference.timeShift.timeShiftName;
-            }
-            if(newCandidate.locality != null){
-                locality = newCandidate.locality.localityName;
-            }
-            returnedDataArray.push({
-                'cLID': '<a href="/candidateSignupSupport/' + newCandidate.lead.leadId + '/false' + '" target="_blank">'+newCandidate.lead.leadId+'</a>',
-                'candidateFirstName' : newCandidate.candidateFirstName +" "+newCandidate.candidateLastName,
-                'candidateMobile' : newCandidate.candidateMobile,
-                'candidateLastWithdrawnSalary' : getLastWithdrawnSalary(newCandidate.candidateLastWithdrawnSalary),
-                'candidateJobPref' :  getJobPref(newCandidate.jobPreferencesList),
-                'candidateLocalityPref'  :getLocalityPref(newCandidate.localityPreferenceList),
-                'locality'  :getHomeLocality(newCandidate.locality),
-                'candidateLanguage' : getLanguageKnown(newCandidate.languageKnownList),
-                'candidateEducation' : getEducation(newCandidate.candidateEducation),
-                'candidateSkillList' : getSkills(newCandidate.candidateSkillList),
-                'candidateTimeShiftPref' : timeShiftPref,
-                'candidateExperience' :  getInYearMonthFormat(newCandidate.candidateTotalExperience),
-                'candidateIsAssessmentComplete' : getYesNo(newCandidate.candidateIsAssessed),
-                'candidateGender' : getGender(newCandidate.candidateGender),
-                'candidateIsEmployed' : getYesNo(newCandidate.candidateIsEmployed),
-                'candidateCreateTimestamp' : getDateTime(newCandidate.candidateCreateTimestamp),
-                'pastOrCurrentCompanyName' : getPastOrCurrentCompanyName(newCandidate.jobHistoryList),
-                'isMinProfileComplete' : getYesNo(newCandidate.isMinProfileComplete),
-                'followUp' : getYesNo(newCandidate.lead.followUp),
-                'noOfJobApplication' : newCandidate.jobApplicationList.length,
-                'experience' : getExperience(newCandidate.candidateExpList),
-                'age' : getAge(newCandidate.candidateDOB),
-                'candidateExperienceLetter' : getYesNo(newCandidate.candidateExperienceLetter),
-                'isActive' : getProperProfileStatus(newCandidate.candidateprofilestatus),
-                'candidateExpiry' : getExpiry(newCandidate.candidateStatusDetail)
-            })
-        });
-        
-        $('#candidateSearchResultTable').show();
-
-        var table = $('table#candidateSearchResultTable').DataTable({
-            "data": returnedDataArray,
-            "order": [[15, "desc"]],
-            "scrollX": true,
-            "columns": [
-                { "data": "cLID" },
-                { "data": "candidateFirstName" },
-                { "data": "candidateMobile" },
-                { "data": "candidateJobPref" },
-                { "data": "candidateLocalityPref" },
-                { "data": "locality" },
-                { "data": "candidateExperience" },
-                { "data": "candidateIsEmployed" },
-                { "data": "candidateLastWithdrawnSalary" },
-                { "data": "candidateLanguage" },
-                { "data": "candidateEducation" },
-                { "data": "candidateSkillList" },
-                { "data": "candidateGender" },
-                { "data": "candidateIsAssessmentComplete" },
-                { "data": "candidateTimeShiftPref" },
-                { "data": "candidateCreateTimestamp" },
-                { "data": "pastOrCurrentCompanyName" },
-                { "data": "isMinProfileComplete" },
-                { "data": "followUp" },
-                { "data": "noOfJobApplication" },
-                { "data": "experience" },
-                { "data": "age" },
-                { "data": "candidateExperienceLetter" },
-                { "data": "isActive" },
-                { "data": "candidateExpiry" }
-            ],
-            "deferRender": true,
-            "scroller": true,
-            "scrollY":'48vh',
-            "scrollCollapse": true,
-            "language": {
-                "emptyTable": "No data available"
-            },
-            "destroy": true,
-            "dom": 'Bfrtip',
-            "buttons": [
-                'copy', 'csv', 'excel'
-            ]
-        });
-
-        // Apply the search filter
-        table.columns().every( function () {
-            var that = this;
-            $( 'input', this.footer() ).on( 'keyup change', function () {
-                if ( that.search() !== this.value ) {
-                    that
-                        .search( this.value )
-                        .draw();
+                var timeShiftPref = "";
+                var locality = "";
+                if (newCandidate.timeShiftPreference != null) {
+                    timeShiftPref = newCandidate.timeShiftPreference.timeShift.timeShiftName;
                 }
-            } );
-        } );
+                if (newCandidate.locality != null) {
+                    locality = newCandidate.locality.localityName;
+                }
+                returnedDataArray.push({
+                    'cLID': '<a href="/candidateSignupSupport/' + newCandidate.lead.leadId + '" target="_blank">' + newCandidate.lead.leadId + '</a>',
+                    'candidateFirstName': newCandidate.candidateFirstName + " " + newCandidate.candidateLastName,
+                    'candidateMobile': newCandidate.candidateMobile,
+                    'candidateLastWithdrawnSalary': getLastWithdrawnSalary(newCandidate.candidateLastWithdrawnSalary),
+                    'candidateJobPref': getJobPref(newCandidate.jobPreferencesList),
+                    'candidateLocalityPref': getLocalityPref(newCandidate.localityPreferenceList),
+                    'locality': getHomeLocality(newCandidate.locality),
+                    'candidateLanguage': getLanguageKnown(newCandidate.languageKnownList),
+                    'candidateEducation': getEducation(newCandidate.candidateEducation),
+                    'candidateSkillList': getSkills(newCandidate.candidateSkillList),
+                    'candidateTimeShiftPref': timeShiftPref,
+                    'candidateExperience': getInYearMonthFormat(newCandidate.candidateTotalExperience),
+                    'candidateIsAssessmentComplete': getYesNo(newCandidate.candidateIsAssessed),
+                    'candidateGender': getGender(newCandidate.candidateGender),
+                    'candidateIsEmployed': getYesNo(newCandidate.candidateIsEmployed),
+                    'candidateCreateTimestamp': getDateTime(newCandidate.candidateCreateTimestamp),
+                    'pastOrCurrentCompanyName': getPastOrCurrentCompanyName(newCandidate.jobHistoryList),
+                    'isMinProfileComplete': getYesNo(newCandidate.isMinProfileComplete),
+                    'followUp': getYesNo(newCandidate.lead.followUp),
+                    'noOfJobApplication': newCandidate.jobApplicationList.length,
+                    'experience': getExperience(newCandidate.candidateExpList),
+                    'age': getAge(newCandidate.candidateDOB),
+                    'candidateExperienceLetter': getYesNo(newCandidate.candidateExperienceLetter),
+                    'isActive': getProperProfileStatus(newCandidate.candidateprofilestatus),
+                    'candidateExpiry': getExpiry(newCandidate.candidateStatusDetail)
+                })
+            });
 
-        /* Initialise datatables */
-        $.fn.dataTable.moment('dd/MM/YYYY HH:mm:ss');
+            $('#candidateSearchResultTable').show();
 
-        var oTable = $('#candidateSearchResultTable').dataTable();
+            var table = $('table#candidateSearchResultTable').DataTable({
+                "data": returnedDataArray,
+                "order": [[15, "desc"]],
+                "scrollX": true,
+                "columns": [
+                    {"data": "cLID"},
+                    {"data": "candidateFirstName"},
+                    {"data": "candidateMobile"},
+                    {"data": "candidateJobPref"},
+                    {"data": "candidateLocalityPref"},
+                    {"data": "locality"},
+                    {"data": "candidateExperience"},
+                    {"data": "candidateIsEmployed"},
+                    {"data": "candidateLastWithdrawnSalary"},
+                    {"data": "candidateLanguage"},
+                    {"data": "candidateEducation"},
+                    {"data": "candidateSkillList"},
+                    {"data": "candidateGender"},
+                    {"data": "candidateIsAssessmentComplete"},
+                    {"data": "candidateTimeShiftPref"},
+                    {"data": "candidateCreateTimestamp"},
+                    {"data": "pastOrCurrentCompanyName"},
+                    {"data": "isMinProfileComplete"},
+                    {"data": "followUp"},
+                    {"data": "noOfJobApplication"},
+                    {"data": "experience"},
+                    {"data": "age"},
+                    {"data": "candidateExperienceLetter"},
+                    {"data": "isActive"},
+                    {"data": "candidateExpiry"}
+                ],
+                "deferRender": true,
+                "scroller": true,
+                "scrollY": '48vh',
+                "scrollCollapse": true,
+                "language": {
+                    "emptyTable": "No data available"
+                },
+                "destroy": true,
+                "dom": 'Bfrtip',
+                "buttons": [
+                    'copy', 'csv', 'excel'
+                ]
+            });
 
-        /* Add event listeners to the two range filtering inputs */
-        $('#minExp').keyup( function() { oTable.fnDraw(); } );
-        $('#maxExp').keyup( function() { oTable.fnDraw(); } );
-        $('#minSal').keyup( function() { oTable.fnDraw(); } );
-        $('#maxSal').keyup( function() { oTable.fnDraw(); } );
-        $('#minJobApplication').keyup( function() { oTable.fnDraw(); } );
-        $('#maxJobApplication').keyup( function() { oTable.fnDraw(); } );
-        $('#minAge').keyup( function() { oTable.fnDraw(); } );
-        $('#maxAge').keyup( function() { oTable.fnDraw(); } );
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
+            // Apply the search filter
+            table.columns().every(function () {
+                var that = this;
+                $('input', this.footer()).on('keyup change', function () {
+                    if (that.search() !== this.value) {
+                        that
+                            .search(this.value)
+                            .draw();
+                    }
+                });
+            });
+
+            /* Initialise datatables */
+            $.fn.dataTable.moment('dd/MM/YYYY HH:mm:ss');
+
+            var oTable = $('#candidateSearchResultTable').dataTable();
+
+            /* Add event listeners to the two range filtering inputs */
+            $('#minExp').keyup(function () {
+                oTable.fnDraw();
+            });
+            $('#maxExp').keyup(function () {
+                oTable.fnDraw();
+            });
+            $('#minSal').keyup(function () {
+                oTable.fnDraw();
+            });
+            $('#maxSal').keyup(function () {
+                oTable.fnDraw();
+            });
+            $('#minJobApplication').keyup(function () {
+                oTable.fnDraw();
+            });
+            $('#maxJobApplication').keyup(function () {
+                oTable.fnDraw();
+            });
+            $('#minAge').keyup(function () {
+                oTable.fnDraw();
+            });
+            $('#maxAge').keyup(function () {
+                oTable.fnDraw();
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
     }
     NProgress.done();
 }
-
 
 function searchForm(){
     var localityArray = [];
