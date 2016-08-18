@@ -193,6 +193,7 @@ public class TrudroidController {
         JobPostResponse.Builder jobPostResponseBuilder = JobPostResponse.newBuilder();
         List<JobPost> jobPostList = JobPost.find.where().eq("jobPostIsHot", ServerConstants.IS_HOT).findList();
         List<JobPostObject> jobPostListToReturn = getJobPostObjectListFromJobPostList(jobPostList);
+        //checking if the job is already applied or not
         jobPostResponseBuilder.addAllJobPost(jobPostListToReturn);
         return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
     }
@@ -795,6 +796,20 @@ public class TrudroidController {
                                     MatchingEngineService.fetchMatchingJobPostForLatLng(
                                             existingCandidate.getCandidateLocalityLat(), existingCandidate.getCandidateLocalityLng(), null)
                             );
+
+                    //checking if the job is already applied or not
+                    List<JobApplication> jobApplicationList = JobApplication.find.where().eq("candidateId", existingCandidate.getCandidateId()).findList();
+                    for(int i=0; i<jobPostListToReturn.size(); i++){
+                        for(int j=0; j<jobApplicationList.size(); j++){
+                            if(jobPostListToReturn.get(i).getJobPostId() == jobApplicationList.get(j).getJobPost().getJobPostId()){
+                                JobPostObject.Builder newJobPostBuilder = jobPostListToReturn.get(i).toBuilder();
+                                newJobPostBuilder.setIsApplied(1);
+                                jobPostListToReturn.remove(i);
+                                jobPostListToReturn.add(i, newJobPostBuilder.build());
+                            }
+                        }
+                    }
+
                     jobPostResponseBuilder.addAllJobPost(jobPostListToReturn);
                 }
             }
