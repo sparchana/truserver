@@ -927,7 +927,7 @@ public class CandidateService
                     if(existingCandidate.getJobPreferencesList().size() > 0){
                         loginResponse.setCandidateJobPrefStatus(1);
                     }
-                    if(existingCandidate.getLocality() != null){
+                    if(existingCandidate.getCandidateLocalityLat() != null && existingCandidate.getCandidateLocalityLng() != null){
                         loginResponse.setCandidateHomeLocalityStatus(1);
                     }
                     loginResponse.setStatus(loginResponse.STATUS_SUCCESS);

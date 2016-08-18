@@ -79,6 +79,7 @@ public class TrudroidController {
                 loginResponseBuilder.setLeadId(loginResponse.getLeadId());
                 loginResponseBuilder.setCandidateJobPrefStatus(loginResponse.getCandidateJobPrefStatus());
                 loginResponseBuilder.setCandidateHomeLocalityStatus(loginResponse.getCandidateHomeLocalityStatus());
+                Candidate candidate = Candidate.find.where().eq("candidateId", loginResponse.getCandidateId()).findUnique();
             }
 
             Logger.info("Status returned = " + loginResponseBuilder.getStatus());
@@ -230,12 +231,8 @@ public class TrudroidController {
             jobPostBuilder.setJobPostMaxSalary(jobPost.getJobPostMaxSalary());
             jobPostBuilder.setVacancies(jobPost.getJobPostVacancies());
 
-            JobRoleObject.Builder jobRoleBuilder = JobRoleObject.newBuilder();
-
             if (jobPost.getJobRole() != null) {
-                jobRoleBuilder.setJobRoleName(jobPost.getJobRole().getJobName());
-                jobRoleBuilder.setJobRoleId(jobPost.getJobRole().getJobRoleId());
-                jobPostBuilder.setJobRole(jobRoleBuilder.build());
+                jobPostBuilder.setJobRole(jobPost.getJobRole().getJobName());
             }
 
             jobPostBuilder.setJobPostCompanyLogo(jobPost.getCompany().getCompanyLogo());
@@ -253,21 +250,24 @@ public class TrudroidController {
                 jobPostBuilder.setJobPostShift(timeShiftBuilder);
             }
 
-            List<LocalityObject> jobPostLocalities = new ArrayList<>();
             List<JobPostToLocality> localityList = jobPost.getJobPostToLocalityList();
-            for (JobPostToLocality locality : localityList) {
-                LocalityObject.Builder localityBuilder
-                        = LocalityObject.newBuilder();
-                localityBuilder.setLocalityId(locality.getLocality().getLocalityId());
-                localityBuilder.setLocalityName(locality.getLocality().getLocalityName());
-                jobPostLocalities.add(localityBuilder.build());
-            }
-            jobPostBuilder.addAllJobPostLocality(jobPostLocalities);
-
+            jobPostBuilder.addAllJobPostLocality(getLocalityFromJobToLocalityObject(localityList));
             jobPostListToReturn.add(jobPostBuilder.build());
         }
 
         return jobPostListToReturn;
+    }
+
+    public static List<LocalityObject> getLocalityFromJobToLocalityObject(List<JobPostToLocality> jobPostToLocalityList){
+        List<LocalityObject> jobPostLocalities = new ArrayList<>();
+        for (JobPostToLocality locality : jobPostToLocalityList) {
+            LocalityObject.Builder localityBuilder
+                    = LocalityObject.newBuilder();
+            localityBuilder.setLocalityId(locality.getLocality().getLocalityId());
+            localityBuilder.setLocalityName(locality.getLocality().getLocalityName());
+            jobPostLocalities.add(localityBuilder.build());
+        }
+        return jobPostLocalities;
     }
 
     public static Result mApplyJob() {
@@ -277,15 +277,20 @@ public class TrudroidController {
         try {
             String requestString = request().body().asText();
             pApplyJobRequest = ApplyJobRequest.parseFrom(Base64.decodeBase64(requestString));
+
+            //conversion from proto to http request object
             api.http.httpRequest.ApplyJobRequest applyJobRequest = new api.http.httpRequest.ApplyJobRequest();
             applyJobRequest.setJobId(Math.toIntExact(pApplyJobRequest.getJobPostId()));
             applyJobRequest.setLocalityId(Math.toIntExact(pApplyJobRequest.getLocalityId()));
             applyJobRequest.setCandidateMobile(FormValidator.convertToIndianMobileFormat(pApplyJobRequest.getCandidateMobile()));
+
+            //applying job
             api.http.httpResponse.ApplyJobResponse applyJobResponse = JobService.applyJob(applyJobRequest);
+
+            //setting status response
             applyJobResponseBuilder.setStatus(ApplyJobResponse.Status.valueOf(applyJobResponse.getStatus()));
 
             Logger.info("Status returned = " + applyJobResponseBuilder.getStatus());
-
         } catch (InvalidProtocolBufferException e) {
             Logger.info("Unable to parse message");
         }
@@ -339,17 +344,15 @@ public class TrudroidController {
 
     public static Result mGetCandidateInformation() {
         CandidateInformationRequest pCandidateInformationRequest = null;
-        GetCandidateInformationResponse.Builder getCandidateInfoBulder = GetCandidateInformationResponse.newBuilder();
+        GetCandidateInformationResponse.Builder getCandidateInfoBuilder = GetCandidateInformationResponse.newBuilder();
         CandidateObject.Builder candidateBuilder = CandidateObject.newBuilder();
-
-
         try {
             String requestString = request().body().asText();
             pCandidateInformationRequest = CandidateInformationRequest.parseFrom(Base64.decodeBase64(requestString));
 
             Candidate candidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(pCandidateInformationRequest.getCandidateMobile()));
             if (candidate != null) {
-                getCandidateInfoBulder.setStatus(GetCandidateInformationResponse.Status.valueOf(1));
+                getCandidateInfoBuilder.setStatus(GetCandidateInformationResponse.Status.valueOf(1));
                 candidateBuilder.setCandidateId(candidate.getCandidateId());
                 candidateBuilder.setCandidateMobile(candidate.getCandidateMobile());
                 candidateBuilder.setCandidateFirstName(candidate.getCandidateFirstName());
@@ -361,6 +364,9 @@ public class TrudroidController {
                 if(candidate.getCandidateIsEmployed() != null ){
                     candidateBuilder.setCandidateIsEmployed(candidate.getCandidateIsEmployed());
                 }
+                int scale = (int) Math.pow(10, 2);
+                float percentValue = (float) Math.round(CandidateService.getProfileCompletionPercent(FormValidator.convertToIndianMobileFormat(candidate.getCandidateMobile())) * 100 * scale) / scale;
+                candidateBuilder.setCandidateProfileCompletePercent(percentValue);
                 candidateBuilder.setCandidateIsAssessed(candidate.getCandidateIsAssessed());
                 candidateBuilder.setCandidateMinProfileComplete(candidate.getIsMinProfileComplete());
                 if (candidate.getCandidateGender() != null) {
@@ -369,6 +375,8 @@ public class TrudroidController {
                 if (candidate.getCandidateTotalExperience() != null) {
                     candidateBuilder.setCandidateTotalExperience(candidate.getCandidateTotalExperience());
                 }
+
+                candidateBuilder.setAppliedJobs(candidate.getJobApplicationList().size());
 
                 //getting candidate DOB
                 if(candidate.getCandidateDOB() != null){
@@ -406,9 +414,14 @@ public class TrudroidController {
 
                 //getting education
                 CandidateEducationObject.Builder candidateEducationBuilder = CandidateEducationObject.newBuilder();
-
                 if (candidate.getCandidateEducation() != null) {
-                    candidateEducationBuilder.setCandidateInstitute(candidate.getCandidateEducation().getCandidateLastInstitute());
+                    if(candidate.getCandidateEducation().getCandidateLastInstitute() != null){
+                        candidateEducationBuilder.setCandidateInstitute(candidate.getCandidateEducation().getCandidateLastInstitute());
+                    }
+                    candidateEducationBuilder.setCandidateEducationCompletionStatus(0);
+                    if(candidate.getCandidateEducation().getCandidateEducationCompletionStatus() != null){
+                        candidateEducationBuilder.setCandidateEducationCompletionStatus(candidate.getCandidateEducation().getCandidateEducationCompletionStatus());
+                    }
                     DegreeObject.Builder degreeBuilder = DegreeObject.newBuilder();
                     if (candidate.getCandidateEducation().getDegree() != null) {
                         degreeBuilder.setDegreeId(candidate.getCandidateEducation().getDegree().getDegreeId());
@@ -489,32 +502,34 @@ public class TrudroidController {
                     }
                     candidateBuilder.addAllCandidateSkillObject(candidateSkillListToReturn);
                 }
-                getCandidateInfoBulder.setCandidate(candidateBuilder);
+                getCandidateInfoBuilder.setCandidate(candidateBuilder);
 
                 List<models.entity.Static.JobRole> jobRoleList = models.entity.Static.JobRole.find.all();
-                getCandidateInfoBulder.addAllJobRoles(getJobRoleObjectListFromJobRoleList(jobRoleList));
+                getCandidateInfoBuilder.addAllJobRoles(getJobRoleObjectListFromJobRoleList(jobRoleList));
             } else {
-                getCandidateInfoBulder.setStatus(GetCandidateInformationResponse.Status.valueOf(2));
+                getCandidateInfoBuilder.setStatus(GetCandidateInformationResponse.Status.valueOf(2));
             }
         } catch (Exception e) {
             Logger.info("Unable to parse message");
+            getCandidateInfoBuilder.setStatus(GetCandidateInformationResponse.Status.valueOf(2));
         }
 
         if (pCandidateInformationRequest == null) {
             Logger.info("Invalid message");
+            getCandidateInfoBuilder.setStatus(GetCandidateInformationResponse.Status.valueOf(2));
             return badRequest();
         }
-        return ok(Base64.encodeBase64String(getCandidateInfoBulder.build().toByteArray()));
+        return ok(Base64.encodeBase64String(getCandidateInfoBuilder.build().toByteArray()));
     }
 
     public static JobPostObject getJobPostInformationFromJobPostObject(JobPost jobPost) {
+        //initializing jobPostObject (proto) to return
         JobPostObject jobPostObject;
+
         JobPostObject.Builder jobPostBuilder = JobPostObject.newBuilder();
         JobRoleObject.Builder jobRoleBuilder = JobRoleObject.newBuilder();
         if (jobPost.getJobRole() != null) {
-            jobRoleBuilder.setJobRoleName(jobPost.getJobRole().getJobName());
-            jobRoleBuilder.setJobRoleId(jobPost.getJobRole().getJobRoleId());
-            jobPostBuilder.setJobRole(jobRoleBuilder.build());
+            jobPostBuilder.setJobRole(jobPost.getJobRole().getJobName());
         }
 
         jobPostBuilder.setJobPostCreationMillis(jobPost.getJobPostCreateTimestamp().getTime());
@@ -530,6 +545,7 @@ public class TrudroidController {
             jobPostBuilder.setJobPostEndTime(jobPost.getJobPostEndTime());
         }
 
+        //setting values to jobPostObject from Model object
         jobPostBuilder.setJobPostId(jobPost.getJobPostId());
         jobPostBuilder.setJobPostCompanyName(jobPost.getCompany().getCompanyName());
         jobPostBuilder.setJobPostCompanyLogo(jobPost.getCompany().getCompanyLogo());
@@ -546,16 +562,11 @@ public class TrudroidController {
             jobPostBuilder.setJobPostWorkingDays("");
         }
 
-        List<LocalityObject> jobPostLocalities = new ArrayList<>();
+        //adding jobPost localities
         List<JobPostToLocality> localityList = jobPost.getJobPostToLocalityList();
-        for (JobPostToLocality locality : localityList) {
-            LocalityObject.Builder localityBuilder = LocalityObject.newBuilder();
-            localityBuilder.setLocalityId(locality.getLocality().getLocalityId());
-            localityBuilder.setLocalityName(locality.getLocality().getLocalityName());
-            jobPostLocalities.add(localityBuilder.build());
-        }
-        jobPostBuilder.addAllJobPostLocality(jobPostLocalities);
+        jobPostBuilder.addAllJobPostLocality(getLocalityFromJobToLocalityObject(localityList));
 
+        //adding job post experience
         if (jobPost.getJobPostExperience() != null) {
             ExperienceObject.Builder experienceBuilder = ExperienceObject.newBuilder();
             experienceBuilder.setExperienceId(jobPost.getJobPostExperience().getExperienceId());
@@ -563,11 +574,13 @@ public class TrudroidController {
             jobPostBuilder.setJobPostExperience(experienceBuilder);
         }
 
+        //adding job post time Shift
         TimeShiftObject.Builder timeShiftBuilder = TimeShiftObject.newBuilder();
         timeShiftBuilder.setTimeShiftId(jobPost.getJobPostShift().getTimeShiftId());
         timeShiftBuilder.setTimeShiftName(jobPost.getJobPostShift().getTimeShiftName());
         jobPostBuilder.setJobPostShift(timeShiftBuilder);
 
+        //adding job post education
         if (jobPost.getJobPostEducation() != null) {
             EducationObject.Builder educationBuilder = EducationObject.newBuilder();
             educationBuilder.setEducationId(jobPost.getJobPostEducation().getEducationId());
@@ -577,15 +590,17 @@ public class TrudroidController {
         jobPostObject = jobPostBuilder.build();
 
         return jobPostObject;
-
     }
 
     public static CompanyObject getCompanyInfoFromCompanyObject(Company company, JobPost jobPost){
         CompanyObject.Builder companyBuilder = CompanyObject.newBuilder();
+
+        //setting values of company model object to proto company object
         companyBuilder.setCompanyName(company.getCompanyName());
         companyBuilder.setCompanyId(company.getCompanyId());
         companyBuilder.setCompanyAddress(company.getCompanyAddress());
 
+        //adding company Locality
         LocalityObject.Builder companyLocality = LocalityObject.newBuilder();
 
         if (company.getCompanyLocality() != null) {
@@ -594,16 +609,22 @@ public class TrudroidController {
             companyBuilder.setCompanyLocality(companyLocality.build());
         }
 
+        //adding company description
         if (company.getCompanyDescription() != null) {
             companyBuilder.setCompanyDescription(company.getCompanyDescription());
         }
+
+        //adding company employee count
         if (company.getCompanyEmployeeCount() != null) {
             companyBuilder.setCompanyEmployeeCount(company.getCompanyEmployeeCount());
         }
+
+        //adding company logo
         if (company.getCompanyLogo() != null) {
             companyBuilder.setCompanyLogo(company.getCompanyLogo());
         }
 
+        //adding company type
         if (company.getCompType() != null) {
             CompanyTypeObject.Builder companyTypeBuilder = CompanyTypeObject.newBuilder();
             companyTypeBuilder.setCompanyTypeId(company.getCompType().getCompanyTypeId());
@@ -615,39 +636,40 @@ public class TrudroidController {
             companyBuilder.setCompanyWebsite(company.getCompanyWebsite());
         }
 
+        //getting other active (Hot Jobs) jobs from the above company
+
+        //getting list of all the other jobs from Model
         List<JobPost> similarJobs = JobPost.find.where().eq("jobPostIsHot", "1").eq("companyId", company.getCompanyId()).findList();
+
+        //creating a new list of type proto which will contain all the other job being offered by a company
         List<JobPostObject> similarJobPostListToReturn = new ArrayList<>();
+
+        //iterating in the list of other jobs (model list) and setting in proto builder objects
         for (models.entity.JobPost companyJobPost : similarJobs) {
+            //checking if the job is the same as the above job which we are fetching the detail
             if (companyJobPost.getJobPostId() != jobPost.getJobPostId()) {
-                JobPostObject.Builder companyJobPostBuilder
+                // new builder to get info of one particular job post
+                JobPostObject.Builder companyOtherJobPostBuilder
                         = JobPostObject.newBuilder();
 
-                JobRoleObject.Builder similarJobRoleBuilder = JobRoleObject.newBuilder();
-
+                // jobRole object of type proto to get jobRole details
                 if (companyJobPost.getJobRole() != null) {
-                    similarJobRoleBuilder.setJobRoleName(jobPost.getJobRole().getJobName());
-                    similarJobRoleBuilder.setJobRoleId(jobPost.getJobRole().getJobRoleId());
-                    companyJobPostBuilder.setJobRole(similarJobRoleBuilder.build());
+                    companyOtherJobPostBuilder.setJobRole(companyJobPost.getJobRole().getJobName());
                 }
 
-                companyJobPostBuilder.setJobPostId(companyJobPost.getJobPostId());
-                companyJobPostBuilder.setJobPostTitle(companyJobPost.getJobPostTitle());
-                companyJobPostBuilder.setJobPostMinSalary(companyJobPost.getJobPostMinSalary());
-                companyJobPostBuilder.setJobPostMaxSalary(companyJobPost.getJobPostMaxSalary());
+                //setting other values to the other jobs post builder
+                companyOtherJobPostBuilder.setJobPostId(companyJobPost.getJobPostId());
+                companyOtherJobPostBuilder.setJobPostTitle(companyJobPost.getJobPostTitle());
+                companyOtherJobPostBuilder.setJobPostMinSalary(companyJobPost.getJobPostMinSalary());
+                companyOtherJobPostBuilder.setJobPostMaxSalary(companyJobPost.getJobPostMaxSalary());
 
-                List<LocalityObject> similarJobPostLocalities = new ArrayList<>();
-                List<LocalityObject> jobPostLocalities = new ArrayList<>();
-                List<JobPostToLocality> similarJobLocalityList = companyJobPost.getJobPostToLocalityList();
-                for (JobPostToLocality locality : similarJobLocalityList) {
-                    LocalityObject.Builder localityBuilder
-                            = LocalityObject.newBuilder();
-                    localityBuilder.setLocalityId(locality.getLocality().getLocalityId());
-                    localityBuilder.setLocalityName(locality.getLocality().getLocalityName());
-                    similarJobPostLocalities.add(localityBuilder.build());
-                }
-                companyJobPostBuilder.addAllJobPostLocality(jobPostLocalities);
+                // list of all the localities of the job post
+                List<JobPostToLocality> jobPostToLocalityList = companyJobPost.getJobPostToLocalityList();
 
-                similarJobPostListToReturn.add(companyJobPostBuilder.build());
+                //adding all the other jobs of a company
+                companyOtherJobPostBuilder.addAllJobPostLocality(getLocalityFromJobToLocalityObject(jobPostToLocalityList));
+
+                similarJobPostListToReturn.add(companyOtherJobPostBuilder.build());
             }
         }
         companyBuilder.addAllCompanyOtherJobs(similarJobPostListToReturn);
@@ -663,16 +685,28 @@ public class TrudroidController {
             String requestString = request().body().asText();
             pGetJobPostDetailsRequest = GetJobPostDetailsRequest.parseFrom(Base64.decodeBase64(requestString));
 
+            //getting jobPost model object
             JobPost jobPost = JobPost.find.where().eq("jobPostId", pGetJobPostDetailsRequest.getJobPostId()).findUnique();
             if (jobPost != null) {
                 getJobPostDetailsResponse.setStatus(GetJobPostDetailsResponse.Status.valueOf(1));
                 getJobPostDetailsResponse.setJobPost(getJobPostInformationFromJobPostObject(jobPost));
-
                 Logger.info("Status returned = " + getJobPostDetailsResponse.getStatus());
             }
+
+            //getting company object from DB
             Company company = Company.find.where().eq("companyId", jobPost.getCompany().getCompanyId()).findUnique();
             if (company != null) {
                 getJobPostDetailsResponse.setCompany(getCompanyInfoFromCompanyObject(company, jobPost));
+            }
+
+            //checking if the candidate has applied to this job or now not
+            getJobPostDetailsResponse.setAlreadyApplied(false);
+            if(pGetJobPostDetailsRequest.getCandidateMobile() != "0"){
+                Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(pGetJobPostDetailsRequest.getCandidateMobile()));
+                JobApplication jobApplication = JobApplication.find.where().eq("candidateId", existingCandidate.getCandidateId()).eq("jobPostId", pGetJobPostDetailsRequest.getJobPostId()).findUnique();
+                if(jobApplication != null){
+                    getJobPostDetailsResponse.setAlreadyApplied(true);
+                }
             }
 
         } catch (Exception e) {
@@ -770,6 +804,7 @@ public class TrudroidController {
 
     public static Result mGetCandidateJobApplication() {
         CandidateAppliedJobsRequest candidateAppliedJobsRequest = null;
+        //Main jobApplication response builder
         CandidateAppliedJobsResponse.Builder candidateAppliedJobsBuilder = CandidateAppliedJobsResponse.newBuilder();
 
         try {
@@ -777,13 +812,24 @@ public class TrudroidController {
             candidateAppliedJobsRequest = CandidateAppliedJobsRequest.parseFrom(Base64.decodeBase64(requestString));
             Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(candidateAppliedJobsRequest.getCandidateMobile()));
             if (existingCandidate != null) {
-                JobPostResponse.Builder jobPostResponseBuilder = JobPostResponse.newBuilder();
-                JobApplicationObject.Builder jobApplicationBuilder = JobApplicationObject.newBuilder();
-                List<JobApplication> jobApplicationList = JobApplication.find.where().eq("candidateId", existingCandidate.getCandidateId()).orderBy("jobApplicationId desc").findList();
+
+                //job Application list builder which will contain all the job application
                 List<JobApplicationObject> jobApplicationListToReturn = new ArrayList<JobApplicationObject>();
+
+
+                //Getting list of all the job applications applied by a user from model
+                List<JobApplication> jobApplicationList = JobApplication.find.where().eq("candidateId", existingCandidate.getCandidateId()).orderBy("jobApplicationId desc").findList();
+
+                //Job Application Object (Proto) to get all the job application applied by the candidate (list object)
+                JobApplicationObject.Builder jobApplicationBuilder = JobApplicationObject.newBuilder();
+
+                //iterating all the applied jobs
                 for (JobApplication jobApplication : jobApplicationList) {
+
+                    //setting all the values form model object to proto object (builder)
                     jobApplicationBuilder.setJobApplicationAppliedMillis(jobApplication.getJobApplicationCreateTimeStamp().getTime());
 
+                    //getting pre screened locality
                     if (jobApplication.getLocality() != null) {
                         LocalityObject.Builder localityBuilder = LocalityObject.newBuilder();
                         Locality locality = Locality.find.where().eq("localityId", jobApplication.getLocality().getLocalityId()).findUnique();
@@ -793,10 +839,13 @@ public class TrudroidController {
                         }
                     }
 
+                    //setting the job post of the applied job
                     jobApplicationBuilder.setJobPost(getJobPostInformationFromJobPostObject(jobApplication.getJobPost()));
+
+                    //adding the jobApplicationBuilder to the main list to be returned
                     jobApplicationListToReturn.add(jobApplicationBuilder.build());
                 }
-
+                //adding the list to the main response builder
                 candidateAppliedJobsBuilder.addAllJobApplication(jobApplicationListToReturn);
 
                 return ok(Base64.encodeBase64String(candidateAppliedJobsBuilder.build().toByteArray()));
@@ -815,6 +864,7 @@ public class TrudroidController {
             String requestString = request().body().asText();
             updateCandidateBasicProfileRequest = UpdateCandidateBasicProfileRequest.parseFrom(Base64.decodeBase64(requestString));
 
+            //getting all the values from the request builder and converting it to http request object
             AddCandidateRequest addCandidateRequest = new AddCandidateRequest();
             addCandidateRequest.setCandidateMobile(updateCandidateBasicProfileRequest.getCandidateMobile());
             addCandidateRequest.setCandidateFirstName(updateCandidateBasicProfileRequest.getCandidateFirstName());
@@ -825,19 +875,22 @@ public class TrudroidController {
             }
             addCandidateRequest.setCandidateJobPref(jobRoleIdList);
             addCandidateRequest.setCandidateGender(updateCandidateBasicProfileRequest.getCandidateGender());
+
+            //converting candidate DOB from string to Date
             String startDateString = updateCandidateBasicProfileRequest.getCandidateDOB();
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+            DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
             Date startDate;
             try {
                 startDate = df.parse(startDateString);
                 addCandidateRequest.setCandidateDob(startDate);
-            } catch (ParseException e) {
-            }
+            } catch (ParseException e) {}
 
             addCandidateRequest.setCandidateTimeShiftPref(String.valueOf(updateCandidateBasicProfileRequest.getCandidateTimeshiftPref()));
 
             boolean isSupport = false;
             CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addCandidateRequest, isSupport, ServerConstants.UPDATE_BASIC_PROFILE);
+
+            //setting status response
             updateCandidateProfileResponse.setStatus(UpdateCandidateBasicProfileResponse.Status.valueOf(candidateSignUpResponse.getStatus()));
             Logger.info("Status returned = " + updateCandidateProfileResponse.getStatus());
 
@@ -860,11 +913,14 @@ public class TrudroidController {
         try {
             String requestString = request().body().asText();
             updateCandidateExperienceProfileRequest = UpdateCandidateExperienceProfileRequest.parseFrom(Base64.decodeBase64(requestString));
+
+            //getting all the values from the experience request builder and converting it to http request object
             AddCandidateExperienceRequest addCandidateExperienceRequest = new AddCandidateExperienceRequest();
 
             List<CandidateKnownLanguage> candidateKnownLanguageList = new ArrayList<CandidateKnownLanguage>();
             List<CandidateSkills> candidateSkillList = new ArrayList<CandidateSkills>();
 
+            //getting language and adding in a list
             for(LanguageKnownObject languageKnown : updateCandidateExperienceProfileRequest.getCandidateLanguageList()){
                 CandidateKnownLanguage candidateKnownLanguage = new CandidateKnownLanguage();
                 candidateKnownLanguage.setId(String.valueOf(languageKnown.getLanguageKnownId()));
@@ -874,19 +930,26 @@ public class TrudroidController {
                 candidateKnownLanguageList.add(candidateKnownLanguage);
             }
 
+            //getting skills and adding in a list
             for(CandidateSkillObject candidateSkill : updateCandidateExperienceProfileRequest.getCandidateSkillList()){
                 CandidateSkills skill = new CandidateSkills();
                 skill.setId(String.valueOf(candidateSkill.getSkillId()));
                 skill.setAnswer(candidateSkill.getAnswer());
                 candidateSkillList.add(skill);
             }
+
             addCandidateExperienceRequest.setCandidateMobile(FormValidator.convertToIndianMobileFormat(updateCandidateExperienceProfileRequest.getCandidateMobile()));
+
+            //current Company
             if(updateCandidateExperienceProfileRequest.getCandidateCurrentCompany() != null){
                 addCandidateExperienceRequest.setCandidateCurrentCompany(updateCandidateExperienceProfileRequest.getCandidateCurrentCompany());
             }
+
+            //current job role
             if(updateCandidateExperienceProfileRequest.getCurrentJobRole() != null){
                 addCandidateExperienceRequest.setCandidateCurrentJobRoleId(updateCandidateExperienceProfileRequest.getCurrentJobRole().getJobRoleId());
             }
+            //last withdrawn salary, total experience and is Employed
             addCandidateExperienceRequest.setCandidateLastWithdrawnSalary(updateCandidateExperienceProfileRequest.getCandidateCurrentSalary());
             addCandidateExperienceRequest.setCandidateTotalExperience(updateCandidateExperienceProfileRequest.getCandidateTotalExperience());
             addCandidateExperienceRequest.setCandidateIsEmployed(updateCandidateExperienceProfileRequest.getCandidateIsEmployed());
@@ -898,6 +961,8 @@ public class TrudroidController {
 
             boolean isSupport = false;
             CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addCandidateExperienceRequest, isSupport, ServerConstants.UPDATE_SKILLS_PROFILE);
+
+            //setting status response
             updateCandidateProfileResponse.setStatus(UpdateCandidateBasicProfileResponse.Status.valueOf(candidateSignUpResponse.getStatus()));
             Logger.info("Status returned = " + updateCandidateProfileResponse.getStatus());
 
@@ -922,6 +987,7 @@ public class TrudroidController {
             String requestString = request().body().asText();
             updateCandidateEducationProfileRequest = UpdateCandidateEducationProfileRequest.parseFrom(Base64.decodeBase64(requestString));
 
+            //getting all the values from the education request builder and converting it to http request object
             addCandidateEducationRequest.setCandidateMobile(updateCandidateEducationProfileRequest.getCandidateMobile());
             addCandidateEducationRequest.setCandidateDegree(Math.toIntExact(updateCandidateEducationProfileRequest.getCandidateDegree()));
             addCandidateEducationRequest.setCandidateEducationLevel(Math.toIntExact(updateCandidateEducationProfileRequest.getCandidateEducationLevel()));
@@ -930,6 +996,8 @@ public class TrudroidController {
 
             boolean isSupport = false;
             CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addCandidateEducationRequest, isSupport, ServerConstants.UPDATE_EDUCATION_PROFILE);
+
+            //setting status response
             updateCandidateProfileResponse.setStatus(UpdateCandidateBasicProfileResponse.Status.valueOf(candidateSignUpResponse.getStatus()));
             Logger.info("Status returned = " + updateCandidateProfileResponse.getStatus());
         } catch (InvalidProtocolBufferException e) {
@@ -941,24 +1009,27 @@ public class TrudroidController {
             return badRequest();
         }
 
-        boolean isSupport = false;
-        CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addCandidateEducationRequest, isSupport, ServerConstants.UPDATE_EDUCATION_PROFILE);
-
         return ok(Base64.encodeBase64String(updateCandidateProfileResponse.build().toByteArray()));
     }
 
     public static Result mGetCandidateUpdateBasicProfileStatics() {
+        //initializing response builder (proto)
         GetCandidateBasicProfileStaticResponse.Builder getCandidateBasicProfileStaticResponse = GetCandidateBasicProfileStaticResponse.newBuilder();
 
         try {
-            List<TimeShiftObject> timeShiftObjectList = new ArrayList<>();
+            //getting all the time shifts available from model
             List<TimeShift> timeShiftList = TimeShift.find.all();
+
+            //creating a list of TimeShiftObject (proto)
+            List<TimeShiftObject> timeShiftObjectList = new ArrayList<>();
             TimeShiftObject.Builder timeShiftBuilder = TimeShiftObject.newBuilder();
             for (TimeShift timeShift : timeShiftList) {
                 timeShiftBuilder.setTimeShiftId(timeShift.getTimeShiftId());
                 timeShiftBuilder.setTimeShiftName(timeShift.getTimeShiftName());
                 timeShiftObjectList.add(timeShiftBuilder.build());
             }
+
+            //adding the time shifts in response builder
             getCandidateBasicProfileStaticResponse.addAllTimeShiftList(timeShiftObjectList);
 
         } catch (Exception e) {
@@ -969,33 +1040,40 @@ public class TrudroidController {
     }
 
     public static Result mGetCandidateUpdateEducationProfileStatics() {
+        //initializing response builder (proto)
         GetCandidateEducationProfileStaticResponse.Builder getCandidateEducationProfileStaticResponse = GetCandidateEducationProfileStaticResponse.newBuilder();
-
         try {
-            List<EducationObject> educationObjectList = new ArrayList<>();
+            //getting all the education levels form the model
             List<Education> educationList = Education.find.all();
+
+            //creating a list of EducationObject (proto) to get all the education levels
+            List<EducationObject> educationObjectList = new ArrayList<>();
             EducationObject.Builder educationObjectBuilder = EducationObject.newBuilder();
             for (Education education : educationList) {
                 educationObjectBuilder.setEducationId(education.getEducationId());
                 educationObjectBuilder.setEducationName(education.getEducationName());
                 educationObjectList.add(educationObjectBuilder.build());
             }
+            //adding all the education levels in the response builder
             getCandidateEducationProfileStaticResponse.addAllEducationObject(educationObjectList);
 
-            List<DegreeObject> degreeObjectList = new ArrayList<>();
+            //getting all the degrees form the model
             List<Degree> degreeList = Degree.find.all();
+
+            //creating a list of DegreeObject (proto) to get all the degrees
+            List<DegreeObject> degreeObjectList = new ArrayList<>();
             DegreeObject.Builder degreeObjectBuilder = DegreeObject.newBuilder();
             for (Degree degree : degreeList) {
                 degreeObjectBuilder.setDegreeId(degree.getDegreeId());
                 degreeObjectBuilder.setDegreeName(degree.getDegreeName());
                 degreeObjectList.add(degreeObjectBuilder.build());
             }
+            //adding all the degrees in the response builder
             getCandidateEducationProfileStaticResponse.addAllDegreeObject(degreeObjectList);
 
         } catch (Exception e) {
             Logger.info("Unable to parse message");
         }
-
         return ok(Base64.encodeBase64String(getCandidateEducationProfileStaticResponse.build().toByteArray()));
     }
 
@@ -1003,9 +1081,11 @@ public class TrudroidController {
         GetCandidateExperienceProfileStaticResponse.Builder getCandidatExperienceProfileStaticResponse = GetCandidateExperienceProfileStaticResponse.newBuilder();
 
         try {
-            //getting all languages
-            List<LanguageObject> languageObjectList = new ArrayList<>();
+            //getting all languages from the model
             List<Language> languageList = Language.find.all();
+
+            //creating a list of LanguageObject (proto) to get all the languages
+            List<LanguageObject> languageObjectList = new ArrayList<>();
             LanguageObject.Builder languageBuilder = LanguageObject.newBuilder();
 
             for (Language language : languageList) {
@@ -1015,11 +1095,17 @@ public class TrudroidController {
             }
 
             //getting skills
+
+            //"jobRoles" is a string variable which is a string of jobROles separated by commas (3,4,6). Comes from the user
             List<String> jobPrefIdList = Arrays.asList(jobRoles.split("\\s*,\\s*"));
 
+            //creating a list of LanguageObject (proto) to get all the skills
             List<SkillObject> skillObjectList = new ArrayList<>();
+
+            //skill builder (proto)
             SkillObject.Builder skillBuilder = SkillObject.newBuilder();
 
+            //getting skills of particular job roles
             List<JobToSkill> response = new ArrayList<>();
             int flag = 0;
             for(String jobId: jobPrefIdList) {
@@ -1051,9 +1137,13 @@ public class TrudroidController {
                     }
                 }
             }
+            //getting all the job roles from model
             List<models.entity.Static.JobRole> jobRoleList = models.entity.Static.JobRole.find.all();
+
+            //setting all the job roles in response builder
             getCandidatExperienceProfileStaticResponse.addAllJobRole(getJobRoleObjectListFromJobRoleList(jobRoleList));
 
+            //adding language and skill list to response object
             getCandidatExperienceProfileStaticResponse.addAllLanguageObject(languageObjectList);
             getCandidatExperienceProfileStaticResponse.addAllSkillObject(skillObjectList);
 
