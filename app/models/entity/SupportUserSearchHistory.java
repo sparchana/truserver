@@ -23,7 +23,7 @@ public class SupportUserSearchHistory extends Model {
     @Column(name = "search_datetime", columnDefinition = "timestamp null")
     private Timestamp searchDateTime;
 
-    @Column(name = "search_query", columnDefinition = "varchar(1000) null")
+    @Column(name = "search_query", columnDefinition = "text null")
     private String searchQuery;
 
     @Column(name = "daily_search_sum", columnDefinition = "int signed null")

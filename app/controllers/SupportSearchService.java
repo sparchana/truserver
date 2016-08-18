@@ -8,6 +8,7 @@ import models.entity.Candidate;
 import models.entity.Developer;
 import models.entity.SupportUserSearchHistory;
 import models.entity.SupportUserSearchPermissions;
+import models.util.SmsUtil;
 import play.Logger;
 
 import java.sql.Timestamp;
@@ -22,7 +23,7 @@ public class SupportSearchService {
 
     private static final SimpleDateFormat sfd_yyyymmdd = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
 
-    public static List<Candidate> searchCandidateBySupport(SearchCandidateRequest searchCandidateRequest,
+    public static SearchCandidateResponse searchCandidateBySupport(SearchCandidateRequest searchCandidateRequest,
                                                                    Developer developer)
     {
         SearchCandidateResponse searchCandidateResponse = new SearchCandidateResponse();
@@ -39,7 +40,7 @@ public class SupportSearchService {
         if (developer == null) {
             Logger.error(" Developer details not provided. Unable to proceed with search request");
             searchCandidateResponse.setStatus(SearchCandidateResponse.STATUS_FAILURE);
-            return candidateResponseList;
+            return searchCandidateResponse;
         }
 
         SupportUserSearchPermissions searchPermissions = null;
@@ -82,7 +83,8 @@ public class SupportSearchService {
         if (todaySearchedCount >= dailyLimit) {
             Logger.warn(" Support user " + developer.getDeveloperName() + " has exhausted daily search limit of " + dailyLimit);
             searchCandidateResponse.setStatus(SearchCandidateResponse.STATUS_LIMIT_EXHAUSTED);
-            //return searchCandidateResponse;
+            sendAlertSmsToAdmin(developer.getDeveloperName(), dailyLimit);
+            return searchCandidateResponse;
         } else {
             additionalPermissibleCount = dailyLimit - todaySearchedCount;
         }
@@ -159,6 +161,15 @@ public class SupportSearchService {
             searchCandidateResponse.setCandidateList(candidateResponseList);
         }
 
-        return candidateResponseList;
+        return searchCandidateResponse;
+    }
+
+    public static void sendAlertSmsToAdmin(String userName, Integer limit)
+    {
+        String message = "TRUJOBS SUPPORT SEARCH ALERT: Support user " + userName
+                + " has exhausted daily search limit of " + limit + " records";
+        SmsUtil.sendSms(ServerConstants.devTeamMobile.get("Archana"), message);
+        SmsUtil.sendSms(ServerConstants.devTeamMobile.get("Avishek"), message);
+        SmsUtil.sendSms(ServerConstants.devTeamMobile.get("Chillu"), message);
     }
 }
