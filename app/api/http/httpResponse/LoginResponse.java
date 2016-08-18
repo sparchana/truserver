@@ -27,6 +27,9 @@ public class LoginResponse {
     */
     public Double candidateHomeLat;
     public Double candidateHomeLng;
+    public Long candidatePrefJobRoleIdOne;
+    public Long candidatePrefJobRoleIdTwo;
+    public Long candidatePrefJobRoleIdThree;
 
     public int getMinProfile() {
         return minProfile;
@@ -129,5 +132,29 @@ public class LoginResponse {
 
     public void setCandidateHomeLat(Double candidateHomeLat) {
         this.candidateHomeLat = candidateHomeLat;
+    }
+
+    public Long getCandidatePrefJobRoleIdOne() {
+        return candidatePrefJobRoleIdOne;
+    }
+
+    public void setCandidatePrefJobRoleIdOne(Long candidatePrefJobRoleIdOne) {
+        this.candidatePrefJobRoleIdOne = candidatePrefJobRoleIdOne;
+    }
+
+    public Long getCandidatePrefJobRoleIdThree() {
+        return candidatePrefJobRoleIdThree;
+    }
+
+    public void setCandidatePrefJobRoleIdThree(Long candidatePrefJobRoleIdThree) {
+        this.candidatePrefJobRoleIdThree = candidatePrefJobRoleIdThree;
+    }
+
+    public Long getCandidatePrefJobRoleIdTwo() {
+        return candidatePrefJobRoleIdTwo;
+    }
+
+    public void setCandidatePrefJobRoleIdTwo(Long candidatePrefJobRoleIdTwo) {
+        this.candidatePrefJobRoleIdTwo = candidatePrefJobRoleIdTwo;
     }
 }

@@ -195,9 +195,10 @@ public class JobPostService {
                 for (JobPost jobPost : jobPostList) {
                     boolean shouldContinue = false;
                     if (jobFilterRequest.getSalary() != null && jobFilterRequest.getSalary() != JobFilterRequest.Salary.ANY_SALARY) {
-                        if (jobPost.getJobPostMaxSalary() != null && (getSalaryValue(jobFilterRequest.getSalaryValue()) <= jobPost.getJobPostMaxSalary())) {
-                            shouldContinue = true;
-                        } else if (jobPost.getJobPostMinSalary() != null && getSalaryValue(jobFilterRequest.getSalaryValue()) <= jobPost.getJobPostMinSalary()) {
+                        if ((jobPost.getJobPostMaxSalary() != null
+                                && (getSalaryValue(jobFilterRequest.getSalaryValue()) <= jobPost.getJobPostMaxSalary()))
+                                || (jobPost.getJobPostMinSalary() != null
+                                && getSalaryValue(jobFilterRequest.getSalaryValue()) <= jobPost.getJobPostMinSalary())) {
                             shouldContinue = true;
                         } else {
                             shouldContinue = false;
@@ -263,10 +264,9 @@ public class JobPostService {
                         filteredJobPostList.add(jobPost);
                     }
                 }
-                return filteredJobPostList;
             }
         }
-        return new ArrayList<>();
+        return filteredJobPostList;
     }
 
     private static Long getSalaryValue(Integer id) {

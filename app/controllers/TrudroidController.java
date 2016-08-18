@@ -80,6 +80,9 @@ public class TrudroidController {
                 loginResponseBuilder.setCandidateHomeLocalityStatus(loginResponse.getCandidateHomeLocalityStatus());
                 loginResponseBuilder.setCandidateHomeLatitude(loginResponse.getCandidateHomeLat());
                 loginResponseBuilder.setCandidateHomeLongitude(loginResponse.getCandidateHomeLng());
+                loginResponseBuilder.setCandidatePrefJobRoleIdOne(loginResponse.getCandidatePrefJobRoleIdOne());
+                loginResponseBuilder.setCandidatePrefJobRoleIdTwo(loginResponse.getCandidatePrefJobRoleIdTwo());
+                loginResponseBuilder.setCandidatePrefJobRoleIdThree(loginResponse.getCandidatePrefJobRoleIdThree());
             }
 
             Logger.info("Status returned = " + loginResponseBuilder.getStatus());
@@ -590,6 +593,11 @@ public class TrudroidController {
         return ok(Base64.encodeBase64String(r.toByteArray()));
     }
 
+    /*
+    * check out the following link to understand the default value when
+    * a variable is not set
+    * https://developers.google.com/protocol-buffers/docs/proto3#default
+    */
     public static Result mSearchJobs() {
         JobSearchRequest jobSearchRequest = null;
         try {
@@ -607,10 +615,16 @@ public class TrudroidController {
 
         if(jobSearchRequest.getJobSearchByJobRoleRequest() != null && jobSearchRequest.getJobSearchByJobRoleRequest().getJobRoleIdOne() > 0) {
             jobSearchByJobRoleRequest = jobSearchRequest.getJobSearchByJobRoleRequest().toBuilder();
-            Logger.info("Filter By JobRole : "+ jobSearchByJobRoleRequest.getJobRoleIdOne());
-            jobRoleIdList.add(jobSearchByJobRoleRequest.getJobRoleIdOne());
-            jobRoleIdList.add(jobSearchByJobRoleRequest.getJobRoleIdTwo());
-            jobRoleIdList.add(jobSearchByJobRoleRequest.getJobRoleIdThree());
+            if(jobSearchByJobRoleRequest.getJobRoleIdOne() != 0) {
+                Logger.info("Filter By JobRole : "+ jobSearchByJobRoleRequest.getJobRoleIdOne());
+                jobRoleIdList.add(jobSearchByJobRoleRequest.getJobRoleIdOne());
+            }
+            if(jobSearchByJobRoleRequest.getJobRoleIdTwo() != 0)
+                Logger.info("Filter By JobRole : "+ jobSearchByJobRoleRequest.getJobRoleIdTwo());
+                jobRoleIdList.add(jobSearchByJobRoleRequest.getJobRoleIdTwo());
+            if(jobSearchByJobRoleRequest.getJobRoleIdThree() != 0)
+                Logger.info("Filter By JobRole : "+ jobSearchByJobRoleRequest.getJobRoleIdThree());
+                jobRoleIdList.add(jobSearchByJobRoleRequest.getJobRoleIdThree());
         }
         if(jobSearchRequest.getJobFilterRequest() != null && jobSearchRequest.isInitialized()) {
             Logger.info("Filter By Other Filter Options  : ");
