@@ -22,6 +22,12 @@ public class LoginResponse {
     public String authSessionId;
     public Long sessionExpiryInMilliSecond;
 
+    /*
+    * To cater mobile needs
+    */
+    public Double candidateHomeLat;
+    public Double candidateHomeLng;
+
     public int getMinProfile() {
         return minProfile;
     }
@@ -107,5 +113,21 @@ public class LoginResponse {
 
     public Long getSessionExpiryInMilliSecond() {
         return sessionExpiryInMilliSecond;
+    }
+
+    public Double getCandidateHomeLng() {
+        return candidateHomeLng;
+    }
+
+    public void setCandidateHomeLng(Double candidateHomeLng) {
+        this.candidateHomeLng = candidateHomeLng;
+    }
+
+    public Double getCandidateHomeLat() {
+        return candidateHomeLat;
+    }
+
+    public void setCandidateHomeLat(Double candidateHomeLat) {
+        this.candidateHomeLat = candidateHomeLat;
     }
 }

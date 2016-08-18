@@ -113,15 +113,13 @@ POST        /mAddPassword                                      controllers.Trudr
 POST        /mFindUserAndSendOtp                               controllers.TrudroidController.mFindUserAndSendOtp()
 POST        /mGetAllJobRoles                                   controllers.TrudroidController.mGetAllJobRoles()
 POST        /mGetAllJobPosts                                   controllers.TrudroidController.mGetAllJobPosts()
-POST        /mGetMatchingJobPosts/:mobile                      controllers.TrudroidController.mGetMatchingJobPosts(mobile: String)
 POST        /mAddHomeLocality                                  controllers.TrudroidController.mAddHomeLocality()
 POST        /mApplyJob                                         controllers.TrudroidController.mApplyJob()
 POST        /mAddJobPref                                       controllers.TrudroidController.mAddJobPref()
 POST        /mGetCandidateInformation                          controllers.TrudroidController.mGetCandidateInformation()
 POST        /mGetJobPostInfo                                   controllers.TrudroidController.mGetJobPostInfo()
-POST        /mGetFilteredJobPosts                              controllers.TrudroidController.mGetFilteredJobPosts()
 POST        /mFetchCandidateAlert                              controllers.TrudroidController.mFetchCandidateAlert()
-POST        /mSearchJobsByLatLng                               controllers.TrudroidController.mSearchJobsByLatLng()
+POST        /mSearchJobs                                       controllers.TrudroidController.mSearchJobs()
 
 # 3rd Party API
 # ~~~~~~~~~~~~~

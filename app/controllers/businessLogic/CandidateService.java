@@ -924,6 +924,11 @@ public class CandidateService
                     loginResponse.setLeadId(existingCandidate.getLead().getLeadId());
                     loginResponse.setCandidateJobPrefStatus(0);
                     loginResponse.setCandidateHomeLocalityStatus(0);
+                    if(existingCandidate.getCandidateLocalityLat() != null
+                            || existingCandidate.getCandidateLocalityLng() != null ){
+                        loginResponse.setCandidateHomeLat(existingCandidate.getCandidateLocalityLat());
+                        loginResponse.setCandidateHomeLng(existingCandidate.getCandidateLocalityLng());
+                    }
                     if(existingCandidate.getJobPreferencesList().size() > 0){
                         loginResponse.setCandidateJobPrefStatus(1);
                     }

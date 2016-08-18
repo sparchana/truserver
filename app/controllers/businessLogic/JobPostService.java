@@ -2,6 +2,7 @@ package controllers.businessLogic;
 
 import api.ServerConstants;
 import api.http.FormValidator;
+import com.avaje.ebean.Query;
 import in.trujobs.proto.*;
 import models.entity.Candidate;
 import models.entity.JobPost;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static api.ServerConstants.IS_HOT;
 import static api.ServerConstants.SORT_BY_DATE_POSTED;
 import static api.ServerConstants.SORT_BY_SALARY;
 import static models.util.Validator.isValidLocalityName;
@@ -85,8 +87,25 @@ public class JobPostService {
         return JobPost.find.where().eq("jobPostIsHot", ServerConstants.IS_HOT).findList();
     }
 
-    public static List<JobPost> mGetAllJobPostsRaw(Integer sortOrder) {
-        List<JobPost> jobPostsResponseList = JobPost.find.where().eq("jobPostIsHot", ServerConstants.IS_HOT).findList();
+    public static List<JobPost> mGetAllJobPostsRaw(Integer sortOrder, List<Long> jobRoleIds) {
+        if(sortOrder == null){
+            sortOrder = ServerConstants.SORT_DEFAULT;
+        }
+
+        Query<JobPost> query = JobPost.find.query();
+
+        query = query
+                .where()
+                .eq("jobPostIsHot", IS_HOT)
+                .query();
+
+        if(jobRoleIds != null && !jobRoleIds.isEmpty() ) {
+            query = query.select("*").fetch("jobRole")
+                    .where()
+                    .in("jobRole.jobRoleId", jobRoleIds)
+                    .query();
+        }
+        List<JobPost> jobPostsResponseList = query.findList();
         switch (sortOrder) {
             case SORT_BY_SALARY:
                 Logger.info("sorting on Salary");
@@ -121,7 +140,7 @@ public class JobPostService {
         return locality;
     }
 
-    public static List<JobPost> mGetMatchingJobPostsRaw(String mobile, Integer sortOrder) {
+    public static List<JobPost> mGetMatchingJobPostsRaw(String mobile, Integer sortOrder, List<Long> jobRoleIds) {
         mobile = FormValidator.convertToIndianMobileFormat(mobile);
         if (mobile != null && !mobile.trim().isEmpty()) {
             Logger.info("getMatchingJob for Mobile: " + mobile);
@@ -141,12 +160,12 @@ public class JobPostService {
             }
         } else {
             Logger.info("All job search triggered in App: ");
-            return mGetAllJobPostsRaw(sortOrder);
+            return mGetAllJobPostsRaw(sortOrder, jobRoleIds);
         }
         return null;
     }
 
-    public static List<JobPost> filterJobs(JobFilterRequest jobFilterRequest) {
+    public static List<JobPost> filterJobs(JobFilterRequest jobFilterRequest, List<Long> jobRoleIds) {
         List<JobPost> filteredJobPostList = new ArrayList<>();
         Integer sortOrder = ServerConstants.SORT_DEFAULT;
         if (jobFilterRequest != null) {
@@ -156,18 +175,17 @@ public class JobPostService {
                 sortOrder = ServerConstants.SORT_BY_SALARY;
             }
             List<JobPost> jobPostList;
+
             /* filter on searched lat/lng */
             if(jobFilterRequest.getJobSearchLongitude() != 0.0
-                    && jobFilterRequest.getJobSearchLatitude() != 0.0){
+                    && jobFilterRequest.getJobSearchLatitude() != 0.0) {
                 jobPostList = mGetMatchingJobPostsByLatLngRaw(jobFilterRequest.getCandidateMobile(),
-                        jobFilterRequest.getJobSearchLatitude(), jobFilterRequest.getJobSearchLongitude(), sortOrder);
-                Logger.info("filter applied for search lat: " + toJson(jobFilterRequest.getJobSearchLatitude()));
-                Logger.info("filter applied for search lng: " + toJson(jobFilterRequest.getJobSearchLongitude()));
+                        jobFilterRequest.getJobSearchLatitude(), jobFilterRequest.getJobSearchLongitude(), jobRoleIds,sortOrder);
             } else {
                 /* filter over candidate's lat/lng or over all the the jobpost */
-                Logger.info("--- [Filter on AllJobs] or [candidate's lat/lng ]----");
-                jobPostList = mGetMatchingJobPostsRaw(jobFilterRequest.getCandidateMobile(), sortOrder);
+                jobPostList = mGetMatchingJobPostsRaw(jobFilterRequest.getCandidateMobile(), sortOrder, jobRoleIds);
             }
+
             if (jobPostList != null) {
                 Logger.info("jobFilterRequest sal: " + toJson(jobFilterRequest.getSalary()));
                 Logger.info("jobFilterRequest exp: " + toJson(jobFilterRequest.getExp()));
@@ -178,36 +196,28 @@ public class JobPostService {
                     boolean shouldContinue = false;
                     if (jobFilterRequest.getSalary() != null && jobFilterRequest.getSalary() != JobFilterRequest.Salary.ANY_SALARY) {
                         if (jobPost.getJobPostMaxSalary() != null && (getSalaryValue(jobFilterRequest.getSalaryValue()) <= jobPost.getJobPostMaxSalary())) {
-                            Logger.info(jobPost.getJobPostId() + "-jobFilterRequest.getSalary: " + getSalaryValue(jobFilterRequest.getSalaryValue()) + "< Max:" + jobPost.getJobPostMaxSalary());
                             shouldContinue = true;
                         } else if (jobPost.getJobPostMinSalary() != null && getSalaryValue(jobFilterRequest.getSalaryValue()) <= jobPost.getJobPostMinSalary()) {
-                            Logger.info(jobPost.getJobPostId() + "-jobFilterRequest.getSalary: " + getSalaryValue(jobFilterRequest.getSalaryValue()) + "< Min:" + jobPost.getJobPostMinSalary());
                             shouldContinue = true;
                         } else {
                             shouldContinue = false;
                         }
                     } else {
-                        Logger.info("Salary is not provided, hence salary filter not applied");
                         shouldContinue = true;
                     }
                     /* filter result take Exp_Type:Any* into-account */
                     if (shouldContinue && jobPost.getJobPostExperience() != null
                             && jobFilterRequest.getExp() != null) {
-                        Logger.info("jobFilterRequest.getExp():" + jobFilterRequest.getExp() + "");
                         if (jobFilterRequest.getExpValue() == JobFilterRequest.Experience.FRESHER_VALUE
                                 && (jobPost.getJobPostExperience().getExperienceId() == ServerConstants.EXPERIENCE_TYPE_FRESHER_ID
                                 || jobPost.getJobPostExperience().getExperienceId() == ServerConstants.EXPERIENCE_TYPE_ANY_ID)) {
-                            Logger.info("Matched with JobFilterRequest.Experience.FRESHER_VALUE: ");
                             shouldContinue = true;
                         } else if (jobFilterRequest.getExpValue() == JobFilterRequest.Experience.EXPERIENCED_VALUE
                                 && jobPost.getJobPostExperience().getExperienceId() > ServerConstants.EXPERIENCE_TYPE_FRESHER_ID) {
-                            Logger.info("JobFilterRequest.Experience.EXPERIENCED_VALUE: ");
                             shouldContinue = true;
                         } else if (jobFilterRequest.getExp() == JobFilterRequest.Experience.ANY_EXPERIENCE) {
                             shouldContinue = true;
                         } else {
-                            Logger.info("jobFilterRequest.getExp(): didn't match with this jobpost.exp:"
-                                    + jobPost.getJobPostExperience().getExperienceType() + "");
                             shouldContinue = false;
                         }
                     }
@@ -216,23 +226,18 @@ public class JobPostService {
                             && jobFilterRequest.getEdu() != null) {
                         if (jobFilterRequest.getEduValue() == JobFilterRequest.Education.LT_TEN_VALUE
                                 && jobPost.getJobPostEducation().getEducationId() == ServerConstants.EDUCATION_TYPE_LT_10TH_ID) {
-                            Logger.info("JobFilterRequest.Education.LT_TEN_VALUE: ");
                             shouldContinue = true;
                         } else if (jobFilterRequest.getEduValue() == JobFilterRequest.Education.TEN_PASS_VALUE
                                 && jobPost.getJobPostEducation().getEducationId() == ServerConstants.EDUCATION_TYPE_10TH_PASS_ID) {
-                            Logger.info("JobFilterRequest.Education.TEN_PASS_VALUE: ");
                             shouldContinue = true;
                         } else if (jobFilterRequest.getEduValue() == JobFilterRequest.Education.TWELVE_PASS_VALUE
                                 && jobPost.getJobPostEducation().getEducationId() == ServerConstants.EDUCATION_TYPE_12TH_PASS_ID) {
-                            Logger.info("JobFilterRequest.Education.TWELVE_PASS_VALUE: ");
                             shouldContinue = true;
                         } else if (jobFilterRequest.getEduValue() == JobFilterRequest.Education.UG_VALUE
                                 && jobPost.getJobPostEducation().getEducationId() == ServerConstants.EDUCATION_TYPE_UG) {
-                            Logger.info("JobFilterRequest.Education.UG_VALUE: ");
                             shouldContinue = true;
                         } else if (jobFilterRequest.getEduValue() == JobFilterRequest.Education.PG_VALUE
                                 && jobPost.getJobPostEducation().getEducationId() == ServerConstants.EDUCATION_TYPE_PG) {
-                            Logger.info("JobFilterRequest.Education.PG_VALUE: ");
                             shouldContinue = true;
                         } else if (jobFilterRequest.getEdu() == JobFilterRequest.Education.ANY_EDUCATION) {
                             shouldContinue = true;
@@ -251,21 +256,35 @@ public class JobPostService {
                                 && jobFilterRequest.getGender() != JobFilterRequest.Gender.FEMALE) {
                             shouldContinue = true;
                         } else {
-                            Logger.info(jobPost.getGender()+" Gender specified in jobPostId:"+jobPost.getJobPostId());
                             shouldContinue = false;
                         }
                     }
                     if (shouldContinue) {
-                        Logger.info("returned jobs min/max sal:" + toJson(jobPost.getJobPostMinSalary() + "/" +
-                                jobPost.getJobPostMaxSalary()));
                         filteredJobPostList.add(jobPost);
                     }
                 }
-                Logger.info("returned jobs:" + toJson(filteredJobPostList.size()));
                 return filteredJobPostList;
             }
         }
         return new ArrayList<>();
+    }
+
+    public static List<JobPost> filterJobsByJobRole(List<JobPost> jobPostList, List<Long> prefJobRoleIdList) {
+        List<JobPost> responseList = new ArrayList<>();
+        for(JobPost jobPost: jobPostList) {
+            boolean shouldAdd = false;
+            for(Long jobRoleId : prefJobRoleIdList){
+                if(jobPost.getJobRole().getJobRoleId() == jobRoleId){
+                    shouldAdd = true;
+                    Logger.info("found jobpost "+jobPost.getJobRole().getJobName()+" for jobRole"+jobRoleId);
+                    break;
+                }
+            }
+            if(shouldAdd){
+                responseList.add(jobPost);
+            }
+        }
+        return responseList;
     }
 
     private static Long getSalaryValue(Integer id) {
@@ -287,23 +306,24 @@ public class JobPostService {
         }
     }
 
-    public static List<JobPost> mGetMatchingJobPostsByLatLngRaw(String mobile, Double latitude, Double longitude, Integer
+    public static List<JobPost> mGetMatchingJobPostsByLatLngRaw(String mobile, Double latitude, Double longitude,List<Long> jobRoleIds, Integer
                                                                 sortOrder) {
         mobile = FormValidator.convertToIndianMobileFormat(mobile);
         if (mobile != null) {
             Logger.info("getMatchingJob for Mobile: " + mobile);
             Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
             if (existingCandidate != null) {
-                List<Long> jobPrefId = new ArrayList<>();
-                for (JobPreference jobPreference : existingCandidate.getJobPreferencesList()) {
-                    jobPrefId.add(jobPreference.getJobRole().getJobRoleId());
+                if(jobRoleIds.isEmpty()){
+                    for (JobPreference jobPreference : existingCandidate.getJobPreferencesList()) {
+                        jobRoleIds.add(jobPreference.getJobRole().getJobRoleId());
+                    }
                 }
                 sortOrder = sortOrder == null ? ServerConstants.SORT_DEFAULT:sortOrder;
                 return MatchingEngineService.fetchMatchingJobPostForLatLng(
-                        latitude, longitude, null, jobPrefId, sortOrder);
+                        latitude, longitude, null, jobRoleIds, sortOrder);
             }
         }
         return MatchingEngineService.fetchMatchingJobPostForLatLng(
-                latitude, longitude, null, null, sortOrder);
+                latitude, longitude, null, jobRoleIds, sortOrder);
     }
 }

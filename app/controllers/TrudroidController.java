@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static controllers.businessLogic.JobPostService.*;
+import static controllers.businessLogic.JobPostService.mGetMatchingJobPostsByLatLngRaw;
 import static play.mvc.Http.Context.Implicit.request;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
@@ -77,6 +78,8 @@ public class TrudroidController {
                 loginResponseBuilder.setLeadId(loginResponse.getLeadId());
                 loginResponseBuilder.setCandidateJobPrefStatus(loginResponse.getCandidateJobPrefStatus());
                 loginResponseBuilder.setCandidateHomeLocalityStatus(loginResponse.getCandidateHomeLocalityStatus());
+                loginResponseBuilder.setCandidateHomeLatitude(loginResponse.getCandidateHomeLat());
+                loginResponseBuilder.setCandidateHomeLongitude(loginResponse.getCandidateHomeLng());
             }
 
             Logger.info("Status returned = " + loginResponseBuilder.getStatus());
@@ -569,32 +572,6 @@ public class TrudroidController {
         return ok(Base64.encodeBase64String(builder.build().toByteArray()));
     }
 
-    public static Result mGetMatchingJobPosts(String mobile) {
-        JobPostResponse.Builder jobPostResponseBuilder = JobPostResponse.newBuilder();
-        try {
-            jobPostResponseBuilder.addAllJobPost(getJobPostObjectListFromJobPostList(
-                    mGetMatchingJobPostsRaw(mobile, ServerConstants.SORT_DEFAULT)));
-        } catch (NullPointerException n) {
-
-        }
-
-        return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
-    }
-
-    public static Result mGetFilteredJobPosts() {
-        // filter req has candidate's mobile number
-        JobPostResponse.Builder jobPostResponseBuilder = JobPostResponse.newBuilder();
-        try {
-            String requestString = request().body().asText();
-            JobFilterRequest jobFilterRequest = JobFilterRequest.parseFrom(Base64.decodeBase64(requestString));
-            List<JobPost> filteredJobPostList = filterJobs(jobFilterRequest);
-            jobPostResponseBuilder.addAllJobPost(getJobPostObjectListFromJobPostList(filteredJobPostList));
-        } catch (InvalidProtocolBufferException e) {
-            e.printStackTrace();
-        }
-        return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
-    }
-
     public static Result mFetchCandidateAlert() {
         String requestString = request().body().asText();
 
@@ -613,7 +590,7 @@ public class TrudroidController {
         return ok(Base64.encodeBase64String(r.toByteArray()));
     }
 
-    public static Result mSearchJobsByLatLng() {
+    public static Result mSearchJobs() {
         JobSearchRequest jobSearchRequest = null;
         try {
             String requestString = request().body().asText();
@@ -623,14 +600,43 @@ public class TrudroidController {
         }
 
         JobPostResponse.Builder jobPostResponseBuilder = JobPostResponse.newBuilder();
-        try {
-            jobPostResponseBuilder.addAllJobPost(getJobPostObjectListFromJobPostList(
-                    mGetMatchingJobPostsByLatLngRaw(jobSearchRequest.getCandidateMobile()
-                    , jobSearchRequest.getLatitude(), jobSearchRequest.getLongitude(), ServerConstants.SORT_DEFAULT)));
-        } catch (NullPointerException n) {
+        JobFilterRequest.Builder jobFilterRequest;
+        JobSearchByJobRoleRequest.Builder jobSearchByJobRoleRequest;
+        List<Long> jobRoleIdList = new ArrayList<>();
+        List<JobPost> jobPostList = new ArrayList<>();
 
+        if(jobSearchRequest.getJobSearchByJobRoleRequest() != null && jobSearchRequest.getJobSearchByJobRoleRequest().getJobRoleIdOne() > 0) {
+            jobSearchByJobRoleRequest = jobSearchRequest.getJobSearchByJobRoleRequest().toBuilder();
+            Logger.info("Filter By JobRole : "+ jobSearchByJobRoleRequest.getJobRoleIdOne());
+            jobRoleIdList.add(jobSearchByJobRoleRequest.getJobRoleIdOne());
+            jobRoleIdList.add(jobSearchByJobRoleRequest.getJobRoleIdTwo());
+            jobRoleIdList.add(jobSearchByJobRoleRequest.getJobRoleIdThree());
         }
+        if(jobSearchRequest.getJobFilterRequest() != null && jobSearchRequest.isInitialized()) {
+            Logger.info("Filter By Other Filter Options  : ");
+            jobFilterRequest = jobSearchRequest.getJobFilterRequest().toBuilder();
+            /* override the filter lat/lng with search lat/lng */
+            jobFilterRequest.setJobSearchLatitude(jobSearchRequest.getLatitude());
+            jobFilterRequest.setJobSearchLongitude(jobSearchRequest.getLongitude());
+            jobPostList.addAll(filterJobs(jobFilterRequest.build(), jobRoleIdList));
+        } else {
+            Logger.info("No Filter Applied. Search Jobs with/without jobRoleIdList: "+jobSearchRequest.getLatitude());
+            if(jobSearchRequest.getLatitude() != 0.0
+                    && jobSearchRequest.getLongitude() != 0.0) {
+                try {
+                    jobPostList.addAll(
+                            mGetMatchingJobPostsByLatLngRaw(jobSearchRequest.getCandidateMobile()
+                                    , jobSearchRequest.getLatitude(), jobSearchRequest.getLongitude(), jobRoleIdList, ServerConstants.SORT_DEFAULT));
+                } catch (NullPointerException n) {
+
+                }
+            } else {
+                jobPostList.addAll((mGetMatchingJobPostsRaw(null, null, jobRoleIdList)));
+            }
+        }
+
+        jobPostResponseBuilder.addAllJobPost(getJobPostObjectListFromJobPostList(jobPostList));
+        Logger.info("Total Jobs Found: "+jobPostList.size());
         return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
     }
-
 }

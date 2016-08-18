@@ -78,7 +78,7 @@ public class TruControllerTest {
         Application fakeApp = fakeApplication();
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
         running(server, () -> {
-            List<JobPost> jobPostList = JobPostService.filterJobs(jobFilterRequest.build());
+            List<JobPost> jobPostList = JobPostService.filterJobs(jobFilterRequest.build(), null);
             if (jobPostList == null) return;
             assertEquals(expectedSize, jobPostList.size());
             System.out.println("[test case] testFilterJobs: resultSize:-----------------------------------------------" + jobPostList.size());
