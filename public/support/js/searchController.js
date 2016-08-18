@@ -232,7 +232,6 @@ function getExpiry(expiryObject) {
 }
 
 function renderSearchResult(returnedData) {
-
     var status = returnedData.status;
     var candidateList = returnedData.candidateList;
 

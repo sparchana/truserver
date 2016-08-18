@@ -120,6 +120,13 @@ POST         /mAddJobPref                                                       
 POST         /mFetchCandidateAlert                                               controllers.TrudroidController.mFetchCandidateAlert()
 POST         /mGetCandidateInformation                                           controllers.TrudroidController.mGetCandidateInformation()
 POST         /mGetJobPostInfo                                                    controllers.TrudroidController.mGetJobPostInfo()
+POST         /mGetCandidateJobApplication                                        controllers.TrudroidController.mGetCandidateJobApplication()
+POST         /mCandidateUpdateBasicProfile                                       controllers.TrudroidController.mCandidateUpdateBasicProfile()
+POST         /mCandidateUpdateExperienceProfile                                  controllers.TrudroidController.mCandidateUpdateExperienceProfile()
+POST         /mCandidateUpdateEducationProfile                                   controllers.TrudroidController.mCandidateUpdateEducationProfile()
+POST         /mGetCandidateUpdateBasicProfileStatics                             controllers.TrudroidController.mGetCandidateUpdateBasicProfileStatics()
+POST         /mGetCandidateUpdateExperienceProfileStatics/:jobRoles              controllers.TrudroidController.mGetCandidateUpdateExperienceProfileStatics(jobRoles: String)
+POST         /mGetCandidateUpdateEducationProfileStatics                         controllers.TrudroidController.mGetCandidateUpdateEducationProfileStatics()
 
 # 3rd Party API
 # ~~~~~~~~~~~~~
