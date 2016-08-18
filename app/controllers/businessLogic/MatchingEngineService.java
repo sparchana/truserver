@@ -91,13 +91,13 @@ public class MatchingEngineService {
             switch (sortOrder) {
                 case SORT_BY_SALARY:
                     Logger.info("sorting on Salary");
-                    Collections.sort(jobPostsResponseList, (a, b) -> a.getJobPostMinSalary()
-                            .compareTo(b.getJobPostMinSalary()));
+                    Collections.sort(jobPostsResponseList, (a, b) -> b.getJobPostMinSalary()
+                            .compareTo(a.getJobPostMinSalary()));
                     break;
                 case SORT_BY_DATE_POSTED:
                     Logger.info("sorting on date posted");
-                    Collections.sort(jobPostsResponseList, (a, b) -> a.getJobPostCreateTimestamp()
-                            .compareTo(b.getJobPostCreateTimestamp()));
+                    Collections.sort(jobPostsResponseList, (a, b) -> b.getJobPostCreateTimestamp()
+                            .compareTo(a.getJobPostCreateTimestamp()));
                     break;
                 default:
                     Logger.info("default sort triggered");

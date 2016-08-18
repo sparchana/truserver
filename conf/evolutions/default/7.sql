@@ -15,4 +15,3 @@ drop index ix_jobapplication_prescreenlocation on jobapplication;
 alter table jobapplication drop column prescreenlocation;
 alter table jobapplication drop column prescreentimings;
 alter table jobapplication drop column prescreensalary;
-

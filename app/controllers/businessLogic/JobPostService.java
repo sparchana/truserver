@@ -269,24 +269,6 @@ public class JobPostService {
         return new ArrayList<>();
     }
 
-    public static List<JobPost> filterJobsByJobRole(List<JobPost> jobPostList, List<Long> prefJobRoleIdList) {
-        List<JobPost> responseList = new ArrayList<>();
-        for(JobPost jobPost: jobPostList) {
-            boolean shouldAdd = false;
-            for(Long jobRoleId : prefJobRoleIdList){
-                if(jobPost.getJobRole().getJobRoleId() == jobRoleId){
-                    shouldAdd = true;
-                    Logger.info("found jobpost "+jobPost.getJobRole().getJobName()+" for jobRole"+jobRoleId);
-                    break;
-                }
-            }
-            if(shouldAdd){
-                responseList.add(jobPost);
-            }
-        }
-        return responseList;
-    }
-
     private static Long getSalaryValue(Integer id) {
         switch (id) {
             case JobFilterRequest.Salary.ANY_SALARY_VALUE:

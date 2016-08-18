@@ -1,8 +1,12 @@
 package models.entity;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.PrivateOwned;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import models.entity.OO.CandidateEducation;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -19,6 +23,7 @@ public class Developer extends Model {
 
     @Column(name = "DeveloperName", columnDefinition = "varchar(50) not null", nullable = false)
     private String developerName = "";
+
 
     @Column(name = "DeveloperAccessLevel", columnDefinition = "int not null", nullable = false)
     private int developerAccessLevel = 0;
@@ -37,6 +42,16 @@ public class Developer extends Model {
 
     @Column(name = "DeveloperApiKey", columnDefinition = "varchar(255) not null", nullable = false, unique = true)
     private String developerApiKey =  UUID.randomUUID().toString();
+
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "developer", cascade = CascadeType.ALL)
+    private List<SupportUserSearchHistory> searchHistoryList;
+
+    @JsonManagedReference
+    @ManyToOne
+    @JoinColumn(name = "support_user_search_permissions", nullable = true)
+    private SupportUserSearchPermissions userSearchPermissions;
 
     public static Finder<String, Developer> find = new Finder(Developer.class);
 
@@ -102,5 +117,21 @@ public class Developer extends Model {
 
     public void setDeveloperApiKey(String developerApiKey) {
         this.developerApiKey = developerApiKey;
+    }
+
+    public List<SupportUserSearchHistory> getSearchHistoryList() {
+        return searchHistoryList;
+    }
+
+    public void setSearchHistoryList(List<SupportUserSearchHistory> searchHistoryList) {
+        this.searchHistoryList = searchHistoryList;
+    }
+
+    public SupportUserSearchPermissions getUserSearchPermissions() {
+        return userSearchPermissions;
+    }
+
+    public void setUserSearchPermissions(SupportUserSearchPermissions userSearchPermissions) {
+        this.userSearchPermissions = userSearchPermissions;
     }
 }
