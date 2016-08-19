@@ -932,11 +932,11 @@ public class CandidateService
                         loginResponse.setCandidateHomeLng(existingCandidate.getCandidateLocalityLng());
                     }
                     if(!existingCandidate.getJobPreferencesList().isEmpty()){
-                        if(existingCandidate.getJobPreferencesList().get(0)!= null)
+                        if(existingCandidate.getJobPreferencesList().size()>0 && existingCandidate.getJobPreferencesList().get(0)!= null)
                             loginResponse.setCandidatePrefJobRoleIdOne(existingCandidate.getJobPreferencesList().get(0).getJobRole().getJobRoleId());
-                        if(existingCandidate.getJobPreferencesList().get(1)!= null)
+                        if(existingCandidate.getJobPreferencesList().size()>1 &&existingCandidate.getJobPreferencesList().get(1)!= null)
                             loginResponse.setCandidatePrefJobRoleIdTwo(existingCandidate.getJobPreferencesList().get(1).getJobRole().getJobRoleId());
-                        if(existingCandidate.getJobPreferencesList().get(2)!= null)
+                        if(existingCandidate.getJobPreferencesList().size()>2 &&existingCandidate.getJobPreferencesList().get(2)!= null)
                             loginResponse.setCandidatePrefJobRoleIdThree(existingCandidate.getJobPreferencesList().get(2).getJobRole().getJobRoleId());
                     }
                     /* END */

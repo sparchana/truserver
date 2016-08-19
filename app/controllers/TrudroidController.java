@@ -84,11 +84,11 @@ public class TrudroidController {
                 loginResponseBuilder.setLeadId(loginResponse.getLeadId());
                 loginResponseBuilder.setCandidateJobPrefStatus(loginResponse.getCandidateJobPrefStatus());
                 loginResponseBuilder.setCandidateHomeLocalityStatus(loginResponse.getCandidateHomeLocalityStatus());
-                loginResponseBuilder.setCandidateHomeLatitude(loginResponse.getCandidateHomeLat());
-                loginResponseBuilder.setCandidateHomeLongitude(loginResponse.getCandidateHomeLng());
-                loginResponseBuilder.setCandidatePrefJobRoleIdOne(loginResponse.getCandidatePrefJobRoleIdOne());
-                loginResponseBuilder.setCandidatePrefJobRoleIdTwo(loginResponse.getCandidatePrefJobRoleIdTwo());
-                loginResponseBuilder.setCandidatePrefJobRoleIdThree(loginResponse.getCandidatePrefJobRoleIdThree());
+                if(loginResponse.getCandidateHomeLat() != null) loginResponseBuilder.setCandidateHomeLatitude(loginResponse.getCandidateHomeLat());
+                if(loginResponse.getCandidateHomeLng() != null) loginResponseBuilder.setCandidateHomeLongitude(loginResponse.getCandidateHomeLng());
+                if(loginResponse.getCandidatePrefJobRoleIdOne() != null) loginResponseBuilder.setCandidatePrefJobRoleIdOne(loginResponse.getCandidatePrefJobRoleIdOne());
+                if(loginResponse.getCandidatePrefJobRoleIdTwo() != null) loginResponseBuilder.setCandidatePrefJobRoleIdTwo(loginResponse.getCandidatePrefJobRoleIdTwo());
+                if(loginResponse.getCandidatePrefJobRoleIdThree() != null) loginResponseBuilder.setCandidatePrefJobRoleIdThree(loginResponse.getCandidatePrefJobRoleIdThree());
             }
 
             Logger.info("Status returned = " + loginResponseBuilder.getStatus());
