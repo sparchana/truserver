@@ -44,7 +44,6 @@ public class ParseCSV {
                     } else {
                         lead.setLeadMobile(nextLine[2]);
                     }
-
                     // check if lead already exists
                     Lead existingLead = Lead.find.where().eq("leadMobile", lead.getLeadMobile()).findUnique();
 

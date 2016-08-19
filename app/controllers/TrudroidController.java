@@ -15,6 +15,9 @@ import in.trujobs.proto.ApplyJobRequest;
 import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
+import models.entity.OM.JobPostToLocality;
+import models.entity.OM.JobPreference;
+import models.entity.OM.LocalityPreference;
 import models.entity.OM.*;
 import models.entity.Static.*;
 import play.Logger;
@@ -25,6 +28,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static controllers.businessLogic.JobPostService.*;
+import static controllers.businessLogic.JobPostService.mGetMatchingJobPostsByLatLngRaw;
 import static models.util.Validator.isValidLocalityName;
 import static play.mvc.Http.Context.Implicit.request;
 import static play.mvc.Results.badRequest;
@@ -79,7 +84,11 @@ public class TrudroidController {
                 loginResponseBuilder.setLeadId(loginResponse.getLeadId());
                 loginResponseBuilder.setCandidateJobPrefStatus(loginResponse.getCandidateJobPrefStatus());
                 loginResponseBuilder.setCandidateHomeLocalityStatus(loginResponse.getCandidateHomeLocalityStatus());
-                Candidate candidate = Candidate.find.where().eq("candidateId", loginResponse.getCandidateId()).findUnique();
+                loginResponseBuilder.setCandidateHomeLatitude(loginResponse.getCandidateHomeLat());
+                loginResponseBuilder.setCandidateHomeLongitude(loginResponse.getCandidateHomeLng());
+                loginResponseBuilder.setCandidatePrefJobRoleIdOne(loginResponse.getCandidatePrefJobRoleIdOne());
+                loginResponseBuilder.setCandidatePrefJobRoleIdTwo(loginResponse.getCandidatePrefJobRoleIdTwo());
+                loginResponseBuilder.setCandidatePrefJobRoleIdThree(loginResponse.getCandidatePrefJobRoleIdThree());
             }
 
             Logger.info("Status returned = " + loginResponseBuilder.getStatus());
@@ -191,15 +200,13 @@ public class TrudroidController {
 
     public static Result mGetAllJobPosts() {
         JobPostResponse.Builder jobPostResponseBuilder = JobPostResponse.newBuilder();
-        List<JobPost> jobPostList = JobPost.find.where().eq("jobPostIsHot", ServerConstants.IS_HOT).findList();
-        List<JobPostObject> jobPostListToReturn = getJobPostObjectListFromJobPostList(jobPostList);
-        //checking if the job is already applied or not
-        jobPostResponseBuilder.addAllJobPost(jobPostListToReturn);
+        jobPostResponseBuilder.addAllJobPost(getJobPostObjectListFromJobPostList(mGetAllJobPostsRaw()));
         return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
     }
 
     private static List<JobRoleObject> getJobRoleObjectListFromJobRoleList(List<JobRole> jobRoleList) {
         List<JobRoleObject> jobRoleListToReturn = new ArrayList<>();
+
         for (JobRole jobRole : jobRoleList) {
             JobRoleObject.Builder jobRoleBuilder
                     = JobRoleObject.newBuilder();
@@ -609,7 +616,6 @@ public class TrudroidController {
             companyLocality.setLocalityId(company.getCompanyLocality().getLocalityId());
             companyBuilder.setCompanyLocality(companyLocality.build());
         }
-
         //adding company description
         if (company.getCompanyDescription() != null) {
             companyBuilder.setCompanyDescription(company.getCompanyDescription());
@@ -728,17 +734,17 @@ public class TrudroidController {
         try {
             String requestString = request().body().asText();
             pHomeLocalityRequest = HomeLocalityRequest.parseFrom(Base64.decodeBase64(requestString));
-            if(pHomeLocalityRequest != null){
+            if (pHomeLocalityRequest != null) {
                 Candidate existingCandidate = CandidateService.isCandidateExists(pHomeLocalityRequest.getCandidateMobile());
-                if (existingCandidate != null){
+                if (existingCandidate != null) {
                     Logger.info("lat/lng:" + pHomeLocalityRequest.getLat() + "/" + pHomeLocalityRequest.getLng());
-                    Logger.info("Address" + pHomeLocalityRequest.getAddress());
+                    Logger.info("Address:" + pHomeLocalityRequest.getAddress());
 
                     List<String> localityList = Arrays.asList(pHomeLocalityRequest.getAddress().split(","));
                     if (localityList.size() >= 4) {
                         String localityName = localityList.get(localityList.size() - 4);
                         existingCandidate.setLocality(getOrCreateLocality(localityName));
-                    } else if(localityList.size() == 2){
+                    } else if (localityList.size() == 2) {
                         String localityName = localityList.get(localityList.size() - 1);
                         existingCandidate.setLocality(getOrCreateLocality(localityName));
                         Logger.info("Locality:" + existingCandidate.getLocality().getLocalityName());
@@ -779,42 +785,6 @@ public class TrudroidController {
         locality.save();
         locality = Locality.find.where().eq("localityName", localityName).findUnique();
         return locality;
-    }
-
-    public static Result mGetMatchingJobPosts(String mobile) {
-        JobPostResponse.Builder jobPostResponseBuilder = JobPostResponse.newBuilder();
-        mobile = FormValidator.convertToIndianMobileFormat(mobile);
-        if (mobile != null) {
-            Logger.info("getMatchingJob for Mobile: " + mobile);
-            Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
-            if(existingCandidate != null){
-                if(existingCandidate.getCandidateLocalityLat() == null || existingCandidate.getCandidateLocalityLng() == null) {
-                    return mGetAllJobPosts();
-                } else {
-                    List<JobPostObject> jobPostListToReturn =
-                            getJobPostObjectListFromJobPostList(
-                                    MatchingEngineService.fetchMatchingJobPostForLatLng(
-                                            existingCandidate.getCandidateLocalityLat(), existingCandidate.getCandidateLocalityLng(), null)
-                            );
-
-                    //checking if the job is already applied or not
-                    List<JobApplication> jobApplicationList = JobApplication.find.where().eq("candidateId", existingCandidate.getCandidateId()).findList();
-                    for(int i=0; i<jobPostListToReturn.size(); i++){
-                        for(int j=0; j<jobApplicationList.size(); j++){
-                            if(jobPostListToReturn.get(i).getJobPostId() == jobApplicationList.get(j).getJobPost().getJobPostId()){
-                                JobPostObject.Builder newJobPostBuilder = jobPostListToReturn.get(i).toBuilder();
-                                newJobPostBuilder.setIsApplied(1);
-                                jobPostListToReturn.remove(i);
-                                jobPostListToReturn.add(i, newJobPostBuilder.build());
-                            }
-                        }
-                    }
-
-                    jobPostResponseBuilder.addAllJobPost(jobPostListToReturn);
-                }
-            }
-        }
-        return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
     }
 
     public static Result mGetCandidateJobApplication() {
@@ -1169,8 +1139,7 @@ public class TrudroidController {
         return ok(Base64.encodeBase64String(getCandidatExperienceProfileStaticResponse.build().toByteArray()));
     }
 
-    public static Result mFetchCandidateAlert ()
-    {
+    public static Result mFetchCandidateAlert() {
         String requestString = request().body().asText();
 
         FetchCandidateAlertRequest fetchCandidateAlertProtoRequest = null;
@@ -1186,5 +1155,66 @@ public class TrudroidController {
         FetchCandidateAlertResponse r = CandidateAlertService.getAlertForCandidate(candidateMobile);
 
         return ok(Base64.encodeBase64String(r.toByteArray()));
+    }
+
+    /*
+    * check out the following link to understand the default value when
+    * a variable is not set
+    * https://developers.google.com/protocol-buffers/docs/proto3#default
+    */
+    public static Result mSearchJobs() {
+        JobSearchRequest jobSearchRequest = null;
+        try {
+            String requestString = request().body().asText();
+            jobSearchRequest = JobSearchRequest.parseFrom(Base64.decodeBase64(requestString));
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+
+        JobPostResponse.Builder jobPostResponseBuilder = JobPostResponse.newBuilder();
+        JobFilterRequest.Builder jobFilterRequest;
+        JobSearchByJobRoleRequest.Builder jobSearchByJobRoleRequest;
+        List<Long> jobRoleIdList = new ArrayList<>();
+        List<JobPost> jobPostList = new ArrayList<>();
+
+        if(jobSearchRequest.getJobSearchByJobRoleRequest() != null && jobSearchRequest.getJobSearchByJobRoleRequest().getJobRoleIdOne() > 0) {
+            jobSearchByJobRoleRequest = jobSearchRequest.getJobSearchByJobRoleRequest().toBuilder();
+            if(jobSearchByJobRoleRequest.getJobRoleIdOne() != 0) {
+                Logger.info("Filter By JobRole : "+ jobSearchByJobRoleRequest.getJobRoleIdOne());
+                jobRoleIdList.add(jobSearchByJobRoleRequest.getJobRoleIdOne());
+            }
+            if(jobSearchByJobRoleRequest.getJobRoleIdTwo() != 0)
+                Logger.info("Filter By JobRole : "+ jobSearchByJobRoleRequest.getJobRoleIdTwo());
+                jobRoleIdList.add(jobSearchByJobRoleRequest.getJobRoleIdTwo());
+            if(jobSearchByJobRoleRequest.getJobRoleIdThree() != 0)
+                Logger.info("Filter By JobRole : "+ jobSearchByJobRoleRequest.getJobRoleIdThree());
+                jobRoleIdList.add(jobSearchByJobRoleRequest.getJobRoleIdThree());
+        }
+        if(jobSearchRequest.getJobFilterRequest() != null && jobSearchRequest.isInitialized()) {
+            Logger.info("Filter By Other Filter Options  : ");
+            jobFilterRequest = jobSearchRequest.getJobFilterRequest().toBuilder();
+            /* override the filter lat/lng with search lat/lng */
+            jobFilterRequest.setJobSearchLatitude(jobSearchRequest.getLatitude());
+            jobFilterRequest.setJobSearchLongitude(jobSearchRequest.getLongitude());
+            jobPostList.addAll(filterJobs(jobFilterRequest.build(), jobRoleIdList));
+        } else {
+            Logger.info("No Filter Applied. Search Jobs with/without jobRoleIdList: "+jobSearchRequest.getLatitude());
+            if(jobSearchRequest.getLatitude() != 0.0
+                    && jobSearchRequest.getLongitude() != 0.0) {
+                try {
+                    jobPostList.addAll(
+                            mGetMatchingJobPostsByLatLngRaw(jobSearchRequest.getCandidateMobile()
+                                    , jobSearchRequest.getLatitude(), jobSearchRequest.getLongitude(), jobRoleIdList, ServerConstants.SORT_DEFAULT));
+                } catch (NullPointerException n) {
+
+                }
+            } else {
+                jobPostList.addAll((mGetMatchingJobPostsRaw(null, null, jobRoleIdList)));
+            }
+        }
+
+        jobPostResponseBuilder.addAllJobPost(getJobPostObjectListFromJobPostList(jobPostList));
+        Logger.info("Total Jobs Found: "+jobPostList.size());
+        return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
     }
 }

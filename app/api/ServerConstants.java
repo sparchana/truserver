@@ -147,4 +147,26 @@ public class ServerConstants {
     }
 
     public static final Double DEFAULT_MATCHING_ENGINE_RADIUS = 10.0; // In Kilometers
+
+    // Job Post DB Constants
+    public static final int EXPERIENCE_TYPE_FRESHER_ID = 1;
+    public static final int EXPERIENCE_TYPE_ANY_ID = 5;
+
+    // Job Post DB Constants
+    public static final int EDUCATION_TYPE_ANY = 0; // not in db
+    public static final int EDUCATION_TYPE_LT_10TH_ID = 1;
+    public static final int EDUCATION_TYPE_10TH_PASS_ID = 2;
+    public static final int EDUCATION_TYPE_12TH_PASS_ID = 3;
+    public static final int EDUCATION_TYPE_UG = 4;
+    public static final int EDUCATION_TYPE_PG = 5;
+
+    // MatchingEngine Sort Type
+    public static final int SORT_BY_NEARBY = 1;
+    public static final int SORT_BY_DATE_POSTED = 2;
+    public static final int SORT_BY_SALARY = 3;
+    public static final int SORT_DEFAULT = SORT_BY_NEARBY;
+
+    public static final int GENDER_MALE = 0;
+    public static final int GENDER_FEMALE = 1;
+    public static final int GENDER_ANY= 2;
 }

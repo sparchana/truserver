@@ -924,6 +924,22 @@ public class CandidateService
                     loginResponse.setLeadId(existingCandidate.getLead().getLeadId());
                     loginResponse.setCandidateJobPrefStatus(0);
                     loginResponse.setCandidateHomeLocalityStatus(0);
+
+                    /* START : to cater specifically the app need */
+                    if(existingCandidate.getCandidateLocalityLat() != null
+                            || existingCandidate.getCandidateLocalityLng() != null ){
+                        loginResponse.setCandidateHomeLat(existingCandidate.getCandidateLocalityLat());
+                        loginResponse.setCandidateHomeLng(existingCandidate.getCandidateLocalityLng());
+                    }
+                    if(!existingCandidate.getJobPreferencesList().isEmpty()){
+                        if(existingCandidate.getJobPreferencesList().get(0)!= null)
+                            loginResponse.setCandidatePrefJobRoleIdOne(existingCandidate.getJobPreferencesList().get(0).getJobRole().getJobRoleId());
+                        if(existingCandidate.getJobPreferencesList().get(1)!= null)
+                            loginResponse.setCandidatePrefJobRoleIdTwo(existingCandidate.getJobPreferencesList().get(1).getJobRole().getJobRoleId());
+                        if(existingCandidate.getJobPreferencesList().get(2)!= null)
+                            loginResponse.setCandidatePrefJobRoleIdThree(existingCandidate.getJobPreferencesList().get(2).getJobRole().getJobRoleId());
+                    }
+                    /* END */
                     if(existingCandidate.getJobPreferencesList().size() > 0){
                         loginResponse.setCandidateJobPrefStatus(1);
                     }
