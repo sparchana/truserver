@@ -145,6 +145,7 @@ public class JobPost extends Model {
     @Column(name = "Gender", columnDefinition = "int(1) null")
     private Integer gender;
 
+
     public static Finder<String, JobPost> find = new Finder(JobPost.class);
 
     public JobPost() {

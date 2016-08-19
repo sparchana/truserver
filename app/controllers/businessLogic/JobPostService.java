@@ -46,9 +46,7 @@ public class JobPostService {
             JobRoleObject.Builder jobRoleBuilder = JobRoleObject.newBuilder();
 
             if (jobPost.getJobRole() != null) {
-                jobRoleBuilder.setJobRoleName(jobPost.getJobRole().getJobName());
-                jobRoleBuilder.setJobRoleId(jobPost.getJobRole().getJobRoleId());
-                jobPostBuilder.setJobRole(jobRoleBuilder.build());
+                jobPostBuilder.setJobRole(jobPost.getJobRole().getJobName());
             }
 
             jobPostBuilder.setJobPostCompanyLogo(jobPost.getCompany().getCompanyLogo());

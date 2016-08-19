@@ -286,7 +286,7 @@ public class CandidateService
 
             // In case of errors, return at this point
             if(candidateSignUpResponse.getStatus() != CandidateSignUpResponse.STATUS_SUCCESS){
-                Logger.info("Error while updating basic profile of candidate with mobile " + candidate.getCandidateMobile());
+                Logger.info("Error while updating experience profile of candidate with mobile " + candidate.getCandidateMobile());
                 return candidateSignUpResponse;
             }
 
@@ -943,7 +943,7 @@ public class CandidateService
                     if(existingCandidate.getJobPreferencesList().size() > 0){
                         loginResponse.setCandidateJobPrefStatus(1);
                     }
-                    if(existingCandidate.getLocality() != null){
+                    if(existingCandidate.getCandidateLocalityLat() != null && existingCandidate.getCandidateLocalityLng() != null){
                         loginResponse.setCandidateHomeLocalityStatus(1);
                     }
                     loginResponse.setStatus(loginResponse.STATUS_SUCCESS);
@@ -1003,7 +1003,7 @@ public class CandidateService
 
     public static List<JobPreference> getCandidateJobPreferenceList(List<Integer> jobsList, Candidate candidate) {
         List<JobPreference> candidateJobPreferences = new ArrayList<>();
-        for(Integer  s : jobsList) {
+        for(Integer s : jobsList) {
             JobPreference candidateJobPreference = new JobPreference();
             candidateJobPreference.setCandidate(candidate);
             JobRole jobRole = JobRole.find.where().eq("JobRoleId", s).findUnique();
