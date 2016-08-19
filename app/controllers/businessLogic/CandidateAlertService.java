@@ -1,6 +1,7 @@
 package controllers.businessLogic;
 
 import api.ServerConstants;
+import api.http.FormValidator;
 import in.trujobs.proto.FetchCandidateAlertResponse;
 import models.entity.Candidate;
 import models.entity.JobPost;
@@ -26,7 +27,7 @@ public class CandidateAlertService {
 
         FetchCandidateAlertResponse.Builder fetchCandidateResponseBuilder = FetchCandidateAlertResponse.newBuilder();
 
-        Candidate candidate = CandidateService.isCandidateExists(candidateMobile);
+        Candidate candidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(candidateMobile));
         if (candidate == null) {
             Logger.error("Candidate with mobile " + candidateMobile + " doesnt exist. No alerts applicable");
             return null;
