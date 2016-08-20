@@ -9,15 +9,15 @@ import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
 import com.google.api.client.util.Base64;
 import com.google.protobuf.InvalidProtocolBufferException;
-import controllers.businessLogic.*;
+import controllers.businessLogic.AuthService;
+import controllers.businessLogic.CandidateAlertService;
+import controllers.businessLogic.CandidateService;
+import controllers.businessLogic.JobService;
 import in.trujobs.proto.*;
 import in.trujobs.proto.ApplyJobRequest;
 import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
-import models.entity.OM.JobPostToLocality;
-import models.entity.OM.JobPreference;
-import models.entity.OM.LocalityPreference;
 import models.entity.OM.*;
 import models.entity.Static.*;
 import play.Logger;
@@ -29,7 +29,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static controllers.businessLogic.JobPostService.*;
-import static controllers.businessLogic.JobPostService.mGetMatchingJobPostsByLatLngRaw;
 import static models.util.Validator.isValidLocalityName;
 import static play.mvc.Http.Context.Implicit.request;
 import static play.mvc.Results.badRequest;
@@ -366,9 +365,8 @@ public class TrudroidController {
                 candidateBuilder.setCandidateFirstName(candidate.getCandidateFirstName());
                 if (candidate.getCandidateLastName() != null) {
                     candidateBuilder.setCandidateLastName(candidate.getCandidateLastName());
-                } else {
-                    candidateBuilder.setCandidateLastName("");
                 }
+                candidateBuilder.setCandidateIsEmployed(-1);
                 if(candidate.getCandidateIsEmployed() != null ){
                     candidateBuilder.setCandidateIsEmployed(candidate.getCandidateIsEmployed());
                 }
@@ -377,9 +375,11 @@ public class TrudroidController {
                 candidateBuilder.setCandidateProfileCompletePercent(percentValue);
                 candidateBuilder.setCandidateIsAssessed(candidate.getCandidateIsAssessed());
                 candidateBuilder.setCandidateMinProfileComplete(candidate.getIsMinProfileComplete());
+                candidateBuilder.setCandidateGender(-1);
                 if (candidate.getCandidateGender() != null) {
                     candidateBuilder.setCandidateGender(candidate.getCandidateGender());
                 }
+                candidateBuilder.setCandidateTotalExperience(-1);
                 if (candidate.getCandidateTotalExperience() != null) {
                     candidateBuilder.setCandidateTotalExperience(candidate.getCandidateTotalExperience());
                 }
@@ -426,7 +426,7 @@ public class TrudroidController {
                     if(candidate.getCandidateEducation().getCandidateLastInstitute() != null){
                         candidateEducationBuilder.setCandidateInstitute(candidate.getCandidateEducation().getCandidateLastInstitute());
                     }
-                    candidateEducationBuilder.setCandidateEducationCompletionStatus(0);
+                    candidateEducationBuilder.setCandidateEducationCompletionStatus(-1);
                     if(candidate.getCandidateEducation().getCandidateEducationCompletionStatus() != null){
                         candidateEducationBuilder.setCandidateEducationCompletionStatus(candidate.getCandidateEducation().getCandidateEducationCompletionStatus());
                     }
@@ -535,7 +535,6 @@ public class TrudroidController {
         JobPostObject jobPostObject;
 
         JobPostObject.Builder jobPostBuilder = JobPostObject.newBuilder();
-        JobRoleObject.Builder jobRoleBuilder = JobRoleObject.newBuilder();
         if (jobPost.getJobRole() != null) {
             jobPostBuilder.setJobRole(jobPost.getJobRole().getJobName());
         }
@@ -715,13 +714,16 @@ public class TrudroidController {
                     getJobPostDetailsResponse.setAlreadyApplied(true);
                 }
             }
+            getJobPostDetailsResponse.setStatus(GetJobPostDetailsResponse.Status.valueOf(1));
 
         } catch (Exception e) {
             Logger.info("Unable to parse message");
+            getJobPostDetailsResponse.setStatus(GetJobPostDetailsResponse.Status.valueOf(2));
         }
 
         if (pGetJobPostDetailsRequest == null) {
             Logger.info("Invalid message");
+            getJobPostDetailsResponse.setStatus(GetJobPostDetailsResponse.Status.valueOf(2));
             return badRequest();
         }
         return ok(Base64.encodeBase64String(getJobPostDetailsResponse.build().toByteArray()));
@@ -832,7 +834,7 @@ public class TrudroidController {
                 }
                 //adding the list to the main response builder
                 candidateAppliedJobsBuilder.addAllJobApplication(jobApplicationListToReturn);
-
+                candidateAppliedJobsBuilder.setStatus(CandidateAppliedJobsResponse.Status.valueOf(1));
                 return ok(Base64.encodeBase64String(candidateAppliedJobsBuilder.build().toByteArray()));
             }
         } catch (InvalidProtocolBufferException e) {
@@ -1016,8 +1018,10 @@ public class TrudroidController {
 
             //adding the time shifts in response builder
             getCandidateBasicProfileStaticResponse.addAllTimeShiftList(timeShiftObjectList);
+            getCandidateBasicProfileStaticResponse.setStatus(GetCandidateBasicProfileStaticResponse.Status.valueOf(1));
 
         } catch (Exception e) {
+            getCandidateBasicProfileStaticResponse.setStatus(GetCandidateBasicProfileStaticResponse.Status.valueOf(2));
             Logger.info("Unable to parse message");
         }
 
@@ -1055,15 +1059,17 @@ public class TrudroidController {
             }
             //adding all the degrees in the response builder
             getCandidateEducationProfileStaticResponse.addAllDegreeObject(degreeObjectList);
+            getCandidateEducationProfileStaticResponse.setStatus(GetCandidateEducationProfileStaticResponse.Status.valueOf(1));
 
         } catch (Exception e) {
+            getCandidateEducationProfileStaticResponse.setStatus(GetCandidateEducationProfileStaticResponse.Status.valueOf(2));
             Logger.info("Unable to parse message");
         }
         return ok(Base64.encodeBase64String(getCandidateEducationProfileStaticResponse.build().toByteArray()));
     }
 
     public static Result mGetCandidateUpdateExperienceProfileStatics(String jobRoles) {
-        GetCandidateExperienceProfileStaticResponse.Builder getCandidatExperienceProfileStaticResponse = GetCandidateExperienceProfileStaticResponse.newBuilder();
+        GetCandidateExperienceProfileStaticResponse.Builder getCandidateExperienceProfileStaticResponse = GetCandidateExperienceProfileStaticResponse.newBuilder();
 
         try {
             //getting all languages from the model
@@ -1126,17 +1132,19 @@ public class TrudroidController {
             List<models.entity.Static.JobRole> jobRoleList = models.entity.Static.JobRole.find.all();
 
             //setting all the job roles in response builder
-            getCandidatExperienceProfileStaticResponse.addAllJobRole(getJobRoleObjectListFromJobRoleList(jobRoleList));
+            getCandidateExperienceProfileStaticResponse.addAllJobRole(getJobRoleObjectListFromJobRoleList(jobRoleList));
 
             //adding language and skill list to response object
-            getCandidatExperienceProfileStaticResponse.addAllLanguageObject(languageObjectList);
-            getCandidatExperienceProfileStaticResponse.addAllSkillObject(skillObjectList);
+            getCandidateExperienceProfileStaticResponse.addAllLanguageObject(languageObjectList);
+            getCandidateExperienceProfileStaticResponse.addAllSkillObject(skillObjectList);
+            getCandidateExperienceProfileStaticResponse.setStatus(GetCandidateExperienceProfileStaticResponse.Status.valueOf(1));
 
         } catch (Exception e) {
+            getCandidateExperienceProfileStaticResponse.setStatus(GetCandidateExperienceProfileStaticResponse.Status.valueOf(2));
             Logger.info("Unable to parse message");
         }
 
-        return ok(Base64.encodeBase64String(getCandidatExperienceProfileStaticResponse.build().toByteArray()));
+        return ok(Base64.encodeBase64String(getCandidateExperienceProfileStaticResponse.build().toByteArray()));
     }
 
     public static Result mFetchCandidateAlert() {
@@ -1152,7 +1160,7 @@ public class TrudroidController {
 
         String candidateMobile = fetchCandidateAlertProtoRequest.getCandidateMobile();
 
-        FetchCandidateAlertResponse r = CandidateAlertService.getAlertForCandidate(candidateMobile);
+        FetchCandidateAlertResponse r = CandidateAlertService.getAlertForCandidate(FormValidator.convertToIndianMobileFormat(candidateMobile));
 
         return ok(Base64.encodeBase64String(r.toByteArray()));
     }
@@ -1172,7 +1180,7 @@ public class TrudroidController {
         }
 
         JobPostResponse.Builder jobPostResponseBuilder = JobPostResponse.newBuilder();
-        JobFilterRequest.Builder jobFilterRequest;
+        JobFilterRequest.Builder jobFilterRequest = null;
         JobSearchByJobRoleRequest.Builder jobSearchByJobRoleRequest;
         List<Long> jobRoleIdList = new ArrayList<>();
         List<JobPost> jobPostList = new ArrayList<>();
@@ -1213,7 +1221,36 @@ public class TrudroidController {
             }
         }
 
-        jobPostResponseBuilder.addAllJobPost(getJobPostObjectListFromJobPostList(jobPostList));
+        List<JobPostObject> jobPostListToReturn = getJobPostObjectListFromJobPostList(jobPostList);
+
+        //checking if the job is already applied or not
+        if((jobSearchRequest != null && !jobSearchRequest.getCandidateMobile().trim().isEmpty())
+                || (jobFilterRequest != null && !jobFilterRequest.getCandidateMobile().trim().isEmpty())){
+            String candidateMobile;
+            if(!jobSearchRequest.getCandidateMobile().trim().isEmpty()){
+                candidateMobile = jobSearchRequest.getCandidateMobile();
+            } else{
+                candidateMobile = jobFilterRequest.getCandidateMobile();
+            }
+            Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(candidateMobile));
+
+            List<JobApplication> jobApplicationList = JobApplication.find.where().eq("candidateId", existingCandidate.getCandidateId()).findList();
+            List<Long> appliedJobPostIdList = new ArrayList<Long>();
+            for(JobApplication jobApplication : jobApplicationList){
+                appliedJobPostIdList.add(jobApplication.getJobPost().getJobPostId());
+            }
+
+            for(int i = 0; i< jobPostListToReturn.size(); i++){
+                if(appliedJobPostIdList.contains(jobPostListToReturn.get(i).getJobPostId())){
+                    JobPostObject.Builder newJobPostBuilder = jobPostListToReturn.get(i).toBuilder();
+                    newJobPostBuilder.setIsApplied(1);
+                    jobPostListToReturn.remove(i);
+                    jobPostListToReturn.add(i, newJobPostBuilder.build());
+                }
+            }
+        }
+
+    jobPostResponseBuilder.addAllJobPost(jobPostListToReturn);
         Logger.info("Total Jobs Found: "+jobPostList.size());
         return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
     }
