@@ -9,15 +9,15 @@ import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
 import com.google.api.client.util.Base64;
 import com.google.protobuf.InvalidProtocolBufferException;
-import controllers.businessLogic.*;
+import controllers.businessLogic.AuthService;
+import controllers.businessLogic.CandidateAlertService;
+import controllers.businessLogic.CandidateService;
+import controllers.businessLogic.JobService;
 import in.trujobs.proto.*;
 import in.trujobs.proto.ApplyJobRequest;
 import models.entity.Candidate;
 import models.entity.Company;
 import models.entity.JobPost;
-import models.entity.OM.JobPostToLocality;
-import models.entity.OM.JobPreference;
-import models.entity.OM.LocalityPreference;
 import models.entity.OM.*;
 import models.entity.Static.*;
 import play.Logger;
@@ -29,7 +29,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static controllers.businessLogic.JobPostService.*;
-import static controllers.businessLogic.JobPostService.mGetMatchingJobPostsByLatLngRaw;
 import static models.util.Validator.isValidLocalityName;
 import static play.mvc.Http.Context.Implicit.request;
 import static play.mvc.Results.badRequest;
@@ -1236,14 +1235,17 @@ public class TrudroidController {
             Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(candidateMobile));
 
             List<JobApplication> jobApplicationList = JobApplication.find.where().eq("candidateId", existingCandidate.getCandidateId()).findList();
-            for(int i=0; i<jobPostListToReturn.size(); i++){
-                for(int j=0; j<jobApplicationList.size(); j++){
-                    if(jobPostListToReturn.get(i).getJobPostId() == jobApplicationList.get(j).getJobPost().getJobPostId()){
-                        JobPostObject.Builder newJobPostBuilder = jobPostListToReturn.get(i).toBuilder();
-                        newJobPostBuilder.setIsApplied(1);
-                        jobPostListToReturn.remove(i);
-                        jobPostListToReturn.add(i, newJobPostBuilder.build());
-                    }
+            List<Long> appliedJobPostIdList = new ArrayList<Long>();
+            for(JobApplication jobApplication : jobApplicationList){
+                appliedJobPostIdList.add(jobApplication.getJobPost().getJobPostId());
+            }
+
+            for(int i = 0; i< jobPostListToReturn.size(); i++){
+                if(appliedJobPostIdList.contains(jobPostListToReturn.get(i).getJobPostId())){
+                    JobPostObject.Builder newJobPostBuilder = jobPostListToReturn.get(i).toBuilder();
+                    newJobPostBuilder.setIsApplied(1);
+                    jobPostListToReturn.remove(i);
+                    jobPostListToReturn.add(i, newJobPostBuilder.build());
                 }
             }
         }
