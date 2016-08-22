@@ -129,8 +129,8 @@ public class MatchingEngineService {
                 break;
             case SORT_BY_DATE_POSTED:
                 Logger.info("In mGetAllJobPostsRaw : sorting on date posted");
-                Collections.sort(jobPostsResponseList, (a, b) -> a.getJobPostCreateTimestamp()
-                        .compareTo(b.getJobPostCreateTimestamp()));
+                Collections.sort(jobPostsResponseList, (a, b) -> b.getJobPostCreateTimestamp()
+                        .compareTo(a.getJobPostCreateTimestamp()));
                 break;
             default:
                 if(doDefaultSort) {

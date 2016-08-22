@@ -694,7 +694,7 @@ public class TrudroidController {
             //getting jobPost model object
             JobPost jobPost = JobPost.find.where().eq("jobPostId", pGetJobPostDetailsRequest.getJobPostId()).findUnique();
             if (jobPost != null) {
-                getJobPostDetailsResponse.setStatus(GetJobPostDetailsResponse.Status.valueOf(1));
+                getJobPostDetailsResponse.setStatus(GetJobPostDetailsResponse.Status.SUCCESS);
                 getJobPostDetailsResponse.setJobPost(getJobPostInformationFromJobPostObject(jobPost));
                 Logger.info("Status returned = " + getJobPostDetailsResponse.getStatus());
             }
@@ -707,23 +707,27 @@ public class TrudroidController {
 
             //checking if the candidate has applied to this job or now not
             getJobPostDetailsResponse.setAlreadyApplied(false);
-            if(pGetJobPostDetailsRequest.getCandidateMobile() != "0"){
+            if(!pGetJobPostDetailsRequest.getCandidateMobile().trim().isEmpty()){
                 Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(pGetJobPostDetailsRequest.getCandidateMobile()));
-                JobApplication jobApplication = JobApplication.find.where().eq("candidateId", existingCandidate.getCandidateId()).eq("jobPostId", pGetJobPostDetailsRequest.getJobPostId()).findUnique();
+                JobApplication jobApplication = JobApplication.find.where()
+                        .eq("candidateId", existingCandidate.getCandidateId())
+                        .eq("jobPostId", pGetJobPostDetailsRequest.getJobPostId())
+                        .findUnique();
                 if(jobApplication != null){
                     getJobPostDetailsResponse.setAlreadyApplied(true);
                 }
             }
-            getJobPostDetailsResponse.setStatus(GetJobPostDetailsResponse.Status.valueOf(1));
+            getJobPostDetailsResponse.setStatus(GetJobPostDetailsResponse.Status.SUCCESS);
 
         } catch (Exception e) {
+            e.printStackTrace();
             Logger.info("Unable to parse message");
-            getJobPostDetailsResponse.setStatus(GetJobPostDetailsResponse.Status.valueOf(2));
+            getJobPostDetailsResponse.setStatus(GetJobPostDetailsResponse.Status.NO_JOB);
         }
 
         if (pGetJobPostDetailsRequest == null) {
             Logger.info("Invalid message");
-            getJobPostDetailsResponse.setStatus(GetJobPostDetailsResponse.Status.valueOf(2));
+            getJobPostDetailsResponse.setStatus(GetJobPostDetailsResponse.Status.NO_JOB);
             return badRequest();
         }
         return ok(Base64.encodeBase64String(getJobPostDetailsResponse.build().toByteArray()));
