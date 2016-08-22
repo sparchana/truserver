@@ -1199,7 +1199,7 @@ public class TrudroidController {
                 jobRoleIdList.add(jobSearchByJobRoleRequest.getJobRoleIdThree());
         }
         if(jobSearchRequest.getJobFilterRequest() != null && jobSearchRequest.isInitialized()) {
-            Logger.info("Filter By Other Filter Options  : ") ;
+            Logger.info("Filter by other filter options  triggered ") ;
             jobFilterRequestBuilder = jobSearchRequest.getJobFilterRequest().toBuilder();
 
             /* override the filter candidateMobile with search candidateMobile */

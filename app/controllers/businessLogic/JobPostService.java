@@ -12,10 +12,10 @@ import models.entity.Static.Locality;
 import play.Logger;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import static api.ServerConstants.*;
+import static api.ServerConstants.IS_HOT;
+import static controllers.businessLogic.MatchingEngineService.SortJobPostList;
 import static models.util.Validator.isValidLocalityName;
 import static play.libs.Json.toJson;
 
@@ -102,23 +102,12 @@ public class JobPostService {
                     .query();
         }
         List<JobPost> jobPostsResponseList = query.findList();
-        switch (sortOrder) {
-            case SORT_BY_SALARY:
-                Logger.info("sorting on Salary");
-                Collections.sort(jobPostsResponseList, (a, b) -> a.getJobPostMinSalary()
-                        .compareTo(b.getJobPostMinSalary()));
-                break;
-            case SORT_BY_DATE_POSTED:
-                Logger.info("sorting on date posted");
-                Collections.sort(jobPostsResponseList, (a, b) -> a.getJobPostCreateTimestamp()
-                        .compareTo(b.getJobPostCreateTimestamp()));
-                break;
-            default:
-                Logger.info("no default sorting if candidate not logged in");
-                break;
-        }
+        boolean doDefaultSort = false;
+        SortJobPostList(jobPostsResponseList, sortOrder, doDefaultSort);
         return jobPostsResponseList;
     }
+
+
 
     public static Locality getOrCreateLocality(String localityName) {
         // validate localityName
@@ -151,7 +140,7 @@ public class JobPostService {
             if(jobFilterRequest.getJobSearchLongitude() != 0.0
                     && jobFilterRequest.getJobSearchLatitude() != 0.0) {
                 jobPostList = mGetMatchingJobPostsByLatLngRaw(jobFilterRequest.getCandidateMobile(),
-                        jobFilterRequest.getJobSearchLatitude(), jobFilterRequest.getJobSearchLongitude(), jobRoleIds,sortOrder);
+                        jobFilterRequest.getJobSearchLatitude(), jobFilterRequest.getJobSearchLongitude(), jobRoleIds, sortOrder);
             } else {
                 /* filter over candidate's lat/lng or over all the the jobpost */
                 jobPostList = mGetMatchingJobPostsRaw(jobFilterRequest.getCandidateMobile(), sortOrder, jobRoleIds);
@@ -161,6 +150,7 @@ public class JobPostService {
                 Logger.info("jobFilterRequest sal: " + toJson(jobFilterRequest.getSalary()));
                 Logger.info("jobFilterRequest exp: " + toJson(jobFilterRequest.getExp()));
                 Logger.info("jobFilterRequest edu: " + toJson(jobFilterRequest.getEdu()));
+                Logger.info("jobFilterRequest gender: " + toJson(jobFilterRequest.getGender()));
                 Logger.info("jobFilterRequest sort_by_datePosted: " + toJson(jobFilterRequest.getSortByDatePosted()));
                 Logger.info("jobFilterRequest sort_by_sortBySalary: " + toJson(jobFilterRequest.getSortBySalary()));
                 for (JobPost jobPost : jobPostList) {
@@ -219,13 +209,13 @@ public class JobPostService {
                     }
                     /* filter gender */
                     if (shouldContinue && jobFilterRequest.getGender() != null && jobFilterRequest.getGender() != JobFilterRequest.Gender.ANY_GENDER) {
-                        if (jobPost.getGender()!= null  && (jobPost.getGender() == ServerConstants.GENDER_MALE
-                                || jobPost.getGender() == ServerConstants.GENDER_ANY || jobPost.getGender() == null)
-                                && jobFilterRequest.getGender() != JobFilterRequest.Gender.MALE) {
+                        if ((jobPost.getGender() == null
+                                || jobPost.getGender() == ServerConstants.GENDER_MALE
+                                || jobPost.getGender() == ServerConstants.GENDER_ANY) && jobFilterRequest.getGender() != JobFilterRequest.Gender.MALE) {
                             shouldContinue = true;
-                        } else if (jobPost.getGender()!= null && (jobPost.getGender() == ServerConstants.GENDER_FEMALE
-                                || jobPost.getGender() == ServerConstants.GENDER_ANY || jobPost.getGender() == null)
-                                && jobFilterRequest.getGender() != JobFilterRequest.Gender.FEMALE) {
+                        } else if ((jobPost.getGender() == null
+                                || jobPost.getGender() == ServerConstants.GENDER_FEMALE
+                                || jobPost.getGender() == ServerConstants.GENDER_ANY) && jobFilterRequest.getGender() != JobFilterRequest.Gender.FEMALE) {
                             shouldContinue = true;
                         } else {
                             shouldContinue = false;
@@ -304,7 +294,7 @@ public class JobPostService {
                 }
             }
         } else {
-            Logger.info("No Mobile Number found. All job search triggered in App: ");
+            Logger.info("In mGetMatchingJobPostsRaw: No Mobile Number found. All job search triggered in App: ");
             return mGetAllJobPostsRaw(sortOrder, jobRoleIds);
         }
         return null;
