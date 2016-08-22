@@ -50,7 +50,9 @@ public class MatchingEngineService {
                 .eq("jobPostIsHot", IS_HOT)
                 .query();
 
+        Logger.info("JobPostIdList Size: "+ jobRoleIds.size());
         if(jobRoleIds != null && !jobRoleIds.isEmpty() ) {
+            Logger.info("Matching JobPosts for: "+ jobRoleIds.toString()+" JobRoleIds");
             query = query.select("*").fetch("jobRole")
                     .where()
                     .in("jobRole.jobRoleId", jobRoleIds)

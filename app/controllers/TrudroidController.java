@@ -1172,7 +1172,7 @@ public class TrudroidController {
         }
 
         JobPostResponse.Builder jobPostResponseBuilder = JobPostResponse.newBuilder();
-        JobFilterRequest.Builder jobFilterRequest;
+        JobFilterRequest.Builder jobFilterRequestBuilder;
         JobSearchByJobRoleRequest.Builder jobSearchByJobRoleRequest;
         List<Long> jobRoleIdList = new ArrayList<>();
         List<JobPost> jobPostList = new ArrayList<>();
@@ -1191,14 +1191,19 @@ public class TrudroidController {
                 jobRoleIdList.add(jobSearchByJobRoleRequest.getJobRoleIdThree());
         }
         if(jobSearchRequest.getJobFilterRequest() != null && jobSearchRequest.isInitialized()) {
-            Logger.info("Filter By Other Filter Options  : ");
-            jobFilterRequest = jobSearchRequest.getJobFilterRequest().toBuilder();
+            Logger.info("Filter By Other Filter Options  : ") ;
+            jobFilterRequestBuilder = jobSearchRequest.getJobFilterRequest().toBuilder();
+
+            /* override the filter candidateMobile with search candidateMobile */
+            if(jobFilterRequestBuilder.getCandidateMobile().trim().isEmpty()){
+                jobFilterRequestBuilder.setCandidateMobile(jobSearchRequest.getCandidateMobile());
+            }
             /* override the filter lat/lng with search lat/lng */
-            jobFilterRequest.setJobSearchLatitude(jobSearchRequest.getLatitude());
-            jobFilterRequest.setJobSearchLongitude(jobSearchRequest.getLongitude());
-            jobPostList.addAll(filterJobs(jobFilterRequest.build(), jobRoleIdList));
+            jobFilterRequestBuilder.setJobSearchLatitude(jobSearchRequest.getLatitude());
+            jobFilterRequestBuilder.setJobSearchLongitude(jobSearchRequest.getLongitude());
+            jobPostList.addAll(filterJobs(jobFilterRequestBuilder.build(), jobRoleIdList));
         } else {
-            Logger.info("No Filter Applied. Search Jobs with/without jobRoleIdList: "+jobSearchRequest.getLatitude());
+            Logger.info("No Filter Applied. Search Jobs with/without jobRoleIdList: ");
             if(jobSearchRequest.getLatitude() != 0.0
                     && jobSearchRequest.getLongitude() != 0.0) {
                 try {

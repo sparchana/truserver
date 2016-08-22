@@ -15,9 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static api.ServerConstants.IS_HOT;
-import static api.ServerConstants.SORT_BY_DATE_POSTED;
-import static api.ServerConstants.SORT_BY_SALARY;
+import static api.ServerConstants.*;
 import static models.util.Validator.isValidLocalityName;
 import static play.libs.Json.toJson;
 
@@ -138,31 +136,6 @@ public class JobPostService {
         return locality;
     }
 
-    public static List<JobPost> mGetMatchingJobPostsRaw(String mobile, Integer sortOrder, List<Long> jobRoleIds) {
-        mobile = FormValidator.convertToIndianMobileFormat(mobile);
-        if (mobile != null && !mobile.trim().isEmpty()) {
-            Logger.info("getMatchingJob for Mobile: " + mobile);
-            Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
-            if (existingCandidate != null) {
-                List<Long> jobPrefId = new ArrayList<>();
-                for (JobPreference jobPreference : existingCandidate.getJobPreferencesList()) {
-                    jobPrefId.add(jobPreference.getJobRole().getJobRoleId());
-                }
-                if (existingCandidate.getCandidateLocalityLat() == null || existingCandidate.getCandidateLocalityLng() == null) {
-                    return mGetAllJobPostsRaw();
-                } else {
-                    return MatchingEngineService.fetchMatchingJobPostForLatLng(
-                            existingCandidate.getCandidateLocalityLat(), existingCandidate.getCandidateLocalityLng(), null
-                            , jobPrefId, sortOrder);
-                }
-            }
-        } else {
-            Logger.info("All job search triggered in App: ");
-            return mGetAllJobPostsRaw(sortOrder, jobRoleIds);
-        }
-        return null;
-    }
-
     public static List<JobPost> filterJobs(JobFilterRequest jobFilterRequest, List<Long> jobRoleIds) {
         List<JobPost> filteredJobPostList = new ArrayList<>();
         Integer sortOrder = ServerConstants.SORT_DEFAULT;
@@ -247,11 +220,11 @@ public class JobPostService {
                     /* filter gender */
                     if (shouldContinue && jobFilterRequest.getGender() != null && jobFilterRequest.getGender() != JobFilterRequest.Gender.ANY_GENDER) {
                         if (jobPost.getGender()!= null  && (jobPost.getGender() == ServerConstants.GENDER_MALE
-                                || jobPost.getGender() == ServerConstants.GENDER_ANY)
+                                || jobPost.getGender() == ServerConstants.GENDER_ANY || jobPost.getGender() == null)
                                 && jobFilterRequest.getGender() != JobFilterRequest.Gender.MALE) {
                             shouldContinue = true;
                         } else if (jobPost.getGender()!= null && (jobPost.getGender() == ServerConstants.GENDER_FEMALE
-                                || jobPost.getGender() == ServerConstants.GENDER_ANY)
+                                || jobPost.getGender() == ServerConstants.GENDER_ANY || jobPost.getGender() == null)
                                 && jobFilterRequest.getGender() != JobFilterRequest.Gender.FEMALE) {
                             shouldContinue = true;
                         } else {
@@ -286,14 +259,15 @@ public class JobPostService {
         }
     }
 
-    public static List<JobPost> mGetMatchingJobPostsByLatLngRaw(String mobile, Double latitude, Double longitude,List<Long> jobRoleIds, Integer
-                                                                sortOrder) {
+    public static List<JobPost> mGetMatchingJobPostsByLatLngRaw(String mobile, Double latitude, Double longitude,
+                                                                List<Long> jobRoleIds, Integer sortOrder) {
         mobile = FormValidator.convertToIndianMobileFormat(mobile);
-        if (mobile != null) {
+        if (mobile != null && !mobile.trim().isEmpty()) {
             Logger.info("getMatchingJob for Mobile: " + mobile);
             Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
             if (existingCandidate != null) {
                 if(jobRoleIds.isEmpty()){
+                    Logger.info("JobRoleId List is empty. Hence getting jobrole Prefs from db");
                     for (JobPreference jobPreference : existingCandidate.getJobPreferencesList()) {
                         jobRoleIds.add(jobPreference.getJobRole().getJobRoleId());
                     }
@@ -302,8 +276,37 @@ public class JobPostService {
                 return MatchingEngineService.fetchMatchingJobPostForLatLng(
                         latitude, longitude, null, jobRoleIds, sortOrder);
             }
+        } else {
+            Logger.info("Job Search Req with NO mobile Number.");
         }
         return MatchingEngineService.fetchMatchingJobPostForLatLng(
                 latitude, longitude, null, jobRoleIds, sortOrder);
+    }
+
+    public static List<JobPost> mGetMatchingJobPostsRaw(String mobile, Integer sortOrder, List<Long> jobRoleIds) {
+        mobile = FormValidator.convertToIndianMobileFormat(mobile);
+        if (mobile != null && !mobile.trim().isEmpty()) {
+            Logger.info("getMatchingJob for Mobile: " + mobile);
+            Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
+            if (existingCandidate != null) {
+                if(jobRoleIds== null || jobRoleIds.size() == 0){
+                    jobRoleIds = new ArrayList<>();
+                    for (JobPreference jobPreference : existingCandidate.getJobPreferencesList()) {
+                        jobRoleIds.add(jobPreference.getJobRole().getJobRoleId());
+                    }
+                }
+                if (existingCandidate.getCandidateLocalityLat() == null || existingCandidate.getCandidateLocalityLng() == null) {
+                    return mGetAllJobPostsRaw();
+                } else {
+                    return MatchingEngineService.fetchMatchingJobPostForLatLng(
+                            existingCandidate.getCandidateLocalityLat(), existingCandidate.getCandidateLocalityLng(), null
+                            , jobRoleIds, sortOrder);
+                }
+            }
+        } else {
+            Logger.info("No Mobile Number found. All job search triggered in App: ");
+            return mGetAllJobPostsRaw(sortOrder, jobRoleIds);
+        }
+        return null;
     }
 }
