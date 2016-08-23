@@ -375,6 +375,7 @@ public class TrudroidController {
                 candidateBuilder.setCandidateProfileCompletePercent(percentValue);
                 candidateBuilder.setCandidateIsAssessed(candidate.getCandidateIsAssessed());
                 candidateBuilder.setCandidateMinProfileComplete(candidate.getIsMinProfileComplete());
+
                 candidateBuilder.setCandidateGender(-1);
                 if (candidate.getCandidateGender() != null) {
                     candidateBuilder.setCandidateGender(candidate.getCandidateGender());
@@ -392,8 +393,6 @@ public class TrudroidController {
                     c.setTime(candidate.getCandidateDOB());
                     long time = c.getTimeInMillis();
                     candidateBuilder.setCandidateDobMillis(time);
-                } else{
-                    candidateBuilder.setCandidateDobMillis(0);
                 }
 
                 //getting home locality
@@ -401,6 +400,8 @@ public class TrudroidController {
                 if (candidate.getLocality() != null) {
                     localityBuilder.setLocalityId(candidate.getLocality().getLocalityId());
                     localityBuilder.setLocalityName(candidate.getLocality().getLocalityName());
+                    localityBuilder.setLat(candidate.getLocality().getLat());
+                    localityBuilder.setLng(candidate.getLocality().getLng());
                     candidateBuilder.setCandidateHomelocality(localityBuilder);
                 }
 
@@ -410,12 +411,14 @@ public class TrudroidController {
 
                 List<JobHistory> jobHistoryList = JobHistory.find.where().eq("candidateId", candidate.getCandidateId()).findList();
                 for (JobHistory jobHistory : jobHistoryList) {
-                    if (jobHistory.getCurrentJob() == true) {
+                    if (jobHistory.getCurrentJob()) {
                         candidateBuilder.setCandidateCurrentCompany(jobHistory.getCandidatePastCompany());
                         JobRoleObject.Builder jobRoleBuilder = JobRoleObject.newBuilder();
-                        jobRoleBuilder.setJobRoleName(jobHistory.getJobRole().getJobName());
-                        jobRoleBuilder.setJobRoleId(jobHistory.getJobRole().getJobRoleId());
-                        candidateBuilder.setCandidateCurrentJobRole(jobRoleBuilder.build());
+                        if(jobHistory.getJobRole() != null){
+                            jobRoleBuilder.setJobRoleName(jobHistory.getJobRole().getJobName());
+                            jobRoleBuilder.setJobRoleId(jobHistory.getJobRole().getJobRoleId());
+                            candidateBuilder.setCandidateCurrentJobRole(jobRoleBuilder.build());
+                        }
                         break;
                     }
                 }
