@@ -783,9 +783,17 @@ public class TrudroidController {
     private static Locality getOrCreateLocality(String localityName, Double latitude, Double longitude) {
         // validate localityName
         localityName = localityName.trim();
+        Logger.info("setting home loality to "+localityName);
         if (localityName != null && isValidLocalityName(localityName)) {
             Locality locality = Locality.find.where().eq("localityName", localityName).findUnique();
             if (locality != null) {
+                if(locality.getLat() == null || locality.getLat() == 0.0
+                        || locality.getLng() == null || locality.getLng() == 0.0){
+                    Logger.info("updating lat lng for : "+localityName+" in static table Locality");
+                    locality.setLat(latitude);
+                    locality.setLng(longitude);
+                    locality.update();
+                }
                 return locality;
             }
         }
