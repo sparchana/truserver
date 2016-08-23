@@ -749,10 +749,10 @@ public class TrudroidController {
                     List<String> localityList = Arrays.asList(pHomeLocalityRequest.getAddress().split(","));
                     if (localityList.size() >= 4) {
                         String localityName = localityList.get(localityList.size() - 4);
-                        existingCandidate.setLocality(getOrCreateLocality(localityName));
+                        existingCandidate.setLocality(getOrCreateLocality(localityName, pHomeLocalityRequest.getLat(), pHomeLocalityRequest.getLng()));
                     } else if (localityList.size() == 2) {
                         String localityName = localityList.get(localityList.size() - 1);
-                        existingCandidate.setLocality(getOrCreateLocality(localityName));
+                        existingCandidate.setLocality(getOrCreateLocality(localityName, pHomeLocalityRequest.getLat(), pHomeLocalityRequest.getLng()));
                         Logger.info("Locality:" + existingCandidate.getLocality().getLocalityName());
                     }
                     existingCandidate.setCandidateLocalityLat(pHomeLocalityRequest.getLat());
@@ -777,7 +777,7 @@ public class TrudroidController {
         return ok(Base64.encodeBase64String(builder.build().toByteArray()));
     }
 
-    private static Locality getOrCreateLocality(String localityName) {
+    private static Locality getOrCreateLocality(String localityName, Double latitude, Double longitude) {
         // validate localityName
         localityName = localityName.trim();
         if (localityName != null && isValidLocalityName(localityName)) {
@@ -788,6 +788,8 @@ public class TrudroidController {
         }
         Locality locality = new Locality();
         locality.setLocalityName(localityName);
+        locality.setLat(latitude);
+        locality.setLng(longitude);
         locality.save();
         locality = Locality.find.where().eq("localityName", localityName).findUnique();
         return locality;
