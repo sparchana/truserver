@@ -747,14 +747,17 @@ public class TrudroidController {
                     Logger.info("Address:" + pHomeLocalityRequest.getAddress());
 
                     List<String> localityList = Arrays.asList(pHomeLocalityRequest.getAddress().split(","));
+                    String localityName = "";
                     if (localityList.size() >= 4) {
-                        String localityName = localityList.get(localityList.size() - 4);
+                        localityName = localityList.get(localityList.size() - 4);
                         existingCandidate.setLocality(getOrCreateLocality(localityName, pHomeLocalityRequest.getLat(), pHomeLocalityRequest.getLng()));
                     } else if (localityList.size() == 2) {
-                        String localityName = localityList.get(localityList.size() - 1);
-                        existingCandidate.setLocality(getOrCreateLocality(localityName, pHomeLocalityRequest.getLat(), pHomeLocalityRequest.getLng()));
+                        localityName = localityList.get(localityList.size() - 1);
                         Logger.info("Locality:" + existingCandidate.getLocality().getLocalityName());
+                    } else if(localityList.size()  == 1){
+                        localityName = localityList.get(0);
                     }
+                    existingCandidate.setLocality(getOrCreateLocality(localityName, pHomeLocalityRequest.getLat(), pHomeLocalityRequest.getLng()));
                     existingCandidate.setCandidateLocalityLat(pHomeLocalityRequest.getLat());
                     existingCandidate.setCandidateLocalityLng(pHomeLocalityRequest.getLng());
                     existingCandidate.candidateUpdate();
@@ -1199,20 +1202,22 @@ public class TrudroidController {
         List<Long> jobRoleIdList = new ArrayList<>();
         List<JobPost> jobPostList = new ArrayList<>();
 
-        if(jobSearchRequest.getJobSearchByJobRoleRequest() != null && jobSearchRequest.getJobSearchByJobRoleRequest().getJobRoleIdOne() > 0) {
+        if(jobSearchRequest.hasJobSearchByJobRoleRequest()) {
             jobSearchByJobRoleRequest = jobSearchRequest.getJobSearchByJobRoleRequest().toBuilder();
             if(jobSearchByJobRoleRequest.getJobRoleIdOne() != 0) {
-                Logger.info("Filter By JobRole : "+ jobSearchByJobRoleRequest.getJobRoleIdOne());
+                Logger.info("1. Filter By JobRole : "+ jobSearchByJobRoleRequest.getJobRoleIdOne());
                 jobRoleIdList.add(jobSearchByJobRoleRequest.getJobRoleIdOne());
             }
-            if(jobSearchByJobRoleRequest.getJobRoleIdTwo() != 0)
-                Logger.info("Filter By JobRole : "+ jobSearchByJobRoleRequest.getJobRoleIdTwo());
+            if(jobSearchByJobRoleRequest.getJobRoleIdTwo() != 0){
+                Logger.info("2. Filter By JobRole : "+ jobSearchByJobRoleRequest.getJobRoleIdTwo());
                 jobRoleIdList.add(jobSearchByJobRoleRequest.getJobRoleIdTwo());
-            if(jobSearchByJobRoleRequest.getJobRoleIdThree() != 0)
-                Logger.info("Filter By JobRole : "+ jobSearchByJobRoleRequest.getJobRoleIdThree());
+            }
+            if(jobSearchByJobRoleRequest.getJobRoleIdThree() != 0){
+                Logger.info("3. Filter By JobRole : "+ jobSearchByJobRoleRequest.getJobRoleIdThree());
                 jobRoleIdList.add(jobSearchByJobRoleRequest.getJobRoleIdThree());
+            }
         }
-        if(jobSearchRequest.getJobFilterRequest() != null && jobSearchRequest.isInitialized()) {
+        if(jobSearchRequest.hasJobFilterRequest()) {
             Logger.info("Filter by other filter options  triggered ") ;
             jobFilterRequestBuilder = jobSearchRequest.getJobFilterRequest().toBuilder();
 
@@ -1225,7 +1230,7 @@ public class TrudroidController {
             jobFilterRequestBuilder.setJobSearchLongitude(jobSearchRequest.getLongitude());
             jobPostList.addAll(filterJobs(jobFilterRequestBuilder.build(), jobRoleIdList));
         } else {
-            Logger.info("No Filter Applied. Search Jobs with/without jobRoleIdList: ");
+            Logger.info("No Misc. Filter Applied. Search Jobs with/without jobRoleIdList: "+jobRoleIdList.size());
             if(jobSearchRequest.getLatitude() != 0.0
                     && jobSearchRequest.getLongitude() != 0.0) {
                 try {
