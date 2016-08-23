@@ -37,6 +37,7 @@ public class MatchingEngineService {
      * are ordered by distance of each JobPostToLocality from candidate's home locality.
      */
     public static List<JobPost> fetchMatchingJobPostForLatLng(Double lat, Double lng, Double r, List<Long> jobRoleIds, Integer sortOrder) {
+        Logger.info("[Matching Engine]");
         if (r != null && r > 0) {
             radius = r;
         }
@@ -50,7 +51,9 @@ public class MatchingEngineService {
                 .eq("jobPostIsHot", IS_HOT)
                 .query();
 
+        Logger.info("JobPostIdList Size: "+ jobRoleIds.size());
         if(jobRoleIds != null && !jobRoleIds.isEmpty() ) {
+            Logger.info("Matching JobPosts for: "+ jobRoleIds.toString()+" JobRoleIds");
             query = query.select("*").fetch("jobRole")
                     .where()
                     .in("jobRole.jobRoleId", jobRoleIds)
@@ -88,23 +91,7 @@ public class MatchingEngineService {
                     jobPostsResponseList.add(new JobPost(tempJobPost));
                 }
             }
-            switch (sortOrder) {
-                case SORT_BY_SALARY:
-                    Logger.info("sorting on Salary");
-                    Collections.sort(jobPostsResponseList, (a, b) -> b.getJobPostMinSalary()
-                            .compareTo(a.getJobPostMinSalary()));
-                    break;
-                case SORT_BY_DATE_POSTED:
-                    Logger.info("sorting on date posted");
-                    Collections.sort(jobPostsResponseList, (a, b) -> b.getJobPostCreateTimestamp()
-                            .compareTo(a.getJobPostCreateTimestamp()));
-                    break;
-                default:
-                    Logger.info("default sort triggered");
-                    Collections.sort(jobPostsResponseList, (a, b) -> a.getJobPostToLocalityList().get(0).getDistance()
-                            .compareTo(b.getJobPostToLocalityList().get(0).getDistance()));
-                    break;
-            }
+            SortJobPostList(jobPostsResponseList, sortOrder, true);
             Logger.info("jobPostResponseList:" + jobPostsResponseList);
             return jobPostsResponseList;
         } else {
@@ -132,5 +119,29 @@ public class MatchingEngineService {
                 * Math.cos(Math.toRadians(centerLat)) * Math.cos(Math.toRadians(pointLat));
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return c * earthRadius;
+    }
+
+    public static void SortJobPostList(List<JobPost> jobPostsResponseList, Integer sortOrder, boolean doDefaultSort) {
+        switch (sortOrder) {
+            case SORT_BY_SALARY:
+                Logger.info("In mGetAllJobPostsRaw : sorting on Salary");
+                Collections.sort(jobPostsResponseList, (a, b) -> b.getJobPostMinSalary()
+                        .compareTo(a.getJobPostMinSalary()));
+                break;
+            case SORT_BY_DATE_POSTED:
+                Logger.info("In mGetAllJobPostsRaw : sorting on date posted");
+                Collections.sort(jobPostsResponseList, (a, b) -> b.getJobPostCreateTimestamp()
+                        .compareTo(a.getJobPostCreateTimestamp()));
+                break;
+            default:
+                if(doDefaultSort) {
+                    Logger.info("default sort triggered");
+                    Collections.sort(jobPostsResponseList, (a, b) -> a.getJobPostToLocalityList().get(0).getDistance()
+                            .compareTo(b.getJobPostToLocalityList().get(0).getDistance()));
+                } else {
+                    Logger.info("no default sorting if candidate not logged in");
+                }
+                break;
+        }
     }
 }
