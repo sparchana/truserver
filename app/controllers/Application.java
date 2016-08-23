@@ -355,6 +355,7 @@ public class Application extends Controller {
         }
         return ok(toJson(ParseCSV.parseCSV(file)));
     }
+
     @Security.Authenticated(Secured.class)
     public static Result getAll(int id){
         List<Lead> allLead = new ArrayList<>();
@@ -1146,7 +1147,7 @@ public class Application extends Controller {
         return ok(views.html.admin.render());
     }
 
-    @Security.Authenticated(AdminSecured.class)
+    @Security.Authenticated(RecSecured.class)
     public static Result uploadCSV() {
         return ok(views.html.uploadcsv.render());
     }
