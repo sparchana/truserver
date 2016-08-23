@@ -58,14 +58,14 @@ public class CandidateAlertService {
                 Logger.error("Candidate with mobile " + candidateMobile + " doesnt have lat-long info");
                 jobsCount = JobPost.find.all().size();
             } else {
-                // fetch jobs near this candidate according to its jobPreference
-                List<Long> jobPrefId = new ArrayList<>();
+                // fetch jobs near this candidate according to jobPreference
+                List<Long> jobPrefIds = new ArrayList<>();
                 for(JobPreference jobPreference: candidate.getJobPreferencesList()){
-                    jobPrefId.add(jobPreference.getJobRole().getJobRoleId());
+                    jobPrefIds.add(jobPreference.getJobRole().getJobRoleId());
                 }
                 jobsCount = MatchingEngineService.fetchMatchingJobPostForLatLng(candidate.getCandidateLocalityLat(),
                         candidate.getCandidateLocalityLat(),
-                        ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, jobPrefId, ServerConstants.SORT_DEFAULT).size();
+                        ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, jobPrefIds, ServerConstants.SORT_DEFAULT).size();
             }
 
             if (jobsCount > 0) {
@@ -73,6 +73,12 @@ public class CandidateAlertService {
                         "Whoa! " + jobsCount + " new jobs available in your locality! Start applying now!!");
                 fetchCandidateResponseBuilder.setAlertType(
                         FetchCandidateAlertResponse.Type.valueOf(FetchCandidateAlertResponse.Type.NEW_JOBS_IN_LOCALITY_VALUE));
+            }
+            else {
+                fetchCandidateResponseBuilder.setAlertMessage(
+                        "Complete skill assessment now and increase your changes of finding the right job!!");
+                fetchCandidateResponseBuilder.setAlertType(
+                        FetchCandidateAlertResponse.Type.valueOf(FetchCandidateAlertResponse.Type.COMPLETE_ASSESSMENT_VALUE));
             }
         }
         return fetchCandidateResponseBuilder.build();
