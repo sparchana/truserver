@@ -393,9 +393,7 @@ public class TrudroidController {
                     c.setTime(candidate.getCandidateDOB());
                     long time = c.getTimeInMillis();
                     candidateBuilder.setCandidateDobMillis(time);
-                } else{
-                    candidateBuilder.setCandidateDobMillis(-1);
-                }
+                } 
 
                 //getting home locality
                 LocalityObject.Builder localityBuilder = LocalityObject.newBuilder();
