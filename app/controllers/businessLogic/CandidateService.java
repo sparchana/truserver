@@ -1155,7 +1155,7 @@ public class CandidateService
 
             p0FieldCount++;
             if (candidate.getLanguageKnownList() != null) {
-                if (candidate.getLanguageKnownList().size() >= 2) {
+                if (candidate.getLanguageKnownList().size() >= 1) {
                     p0CompletedFieldCount++;
                 }
             }
