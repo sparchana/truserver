@@ -256,6 +256,12 @@ public class JobPostService {
             Logger.info("getMatchingJob for Mobile: " + mobile);
             Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
             if (existingCandidate != null) {
+                if(jobRoleIds.isEmpty()){
+                    Logger.info("JobRoleId List is empty. Hence getting jobrole Prefs from db");
+                    for (JobPreference jobPreference : existingCandidate.getJobPreferencesList()) {
+                        jobRoleIds.add(jobPreference.getJobRole().getJobRoleId());
+                    }
+                }
                 sortOrder = sortOrder == null ? ServerConstants.SORT_DEFAULT:sortOrder;
                 return MatchingEngineService.fetchMatchingJobPostForLatLng(
                         latitude, longitude, null, jobRoleIds, sortOrder);
