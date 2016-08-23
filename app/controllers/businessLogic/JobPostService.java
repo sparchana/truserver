@@ -211,11 +211,11 @@ public class JobPostService {
                     if (shouldContinue && jobFilterRequest.getGender() != null && jobFilterRequest.getGender() != JobFilterRequest.Gender.ANY_GENDER) {
                         if ((jobPost.getGender() == null
                                 || jobPost.getGender() == ServerConstants.GENDER_MALE
-                                || jobPost.getGender() == ServerConstants.GENDER_ANY) && jobFilterRequest.getGender() != JobFilterRequest.Gender.MALE) {
+                                || jobPost.getGender() == ServerConstants.GENDER_ANY) && jobFilterRequest.getGender() == JobFilterRequest.Gender.MALE) {
                             shouldContinue = true;
                         } else if ((jobPost.getGender() == null
                                 || jobPost.getGender() == ServerConstants.GENDER_FEMALE
-                                || jobPost.getGender() == ServerConstants.GENDER_ANY) && jobFilterRequest.getGender() != JobFilterRequest.Gender.FEMALE) {
+                                || jobPost.getGender() == ServerConstants.GENDER_ANY) && jobFilterRequest.getGender() == JobFilterRequest.Gender.FEMALE) {
                             shouldContinue = true;
                         } else {
                             shouldContinue = false;
@@ -256,12 +256,6 @@ public class JobPostService {
             Logger.info("getMatchingJob for Mobile: " + mobile);
             Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
             if (existingCandidate != null) {
-                if(jobRoleIds.isEmpty()){
-                    Logger.info("JobRoleId List is empty. Hence getting jobrole Prefs from db");
-                    for (JobPreference jobPreference : existingCandidate.getJobPreferencesList()) {
-                        jobRoleIds.add(jobPreference.getJobRole().getJobRoleId());
-                    }
-                }
                 sortOrder = sortOrder == null ? ServerConstants.SORT_DEFAULT:sortOrder;
                 return MatchingEngineService.fetchMatchingJobPostForLatLng(
                         latitude, longitude, null, jobRoleIds, sortOrder);
