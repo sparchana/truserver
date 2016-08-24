@@ -400,8 +400,8 @@ public class TrudroidController {
                 if (candidate.getLocality() != null) {
                     localityBuilder.setLocalityId(candidate.getLocality().getLocalityId());
                     localityBuilder.setLocalityName(candidate.getLocality().getLocalityName());
-                    localityBuilder.setLat(candidate.getLocality().getLat());
-                    localityBuilder.setLng(candidate.getLocality().getLng());
+                    localityBuilder.setLat(candidate.getCandidateLocalityLat());
+                    localityBuilder.setLng(candidate.getCandidateLocalityLat());
                     candidateBuilder.setCandidateHomelocality(localityBuilder);
                 }
 
