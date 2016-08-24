@@ -83,6 +83,7 @@ public class TrudroidController {
                 loginResponseBuilder.setLeadId(loginResponse.getLeadId());
                 loginResponseBuilder.setCandidateJobPrefStatus(loginResponse.getCandidateJobPrefStatus());
                 loginResponseBuilder.setCandidateHomeLocalityStatus(loginResponse.getCandidateHomeLocalityStatus());
+                if(loginResponse.getCandidateHomeLocalityName() != null) loginResponseBuilder.setCandidateHomeLocalityName(loginResponse.getCandidateHomeLocalityName());
                 if(loginResponse.getCandidateHomeLat() != null) loginResponseBuilder.setCandidateHomeLatitude(loginResponse.getCandidateHomeLat());
                 if(loginResponse.getCandidateHomeLng() != null) loginResponseBuilder.setCandidateHomeLongitude(loginResponse.getCandidateHomeLng());
                 if(loginResponse.getCandidatePrefJobRoleIdOne() != null) loginResponseBuilder.setCandidatePrefJobRoleIdOne(loginResponse.getCandidatePrefJobRoleIdOne());
