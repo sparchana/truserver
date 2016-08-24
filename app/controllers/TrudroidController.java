@@ -424,7 +424,7 @@ public class TrudroidController {
                     localityBuilder.setLocalityId(candidate.getLocality().getLocalityId());
                     localityBuilder.setLocalityName(candidate.getLocality().getLocalityName());
                     localityBuilder.setLat(candidate.getCandidateLocalityLat());
-                    localityBuilder.setLng(candidate.getCandidateLocalityLat());
+                    localityBuilder.setLng(candidate.getCandidateLocalityLng());
                     candidateBuilder.setCandidateHomelocality(localityBuilder);
                 }
 
