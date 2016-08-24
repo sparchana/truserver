@@ -37,7 +37,7 @@ public class MatchingEngineService {
      * are ordered by distance of each JobPostToLocality from candidate's home locality.
      */
     public static List<JobPost> fetchMatchingJobPostForLatLng(Double lat, Double lng, Double r, List<Long> jobRoleIds, Integer sortOrder) {
-        Logger.info("[Matching Engine]");
+        Logger.info("[Matching Engine] for lat/lng "+lat+"/"+lng);
         if (r != null && r > 0) {
             radius = r;
         }
