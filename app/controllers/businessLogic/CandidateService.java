@@ -946,6 +946,9 @@ public class CandidateService
                     if(existingCandidate.getCandidateLocalityLat() != null && existingCandidate.getCandidateLocalityLng() != null){
                         loginResponse.setCandidateHomeLocalityStatus(1);
                     }
+                    if(existingCandidate.getLocality()!= null && existingCandidate.getLocality().getLocalityName()!=null){
+                        loginResponse.setCandidateHomeLocalityName(existingCandidate.getLocality().getLocalityName());
+                    }
                     loginResponse.setStatus(loginResponse.STATUS_SUCCESS);
 
                     existingAuth.setAuthSessionId(UUID.randomUUID().toString());
