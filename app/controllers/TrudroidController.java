@@ -20,6 +20,7 @@ import models.entity.Company;
 import models.entity.JobPost;
 import models.entity.OM.*;
 import models.entity.Static.*;
+import models.util.SmsUtil;
 import play.Logger;
 import play.mvc.Result;
 
@@ -29,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static controllers.businessLogic.JobPostService.*;
+import static models.util.Util.generateOtp;
 import static models.util.Validator.isValidLocalityName;
 import static play.mvc.Http.Context.Implicit.request;
 import static play.mvc.Results.badRequest;
@@ -164,6 +166,26 @@ public class TrudroidController {
             return badRequest();
         }
         return ok(Base64.encodeBase64String(loginResponseBuilder.build().toByteArray()));
+    }
+
+    public static Result mResendOtp() {
+        ResetPasswordRequest pResetPasswordRequest = null;
+        ResetPasswordResponse.Builder resetPasswordResponseBuilder = ResetPasswordResponse.newBuilder();
+
+        try {
+            String requestString = request().body().asText();
+            pResetPasswordRequest = ResetPasswordRequest.parseFrom(Base64.decodeBase64(requestString));
+            int randomPIN = generateOtp();
+            SmsUtil.sendResetPasswordOTPSms(randomPIN, FormValidator.convertToIndianMobileFormat(pResetPasswordRequest.getMobile()));
+            resetPasswordResponseBuilder.setOtp(randomPIN);
+            resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.SUCCESS);
+
+        } catch (InvalidProtocolBufferException e) {
+            resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.FAILURE);
+            Logger.info("Unable to parse message");
+        }
+
+        return ok(Base64.encodeBase64String(resetPasswordResponseBuilder.build().toByteArray()));
     }
 
     public static Result mFindUserAndSendOtp() {
@@ -401,8 +423,8 @@ public class TrudroidController {
                 if (candidate.getLocality() != null) {
                     localityBuilder.setLocalityId(candidate.getLocality().getLocalityId());
                     localityBuilder.setLocalityName(candidate.getLocality().getLocalityName());
-                    localityBuilder.setLat(candidate.getLocality().getLat());
-                    localityBuilder.setLng(candidate.getLocality().getLng());
+                    localityBuilder.setLat(candidate.getCandidateLocalityLat());
+                    localityBuilder.setLng(candidate.getCandidateLocalityLat());
                     candidateBuilder.setCandidateHomelocality(localityBuilder);
                 }
 
