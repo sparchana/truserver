@@ -30,6 +30,7 @@ public class LoginResponse {
     public Long candidatePrefJobRoleIdOne;
     public Long candidatePrefJobRoleIdTwo;
     public Long candidatePrefJobRoleIdThree;
+    public String candidateHomeLocalityName;
 
     public int getMinProfile() {
         return minProfile;
@@ -156,5 +157,13 @@ public class LoginResponse {
 
     public void setCandidatePrefJobRoleIdTwo(Long candidatePrefJobRoleIdTwo) {
         this.candidatePrefJobRoleIdTwo = candidatePrefJobRoleIdTwo;
+    }
+
+    public String getCandidateHomeLocalityName() {
+        return candidateHomeLocalityName;
+    }
+
+    public void setCandidateHomeLocalityName(String candidateHomeLocalityName) {
+        this.candidateHomeLocalityName = candidateHomeLocalityName;
     }
 }
