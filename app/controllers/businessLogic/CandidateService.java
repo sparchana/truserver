@@ -286,7 +286,7 @@ public class CandidateService
 
             // In case of errors, return at this point
             if(candidateSignUpResponse.getStatus() != CandidateSignUpResponse.STATUS_SUCCESS){
-                Logger.info("Error while updating basic profile of candidate with mobile " + candidate.getCandidateMobile());
+                Logger.info("Error while updating experience profile of candidate with mobile " + candidate.getCandidateMobile());
                 return candidateSignUpResponse;
             }
 
@@ -924,11 +924,30 @@ public class CandidateService
                     loginResponse.setLeadId(existingCandidate.getLead().getLeadId());
                     loginResponse.setCandidateJobPrefStatus(0);
                     loginResponse.setCandidateHomeLocalityStatus(0);
+
+                    /* START : to cater specifically the app need */
+                    if(existingCandidate.getCandidateLocalityLat() != null
+                            || existingCandidate.getCandidateLocalityLng() != null ){
+                        loginResponse.setCandidateHomeLat(existingCandidate.getCandidateLocalityLat());
+                        loginResponse.setCandidateHomeLng(existingCandidate.getCandidateLocalityLng());
+                    }
+                    if(!existingCandidate.getJobPreferencesList().isEmpty()){
+                        if(existingCandidate.getJobPreferencesList().size()>0 && existingCandidate.getJobPreferencesList().get(0)!= null)
+                            loginResponse.setCandidatePrefJobRoleIdOne(existingCandidate.getJobPreferencesList().get(0).getJobRole().getJobRoleId());
+                        if(existingCandidate.getJobPreferencesList().size()>1 &&existingCandidate.getJobPreferencesList().get(1)!= null)
+                            loginResponse.setCandidatePrefJobRoleIdTwo(existingCandidate.getJobPreferencesList().get(1).getJobRole().getJobRoleId());
+                        if(existingCandidate.getJobPreferencesList().size()>2 &&existingCandidate.getJobPreferencesList().get(2)!= null)
+                            loginResponse.setCandidatePrefJobRoleIdThree(existingCandidate.getJobPreferencesList().get(2).getJobRole().getJobRoleId());
+                    }
+                    /* END */
                     if(existingCandidate.getJobPreferencesList().size() > 0){
                         loginResponse.setCandidateJobPrefStatus(1);
                     }
-                    if(existingCandidate.getLocality() != null){
+                    if(existingCandidate.getCandidateLocalityLat() != null && existingCandidate.getCandidateLocalityLng() != null){
                         loginResponse.setCandidateHomeLocalityStatus(1);
+                    }
+                    if(existingCandidate.getLocality()!= null && existingCandidate.getLocality().getLocalityName()!=null){
+                        loginResponse.setCandidateHomeLocalityName(existingCandidate.getLocality().getLocalityName());
                     }
                     loginResponse.setStatus(loginResponse.STATUS_SUCCESS);
 
@@ -987,7 +1006,7 @@ public class CandidateService
 
     public static List<JobPreference> getCandidateJobPreferenceList(List<Integer> jobsList, Candidate candidate) {
         List<JobPreference> candidateJobPreferences = new ArrayList<>();
-        for(Integer  s : jobsList) {
+        for(Integer s : jobsList) {
             JobPreference candidateJobPreference = new JobPreference();
             candidateJobPreference.setCandidate(candidate);
             JobRole jobRole = JobRole.find.where().eq("JobRoleId", s).findUnique();
@@ -1139,7 +1158,7 @@ public class CandidateService
 
             p0FieldCount++;
             if (candidate.getLanguageKnownList() != null) {
-                if (candidate.getLanguageKnownList().size() >= 2) {
+                if (candidate.getLanguageKnownList().size() >= 1) {
                     p0CompletedFieldCount++;
                 }
             }

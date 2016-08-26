@@ -22,6 +22,16 @@ public class LoginResponse {
     public String authSessionId;
     public Long sessionExpiryInMilliSecond;
 
+    /*
+    * To cater mobile needs
+    */
+    public Double candidateHomeLat;
+    public Double candidateHomeLng;
+    public Long candidatePrefJobRoleIdOne;
+    public Long candidatePrefJobRoleIdTwo;
+    public Long candidatePrefJobRoleIdThree;
+    public String candidateHomeLocalityName;
+
     public int getMinProfile() {
         return minProfile;
     }
@@ -107,5 +117,53 @@ public class LoginResponse {
 
     public Long getSessionExpiryInMilliSecond() {
         return sessionExpiryInMilliSecond;
+    }
+
+    public Double getCandidateHomeLng() {
+        return candidateHomeLng;
+    }
+
+    public void setCandidateHomeLng(Double candidateHomeLng) {
+        this.candidateHomeLng = candidateHomeLng;
+    }
+
+    public Double getCandidateHomeLat() {
+        return candidateHomeLat;
+    }
+
+    public void setCandidateHomeLat(Double candidateHomeLat) {
+        this.candidateHomeLat = candidateHomeLat;
+    }
+
+    public Long getCandidatePrefJobRoleIdOne() {
+        return candidatePrefJobRoleIdOne;
+    }
+
+    public void setCandidatePrefJobRoleIdOne(Long candidatePrefJobRoleIdOne) {
+        this.candidatePrefJobRoleIdOne = candidatePrefJobRoleIdOne;
+    }
+
+    public Long getCandidatePrefJobRoleIdThree() {
+        return candidatePrefJobRoleIdThree;
+    }
+
+    public void setCandidatePrefJobRoleIdThree(Long candidatePrefJobRoleIdThree) {
+        this.candidatePrefJobRoleIdThree = candidatePrefJobRoleIdThree;
+    }
+
+    public Long getCandidatePrefJobRoleIdTwo() {
+        return candidatePrefJobRoleIdTwo;
+    }
+
+    public void setCandidatePrefJobRoleIdTwo(Long candidatePrefJobRoleIdTwo) {
+        this.candidatePrefJobRoleIdTwo = candidatePrefJobRoleIdTwo;
+    }
+
+    public String getCandidateHomeLocalityName() {
+        return candidateHomeLocalityName;
+    }
+
+    public void setCandidateHomeLocalityName(String candidateHomeLocalityName) {
+        this.candidateHomeLocalityName = candidateHomeLocalityName;
     }
 }

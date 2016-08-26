@@ -284,7 +284,7 @@ input::-webkit-inner-spin-button {
 }
 
 .educationBtn{
-    width: 80px;
+    width: 120px;
 }
 
 #languageBtn{
@@ -306,6 +306,11 @@ input::-webkit-inner-spin-button {
         width: 80%;
     }
     .skillBtn{
+        width: 50px;
+        padding: 8px 2px;
+        font-size: 9px;
+    }
+    .educationBtn{
         width: 50px;
         padding: 8px 2px;
         font-size: 9px;

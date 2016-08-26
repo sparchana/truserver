@@ -1,10 +1,15 @@
 package controllers.businessLogic;
 
 import api.ServerConstants;
+import api.http.FormValidator;
 import in.trujobs.proto.FetchCandidateAlertResponse;
 import models.entity.Candidate;
 import models.entity.JobPost;
+import models.entity.OM.JobPreference;
 import play.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Use this service to fetch the most important alert that needs to be displayed to a candidate at any point
@@ -22,7 +27,7 @@ public class CandidateAlertService {
 
         FetchCandidateAlertResponse.Builder fetchCandidateResponseBuilder = FetchCandidateAlertResponse.newBuilder();
 
-        Candidate candidate = CandidateService.isCandidateExists(candidateMobile);
+        Candidate candidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(candidateMobile));
         if (candidate == null) {
             Logger.error("Candidate with mobile " + candidateMobile + " doesnt exist. No alerts applicable");
             return null;
@@ -53,10 +58,14 @@ public class CandidateAlertService {
                 Logger.error("Candidate with mobile " + candidateMobile + " doesnt have lat-long info");
                 jobsCount = JobPost.find.all().size();
             } else {
-                // fetch jobs near this candidate
+                // fetch jobs near this candidate according to jobPreference
+                List<Long> jobPrefIds = new ArrayList<>();
+                for(JobPreference jobPreference: candidate.getJobPreferencesList()){
+                    jobPrefIds.add(jobPreference.getJobRole().getJobRoleId());
+                }
                 jobsCount = MatchingEngineService.fetchMatchingJobPostForLatLng(candidate.getCandidateLocalityLat(),
                         candidate.getCandidateLocalityLat(),
-                        ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS).size();
+                        ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, jobPrefIds, ServerConstants.SORT_DEFAULT).size();
             }
 
             if (jobsCount > 0) {
@@ -64,6 +73,12 @@ public class CandidateAlertService {
                         "Whoa! " + jobsCount + " new jobs available in your locality! Start applying now!!");
                 fetchCandidateResponseBuilder.setAlertType(
                         FetchCandidateAlertResponse.Type.valueOf(FetchCandidateAlertResponse.Type.NEW_JOBS_IN_LOCALITY_VALUE));
+            }
+            else {
+                fetchCandidateResponseBuilder.setAlertMessage(
+                        "Complete skill assessment now and increase your changes of finding the right job!!");
+                fetchCandidateResponseBuilder.setAlertType(
+                        FetchCandidateAlertResponse.Type.valueOf(FetchCandidateAlertResponse.Type.COMPLETE_ASSESSMENT_VALUE));
             }
         }
         return fetchCandidateResponseBuilder.build();

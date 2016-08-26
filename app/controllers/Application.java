@@ -355,6 +355,7 @@ public class Application extends Controller {
         }
         return ok(toJson(ParseCSV.parseCSV(file)));
     }
+
     @Security.Authenticated(Secured.class)
     public static Result getAll(int id){
         List<Lead> allLead = new ArrayList<>();
@@ -819,29 +820,9 @@ public class Application extends Controller {
                 if(candidate.getLanguageKnownList() != null && candidate.getLanguageKnownList().size() > 0) {
                     List<LanguageKnown> languageKnownList = candidate.getLanguageKnownList();
 
-                    String canRead = "";
-                    String canWrite = "";
-                    String canSpeak = "";
-
                     for(LanguageKnown l : languageKnownList){
-                        if(l.getReadingAbility() == null){
-                            canRead = "na";
-                        } else{
-                            canRead = l.getReadingAbility() + "";
-                        }
-                        if(l.getWritingAbility() == null){
-                            canWrite = "na";
-                        } else{
-                            canWrite = l.getWritingAbility() + "";
-                        }
-                        if(l.getVerbalAbility() == null){
-                            canSpeak = "na";
-                        } else{
-                            canSpeak = l.getVerbalAbility() + "";
-                        }
-
-                        languagesKnown += l.getLanguage().getLanguageName() + "(" + canRead + ", " +
-                                canWrite + ", " + canSpeak + "), ";
+                        languagesKnown += l.getLanguage().getLanguageName() + "(" + l.getUnderstanding() + ", " +
+                                l.getVerbalAbility() + ", " + l.getReadWrite() + "), ";
                     }
                 }
 
@@ -1004,7 +985,7 @@ public class Application extends Controller {
         return redirect("/candidateSignupSupport/0/false");
     }
 
-    @Security.Authenticated(AdminSecured.class)
+    @Security.Authenticated(RecSecured.class)
     public static Result searchCandidate() {
         return ok(views.html.search.render());
     }
@@ -1012,7 +993,7 @@ public class Application extends Controller {
     @Security.Authenticated(Secured.class)
     public static Result getSearchCandidateResult() {
         JsonNode searchReq = request().body().asJson();
-        if(searchReq == null){
+        if(searchReq == null) {
             return badRequest();
         }
 
@@ -1025,8 +1006,18 @@ public class Application extends Controller {
             e.printStackTrace();
         }
 
-        return ok(toJson(SupportSearchService.searchCandidateBySupport(searchCandidateRequest)));
+        String sessionId = session().get("sessionId");
+        Developer developer = null;
+
+        if(sessionId != null) {
+            developer = Developer.find.where().eq("developerSessionId", sessionId).findUnique();
+        }
+
+        JsonNode resp = toJson(SupportSearchService.searchCandidateBySupport(searchCandidateRequest, developer));
+
+        return ok(resp);
     }
+
     @Security.Authenticated(PartnerSecured.class)
     public static Result getAllLeadSource() {
         List<LeadSource> leadSources = LeadSource.find.orderBy("leadSourceName").findList();
@@ -1153,7 +1144,7 @@ public class Application extends Controller {
         return ok(views.html.admin.render());
     }
 
-    @Security.Authenticated(AdminSecured.class)
+    @Security.Authenticated(RecSecured.class)
     public static Result uploadCSV() {
         return ok(views.html.uploadcsv.render());
     }

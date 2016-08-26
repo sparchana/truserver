@@ -126,6 +126,7 @@ public class ServerConstants {
     public static final String SDF_FORMAT = "yyyy-MM-dd hh:mm:ss a";
     public static final String SDF_FORMAT_FOLLOWUP = "d MMM hh:mm a";
     public static final String SDF_FORMAT_ENTRY = "yyyy-MM-dd hh:mm:ss";
+    public static final String SDF_FORMAT_YYYYMMDD = "yyyy-MM-dd";
 
     public static final String PROD_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/1NIGQC5jmSDuQaGUF0Jw1UG-Dz_3huFtZf9Bo7ncPl4g/formResponse";
     public static final String DEV_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/e/1FAIpQLSe2owE6RMlW8Ynk8p-dWWBuQl0EclR2Go2ua9HGUIXxwMt0cg/formResponse";
@@ -146,4 +147,26 @@ public class ServerConstants {
     }
 
     public static final Double DEFAULT_MATCHING_ENGINE_RADIUS = 10.0; // In Kilometers
+
+    // Job Post DB Constants
+    public static final int EXPERIENCE_TYPE_FRESHER_ID = 1;
+    public static final int EXPERIENCE_TYPE_ANY_ID = 5;
+
+    // Job Post DB Constants
+    public static final int EDUCATION_TYPE_ANY = 0; // not in db
+    public static final int EDUCATION_TYPE_LT_10TH_ID = 1;
+    public static final int EDUCATION_TYPE_10TH_PASS_ID = 2;
+    public static final int EDUCATION_TYPE_12TH_PASS_ID = 3;
+    public static final int EDUCATION_TYPE_UG = 4;
+    public static final int EDUCATION_TYPE_PG = 5;
+
+    // MatchingEngine Sort Type
+    public static final int SORT_BY_NEARBY = 1;
+    public static final int SORT_BY_DATE_POSTED = 2;
+    public static final int SORT_BY_SALARY = 3;
+    public static final int SORT_DEFAULT = SORT_BY_NEARBY;
+
+    public static final int GENDER_MALE = 0;
+    public static final int GENDER_FEMALE = 1;
+    public static final int GENDER_ANY= 2;
 }

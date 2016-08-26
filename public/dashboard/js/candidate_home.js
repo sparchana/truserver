@@ -447,7 +447,7 @@ function processDataAndFillMinProfile(returnedData) {
 
     if(returnedData.candidateLastWithdrawnSalary != null){
         if(returnedData.candidateLastWithdrawnSalary == "0"){
-            document.getElementById("userCurrentSalary").innerHTML = "Fresher";
+            document.getElementById("userCurrentSalary").innerHTML = "Not Applicable";
         } else{
             document.getElementById("userCurrentSalary").innerHTML = "&#x20B9;" + returnedData.candidateLastWithdrawnSalary + "/month";
         }

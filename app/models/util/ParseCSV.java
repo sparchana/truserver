@@ -44,7 +44,6 @@ public class ParseCSV {
                     } else {
                         lead.setLeadMobile(nextLine[2]);
                     }
-
                     // check if lead already exists
                     Lead existingLead = Lead.find.where().eq("leadMobile", lead.getLeadMobile()).findUnique();
 
@@ -64,7 +63,6 @@ public class ParseCSV {
                     } else {
                         if(existingLead.getLeadCreationTimestamp().getTime() > knowlarityInBoundTimestamp.getTime()) {
                             // recording the first inbound of a lead
-                            Logger.info("updating leadCreationTimeStamp");
                             existingLead.setLeadCreationTimestamp(knowlarityInBoundTimestamp);
                             existingLead.update();
                         }
@@ -83,10 +81,8 @@ public class ParseCSV {
                             .eq("objectAUUID", interaction.getObjectAUUId())
                             .eq("creationTimestamp", new Timestamp(knowlarityInBoundDate.getTime()))
                             .findList();
-                    Logger.info("TimeStamp Matching : " + new Timestamp(knowlarityInBoundDate.getTime()));
                     if(existingInteraction == null || existingInteraction.isEmpty()){
                         // save all inbound calls to interaction
-                        Logger.info("CSV Interaction saved");
                         interaction.setCreatedBy(ServerConstants.INTERACTION_CREATED_SYSTEM_KNOWLARITY);
                         interaction.setCreationTimestamp(knowlarityInBoundTimestamp);
                         interaction.setInteractionType(ServerConstants.INTERACTION_TYPE_CALL_IN);
