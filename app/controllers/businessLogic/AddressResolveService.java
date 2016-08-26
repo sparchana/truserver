@@ -9,8 +9,6 @@ import models.entity.Static.Locality;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import play.Logger;
 
 import java.io.IOException;
@@ -29,7 +27,7 @@ import java.util.*;
  * Some lat/lng aren't fully resolved to locality level hence this module tries to find
  * a nearby valid resolved address.
  *
- * TODO: This module also inserts a newly found locality name along with its right latlng, is inserted into db
+ * TODO: This module also inserts a newly found locality name along with its right latlng, into db
  */
 
 public class AddressResolveService {
@@ -86,7 +84,7 @@ public class AddressResolveService {
         JSONArray jsonResultArray = null;
         // Create a JSON object hierarchy from the results
             int count = 0;
-            while( count<API_CALL_LIMIT ){
+            while( count < API_CALL_LIMIT ){
                 /* Get JSON */
                 StringBuilder jsonResults = getJSONForNearByLocality(latitude, longitude, radius);
 
@@ -97,7 +95,7 @@ public class AddressResolveService {
                     String status = jsonObj.getString("status");
                     if(status.trim().equalsIgnoreCase("ok")) {
                         jsonResultArray = jsonObj.getJSONArray("results");
-                        Logger.info("result size: "+jsonResultArray.length());
+                        //Logger.info("result size: "+jsonResultArray.length());
                         if(jsonResultArray.length() >=20) {
                            break;
                         }
@@ -129,13 +127,15 @@ public class AddressResolveService {
         /*
          * Add other city names into toBeRemovedList[].
          * Any String in the list is matched in the given paragraph
-         * and replaced with empty string.
+         * and replaced with empty string irrespective of its case.
+         *
+         * TODO: add better regex expression pattern match to remove noise further
          * */
         paragraph = paragraph.toLowerCase().trim();
         for(int i = 0; i < toBeRemovedList.length; ++i){
-            paragraph = paragraph.replaceAll(toBeRemovedList[i].toLowerCase(), "");
+            paragraph = paragraph.toLowerCase().replaceAll(toBeRemovedList[i].toLowerCase(), "");
         }
-        paragraph = paragraph.replaceAll(",,", "");
+        paragraph = paragraph.replaceAll(",,", ",");
         return paragraph;
     }
 
@@ -176,20 +176,17 @@ public class AddressResolveService {
     *  Sort a given map by its value in descending order
     */
     public static <K, V extends Comparable<? super V>> Map<K, V> sortMapByValue( Map<K, V> map ) {
-        List<Map.Entry<K, V>> list =
-                new LinkedList<>( map.entrySet() );
-        Collections.sort( list, new Comparator<Map.Entry<K, V>>()
-        {
+        List<Map.Entry<K, V>> list = new LinkedList<>( map.entrySet() );
+        Collections.sort( list, new Comparator<Map.Entry<K, V>>() {
             @Override
-            public int compare( Map.Entry<K, V> o1, Map.Entry<K, V> o2 )
-            {
+            public int compare( Map.Entry<K, V> o1, Map.Entry<K, V> o2 ) {
                 return ( o2.getValue() ).compareTo( o1.getValue() );
             }
         } );
 
         Map<K, V> result = new LinkedHashMap<>();
-        for (Map.Entry<K, V> entry : list)
-        {
+        for (Map.Entry<K, V> entry : list) {
+            //Logger.info("Locality: " + entry.getKey() +" count: " + entry.getValue());
             result.put( entry.getKey(), entry.getValue() );
         }
         return result;
@@ -213,8 +210,7 @@ public class AddressResolveService {
             conn = (HttpURLConnection) url.openConnection();
             InputStreamReader in = new InputStreamReader(conn.getInputStream());
 
-            Logger.warn("url: "+sb.toString());
-
+            //Logger.warn("url: "+sb.toString());
             // Load the results into a StringBuilder
             int read;
             char[] buff = new char[1024];
