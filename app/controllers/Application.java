@@ -1108,7 +1108,10 @@ public class Application extends Controller {
     public static Result getJobExpQuestion(String jobRoleIds) {
         List<String> jobRoleIdList = Arrays.asList(jobRoleIds.split("\\s*,\\s*"));
         Query<JobExpQuestion> query = JobExpQuestion.find.query();
-        query = query.select("*").fetch("jobRole").where().in("jobRole.jobRoleId", jobRoleIdList).query();
+        query = query.select("*").fetch("jobRole")
+                .where()
+                .in("jobRole.jobRoleId", jobRoleIdList)
+                .query();
         List<JobExpQuestion> response = query.findList();
         if(response != null){
             return ok(toJson(response));
