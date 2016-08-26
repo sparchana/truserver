@@ -1,0 +1,148 @@
+<script type="text/javascript" src="/assets/js/signup_candidate.js"></script>
+<script type="text/javascript" src="/assets/js/add_lead.js"></script>
+<script type="text/javascript" src="/assets/js/reset_password.js"></script>
+<script type="text/javascript" src="/assets/js/validation.js"></script>
+<script type="text/javascript" src="/assets/js/login.js"></script>
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigationbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+
+                </button>
+                <div itemscope itemtype ="http://schema.org/logo">
+                    <a class="navbar-brand" href="#"><img id="navLogo" itemprop="Brand" src="/assets/new/img/logo-color.gif" alt="TruJobs Logo" height="30px" style="margin-top: -8px;"></a>
+                </div>
+            </div>
+
+            <div class="collapse navbar-collapse" id="navigationbar">
+                <ul class="nav navbar-nav navbar-right">
+                    <li> <a href="#sectionOne"><font id="navItem1" color="#0065a4" style="font-size: 12px; letter-spacing: 1px;">HOME</font></a></li>
+                    <li> <a href="#applyToJobs"><font id="navItem2" color="#0065a4" style="font-size: 12px; letter-spacing: 1px;">APPLY TO JOBS</font></a></li>
+                    <li> <a href="#forCandidate"><font id="navItem3" color="#0065a4"  style="font-size: 12px; letter-spacing: 1px;">FOR CANDIDATES</font></a></li>
+                    <li> <a href="#forRecruiter"><font id="navItem4" color="#0065a4"  style="font-size: 12px; letter-spacing: 1px;">FOR EMPLOYERS</font></a></li>
+                    <li> <a style="cursor: pointer;" data-toggle="modal" data-target="#myLoginModal" onClick="openLogin()">
+                        <font id="navItem5" color="#0065a4"  style="font-size: 12px; letter-spacing: 1px;">
+                            <img src="/assets/new/img/sign_up.png" height="16px" style="margin-right: 6px"/>SIGN IN
+                        </font></a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+    <!-- /.container -->
+</nav>
+<div id="myLoginModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body" id="model_size">
+                <form id="form_login_candidate" class="form-horizontal" role="form" name="form_login_candidate">
+                    <div class="line_up" id="signInPopup">Sign In</div>
+                    <div class="container-fluid" id="main_signin_box">
+                        <div class="row">
+                            <div class="col-sm-12" id="logo">
+                                <input type="text" class="form-control" id="candidateLoginMobile" placeholder="Mobile Number" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12" id="pass_input" style="margin-bottom:12px;">
+                                <input type="password" class="form-control" id="candidateLoginPassword" placeholder="Password" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <input type="checkbox" class="checkbox-inline" style="margin-right:5px;">Remember me
+                            </div>
+                            <div class="col-xs-6 pull-right" style="text-align:right;">
+                                <a style="cursor: pointer;" onclick="resetPassword()"><font color="#06436a">Forgot Password?</font></a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12" id="logo">
+                                <button type="submit" class="form-control" id="registerBtn" style="margin-top:5px;">Sign In</button>
+                            </div>
+                        </div>
+                        <hr>
+                        <center>
+                            Don't have an account?<a style="cursor: pointer;" data-toggle="modal" data-target="#mySignUpModal" onClick="openSignUp()">
+                            <font color="#06436a">&nbsp;Sign Up</font></a>
+                        </center>
+                    </div>
+                </form>
+
+                <form id="form_forgot_password" style="display: none" class="form-horizontal" role="form" name="form_forgot_password" >
+                    <div align="center">
+                        <div class="line_up">Reset Password</div>
+                        <!-- Text input-->
+                        <br>
+                        <h5>Enter your mobile No</h5>
+                        <div class="form-group">
+                            <input style="width: 80%;" id="resetPasswordMobile" type="text" maxlength="10" placeholder="Mobile No. (eg: 8880007799)" class="form-control input-md" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" id="resetCheckUserBtn" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none">Submit</button>
+
+                    </div>
+                </form>
+
+                <form id="form_password_reset_otp" style="display: none" class="form-horizontal" role="form">
+                    <div align="center">
+                        <div class="line_up">Reset Password</div>
+                        <!-- Text input-->
+                        <br>
+                        <h5 id="helpText"></h5>
+
+                        <div class="form-group">
+                            <input style="width: 80%;" id="candidateForgotOtp" type="number" minlength="1000" maxlength="9999" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none" >Verify OTP</button>
+
+                    </div>
+                </form>
+
+                <form id="form_password_reset_new" style="display: none" class="form-horizontal" role="form">
+                    <div align="center">
+                        <div class="line_up">Reset Password</div>
+                        <!-- Text input-->
+                        <br>
+                        <h5>Enter New Password</h5>
+
+                        <div class="form-group">
+                            <input style="width: 80%;" id="candidateNewPassword" type="password" placeholder="Enter new Password" class="form-control input-md" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="resetNewPasswordBtn" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none" >Reset Password</button>
+                    </div>
+                </form>
+
+                <center>
+                    <font color="red">
+                        <div class="errorMsgText" id="incorrectMsg" style="margin-top: 2%;display: none;">
+                            <h5>Incorrect Login Credentials</h5>
+                        </div>
+                        <div class="errorMsgText" id="incorrectMsgLogin" style="margin-top: 2%;display: none;" >
+                            <h5>Incorrect Login Credentials</h5>
+                        </div>
+                        <div class="errorMsgText" id="errorMsgReset" style="margin-top: 2%;display: none;">
+                            <h5>User Does Not Exist!</h5>
+                        </div>
+                        <div class="errorMsgText" id="noUserLogin" style="margin-top: 2%;display: none;">
+                            <h5>User Does Not Exist!</h5>
+                        </div>
+
+                        <div class="errorMsgText" id="wrongOtp" style="margin-top: 2%;display: none;">
+                            <h5>Incorrect OTP!</h5>
+                        </div>
+
+                        <div class="errorMsgText" id="errorMsg" style="margin-top: 2%;display: none;">
+                            <h5>Looks like something went wrong. Please try again later!</h5>
+                        </div>
+                    </font>
+                </center>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,132 +1,7 @@
 /**
- * Created by batcoder1 on 7/6/16.
+ * Created by hawk on 25/8/16.
  */
-
-var localityArray = [];
-var jobArray = [];
-var prefLocation;
-var prefLocationName;
-
-function getLocality(){
-    return localityArray;
-}
-
-function getJob(){
-    return jobArray;
-}
-
-function processDataCheckLocality(returnedData) {
-    returnedData.forEach(function(locality)
-    {
-        var id = locality.localityId;
-        var name = locality.localityName;
-        var item = {};
-        item ["id"] = id;
-        item ["name"] = name;
-        localityArray.push(item);
-    });
-}
-
-function processDataCheckJobs(returnedData) {
-    returnedData.forEach(function(job)
-    {
-        var id = job.jobRoleId;
-        var name = job.jobName;
-        var item = {};
-        item ["id"] = id;
-        item ["name"] = name;
-        jobArray.push(item);
-    });
-}
-
-$(function() {
-    $('a[href*="#"]:not([href="#"])').click(function() {
-        if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
-            var target = $(this.hash);
-            target = target.length ? target : $('[name=' + this.hash.slice(1) +']');
-            if (target.length) {
-                $('html, body').animate({
-                    scrollTop: target.offset().top - 92
-                }, 1000);
-            }
-        }
-    });
-});
-
-$(function () {
-    $("#hotJobs").scroll(function() {
-        var w = window.innerWidth;
-        if(w < 440){
-            document.documentElement.scrollTop = document.body.scrollTop = 280;
-        } else{
-            document.documentElement.scrollTop = document.body.scrollTop = 248;
-        }
-    });
-});
-
-$(function () {
-    $('#myRegistrationModal').on('hidden.bs.modal', function () {
-        document.getElementById("registerBtn").disabled = false;
-        window.location = "/"
-    })
-});
-
-$(window).load(function() {
-    $('html, body').css({
-        'overflow': 'auto',
-        'height': 'auto'
-    });
-    $("#status").fadeOut();
-    $("#loaderLogo").fadeOut();
-    $("#preloader").delay(1000).fadeOut("slow");
-});
-
 $(document).ready(function(){
-    localStorage.clear();
-    $(".navbar-nav li a").click(function(event) {
-        $(".navbar-collapse").collapse('hide');
-    });
-
-    var w = window.innerWidth;
-    if(w < 440){
-        $(".navbar-default").css('background-color', 'white');
-    }
-    $(window).scroll(function() {
-        if ($(document).scrollTop() > 150) {
-            $("#fixed-menu").css('background-color', '#2980b9');
-            $("#fixed-menu").fadeIn();
-            $(".navbar-default").css('background-color', 'white');
-        } else {
-            $("#fixed-menu").css('background-color', 'rgba(0, 0, 0, 0.175)');
-            $("#fixed-menu").fadeOut();
-        }
-    });
-    
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getAllLocality",
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataCheckLocality
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getAllJobs",
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataCheckJobs
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
     try {
         $.ajax({
             type: "POST",
@@ -139,8 +14,8 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-});
 
+});
 function processDataAllJobPosts(returnedData) {
     var jobPostCount = Object.keys(returnedData).length;
     if(jobPostCount > 0){
@@ -151,7 +26,7 @@ function processDataAllJobPosts(returnedData) {
             count++;
             if(count){
                 console.log("Home Page Js");
-                //!* get all localities of the jobPost *!/
+                /* get all localities of the jobPost */
                 var jobLocality = jobPost.jobPostToLocalityList;
                 var localities = "";
                 var allLocalities = ""
@@ -217,7 +92,7 @@ function processDataAllJobPosts(returnedData) {
                 jobBodyDetails.id = "jobBodyDetails";
                 jobBodyCol.appendChild(jobBodyDetails);
 
-                //!*  salary  *!/
+                /*  salary  */
 
                 var bodyCol = document.createElement("div");
                 bodyCol.className = "col-sm-4";
@@ -253,7 +128,7 @@ function processDataAllJobPosts(returnedData) {
 
                 jobBodySubRowCol.appendChild(salaryDiv);
 
-                //!*  experience  *!/
+                /*  experience  */
 
                 var bodyColExp = document.createElement("div");
                 bodyColExp.className = "col-sm-3";
@@ -283,7 +158,7 @@ function processDataAllJobPosts(returnedData) {
                 expDiv.textContent = "Exp: " + jobPost.jobPostExperience.experienceType;
                 jobBodySubRowColExp.appendChild(expDiv);
 
-                //!*  Location  *!/
+                /*  Location  */
 
                 var bodyColLoc = document.createElement("div");
                 bodyColLoc.className = "col-sm-5";
@@ -327,21 +202,10 @@ function processDataAllJobPosts(returnedData) {
                     $('[data-toggle="tooltip"]').tooltip()
                 });
 
-                 hotJobItem.onclick=function(){
-                        try {
-                                     window.location.href = "/jobs/" + jobPost.jobPostTitle +"/Bengaluru/"+ jobPost.company.companyName + "/" + jobPost.jobPostId;
-                                    // $.ajax({
-                                    //     type: "GET",
-                                    //     url: "/jobs/" + jobPost.jobPostTitle +"/"+ "Bengaluru"  +"/"+ jobPost.company.companyName + "/" + jobPost.jobPostId,
-                                    //     data: false,
-                                    //     processData: false,
-                                    //     success: false
-                                    // })
-                                } catch (exception) {
-                                    console.log("exception occured!!" + exception);
-                                }
-                 }
-                //!*  apply button *!/
+                hotJobItem.onclick=function(){
+                        window.location.href = "/jobs/" + jobPost.jobPostTitle +"/Bengaluru/"+ jobPost.company.companyName + "/" + jobPost.jobPostId;
+                }
+                /*  apply button */
                 var applyBtnDiv = document.createElement("div");
                 applyBtnDiv.className = "col-sm-2";
                 applyBtnDiv.onclick = function () {
@@ -360,112 +224,4 @@ function processDataAllJobPosts(returnedData) {
             }
         });
     }
-}
-
-function addLocalitiesToModal() {
-    $("#applyButton").addClass("jobApplyBtnModal").removeClass("appliedBtn").prop('disabled',false).html("Apply");
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getJobPostInfo/" + jobPostId + "/0",
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataForJobPostLocation
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-}
-function processDataForJobPostLocation(returnedData) {
-    $("#jobNameConfirmation").html(returnedData.jobPostTitle);
-    $("#companyNameConfirmation").html(returnedData.company.companyName);
-
-    $('#jobLocality').html('');
-    var defaultOption=$('<option value="-1"></option>').text("Select Preferred Location");
-    $('#jobLocality').append(defaultOption);
-    var jobLocality = returnedData.jobPostToLocalityList;
-    jobLocality.forEach(function (locality) {
-        var item = {};
-        item ["id"] = locality.locality.localityId;
-        item ["name"] = " " + locality.locality.localityName;
-        jobLocalityArray.push(item);
-        var option=$('<option value=' + locality.locality.localityId + '></option>').text(locality.locality.localityName);
-        $('#jobLocality').append(option);
-    });
-}
-
-function confirmApply() {
-    applyJob(jobPostId, prefLocation);
-}
-
-$(function() {
-    $("#jobLocality").change(function (){
-        if($(this).val() != -1){
-            prefLocation = $(this).val();
-            prefLocationName = $("#jobLocality option:selected").text();
-            $("#applyButton").show();
-        } else{
-            $("#applyButton").hide();
-        }
-    });
-});
-
-function processCheckLeadStatus() {
-    $("#addLeadMobile").val("");
-    $("#messagePromptModal").modal("show");
-    $("#customMsg").html("Thanks! We will get back soon!");
-}
-function addLead() {
-    var phone = $('#addLeadMobile').val();
-    var res = validateMobile(phone);
-    if(res == 0){ // invalid mobile
-        alert("Enter a valid mobile number");
-    } else if(res == 1){ // mobile no. less than 1 digits
-        alert("Enter 10 digit mobile number");
-    }
-    else{
-        try {
-            var d = {
-                leadName : "",
-                leadMobile : $("#addLeadMobile").val(),
-                leadChannel : 0,
-                leadType : 1,
-                leadInterest : "General Registration"
-            };
-            $.ajax({
-                type: "POST",
-                url: "/addLead",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(d),
-                success: processCheckLeadStatus
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
-        }
-    }
-}
-
-function openLogin() {
-    $("#signInPopup").html("Sign In");
-    document.getElementById("resetCheckUserBtn").disabled = false;
-    document.getElementById("resetNewPasswordBtn").disabled = false;
-    $('#form_login_candidate').show();
-    $('#noUserLogin').hide();
-    $('#incorrectMsgLogin').hide();
-    $('#form_forgot_password').hide();
-    $('#errorMsgReset').hide();
-    $('#form_password_reset_otp').hide();
-    $('#form_password_reset_new').hide();
-}
-
-function openSignUp() {
-    $("#myLoginModal").modal("hide");
-}
-
-function resetPassword() {
-    $('#noUserLogin').hide();
-    $('#incorrectMsgLogin').hide();
-    $('#form_login_candidate').hide();
-    $('#form_forgot_password').show();
 }

@@ -14,7 +14,6 @@ import play.Logger;
 import java.util.UUID;
 
 import static play.mvc.Controller.session;
-
 /**
  * Created by batcoder1 on 5/5/16.
  */
