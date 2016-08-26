@@ -68,7 +68,7 @@ public class MatchingEngineServiceTest {
     }
 
     @Parameterized.Parameters
-    public static Collection getDistanceFromCenter(){
+    public static Collection getDistanceFromCenter() {
         // bellandur {12.926031, 77.676246}
         return Arrays.asList(new Object[][]{
                 {12.926031, 77.676246, 12.927923, 77.627108, 5.33, 1.0, Arrays.asList( 2, 5, 11)},
@@ -92,7 +92,7 @@ public class MatchingEngineServiceTest {
     }
 
     @Test
-    public void testFetcher(){
+    public void testFetcher() {
         Application fakeApp = fakeApplication();
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
         running(server, () -> {

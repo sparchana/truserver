@@ -42,4 +42,6 @@ libraryDependencies += "com.google.code.gson" % "gson" % "2.5"
 
 libraryDependencies += "org.mockito" % "mockito-core" % "1.10.19"
 
+libraryDependencies += "org.json"%"org.json"%"chargebee-1.0"
+
 libraryDependencies += evolutions

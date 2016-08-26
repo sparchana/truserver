@@ -8,6 +8,7 @@ import api.http.httpRequest.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
 import com.google.api.client.util.Base64;
+import com.google.protobuf.Internal;
 import com.google.protobuf.InvalidProtocolBufferException;
 import controllers.businessLogic.AuthService;
 import controllers.businessLogic.CandidateAlertService;
@@ -32,6 +33,7 @@ import java.util.*;
 import static controllers.businessLogic.JobPostService.*;
 import static models.util.Util.generateOtp;
 import static models.util.Validator.isValidLocalityName;
+import static play.libs.Json.toJson;
 import static play.mvc.Http.Context.Implicit.request;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
@@ -1300,8 +1302,34 @@ public class TrudroidController {
             }
         }
 
-    jobPostResponseBuilder.addAllJobPost(jobPostListToReturn);
+        jobPostResponseBuilder.addAllJobPost(jobPostListToReturn);
         Logger.info("Total Jobs Found: "+jobPostList.size());
         return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
+    }
+
+    public static Result mResolvedLatLng(String latlng){
+        List<String> LatLng = Arrays.asList(latlng.trim().split(","));
+        Double latitude = 0D;
+        Double longitude = 0D;
+        try {
+            latitude = Double.parseDouble(LatLng.get(0));
+            longitude = Double.parseDouble(LatLng.get(1));
+        } catch (IllegalFormatException ife){
+            ife.printStackTrace();
+        }
+        return ok(toJson("LatLng: "+ latlng+" Locality: "+controllers.businessLogic.AddressResolveService.resolveLocalityFor(latitude, longitude)));
+    }
+
+    public static Result mResolvedLatLngWithin(String latlng, Integer radius){
+        List<String> LatLng = Arrays.asList(latlng.trim().split(","));
+        Double latitude = 0D;
+        Double longitude = 0D;
+        try {
+            latitude = Double.parseDouble(LatLng.get(0));
+            longitude = Double.parseDouble(LatLng.get(1));
+        } catch (IllegalFormatException ife){
+            ife.printStackTrace();
+        }
+        return ok(toJson("LatLng: "+ latlng+" Locality: "+controllers.businessLogic.AddressResolveService.resolveLocalityFor(latitude, longitude, radius)));
     }
 }
