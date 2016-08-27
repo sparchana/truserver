@@ -170,6 +170,8 @@ public class ServerConstants {
     public static final int GENDER_FEMALE = 1;
     public static final int GENDER_ANY= 2;
 
+    /* Constants */
+    public static final double EARTH_RADIUS = 6371.0; // kilometers (or 3958.75 in miles)
     /* EXTERNAL API KEYS */
     public static final String GOOGLE_SERVER_API_KEY = "AIzaSyCKHf7GijuzKW84Ggz0fFWWHD0y9_onUhg";
 

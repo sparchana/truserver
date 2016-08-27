@@ -2,6 +2,7 @@ package Service;
 
 import common.TestConstants;
 import controllers.businessLogic.AddressResolveService;
+import models.util.LatLng;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
+import static play.libs.Json.toJson;
 import static play.test.Helpers.fakeApplication;
 import static play.test.Helpers.running;
 import static play.test.Helpers.testServer;
@@ -68,7 +70,7 @@ public class AddressResolverServiceTest {
         });
     }
 
-    @Ignore
+    //@Ignore
     public void testFetchNearByLocalityMethod() {
         Application fakeApp = fakeApplication();
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
@@ -78,7 +80,7 @@ public class AddressResolverServiceTest {
             }
         });
     }
-    @Ignore
+    //@Ignore
     public void testGetJSONForNearByLocality() {
         Application fakeApp = fakeApplication();
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
@@ -108,5 +110,10 @@ public class AddressResolverServiceTest {
                 Logger.info("lat/lng " + latitude+"/"+longitude + " falls withing " + respones);
             }
         });
+    }
+    @Ignore
+    public void testToBounds() {
+        LatLng latLng = new LatLng(latitude, longitude);
+        System.out.println("--testing ToBounds for LatLng"+latitude+","+longitude+" : " + toJson(addressResolveService.toBounds(latLng, 2)));
     }
 }

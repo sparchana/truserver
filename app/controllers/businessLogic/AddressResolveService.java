@@ -6,6 +6,9 @@ package controllers.businessLogic;
 
 import api.ServerConstants;
 import models.entity.Static.Locality;
+import models.util.LatLng;
+import models.util.LatLngBounds;
+import models.util.SphericalUtil;
 import org.apache.commons.lang3.text.WordUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,6 +24,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
 
+import static play.libs.Json.toJson;
+
 /**
  * Address Resolve Service receives a {latitude, longitude} pair
  * and tries to determine an exact/approximate valid address for a given pair.
@@ -30,6 +35,16 @@ import java.util.*;
  * a nearby valid resolved address.
  *
  * This module also inserts a newly found locality name along with its right latlng, into db
+ *
+ *  In every vicinity, most of the time the end word is city name. Since that is also trimmed off, it
+ * decreases count of city name. Hence increases the count of locality name.
+ *
+ * toBeRemovedList is a list which is a bag_of_city_name which is used in Sanitization
+ * before counting happens. Hence further increases change of getting good data.
+ *
+ * There is always a chance of error in resolution. Further optimization should reduce it
+ *
+ *
  */
 
 public class AddressResolveService {
@@ -41,20 +56,35 @@ public class AddressResolveService {
     public static final String NEAR_BY_SEARCH = "/nearbysearch";
     public static final String OUT_JSON = "/json";
     public static final String API_KEY = ServerConstants.GOOGLE_SERVER_API_KEY;
-    public static final int RADIUS = 500; // in meters
+    public static final int DEFAULT_RADIUS = 500; // in meters
     public static final int RADIUS_INCREMENT = 200; // in meters
     public static final int API_CALL_LIMIT = 5;
 
-    /* Sanitization params */
+    public static final int DEFAULT_RADIUS_IN_KM = 2; // ofcourse in km
+
+    protected static double latitude;
+    protected static double longitude;
+
+    public AddressResolveService(){
+    }
+
+    public AddressResolveService(Double lat, Double lng){
+        if(lat!=null)latitude = lat;
+        if(lng!=null)longitude = lng;
+    }
+
+    /* Sanitization params*/
     public static String[] toBeRemovedList = {"Bangalore", "bengaluru","Karnataka","India"};
 
     public static String resolveLocalityFor(Double latitude, Double longitude) {
+        new AddressResolveService(latitude, longitude);
         List<String> nearyByAddressList = new ArrayList<>();
         nearyByAddressList.addAll(fetchNearByLocality(latitude, longitude, null));
         return determineLocality(nearyByAddressList);
     }
 
     public static String resolveLocalityFor(Double latitude, Double longitude, Integer radius) {
+        new AddressResolveService(latitude, longitude);
         List<String> nearyByAddressList = new ArrayList<>();
         nearyByAddressList.addAll(fetchNearByLocality(latitude, longitude, radius));
         return determineLocality(nearyByAddressList);
@@ -82,7 +112,8 @@ public class AddressResolveService {
     }
 
     public static List<String> fetchNearByLocality(Double latitude, Double longitude, Integer radius) {
-        if(radius == null || radius == 0) radius = RADIUS; // Default: start within 500 meters
+        new AddressResolveService(latitude, longitude);
+        if(radius == null || radius == 0) radius = DEFAULT_RADIUS; // Default: start within 500 meters
         List<String> nearbyLocalityAddressList = new ArrayList<>();
 
         JSONObject jsonObj;
@@ -118,7 +149,8 @@ public class AddressResolveService {
             for (int i = 0; i < jsonResultArray.length(); ++i) {
                 try {
                     JSONObject placeOfInterest = jsonResultArray.getJSONObject(i);
-                    String placeAddress = placeOfInterest.getString("vicinity");
+                    String placeAddress = placeOfInterest.getString("vicinity").trim();
+                    placeAddress = placeAddress.lastIndexOf(",") > placeAddress.indexOf(",")? placeAddress.substring(0, placeAddress.lastIndexOf(",")) : placeAddress;
                     nearbyLocalityAddressList.add(placeAddress.trim());
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -135,6 +167,7 @@ public class AddressResolveService {
         JSONArray jsonResultArray;
         Double latitude = 0D;
         Double longitude = 0D;
+        String locationName = null;
         String placeId = null;
         String cityName = null;
         String stateName = null;
@@ -142,6 +175,7 @@ public class AddressResolveService {
         try {
             // Log.d(TAG, jsonResults.toString());
             StringBuilder jsonResults = getJSONForAddressToLatLng(localityName);
+
             jsonObj = new JSONObject(jsonResults.toString());
             String status = jsonObj.getString("status");
             if(status.trim().equalsIgnoreCase("ok")) {
@@ -150,31 +184,44 @@ public class AddressResolveService {
                     Boolean isDesiredData = false;
                     JSONObject addressJsonObj = jsonResultArray.getJSONObject(i);
                     JSONArray address_components = addressJsonObj.getJSONArray("address_components");
-                    String locationName = address_components.getJSONObject(0).getString("long_name");
-                    JSONArray typesArray = address_components.getJSONObject(0).getJSONArray("types");
-                    JSONArray typesArrayForCity = address_components.getJSONObject(1).getJSONArray("types");
-                    JSONArray typesArrayForState = address_components.getJSONObject(addressJsonObj.getJSONArray("address_components").length() - 2).getJSONArray("types");
+                    Logger.info("address_components"+address_components);
 
-                    for(int j = 0; j<typesArray.length(); ++j) {
-                        if(typesArray.get(j).toString().equalsIgnoreCase("sublocality_level_1")) {
-                            isDesiredData = true;
+                    /**
+                     *
+                     * Data set is limited to 20 by api, hence below code shouldn't be a time hogging task
+                     * TODO: still find a better way to do the same
+                     */
+                    /* loop thourgh all address_component to find city, state, country*/
+                    for(int k = 0; k< address_components.length(); ++k){
+                        JSONObject objectOfInterest = address_components.getJSONObject(k);
+                        JSONArray tempTypesArray = objectOfInterest.getJSONArray("types");
+                        //Logger.info("objOfInterest"+objectOfInterest);
+                        for(int j = 0; j < tempTypesArray.length(); ++j) {
+                            if(tempTypesArray.get(j).toString().equalsIgnoreCase("sublocality_level_1")) {
+                                locationName = objectOfInterest.getString("long_name");
+                                if(!localityName.trim().equalsIgnoreCase(locationName.trim().toLowerCase())){
+                                    Logger.info("Found locality which appears to sublocality of a locality. hence " +
+                                            "changing PrevFoundName: "+localityName +" to new name = "+locationName);
+                                    localityName = locationName;
+                                }
+                                isDesiredData = true;
+                            }
+                            else if(tempTypesArray.get(j).toString().equalsIgnoreCase("locality")) {
+                                cityName = objectOfInterest.getString("long_name");
+                            }
+                            else if(tempTypesArray.get(j).toString().equalsIgnoreCase("administrative_area_level_1")) {
+                                stateName = objectOfInterest.getString("long_name");
+                            }
                         }
                     }
-                    for(int j = 0; j<typesArrayForCity.length() && isDesiredData; ++j) {
-                        if(typesArrayForCity.get(j).toString().equalsIgnoreCase("locality")) {
-                            cityName = address_components.getJSONObject(1).getString("long_name");
-                        }
-                    }
-                    for(int j = 0; j<typesArrayForState.length() && isDesiredData; ++j) {
-                        if(typesArrayForState.get(j).toString().equalsIgnoreCase("administrative_area_level_1")) {
-                            stateName = address_components.getJSONObject(address_components.length()-2).getString("long_name");
-                        }
-                    }
-                    if(isDesiredData && locationName.trim().equalsIgnoreCase(localityName.trim().toLowerCase())){
+
+                    if(isDesiredData){
+
                         JSONObject geometry = addressJsonObj.getJSONObject("geometry");
                         latitude = geometry.getJSONObject("location").getDouble("lat");
                         longitude = geometry.getJSONObject("location").getDouble("lng");
                         placeId = addressJsonObj.getString("place_id");
+
 
                         freshLocality = new Locality();
                         freshLocality.setLocalityName(WordUtils.capitalize(localityName));
@@ -193,6 +240,8 @@ public class AddressResolveService {
                             Logger.info("Error while saving new found locality into db");
                         }
                         break;
+                    } else {
+                        Logger.warn("Couldn't resolved "+localityName+" till locality level: found Incomplete final obj of interest as : "+locationName+"-"+ cityName+"-"+stateName);
                     }
 
                 }
@@ -248,10 +297,9 @@ public class AddressResolveService {
             finalPredictedLocalityName = sortMapByValue(matchingLocalities).entrySet().iterator().next().getKey();
             Logger.info("match founnd in db for:"+finalPredictedLocalityName );
         } else {
-            finalPredictedLocalityName = sortMapByValue(countByWord).entrySet().iterator().next().getKey();
-            Logger.info("no match founnd in db for:"+finalPredictedLocalityName );
-            Locality freshLocality = insertLocality(finalPredictedLocalityName);
+            Locality freshLocality = insertLocality(sortMapByValue(countByWord).entrySet().iterator().next().getKey());
             if(freshLocality!= null){
+                finalPredictedLocalityName = freshLocality.getLocalityName();
                 Logger.info("New Locality saved successfully, in db");
             } else {
                 Logger.error("Error while fetching and saving new locality");
@@ -329,6 +377,7 @@ public class AddressResolveService {
             StringBuilder sb = new StringBuilder(GOOGLE_MAPS_API_BASE_URL + TYPE_GEOCODE + OUT_JSON);
             sb.append("?key=" + API_KEY);
             sb.append("&address="+ URLEncoder.encode(addressToResolve, "utf-8"));
+            sb.append("&bounds="+ URLEncoder.encode(toBounds(), "utf-8"));
 
             URL url = new URL(sb.toString());
             conn = (HttpURLConnection) url.openConnection();
@@ -357,4 +406,33 @@ public class AddressResolveService {
         return jsonResults;
     }
 
+    /**
+     *
+     *  We have 3 flavours of toBound bellow to cater most of the req. in different scenario
+     *
+     */
+
+    public static String toBounds() {
+        return boundsToString(toBounds(new LatLng(latitude, longitude), DEFAULT_RADIUS_IN_KM));
+    }
+
+    public static String toBounds(LatLng center) {
+        return boundsToString(toBounds(center, DEFAULT_RADIUS_IN_KM));
+    }
+
+    public static LatLngBounds toBounds(LatLng center, double radius) {
+        LatLng southwest = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 225);
+        LatLng northeast = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 45);
+        return new LatLngBounds(southwest, northeast);
+    }
+
+    public static String boundsToString(LatLngBounds latlngbounds){
+        /**
+         *
+         * https://developers.google.com/maps/documentation/geocoding/intro
+         * The bounds parameter defines the latitude/longitude coordinates of the southwest and northeast corners of this bounding box using a pipe (|)
+         *
+         */
+        return latlngbounds.getSouthwest().toString()+" | " + latlngbounds.getNortheast().toString();
+    }
 }
