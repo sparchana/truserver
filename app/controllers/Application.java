@@ -1239,7 +1239,6 @@ public class Application extends Controller {
     }
     public static Result jobRoleDetailsPageData(String rolePara, Long idPara)
     {
-        Logger.info("Show result"+toJson(rolePara) + toJson(idPara));
         List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).eq("jobPostIsHot", 1).findList();
         return ok((toJson(jobPostList)));
     }

@@ -1,4 +1,4 @@
-latin-ext
+#latin-ext
 @font-face {
     font-family: 'Lato';
     font-style: normal;
@@ -6,7 +6,7 @@ latin-ext
     src: local('Lato Light'), local('Lato-Light'), url(https://fonts.gstatic.com/s/lato/v11/dPJ5r9gl3kK6ijoeP1IRsvY6323mHUZFJMgTvxaG2iE.woff2) format('woff2');
     unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
 }
-latin
+#latin
 @font-face {
     font-family: 'Lato';
     font-style: normal;
@@ -493,11 +493,11 @@ hr{
     padding:0px;
     color:#2196F3
 }
-#hotJobCompanyLogo{
+#postedJobCompanyLogo{
     margin-top: 0%;
     width: 80%;
 }
-#hotJobTitle{
+#postedJobTitle{
     font-size: 26px;
     margin-top:4px;
     display: inline-block;
@@ -529,42 +529,41 @@ hr{
     #companyLogoCompanyDetails{
         text-align: center;
     }
-    #hotCompanyTitle{
-
-    }
-    #companyLogoUp{
+    #companyLogo{
+        display:none;
         text-align:center;
     }
     .companyTitleHead{
-        font-size: 16px;
+        font-size: 18px;
+        margin-top: 4%;
         text-align: center;
     }
     #jobApplyBtnId{
         text-align:center;
     }
-    #hotCompanyLogo{
+    #postedCompanyLogo{
         width:48%;
     }
     .jobApplyBtnV2{
         margin-top: 6%;
         background: #09ac58;
-        padding: 6%;
-        width: 90px;
+        padding: 4%;
         box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.16);
     }
     #jobTitleHead{
+        font-size: 18px;
         text-align: center;
     }
-    #hotJobTitle{
-        font-size: 16px;
-        margin-top:4px;
+    #postedJobTitle{
+        margin: 6% 0% 4% 0% ;
+        font-size: 18px;
         text-align: center;
-        display: inline-block;
     }
     #categoriesNameDes{
         font-size:16px;
         text-align: center;
         margin-top:0px;
+        margin-bottom:0px;
         color:#2196F3;
     }
     #categoriesName{
@@ -572,10 +571,11 @@ hr{
         text-align: center;
         margin-top:0px;
         padding:0px;
+        margin-bottom:0px;
         color:#2196F3
     }
-    #hotJobCompanyLogo{
-        margin-left: auto;
+    #postedJobCompanyLogo{
+        margin: 4% 0% 4% 0% ;
         width: 48%;
     }
     #customModal {
@@ -1318,13 +1318,13 @@ li .dropdown-menu{
      cursor: pointer;
      box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
  }
-.hot_jobs_detail_page{
+.posted_job_details_container{
     margin-top:50px;
     padding: 2% 9%;
     background-color:white;
 
 }
-.hot_jobs_center_box{
+.posted_job_details_center{
     border-top:2px rgba(46, 131, 213, 0.6) solid;
     font-size: 16px;
     background-color: #ffffff;
@@ -1337,13 +1337,13 @@ li .dropdown-menu{
     padding-left: 10%;
     text-align: left;
 }
- .hot_jobs_company_details{
+ .posted_jobs_company_details{
      margin-top:0px;
      padding: 2% 9%;
      background-color:white;
 
  }
- .hot_jobs_company_center_box{
+ .posted_jobs_company_center_box{
      border-top:2px rgba(46, 131, 213, 0.6) solid;
      font-size: 16px;
      background-color: #ffffff;

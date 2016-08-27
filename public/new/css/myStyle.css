@@ -1240,3 +1240,7 @@ padding: 0px;
     position:fixed;
     bottom: 50px;
 }
+#job_box_inc a{
+    text-decoration: none;
+    color: #000000;
+}
