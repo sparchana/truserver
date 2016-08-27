@@ -6,6 +6,7 @@ package controllers.businessLogic;
 
 import api.ServerConstants;
 import models.entity.Static.Locality;
+import org.apache.commons.lang3.text.WordUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,6 +18,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -34,6 +36,7 @@ public class AddressResolveService {
 
     /* EXTERNAL API URL */
     public static final String GOOGLE_MAPS_API_BASE_URL = "https://maps.googleapis.com/maps/api";
+    public static final String TYPE_GEOCODE = "/geocode";
     public static final String TYPE_PLACE = "/place";
     public static final String NEAR_BY_SEARCH = "/nearbysearch";
     public static final String OUT_JSON = "/json";
@@ -43,7 +46,7 @@ public class AddressResolveService {
     public static final int API_CALL_LIMIT = 5;
 
     /* Sanitization params */
-    public static String[] toBeRemovedList = {"Bangalore", "bengaluru"};
+    public static String[] toBeRemovedList = {"Bangalore", "bengaluru","Karnataka","India"};
 
     public static String resolveLocalityFor(Double latitude, Double longitude) {
         List<String> nearyByAddressList = new ArrayList<>();
@@ -67,10 +70,12 @@ public class AddressResolveService {
         List<String> finalWordList = Arrays.asList(allAddress.toString().split("\\s*,\\s*"));
         for (String locality: finalWordList) {
             locality = locality.trim().toLowerCase();
-            if (countByLocality.containsKey(locality)) {
-                countByLocality.put(locality, countByLocality.get(locality) + 1);
-            } else {
-                countByLocality.put(locality, 1);
+            if(!locality.trim().isEmpty() && Arrays.asList(locality.split("\\s* \\s*")).size() < 4 ){
+                if (countByLocality.containsKey(locality)) {
+                    countByLocality.put(locality, countByLocality.get(locality) + 1);
+                } else {
+                    countByLocality.put(locality, 1);
+                }
             }
         }
         return getMostFrequentLocality(countByLocality);
@@ -123,6 +128,81 @@ public class AddressResolveService {
         return nearbyLocalityAddressList;
     }
 
+    private static Locality insertLocality(String localityName){
+       Locality freshLocality = null;
+
+        JSONObject jsonObj;
+        JSONArray jsonResultArray;
+        Double latitude = 0D;
+        Double longitude = 0D;
+        String placeId = null;
+        String cityName = null;
+        String stateName = null;
+        /* Parse JSON */
+        try {
+            // Log.d(TAG, jsonResults.toString());
+            StringBuilder jsonResults = getJSONForAddressToLatLng(localityName);
+            jsonObj = new JSONObject(jsonResults.toString());
+            String status = jsonObj.getString("status");
+            if(status.trim().equalsIgnoreCase("ok")) {
+                jsonResultArray = jsonObj.getJSONArray("results");
+                for(int i = 0; i<jsonResultArray.length(); ++i){
+                    Boolean isDesiredData = false;
+                    JSONObject addressJsonObj = jsonResultArray.getJSONObject(i);
+                    JSONArray address_components = addressJsonObj.getJSONArray("address_components");
+                    String locationName = address_components.getJSONObject(0).getString("long_name");
+                    JSONArray typesArray = address_components.getJSONObject(0).getJSONArray("types");
+                    JSONArray typesArrayForCity = address_components.getJSONObject(1).getJSONArray("types");
+                    JSONArray typesArrayForState = address_components.getJSONObject(addressJsonObj.getJSONArray("address_components").length() - 2).getJSONArray("types");
+
+                    for(int j = 0; j<typesArray.length(); ++j) {
+                        if(typesArray.get(j).toString().equalsIgnoreCase("sublocality_level_1")) {
+                            isDesiredData = true;
+                        }
+                    }
+                    for(int j = 0; j<typesArrayForCity.length() && isDesiredData; ++j) {
+                        if(typesArrayForCity.get(j).toString().equalsIgnoreCase("locality")) {
+                            cityName = address_components.getJSONObject(1).getString("long_name");
+                        }
+                    }
+                    for(int j = 0; j<typesArrayForState.length() && isDesiredData; ++j) {
+                        if(typesArrayForState.get(j).toString().equalsIgnoreCase("administrative_area_level_1")) {
+                            stateName = addressJsonObj.getJSONArray("address_components").getJSONObject(0).getString("long_name");
+                        }
+                    }
+                    if(isDesiredData && locationName.trim().equalsIgnoreCase(localityName.trim().toLowerCase())){
+                        JSONObject geometry = addressJsonObj.getJSONObject("geometry");
+                        latitude = geometry.getJSONObject("location").getDouble("lat");
+                        longitude = geometry.getJSONObject("location").getDouble("lng");
+                        placeId = addressJsonObj.getString("place_id");
+
+                        freshLocality = new Locality();
+                        freshLocality.setLocalityName(WordUtils.capitalize(localityName));
+                        freshLocality.setLat(latitude);
+                        freshLocality.setLng(longitude);
+                        freshLocality.setCity(WordUtils.capitalize(cityName));
+                        freshLocality.setState(WordUtils.capitalize(stateName));
+                        freshLocality.setCountry("India");
+                        freshLocality.setPlaceId(placeId);
+                        freshLocality.save();
+                        Locality newlocality = Locality.find.where().eq("placeId", freshLocality.getPlaceId()).findUnique();
+                        if(newlocality!= null){
+                            Logger.info("Successfully saved new found locality i.e. "+freshLocality.getLocalityName()+" into db");
+                            return newlocality;
+                        } else {
+                            Logger.info("Error while saving new found locality into db");
+                        }
+                        break;
+                    }
+
+                }
+            }
+        } catch (JSONException e) {
+            Logger.error("Cannot process JSON results", e);
+        }
+        return freshLocality;
+    }
+
     private static String performSanitization(String paragraph) {
         /*
          * Add other city names into toBeRemovedList[].
@@ -154,7 +234,6 @@ public class AddressResolveService {
      */
     public static String getMostFrequentLocality(Map<String, Integer> countByWord) {
         Map<String, Integer> matchingLocalities = new HashMap<>();
-        Iterator it = countByWord.entrySet().iterator();
         List<String> dbLocalityNameList = new ArrayList<>();
         dbLocalityNameList.addAll(getAllLocalityNames());
         for (String dbLocalityName : dbLocalityNameList) {
@@ -164,12 +243,22 @@ public class AddressResolveService {
             }
         }
 
-        if(matchingLocalities.size()>0){
-            return sortMapByValue(matchingLocalities).entrySet().iterator().next().getKey();
+        String finalPredictedLocalityName = "";
+        if(matchingLocalities.size() >0 ){
+            finalPredictedLocalityName = sortMapByValue(matchingLocalities).entrySet().iterator().next().getKey();
+            Logger.info("match founnd in db for:"+finalPredictedLocalityName );
         } else {
             // TODO trigger geocode and get lat/lng for the new locality and save it in db;
+            finalPredictedLocalityName = sortMapByValue(countByWord).entrySet().iterator().next().getKey();
+            Logger.info("no match founnd in db for:"+finalPredictedLocalityName );
+            Locality freshLocality = insertLocality(finalPredictedLocalityName);
+            if(freshLocality!= null){
+                Logger.info("New Locality after saving, is found in db");
+            } else {
+                Logger.error("Error in resolving lat/lng for new locality");
+            }
         }
-        return sortMapByValue(countByWord).entrySet().iterator().next().getKey();
+        return finalPredictedLocalityName;
     }
 
     /**
@@ -186,7 +275,7 @@ public class AddressResolveService {
 
         Map<K, V> result = new LinkedHashMap<>();
         for (Map.Entry<K, V> entry : list) {
-            //Logger.info("Locality: " + entry.getKey() +" count: " + entry.getValue());
+            Logger.info("Locality: " + entry.getKey() +" count: " + entry.getValue());
             result.put( entry.getKey(), entry.getValue() );
         }
         return result;
@@ -210,7 +299,7 @@ public class AddressResolveService {
             conn = (HttpURLConnection) url.openConnection();
             InputStreamReader in = new InputStreamReader(conn.getInputStream());
 
-            //Logger.warn("url: "+sb.toString());
+            Logger.warn("url: "+sb.toString());
             // Load the results into a StringBuilder
             int read;
             char[] buff = new char[1024];
@@ -224,6 +313,42 @@ public class AddressResolveService {
             e.printStackTrace();
         } catch (IOException e) {
             Logger.error("Error processing Place Nearby Search API URL", e);
+            return jsonResults;
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+        return jsonResults;
+    }
+
+    public static StringBuilder getJSONForAddressToLatLng(String addressToResolve) {
+        HttpURLConnection conn = null;
+        StringBuilder jsonResults = new StringBuilder();
+
+        try {
+            StringBuilder sb = new StringBuilder(GOOGLE_MAPS_API_BASE_URL + TYPE_GEOCODE + OUT_JSON);
+            sb.append("?key=" + API_KEY);
+            sb.append("&address="+ URLEncoder.encode(addressToResolve, "utf-8"));
+
+            URL url = new URL(sb.toString());
+            conn = (HttpURLConnection) url.openConnection();
+            InputStreamReader in = new InputStreamReader(conn.getInputStream());
+
+            Logger.warn("url: "+sb.toString());
+            // Load the results into a StringBuilder
+            int read;
+            char[] buff = new char[1024];
+            while ((read = in.read(buff)) != -1) {
+                jsonResults.append(buff, 0, read);
+            }
+        } catch (MalformedURLException e) {
+            Logger.error("Error processing Address to LatLng Resolver API URL", e);
+            return jsonResults;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            Logger.error("Error processing Address to LatLng Resolver API URL", e);
             return jsonResults;
         } finally {
             if (conn != null) {
