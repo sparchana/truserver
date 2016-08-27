@@ -167,7 +167,7 @@ public class AddressResolveService {
                     }
                     for(int j = 0; j<typesArrayForState.length() && isDesiredData; ++j) {
                         if(typesArrayForState.get(j).toString().equalsIgnoreCase("administrative_area_level_1")) {
-                            stateName = addressJsonObj.getJSONArray("address_components").getJSONObject(0).getString("long_name");
+                            stateName = address_components.getJSONObject(address_components.length()-2).getString("long_name");
                         }
                     }
                     if(isDesiredData && locationName.trim().equalsIgnoreCase(localityName.trim().toLowerCase())){
