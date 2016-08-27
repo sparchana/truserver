@@ -354,11 +354,9 @@ public class TrudroidController {
 
             Candidate candidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(pAddJobPrefRequest.getCandidateMobile()));
             if (candidate != null) {
-                Logger.info("hehe");
                 CandidateService.resetJobPref(candidate, CandidateService.getCandidateJobPreferenceList(jobPrefList, candidate));
                 candidate.setJobPreferencesList(CandidateService.getCandidateJobPreferenceList(jobPrefList, candidate));
                 candidate.update();
-                Logger.info("hehe1");
                 addJobRoleResponseBuilder.setStatus(AddJobRoleResponse.Status.valueOf(1));
             }
             Logger.info("Status returned = " + addJobRoleResponseBuilder.getStatus());
