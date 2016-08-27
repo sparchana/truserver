@@ -29,7 +29,7 @@ import java.util.*;
  * Some lat/lng aren't fully resolved to locality level hence this module tries to find
  * a nearby valid resolved address.
  *
- * TODO: This module also inserts a newly found locality name along with its right latlng, into db
+ * This module also inserts a newly found locality name along with its right latlng, into db
  */
 
 public class AddressResolveService {
@@ -248,14 +248,13 @@ public class AddressResolveService {
             finalPredictedLocalityName = sortMapByValue(matchingLocalities).entrySet().iterator().next().getKey();
             Logger.info("match founnd in db for:"+finalPredictedLocalityName );
         } else {
-            // TODO trigger geocode and get lat/lng for the new locality and save it in db;
             finalPredictedLocalityName = sortMapByValue(countByWord).entrySet().iterator().next().getKey();
             Logger.info("no match founnd in db for:"+finalPredictedLocalityName );
             Locality freshLocality = insertLocality(finalPredictedLocalityName);
             if(freshLocality!= null){
-                Logger.info("New Locality after saving, is found in db");
+                Logger.info("New Locality saved successfully, in db");
             } else {
-                Logger.error("Error in resolving lat/lng for new locality");
+                Logger.error("Error while fetching and saving new locality");
             }
         }
         return finalPredictedLocalityName;
