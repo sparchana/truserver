@@ -127,8 +127,7 @@ POST        /mCandidateUpdateEducationProfile                             contro
 POST        /mGetCandidateUpdateBasicProfileStatics                       controllers.TrudroidController.mGetCandidateUpdateBasicProfileStatics()
 POST        /mGetCandidateUpdateExperienceProfileStatics/:jobRoles        controllers.TrudroidController.mGetCandidateUpdateExperienceProfileStatics(jobRoles: String)
 POST        /mGetCandidateUpdateEducationProfileStatics                   controllers.TrudroidController.mGetCandidateUpdateEducationProfileStatics()
-GET         /resolvedLatLng/:latlng                                       controllers.TrudroidController.mResolvedLatLng(latlng: String)
-GET         /resolvedLatLng/:latlng/:radius                               controllers.TrudroidController.mResolvedLatLngWithin(latlng: String, radius: Integer)
+GET         /resolveLatLng/:latlng                                        controllers.TrudroidController.mResolveLatLng(latlng: String)
 
 # 3rd Party API
 # ~~~~~~~~~~~~~

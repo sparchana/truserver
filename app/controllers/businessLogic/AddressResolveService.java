@@ -36,13 +36,13 @@ import static play.libs.Json.toJson;
  *
  * This module also inserts a newly found locality name along with its right latlng, into db
  *
- *  In every vicinity, most of the time the end word is city name. Since that is also trimmed off, it
+ * In every vicinity, most of the time the end word is city name. Since that is also trimmed off, it
  * decreases count of city name. Hence increases the count of locality name.
  *
  * toBeRemovedList is a list which is a bag_of_city_name which is used in Sanitization
  * before counting happens. Hence further increases change of getting good data.
  *
- * There is always a chance of error in resolution. Further optimization should reduce it
+ * TODO: There is always a chance of error in resolution. Further optimization should reduce it
  *
  *
  */
@@ -184,7 +184,6 @@ public class AddressResolveService {
                     Boolean isDesiredData = false;
                     JSONObject addressJsonObj = jsonResultArray.getJSONObject(i);
                     JSONArray address_components = addressJsonObj.getJSONArray("address_components");
-                    Logger.info("address_components"+address_components);
 
                     /**
                      *
@@ -214,6 +213,9 @@ public class AddressResolveService {
                             }
                         }
                     }
+                    if(cityName!= null && cityName.equalsIgnoreCase(localityName)){
+                        return null;
+                    }
 
                     if(isDesiredData){
 
@@ -241,7 +243,7 @@ public class AddressResolveService {
                         }
                         break;
                     } else {
-                        Logger.warn("Couldn't resolved "+localityName+" till locality level: found Incomplete final obj of interest as : "+locationName+"-"+ cityName+"-"+stateName);
+                        Logger.warn("LatLng is of a Remote Area. Couldn't resolved "+localityName+" till locality level: found Incomplete final obj of interest as : "+locationName+"-"+ cityName+"-"+stateName);
                     }
 
                 }
@@ -282,6 +284,8 @@ public class AddressResolveService {
      * Return the most probable locality name from a Map<LocalityName, count>
      */
     public static String getMostFrequentLocality(Map<String, Integer> countByWord) {
+        int COUNT_LIMIT = 2;
+
         Map<String, Integer> matchingLocalities = new HashMap<>();
         List<String> dbLocalityNameList = new ArrayList<>();
         dbLocalityNameList.addAll(getAllLocalityNames());
@@ -297,12 +301,16 @@ public class AddressResolveService {
             finalPredictedLocalityName = sortMapByValue(matchingLocalities).entrySet().iterator().next().getKey();
             Logger.info("match founnd in db for:"+finalPredictedLocalityName );
         } else {
-            Locality freshLocality = insertLocality(sortMapByValue(countByWord).entrySet().iterator().next().getKey());
-            if(freshLocality!= null){
-                finalPredictedLocalityName = freshLocality.getLocalityName();
-                Logger.info("New Locality saved successfully, in db");
-            } else {
-                Logger.error("Error while fetching and saving new locality");
+            Map<String, Integer> sortedMap = sortMapByValue(countByWord);
+            Iterator it = sortedMap.entrySet().iterator();
+            int n = 0;
+            while (it.hasNext() && n++ < COUNT_LIMIT) {
+                Map.Entry pair = (Map.Entry)it.next();
+                Locality freshLocality = insertLocality(pair.getKey().toString());
+                if(freshLocality != null){
+                    finalPredictedLocalityName = freshLocality.getLocalityName();
+                    break;
+                }
             }
         }
         return finalPredictedLocalityName;
@@ -408,7 +416,7 @@ public class AddressResolveService {
 
     /**
      *
-     *  We have 3 flavours of toBound bellow to cater most of the req. in different scenario
+     *  We have 3 flavours of toBound below to cater most of the req. in different scenario
      *
      */
 

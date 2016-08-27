@@ -1307,29 +1307,16 @@ public class TrudroidController {
         return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
     }
 
-    public static Result mResolvedLatLng(String latlng){
+    public static Result mResolveLatLng(String latlng){
         List<String> LatLng = Arrays.asList(latlng.trim().split(","));
         Double latitude = 0D;
         Double longitude = 0D;
         try {
             latitude = Double.parseDouble(LatLng.get(0));
             longitude = Double.parseDouble(LatLng.get(1));
-        } catch (IllegalFormatException ife){
-            ife.printStackTrace();
+        } catch (NumberFormatException nfe){
+            return ok("Invalid Format");
         }
         return ok(toJson("LatLng: "+ latlng+" Locality: "+controllers.businessLogic.AddressResolveService.resolveLocalityFor(latitude, longitude)));
-    }
-
-    public static Result mResolvedLatLngWithin(String latlng, Integer radius){
-        List<String> LatLng = Arrays.asList(latlng.trim().split(","));
-        Double latitude = 0D;
-        Double longitude = 0D;
-        try {
-            latitude = Double.parseDouble(LatLng.get(0));
-            longitude = Double.parseDouble(LatLng.get(1));
-        } catch (IllegalFormatException ife){
-            ife.printStackTrace();
-        }
-        return ok(toJson("LatLng: "+ latlng+" Locality: "+controllers.businessLogic.AddressResolveService.resolveLocalityFor(latitude, longitude, radius)));
     }
 }
