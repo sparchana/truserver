@@ -154,10 +154,6 @@ body{
 }
 
 #sectionOne {
-    background: linear-gradient(
-            rgba(24, 26, 45, 0.6),
-            rgba(24, 26, 45, 0.6)
-    ), url(../img/back_design.png) no-repeat;
     background-size: 100%;
     color: #ffffff;
     font-weight: bold;

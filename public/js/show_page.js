@@ -128,6 +128,8 @@ $(document).ready(function(){
     var allJobDetailPageUrl = $(location).attr('href');
     var allJobDetailPageUrlBreak = allJobDetailPageUrl.split("/");
     allJobDetailPageUrlBreak.reverse();
+    $("#sectionOne").css("background-image","linear-gradient(rgba(24, 26, 45, 0.1),rgba(24, 26, 45, 0.1))" +
+        ",url(/assets/img/"+allJobDetailPageUrlBreak[0]+".png)");
     try {
         $.ajax({
             type: "GET",
