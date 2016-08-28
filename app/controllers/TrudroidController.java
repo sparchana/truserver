@@ -145,18 +145,29 @@ public class TrudroidController {
             String requestString = request().body().asText();
             pLoginRequest = LogInRequest.parseFrom(Base64.decodeBase64(requestString));
             CandidateSignUpResponse candidateSignUpResponse = AuthService.savePassword(FormValidator.convertToIndianMobileFormat(pLoginRequest.getCandidateMobile()), pLoginRequest.getCandidatePassword());
-            loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(candidateSignUpResponse.getStatus()));
-            loginResponseBuilder.setCandidateFirstName(candidateSignUpResponse.getCandidateFirstName());
-            if (candidateSignUpResponse.getCandidateLastName() != null) {
-                loginResponseBuilder.setCandidateLastName(candidateSignUpResponse.getCandidateLastName());
-            }
-            loginResponseBuilder.setCandidateId(candidateSignUpResponse.getCandidateId());
-            loginResponseBuilder.setCandidateIsAssessed(candidateSignUpResponse.getIsAssessed());
-            loginResponseBuilder.setLeadId(candidateSignUpResponse.getLeadId());
-            loginResponseBuilder.setMinProfile(candidateSignUpResponse.getMinProfile());
-            loginResponseBuilder.setCandidateJobPrefStatus(candidateSignUpResponse.getCandidateJobPrefStatus());
-            loginResponseBuilder.setCandidateHomeLocalityStatus(candidateSignUpResponse.getCandidateHomeLocalityStatus());
+            if(candidateSignUpResponse.getStatus() == candidateSignUpResponse.STATUS_SUCCESS){
+                loginResponseBuilder.setCandidateFirstName(candidateSignUpResponse.getCandidateFirstName());
+                if (candidateSignUpResponse.getCandidateLastName() != null) {
+                    loginResponseBuilder.setCandidateLastName(candidateSignUpResponse.getCandidateLastName());
+                } else {
+                    loginResponseBuilder.setCandidateLastName("");
+                }
+                loginResponseBuilder.setCandidateId(candidateSignUpResponse.getCandidateId());
+                loginResponseBuilder.setCandidateIsAssessed(candidateSignUpResponse.getIsAssessed());
+                loginResponseBuilder.setLeadId(candidateSignUpResponse.getLeadId());
+                loginResponseBuilder.setCandidateJobPrefStatus(candidateSignUpResponse.getCandidateJobPrefStatus());
+                loginResponseBuilder.setCandidateHomeLocalityStatus(candidateSignUpResponse.getCandidateHomeLocalityStatus());
+                if(candidateSignUpResponse.getCandidateHomeLocalityName() != null) loginResponseBuilder.setCandidateHomeLocalityName(candidateSignUpResponse.getCandidateHomeLocalityName());
+                if(candidateSignUpResponse.getCandidateHomeLat() != null) loginResponseBuilder.setCandidateHomeLatitude(candidateSignUpResponse.getCandidateHomeLat());
+                if(candidateSignUpResponse.getCandidateHomeLng() != null) loginResponseBuilder.setCandidateHomeLongitude(candidateSignUpResponse.getCandidateHomeLng());
+                if(candidateSignUpResponse.getCandidatePrefJobRoleIdOne() != null) loginResponseBuilder.setCandidatePrefJobRoleIdOne(candidateSignUpResponse.getCandidatePrefJobRoleIdOne());
+                if(candidateSignUpResponse.getCandidatePrefJobRoleIdTwo() != null) loginResponseBuilder.setCandidatePrefJobRoleIdTwo(candidateSignUpResponse.getCandidatePrefJobRoleIdTwo());
+                if(candidateSignUpResponse.getCandidatePrefJobRoleIdThree() != null) loginResponseBuilder.setCandidatePrefJobRoleIdThree(candidateSignUpResponse.getCandidatePrefJobRoleIdThree());
+                loginResponseBuilder.setStatus(LogInResponse.Status.SUCCESS);
 
+            } else{
+                loginResponseBuilder.setStatus(LogInResponse.Status.FAILURE);
+            }
             Logger.info("Status returned = " + loginResponseBuilder.getStatus());
 
         } catch (InvalidProtocolBufferException e) {
