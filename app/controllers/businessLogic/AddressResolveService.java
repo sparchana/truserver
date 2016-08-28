@@ -281,10 +281,10 @@ public class AddressResolveService {
                             if(freshLocality.getPlaceId() == null || freshLocality.getPlaceId().trim().isEmpty() ){
                                 freshLocality.setPlaceId(placeId);
                             }
-                            if(freshLocality.getLat()!=null || freshLocality.getLat() != 0){
+                            if(freshLocality.getLat()==null || freshLocality.getLat() == 0){
                                 freshLocality.setLat(latitude);
                             }
-                            if(freshLocality.getLng()!=null || freshLocality.getLng() != 0){
+                            if(freshLocality.getLng()==null || freshLocality.getLng() == 0){
                                 freshLocality.setLng(longitude);
                             }
                             freshLocality.setCity(cityName);
