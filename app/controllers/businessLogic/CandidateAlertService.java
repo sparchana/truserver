@@ -60,9 +60,6 @@ public class CandidateAlertService {
             } else {
                 // fetch jobs near this candidate according to jobPreference
                 List<Long> jobPrefIds = new ArrayList<>();
-                for(JobPreference jobPreference: candidate.getJobPreferencesList()){
-                    jobPrefIds.add(jobPreference.getJobRole().getJobRoleId());
-                }
                 jobsCount = MatchingEngineService.fetchMatchingJobPostForLatLng(candidate.getCandidateLocalityLat(),
                         candidate.getCandidateLocalityLat(),
                         ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, jobPrefIds, ServerConstants.SORT_DEFAULT).size();

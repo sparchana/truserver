@@ -256,12 +256,6 @@ public class JobPostService {
             Logger.info("getMatchingJob for Mobile: " + mobile);
             Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
             if (existingCandidate != null) {
-                if(jobRoleIds.isEmpty()){
-                    Logger.info("JobRoleId List is empty. Hence getting jobrole Prefs from db");
-                    for (JobPreference jobPreference : existingCandidate.getJobPreferencesList()) {
-                        jobRoleIds.add(jobPreference.getJobRole().getJobRoleId());
-                    }
-                }
                 sortOrder = sortOrder == null ? ServerConstants.SORT_DEFAULT:sortOrder;
                 return MatchingEngineService.fetchMatchingJobPostForLatLng(
                         latitude, longitude, null, jobRoleIds, sortOrder);
@@ -273,24 +267,25 @@ public class JobPostService {
                 latitude, longitude, null, jobRoleIds, sortOrder);
     }
 
+    /**
+     *
+     * This method is called when lat/lng is 0 or not available
+     * if its 0.0 then all jobs are returned
+     *
+     */
     public static List<JobPost> mGetMatchingJobPostsRaw(String mobile, Integer sortOrder, List<Long> jobRoleIds) {
         mobile = FormValidator.convertToIndianMobileFormat(mobile);
         if (mobile != null && !mobile.trim().isEmpty()) {
             Logger.info("getMatchingJob for Mobile: " + mobile);
             Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
             if (existingCandidate != null) {
-                if(jobRoleIds== null || jobRoleIds.size() == 0){
-                    jobRoleIds = new ArrayList<>();
-                    for (JobPreference jobPreference : existingCandidate.getJobPreferencesList()) {
-                        jobRoleIds.add(jobPreference.getJobRole().getJobRoleId());
-                    }
-                }
                 if (existingCandidate.getCandidateLocalityLat() == null || existingCandidate.getCandidateLocalityLng() == null) {
                     return mGetAllJobPostsRaw();
                 } else {
-                    return MatchingEngineService.fetchMatchingJobPostForLatLng(
+                    /*return MatchingEngineService.fetchMatchingJobPostForLatLng(
                             existingCandidate.getCandidateLocalityLat(), existingCandidate.getCandidateLocalityLng(), null
-                            , jobRoleIds, sortOrder);
+                            , jobRoleIds, sortOrder);*/
+                    return mGetAllJobPostsRaw(sortOrder, jobRoleIds);
                 }
             }
         } else {

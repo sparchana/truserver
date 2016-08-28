@@ -1266,7 +1266,7 @@ public class TrudroidController {
                 }
             } else {
                 Logger.info("No LatLong found");
-                jobPostList.addAll((mGetMatchingJobPostsRaw(null, null, jobRoleIdList)));
+                jobPostList.addAll((mGetMatchingJobPostsRaw(jobSearchRequest.getCandidateMobile(), null, jobRoleIdList)));
             }
         }
 

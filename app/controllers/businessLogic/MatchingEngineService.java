@@ -60,6 +60,7 @@ public class MatchingEngineService {
                     .query();
         }
         List<JobPost> jobPostList = query.findList();
+        Logger.info("[ME] init jobpost size:"+jobPostList.size() +" within : " + radius);
         if (lat != null && lng != null) {
             List<JobPost> jobPostsResponseList = new ArrayList<>();
             for (JobPost jobPost : jobPostList) {
