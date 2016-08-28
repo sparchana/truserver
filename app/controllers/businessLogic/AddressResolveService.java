@@ -5,7 +5,6 @@ package controllers.businessLogic;
  */
 
 import api.ServerConstants;
-import in.trujobs.proto.LocalityObject;
 import models.entity.Static.Locality;
 import models.util.LatLng;
 import models.util.LatLngBounds;
@@ -24,6 +23,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
+
+import static com.avaje.ebean.Expr.eq;
 
 
 /**
@@ -100,7 +101,11 @@ public class AddressResolveService {
         new AddressResolveService(appxLatitude, appxLongitude);
         List<String> nearyByAddressList = new ArrayList<>();
         nearyByAddressList.addAll(fetchNearByLocality(appxLatitude, appxLongitude, null));
-        return Locality.find.where().eq("localityName", determineLocality(nearyByAddressList)).findUnique();
+        Locality locality =  Locality.find.where().eq("localityName", determineLocality(nearyByAddressList)).findUnique();
+        if(locality.getLng() == 0 || locality.getLat() == 0 || locality.getPlaceId() == null){
+            locality = insertOrUpdateLocality(locality.getLocalityName());
+        }
+        return locality;
     }
 
     public static Locality getLocalityForPlaceId(String placeId){
@@ -178,7 +183,7 @@ public class AddressResolveService {
         return nearbyLocalityAddressList;
     }
 
-    private static Locality insertLocality(String localityName){
+    private static Locality insertOrUpdateLocality(String localityName){
        Locality freshLocality = null;
 
         JSONObject jsonObj;
@@ -213,7 +218,8 @@ public class AddressResolveService {
                         JSONArray tempTypesArray = objectOfInterest.getJSONArray("types");
                         //Logger.info("objOfInterest"+objectOfInterest);
                         for(int j = 0; j < tempTypesArray.length(); ++j) {
-                            if(tempTypesArray.get(j).toString().equalsIgnoreCase("sublocality_level_1")) {
+                            if(tempTypesArray.get(j).toString().equalsIgnoreCase("sublocality_level_1")
+                                    || tempTypesArray.get(j).toString().equalsIgnoreCase("route") ) {
                                 locationName = objectOfInterest.getString("long_name");
                                 if(!localityName.trim().equalsIgnoreCase(locationName.trim().toLowerCase())){
                                     Logger.info("Found locality which appears to sublocality of a locality. hence " +
@@ -239,7 +245,9 @@ public class AddressResolveService {
                         longitude = geometry.getJSONObject("location").getDouble("lng");
                         placeId = addressJsonObj.getString("place_id");
 
-                        freshLocality = Locality.find.where().eq("placeId", placeId).findUnique();
+                        freshLocality = Locality.find.where()
+                                                .or(eq("placeId", placeId), eq("localityName", localityName))
+                                                .findUnique();
                         if(freshLocality==null) {
                             freshLocality = new Locality();
                             freshLocality.setLocalityName(WordUtils.capitalize(localityName));
@@ -271,6 +279,9 @@ public class AddressResolveService {
                             if(freshLocality.getLng()!=null || freshLocality.getLng() != 0){
                                 freshLocality.setLng(longitude);
                             }
+                            freshLocality.setCity(cityName);
+                            freshLocality.setState(stateName);
+                            freshLocality.setCountry("India");
                             Logger.warn("Static Data "+freshLocality.getLocalityName() + " in Locality update");
                             freshLocality.update();
                         }
@@ -374,7 +385,7 @@ public class AddressResolveService {
             int n = 0;
             while (it.hasNext() && n++ < COUNT_LIMIT) {
                 Map.Entry pair = (Map.Entry)it.next();
-                Locality freshLocality = insertLocality(pair.getKey().toString());
+                Locality freshLocality = insertOrUpdateLocality(pair.getKey().toString());
                 if(freshLocality != null){
                     finalPredictedLocalityName = freshLocality.getLocalityName();
                     break;

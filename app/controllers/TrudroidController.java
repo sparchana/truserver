@@ -1252,6 +1252,7 @@ public class TrudroidController {
             Logger.info("No Misc. Filter Applied. Search Jobs with/without jobRoleIdList: "+jobRoleIdList.size());
             if(jobSearchRequest.getLatitude() != 0.0
                     && jobSearchRequest.getLongitude() != 0.0) {
+                Logger.info("Job Search triggered with given LatLng");
                 try {
                     jobPostList.addAll(
                             mGetMatchingJobPostsByLatLngRaw(jobSearchRequest.getCandidateMobile()
@@ -1260,6 +1261,7 @@ public class TrudroidController {
 
                 }
             } else {
+                Logger.info("No LatLong found");
                 jobPostList.addAll((mGetMatchingJobPostsRaw(null, null, jobRoleIdList)));
             }
         }
@@ -1342,14 +1344,13 @@ public class TrudroidController {
             if(locality.getPlaceId()!=null) localityObject.setPlaceId(locality.getPlaceId());
             localityObjectResponse.setLocality(localityObject.build());
             localityObjectResponse.setStatus(LocalityObjectResponse.Status.SUCCESS);
+            Logger.info("returned Locality name: "+ locality.getLocalityName());
         } else {
             Logger.error("Unable to find locality for placeId:"+latLngOrPlaceIdRequest.getPlaceId() +
                     latLngOrPlaceIdRequest.getPlaceId() + " or lat/lng:"+latLngOrPlaceIdRequest.getLatitude()+
                     "/"+latLngOrPlaceIdRequest.getLatitude());
             localityObjectResponse.setStatus(LocalityObjectResponse.Status.UNKNOWN);
         }
-
-        Logger.info("returned Locality name: "+ locality.getLocalityName());
        return ok(Base64.encodeBase64String(localityObjectResponse.build().toByteArray()));
     }
 }
