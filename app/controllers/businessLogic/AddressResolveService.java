@@ -96,10 +96,10 @@ public class AddressResolveService {
         return determineLocality(nearyByAddressList);
     }
 
-    public static Locality getLocalityForLatLng(Double latitude, Double longitude) {
-        new AddressResolveService(latitude, longitude);
+    public static Locality getLocalityForLatLng(Double appxLatitude, Double appxLongitude) {
+        new AddressResolveService(appxLatitude, appxLongitude);
         List<String> nearyByAddressList = new ArrayList<>();
-        nearyByAddressList.addAll(fetchNearByLocality(latitude, longitude, null));
+        nearyByAddressList.addAll(fetchNearByLocality(appxLatitude, appxLongitude, null));
         return Locality.find.where().eq("localityName", determineLocality(nearyByAddressList)).findUnique();
     }
 
@@ -271,6 +271,7 @@ public class AddressResolveService {
                             if(freshLocality.getLng()!=null || freshLocality.getLng() != 0){
                                 freshLocality.setLng(longitude);
                             }
+                            Logger.warn("Static Data "+freshLocality.getLocalityName() + " in Locality update");
                             freshLocality.update();
                         }
                         break;
