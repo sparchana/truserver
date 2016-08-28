@@ -56,23 +56,41 @@ public class AuthService {
                 /* adding session details */
                 addSession(existingAuth, existingCandidate);
 
+                candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+
+                candidateSignUpResponse.setCandidateId(existingCandidate.getCandidateId());
                 candidateSignUpResponse.setCandidateFirstName(existingCandidate.getCandidateFirstName());
                 candidateSignUpResponse.setCandidateLastName(existingCandidate.getCandidateLastName());
-                candidateSignUpResponse.setCandidateId(existingCandidate.getCandidateId());
-                candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-                candidateSignUpResponse.setMinProfile(existingCandidate.getIsMinProfileComplete());
                 candidateSignUpResponse.setIsAssessed(existingCandidate.getCandidateIsAssessed());
+                candidateSignUpResponse.setMinProfile(existingCandidate.getIsMinProfileComplete());
                 candidateSignUpResponse.setLeadId(existingCandidate.getLead().getLeadId());
-
                 candidateSignUpResponse.setCandidateJobPrefStatus(0);
                 candidateSignUpResponse.setCandidateHomeLocalityStatus(0);
+
+                    /* START : to cater specifically the app need */
+                if(existingCandidate.getCandidateLocalityLat() != null
+                        || existingCandidate.getCandidateLocalityLng() != null ){
+                    candidateSignUpResponse.setCandidateHomeLat(existingCandidate.getCandidateLocalityLat());
+                    candidateSignUpResponse.setCandidateHomeLng(existingCandidate.getCandidateLocalityLng());
+                }
+                if(!existingCandidate.getJobPreferencesList().isEmpty()){
+                    if(existingCandidate.getJobPreferencesList().size()>0 && existingCandidate.getJobPreferencesList().get(0)!= null)
+                        candidateSignUpResponse.setCandidatePrefJobRoleIdOne(existingCandidate.getJobPreferencesList().get(0).getJobRole().getJobRoleId());
+                    if(existingCandidate.getJobPreferencesList().size()>1 &&existingCandidate.getJobPreferencesList().get(1)!= null)
+                        candidateSignUpResponse.setCandidatePrefJobRoleIdTwo(existingCandidate.getJobPreferencesList().get(1).getJobRole().getJobRoleId());
+                    if(existingCandidate.getJobPreferencesList().size()>2 &&existingCandidate.getJobPreferencesList().get(2)!= null)
+                        candidateSignUpResponse.setCandidatePrefJobRoleIdThree(existingCandidate.getJobPreferencesList().get(2).getJobRole().getJobRoleId());
+                }
+                    /* END */
                 if(existingCandidate.getJobPreferencesList().size() > 0){
                     candidateSignUpResponse.setCandidateJobPrefStatus(1);
                 }
-                if(existingCandidate.getLocality() != null){
+                if(existingCandidate.getCandidateLocalityLat() != null && existingCandidate.getCandidateLocalityLng() != null){
                     candidateSignUpResponse.setCandidateHomeLocalityStatus(1);
                 }
-
+                if(existingCandidate.getLocality()!= null && existingCandidate.getLocality().getLocalityName()!=null){
+                    candidateSignUpResponse.setCandidateHomeLocalityName(existingCandidate.getLocality().getLocalityName());
+                }
             }
 
             else{

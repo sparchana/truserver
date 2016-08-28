@@ -60,6 +60,7 @@ public class MatchingEngineService {
                     .query();
         }
         List<JobPost> jobPostList = query.findList();
+        Logger.info("[ME] init jobpost size:"+jobPostList.size() +" within : " + radius);
         if (lat != null && lng != null) {
             List<JobPost> jobPostsResponseList = new ArrayList<>();
             for (JobPost jobPost : jobPostList) {
@@ -110,7 +111,7 @@ public class MatchingEngineService {
         if (centerLat == null || centerLng == null || pointLat == null || pointLng == null) {
             return null;
         }
-        double earthRadius = 6371.0; // kilometers (or 3958.75 in miles)
+        double earthRadius = EARTH_RADIUS;
         double dLat = Math.toRadians(pointLat - centerLat);
         double dLng = Math.toRadians(pointLng - centerLng);
         double sindLat = Math.sin(dLat / 2);
