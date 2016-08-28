@@ -5,6 +5,7 @@ package controllers.businessLogic;
  */
 
 import api.ServerConstants;
+import in.trujobs.proto.LocalityObject;
 import models.entity.Static.Locality;
 import models.util.LatLng;
 import models.util.LatLngBounds;
@@ -24,7 +25,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
 
-import static play.libs.Json.toJson;
 
 /**
  * Address Resolve Service receives a {latitude, longitude} pair
@@ -42,7 +42,13 @@ import static play.libs.Json.toJson;
  * toBeRemovedList is a list which is a bag_of_city_name which is used in Sanitization
  * before counting happens. Hence further increases change of getting good data.
  *
- * TODO: There is always a chance of error in resolution. Further optimization should reduce it
+ * Note: Precision of Lat/Lng in Db is upto 6 decimals, DB auto rounds if it exceeds
+ * Also try using RoundTo6Decimals() method available in utils, in comparing between lat/lng from google_db and tru_db
+ *
+ *
+ * There is always a chance of error in resolution. Further optimization should reduce it
+ *
+ * TODO: modify to take "type":"route" into account
  *
  *
  */
@@ -88,6 +94,18 @@ public class AddressResolveService {
         List<String> nearyByAddressList = new ArrayList<>();
         nearyByAddressList.addAll(fetchNearByLocality(latitude, longitude, radius));
         return determineLocality(nearyByAddressList);
+    }
+
+    public static Locality getLocalityForLatLng(Double latitude, Double longitude) {
+        new AddressResolveService(latitude, longitude);
+        List<String> nearyByAddressList = new ArrayList<>();
+        nearyByAddressList.addAll(fetchNearByLocality(latitude, longitude, null));
+        return Locality.find.where().eq("localityName", determineLocality(nearyByAddressList)).findUnique();
+    }
+
+    public static Locality getLocalityForPlaceId(String placeId){
+        LatLng latLng = getLatLngForPlaceId(placeId);
+        return getLocalityForLatLng(latLng.latitude, latLng.longitude);
     }
 
     public static String determineLocality(List<String> localityList) {
@@ -184,7 +202,6 @@ public class AddressResolveService {
                     Boolean isDesiredData = false;
                     JSONObject addressJsonObj = jsonResultArray.getJSONObject(i);
                     JSONArray address_components = addressJsonObj.getJSONArray("address_components");
-
                     /**
                      *
                      * Data set is limited to 20 by api, hence below code shouldn't be a time hogging task
@@ -216,30 +233,45 @@ public class AddressResolveService {
                     if(cityName!= null && cityName.equalsIgnoreCase(localityName)){
                         return null;
                     }
-
                     if(isDesiredData){
-
                         JSONObject geometry = addressJsonObj.getJSONObject("geometry");
                         latitude = geometry.getJSONObject("location").getDouble("lat");
                         longitude = geometry.getJSONObject("location").getDouble("lng");
                         placeId = addressJsonObj.getString("place_id");
 
+                        freshLocality = Locality.find.where().eq("placeId", placeId).findUnique();
+                        if(freshLocality==null) {
+                            freshLocality = new Locality();
+                            freshLocality.setLocalityName(WordUtils.capitalize(localityName));
+                            freshLocality.setLat(latitude);
+                            freshLocality.setLng(longitude);
+                            freshLocality.setCity(WordUtils.capitalize(cityName));
+                            freshLocality.setState(WordUtils.capitalize(stateName));
+                            freshLocality.setCountry("India");
+                            freshLocality.setPlaceId(placeId);
+                            freshLocality.save();
 
-                        freshLocality = new Locality();
-                        freshLocality.setLocalityName(WordUtils.capitalize(localityName));
-                        freshLocality.setLat(latitude);
-                        freshLocality.setLng(longitude);
-                        freshLocality.setCity(WordUtils.capitalize(cityName));
-                        freshLocality.setState(WordUtils.capitalize(stateName));
-                        freshLocality.setCountry("India");
-                        freshLocality.setPlaceId(placeId);
-                        freshLocality.save();
-                        Locality newlocality = Locality.find.where().eq("placeId", freshLocality.getPlaceId()).findUnique();
-                        if(newlocality!= null){
-                            Logger.info("Successfully saved new found locality i.e. "+freshLocality.getLocalityName()+" into db");
-                            return newlocality;
+
+                            /* Re-Check if it got saved */
+                            Locality newlocality = Locality.find.where().eq("placeId", freshLocality.getPlaceId()).findUnique();
+                            if(newlocality!= null){
+                                Logger.info("Successfully saved new found locality i.e. "+freshLocality.getLocalityName()+" into db");
+                                return newlocality;
+                            } else {
+                                Logger.info("Error while saving new found locality into db");
+                            }
                         } else {
-                            Logger.info("Error while saving new found locality into db");
+                           /* update the existing locality object if req */
+                            if(freshLocality.getPlaceId() == null || freshLocality.getPlaceId().trim().isEmpty() ){
+                                freshLocality.setPlaceId(placeId);
+                            }
+                            if(freshLocality.getLat()!=null || freshLocality.getLat() != 0){
+                                freshLocality.setLat(latitude);
+                            }
+                            if(freshLocality.getLng()!=null || freshLocality.getLng() != 0){
+                                freshLocality.setLng(longitude);
+                            }
+                            freshLocality.update();
                         }
                         break;
                     } else {
@@ -252,6 +284,41 @@ public class AddressResolveService {
             Logger.error("Cannot process JSON results", e);
         }
         return freshLocality;
+    }
+
+    public static LatLng getLatLngForPlaceId(String placeId){
+        LatLng latLng = null;
+        Locality locality = Locality.find.where().eq("placeId", placeId).findUnique();
+        if(locality!= null){
+            return new LatLng(locality.getLat(), locality.getLng());
+        } else {
+            StringBuilder sb = new StringBuilder(GOOGLE_MAPS_API_BASE_URL + TYPE_GEOCODE + OUT_JSON);
+            sb.append("?key=" + API_KEY);
+            sb.append("&place_id=" + placeId);
+
+            /* getJson String */
+            StringBuilder jsonResults = executeUrl(sb.toString());
+
+            /* parse Json */
+            try {
+                JSONObject jsonObj = new JSONObject(jsonResults.toString());
+                /**
+                * It will always return only one result.
+                */
+                if(jsonObj.getString("status").trim().equalsIgnoreCase("ok")){
+                    JSONObject location = jsonObj.getJSONArray("results")
+                            .getJSONObject(0)
+                            .getJSONObject("geometry")
+                            .getJSONObject("location");
+                   latLng = new LatLng(location.getDouble("lat"), location.getDouble("lng")) ;
+                    return latLng;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return latLng;
     }
 
     private static String performSanitization(String paragraph) {
@@ -341,77 +408,29 @@ public class AddressResolveService {
      * API Calls : Return Type is a String containing JSON
      */
     public static StringBuilder getJSONForNearByLocality(Double latitude, Double longitude, int radius) {
-        HttpURLConnection conn = null;
-        StringBuilder jsonResults = new StringBuilder();
+        StringBuilder jsonResults = null;
 
-        try {
-            StringBuilder sb = new StringBuilder(GOOGLE_MAPS_API_BASE_URL + TYPE_PLACE + NEAR_BY_SEARCH + OUT_JSON);
-            sb.append("?key=" + API_KEY);
-            sb.append("&location="+latitude+","+longitude);
-            sb.append("&radius="+radius);
+        StringBuilder sb = new StringBuilder(GOOGLE_MAPS_API_BASE_URL + TYPE_PLACE + NEAR_BY_SEARCH + OUT_JSON);
+        sb.append("?key=" + API_KEY);
+        sb.append("&location=" + latitude + "," + longitude);
+        sb.append("&radius=" + radius);
 
-            URL url = new URL(sb.toString());
-            conn = (HttpURLConnection) url.openConnection();
-            InputStreamReader in = new InputStreamReader(conn.getInputStream());
-
-            Logger.warn("url: "+sb.toString());
-            // Load the results into a StringBuilder
-            int read;
-            char[] buff = new char[1024];
-            while ((read = in.read(buff)) != -1) {
-                jsonResults.append(buff, 0, read);
-            }
-        } catch (MalformedURLException e) {
-            Logger.error("Error processing Place Nearby Search API URL", e);
-            return jsonResults;
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            Logger.error("Error processing Place Nearby Search API URL", e);
-            return jsonResults;
-        } finally {
-            if (conn != null) {
-                conn.disconnect();
-            }
-        }
-        return jsonResults;
+        return executeUrl(sb.toString());
     }
 
     public static StringBuilder getJSONForAddressToLatLng(String addressToResolve) {
-        HttpURLConnection conn = null;
-        StringBuilder jsonResults = new StringBuilder();
 
+        StringBuilder sb = null;
         try {
-            StringBuilder sb = new StringBuilder(GOOGLE_MAPS_API_BASE_URL + TYPE_GEOCODE + OUT_JSON);
+            sb = new StringBuilder(GOOGLE_MAPS_API_BASE_URL + TYPE_GEOCODE + OUT_JSON);
             sb.append("?key=" + API_KEY);
             sb.append("&address="+ URLEncoder.encode(addressToResolve, "utf-8"));
             sb.append("&bounds="+ URLEncoder.encode(toBounds(), "utf-8"));
 
-            URL url = new URL(sb.toString());
-            conn = (HttpURLConnection) url.openConnection();
-            InputStreamReader in = new InputStreamReader(conn.getInputStream());
-
-            Logger.warn("url: "+sb.toString());
-            // Load the results into a StringBuilder
-            int read;
-            char[] buff = new char[1024];
-            while ((read = in.read(buff)) != -1) {
-                jsonResults.append(buff, 0, read);
-            }
-        } catch (MalformedURLException e) {
-            Logger.error("Error processing Address to LatLng Resolver API URL", e);
-            return jsonResults;
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            Logger.error("Error processing Address to LatLng Resolver API URL", e);
-            return jsonResults;
-        } finally {
-            if (conn != null) {
-                conn.disconnect();
-            }
         }
-        return jsonResults;
+        return executeUrl(sb.toString());
     }
 
     /**
@@ -442,5 +461,34 @@ public class AddressResolveService {
          *
          */
         return latlngbounds.getSouthwest().toString()+" | " + latlngbounds.getNortheast().toString();
+    }
+
+    public static StringBuilder executeUrl(String urlString){
+        HttpURLConnection conn = null;
+        StringBuilder jsonResults = new StringBuilder();
+        try{
+            URL url = new URL(urlString);
+            conn = (HttpURLConnection) url.openConnection();
+            InputStreamReader in = new InputStreamReader(conn.getInputStream());
+
+            Logger.warn("url: "+urlString.toString());
+            // Load the results into a StringBuilder
+            int read;
+            char[] buff = new char[1024];
+            while ((read = in.read(buff)) != -1) {
+                jsonResults.append(buff, 0, read);
+            }
+        } catch (MalformedURLException e) {
+            Logger.error("Error processing URL", e);
+            return jsonResults;
+        } catch (IOException e) {
+            Logger.error("Error processing URL", e);
+            return jsonResults;
+        } finally {
+            if (conn != null) {
+                conn.disconnect();
+            }
+        }
+        return jsonResults;
     }
 }

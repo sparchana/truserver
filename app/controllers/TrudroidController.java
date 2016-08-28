@@ -772,20 +772,9 @@ public class TrudroidController {
                 Candidate existingCandidate = CandidateService.isCandidateExists(pHomeLocalityRequest.getCandidateMobile());
                 if (existingCandidate != null) {
                     Logger.info("lat/lng:" + pHomeLocalityRequest.getLat() + "/" + pHomeLocalityRequest.getLng());
-                    Logger.info("Address:" + pHomeLocalityRequest.getAddress());
-
-                    List<String> localityList = Arrays.asList(pHomeLocalityRequest.getAddress().split(","));
-                    String localityName = "";
-                    if (localityList.size() >= 4) {
-                        localityName = localityList.get(localityList.size() - 4);
-                        existingCandidate.setLocality(getOrCreateLocality(localityName, pHomeLocalityRequest.getLat(), pHomeLocalityRequest.getLng()));
-                    } else if (localityList.size() == 2) {
-                        localityName = localityList.get(localityList.size() - 1);
-                        Logger.info("Locality:" + existingCandidate.getLocality().getLocalityName());
-                    } else if(localityList.size()  == 1){
-                        localityName = localityList.get(0);
-                    }
-                    existingCandidate.setLocality(getOrCreateLocality(localityName, pHomeLocalityRequest.getLat(), pHomeLocalityRequest.getLng()));
+                    Logger.info("Address:" + pHomeLocalityRequest.getLocalityName());
+                    existingCandidate.setLocality(getOrCreateLocality(pHomeLocalityRequest.getLocalityName(),
+                            pHomeLocalityRequest.getLat(), pHomeLocalityRequest.getLng(), pHomeLocalityRequest.getPlaceId()));
                     existingCandidate.setCandidateLocalityLat(pHomeLocalityRequest.getLat());
                     existingCandidate.setCandidateLocalityLng(pHomeLocalityRequest.getLng());
                     existingCandidate.candidateUpdate();
@@ -808,7 +797,7 @@ public class TrudroidController {
         return ok(Base64.encodeBase64String(builder.build().toByteArray()));
     }
 
-    private static Locality getOrCreateLocality(String localityName, Double latitude, Double longitude) {
+    private static Locality getOrCreateLocality(String localityName, Double latitude, Double longitude, String placeId) {
         // validate localityName
         localityName = localityName.trim();
         Logger.info("setting home loality to "+localityName);
@@ -820,6 +809,7 @@ public class TrudroidController {
                     Logger.info("updating lat lng for : "+localityName+" in static table Locality");
                     locality.setLat(latitude);
                     locality.setLng(longitude);
+                    locality.setPlaceId(placeId);
                     locality.update();
                 }
                 return locality;
@@ -829,6 +819,7 @@ public class TrudroidController {
         locality.setLocalityName(localityName);
         locality.setLat(latitude);
         locality.setLng(longitude);
+        locality.setPlaceId(placeId);
         locality.save();
         locality = Locality.find.where().eq("localityName", localityName).findUnique();
         return locality;
@@ -1307,7 +1298,7 @@ public class TrudroidController {
         return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
     }
 
-    public static Result mResolveLatLng(String latlng){
+        public static Result mResolveLatLng(String latlng){
         List<String> LatLng = Arrays.asList(latlng.trim().split(","));
         Double latitude = 0D;
         Double longitude = 0D;
@@ -1318,5 +1309,47 @@ public class TrudroidController {
             return ok("Invalid Format");
         }
         return ok(toJson("LatLng: "+ latlng+" Locality: "+controllers.businessLogic.AddressResolveService.resolveLocalityFor(latitude, longitude)));
+    }
+
+    public static Result mGetLocalityForLatLngOrPlaceId() {
+        LatLngOrPlaceIdRequest latLngOrPlaceIdRequest= null;
+        try {
+            String requestString = request().body().asText();
+            Logger.info("got : "+requestString);
+            latLngOrPlaceIdRequest = LatLngOrPlaceIdRequest.parseFrom(Base64.decodeBase64(requestString));
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        Locality locality = null;
+        LocalityObjectResponse.Builder localityObjectResponse = LocalityObjectResponse.newBuilder();
+
+        if(!latLngOrPlaceIdRequest.getPlaceId().trim().isEmpty()){
+            locality = controllers.businessLogic.AddressResolveService
+                    .getLocalityForPlaceId(latLngOrPlaceIdRequest.getPlaceId());
+            localityObjectResponse.setType(LocalityObjectResponse.Type.FOR_PLACEID);
+        }
+        if(latLngOrPlaceIdRequest.getLatitude()!=0 && latLngOrPlaceIdRequest.getLongitude() != 0){
+            locality = controllers.businessLogic.AddressResolveService
+                    .getLocalityForLatLng(latLngOrPlaceIdRequest.getLatitude(), latLngOrPlaceIdRequest.getLongitude());
+            localityObjectResponse.setType(LocalityObjectResponse.Type.FOR_LATLNG);
+        }
+        LocalityObject.Builder localityObject = LocalityObject.newBuilder();
+        if(locality != null){
+            localityObject.setLocalityName(locality.getLocalityName());
+            localityObject.setLat(locality.getLat());
+            localityObject.setLng(locality.getLng());
+            localityObject.setLocalityId(locality.getLocalityId());
+            if(locality.getPlaceId()!=null) localityObject.setPlaceId(locality.getPlaceId());
+            localityObjectResponse.setLocality(localityObject.build());
+            localityObjectResponse.setStatus(LocalityObjectResponse.Status.SUCCESS);
+        } else {
+            Logger.error("Unable to find locality for placeId:"+latLngOrPlaceIdRequest.getPlaceId() +
+                    latLngOrPlaceIdRequest.getPlaceId() + " or lat/lng:"+latLngOrPlaceIdRequest.getLatitude()+
+                    "/"+latLngOrPlaceIdRequest.getLatitude());
+            localityObjectResponse.setStatus(LocalityObjectResponse.Status.UNKNOWN);
+        }
+
+        Logger.info("returned Locality name: "+ locality.getLocalityName());
+       return ok(Base64.encodeBase64String(localityObjectResponse.build().toByteArray()));
     }
 }
