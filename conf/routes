@@ -127,8 +127,8 @@ POST        /mCandidateUpdateEducationProfile                             contro
 POST        /mGetCandidateUpdateBasicProfileStatics                       controllers.TrudroidController.mGetCandidateUpdateBasicProfileStatics()
 POST        /mGetCandidateUpdateExperienceProfileStatics/:jobRoles        controllers.TrudroidController.mGetCandidateUpdateExperienceProfileStatics(jobRoles: String)
 POST        /mGetCandidateUpdateEducationProfileStatics                   controllers.TrudroidController.mGetCandidateUpdateEducationProfileStatics()
-
-
+GET         /resolveLatLng/:latlng                                        controllers.TrudroidController.mResolveLatLng(latlng: String)
+POST        /mGetLocalityForLatLngOrPlaceId                               controllers.TrudroidController.mGetLocalityForLatLngOrPlaceId()
 # 3rd Party API
 # ~~~~~~~~~~~~~
 GET         /employer/postJob                                             controllers.Application.postJob()
