@@ -425,8 +425,12 @@ public class TrudroidController {
                 if (candidate.getLocality() != null) {
                     localityBuilder.setLocalityId(candidate.getLocality().getLocalityId());
                     localityBuilder.setLocalityName(candidate.getLocality().getLocalityName());
-                    localityBuilder.setLat(candidate.getCandidateLocalityLat());
-                    localityBuilder.setLng(candidate.getCandidateLocalityLng());
+                    if(candidate.getCandidateLocalityLat() != null){
+                        localityBuilder.setLat(candidate.getCandidateLocalityLat());
+                    }
+                    if(candidate.getCandidateLocalityLng() != null){
+                        localityBuilder.setLng(candidate.getCandidateLocalityLng());
+                    }
                     candidateBuilder.setCandidateHomelocality(localityBuilder);
                 }
 
@@ -1279,19 +1283,23 @@ public class TrudroidController {
             }
             Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(candidateMobile));
 
-            List<JobApplication> jobApplicationList = JobApplication.find.where().eq("candidateId", existingCandidate.getCandidateId()).findList();
-            List<Long> appliedJobPostIdList = new ArrayList<Long>();
-            for(JobApplication jobApplication : jobApplicationList){
-                appliedJobPostIdList.add(jobApplication.getJobPost().getJobPostId());
-            }
-
-            for(int i = 0; i< jobPostListToReturn.size(); i++){
-                if(appliedJobPostIdList.contains(jobPostListToReturn.get(i).getJobPostId())){
-                    JobPostObject.Builder newJobPostBuilder = jobPostListToReturn.get(i).toBuilder();
-                    newJobPostBuilder.setIsApplied(1);
-                    jobPostListToReturn.remove(i);
-                    jobPostListToReturn.add(i, newJobPostBuilder.build());
+            if(existingCandidate != null){
+                List<JobApplication> jobApplicationList = JobApplication.find.where().eq("candidateId", existingCandidate.getCandidateId()).findList();
+                List<Long> appliedJobPostIdList = new ArrayList<Long>();
+                for(JobApplication jobApplication : jobApplicationList){
+                    appliedJobPostIdList.add(jobApplication.getJobPost().getJobPostId());
                 }
+
+                for(int i = 0; i< jobPostListToReturn.size(); i++){
+                    if(appliedJobPostIdList.contains(jobPostListToReturn.get(i).getJobPostId())){
+                        JobPostObject.Builder newJobPostBuilder = jobPostListToReturn.get(i).toBuilder();
+                        newJobPostBuilder.setIsApplied(1);
+                        jobPostListToReturn.remove(i);
+                        jobPostListToReturn.add(i, newJobPostBuilder.build());
+                    }
+                }
+            } else{
+                Logger.info("Null candidate Found!");
             }
         }
 
