@@ -25,6 +25,7 @@ import java.net.URLEncoder;
 import java.util.*;
 
 import static com.avaje.ebean.Expr.eq;
+import static play.libs.Json.toJson;
 
 
 /**
@@ -101,8 +102,11 @@ public class AddressResolveService {
         new AddressResolveService(appxLatitude, appxLongitude);
         List<String> nearyByAddressList = new ArrayList<>();
         nearyByAddressList.addAll(fetchNearByLocality(appxLatitude, appxLongitude, null));
-        Locality locality =  Locality.find.where().eq("localityName", determineLocality(nearyByAddressList)).findUnique();
-        if(locality.getLng() == 0 || locality.getLat() == 0 || locality.getPlaceId() == null){
+        Locality locality =  Locality.find.where().eq("localityName", determineLocality(nearyByAddressList).trim().toLowerCase()).findUnique();
+        if(locality == null){
+            Logger.info("Locality is null!!");
+        }
+        if(locality != null && (locality.getLat()==null || locality.getLat() == 0 || locality.getPlaceId() == null)){
             locality = insertOrUpdateLocality(locality.getLocalityName());
         }
         return locality;
@@ -122,7 +126,7 @@ public class AddressResolveService {
         String allAddress = performSanitization(sb.toString());
         List<String> finalWordList = Arrays.asList(allAddress.toString().split("\\s*,\\s*"));
         for (String locality: finalWordList) {
-            locality = locality.trim().toLowerCase();
+            locality = locality.trim().toLowerCase().replace(".", "");
             if(!locality.trim().isEmpty() && Arrays.asList(locality.split("\\s* \\s*")).size() < 4 ){
                 if (countByLocality.containsKey(locality)) {
                     countByLocality.put(locality, countByLocality.get(locality) + 1);
@@ -221,24 +225,28 @@ public class AddressResolveService {
                             if(tempTypesArray.get(j).toString().equalsIgnoreCase("sublocality_level_1")
                                     || tempTypesArray.get(j).toString().equalsIgnoreCase("route") ) {
                                 locationName = objectOfInterest.getString("long_name");
-                                if(!localityName.trim().equalsIgnoreCase(locationName.trim().toLowerCase())){
+                                if(!localityName.trim().equalsIgnoreCase(locationName.trim().toLowerCase()) && !locationName.trim().isEmpty()){
                                     Logger.info("Found locality which appears to sublocality of a locality. hence " +
                                             "changing PrevFoundName: "+localityName +" to new name = "+locationName);
                                     localityName = locationName;
+                                    Logger.info("locationName: "+localityName );
                                 }
                                 isDesiredData = true;
                             }
                             else if(tempTypesArray.get(j).toString().equalsIgnoreCase("locality")) {
                                 cityName = objectOfInterest.getString("long_name");
+                                Logger.info("cityName: "+cityName);
                             }
                             else if(tempTypesArray.get(j).toString().equalsIgnoreCase("administrative_area_level_1")) {
                                 stateName = objectOfInterest.getString("long_name");
+                                Logger.info("stateName: "+stateName);
                             }
                         }
                     }
-                    if(cityName!= null && cityName.equalsIgnoreCase(localityName)){
+                    if(cityName!= null && cityName.trim().equalsIgnoreCase(localityName.trim())){
                         return null;
                     }
+
                     if(isDesiredData){
                         JSONObject geometry = addressJsonObj.getJSONObject("geometry");
                         latitude = geometry.getJSONObject("location").getDouble("lat");
@@ -246,7 +254,7 @@ public class AddressResolveService {
                         placeId = addressJsonObj.getString("place_id");
 
                         freshLocality = Locality.find.where()
-                                                .or(eq("placeId", placeId), eq("localityName", localityName))
+                                                .or(eq("placeId", placeId), eq("localityName", localityName.trim().toLowerCase()))
                                                 .findUnique();
                         if(freshLocality==null) {
                             freshLocality = new Locality();
@@ -295,6 +303,7 @@ public class AddressResolveService {
         } catch (JSONException e) {
             Logger.error("Cannot process JSON results", e);
         }
+        Logger.info("loclaity:"+toJson(freshLocality));
         return freshLocality;
     }
 
@@ -369,7 +378,7 @@ public class AddressResolveService {
         List<String> dbLocalityNameList = new ArrayList<>();
         dbLocalityNameList.addAll(getAllLocalityNames());
         for (String dbLocalityName : dbLocalityNameList) {
-            dbLocalityName = dbLocalityName.trim().toLowerCase();
+            dbLocalityName = dbLocalityName.trim().toLowerCase().replaceAll(".","");
             if(countByWord.containsKey(dbLocalityName)){
                 matchingLocalities.put(dbLocalityName, countByWord.get(dbLocalityName));
             }
