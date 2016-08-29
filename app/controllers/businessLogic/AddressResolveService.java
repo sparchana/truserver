@@ -106,8 +106,7 @@ public class AddressResolveService {
         Locality locality =  Locality.find.where().eq("localityName", determineLocality(nearyByAddressList).trim().toLowerCase()).findUnique();
         if(locality == null){
             Logger.info("Locality is null!!");
-        }
-        if(locality != null && (locality.getLat()==null || locality.getLat() == 0 || locality.getPlaceId() == null)){
+        } else if((locality.getLat()==null || locality.getLat() == 0 || locality.getPlaceId() == null)){
             locality = insertOrUpdateLocality(locality.getLocalityName());
         }
         return locality;
@@ -117,7 +116,7 @@ public class AddressResolveService {
         LatLng latLng = getLatLngForPlaceId(placeId);
         Locality locality = getLocalityForLatLng(latLng.latitude, latLng.longitude);
         /* Modify Locality object to contain the given latlng instead of locality's latlng */
-        if(locality.getLat() !=0 && locality.getLat() != latitude && latitude != 0){
+        if(locality!= null && locality.getLat() !=0 && locality.getLat() != latitude && latitude != 0){
             locality.setLat(latLng.latitude);
             locality.setLng(latLng.longitude);
         }
@@ -230,7 +229,8 @@ public class AddressResolveService {
                         //Logger.info("objOfInterest"+objectOfInterest);
                         for(int j = 0; j < tempTypesArray.length(); ++j) {
                             if(tempTypesArray.get(j).toString().equalsIgnoreCase("sublocality_level_1")
-                                    || tempTypesArray.get(j).toString().equalsIgnoreCase("route") ) {
+                                    || tempTypesArray.get(j).toString().equalsIgnoreCase("route")
+                                    || tempTypesArray.get(j).toString().equalsIgnoreCase("neighborhood") ) {
                                 locationName = objectOfInterest.getString("long_name");
                                 if(!localityName.trim().equalsIgnoreCase(locationName.trim().toLowerCase()) && !locationName.trim().isEmpty()){
                                     Logger.info("Found locality which appears to sublocality of a locality. hence " +
@@ -394,8 +394,8 @@ public class AddressResolveService {
         List<String> dbLocalityNameList = new ArrayList<>();
         dbLocalityNameList.addAll(getAllLocalityNames());
         for (String dbLocalityName : dbLocalityNameList) {
-            dbLocalityName = dbLocalityName.trim().toLowerCase().replaceAll(".","");
-            if(countByWord.containsKey(dbLocalityName)){
+            dbLocalityName = dbLocalityName.toLowerCase().replace(".", "").trim();
+            if(countByWord.containsKey(dbLocalityName)) {
                 matchingLocalities.put(dbLocalityName, countByWord.get(dbLocalityName));
             }
         }
@@ -417,6 +417,7 @@ public class AddressResolveService {
                 }
             }
         }
+        Logger.info("finalPredicted Locality name "+finalPredictedLocalityName);
         return finalPredictedLocalityName;
     }
 
