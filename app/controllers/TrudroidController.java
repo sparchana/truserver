@@ -817,23 +817,24 @@ public class TrudroidController {
         // validate localityName
         localityName = localityName.trim();
         Logger.info("setting home loality to "+localityName);
-        if(placeId!=null || placeId.trim().isEmpty()){
-            Locality locality = Locality.find.where().eq("placeId", placeId).findUnique();
-            if(locality != null) {
-                return locality;
+        Locality mLocality = null;
+        if(placeId!=null || !placeId.trim().isEmpty()){
+            mLocality = Locality.find.where().eq("placeId", placeId).findUnique();
+            if(mLocality != null) {
+                return mLocality;
             }
-        } else if (localityName != null && isValidLocalityName(localityName)) {
-            Locality locality = Locality.find.where().eq("localityName", localityName).findUnique();
-            if (locality != null) {
-                if(locality.getLat() == null || locality.getLat() == 0.0
-                        || locality.getLng() == null || locality.getLng() == 0.0) {
+        } else if (mLocality == null && localityName != null && isValidLocalityName(localityName)) {
+            mLocality = Locality.find.where().eq("localityName", localityName).findUnique();
+            if (mLocality != null) {
+                if(mLocality.getLat() == null || mLocality.getLat() == 0.0
+                        || mLocality.getLng() == null || mLocality.getLng() == 0.0) {
                     Logger.info("updating lat lng for : "+localityName+" in static table Locality");
-                    locality.setLat(latitude);
-                    locality.setLng(longitude);
-                    locality.setPlaceId(placeId);
-                    locality.update();
+                    mLocality.setLat(latitude);
+                    mLocality.setLng(longitude);
+                    mLocality.setPlaceId(placeId);
+                    mLocality.update();
                 }
-                return locality;
+                return mLocality;
             }
         }
         Locality locality = new Locality();
