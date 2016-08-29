@@ -53,6 +53,7 @@ import static play.libs.Json.toJson;
  * TODO: modify to take "type":"route" into account
  *
  *
+ *
  */
 
 public class AddressResolveService {
@@ -114,7 +115,13 @@ public class AddressResolveService {
 
     public static Locality getLocalityForPlaceId(String placeId){
         LatLng latLng = getLatLngForPlaceId(placeId);
-        return getLocalityForLatLng(latLng.latitude, latLng.longitude);
+        Locality locality = getLocalityForLatLng(latLng.latitude, latLng.longitude);
+        /* Modify Locality object to contain the given latlng instead of locality's latlng */
+        if(locality.getLat() !=0 && locality.getLat() != latitude && latitude != 0){
+            locality.setLat(latLng.latitude);
+            locality.setLng(latLng.longitude);
+        }
+        return locality;
     }
 
     public static String determineLocality(List<String> localityList) {
