@@ -65,12 +65,12 @@ public class SmsUtil {
     }
 
     public static void sendOTPSms(int otp, String mobile) {
-        String msg = "Welcome to www.Trujobs.in! Use OTP " + otp + " to register and start your job search";
+        String msg = "Use OTP " + otp + " to register and start your job search. Welcome to www.Trujobs.in!";
         sendSms(mobile, msg);
     }
 
     public static void sendResetPasswordOTPSms(int otp, String mobile) {
-        String msg = "Welcome to www.Trujobs.in! Use OTP " + otp + " to reset your password";
+        String msg = "Use OTP " + otp + " to reset your password. Welcome to www.Trujobs.in!";
         sendSms(mobile, msg);
     }
 
