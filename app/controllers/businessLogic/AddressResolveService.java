@@ -278,20 +278,29 @@ public class AddressResolveService {
                             }
                         } else {
                            /* update the existing locality object if req */
+                           boolean isChanged = false;
                             if(freshLocality.getPlaceId() == null || freshLocality.getPlaceId().trim().isEmpty() ){
-                                freshLocality.setPlaceId(placeId);
+                                freshLocality.setPlaceId(placeId); isChanged=true;
                             }
                             if(freshLocality.getLat()==null || freshLocality.getLat() == 0){
-                                freshLocality.setLat(latitude);
+                                freshLocality.setLat(latitude); isChanged=true;
                             }
                             if(freshLocality.getLng()==null || freshLocality.getLng() == 0){
-                                freshLocality.setLng(longitude);
+                                freshLocality.setLng(longitude); isChanged=true;
                             }
-                            freshLocality.setCity(cityName);
-                            freshLocality.setState(stateName);
-                            freshLocality.setCountry("India");
-                            Logger.warn("Static Data "+freshLocality.getLocalityName() + " in Locality update");
-                            freshLocality.update();
+                            if(freshLocality.getCity() == null || freshLocality.getCity().trim().isEmpty()) {
+                                freshLocality.setCity(cityName); isChanged=true;
+                            }
+                            if(freshLocality.getState() == null || freshLocality.getState().trim().isEmpty()){
+                                freshLocality.setState(stateName); isChanged=true;
+                            }
+                            if(freshLocality.getCountry() == null || freshLocality.getCountry().trim().isEmpty()) {
+                                freshLocality.setCountry("India"); isChanged=true;
+                            }
+                            if(isChanged){
+                                Logger.warn("Static Data "+freshLocality.getLocalityName() + " in Locality update");
+                                freshLocality.update();
+                            }
                         }
                         break;
                     } else {
