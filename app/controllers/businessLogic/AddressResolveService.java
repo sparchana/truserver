@@ -53,6 +53,7 @@ import static play.libs.Json.toJson;
  * TODO: modify to take "type":"route" into account
  *
  *
+ *
  */
 
 public class AddressResolveService {
@@ -105,8 +106,7 @@ public class AddressResolveService {
         Locality locality =  Locality.find.where().eq("localityName", determineLocality(nearyByAddressList).trim().toLowerCase()).findUnique();
         if(locality == null){
             Logger.info("Locality is null!!");
-        }
-        if(locality != null && (locality.getLat()==null || locality.getLat() == 0 || locality.getPlaceId() == null)){
+        } else if((locality.getLat()==null || locality.getLat() == 0 || locality.getPlaceId() == null)){
             locality = insertOrUpdateLocality(locality.getLocalityName());
         }
         return locality;
@@ -114,7 +114,13 @@ public class AddressResolveService {
 
     public static Locality getLocalityForPlaceId(String placeId){
         LatLng latLng = getLatLngForPlaceId(placeId);
-        return getLocalityForLatLng(latLng.latitude, latLng.longitude);
+        Locality locality = getLocalityForLatLng(latLng.latitude, latLng.longitude);
+        /* Modify Locality object to contain the given latlng instead of locality's latlng */
+        if(locality!= null && locality.getLat() !=0 && locality.getLat() != latitude && latitude != 0){
+            locality.setLat(latLng.latitude);
+            locality.setLng(latLng.longitude);
+        }
+        return locality;
     }
 
     public static String determineLocality(List<String> localityList) {
@@ -223,7 +229,8 @@ public class AddressResolveService {
                         //Logger.info("objOfInterest"+objectOfInterest);
                         for(int j = 0; j < tempTypesArray.length(); ++j) {
                             if(tempTypesArray.get(j).toString().equalsIgnoreCase("sublocality_level_1")
-                                    || tempTypesArray.get(j).toString().equalsIgnoreCase("route") ) {
+                                    || tempTypesArray.get(j).toString().equalsIgnoreCase("route")
+                                    || tempTypesArray.get(j).toString().equalsIgnoreCase("neighborhood") ) {
                                 locationName = objectOfInterest.getString("long_name");
                                 if(!localityName.trim().equalsIgnoreCase(locationName.trim().toLowerCase()) && !locationName.trim().isEmpty()){
                                     Logger.info("Found locality which appears to sublocality of a locality. hence " +
@@ -278,20 +285,29 @@ public class AddressResolveService {
                             }
                         } else {
                            /* update the existing locality object if req */
+                           boolean isChanged = false;
                             if(freshLocality.getPlaceId() == null || freshLocality.getPlaceId().trim().isEmpty() ){
-                                freshLocality.setPlaceId(placeId);
+                                freshLocality.setPlaceId(placeId); isChanged=true;
                             }
                             if(freshLocality.getLat()==null || freshLocality.getLat() == 0){
-                                freshLocality.setLat(latitude);
+                                freshLocality.setLat(latitude); isChanged=true;
                             }
                             if(freshLocality.getLng()==null || freshLocality.getLng() == 0){
-                                freshLocality.setLng(longitude);
+                                freshLocality.setLng(longitude); isChanged=true;
                             }
-                            freshLocality.setCity(cityName);
-                            freshLocality.setState(stateName);
-                            freshLocality.setCountry("India");
-                            Logger.warn("Static Data "+freshLocality.getLocalityName() + " in Locality update");
-                            freshLocality.update();
+                            if(freshLocality.getCity() == null || freshLocality.getCity().trim().isEmpty()) {
+                                freshLocality.setCity(cityName); isChanged=true;
+                            }
+                            if(freshLocality.getState() == null || freshLocality.getState().trim().isEmpty()){
+                                freshLocality.setState(stateName); isChanged=true;
+                            }
+                            if(freshLocality.getCountry() == null || freshLocality.getCountry().trim().isEmpty()) {
+                                freshLocality.setCountry("India"); isChanged=true;
+                            }
+                            if(isChanged){
+                                Logger.warn("Static Data "+freshLocality.getLocalityName() + " in Locality update");
+                                freshLocality.update();
+                            }
                         }
                         break;
                     } else {
@@ -378,8 +394,8 @@ public class AddressResolveService {
         List<String> dbLocalityNameList = new ArrayList<>();
         dbLocalityNameList.addAll(getAllLocalityNames());
         for (String dbLocalityName : dbLocalityNameList) {
-            dbLocalityName = dbLocalityName.trim().toLowerCase().replaceAll(".","");
-            if(countByWord.containsKey(dbLocalityName)){
+            dbLocalityName = dbLocalityName.toLowerCase().replace(".", "").trim();
+            if(countByWord.containsKey(dbLocalityName)) {
                 matchingLocalities.put(dbLocalityName, countByWord.get(dbLocalityName));
             }
         }
@@ -401,6 +417,7 @@ public class AddressResolveService {
                 }
             }
         }
+        Logger.info("finalPredicted Locality name "+finalPredictedLocalityName);
         return finalPredictedLocalityName;
     }
 

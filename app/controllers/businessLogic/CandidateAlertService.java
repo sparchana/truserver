@@ -37,7 +37,7 @@ public class CandidateAlertService {
         if (CandidateService.getP0FieldsCompletionPercent(candidate) < 1 ||
                 CandidateService.getP1FieldsCompletionPercent(candidate) < 0.5) {
             fetchCandidateResponseBuilder.setAlertMessage(
-                    "Uh ho! Looks like your profile is incomplete. Complete your profile now to find a job faster!!");
+                    "Your profile is incomplete. Complete your profile now to get 5-times more job offers!!");
             fetchCandidateResponseBuilder.setAlertType(
                     FetchCandidateAlertResponse.Type.valueOf(FetchCandidateAlertResponse.Type.COMPLETE_PROFILE_VALUE));
         }
@@ -60,8 +60,12 @@ public class CandidateAlertService {
             } else {
                 // fetch jobs near this candidate according to jobPreference
                 List<Long> jobPrefIds = new ArrayList<>();
+                for(JobPreference jobPreference: candidate.getJobPreferencesList()){
+                    jobPrefIds.add(jobPreference.getJobRole().getJobRoleId());
+                }
+
                 jobsCount = MatchingEngineService.fetchMatchingJobPostForLatLng(candidate.getCandidateLocalityLat(),
-                        candidate.getCandidateLocalityLat(),
+                        candidate.getCandidateLocalityLng(),
                         ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, jobPrefIds, ServerConstants.SORT_DEFAULT).size();
             }
 
