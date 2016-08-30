@@ -1221,7 +1221,8 @@ public class Application extends Controller {
         return ok(views.html.posted_job_view.render());
     }
     public static Result showJobsPage() { return ok(views.html.show_all_jobs_page.render());}
-    public static Result postedJobsDetails(String jobTitle,String jobLocation,String jobCompany,long jobId){return ok(views.html.posted_job_details.render());}
+    public static Result postedJobsDetails(String jobTitle,String jobLocation,String jobCompany,long jobId)
+    {return ok(views.html.posted_job_details.render());}
     public static Result postedJobsDetailsData(String jobTitle,String jobLocation,String jobCompany,long jobId)
     {
         JobPost jobPost = JobPost.find.where().eq("JobPostId",jobId).findUnique();
@@ -1229,7 +1230,6 @@ public class Application extends Controller {
         if (jobPost != null) {
             return ok(toJson(jobPost));
         }
-
         return ok("Error");
 
     }
@@ -1239,9 +1239,11 @@ public class Application extends Controller {
     }
     public static Result jobRoleDetailsPageData(String rolePara, Long idPara)
     {
+        //JobRole jobRole = JobRole.find.where().eq("jobRoleId",idPara).findUnique();
+        List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).findList();
+        Logger.info("Show"+jobPostList);
+        return ok(toJson(jobPostList));
 
-        List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).eq("jobPostIsHot", 1).findList();
-        Logger.info(" start "+toJson(jobPostList));
-        return ok((toJson(jobPostList)));
+
     }
 }

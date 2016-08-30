@@ -85,7 +85,7 @@ GET         /footer                                                             
 GET         /jobRolesView                                                        controllers.Application.renderJobRolesView()
 GET         /jobRolesViewLinked                                                  controllers.Application.renderJobRolesViewLinked()
 GET         /postedJobRolesView                                                  controllers.Application.renderPostedJobRolesView()
-GET         /showJob                                                             controllers.Application.showJobsPage()
+GET         /showJobs                                                            controllers.Application.showJobsPage()
 GET         /jobs/:jobTitle/:jobLocation/:jobCompany/:jobId                      controllers.Application.postedJobsDetails( jobTitle: String , jobLocation : String , jobCompany :String , jobId : Long )
 GET         /job/:jobTitle/:jobLocation/:jobCompany/:jobId                       controllers.Application.postedJobsDetailsData( jobTitle: String , jobLocation : String , jobCompany :String , jobId : Long )
 GET         /job/:rolePara/:idPara                                               controllers.Application.jobRoleDetailsPage( rolePara: String, idPara:Long)

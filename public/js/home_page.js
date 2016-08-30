@@ -326,20 +326,13 @@ function processDataAllJobPosts(returnedData) {
                 $(function () {
                     $('[data-toggle="tooltip"]').tooltip()
                 });
-
                  hotJobItem.onclick=function(){
-                        try {
-                                     window.location.href = "/jobs/" + jobPost.jobPostTitle +"/Bengaluru/"+ jobPost.company.companyName + "/" + jobPost.jobPostId;
-                                    // $.ajax({
-                                    //     type: "GET",
-                                    //     url: "/jobs/" + jobPost.jobPostTitle +"/"+ "Bengaluru"  +"/"+ jobPost.company.companyName + "/" + jobPost.jobPostId,
-                                    //     data: false,
-                                    //     processData: false,
-                                    //     success: false
-                                    // })
-                                } catch (exception) {
-                                    console.log("exception occured!!" + exception);
-                                }
+                      var jobPostBreak = jobPost.jobPostTitle.replace("/","-");
+                 try {
+                         window.location.href = "/jobs/" + jobPostBreak + "/Bengaluru/" + jobPost.company.companyName + "/" + jobPost.jobPostId;
+                     } catch (exception) {
+                         console.log("exception occured!!" + exception);
+                     }
                  }
                 //!*  apply button *!/
                 var applyBtnDiv = document.createElement("div");

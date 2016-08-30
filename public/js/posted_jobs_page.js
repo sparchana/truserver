@@ -63,10 +63,8 @@ $(document).ready(function(){
 
 $(document).ready(function(){
     var jobDetailPageUrl = $(location).attr('href');
-    //alert(" Url :"+ jobDetailPageUrl);
     var jobDetailPageUrlBreak = jobDetailPageUrl.split("/");
     jobDetailPageUrlBreak.reverse();
-    //alert("Required String :" + jobDetailPageUrlBreak[0]);
     try {
             $.ajax({
                 type: "GET",
