@@ -128,7 +128,7 @@ $(document).ready(function(){
     var allJobDetailPageUrl = $(location).attr('href');
     var allJobDetailPageUrlBreak = allJobDetailPageUrl.split("/");
     allJobDetailPageUrlBreak.reverse();
-    $("#sectionOne").css("background-image","linear-gradient(rgba(24, 26, 45, 0.1),rgba(24, 26, 45, 0.1))" +
+    $("#sectionOne").css("background-image","linear-gradient(rgba(24, 26, 45, 0.4),rgba(24, 26, 45, 0.4))" +
         ",url(/assets/img/"+allJobDetailPageUrlBreak[0]+".png)");
     try {
         $.ajax({
@@ -343,26 +343,19 @@ function processDataForSelectedJobPost(returnedData) {
                             $(function () {
                                 $('[data-toggle="tooltip"]').tooltip()
                             });
-
-                            hotJobItem.onclick = function () {
-                                window.location.href = "/jobs/" + jobPost.jobPostTitle + "/Bengaluru/" + jobPost.company.companyName + "/" + jobPost.jobPostId;
-                            }
                             /*  apply button */
                             var applyBtnDiv = document.createElement("div");
                             applyBtnDiv.className = "col-sm-2";
-                            applyBtnDiv.onclick = function () {
-                                $('#jobApplyConfirm').modal();
-                                jobPostId = jobPost.jobPostId;
-                                jobLocalityArray = [];
-                                $('#applyButton').hide();
-                                addLocalitiesToModal();
-                            };
                             rowDiv.appendChild(applyBtnDiv);
 
                             var applyBtn = document.createElement("div");
                             applyBtn.className = "jobApplyBtn";
-                            applyBtn.textContent = "Apply";
+                            applyBtn.textContent = "View Job";
                             applyBtnDiv.appendChild(applyBtn);
+                            applyBtn.onclick = function () {
+                                var jobPostBreak = jobPost.jobPostTitle.replace("/","-");
+                                window.location.href = "/jobs/" + jobPostBreak + "/Bengaluru/" + jobPost.company.companyName + "/" + jobPost.jobPostId;
+                            }
                         }
                         console.log("show selected jobs Page Js");
                     });

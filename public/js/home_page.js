@@ -330,13 +330,6 @@ function processDataAllJobPosts(returnedData) {
                 //!*  apply button *!/
                 var applyBtnDiv = document.createElement("div");
                 applyBtnDiv.className = "col-sm-2";
-                applyBtnDiv.onclick = function () {
-                    $('#jobApplyConfirm').modal();
-                    jobPostId = jobPost.jobPostId;
-                    jobLocalityArray = [];
-                    $('#applyButton').hide();
-                    addLocalitiesToModal();
-                };
                 rowDiv.appendChild(applyBtnDiv);
 
                 var applyBtn = document.createElement("div");

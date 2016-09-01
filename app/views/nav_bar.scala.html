@@ -14,7 +14,7 @@
 
                 </button>
                 <div itemscope itemtype ="http://schema.org/logo">
-                    <a class="navbar-brand" href="#"><img id="navLogo" itemprop="Brand" src="/assets/new/img/logo-color.gif" alt="TruJobs Logo" height="30px" style="margin-top: -8px;"></a>
+                    <a class="navbar-brand" href="/"><img id="navLogo" itemprop="Brand" src="/assets/new/img/logo-color.gif" alt="TruJobs Logo" height="30px" style="margin-top: -8px;"></a>
                 </div>
             </div>
 
@@ -35,6 +35,109 @@
         </div>
     <!-- /.container -->
 </nav>
+
+<div id="mySignUpModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+            <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-body" id="model_size">
+                <form id="form_signup_candidate_modal"  style="margin-top: 0%; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
+                    <h4 style="font-weight: bold"><center><font color="#0B4063">Sign Up to Apply Jobs</font></center></h4>
+                    <div class="row" id="firstNameLastName">
+                        <div class="col-sm-6" style="padding: 0 4px 0 16px">
+                            <input id="candidateFirstNameModal" placeholder="First name" type="text" maxLength="49" class="form-control input-md">
+                        </div>
+                        <div class="col-sm-6" style="padding: 0 16px 0 4px">
+                            <input id="candidateSecondNameModal" placeholder="Last name" type="text" maxLength="49" class="form-control input-md candidateSecondNameMain" >
+                        </div>
+                    </div>
+
+                    <input id="candidateMobileModal" style="margin-top: 8px" placeholder="Mobile No." name="candidateMobile" type="text" maxlength="10" class="form-control input-md" >
+
+                    <div style="margin-top: 8px">
+                        <input type="text" id="candidateJobPrefModal" placeholder="What jobs you are Interested in?">
+                        <script type="text/javascript">
+                                    $(document).ready(function() {
+                                        $("#candidateJobPrefModal").tokenInput(getJob(), {
+                                            theme: "facebook",
+                                            placeholder: "Jobs Interested? (Max: 3)",
+                                            hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                                            minChars: 0,
+                                            tokenLimit: 3,
+                                            zindex: 9999999,
+                                            preventDuplicates: true
+                                        });
+                                    });
+                                </script>
+                    </div>
+
+                    <div style="margin-top: 8px">
+                        <input type="text" id="candidateLocalityModal" placeholder="What jobs you are Interested in?" style="margin-top: 4px">
+                        <script type="text/javascript">
+                                    $(document).ready(function() {
+                                        $("#candidateLocalityModal").tokenInput(getLocality(), {
+                                            theme: "facebook",
+                                            placeholder: "Locality Interested?",
+                                            minChars: 3,
+                                            zindex: 9999999,
+                                            hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
+                                            preventDuplicates: true
+                                        });
+                                    });
+                                </script>
+                    </div>
+
+                    <button type="submit" id="registerBtnSubmitModal" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
+                        <!-- Text input-->
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bs-example-modal-sm" id="myRegistrationModal" tabindex="-1" role="dialog" aria-labelledby="myRegistrationModal">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content" style="text-align: center">
+            <img src="/assets/img/logo.gif" height="40px" alt="TruJobs Logo">
+            <form id="form_otp" role="form" name="form_otp" style="display: none">
+                <div class="c_form" style="margin-left: 10%; margin-right: 10%;" align="center">
+                    <h5 id="helpTextSignUp">Enter OTP</h5>
+
+                    <div class="form-group">
+                        <input id="candidateOtp" style="width: 80%;" min="1000" max="9999" name="candidateOtp" type="number" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
+                    </div>
+
+                    <button type="submit" id="verifyOtpBtn" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none">Verify OTP</button>
+
+                </div>
+            </form>
+
+            <form id="form_auth" role="form" name="form_auth" style="display: none">
+                <div class="c_form" style="margin-left: 10%; margin-right: 10%;" align="center">
+                    <h4>Enter a password</h4>
+                    <div class="form-group">
+                        <input id="candidatePassword" minlength="6" name="candidatePassword" type="password" placeholder="Enter password (Min. 6 characters)" class="form-control input-md" required>
+                    </div>
+
+                        <!-- hidden-->
+                    <div class="form-group" style="display: none;">
+                        <input id="candidateAuthMobile" name="candidateAuthMobile" type="text"class="form-control input-md" >
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="btnSubmit" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none">Create Account</button>
+                </div>
+            </form>
+            <div id="incorrectOtpMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                <h5>Incorrect OTP Code. Please Enter Again</h5>
+            </div>
+
+            <div id="errorMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                <h4>Looks like something went wrong. Please try again later!</h4>
+            </div>
+        </div>
+    </div>
+        <!-- Lead form block ends -->
+</div>
+
 <div id="myLoginModal" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <!-- Modal content-->
