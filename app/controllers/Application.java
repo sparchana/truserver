@@ -131,8 +131,7 @@ public class Application extends Controller {
                 ServerConstants.LEAD_SOURCE_UNKNOWN
         );
         lead.setLeadType(addLeadRequest.getLeadType());
-        boolean isSupport = false;
-        LeadService.createLead(lead, isSupport);
+        LeadService.createLead(lead, InteractionService.InteractionChannelType.SELF);
         addLeadResponse.setStatus(AddLeadResponse.STATUS_SUCCESS);
         return ok(toJson(addLeadResponse));
     }
@@ -148,8 +147,8 @@ public class Application extends Controller {
         }
         Logger.info("JSON req: " + req);
 
-        boolean isSupport = false;
-        return ok(toJson(CandidateService.signUpCandidate(candidateSignUpRequest, isSupport, ServerConstants.LEAD_SOURCE_UNKNOWN)));
+        InteractionService.InteractionChannelType channelType = InteractionService.InteractionChannelType.SELF;
+        return ok(toJson(CandidateService.signUpCandidate(candidateSignUpRequest, channelType, ServerConstants.LEAD_SOURCE_UNKNOWN)));
     }
     @Security.Authenticated(PartnerSecured.class)
     public static Result signUpSupport() {
@@ -164,9 +163,8 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        boolean isSupport = true;
         return ok(toJson(CandidateService.createCandidateProfile(addSupportCandidateRequest,
-                isSupport,
+                InteractionService.InteractionChannelType.SUPPORT,
                 ServerConstants.UPDATE_ALL_BY_SUPPORT)));
     }
 
@@ -180,8 +178,7 @@ public class Application extends Controller {
             e.printStackTrace();
         }
         Logger.info("Req JSON : " + req);
-        boolean isSupport = false;
-        return ok(toJson(CandidateService.createCandidateProfile(addCandidateRequest, isSupport, ServerConstants.UPDATE_BASIC_PROFILE)));
+        return ok(toJson(CandidateService.createCandidateProfile(addCandidateRequest, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_BASIC_PROFILE)));
     }
 
     public static Result candidateUpdateExperienceDetails() {
@@ -194,8 +191,7 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        boolean isSupport = false;
-        return ok(toJson(CandidateService.createCandidateProfile(addCandidateExperienceRequest, isSupport, ServerConstants.UPDATE_SKILLS_PROFILE)));
+        return ok(toJson(CandidateService.createCandidateProfile(addCandidateExperienceRequest, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_SKILLS_PROFILE)));
     }
 
     public static Result candidateUpdateEducationDetails() {
@@ -207,8 +203,7 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        boolean isSupport = false;
-        return ok(toJson(CandidateService.createCandidateProfile(addCandidateEducationRequest, isSupport, ServerConstants.UPDATE_EDUCATION_PROFILE)));
+        return ok(toJson(CandidateService.createCandidateProfile(addCandidateEducationRequest, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_EDUCATION_PROFILE)));
     }
 
     public static Result addPassword() {
@@ -224,7 +219,7 @@ public class Application extends Controller {
         String userMobile = candidateSignUpRequest.getCandidateAuthMobile();
         String userPassword = candidateSignUpRequest.getCandidatePassword();
 
-        return ok(toJson(AuthService.savePassword(userMobile, userPassword)));
+        return ok(toJson(AuthService.savePassword(userMobile, userPassword, InteractionService.InteractionChannelType.SELF)));
     }
 
     public static Result applyJob() {
@@ -240,7 +235,7 @@ public class Application extends Controller {
         String userMobile = applyJobRequest.getCandidateMobile();
         Integer jobId = applyJobRequest.getJobId();
 
-        return ok(toJson(JobService.applyJob(applyJobRequest)));
+        return ok(toJson(JobService.applyJob(applyJobRequest, InteractionService.InteractionChannelType.SELF)));
     }
 
     @Security.Authenticated(RecSecured.class)
@@ -314,8 +309,7 @@ public class Application extends Controller {
         Logger.info("req JSON: " + req );
         String loginMobile = loginRequest.getCandidateLoginMobile();
         String loginPassword = loginRequest.getCandidateLoginPassword();
-
-        return ok(toJson(CandidateService.login(loginMobile, loginPassword)));
+        return ok(toJson(CandidateService.login(loginMobile, loginPassword, InteractionService.InteractionChannelType.SUPPORT)));
     }
 
     @Security.Authenticated(SecuredUser.class)
@@ -345,7 +339,7 @@ public class Application extends Controller {
         String candidateMobile = resetPasswordResquest.getResetPasswordMobile();
         Logger.info("==> " + candidateMobile);
 
-        return ok(toJson(CandidateService.findUserAndSendOtp(candidateMobile)));
+        return ok(toJson(CandidateService.findUserAndSendOtp(candidateMobile, InteractionService.InteractionChannelType.SELF)));
     }
 
     public static Result processcsv() {
@@ -516,7 +510,12 @@ public class Application extends Controller {
                     Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")). findUnique();
                     objAUUID = candidate.getCandidateUUId();
                 }
-                InteractionService.createInteractionForJobApplicationAttempt(objAUUID, jobPost.getJobPostUUId(), interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName());
+                InteractionService.createInteractionForJobApplicationAttempt(
+                        objAUUID,
+                        jobPost.getJobPostUUId(),
+                        interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName(),
+                        InteractionService.InteractionChannelType.SELF
+                );
             }
 
             return ok(toJson(jobPost));

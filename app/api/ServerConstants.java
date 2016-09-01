@@ -54,6 +54,8 @@ public class ServerConstants {
     public static final int LEAD_CHANNEL_WEBSITE= 0;
     public static final int LEAD_CHANNEL_KNOWLARITY= 1;
     public static final int LEAD_CHANNEL_SUPPORT = 2;
+    public static final int LEAD_CHANNEL_ANDROID  = 3;
+    public static final int LEAD_CHANNEL_UNKNOWN  = 4;
 
     public static final int LEAD_STATUS_NEW= 0;
     public static final int LEAD_STATUS_TTC= 1; // TTC: Trying To Convert
@@ -96,6 +98,7 @@ public class ServerConstants {
     public static final int INTERACTION_TYPE_TRIED_JOB_APPLY= 8;
     public static final int INTERACTION_TYPE_TRIED_PASSWORD_RESET= 9;
     public static final int INTERACTION_TYPE_PASSWORD_RESET_SUCCESS= 10;
+    public static final int INTERACTION_TYPE_ANDROID= 11;
 
     public static final boolean FOLLOW_UP_DEACTIVATE = false;
     public static final boolean FOLLOW_UP_ACTIVATE = true;

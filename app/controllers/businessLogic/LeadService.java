@@ -1,6 +1,7 @@
 package controllers.businessLogic;
 
 import api.ServerConstants;
+import com.sun.org.apache.bcel.internal.generic.BREAKPOINT;
 import models.entity.Interaction;
 import models.entity.Lead;
 import models.entity.Static.LeadSource;
@@ -17,10 +18,10 @@ import static play.mvc.Controller.session;
  */
 public class LeadService {
 
-    public static Lead createOrUpdateConvertedLead(String leadName, String leadMobile, int leadSourceId, boolean isSupport){
+    public static Lead createOrUpdateConvertedLead(String leadName, String leadMobile, int leadSourceId, InteractionService.InteractionChannelType channelType){
         Lead existingLead = isLeadExists(leadMobile);
         if(existingLead == null){
-            int leadChannel = isSupport ? ServerConstants.LEAD_CHANNEL_SUPPORT : ServerConstants.LEAD_CHANNEL_WEBSITE;
+            int leadChannel = getLearChannel(channelType);
             Lead lead = new Lead(
                     leadName,
                     leadMobile,
@@ -30,7 +31,7 @@ public class LeadService {
             );
             lead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
             lead.setLeadType(ServerConstants.TYPE_CANDIDATE);
-            LeadService.createLead(lead, isSupport);
+            LeadService.createLead(lead, channelType);
             Logger.info("New Lead Created Successfully");
             return lead;
         }
@@ -45,6 +46,27 @@ public class LeadService {
             Logger.info("Lead Updated Successfully");
         }
         return existingLead;
+    }
+
+    public static int getLearChannel(InteractionService.InteractionChannelType channelType){
+        int response = ServerConstants.LEAD_CHANNEL_UNKNOWN;
+        switch (channelType){
+            case SELF:
+                response = ServerConstants.LEAD_CHANNEL_WEBSITE;
+                break;
+            case SELF_ANDROID:
+                response = ServerConstants.LEAD_CHANNEL_ANDROID;
+                break;
+            case  SUPPORT:
+                response = ServerConstants.LEAD_CHANNEL_SUPPORT;
+                break;
+            case KNOWLARITY:
+                response = ServerConstants.LEAD_CHANNEL_KNOWLARITY;
+                break;
+            default:
+                break;
+        }
+        return response;
     }
 
     public static Lead isLeadExists(String mobile){
@@ -66,7 +88,7 @@ public class LeadService {
         return null;
     }
 
-    public static void createLead(Lead lead, boolean isSupport){
+    public static void createLead(Lead lead, InteractionService.InteractionChannelType channelType){
         Lead existingLead = isLeadExists(lead.getLeadMobile());
         String objectAUUId;
         String result;
@@ -74,11 +96,13 @@ public class LeadService {
         int interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
         int objectAType;
         String createdBy;
-        if(!isSupport) {
-            createdBy = ServerConstants.INTERACTION_CREATED_SELF;
-        } else {
+        if(channelType == InteractionService.InteractionChannelType.SUPPORT) {
             interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT; //TODO: Call Out/In need to be distinguished
             createdBy = session().get("sessionUsername");
+        } else {
+            createdBy = channelType.toString();
+            interactionType = channelType == InteractionService.InteractionChannelType.SELF_ANDROID
+                    ? ServerConstants.INTERACTION_TYPE_ANDROID : ServerConstants.INTERACTION_TYPE_WEBSITE;
         }
         if(existingLead == null) {
             Lead.addLead(lead);

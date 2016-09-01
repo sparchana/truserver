@@ -10,10 +10,7 @@ import api.http.httpResponse.LoginResponse;
 import com.google.api.client.util.Base64;
 import com.google.protobuf.Internal;
 import com.google.protobuf.InvalidProtocolBufferException;
-import controllers.businessLogic.AuthService;
-import controllers.businessLogic.CandidateAlertService;
-import controllers.businessLogic.CandidateService;
-import controllers.businessLogic.JobService;
+import controllers.businessLogic.*;
 import in.trujobs.proto.*;
 import in.trujobs.proto.ApplyJobRequest;
 import models.entity.Candidate;
@@ -73,7 +70,8 @@ public class TrudroidController {
             loginRequest.setCandidateLoginMobile(pLogInRequest.getCandidateMobile());
             loginRequest.setCandidateLoginPassword(pLogInRequest.getCandidatePassword());
 
-            LoginResponse loginResponse = CandidateService.login(loginRequest.getCandidateLoginMobile(), loginRequest.getCandidateLoginPassword());
+            LoginResponse loginResponse = CandidateService.login(loginRequest.getCandidateLoginMobile(),
+                    loginRequest.getCandidateLoginPassword(), InteractionService.InteractionChannelType.SELF_ANDROID);
             loginResponseBuilder.setStatus(LogInResponse.Status.valueOf(loginResponse.getStatus()));
             if (loginResponse.getStatus() == loginResponse.STATUS_SUCCESS) {
                 loginResponseBuilder.setCandidateFirstName(loginResponse.getCandidateFirstName());
@@ -119,8 +117,9 @@ public class TrudroidController {
             candidateSignUpRequest.setCandidateFirstName(pSignUpRequest.getName());
             candidateSignUpRequest.setCandidateMobile(pSignUpRequest.getMobile());
 
-            boolean isSupport = false;
-            CandidateSignUpResponse candidateSignUpResponse = CandidateService.signUpCandidate(candidateSignUpRequest, isSupport, ServerConstants.LEAD_SOURCE_UNKNOWN);
+            //boolean isSupport = false;
+            CandidateSignUpResponse candidateSignUpResponse = CandidateService.signUpCandidate(candidateSignUpRequest,
+                    InteractionService.InteractionChannelType.SELF_ANDROID, ServerConstants.LEAD_SOURCE_UNKNOWN);
             signUpResponseBuilder.setStatus(SignUpResponse.Status.valueOf(candidateSignUpResponse.getStatus()));
             signUpResponseBuilder.setGeneratedOtp(candidateSignUpResponse.getOtp());
 
@@ -144,7 +143,11 @@ public class TrudroidController {
         try {
             String requestString = request().body().asText();
             pLoginRequest = LogInRequest.parseFrom(Base64.decodeBase64(requestString));
-            CandidateSignUpResponse candidateSignUpResponse = AuthService.savePassword(FormValidator.convertToIndianMobileFormat(pLoginRequest.getCandidateMobile()), pLoginRequest.getCandidatePassword());
+            CandidateSignUpResponse candidateSignUpResponse = AuthService.savePassword(
+                    FormValidator.convertToIndianMobileFormat(pLoginRequest.getCandidateMobile()),
+                    pLoginRequest.getCandidatePassword(),
+                    InteractionService.InteractionChannelType.SELF_ANDROID
+                    );
             if(candidateSignUpResponse.getStatus() == candidateSignUpResponse.STATUS_SUCCESS){
                 loginResponseBuilder.setCandidateFirstName(candidateSignUpResponse.getCandidateFirstName());
                 if (candidateSignUpResponse.getCandidateLastName() != null) {
@@ -208,7 +211,10 @@ public class TrudroidController {
         try {
             String requestString = request().body().asText();
             pResetPasswordRequest = ResetPasswordRequest.parseFrom(Base64.decodeBase64(requestString));
-            api.http.httpResponse.ResetPasswordResponse resetPasswordResponse = CandidateService.findUserAndSendOtp(FormValidator.convertToIndianMobileFormat(pResetPasswordRequest.getMobile()));
+            api.http.httpResponse.ResetPasswordResponse resetPasswordResponse = CandidateService.findUserAndSendOtp(
+                    FormValidator.convertToIndianMobileFormat(pResetPasswordRequest.getMobile()),
+                    InteractionService.InteractionChannelType.SELF_ANDROID
+                    );
             resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.valueOf(resetPasswordResponse.getStatus()));
             resetPasswordResponseBuilder.setOtp(resetPasswordResponse.getOtp());
 
@@ -328,7 +334,7 @@ public class TrudroidController {
             applyJobRequest.setCandidateMobile(FormValidator.convertToIndianMobileFormat(pApplyJobRequest.getCandidateMobile()));
 
             //applying job
-            api.http.httpResponse.ApplyJobResponse applyJobResponse = JobService.applyJob(applyJobRequest);
+            api.http.httpResponse.ApplyJobResponse applyJobResponse = JobService.applyJob(applyJobRequest, InteractionService.InteractionChannelType.SELF_ANDROID);
 
             //setting status response
             applyJobResponseBuilder.setStatus(ApplyJobResponse.Status.valueOf(applyJobResponse.getStatus()));
@@ -932,8 +938,9 @@ public class TrudroidController {
 
             addCandidateRequest.setCandidateTimeShiftPref(String.valueOf(updateCandidateBasicProfileRequest.getCandidateTimeshiftPref()));
 
-            boolean isSupport = false;
-            CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addCandidateRequest, isSupport, ServerConstants.UPDATE_BASIC_PROFILE);
+            //boolean isSupport = false;
+            CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addCandidateRequest,
+                    InteractionService.InteractionChannelType.SELF_ANDROID, ServerConstants.UPDATE_BASIC_PROFILE);
 
             //setting status response
             updateCandidateProfileResponse.setStatus(UpdateCandidateBasicProfileResponse.Status.valueOf(candidateSignUpResponse.getStatus()));
@@ -1004,8 +1011,9 @@ public class TrudroidController {
             //setting candidate skills
             addCandidateExperienceRequest.setCandidateSkills(candidateSkillList);
 
-            boolean isSupport = false;
-            CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addCandidateExperienceRequest, isSupport, ServerConstants.UPDATE_SKILLS_PROFILE);
+            //boolean isSupport = false;
+            CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addCandidateExperienceRequest,
+                    InteractionService.InteractionChannelType.SELF_ANDROID, ServerConstants.UPDATE_SKILLS_PROFILE);
 
             //setting status response
             updateCandidateProfileResponse.setStatus(UpdateCandidateBasicProfileResponse.Status.valueOf(candidateSignUpResponse.getStatus()));
@@ -1039,8 +1047,9 @@ public class TrudroidController {
             addCandidateEducationRequest.setEducationStatus(updateCandidateEducationProfileRequest.getCandidateEducationCompletionStatus());
             addCandidateEducationRequest.setCandidateEducationInstitute(updateCandidateEducationProfileRequest.getCandidateEducationInstitute());
 
-            boolean isSupport = false;
-            CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addCandidateEducationRequest, isSupport, ServerConstants.UPDATE_EDUCATION_PROFILE);
+            //boolean isSupport = false;
+            CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addCandidateEducationRequest,
+                    InteractionService.InteractionChannelType.SELF_ANDROID, ServerConstants.UPDATE_EDUCATION_PROFILE);
 
             //setting status response
             updateCandidateProfileResponse.setStatus(UpdateCandidateBasicProfileResponse.Status.valueOf(candidateSignUpResponse.getStatus()));

@@ -103,7 +103,7 @@ public class JobService {
         return newJobPost;
     }
 
-    public static ApplyJobResponse applyJob(ApplyJobRequest applyJobRequest) {
+    public static ApplyJobResponse applyJob(ApplyJobRequest applyJobRequest, InteractionService.InteractionChannelType channelType) {
         Logger.info("checking user and jobId: " + applyJobRequest.getCandidateMobile() + " + " + applyJobRequest.getJobId());
         ApplyJobResponse applyJobResponse = new ApplyJobResponse();
         Candidate existingCandidate = CandidateService.isCandidateExists(applyJobRequest.getCandidateMobile());
@@ -128,7 +128,12 @@ public class JobService {
                     }
 
                     String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB;
-                    InteractionService.createInteractionForJobApplication(existingCandidate.getCandidateUUId(), existingJobPost.getJobPostUUId(), interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName() + "@" + locality.getLocalityName() );
+                    InteractionService.createInteractionForJobApplication(
+                            existingCandidate.getCandidateUUId(),
+                            existingJobPost.getJobPostUUId(),
+                            interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName() + "@" + locality.getLocalityName(),
+                            channelType
+                    );
 
                     jobApplication.save();
                     Logger.info("candidate: " + existingCandidate.getCandidateFirstName() + " with mobile: " + existingCandidate.getCandidateMobile() + " applied to the jobPost of JobPostId:" + existingJobPost.getJobPostId());
