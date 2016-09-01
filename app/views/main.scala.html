@@ -43,7 +43,6 @@
           ga('create', 'UA-77156203-1', 'auto');
           ga('send', 'pageview');
         </script>
-
     </head>
     <body>
 
@@ -54,39 +53,13 @@
             <div id="status">&nbsp;</div>
         </div>
 
-        <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigationbar">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-
-                    </button>
-                    <div itemscope itemtype ="http://schema.org/logo">
-                    <a class="navbar-brand" href="#"><img id="navLogo" itemprop="Brand" src="/assets/new/img/logo-color.gif" alt="TruJobs Logo" height="30px" style="margin-top: -8px;"></a>
-                    </div>
-                    </div>
-
-                <div class="collapse navbar-collapse" id="navigationbar">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li> <a href="#sectionOne"><font id="navItem1" color="#0065a4" style="font-size: 12px; letter-spacing: 1px;">HOME</font></a></li>
-                        <li> <a href="#applyToJobs"><font id="navItem2" color="#0065a4" style="font-size: 12px; letter-spacing: 1px;">APPLY TO JOBS</font></a></li>
-                        <li> <a href="#forCandidate"><font id="navItem3" color="#0065a4"  style="font-size: 12px; letter-spacing: 1px;">FOR CANDIDATES</font></a></li>
-                        <li> <a href="#forRecruiter"><font id="navItem4" color="#0065a4"  style="font-size: 12px; letter-spacing: 1px;">FOR EMPLOYERS</font></a></li>
-                        <li> <a style="cursor: pointer;" data-toggle="modal" data-target="#myLoginModal" onClick="openLogin()">
-                            <font id="navItem5" color="#0065a4"  style="font-size: 12px; letter-spacing: 1px;">
-                                <img src="/assets/new/img/sign_up.png" height="16px" style="margin-right: 6px"/>SIGN IN
-                            </font></a>
-                        </li>
-                    </ul>
-                </div>
-                    <!-- /.navbar-collapse -->
-            </div>
-                <!-- /.container -->
-        </nav>
-
+        <!-- Nav start -->
+        <div id="nav_bar_inc"></div>
+        <script>
+            $(document).ready(function(){
+              $('#nav_bar_inc').load('/navBar');
+            });
+        </script>
         <div class="container">
             <div id="fixed-menu" style="padding-bottom: 12px; padding-top: 8px; display: none" >
                 <div id="leadFormBox" class="input-group">
@@ -95,119 +68,6 @@
                 </div>
             </div>
         </div>
-
-        <div id="myLoginModal" class="modal fade" role="dialog">
-            <div class="modal-dialog">
-                    <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-body" id="model_size">
-                        <form id="form_login_candidate" class="form-horizontal" role="form" name="form_login_candidate">
-                            <div class="line_up" id="signInPopup">Sign In</div>
-                            <div class="container-fluid" id="main_signin_box">
-                                <div class="row">
-                                    <div class="col-sm-12" id="logo">
-                                        <input type="text" class="form-control" id="candidateLoginMobile" placeholder="Mobile Number" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" required>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-12" id="pass_input" style="margin-bottom:12px;">
-                                        <input type="password" class="form-control" id="candidateLoginPassword" placeholder="Password" required>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6">
-                                        <input type="checkbox" class="checkbox-inline" style="margin-right:5px;">Remember me
-                                    </div>
-                                    <div class="col-xs-6 pull-right" style="text-align:right;">
-                                        <a style="cursor: pointer;" onclick="resetPassword()"><font color="#06436a">Forgot Password?</font></a>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-12" id="logo">
-                                        <button type="submit" class="form-control" id="registerBtn" style="margin-top:5px;">Sign In</button>
-                                    </div>
-                                </div>
-                                <hr>
-                                <center>
-                                    Don't have an account?<a style="cursor: pointer;" data-toggle="modal" data-target="#mySignUpModal" onClick="openSignUp()">
-                                        <font color="#06436a">&nbsp;Sign Up</font></a>
-                                </center>
-                            </div>
-                        </form>
-
-                        <form id="form_forgot_password" style="display: none" class="form-horizontal" role="form" name="form_forgot_password" >
-                            <div align="center">
-                                <div class="line_up">Reset Password</div>
-                                    <!-- Text input-->
-                                <br>
-                                <h5>Enter your mobile No</h5>
-                                <div class="form-group">
-                                    <input style="width: 80%;" id="resetPasswordMobile" type="text" maxlength="10" placeholder="Mobile No. (eg: 8880007799)" class="form-control input-md" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" required>
-                                </div>
-
-                                <button type="submit" class="btn btn-primary" id="resetCheckUserBtn" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none">Submit</button>
-
-                            </div>
-                        </form>
-
-                        <form id="form_password_reset_otp" style="display: none" class="form-horizontal" role="form">
-                            <div align="center">
-                                <div class="line_up">Reset Password</div>
-                                    <!-- Text input-->
-                                <br>
-                                <h5 id="helpText"></h5>
-
-                                <div class="form-group">
-                                    <input style="width: 80%;" id="candidateForgotOtp" type="number" minlength="1000" maxlength="9999" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none" >Verify OTP</button>
-
-                            </div>
-                        </form>
-
-                        <form id="form_password_reset_new" style="display: none" class="form-horizontal" role="form">
-                            <div align="center">
-                                <div class="line_up">Reset Password</div>
-                                    <!-- Text input-->
-                                <br>
-                                <h5>Enter New Password</h5>
-
-                                <div class="form-group">
-                                    <input style="width: 80%;" id="candidateNewPassword" type="password" placeholder="Enter new Password" class="form-control input-md" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary" id="resetNewPasswordBtn" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none" >Reset Password</button>
-                            </div>
-                        </form>
-
-                        <center>
-                            <font color="red">
-                                <div class="errorMsgText" id="incorrectMsg" style="margin-top: 2%;display: none;">
-                                    <h5>Incorrect Login Credentials</h5>
-                                </div>
-                                <div class="errorMsgText" id="incorrectMsgLogin" style="margin-top: 2%;display: none;" >
-                                    <h5>Incorrect Login Credentials</h5>
-                                </div>
-                                <div class="errorMsgText" id="errorMsgReset" style="margin-top: 2%;display: none;">
-                                    <h5>User Does Not Exist!</h5>
-                                </div>
-                                <div class="errorMsgText" id="noUserLogin" style="margin-top: 2%;display: none;">
-                                    <h5>User Does Not Exist!</h5>
-                                </div>
-
-                                <div class="errorMsgText" id="wrongOtp" style="margin-top: 2%;display: none;">
-                                    <h5>Incorrect OTP!</h5>
-                                </div>
-
-                                <div class="errorMsgText" id="errorMsg" style="margin-top: 2%;display: none;">
-                                    <h5>Looks like something went wrong. Please try again later!</h5>
-                                </div>
-                            </font>
-                        </center>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div id="mySignUpModal" class="modal fade" role="dialog">
             <div class="modal-dialog">
                     <!-- Modal content-->
@@ -378,60 +238,15 @@
             </div>
         </div>
 
-            <!-- confirm job modal -->
-        <div class="modal fade" id="jobApplyConfirm" tabindex="-1" role="dialog" aria-labelledby="jobApplyConfirm">
-            <div class="modal-dialog" role="document" id="customModal">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="myModalLabel">Job Application Confirmation</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div id="confirmationMsg">
-                            <center>
-                                <img src="/assets/img/jobApply.png" width="48px">
-                            </center>
-                            <center>
-                                <h5>You are applying for <b><div style="display: inline-block" id="jobNameConfirmation"></div></b> job at <b><div style="display: inline-block" id="companyNameConfirmation"></div></b>.</h5>
-                                <h5>Please select the location where you can work:</h5>
-                                <select id="jobLocality" class="selectDropdown"></select>
-                                <button type="submit" onclick="confirmApply()" id="applyButton" class="jobApplyBtnModal" style="display : none; margin: 6px">Apply</button>
-                            </center>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-            <!-- custom message modal -->
-        <div class="modal fade" id="messagePromptModal" tabindex="-1" role="dialog" aria-labelledby="messagePromptModalLabel">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="myModalLabel">TruJobs</h4>
-                    </div>
-                    <div class="modal-body">
-                        <center>
-                            <img id="customMsgIcon" width="48px">
-                            <div id="customMsg" style="padding: 16px"></div>
-                            <div id="customSubMsg" style="padding: 16px"></div>
-                        </center>
-                    </div>
-                </div>
-            </div>
-        </div>
             <!-- start hot job -->
-        <div id="applyToJobs">
-            <h3>
-                Apply to Jobs
-            </h3>
-        </div>
-        <div id="hotJobs"></div>
-        <br>
-
+        <div id="job_cards_inc"></div>
+        <script>
+            $(document).ready(function(){
+              $('#job_cards_inc').load('/postedJobRolesView');
+            });
+        </script>
         <div class="company_class">
-            Companies Hiring From Us
+            Companies Hiring From <Us>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      </Us>
         </div>
 
         <center>
@@ -545,182 +360,13 @@
                 </div>
             </div>
         </div>
-
-        <div class="sectionTwo" id="jobs">
-            <h3 id="jobVacancyHead">Job Roles</h3>
-            <center>
-                <div class="materialDash"></div>
-            </center><br>
-                <!-- Third row -->
-            <div class="row">
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img id="jobRoleIcon" src="/assets/new/img/icons/d_executive.svg" width="50px" alt="Delivery Executive">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Delivery Executive </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/cashier.svg" width="50px" alt="Cashier Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Cashier </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/store_manager.svg" width="50px" alt="Store Manager Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Store Manager </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/data_entry.svg" width="50px" alt="Data Entry Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Data Entry </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/chef.svg" width="50px" alt="Cook Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Cook </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRoleBottom" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/beautician.svg" width="50px" alt="Beautician Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Beautician </span>
-                    </div>
-                </div>
-                </div>
-            </div>
-
-                <!-- second row -->
-            <div class="row">
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/driver.svg" width="50px" alt="Driver Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Driver </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/field_sales.svg" width="50px" alt="Sales Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Field Sales </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/accountant.svg" width="50px">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Accountant </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/receptionist.svg" width="50px" alt="Receptionist Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Receptionist </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/office_admin.svg" width="50px" alt="Office Admin Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Office Admin </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRoleBottom" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/telecaller.svg" width="50px" alt="Telecaller Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Telecaller </span>
-                    </div>
-                </div>
-                </div>
-            </div>
-                <!-- Third row -->
-            <div class="row">
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRoleRight" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/waiter.svg" width="50px" alt="Waiter Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Waiter </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRoleRight" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/electrician.svg" width="50px" alt="Electrician Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Electrician </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRoleRight" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/carpenter.svg" width="50px" alt="Carpenter Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Carpenter </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRoleRight" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/bpo.svg" width="50px" alt="Bpo Voice Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> BPO-Voice </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRoleRight" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/bpo.svg" width="50px" alt="BPO Non Voice Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> BPO-Non Voice </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRoleNoBorder" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/plumber.svg" width="50px" alt="Plumber Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                            <span itemprop="name"> Plumber </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <!--  Start Job Icons Box -->
+        <div id="job_box_inc"></div>
+        <script>
+            $(document).ready(function(){
+              $('#job_box_inc').load('/jobRolesViewLinked');
+            });
+        </script>
 
         <!-- Are you a candidate -->
         <div class="sectionThree" id="forCandidate">
@@ -844,36 +490,16 @@
                 </div>
             </div>
         </div>
-
-        <div class="sectionFiveMain">
-            <div class="sectionFive" id="contact" itemscope itemtype ="http://schema.org/contactPoint">
-                <span itemprop="email">Write us at: <a href="mailto:info@@trujobs.in"><font color="#f0f8ff">info@@trujobs.in</font></a></span>
-                <br>
-                <span itemprop="telephone"> Have queries? Talk to us at 8880007799</span>
-                <br>
-                Follow us on &nbsp;
-                <a href="https://www.facebook.com/trujobs" target="_blank">
-                    <img src="/assets/img/fb.png" width="48px"
-                    onmouseover="this.src='/assets/img/fb_blue.png'"
-                    onmouseout="this.src='/assets/img/fb.png'"
-                    border="0" alt=""/>
-                </a>
-            </div>
-            <div class="footer" itemscope itemtype ="http://schema.org/contactPoint">
-                © 2016 Trujobs.in | Bengaluru, India. All Right Reserved.
-            <a href="/privacy" target="/privacy" title="Privacy Policy"> <font color="#f0f8ff">
-                    Privacy Policy&nbsp;&nbsp;</font> </a>
-
-            </div>
-        </div>
+    <!-- Start Footer-->
+        <div id="footer_inc"></div>
+        <script>
+            $(document).ready(function(){
+            $('#footer_inc').load('/footer');
+            });
+        </script>
 
             <!-- Including Bootstrap -->
-        <script type="text/javascript" src="/assets/js/validation.js"></script>
-        <script type="text/javascript" src="/assets/js/add_lead.js"></script>
-        <script type="text/javascript" src="/assets/js/apply_job.js"></script>
-        <script type="text/javascript" src="/assets/js/reset_password.js"></script>
-        <script type="text/javascript" src="/assets/js/login.js"></script>
-        <script type="text/javascript" src="/assets/js/signup_candidate.js"></script>
+
         <script>
             $(document).ready(function () {
                 $(document).click(function (event) {
