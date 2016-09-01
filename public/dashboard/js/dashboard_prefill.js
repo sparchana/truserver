@@ -86,8 +86,10 @@ function prefillBasicProfile() {
                 $("#candidateDob").val(yr + "-" + month + "-" + d);
                 $("#dob_day").val(d);
                 $("#dob_month").val(month);
-                $("#dob_year").val(yr);
-
+                if(new Date(date).getFullYear() > 1936
+                    && new Date(date).getFullYear() < 1998){
+                    $("#dob_year").val(yr);
+                }
             } catch (err) {
             }
         }
