@@ -145,7 +145,6 @@ $(document).ready(function(){
 });
 
 function processDataForSelectedJobPost(returnedData) {
-    if(returnedData != ""){
         var allJobDetailPageUrl = $(location).attr('href');
         var allJobDetailPageUrlBreak = allJobDetailPageUrl.split("/");
         allJobDetailPageUrlBreak.reverse();
@@ -159,6 +158,7 @@ function processDataForSelectedJobPost(returnedData) {
             $('#jobTitleLine').html("Register for "+showTitle);
             $('#jobRoleTitle').html("Register for "+showTitle);
             $('#applyToJobsTitle').html("Apply to "+showTitle);
+            if(returnedData != ""){
             var jobPostCount = Object.keys(returnedData).length;
                 if (jobPostCount > 0) {
                 var count = 0;
@@ -389,10 +389,26 @@ function processDataForSelectedJobPost(returnedData) {
             col.className = "col-sm-12";
             rowDiv.appendChild(col);
 
-            var jobLogo = document.createElement("div");
-            jobLogo.id = "jobLogo";
-            col.appendChild(jobLogo);
-            $("#jobLogo").html("No result found");
+            var jobImage = document.createElement("div");
+            jobImage.id = "jobImage";
+            col.appendChild(jobImage);
+
+
+                var jobImageSrc = document.createElement("img");
+                jobImageSrc.id="jobImageSrc";
+                jobImage.appendChild(jobImageSrc);
+                $("#jobImageSrc").attr('src','/assets/img/location.svg');
+
+
+            var jobMssgLine1 = document.createElement("div");
+            jobMssgLine1.id = "jobMssgLine1";
+            col.appendChild(jobMssgLine1);
+            $("#jobMssgLine1").html("Oops!! No relevant jobs found at this movement");
+
+                var jobMssgLine2 = document.createElement("div");
+                jobMssgLine2.id = "jobMssgLine2";
+                col.appendChild(jobMssgLine2);
+                $("#jobMssgLine2").html("Register yourself to get updates when new jobs are posted");
 
     }
 }

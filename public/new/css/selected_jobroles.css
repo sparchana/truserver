@@ -1235,5 +1235,30 @@ a{
     position:fixed;
     bottom: 50px;
 }
+#jobMssgLine1{
+    font-weight: bold;
+    font-size: 18px;
+    text-align: center;
+    margin-top: 1%;
+    margin-bottom:1%;
+    letter-spacing:1px
+}
+#jobMssgLine2{
+    font-size: 16px;
+    text-align: center;
+    margin-top: 1%;
+    margin-bottom:3%;
+    word-spacing: 1%;
+    letter-spacing:2px;
+}
+#jobImage{
+    margin-top:5%;
+    width: 20%;
+    height:20%;
+}
+#jobImageSrc{
+    width: 80%;
+    height: 80%;
+}
 
 
