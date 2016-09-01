@@ -43,6 +43,11 @@
           ga('create', 'UA-77156203-1', 'auto');
           ga('send', 'pageview');
         </script>
+        <script>
+            $(document).ready(function(){
+                $('#job_cards_inc').load('/postedJobRolesView');
+            });
+        </script>
     </head>
     <body>
 
@@ -240,11 +245,7 @@
 
             <!-- start hot job -->
         <div id="job_cards_inc"></div>
-        <script>
-            $(document).ready(function(){
-              $('#job_cards_inc').load('/postedJobRolesView');
-            });
-        </script>
+
         <div class="company_class">
             Companies Hiring From <Us>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      </Us>
         </div>

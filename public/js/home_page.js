@@ -326,14 +326,7 @@ function processDataAllJobPosts(returnedData) {
                 $(function () {
                     $('[data-toggle="tooltip"]').tooltip()
                 });
-                 hotJobItem.onclick=function(){
-                      var jobPostBreak = jobPost.jobPostTitle.replace("/","-");
-                 try {
-                         window.location.href = "/jobs/" + jobPostBreak + "/Bengaluru/" + jobPost.company.companyName + "/" + jobPost.jobPostId;
-                     } catch (exception) {
-                         console.log("exception occured!!" + exception);
-                     }
-                 }
+
                 //!*  apply button *!/
                 var applyBtnDiv = document.createElement("div");
                 applyBtnDiv.className = "col-sm-2";
@@ -348,8 +341,16 @@ function processDataAllJobPosts(returnedData) {
 
                 var applyBtn = document.createElement("div");
                 applyBtn.className = "jobApplyBtn";
-                applyBtn.textContent = "Apply";
+                applyBtn.textContent = "View Job";
                 applyBtnDiv.appendChild(applyBtn);
+                applyBtn.onclick=function(){
+                    var jobPostBreak = jobPost.jobPostTitle.replace("/","-");
+                    try {
+                        window.location.href = "/jobs/" + jobPostBreak + "/Bengaluru/" + jobPost.company.companyName + "/" + jobPost.jobPostId;
+                    } catch (exception) {
+                        console.log("exception occured!!" + exception);
+                    }
+                }
             }
         });
     }
