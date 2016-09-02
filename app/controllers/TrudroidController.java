@@ -1252,6 +1252,15 @@ public class TrudroidController {
         List<Long> jobRoleIdList = new ArrayList<>();
         List<JobPost> jobPostList = new ArrayList<>();
 
+        /*
+         * Interaction Params
+         */
+        String objectAUUID = "";
+        String interactionParamJobRole = "";
+        String interactionParamLocality = "";
+        String interactionParamFilter = "";
+        String interactionResult = "Search for ";
+
         if(jobSearchRequest.hasJobSearchByJobRoleRequest()) {
             jobSearchByJobRoleRequest = jobSearchRequest.getJobSearchByJobRoleRequest().toBuilder();
             if(jobSearchByJobRoleRequest.getJobRoleIdOne() != 0) {
@@ -1266,11 +1275,22 @@ public class TrudroidController {
                 Logger.info("3. Filter By JobRole : "+ jobSearchByJobRoleRequest.getJobRoleIdThree());
                 jobRoleIdList.add(jobSearchByJobRoleRequest.getJobRoleIdThree());
             }
+            /* setting interaction params*/
+            if(jobRoleIdList.size() > 0){
+                List<JobRole> jobRoleList = JobRole.find.where().in("jobRoleId", jobRoleIdList).findList();
+                if( jobRoleList != null){
+                    for(JobRole jobRole: jobRoleList){
+                        interactionParamJobRole +=jobRole.getJobName() + ", ";
+                    }
+                    interactionParamJobRole = interactionParamJobRole.substring(0, interactionParamJobRole.length() - 2);
+                }
+            }
         }
         if(jobSearchRequest.hasJobFilterRequest()) {
             Logger.info("Filter by other filter options  triggered ") ;
             jobFilterRequestBuilder = jobSearchRequest.getJobFilterRequest().toBuilder();
 
+            interactionParamFilter = "Sal: "+jobFilterRequestBuilder.getSalary()+", Edu: " + jobFilterRequestBuilder.getEdu()+", Exp: "+jobFilterRequestBuilder.getExp()+", Gen: "+jobFilterRequestBuilder.getGender();
             /* override the filter candidateMobile with search candidateMobile */
             if(jobFilterRequestBuilder.getCandidateMobile().trim().isEmpty()){
                 jobFilterRequestBuilder.setCandidateMobile(jobSearchRequest.getCandidateMobile());
@@ -1311,6 +1331,8 @@ public class TrudroidController {
             Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(candidateMobile));
 
             if(existingCandidate != null){
+                objectAUUID = existingCandidate.getCandidateUUId();
+
                 List<JobApplication> jobApplicationList = JobApplication.find.where().eq("candidateId", existingCandidate.getCandidateId()).findList();
                 List<Long> appliedJobPostIdList = new ArrayList<Long>();
                 for(JobApplication jobApplication : jobApplicationList){
@@ -1325,13 +1347,35 @@ public class TrudroidController {
                         jobPostListToReturn.add(i, newJobPostBuilder.build());
                     }
                 }
-            } else{
+            } else {
                 Logger.info("Null candidate Found!");
             }
         }
 
         jobPostResponseBuilder.addAllJobPost(jobPostListToReturn);
         Logger.info("Total Jobs Found: "+jobPostList.size());
+
+        /* Interaction */
+        if(objectAUUID.isEmpty()) {
+            objectAUUID = ServerConstants.SEARCH_UUID;
+        }
+        interactionParamLocality = jobSearchRequest.getLocalityName().trim();
+        if(interactionParamLocality.trim().isEmpty()){
+            /* Blank input is all bangalore */
+            interactionParamLocality = "All Bangalore";
+        }
+        if(interactionParamJobRole.trim().isEmpty()){
+            /* Blank input is all job roles */
+            interactionParamJobRole = "All JobRole";
+        }
+        /* TODO: Improve format for displaying info */
+        if(interactionParamFilter.trim().isEmpty()){
+            interactionParamFilter = "Sal: ANY_SALARY, Edu: ANY_EDUCATION, Exp: ANY_EXPERIENCE, Gen: ANY_GENDER";
+        }
+        interactionResult += interactionParamJobRole + " @ " + interactionParamLocality + " with filter - "+interactionParamFilter+" returned ("+jobPostList.size()+") Jobs";
+        Logger.info("interactionResult : "+ interactionResult );
+        InteractionService.createInteractionForSearch(objectAUUID, interactionResult, InteractionService.InteractionChannelType.SELF_ANDROID);
+
         return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
     }
 

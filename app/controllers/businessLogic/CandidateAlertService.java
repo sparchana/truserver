@@ -26,6 +26,7 @@ public class CandidateAlertService {
     public static FetchCandidateAlertResponse getAlertForCandidate(String candidateMobile) {
 
         FetchCandidateAlertResponse.Builder fetchCandidateResponseBuilder = FetchCandidateAlertResponse.newBuilder();
+        String result = "";
 
         Candidate candidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(candidateMobile));
         if (candidate == null) {
@@ -38,6 +39,9 @@ public class CandidateAlertService {
                 CandidateService.getP1FieldsCompletionPercent(candidate) < 0.5) {
             fetchCandidateResponseBuilder.setAlertMessage(
                     "Your profile is incomplete. Complete your profile now to get 5-times more job offers!!");
+            // Incomplete profile
+            result =  "CandidateAlert: Profile-Incomplete";
+
             fetchCandidateResponseBuilder.setAlertType(
                     FetchCandidateAlertResponse.Type.valueOf(FetchCandidateAlertResponse.Type.COMPLETE_PROFILE_VALUE));
         }
@@ -72,16 +76,22 @@ public class CandidateAlertService {
             if (jobsCount > 0) {
                 fetchCandidateResponseBuilder.setAlertMessage(
                         "Whoa! " + jobsCount + " new jobs available in your locality! Start applying now!!");
+                result =  "CandidateAlert: New Jobs Found";
+                // new jobs found
                 fetchCandidateResponseBuilder.setAlertType(
                         FetchCandidateAlertResponse.Type.valueOf(FetchCandidateAlertResponse.Type.NEW_JOBS_IN_LOCALITY_VALUE));
-            }
-            else {
+            } else {
                 fetchCandidateResponseBuilder.setAlertMessage(
                         "Complete skill assessment now and increase your changes of finding the right job!!");
+                result =  "CandidateAlert: Assessment Incomplete";
                 fetchCandidateResponseBuilder.setAlertType(
                         FetchCandidateAlertResponse.Type.valueOf(FetchCandidateAlertResponse.Type.COMPLETE_ASSESSMENT_VALUE));
             }
         }
+
+        InteractionService.CreateInteractionForCandidateAlertService(candidate.getCandidateUUId(),
+                result, InteractionService.InteractionChannelType.SELF_ANDROID);
+
         return fetchCandidateResponseBuilder.build();
     }
 }

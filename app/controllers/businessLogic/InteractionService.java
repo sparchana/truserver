@@ -34,7 +34,7 @@ public class InteractionService {
             Interaction interaction = new Interaction(
                     objectAUUId,
                     ServerConstants.OBJECT_TYPE_CANDIDATE,
-                    channelType == InteractionChannelType.SELF ? ServerConstants.INTERACTION_TYPE_WEBSITE : ServerConstants.INTERACTION_TYPE_ANDROID,
+                    channelType == InteractionChannelType.SELF ? ServerConstants.INTERACTION_TYPE_WEBSITE : ServerConstants.INTERACTION_TYPE_ANDROID_SIGNUP,
                     ServerConstants.INTERACTION_NOTE_BLANK,
                     result,
                     channelType.toString()
@@ -117,7 +117,7 @@ public class InteractionService {
             Interaction interaction = new Interaction(
                     objectAUUId,
                     ServerConstants.OBJECT_TYPE_CANDIDATE,
-                    channelType == InteractionChannelType.SELF ? ServerConstants.INTERACTION_TYPE_WEBSITE : ServerConstants.INTERACTION_TYPE_ANDROID,
+                    channelType == InteractionChannelType.SELF ? ServerConstants.INTERACTION_TYPE_WEBSITE : ServerConstants.INTERACTION_TYPE_ANDROID_LOGIN,
                     ServerConstants.INTERACTION_NOTE_BLANK,
                     ServerConstants.INTERACTION_RESULT_SELF_SIGNEDIN,
                     channelType.toString()
@@ -184,6 +184,30 @@ public class InteractionService {
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
                 ServerConstants.INTERACTION_TYPE_PASSWORD_RESET_SUCCESS,
+                ServerConstants.INTERACTION_NOTE_BLANK,
+                result,
+                channelType.toString()
+        );
+        InteractionService.createInteraction(interaction);
+    }
+
+    public static void CreateInteractionForCandidateAlertService(String objectAUUId, String result, InteractionChannelType channelType){
+        Interaction interaction = new Interaction(
+                objectAUUId,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                ServerConstants.INTERACTION_TYPE_CANDIDATE_ALERT,
+                ServerConstants.INTERACTION_NOTE_BLANK,
+                result,
+                channelType.toString()
+        );
+        InteractionService.createInteraction(interaction);
+    }
+    public static void createInteractionForSearch(String objectAUUId, String result, InteractionChannelType  channelType){
+        Logger.info("Search Interaction Saved for UUID: " + objectAUUId);
+        Interaction interaction = new Interaction(
+                objectAUUId,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                ServerConstants.INTERACTION_TYPE_ANDROID_SEARCH,
                 ServerConstants.INTERACTION_NOTE_BLANK,
                 result,
                 channelType.toString()
