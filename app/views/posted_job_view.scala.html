@@ -48,3 +48,15 @@
 </div>
 <div id="hotJobs"></div>
 <br>
+<script>
+            $(function () {
+                $("#hotJobs").scroll(function() {
+                    var w = window.innerWidth;
+                    if(w < 440){
+                        document.documentElement.scrollTop = document.body.scrollTop = 280;
+                    } else{
+                        document.documentElement.scrollTop = document.body.scrollTop = 248;
+                    }
+                });
+            });
+</script>

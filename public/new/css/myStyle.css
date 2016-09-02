@@ -479,7 +479,27 @@ hr{
     padding-bottom: 24px;
     margin-top: -90px;
 }
-
+#navLogo{
+    margin-top: -4px;
+}
+.appStoreContainer{
+    background: url(/assets/img/backimage_appstore.png) no-repeat;
+    background-size:100% ;
+    padding: 0% 0%;
+}
+#step_image{
+    margin-bottom:4%;
+}
+#playStore{
+    color:white;
+    padding:1% 5% 0% 0%;
+    text-align:left;
+}
+#stepContainer{
+    display: block;
+    text-align:center;
+    margin-top:5%;
+}
 
 @media screen and (max-width: 280px) {
     .panel{
@@ -496,7 +516,6 @@ hr{
         background-color: #ffffff;
     }
 }
-
 #forCandidate {
     background: url(../img/call_center.jpg) no-repeat;
     background-size: 100%;
@@ -505,8 +524,46 @@ hr{
 #firstNameLastName {
     height: 34px;
 }
+.navbar-right{
+    margin-right: -78px;
+}
+#playStoreLogoNavBar{
+    display: none;
+}
+#appImg1,#appImg2,#appImg3{
+    display: inline;
+    height:350px;
+}
 
 @media screen and (max-width: 768px) {
+    #appImg2,#appImg3{
+        display: none;
+    }
+    #appImg1{
+        height: 300px;
+    }
+    #stepContainer{
+        display: none;
+    }
+    .appStoreContainer{
+        background-size: 300%;
+    }
+    .navbar-brand{
+        padding:0px 0px;
+    }
+    #playStoreLogo{
+        display: none;
+    }
+    #playStoreLogoNavBar{
+        display: block;
+        padding:0px;
+        margin-top:4px;
+        margin-right:10px;
+        float: right;
+    }
+    .navbar-right{
+        margin-right:-15px;
+    }
     #customModal {
         margin-left: 2%;
         margin-right: 2%;
@@ -637,7 +694,9 @@ hr{
     #navItem1, #navItem2, #navItem3, #navItem4, #navItem5{
         color: #747474;
     }
+
     #navLogo{
+        margin-top:10px;
         content:url("/assets/new/img/logo-color.gif");
     }
 
