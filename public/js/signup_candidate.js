@@ -208,7 +208,12 @@ $(function() {
 
         if(statusCheck == 1){
             candidateMobile = phone;
-            document.getElementById("registerBtnSubmit").disabled = true;
+            try{
+                document.getElementById("registerBtnSubmit").disabled = true;
+            } catch (e){}
+            try{
+                document.getElementById("registerBtnSubmitModal").disabled = true;
+            } catch(e){}
             try {
                 var candidatePreferredJob = [];
                 var candidatePreferredLocality = [];
