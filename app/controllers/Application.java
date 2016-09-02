@@ -309,7 +309,7 @@ public class Application extends Controller {
         Logger.info("req JSON: " + req );
         String loginMobile = loginRequest.getCandidateLoginMobile();
         String loginPassword = loginRequest.getCandidateLoginPassword();
-        return ok(toJson(CandidateService.login(loginMobile, loginPassword, InteractionService.InteractionChannelType.SUPPORT)));
+        return ok(toJson(CandidateService.login(loginMobile, loginPassword, InteractionService.InteractionChannelType.SELF)));
     }
 
     @Security.Authenticated(SecuredUser.class)
