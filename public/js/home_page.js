@@ -52,18 +52,6 @@ $(function() {
         }
     });
 });
-
-$(function () {
-    $("#hotJobs").scroll(function() {
-        var w = window.innerWidth;
-        if(w < 440){
-            document.documentElement.scrollTop = document.body.scrollTop = 280;
-        } else{
-            document.documentElement.scrollTop = document.body.scrollTop = 248;
-        }
-    });
-});
-
 $(function () {
     $('#myRegistrationModal').on('hidden.bs.modal', function () {
         document.getElementById("registerBtn").disabled = false;
@@ -86,7 +74,6 @@ $(document).ready(function(){
     $(".navbar-nav li a").click(function(event) {
         $(".navbar-collapse").collapse('hide');
     });
-
     var w = window.innerWidth;
     if(w < 440){
         $(".navbar-default").css('background-color', 'white');
@@ -150,7 +137,6 @@ function processDataAllJobPosts(returnedData) {
         returnedData.forEach(function (jobPost){
             count++;
             if(count){
-                console.log("Home Page Js");
                 //!* get all localities of the jobPost *!/
                 var jobLocality = jobPost.jobPostToLocalityList;
                 var localities = "";
@@ -168,7 +154,6 @@ function processDataAllJobPosts(returnedData) {
                         }
                     }
                 });
-
                 loopCount = 0;
                 jobLocality.forEach(function (locality) {
                     loopCount++;

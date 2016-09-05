@@ -1212,10 +1212,10 @@ public class Application extends Controller {
     public static Result renderNavBar() {
         return ok(views.html.nav_bar.render());
     }
+    public static Result renderScript() { return ok(views.html.script.render()); }
     public static Result renderFooter() {
         return ok(views.html.footer.render());
     }
-    public static Result renderJobRolesView() { return ok(views.html.job_roles_view.render());}
     public static Result renderJobRolesViewLinked() { return ok(views.html.job_roles_view_linked.render());}
     public static Result renderPostedJobRolesView() {
         return ok(views.html.posted_job_view.render());
