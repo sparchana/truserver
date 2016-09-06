@@ -18,10 +18,15 @@
     function processDataCheckJobs(returnedData) {
         var jobRoleCount = Object.keys(returnedData).length;
         var jobRoleRowCount = Math.floor(jobRoleCount / 6); // 6 because we are showing 6 job roles in a row
+        var remainingJobRoles = jobRoleCount % 6;
         var startIndex = 0;
         for(var i=0;i<jobRoleRowCount; i++){
             setJobRoles(returnedData, startIndex);
             startIndex = startIndex + 6;
+        }
+        if(remainingJobRoles > 0){
+            startIndex = jobRoleCount - remainingJobRoles;
+            setJobRoles(returnedData, startIndex);
         }
     }
 
@@ -51,7 +56,7 @@
                 jobAnchor.appendChild(innerDiv);
 
                 var jobIcon = document.createElement("img");
-                jobIcon.src = jobRole.jobRoleIcon;
+                jobIcon.src = "/assets/new/img/icons/" + jobRole.jobRoleId + ".svg";
                 jobIcon.setAttribute('width', '50px');
                 jobIcon.setAttribute('alt', jobRole.jobName);
                 innerDiv.appendChild(jobIcon);
