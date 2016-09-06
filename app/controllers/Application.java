@@ -1216,7 +1216,6 @@ public class Application extends Controller {
     public static Result renderPageFooter() {
         return ok(views.html.footer.render());
     }
-    public static Result renderJobRoleGrid() { return ok(views.html.job_role_grid_view.render());}
     public static Result renderJobPostCards() { return ok(views.html.hot_jobs_card_view.render());}
     public static Result renderShowAllJobs() { return ok(views.html.show_all_jobs_page.render());}
     public static Result renderJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {

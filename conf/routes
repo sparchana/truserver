@@ -83,7 +83,6 @@ POST        /signUp                                                       contro
 GET         /navBar                                                       controllers.Application.renderPageNavBar()
 GET         /scriptContainer                                              controllers.Application.renderGAScript()
 GET         /footer                                                       controllers.Application.renderPageFooter()
-GET         /jobRolesGrid                                                 controllers.Application.renderJobRoleGrid()
 GET         /jobPostCardView                                              controllers.Application.renderJobPostCards()
 GET         /showJobs                                                     controllers.Application.renderShowAllJobs()
 GET         /jobs/:jobTitle/:jobLocation/:jobCompany/:jobId               controllers.Application.renderJobPostDetails( jobTitle: String , jobLocation : String , jobCompany :String , jobId : Long )

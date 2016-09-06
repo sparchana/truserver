@@ -391,22 +391,24 @@
                     </div>
                 </div>
             </div>
-          </div>
-            <!--  Start Job Icons Box -->
-    <div id="job_box_inc"></div>
-    <script>
-                    $(document).ready(function(){
-                      $('#job_box_inc').load('/jobRolesGrid');
-                    });
-    </script>
+    </div>
+    <!--  Start Job Icons Box -->
+    <div class="sectionTwo" style="display: table; width: 100%" id="jobs">
+        <h3 id="jobVacancyHead">Job Roles</h3>
+        <center>
+            <div class="materialDash"></div>
+        </center><br>
+
+        <div id="jobRoleGrid" style="width: auto"></div>
+    </div>
 
     <!-- Start Footer-->
     <div id="footer_inc"></div>
     <script>
-                    $(document).ready(function(){
-                    $('#footer_inc').load('/footer');
-                    });
-                </script>
+        $(document).ready(function(){
+        $('#footer_inc').load('/footer');
+        });
+    </script>
 
     <!-- Including Bootstrap -->
     <script type="text/javascript" src="/assets/js/validation.js"></script>
