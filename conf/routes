@@ -78,6 +78,19 @@ POST        /findUserAndSendOtp                                           contro
 POST        /loginSubmit                                                  controllers.Application.loginSubmit()
 POST        /signUp                                                       controllers.Application.signUp()
 
+#new routes
+#~~~~~~~~~~~~~~~~~~~~
+GET         /navBar                                                       controllers.Application.renderPageNavBar()
+GET         /scriptContainer                                              controllers.Application.renderGAScript()
+GET         /footer                                                       controllers.Application.renderPageFooter()
+GET         /jobRolesGrid                                                 controllers.Application.renderJobRoleGrid()
+GET         /jobPostCardView                                              controllers.Application.renderJobPostCards()
+GET         /showJobs                                                     controllers.Application.renderShowAllJobs()
+GET         /jobs/:jobTitle/:jobLocation/:jobCompany/:jobId               controllers.Application.renderJobPostDetails( jobTitle: String , jobLocation : String , jobCompany :String , jobId : Long )
+GET         /job/:jobTitle/:jobLocation/:jobCompany/:jobId                controllers.Application.getJobPostDetails( jobTitle: String , jobLocation : String , jobCompany :String , jobId : Long )
+GET         /job/:rolePara/:idPara                                        controllers.Application.renderJobRoleJobPage( rolePara: String, idPara:Long)
+GET         /jobs/:rolePara/:idPara                                       controllers.Application.getJobRoleWiseJobPosts( rolePara: String, idPara:Long)
+
 # Both support and user
 # ~~~~~~~~~~~~~~~~~~~~~
 

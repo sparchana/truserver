@@ -445,28 +445,6 @@ function processDataAndFillMinProfile(returnedData) {
         }
     }
 
-    if(returnedData.candidateLastWithdrawnSalary != null){
-        if(returnedData.candidateLastWithdrawnSalary == "0"){
-            document.getElementById("userCurrentSalary").innerHTML = "Not Applicable";
-        } else{
-            document.getElementById("userCurrentSalary").innerHTML = "&#x20B9;" + returnedData.candidateLastWithdrawnSalary + "/month";
-        }
-    }
-
-    /* Current Company and Salary */
-    if (Object.keys(returnedData.jobHistoryList).length > 0) {
-        returnedData.jobHistoryList.forEach(function (pastJob) {
-            if(pastJob.currentJob == true){
-                if(pastJob.candidatePastCompany != ""){
-                    document.getElementById("userCurrentCompany").innerHTML = pastJob.candidatePastCompany;
-                } else{
-                    document.getElementById("userCurrentCompany").innerHTML = "Not Specified";
-                }
-                return false;
-            }
-        });
-    }
-
     /* candidate Education */
     try{
         if(returnedData.candidateEducation.education != null) {
@@ -480,18 +458,42 @@ function processDataAndFillMinProfile(returnedData) {
     if(returnedData.candidateTotalExperience != null){
         if(returnedData.candidateTotalExperience == 0) {
             document.getElementById("userTotalExperience").innerHTML = "Fresher";
+            document.getElementById("userCurrentSalary").innerHTML = "Not Applicable";
+            document.getElementById("userCurrentCompany").innerHTML = "Not Applicable";
         }
         else {
-            var totalExperience = parseInt(returnedData.candidateTotalExperience);
-            var yrs = parseInt((totalExperience / 12)).toString();
-            var month = totalExperience % 12;
-            if(yrs == 0 && month != 0){
-                document.getElementById("userTotalExperience").innerHTML = month + " months";
-            } else if(month == 0 && yrs != 0){
+                var totalExperience = parseInt(returnedData.candidateTotalExperience);
+                var yrs = parseInt((totalExperience / 12)).toString();
+                var month = totalExperience % 12;
+                if(yrs == 0 && month != 0){
+                    document.getElementById("userTotalExperience").innerHTML = month + " months";
+                } else if(month == 0 && yrs != 0){
                 document.getElementById("userTotalExperience").innerHTML = yrs + " years";
 
             } else{
                 document.getElementById("userTotalExperience").innerHTML = yrs + " yrs and " + month + " mnths";
+            }
+
+            /* Current Company and Salary */
+            if (Object.keys(returnedData.jobHistoryList).length > 0) {
+                returnedData.jobHistoryList.forEach(function (pastJob) {
+                    if(pastJob.currentJob == true){
+                        if(pastJob.candidatePastCompany != ""){
+                            document.getElementById("userCurrentCompany").innerHTML = pastJob.candidatePastCompany;
+                        } else{
+                            document.getElementById("userCurrentCompany").innerHTML = "Not Specified";
+                        }
+                        return false;
+                    }
+                });
+            }
+
+            if(returnedData.candidateLastWithdrawnSalary != null){
+                if(returnedData.candidateLastWithdrawnSalary == "0"){
+                    document.getElementById("userCurrentSalary").innerHTML = "Not Applicable";
+                } else{
+                    document.getElementById("userCurrentSalary").innerHTML = "&#x20B9;" + returnedData.candidateLastWithdrawnSalary + "/month";
+                }
             }
         }
     }

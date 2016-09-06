@@ -52,18 +52,6 @@ $(function() {
         }
     });
 });
-
-$(function () {
-    $("#hotJobs").scroll(function() {
-        var w = window.innerWidth;
-        if(w < 440){
-            document.documentElement.scrollTop = document.body.scrollTop = 280;
-        } else{
-            document.documentElement.scrollTop = document.body.scrollTop = 248;
-        }
-    });
-});
-
 $(function () {
     $('#myRegistrationModal').on('hidden.bs.modal', function () {
         document.getElementById("registerBtn").disabled = false;
@@ -86,7 +74,6 @@ $(document).ready(function(){
     $(".navbar-nav li a").click(function(event) {
         $(".navbar-collapse").collapse('hide');
     });
-
     var w = window.innerWidth;
     if(w < 440){
         $(".navbar-default").css('background-color', 'white');
@@ -127,7 +114,6 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-
     try {
         $.ajax({
             type: "POST",
@@ -151,10 +137,10 @@ function processDataAllJobPosts(returnedData) {
         returnedData.forEach(function (jobPost){
             count++;
             if(count){
-                /* get all localities of the jobPost */
+                //!* get all localities of the jobPost *!/
                 var jobLocality = jobPost.jobPostToLocalityList;
                 var localities = "";
-                var allLocalities = "";
+                var allLocalities = ""
                 var loopCount = 0;
                 jobLocality.forEach(function (locality) {
                     loopCount ++;
@@ -168,7 +154,6 @@ function processDataAllJobPosts(returnedData) {
                         }
                     }
                 });
-
                 loopCount = 0;
                 jobLocality.forEach(function (locality) {
                     loopCount++;
@@ -217,7 +202,7 @@ function processDataAllJobPosts(returnedData) {
                 jobBodyDetails.id = "jobBodyDetails";
                 jobBodyCol.appendChild(jobBodyDetails);
 
-                /*  salary  */
+                //!*  salary  *!/
 
                 var bodyCol = document.createElement("div");
                 bodyCol.className = "col-sm-4";
@@ -253,7 +238,7 @@ function processDataAllJobPosts(returnedData) {
 
                 jobBodySubRowCol.appendChild(salaryDiv);
 
-                /*  experience  */
+                //!*  experience  *!/
 
                 var bodyColExp = document.createElement("div");
                 bodyColExp.className = "col-sm-3";
@@ -283,7 +268,7 @@ function processDataAllJobPosts(returnedData) {
                 expDiv.textContent = "Exp: " + jobPost.jobPostExperience.experienceType;
                 jobBodySubRowColExp.appendChild(expDiv);
 
-                /*  Location  */
+                //!*  Location  *!/
 
                 var bodyColLoc = document.createElement("div");
                 bodyColLoc.className = "col-sm-5";
@@ -326,23 +311,24 @@ function processDataAllJobPosts(returnedData) {
                 $(function () {
                     $('[data-toggle="tooltip"]').tooltip()
                 });
-                /*  apply button */
 
+                //!*  apply button *!/
                 var applyBtnDiv = document.createElement("div");
                 applyBtnDiv.className = "col-sm-2";
-                applyBtnDiv.onclick = function () {
-                    $('#jobApplyConfirm').modal();
-                    jobPostId = jobPost.jobPostId;
-                    jobLocalityArray = [];
-                    $('#applyButton').hide();
-                    addLocalitiesToModal();
-                };
                 rowDiv.appendChild(applyBtnDiv);
 
                 var applyBtn = document.createElement("div");
                 applyBtn.className = "jobApplyBtn";
-                applyBtn.textContent = "Apply";
+                applyBtn.textContent = "View Job";
                 applyBtnDiv.appendChild(applyBtn);
+                applyBtn.onclick=function(){
+                    var jobPostBreak = jobPost.jobPostTitle.replace("/","-");
+                    try {
+                        window.location.href = "/jobs/" + jobPostBreak + "/Bengaluru/" + jobPost.company.companyName + "/" + jobPost.jobPostId;
+                    } catch (exception) {
+                        console.log("exception occured!!" + exception);
+                    }
+                }
             }
         });
     }
@@ -363,7 +349,6 @@ function addLocalitiesToModal() {
         console.log("exception occured!!" + exception);
     }
 }
-
 function processDataForJobPostLocation(returnedData) {
     $("#jobNameConfirmation").html(returnedData.jobPostTitle);
     $("#companyNameConfirmation").html(returnedData.company.companyName);

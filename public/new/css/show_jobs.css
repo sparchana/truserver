@@ -1,0 +1,26 @@
+#applyToJobs{
+    padding-top: 24px;
+    padding-left: 14%;
+    padding-bottom: 24px;
+    margin-top: -90px;
+    color: #ffffff;
+}
+#applyToJobsTitle{
+    font-weight: bold;
+}
+@media screen and (max-width: 768px){
+    #applyToJobs{
+        padding: 0;
+        text-align: center;
+        margin: -85px 0px 48px 0px;
+        font-weight: bold;
+    }
+    #applyToJobsTitle{
+        font-weight: bold;
+    }
+    #sectionOne {
+        background-size: 260%;
+        padding-top: 0%;
+        padding-bottom: 48%;
+    }
+}

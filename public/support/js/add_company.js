@@ -180,10 +180,10 @@ function saveForm(){
     var recruiterMobile = validateMobile($("#recruiterMobile").val());
     //checking first name
     switch(recruiterName){
-        case 0: alert("First name contains number. Please Enter a valid First Name"); status=0; break;
-        case 2: alert("First Name cannot be blank spaces. Enter a valid first name"); status=0; break;
-        case 3: alert("First name contains special symbols. Enter a valid first name"); status=0; break;
-        case 4: alert("Please enter your first name"); status=0; break;
+        case 0: alert("Recruiter's name contains number. Please Enter a valid name"); status=0; break;
+        case 2: alert("Recruiter's name cannot be blank spaces. Enter a valid name"); status=0; break;
+        case 3: alert("Recruiter's name contains special symbols. Enter a valid name"); status=0; break;
+        case 4: alert("Please enter recruiter's name"); status=0; break;
     }
     if(recruiterMobile == 0){
         alert("Enter a valid mobile number");
@@ -196,10 +196,7 @@ function saveForm(){
         status=0;
     }
 
-    console.log("here status: " + status + " company status: " + companyStatus);
-
     if(status == 1 && companyStatus != 4){
-        console.log("Inside");
         if($("#recruiterCompany").val() != ""){
             companyId = $("#recruiterCompany").val();
         }

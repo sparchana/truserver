@@ -1108,9 +1108,9 @@ public class Application extends Controller {
         List<String> jobRoleIdList = Arrays.asList(jobRoleIds.split("\\s*,\\s*"));
         Query<JobExpQuestion> query = JobExpQuestion.find.query();
         query = query.select("*").fetch("jobRole")
-                    .where()
-                    .in("jobRole.jobRoleId", jobRoleIdList)
-                    .query();
+                .where()
+                .in("jobRole.jobRoleId", jobRoleIdList)
+                .query();
         List<JobExpQuestion> response = query.findList();
         if(response != null){
             return ok(toJson(response));
@@ -1207,5 +1207,35 @@ public class Application extends Controller {
 
     public static Result postJob() {
         return redirect("http://goo.gl/Dpsvcn");
+    }
+    public static Result renderPageNavBar() {
+        return ok(views.html.nav_bar.render());
+    }
+    public static Result renderGAScript() { return ok(views.html.script.render()); }
+    public static Result renderPageFooter() {
+        return ok(views.html.footer.render());
+    }
+    public static Result renderJobRoleGrid() { return ok(views.html.job_role_grid_view.render());}
+    public static Result renderJobPostCards() { return ok(views.html.hot_jobs_card_view.render());}
+    public static Result renderShowAllJobs() { return ok(views.html.show_all_jobs_page.render());}
+    public static Result renderJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
+        return ok(views.html.posted_job_details.render());
+    }
+
+    public static Result getJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
+        JobPost jobPost = JobPost.find.where().eq("JobPostId",jobId).findUnique();
+        if (jobPost != null) {
+            return ok(toJson(jobPost));
+        }
+        return ok("Error");
+    }
+
+    public static Result renderJobRoleJobPage(String rolePara, Long idPara) {
+        return ok(views.html.job_role_page.render());
+    }
+
+    public static Result getJobRoleWiseJobPosts(String rolePara, Long idPara) {
+        List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).findList();
+        return ok(toJson(jobPostList));
     }
 }

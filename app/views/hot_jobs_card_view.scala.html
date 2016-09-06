@@ -1,0 +1,62 @@
+<!-- confirm job modal -->
+<div class="modal fade" id="jobApplyConfirm" tabindex="-1" role="dialog" aria-labelledby="jobApplyConfirm">
+    <div class="modal-dialog" role="document" id="customModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">Job Application Confirmation</h4>
+            </div>
+            <div class="modal-body">
+                <div id="confirmationMsg">
+                    <center>
+                        <img src="/assets/img/jobApply.png" width="48px">
+                    </center>
+                    <center>
+                        <h5>You are applying for <b><div style="display: inline-block" id="jobNameConfirmation"></div></b> job at <b><div style="display: inline-block" id="companyNameConfirmation"></div></b>.</h5>
+                        <h5>Please select the location where you can work:</h5>
+                        <select id="jobLocality" class="selectDropdown"></select>
+                        <button type="submit" onclick="confirmApply()" id="applyButton" class="jobApplyBtnModal" style="display : none; margin: 6px">Apply</button>
+                    </center>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- custom message modal -->
+<div class="modal fade" id="messagePromptModal" tabindex="-1" role="dialog" aria-labelledby="messagePromptModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">TruJobs</h4>
+            </div>
+            <div class="modal-body">
+                <center>
+                    <img id="customMsgIcon" width="48px">
+                    <div id="customMsg" style="padding: 16px"></div>
+                    <div id="customSubMsg" style="padding: 16px"></div>
+                </center>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="applyToJobs">
+    <h3 id="applyToJobsTitle">
+        Apply to Jobs
+    </h3>
+</div>
+<div id="hotJobs"></div>
+<br>
+<script>
+    $(function () {
+        $("#hotJobs").scroll(function() {
+            var w = window.innerWidth;
+            if(w < 440){
+                document.documentElement.scrollTop = document.body.scrollTop = 280;
+            } else{
+                document.documentElement.scrollTop = document.body.scrollTop = 248;
+            }
+        });
+    });
+</script>

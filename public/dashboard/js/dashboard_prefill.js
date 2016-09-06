@@ -86,8 +86,10 @@ function prefillBasicProfile() {
                 $("#candidateDob").val(yr + "-" + month + "-" + d);
                 $("#dob_day").val(d);
                 $("#dob_month").val(month);
-                $("#dob_year").val(yr);
-
+                if(new Date(date).getFullYear() > 1936
+                    && new Date(date).getFullYear() < 1998){
+                    $("#dob_year").val(yr);
+                }
             } catch (err) {
             }
         }
@@ -120,6 +122,8 @@ function prefillSkillProfile(){
     if(candidateInformation.candidateTotalExperience != null){
         if(candidateInformation.candidateTotalExperience == 0 && candidateInformation.candidateIsEmployed != 1){
             document.getElementById("fresher").checked = true;
+            $("#lastWithdrawnSalaryLayout").hide();
+            $("#isEmployedNo").click();
             $('#fresher').parent().addClass('active').siblings().removeClass('active');
         } else{
             var totalExperience = parseInt(candidateInformation.candidateTotalExperience);
@@ -130,6 +134,7 @@ function prefillSkillProfile(){
                 console.log("try catch");
             }
             try{
+                $("#lastWithdrawnSalaryLayout").show();
                 $("#totalWorkExperience").show();
                 $("#isEmployedSelect").show();
                 document.getElementById("experienced").checked = true;
@@ -137,69 +142,72 @@ function prefillSkillProfile(){
             } catch (err){
                 console.log("try catch");
             }
-        }
-    }
 
-    /* is Employed */
-    try {
-        if(candidateInformation.candidateIsEmployed != null){
-            if (candidateInformation.candidateIsEmployed == 1) {
-                $("#isEmployedSelect").show();
-                $('input[id=employed]').attr('checked', true);
-                $('#employedForm').show();
-                /* candidate dashboard */
-                document.getElementById("isEmployedYes").checked = true;
-                $("#isEmployedForm").show();
-                $('#isEmployedYes').parent().addClass('active').siblings().removeClass('active');
+            /* is Employed */
+            try {
+                if(candidateInformation.candidateIsEmployed != null){
+                    if (candidateInformation.candidateIsEmployed == 1) {
+                        $("#isEmployedSelect").show();
+                        $('input[id=employed]').attr('checked', true);
+                        $('#employedForm').show();
+                        /* candidate dashboard */
+                        document.getElementById("isEmployedYes").checked = true;
+                        $("#isEmployedForm").show();
+                        $('#isEmployedYes').parent().addClass('active').siblings().removeClass('active');
 
-            } else {
-                $('input[id=employedNot]').attr('checked', true);
-                /* candidate dashboard */
-                document.getElementById("isEmployedNo").checked = true;
-                $("#isEmployedForm").hide();
-                $('#isEmployedNo').parent().addClass('active').siblings().removeClass('active');
-            }
-        }
-    } catch(err){
-        console.log(err);
-    }
-    /* current company details */
-    try {
-        if(candidateInformation.candidateLastWithdrawnSalary != null){
-            try{
-                $("#candidateLastWithdrawnSalary").val(candidateInformation.candidateLastWithdrawnSalary);
+                    } else {
+                        $('input[id=employedNot]').attr('checked', true);
+                        /* candidate dashboard */
+                        document.getElementById("isEmployedNo").checked = true;
+                        $("#isEmployedForm").hide();
+                        $('#isEmployedNo').parent().addClass('active').siblings().removeClass('active');
+                    }
+                }
             } catch(err){
                 console.log(err);
             }
-        }
-        var currentJobRole = [];
-
-        if(candidateInformation.jobHistoryList != null){
-            var candidatePastJobList = candidateInformation.jobHistoryList;
-            candidatePastJobList.forEach(function (jobHistory) {
-                if(jobHistory.candidatePastCompany != null && jobHistory.candidatePastCompany != "" && jobHistory.currentJob != false && jobHistory.jobRole != null){
-                    $("#candidateCurrentCompany").val(jobHistory.candidatePastCompany);
-                    var item = {};
-                    item ["id"] = jobHistory.jobRole.jobRoleId;
-                    item ["name"] = jobHistory.jobRole.jobName;
-                    currentJobRole.push(item);
+            /* current company details */
+            try {
+                if(candidateInformation.candidateLastWithdrawnSalary != null){
+                    try{
+                        $("#candidateLastWithdrawnSalary").val(candidateInformation.candidateLastWithdrawnSalary);
+                    } catch(err){
+                        console.log(err);
+                    }
                 }
-            });
+                var currentJobRole = [];
+
+                if(candidateInformation.jobHistoryList != null){
+                    var candidatePastJobList = candidateInformation.jobHistoryList;
+                    candidatePastJobList.forEach(function (jobHistory) {
+                        if(jobHistory.candidatePastCompany != null && jobHistory.candidatePastCompany != "" && jobHistory.currentJob != false && jobHistory.jobRole != null){
+                            $("#candidateCurrentCompany").val(jobHistory.candidatePastCompany);
+                            var item = {};
+                            item ["id"] = jobHistory.jobRole.jobRoleId;
+                            item ["name"] = jobHistory.jobRole.jobName;
+                            currentJobRole.push(item);
+                        }
+                    });
+                }
+            } catch(err){
+                console.log(err);
+            }
+
         }
-        if($("#candidateCurrentJobRole").val() == ""){
-            $("#candidateCurrentJobRole").tokenInput(getJob(), {
-                theme: "facebook",
-                hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-                minChars: 0,
-                tokenLimit: 1,
-                prePopulate: currentJobRole,
-                preventDuplicates: true
-            });
-        }
-        
-    } catch(err){
-        console.log(err);
     }
+
+    if($("#candidateCurrentJobRole").val() == ""){
+        $("#candidateCurrentJobRole").tokenInput(getJob(), {
+            theme: "facebook",
+            hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+            minChars: 0,
+            tokenLimit: 1,
+            prePopulate: currentJobRole,
+            preventDuplicates: true
+        });
+    }
+
+
 
     /* language and skills */
     try{
@@ -527,15 +535,16 @@ function saveCandidateExperienceDetails(){
             totalExp=0;
         }
 
-        if(experienceStatus == 1 && $('input:radio[name="isEmployed"]:checked').val() == null){
+        if(experienceStatus == 1 && totalExp == 0){
+            alert("Select Total Years of Experience");
+        }
+
+        else if(experienceStatus == 1 && $('input:radio[name="isEmployed"]:checked').val() == null){
             alert("Please answer \"Are you currently working?\"");
-        } else if((experienceStatus == 1) && ($('input:radio[name="isEmployed"]:checked').val() == 1) && ($('#candidateLastWithdrawnSalary').val() == null || $('#candidateLastWithdrawnSalary').val() == "" || $('#candidateLastWithdrawnSalary').val() == "0")){
+        } else if((experienceStatus == 1)  && ($('#candidateLastWithdrawnSalary').val() == null || $('#candidateLastWithdrawnSalary').val() == "" || $('#candidateLastWithdrawnSalary').val() == "0")){
             alert("Enter your Last Withdrawn Salary");
         }
 
-        else if(experienceStatus == 1 && totalExp == 0){
-            alert("Select Total Years of Experience");
-        }
         else{
             document.getElementById("saveBtn").disabled = true;
             try {
@@ -579,13 +588,13 @@ function saveCandidateExperienceDetails(){
                 var candidateCurrentCompanyVal = "";
                 var candidateLastWithdrawnSalary = "";
 
+                candidateLastWithdrawnSalary = $('#candidateLastWithdrawnSalary').val();
+
                 if($('input:radio[name="isEmployed"]:checked').val() == 0){
                     candidateCurrentCompanyVal = null;
-                    candidateLastWithdrawnSalary = 0;
                 }
                 else{
                     candidateCurrentCompanyVal = $('#candidateCurrentCompany').val();
-                    candidateLastWithdrawnSalary = $('#candidateLastWithdrawnSalary').val();
                 }
 
                 var d = {
