@@ -30,7 +30,7 @@ public class AuthService {
 
     }
 
-    public static CandidateSignUpResponse savePassword(String mobile, String password){
+    public static CandidateSignUpResponse savePassword(String mobile, String password, InteractionService.InteractionChannelType channelType){
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
 
         Logger.info("to check: " + mobile);
@@ -50,7 +50,7 @@ public class AuthService {
                 if(candidate != null){
                     objAUUID = candidate.getCandidateUUId();
                 }
-                InteractionService.CreateInteractionForResetPassword(objAUUID, interactionResult);
+                InteractionService.createInteractionForResetPassword(objAUUID, interactionResult, channelType);
                 existingAuth.setAuthSessionId(UUID.randomUUID().toString());
                 existingAuth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
                 /* adding session details */
@@ -109,10 +109,10 @@ public class AuthService {
                 Interaction interaction = new Interaction(
                         existingCandidate.getCandidateUUId(),
                         ServerConstants.OBJECT_TYPE_CANDIDATE,
-                        ServerConstants.INTERACTION_TYPE_WEBSITE,
+                        channelType == InteractionService.InteractionChannelType.SELF_ANDROID ? ServerConstants.INTERACTION_TYPE_ANDROID : ServerConstants.INTERACTION_TYPE_WEBSITE,
                         ServerConstants.INTERACTION_NOTE_BLANK,
                         ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE + " & " + ServerConstants.INTERACTION_NOTE_SELF_PASSWORD_CHANGED,
-                        ServerConstants.INTERACTION_CREATED_SELF
+                        channelType.toString()
                 );
                 InteractionService.createInteraction(interaction);
                 try {

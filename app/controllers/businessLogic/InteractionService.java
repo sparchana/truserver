@@ -1,6 +1,7 @@
 package controllers.businessLogic;
 
 import api.ServerConstants;
+import com.sun.org.apache.regexp.internal.RE;
 import models.entity.Candidate;
 import models.entity.Interaction;
 import models.entity.Lead;
@@ -15,16 +16,28 @@ import static play.mvc.Controller.session;
  * Created by batcoder1 on 5/5/16.
  */
 public class InteractionService {
+    /* */
+    public enum InteractionChannelType {
+        UNKNOWN,
+        SELF,
+        SELF_ANDROID,
+        SUPPORT,
+        KNOWLARITY;
 
-    public static void createInteractionForSignUpCandidate(String objectAUUId, String result, boolean isSupport) {
-        if(!isSupport){
+        public String toString() {
+            return name().charAt(0) + name().substring(1).toLowerCase();
+        }
+    }
+
+    public static void createInteractionForSignUpCandidate(String objectAUUId, String result, InteractionChannelType channelType) {
+        if(channelType == InteractionChannelType.SELF || channelType == InteractionChannelType.SELF_ANDROID ){
             Interaction interaction = new Interaction(
                     objectAUUId,
                     ServerConstants.OBJECT_TYPE_CANDIDATE,
-                    ServerConstants.INTERACTION_TYPE_WEBSITE,
+                    channelType == InteractionChannelType.SELF ? ServerConstants.INTERACTION_TYPE_WEBSITE : ServerConstants.INTERACTION_TYPE_ANDROID_SIGNUP,
                     ServerConstants.INTERACTION_NOTE_BLANK,
                     result,
-                    ServerConstants.INTERACTION_CREATED_SELF
+                    channelType.toString()
             );
             InteractionService.createInteraction(interaction);
         }
@@ -81,7 +94,7 @@ public class InteractionService {
         }
     }
 
-    public static void createInteractionForJobApplication(String objectAUUId, String objectBUUId, String result) {
+    public static void createInteractionForJobApplication(String objectAUUId, String objectBUUId, String result, InteractionChannelType channelType) {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
@@ -89,7 +102,7 @@ public class InteractionService {
                 ServerConstants.OBJECT_TYPE_JOB_POST,
                 ServerConstants.INTERACTION_TYPE_APPLIED_JOB,
                 result,
-                ServerConstants.INTERACTION_CREATED_SELF
+                channelType.toString()
         );
         InteractionService.createInteraction(interaction);
     }
@@ -99,21 +112,21 @@ public class InteractionService {
         Logger.info("Interaction saved");
     }
 
-    public static void createInteractionForLoginCandidate(String objectAUUId, boolean isSupport) {
-        if(!isSupport){
+    public static void createInteractionForLoginCandidate(String objectAUUId, InteractionChannelType channelType) {
+        if(channelType == InteractionChannelType.SELF || channelType == InteractionChannelType.SELF_ANDROID){
             Interaction interaction = new Interaction(
                     objectAUUId,
                     ServerConstants.OBJECT_TYPE_CANDIDATE,
-                    ServerConstants.INTERACTION_TYPE_WEBSITE,
+                    channelType == InteractionChannelType.SELF ? ServerConstants.INTERACTION_TYPE_WEBSITE : ServerConstants.INTERACTION_TYPE_ANDROID_LOGIN,
                     ServerConstants.INTERACTION_NOTE_BLANK,
                     ServerConstants.INTERACTION_RESULT_SELF_SIGNEDIN,
-                    ServerConstants.INTERACTION_CREATED_SELF
+                    channelType.toString()
             );
             InteractionService.createInteraction(interaction);
         }
     }
 
-    public static void createInteractionForJobApplicationAttempt(String objectAUUId, String objectBUUId, String result) {
+    public static void createInteractionForJobApplicationAttempt(String objectAUUId, String objectBUUId, String result, InteractionChannelType channelType) {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_JOB_POST,
@@ -121,13 +134,13 @@ public class InteractionService {
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
                 ServerConstants.INTERACTION_TYPE_TRIED_JOB_APPLY,
                 result,
-                ServerConstants.INTERACTION_CREATED_SELF
+                channelType.toString()
         );
         InteractionService.createInteraction(interaction);
     }
 
-    public static void CreateInteractionForDeactivateCandidate(String objectAUUId, boolean isSupport){
-        if(!isSupport){
+    public static void createInteractionForDeactivateCandidate(String objectAUUId, boolean isSupport){
+        if(isSupport){
             Interaction interaction = new Interaction(
                     objectAUUId,
                     ServerConstants.OBJECT_TYPE_CANDIDATE,
@@ -140,8 +153,8 @@ public class InteractionService {
         }
     }
 
-    public static void CreateInteractionForActivateCandidate(String objectAUUId, boolean isSupport) {
-        if(!isSupport){
+    public static void createInteractionForActivateCandidate(String objectAUUId, boolean isSupport) {
+        if(isSupport){
             Interaction interaction = new Interaction(
                     objectAUUId,
                     ServerConstants.OBJECT_TYPE_CANDIDATE,
@@ -154,26 +167,50 @@ public class InteractionService {
         }
     }
 
-    public static void CreateInteractionForResetPasswordAttempt(String objectAUUId, String result){
+    public static void createInteractionForResetPasswordAttempt(String objectAUUId, String result, InteractionChannelType channelType){
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
                 ServerConstants.INTERACTION_TYPE_TRIED_PASSWORD_RESET,
                 ServerConstants.INTERACTION_NOTE_BLANK,
                 result,
-                ServerConstants.INTERACTION_CREATED_SELF
+                channelType.toString()
         );
         InteractionService.createInteraction(interaction);
     }
 
-    public static void CreateInteractionForResetPassword(String objectAUUId, String result){
+    public static void createInteractionForResetPassword(String objectAUUId, String result, InteractionChannelType channelType){
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
                 ServerConstants.INTERACTION_TYPE_PASSWORD_RESET_SUCCESS,
                 ServerConstants.INTERACTION_NOTE_BLANK,
                 result,
-                ServerConstants.INTERACTION_CREATED_SELF
+                channelType.toString()
+        );
+        InteractionService.createInteraction(interaction);
+    }
+
+    public static void createInteractionForCandidateAlertService(String objectAUUId, String result, InteractionChannelType channelType){
+        Interaction interaction = new Interaction(
+                objectAUUId,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                ServerConstants.INTERACTION_TYPE_CANDIDATE_ALERT,
+                ServerConstants.INTERACTION_NOTE_BLANK,
+                result,
+                channelType.toString()
+        );
+        InteractionService.createInteraction(interaction);
+    }
+    public static void createInteractionForSearch(String objectAUUId, String result, InteractionChannelType  channelType){
+        Logger.info("Search Interaction Saved for UUID: " + objectAUUId);
+        Interaction interaction = new Interaction(
+                objectAUUId,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                ServerConstants.INTERACTION_TYPE_ANDROID_SEARCH,
+                ServerConstants.INTERACTION_NOTE_BLANK,
+                result,
+                channelType.toString()
         );
         InteractionService.createInteraction(interaction);
     }

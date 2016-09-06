@@ -34,6 +34,8 @@ import static models.util.Util.generateOtp;
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 
+import controllers.businessLogic.InteractionService.InteractionChannelType;
+
 /**
  * Created by batcoder1 on 3/5/16.
  */
@@ -80,7 +82,7 @@ public class CandidateService
     }
 
     public static CandidateSignUpResponse signUpCandidate(CandidateSignUpRequest candidateSignUpRequest,
-                                                          boolean isSupport,
+                                                          InteractionChannelType channelType,
                                                           int leadSourceId) {
         List<Integer> localityList = candidateSignUpRequest.getCandidateLocality();
         List<Integer> jobsList = candidateSignUpRequest.getCandidateJobPref();
@@ -91,7 +93,7 @@ public class CandidateService
         Logger.info("Checking for mobile number: " + candidateSignUpRequest.getCandidateMobile());
         Candidate candidate = isCandidateExists(candidateSignUpRequest.getCandidateMobile());
         String leadName = candidateSignUpRequest.getCandidateFirstName()+ " " + candidateSignUpRequest.getCandidateSecondName();
-        Lead lead = LeadService.createOrUpdateConvertedLead(leadName, candidateSignUpRequest.getCandidateMobile(), leadSourceId, isSupport);
+        Lead lead = LeadService.createOrUpdateConvertedLead(leadName, candidateSignUpRequest.getCandidateMobile(), leadSourceId, channelType);
         try {
             if(candidate == null) {
                 candidate = new Candidate();
@@ -120,7 +122,7 @@ public class CandidateService
                 }
 
                 candidateSignUpResponse = createNewCandidate(candidate, lead);
-                if(!isSupport){
+                if(!(channelType == InteractionChannelType.SUPPORT)){
                     // triggers when candidate is self created
                     triggerOtp(candidate, candidateSignUpResponse);
                     result = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE;
@@ -135,7 +137,7 @@ public class CandidateService
                     if(localityList != null) {
                         resetLocalityAndJobPref(candidate, getCandidateLocalityPreferenceList(localityList, candidate), getCandidateJobPreferenceList(jobsList, candidate));
                     }
-                    if(!isSupport){
+                    if(!(channelType == InteractionChannelType.SUPPORT)){
                         triggerOtp(candidate, candidateSignUpResponse);
                         result = ServerConstants.INTERACTION_RESULT_EXISTING_CANDIDATE_VERIFICATION;
                         objectAUUId = candidate.getCandidateUUId();
@@ -155,7 +157,7 @@ public class CandidateService
 
             // Insert Interaction only for self sign up as interaction for sign up support will be handled in createCandidateProfile
             //TODO: improve naming convention
-            createInteractionForSignUpCandidate(objectAUUId, result, isSupport);
+            createInteractionForSignUpCandidate(objectAUUId, result, channelType);
 
         } catch (NullPointerException n){
             n.printStackTrace();
@@ -173,12 +175,12 @@ public class CandidateService
      *
      * @param request AddCandidateRequest or one of its child classes
      *                (AddCandidateEducationRequest/AddCandidateExperienceRequest/AddSupportCandidateRequest)
-     * @param isSupport Indicates whether this method is being called from support ui or from website
+     * @param channelType Indicates whether this method is being called from support ui or from website or from Android app
      * @param profileUpdateFlag Indicates which part of candidate's profile is being updated
      * @return
      */
     public static CandidateSignUpResponse createCandidateProfile(AddCandidateRequest request,
-                                                                 boolean isSupport,
+                                                                 InteractionChannelType channelType,
                                                                  int profileUpdateFlag) {
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
         // get candidateBasic obj from req
@@ -192,13 +194,17 @@ public class CandidateService
         String createdBy = ServerConstants.INTERACTION_CREATED_SELF;
         String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SELF;
         Integer interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+
         String interactionNote;
         boolean isNewCandidate = false;
 
-        if(isSupport){
+        if(channelType == InteractionChannelType.SUPPORT){
             createdBy = session().get("sessionUsername");
             interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM;
             interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT;
+        } else if(channelType == InteractionChannelType.SELF_ANDROID){
+            interactionType = ServerConstants.INTERACTION_TYPE_ANDROID;
+            createdBy = channelType.toString();
         }
 
         if(candidate == null){
@@ -206,7 +212,7 @@ public class CandidateService
             CandidateSignUpRequest candidateSignUpRequest = ( CandidateSignUpRequest ) request;
 
             // sign this candidate up as a first step
-            candidateSignUpResponse = signUpCandidate(candidateSignUpRequest, isSupport, request.getLeadSource());
+            candidateSignUpResponse = signUpCandidate(candidateSignUpRequest, channelType, request.getLeadSource());
 
             if(candidateSignUpResponse.getStatus() != CandidateSignUpResponse.STATUS_SUCCESS){
                 Logger.info("Error while signing up candidate with mobile number: " + request.getCandidateMobile());
@@ -250,7 +256,7 @@ public class CandidateService
             if(request.getCandidateMobile() != null){
                 // If a lead already exists for this candiate, update its status to 'WON'. If not create a new lead
                 // with status 'WON'
-                Lead lead = createOrUpdateConvertedLead(request.getCandidateFirstName() +" " + request.getCandidateSecondName(), request.getCandidateMobile(), request.getLeadSource(), isSupport);
+                Lead lead = createOrUpdateConvertedLead(request.getCandidateFirstName() +" " + request.getCandidateSecondName(), request.getCandidateMobile(), request.getLeadSource(), channelType);
                 Logger.info("Lead : " + lead.getLeadId() + " created or updated for candidate with mobile: "
                         + request.getCandidateMobile());
                 candidate.setLead(lead);
@@ -282,7 +288,7 @@ public class CandidateService
         if(profileUpdateFlag == ServerConstants.UPDATE_SKILLS_PROFILE ||
                 profileUpdateFlag == ServerConstants.UPDATE_ALL_BY_SUPPORT) {
 
-            candidateSignUpResponse = updateSkillProfile(candidate, (AddCandidateExperienceRequest) request, isSupport);
+            candidateSignUpResponse = updateSkillProfile(candidate, (AddCandidateExperienceRequest) request);
 
             // In case of errors, return at this point
             if(candidateSignUpResponse.getStatus() != CandidateSignUpResponse.STATUS_SUCCESS){
@@ -318,7 +324,7 @@ public class CandidateService
         // set the default interaction note string
         interactionNote = ServerConstants.INTERACTION_NOTE_BLANK;
 
-        if(isSupport){
+        if(channelType == InteractionChannelType.SUPPORT){
             // update additional fields that are part of the support request
             updateOthersBySupport(candidate, request);
 
@@ -339,7 +345,7 @@ public class CandidateService
         // check if we have auth record for this candidate. if we dont have, create one with a temporary password
         Auth auth = AuthService.isAuthExists(candidate.getCandidateId());
         if (auth == null) {
-            if(isSupport){
+            if(channelType == InteractionChannelType.SUPPORT){
                 // TODO: differentiate between in/out call
                 createAndSaveDummyAuthFor(candidate);
                 interactionResult += " & " + ServerConstants.INTERACTION_NOTE_DUMMY_PASSWORD_CREATED;
@@ -493,13 +499,13 @@ public class CandidateService
             candidate.setCandidateprofilestatus(CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_DEACTIVE).findUnique());
             candidateStatusDetail.setReason(Reason.find.where().eq("ReasonId", supportCandidateRequest.getDeactivationReason()).findUnique());
             candidateStatusDetail.setStatusExpiryDate(supportCandidateRequest.getDeactivationExpiryDate());
-            InteractionService.CreateInteractionForDeactivateCandidate(candidate.getCandidateUUId(), true);
+            InteractionService.createInteractionForDeactivateCandidate(candidate.getCandidateUUId(), true);
             return candidateStatusDetail;
         } else if(candidate.getCandidateStatusDetail() != null && !supportCandidateRequest.getDeactivationStatus()){
             /* Remove from candidateStatusDetail and change candidateStatus to Active */
             candidate.setCandidateprofilestatus(CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE).findUnique());
 
-            InteractionService.CreateInteractionForActivateCandidate(candidate.getCandidateUUId(), true);
+            InteractionService.createInteractionForActivateCandidate(candidate.getCandidateUUId(), true);
             return null;
         }
         return null;
@@ -553,8 +559,7 @@ public class CandidateService
     }
 
     private static CandidateSignUpResponse updateSkillProfile(Candidate candidate,
-                                                              AddCandidateExperienceRequest addCandidateExperienceRequest,
-                                                              boolean isSupport) {
+                                                              AddCandidateExperienceRequest addCandidateExperienceRequest) {
 
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
         candidateSignUpResponse.setMinProfile(candidate.getIsMinProfileComplete());
@@ -902,7 +907,7 @@ public class CandidateService
         return response;
     }
 */
-    public static LoginResponse login(String loginMobile, String loginPassword){
+    public static LoginResponse login(String loginMobile, String loginPassword, InteractionChannelType channelType){
         LoginResponse loginResponse = new LoginResponse();
         Logger.info(" login mobile: " + loginMobile);
         Candidate existingCandidate = CandidateService.isCandidateExists(loginMobile);
@@ -960,7 +965,7 @@ public class CandidateService
                     /* adding session details */
                     AuthService.addSession(existingAuth,existingCandidate);
                     existingAuth.update();
-                    InteractionService.createInteractionForLoginCandidate(existingCandidate.getCandidateUUId(), false);
+                    InteractionService.createInteractionForLoginCandidate(existingCandidate.getCandidateUUId(), channelType);
                     Logger.info("Login Successful");
                 }
                 else {
@@ -976,7 +981,7 @@ public class CandidateService
         return loginResponse;
     }
 
-    public static ResetPasswordResponse findUserAndSendOtp(String candidateMobile){
+    public static ResetPasswordResponse findUserAndSendOtp(String candidateMobile, InteractionChannelType channelType){
         ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
         Candidate existingCandidate = isCandidateExists(candidateMobile);
         if(existingCandidate != null){
@@ -993,7 +998,7 @@ public class CandidateService
                 String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_RESET_PASSWORD;
                 String objAUUID = "";
                 objAUUID = existingCandidate.getCandidateUUId();
-                InteractionService.CreateInteractionForResetPasswordAttempt(objAUUID, interactionResult);
+                InteractionService.createInteractionForResetPasswordAttempt(objAUUID, interactionResult, channelType);
                 resetPasswordResponse.setOtp(randomPIN);
                 resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);
             }
