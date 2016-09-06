@@ -1209,41 +1209,34 @@ public class Application extends Controller {
     public static Result postJob() {
         return redirect("http://goo.gl/Dpsvcn");
     }
-    public static Result renderNavBar() {
+    public static Result renderPageNavBar() {
         return ok(views.html.nav_bar.render());
     }
-    public static Result renderScript() { return ok(views.html.script.render()); }
-    public static Result renderFooter() {
+    public static Result renderGAScript() { return ok(views.html.script.render()); }
+    public static Result renderPageFooter() {
         return ok(views.html.footer.render());
     }
-    public static Result renderJobRolesViewLinked() { return ok(views.html.job_roles_view_linked.render());}
-    public static Result renderPostedJobRolesView() {
-        return ok(views.html.posted_job_view.render());
+    public static Result renderJobRoleGrid() { return ok(views.html.job_role_grid_view.render());}
+    public static Result renderJobPostCards() { return ok(views.html.hot_jobs_card_view.render());}
+    public static Result renderShowAllJobs() { return ok(views.html.show_all_jobs_page.render());}
+    public static Result renderJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
+        return ok(views.html.posted_job_details.render());
     }
-    public static Result showJobsPage() { return ok(views.html.show_all_jobs_page.render());}
-    public static Result postedJobsDetails(String jobTitle,String jobLocation,String jobCompany,long jobId)
-    {return ok(views.html.posted_job_details.render());}
-    public static Result postedJobsDetailsData(String jobTitle,String jobLocation,String jobCompany,long jobId)
-    {
-        JobPost jobPost = JobPost.find.where().eq("JobPostId",jobId).findUnique();
 
+    public static Result getJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
+        JobPost jobPost = JobPost.find.where().eq("JobPostId",jobId).findUnique();
         if (jobPost != null) {
             return ok(toJson(jobPost));
         }
         return ok("Error");
+    }
 
+    public static Result renderJobRoleJobPage(String rolePara, Long idPara) {
+        return ok(views.html.job_role_page.render());
     }
-    public static Result jobRoleDetailsPage(String rolePara, Long idPara)
-    {
-        return ok(views.html.selected_job_role_details.render());
-    }
-    public static Result jobRoleDetailsPageData(String rolePara, Long idPara)
-    {
-        //JobRole jobRole = JobRole.find.where().eq("jobRoleId",idPara).findUnique();
+
+    public static Result getJobRoleWiseJobPosts(String rolePara, Long idPara) {
         List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).findList();
-        Logger.info("Show"+jobPostList);
         return ok(toJson(jobPostList));
-
-
     }
 }

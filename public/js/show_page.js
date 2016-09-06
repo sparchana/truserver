@@ -128,12 +128,14 @@ $(document).ready(function(){
     var allJobDetailPageUrl = $(location).attr('href');
     var allJobDetailPageUrlBreak = allJobDetailPageUrl.split("/");
     allJobDetailPageUrlBreak.reverse();
+
     $("#sectionOne").css("background-image","linear-gradient(rgba(24, 26, 45, 0.4),rgba(24, 26, 45, 0.4))" +
         ",url(/assets/img/"+allJobDetailPageUrlBreak[0]+".png)");
+
     try {
         $.ajax({
             type: "GET",
-            url: "/jobs/" +allJobDetailPageUrlBreak[1] +"/"+ allJobDetailPageUrlBreak[0],
+            url: "/jobs/" + allJobDetailPageUrlBreak[1] +"/"+ allJobDetailPageUrlBreak[0],
             contentType: "application/json; charset=utf-8",
             data: false,
             processData: false,
@@ -155,9 +157,10 @@ function processDataForSelectedJobPost(returnedData) {
             temp = conTitle[i].charAt(0).toUpperCase() + conTitle[i].substring(1);
             showTitle +=temp + " ";
         }
-            $('#jobTitleLine').html("Register for "+showTitle);
-            $('#jobRoleTitle').html("Register for "+showTitle);
-            $('#applyToJobsTitle').html("Apply to "+showTitle);
+        var decodedJobRoleName = showTitle.replace(/%20/g, " ");
+            $('#jobTitleLine').html("Register for "+ decodedJobRoleName);
+            $('#jobRoleTitle').html("Register for "+ decodedJobRoleName);
+            $('#applyToJobsTitle').html("Apply to "+ decodedJobRoleName);
             if(returnedData != ""){
             var jobPostCount = Object.keys(returnedData).length;
                 if (jobPostCount > 0) {
@@ -171,7 +174,7 @@ function processDataForSelectedJobPost(returnedData) {
                             /* get all localities of the jobPost */
                             var jobLocality = jobPost.jobPostToLocalityList;
                             var localities = "";
-                            var allLocalities = ""
+                            var allLocalities = "";
                             var loopCount = 0;
                             jobLocality.forEach(function (locality) {
                                 loopCount++;
@@ -364,8 +367,7 @@ function processDataForSelectedJobPost(returnedData) {
                 }
 
             }
-        }
-    else{
+        } else{
             var parent = $("#hotJobs");
             var hotJobItem = document.createElement("div");
             hotJobItem.id = "hotJobItem";
@@ -387,21 +389,21 @@ function processDataForSelectedJobPost(returnedData) {
             col.appendChild(jobImage);
 
 
-                var jobImageSrc = document.createElement("img");
-                jobImageSrc.id="jobImageSrc";
-                jobImage.appendChild(jobImageSrc);
-                $("#jobImageSrc").attr('src','/assets/img/location.svg');
+            var jobImageSrc = document.createElement("img");
+            jobImageSrc.id="jobImageSrc";
+            jobImage.appendChild(jobImageSrc);
+            $("#jobImageSrc").attr('src','/assets/img/empty-search.svg');
 
 
-            var jobMssgLine1 = document.createElement("div");
-            jobMssgLine1.id = "jobMssgLine1";
-            col.appendChild(jobMssgLine1);
-            $("#jobMssgLine1").html("Oops!! No relevant jobs found at this movement");
+            var jobMsgLine1 = document.createElement("div");
+            jobMsgLine1.id = "jobMsgLine1";
+            col.appendChild(jobMsgLine1);
+            $("#jobMsgLine1").html("Oops!! No relevant jobs found at this movement");
 
-                var jobMssgLine2 = document.createElement("div");
-                jobMssgLine2.id = "jobMssgLine2";
-                col.appendChild(jobMssgLine2);
-                $("#jobMssgLine2").html("Register yourself to get updates when new jobs are posted");
+            var jobMsgLine2 = document.createElement("div");
+            jobMsgLine2.id = "jobMsgLine2";
+            col.appendChild(jobMsgLine2);
+            $("#jobMsgLine2").html("Register yourself to get updates when new jobs are posted");
 
     }
 }
