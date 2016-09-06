@@ -243,7 +243,7 @@ function processDataAllJobPosts(returnedData) {
                 $("#locationMsg_" + jobPost.jobPostId).attr("data-toggle", "tooltip");
                 /*  apply button */
 
-                var applyBtnDiv = document.createElement("div");
+               /* var applyBtnDiv = document.createElement("div");
                 applyBtnDiv.className = "col-sm-2";
                 applyBtnDiv.id = "applyBtnDiv_" + jobPost.jobPostId;
                 applyBtnDiv.onclick = function () {
@@ -259,7 +259,26 @@ function processDataAllJobPosts(returnedData) {
                 applyBtn.id = "apply_btn_" + jobPost.jobPostId;
                 applyBtn.className = "jobApplyBtn";
                 applyBtn.textContent = "Apply";
+                applyBtnDiv.appendChild(applyBtn);*/
+
+                var applyBtnDiv = document.createElement("div");
+                applyBtnDiv.className = "col-sm-2";
+                applyBtnDiv.id = "applyBtnDiv_" + jobPost.jobPostId;
+                rowDiv.appendChild(applyBtnDiv);
+
+                var applyBtn = document.createElement("div");
+                applyBtn.className = "jobApplyBtn";
+                applyBtn.id = "apply_btn_" + jobPost.jobPostId;
+                applyBtn.textContent = "View Job";
                 applyBtnDiv.appendChild(applyBtn);
+                applyBtn.onclick=function(){
+                    var jobPostBreak = jobPost.jobPostTitle.replace("/","-");
+                    try {
+                        window.location.href = "/jobs/" + jobPostBreak + "/Bengaluru/" + jobPost.company.companyName + "/" + jobPost.jobPostId;
+                    } catch (exception) {
+                        console.log("exception occured!!" + exception);
+                    }
+                }
             }
         });
     }
@@ -478,7 +497,7 @@ function processDataAndFillMinProfile(returnedData) {
             if (Object.keys(returnedData.jobHistoryList).length > 0) {
                 returnedData.jobHistoryList.forEach(function (pastJob) {
                     if(pastJob.currentJob == true){
-                        if(pastJob.candidatePastCompany != ""){
+                        if(pastJob.candidatePastCompany != null){
                             document.getElementById("userCurrentCompany").innerHTML = pastJob.candidatePastCompany;
                         } else{
                             document.getElementById("userCurrentCompany").innerHTML = "Not Specified";

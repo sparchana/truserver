@@ -1236,6 +1236,9 @@ public class Application extends Controller {
     public static Result renderPageNavBar() {
         return ok(views.html.nav_bar.render());
     }
+    public static Result renderPageNavBarLoggedIn() {
+        return ok(views.html.nav_bar_logged_in.render());
+    }
     public static Result renderGAScript() { return ok(views.html.script.render()); }
     public static Result renderPageFooter() {
         return ok(views.html.footer.render());

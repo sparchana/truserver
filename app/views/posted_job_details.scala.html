@@ -52,17 +52,24 @@
     </div>
 
     <!-- Nav start -->
-    <nav class="navbar navbar-default navbar-fixed-top" role="navigation" id="nav_bar_inc"></nav>
-    <script>
-                    $(document).ready(function(){
-                      $('#nav_bar_inc').load('/navBar');
-                    });
-    </script>
-        <div class="container">
-            <div id="fixed-menu-shadow" style="padding-bottom: 0px; padding-top: 8px; display: none" >
+    <div id="nav_bar_inc"></div>
+        <script>
+            $(document).ready(function(){
+                var phone = localStorage.getItem("mobile");
+                if(phone == null){ // not logged in
+                    $('#nav_bar_inc').load('/navBar');
+                } else{
+                    $('#nav_bar_inc').load('/navBarLoggedIn');
+                }
 
-            </div>
+            });
+        </script>
+
+    <div class="container">
+        <div id="fixed-menu-shadow" style="padding-bottom: 0px; padding-top: 8px; display: none" >
+
         </div>
+    </div>
     <div id="mySignUpModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
             <!-- Modal content-->

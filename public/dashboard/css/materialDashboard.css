@@ -56,7 +56,7 @@ body{
 .fade-background {
     border: none;
     background-color: #286ab6;
-    box-shadow: 0 2px 4px #333;
+    box-shadow: 0 2px 1px rgba(97, 97, 97, 0.64);
 }
 
 .profileSectionOne{

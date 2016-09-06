@@ -52,11 +52,16 @@
         <div id="status">&nbsp;</div>
     </div>
 
-    <!-- Nav start -->
+            <!-- Nav start -->
         <div id="nav_bar_inc"></div>
         <script>
             $(document).ready(function(){
-                $('#nav_bar_inc').load('/navBar');
+                var phone = localStorage.getItem("mobile");
+                if(phone == null){ // not logged in
+                    $('#nav_bar_inc').load('/navBar');
+                } else{
+                    $('#nav_bar_inc').load('/navBarLoggedIn');
+                }
             });
         </script>
         <div class="container">

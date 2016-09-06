@@ -80,7 +80,6 @@ $(window).load(function() {
 });
 
 $(document).ready(function(){
-    localStorage.clear();
     $(".navbar-nav li a").click(function(event) {
         $(".navbar-collapse").collapse('hide');
     });

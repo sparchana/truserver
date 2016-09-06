@@ -81,6 +81,7 @@ POST        /signUp                                                       contro
 #new routes
 #~~~~~~~~~~~~~~~~~~~~
 GET         /navBar                                                       controllers.Application.renderPageNavBar()
+GET         /navBarLoggedIn                                               controllers.Application.renderPageNavBarLoggedIn()
 GET         /scriptContainer                                              controllers.Application.renderGAScript()
 GET         /footer                                                       controllers.Application.renderPageFooter()
 GET         /jobPostCardView                                              controllers.Application.renderJobPostCards()
