@@ -1239,4 +1239,9 @@ public class Application extends Controller {
         List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).findList();
         return ok(toJson(jobPostList));
     }
+
+    public static Result getAllCompanyLogos() {
+        List<Company> companyList = Company.find.orderBy("companyName").findList();
+        return ok(toJson(companyList));
+    }
 }

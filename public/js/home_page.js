@@ -126,7 +126,91 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllCompanyLogos",
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckCompanyLogo
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
 });
+
+function processDataCheckCompanyLogo(returnedData) {
+    var companyCount = Object.keys(returnedData).length;
+    var companyRowCount = Math.floor(companyCount / 6); // 6 because we are showing 6 companies in a row
+    var remainingCompanies = companyCount % 6;
+
+    var count = 0;
+    var start = 0;
+    var parent = $("#hiringCompanies");
+
+    var rowDiv = document.createElement("div");
+    rowDiv.className = "item active";
+    parent.append(rowDiv);
+
+    returnedData.forEach(function (company) {
+        if(count >= start && count < (start+6)){
+            var logoDiv = document.createElement("div");
+            logoDiv.className = "col-sm-2";
+            rowDiv.appendChild(logoDiv);
+
+            var companyLogo = document.createElement("img");
+            companyLogo.className = "img-responsive";
+            companyLogo.setAttribute('alt', "Companies Hiring");
+            companyLogo.src = company.companyLogo;
+            logoDiv.appendChild(companyLogo);
+
+        }
+        count++;
+        //checking when to end the loop
+        if(count > 6){ return true; }
+    });
+
+    startIndex = 6;
+    for(var i=1;i<companyRowCount; i++){
+        setCompanyLogos(returnedData, startIndex);
+        startIndex = startIndex + 6;
+    }
+    if(remainingCompanies > 0){
+        startIndex = companyCount - remainingCompanies;
+        setCompanyLogos(returnedData, startIndex);
+    }
+}
+
+function setCompanyLogos(returnedData, start){
+    var count = 0;
+    var parent = $("#hiringCompanies");
+
+    var rowDiv = document.createElement("div");
+    rowDiv.className = "item";
+    parent.append(rowDiv);
+
+    returnedData.forEach(function (company) {
+        if(count >= start && count < (start+6)){
+            var logoDiv = document.createElement("div");
+            logoDiv.className = "col-sm-2";
+            rowDiv.appendChild(logoDiv);
+
+            var companyLogo = document.createElement("img");
+            companyLogo.className = "img-responsive";
+            companyLogo.setAttribute('alt', "Companies Hiring");
+            companyLogo.src = company.companyLogo;
+            logoDiv.appendChild(companyLogo);
+
+        }
+        count++;
+        //checking when to end the loop
+        if(count > start + 6){ return true; }
+    });
+}
+
+
 
 function processDataAllJobPosts(returnedData) {
     var jobPostCount = Object.keys(returnedData).length;

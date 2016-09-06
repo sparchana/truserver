@@ -108,6 +108,7 @@ POST        /getAllLanguage                                               contro
 POST        /getAllLocality                                               controllers.Application.getAllLocality()
 POST        /getAllShift                                                  controllers.Application.getAllShift()
 POST        /getAllTransportation                                         controllers.Application.getAllTransportation()
+POST        /getAllCompanyLogos                                           controllers.Application.getAllCompanyLogos()
 POST        /getJobPostInfo/:id/:isSupport                                controllers.Application.getJobPostInfo(id : Long, isSupport : Integer)
 
 # 3rd Party API
