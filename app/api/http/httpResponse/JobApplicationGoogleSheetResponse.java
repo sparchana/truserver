@@ -28,6 +28,9 @@ public class JobApplicationGoogleSheetResponse {
     public Timestamp candidateCreationTimestamp;
     public String candidateProfileStatus;
     public Date candidateExpiryDate;
+    public String jobPostIsHot;
+    public String jobApplicationChannel;
+    public int candidateAge;
 
     public String getCandidateProfileStatus() {
         return candidateProfileStatus;
@@ -195,5 +198,29 @@ public class JobApplicationGoogleSheetResponse {
 
     public void setCandidateSkill(String candidateSkill) {
         this.candidateSkill = candidateSkill;
+    }
+
+    public String getJobPostIsHot() {
+        return jobPostIsHot;
+    }
+
+    public void setJobPostIsHot(String jobPostIsHot) {
+        this.jobPostIsHot = jobPostIsHot;
+    }
+
+    public String getJobApplicationChannel() {
+        return jobApplicationChannel;
+    }
+
+    public void setJobApplicationChannel(String jobApplicationChannel) {
+        this.jobApplicationChannel = jobApplicationChannel;
+    }
+
+    public int getCandidateAge() {
+        return candidateAge;
+    }
+
+    public void setCandidateAge(int candidateAge) {
+        this.candidateAge = candidateAge;
     }
 }

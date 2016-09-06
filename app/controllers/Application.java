@@ -767,7 +767,7 @@ public class Application extends Controller {
     }
 
     public static Result getAllHotJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").findList();
+        List<JobPost> jobPosts = JobPost.find.all();
         return ok(toJson(jobPosts));
     }
 
@@ -874,13 +874,37 @@ public class Application extends Controller {
                     jobApplicationGoogleSheetResponse.setCandidateExpiryDate(null);
                 }
 
+                jobApplicationGoogleSheetResponse.setJobApplicationChannel("Website");
+                jobApplicationGoogleSheetResponse.setJobPostIsHot("Not Hot");
+                if(jobpost.getJobPostIsHot()){
+                    jobApplicationGoogleSheetResponse.setJobPostIsHot("Hot");
+                }
+
+                jobApplicationGoogleSheetResponse.setCandidateAge(0);
+                if(candidate.getCandidateDOB() != null){
+                    Date current = new Date();
+                    Date bday = new Date(candidate.getCandidateDOB().getTime());
+
+                    final Calendar calender = new GregorianCalendar();
+                    calender.set(Calendar.HOUR_OF_DAY, 0);
+                    calender.set(Calendar.MINUTE, 0);
+                    calender.set(Calendar.SECOND, 0);
+                    calender.set(Calendar.MILLISECOND, 0);
+                    calender.setTimeInMillis(current.getTime() - bday.getTime());
+
+                    int age = 0;
+                    age = calender.get(Calendar.YEAR) - 1970;
+                    age += (float) calender.get(Calendar.MONTH) / (float) 12;
+                    jobApplicationGoogleSheetResponse.setCandidateAge(age);
+                }
+
                 jobApplicationGoogleSheetResponse.setLanguageKnown(languagesKnown);
                 jobApplicationGoogleSheetResponse.setCandidateJobPref(candidateJobPref);
                 jobApplicationGoogleSheetResponse.setCandidateLocalityPref(candidateLocalityPref);
                 jobApplicationGoogleSheetResponse.setCandidateSkill(candidateSkills);
             }
         }
-        if(Play.isDev(Play.current()) == false){
+        if(!Play.isDev(Play.current())){
             jobApplicationGoogleSheetResponse.setFormUrl(ServerConstants.PROD_GOOGLE_FORM_FOR_JOB_APPLICATION);
         } else{
             jobApplicationGoogleSheetResponse.setFormUrl(ServerConstants.DEV_GOOGLE_FORM_FOR_JOB_APPLICATION);
