@@ -47,7 +47,7 @@ public class LeadService {
         return existingLead;
     }
 
-    public static int getLeadChannel(InteractionService.InteractionChannelType channelType){
+    public static int getLeadChannel(InteractionService.InteractionChannelType channelType) {
         int response = ServerConstants.LEAD_CHANNEL_UNKNOWN;
         switch (channelType){
             case SELF:

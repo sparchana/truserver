@@ -25,6 +25,7 @@ import java.net.URLEncoder;
 import java.util.*;
 
 import static com.avaje.ebean.Expr.eq;
+import static models.util.Util.RoundTo6Decimals;
 import static play.libs.Json.toJson;
 
 
@@ -100,21 +101,23 @@ public class AddressResolveService {
     }
 
     public static Locality getLocalityForLatLng(Double appxLatitude, Double appxLongitude) {
-        new AddressResolveService(appxLatitude, appxLongitude);
         List<String> nearyByAddressList = new ArrayList<>();
         nearyByAddressList.addAll(fetchNearByLocality(appxLatitude, appxLongitude, null));
         Locality locality =  Locality.find.where().eq("localityName", determineLocality(nearyByAddressList).trim().toLowerCase()).findUnique();
         if(locality == null){
             Logger.info("Locality is null!!");
         } else if((locality.getLat()==null || locality.getLat() == 0 || locality.getPlaceId() == null)){
-            locality = insertOrUpdateLocality(locality.getLocalityName());
+            locality = insertOrUpdateLocality(locality.getLocalityName(), appxLatitude, appxLongitude);
         }
         return locality;
     }
 
     public static Locality getLocalityForPlaceId(String placeId){
         LatLng latLng = getLatLngForPlaceId(placeId);
-        Locality locality = getLocalityForLatLng(latLng.latitude, latLng.longitude);
+        Locality locality =  Locality.find.where().eq("placeId", placeId).findUnique();
+        if(locality== null){
+            locality = getLocalityForLatLng(latLng.latitude, latLng.longitude);
+        }
         /* Modify Locality object to contain the given latlng instead of locality's latlng */
         if(locality!= null && locality.getLat() !=0 && locality.getLat() != latitude && latitude != 0){
             locality.setLat(latLng.latitude);
@@ -183,6 +186,7 @@ public class AddressResolveService {
                 try {
                     JSONObject placeOfInterest = jsonResultArray.getJSONObject(i);
                     String placeAddress = placeOfInterest.getString("vicinity").trim();
+                    /* decreases the count of city from address since mostly the city name appears at the end of address */
                     placeAddress = placeAddress.lastIndexOf(",") > placeAddress.indexOf(",")? placeAddress.substring(0, placeAddress.lastIndexOf(",")) : placeAddress;
                     nearbyLocalityAddressList.add(placeAddress.trim());
                 } catch (JSONException e) {
@@ -193,9 +197,18 @@ public class AddressResolveService {
         return nearbyLocalityAddressList;
     }
 
-    private static Locality insertOrUpdateLocality(String localityName){
-       Locality freshLocality = null;
+    public static Locality insertOrUpdateLocality(String localityName, Double lat, Double lng){
 
+        // Log.d(TAG, jsonResults.toString());
+        StringBuilder jsonResults = getJSONForAddressToLatLng(localityName, lat, lng);
+
+        Locality freshLocality = parseAndGetLocality(jsonResults);
+        Logger.info("loclaity:"+toJson(freshLocality));
+        return freshLocality;
+    }
+
+    private static Locality parseAndGetLocality(StringBuilder jsonResults) {
+        Locality freshLocality = null;
         JSONObject jsonObj;
         JSONArray jsonResultArray;
         Double latitude = 0D;
@@ -206,9 +219,6 @@ public class AddressResolveService {
         String stateName = null;
         /* Parse JSON */
         try {
-            // Log.d(TAG, jsonResults.toString());
-            StringBuilder jsonResults = getJSONForAddressToLatLng(localityName);
-
             jsonObj = new JSONObject(jsonResults.toString());
             String status = jsonObj.getString("status");
             if(status.trim().equalsIgnoreCase("ok")) {
@@ -222,25 +232,25 @@ public class AddressResolveService {
                      * Data set is limited to 20 by api, hence below code shouldn't be a time hogging task
                      * TODO: still find a better way to do the same
                      */
-                    /* loop thourgh all address_component to find city, state, country*/
+                    /* loop through all address_component to find city, state, country*/
                     for(int k = 0; k< address_components.length(); ++k){
                         JSONObject objectOfInterest = address_components.getJSONObject(k);
                         JSONArray tempTypesArray = objectOfInterest.getJSONArray("types");
                         //Logger.info("objOfInterest"+objectOfInterest);
                         for(int j = 0; j < tempTypesArray.length(); ++j) {
-                            if(tempTypesArray.get(j).toString().equalsIgnoreCase("sublocality_level_1")
+                            /* Below locality name will be overriden at every address_component
+                            *  since api's hierarchy is such that sublocality_2 is found before sublocality_1
+                            *  and both have sublocality as type. hence in hierarchy whichever element with type sublocality
+                            *  is found at last that value persists through out the process
+                            * */
+                            if(tempTypesArray.get(j).toString().equalsIgnoreCase("sublocality")
                                     || tempTypesArray.get(j).toString().equalsIgnoreCase("route")
                                     || tempTypesArray.get(j).toString().equalsIgnoreCase("neighborhood") ) {
                                 locationName = objectOfInterest.getString("long_name");
-                                if(!localityName.trim().equalsIgnoreCase(locationName.trim().toLowerCase()) && !locationName.trim().isEmpty()){
-                                    Logger.info("Found locality which appears to sublocality of a locality. hence " +
-                                            "changing PrevFoundName: "+localityName +" to new name = "+locationName);
-                                    localityName = locationName;
-                                    Logger.info("locationName: "+localityName );
-                                }
+                                Logger.info("Found locationName: "+locationName );
+
                                 isDesiredData = true;
-                            }
-                            else if(tempTypesArray.get(j).toString().equalsIgnoreCase("locality")) {
+                            } else if(tempTypesArray.get(j).toString().equalsIgnoreCase("locality")) {
                                 cityName = objectOfInterest.getString("long_name");
                                 Logger.info("cityName: "+cityName);
                             }
@@ -250,22 +260,23 @@ public class AddressResolveService {
                             }
                         }
                     }
-                    if(cityName!= null && cityName.trim().equalsIgnoreCase(localityName.trim())){
+                    if(cityName!= null && locationName!=null && cityName.trim().equalsIgnoreCase(locationName.trim())){
                         return null;
                     }
 
                     if(isDesiredData){
                         JSONObject geometry = addressJsonObj.getJSONObject("geometry");
-                        latitude = geometry.getJSONObject("location").getDouble("lat");
-                        longitude = geometry.getJSONObject("location").getDouble("lng");
+                        latitude = RoundTo6Decimals(geometry.getJSONObject("location").getDouble("lat"));
+                        longitude =RoundTo6Decimals(geometry.getJSONObject("location").getDouble("lng"));
                         placeId = addressJsonObj.getString("place_id");
+                        Logger.info("DesiredData Found - placeId: "+ placeId + " locationName:"+ locationName);
 
                         freshLocality = Locality.find.where()
-                                                .or(eq("placeId", placeId), eq("localityName", localityName.trim().toLowerCase()))
-                                                .findUnique();
+                                .or(eq("placeId", placeId), eq("localityName", locationName.trim().toLowerCase()))
+                                .findUnique();
                         if(freshLocality==null) {
                             freshLocality = new Locality();
-                            freshLocality.setLocalityName(WordUtils.capitalize(localityName));
+                            freshLocality.setLocalityName(WordUtils.capitalize(locationName));
                             freshLocality.setLat(latitude);
                             freshLocality.setLng(longitude);
                             freshLocality.setCity(WordUtils.capitalize(cityName));
@@ -285,7 +296,7 @@ public class AddressResolveService {
                             }
                         } else {
                            /* update the existing locality object if req */
-                           boolean isChanged = false;
+                            boolean isChanged = false;
                             if(freshLocality.getPlaceId() == null || freshLocality.getPlaceId().trim().isEmpty() ){
                                 freshLocality.setPlaceId(placeId); isChanged=true;
                             }
@@ -311,15 +322,14 @@ public class AddressResolveService {
                         }
                         break;
                     } else {
-                        Logger.warn("LatLng is of a Remote Area. Couldn't resolved "+localityName+" till locality level: found Incomplete final obj of interest as : "+locationName+"-"+ cityName+"-"+stateName);
+                        Logger.warn("LatLng is of a Remote Area. Couldn't resolved "+locationName+" till locality level. Found Incomplete final obj of interest as : "+locationName+"-"+ cityName+"-"+stateName);
                     }
-
                 }
             }
         } catch (JSONException e) {
             Logger.error("Cannot process JSON results", e);
+            return null;
         }
-        Logger.info("loclaity:"+toJson(freshLocality));
         return freshLocality;
     }
 
@@ -347,7 +357,9 @@ public class AddressResolveService {
                             .getJSONObject(0)
                             .getJSONObject("geometry")
                             .getJSONObject("location");
-                   latLng = new LatLng(location.getDouble("lat"), location.getDouble("lng")) ;
+
+                    //parseAndGetLocality(jsonResults);
+                    latLng = new LatLng(RoundTo6Decimals(location.getDouble("lat")), RoundTo6Decimals(location.getDouble("lng"))) ;
                     return latLng;
                 }
             } catch (JSONException e) {
@@ -371,6 +383,10 @@ public class AddressResolveService {
             paragraph = paragraph.toLowerCase().replaceAll(toBeRemovedList[i].toLowerCase(), "");
         }
         paragraph = paragraph.replaceAll(",,", ",");
+        paragraph = paragraph.replaceAll(",\\s,\\s", ",");
+        paragraph = paragraph.replaceAll(",\\s", ",");
+        paragraph = paragraph.replaceAll(",road", ",");
+        paragraph = paragraph.replaceAll(",\\sroad\\s", ",");
         return paragraph;
     }
 
@@ -410,8 +426,8 @@ public class AddressResolveService {
             int n = 0;
             while (it.hasNext() && n++ < COUNT_LIMIT) {
                 Map.Entry pair = (Map.Entry)it.next();
-                Locality freshLocality = insertOrUpdateLocality(pair.getKey().toString());
-                if(freshLocality != null){
+                Locality freshLocality = insertOrUpdateLocality(pair.getKey().toString(), latitude, longitude);
+                if(freshLocality != null) {
                     finalPredictedLocalityName = freshLocality.getLocalityName();
                     break;
                 }
@@ -471,6 +487,21 @@ public class AddressResolveService {
         return executeUrl(sb.toString());
     }
 
+    public static StringBuilder getJSONForAddressToLatLng(String addressToResolve, Double latitude, Double longitude) {
+
+        StringBuilder sb = null;
+        try {
+            sb = new StringBuilder(GOOGLE_MAPS_API_BASE_URL + TYPE_GEOCODE + OUT_JSON);
+            sb.append("?key=" + API_KEY);
+            sb.append("&address="+ URLEncoder.encode(addressToResolve, "utf-8"));
+            sb.append("&bounds="+ URLEncoder.encode(toBounds(latitude, longitude), "utf-8"));
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return executeUrl(sb.toString());
+    }
+
     /**
      *
      *  We have 3 flavours of toBound below to cater most of the req. in different scenario
@@ -478,6 +509,10 @@ public class AddressResolveService {
      */
 
     public static String toBounds() {
+        return boundsToString(toBounds(new LatLng(latitude, longitude), DEFAULT_RADIUS_IN_KM));
+    }
+
+    public static String toBounds(Double latitude, Double longitude) {
         return boundsToString(toBounds(new LatLng(latitude, longitude), DEFAULT_RADIUS_IN_KM));
     }
 

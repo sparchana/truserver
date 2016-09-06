@@ -37,7 +37,8 @@ public class AddressResolverServiceTest {
         getJSONForNearByLocality,
         resolveLocalityFor,
         getLatLngForPlaceId,
-        getLocalityForPlaceId
+        getLocalityForPlaceId,
+        insertOrUpdateLocality
     }
     private AddressResolverServiceTest.MethodType type;
     private Double latitude;
@@ -59,8 +60,8 @@ public class AddressResolverServiceTest {
     public AddressResolverServiceTest(MethodType type, Double latitude, Double longitude, Integer radius,
                                       Integer expectedInt, String expectedString, String placeId) {
         this.type = type;
-        this.latitude = RoundTo6Decimals(latitude);
-        this.longitude = RoundTo6Decimals(longitude);
+        if(latitude != null)this.latitude = RoundTo6Decimals(latitude);
+        if(longitude != null)this.longitude = RoundTo6Decimals(longitude);
         if(radius!=null) this.radius = radius;
         if(expectedInt!=null) this.expectedInt = expectedInt;
         if(expectedString!=null) this.expectedString = expectedString;
@@ -79,8 +80,11 @@ public class AddressResolverServiceTest {
                 {MethodType.resolveLocalityFor ,12.9063828,77.6774415, null, 1, "Kasavanahalli".toLowerCase(), null},
                 {MethodType.getJSONForNearByLocality ,12.906137,77.677868, 10, 1, null, null},
                 {MethodType.getLatLngForPlaceId , 13.1347859, 77.96529900000002, null, null, null,"ChIJndUwpLH9rTsR6X9HIfbID4M"},
-                {MethodType.getLocalityForPlaceId , 12.933704, 77.66220267, null, null, null,"ChIJH8rxiYUTrjsRFYKr5ANmrCw"},
+                {MethodType.getLocalityForPlaceId , 12.9260308, 77.6762463, null, null, null,"ChIJL-k0LnUTrjsRrmqYb6Y0ssI"},
                 {MethodType.getLocalityForPlaceId , 23.3706492, 85.3200837, null, null, null,"ChIJp72psxzh9DkRFVqU6q1Qgfw"},
+                {MethodType.getLocalityForPlaceId , 13.0900634, 77.4855548, null, null, null,"ChIJlUeN4XAjrjsRmPV7w7hr4-0"},
+                {MethodType.insertOrUpdateLocality , 12.9240482,77.652965, null, null, "Kadubeesanahalli", null},
+                {MethodType.insertOrUpdateLocality , 12.9364468, 77.6261231, null, null, "Bellandur", null},
         });
     }
 
@@ -157,6 +161,17 @@ public class AddressResolverServiceTest {
                 assertEquals(latitude, locality.getLat());
                 assertEquals(longitude, locality.getLng());
                 assertEquals(placeId, locality.getPlaceId());
+            }
+        });
+    }
+    @Ignore
+    public void testInsertOrUpdateLocality() {
+        Application fakeApp = fakeApplication();
+        TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
+        running(server, () -> {
+            if(type == MethodType.insertOrUpdateLocality){
+                Locality locality = addressResolveService.insertOrUpdateLocality(expectedString, latitude, longitude);
+                Logger.info("locality:"+toJson(locality));
             }
         });
     }
