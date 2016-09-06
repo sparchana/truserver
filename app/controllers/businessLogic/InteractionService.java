@@ -139,7 +139,7 @@ public class InteractionService {
         InteractionService.createInteraction(interaction);
     }
 
-    public static void CreateInteractionForDeactivateCandidate(String objectAUUId, boolean isSupport){
+    public static void createInteractionForDeactivateCandidate(String objectAUUId, boolean isSupport){
         if(isSupport){
             Interaction interaction = new Interaction(
                     objectAUUId,
@@ -153,7 +153,7 @@ public class InteractionService {
         }
     }
 
-    public static void CreateInteractionForActivateCandidate(String objectAUUId, boolean isSupport) {
+    public static void createInteractionForActivateCandidate(String objectAUUId, boolean isSupport) {
         if(isSupport){
             Interaction interaction = new Interaction(
                     objectAUUId,
@@ -167,7 +167,7 @@ public class InteractionService {
         }
     }
 
-    public static void CreateInteractionForResetPasswordAttempt(String objectAUUId, String result, InteractionChannelType channelType){
+    public static void createInteractionForResetPasswordAttempt(String objectAUUId, String result, InteractionChannelType channelType){
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
@@ -179,7 +179,7 @@ public class InteractionService {
         InteractionService.createInteraction(interaction);
     }
 
-    public static void CreateInteractionForResetPassword(String objectAUUId, String result, InteractionChannelType channelType){
+    public static void createInteractionForResetPassword(String objectAUUId, String result, InteractionChannelType channelType){
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
@@ -191,7 +191,7 @@ public class InteractionService {
         InteractionService.createInteraction(interaction);
     }
 
-    public static void CreateInteractionForCandidateAlertService(String objectAUUId, String result, InteractionChannelType channelType){
+    public static void createInteractionForCandidateAlertService(String objectAUUId, String result, InteractionChannelType channelType){
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,

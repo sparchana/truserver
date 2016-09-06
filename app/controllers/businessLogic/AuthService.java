@@ -51,7 +51,7 @@ public class AuthService {
                 if(candidate != null){
                     objAUUID = candidate.getCandidateUUId();
                 }
-                InteractionService.CreateInteractionForResetPassword(objAUUID, interactionResult, channelType);
+                InteractionService.createInteractionForResetPassword(objAUUID, interactionResult, channelType);
                 existingAuth.setAuthSessionId(UUID.randomUUID().toString());
                 existingAuth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
                 /* adding session details */

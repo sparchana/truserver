@@ -1,7 +1,6 @@
 package controllers.businessLogic;
 
 import api.ServerConstants;
-import com.sun.org.apache.bcel.internal.generic.BREAKPOINT;
 import models.entity.Interaction;
 import models.entity.Lead;
 import models.entity.Static.LeadSource;
@@ -21,7 +20,7 @@ public class LeadService {
     public static Lead createOrUpdateConvertedLead(String leadName, String leadMobile, int leadSourceId, InteractionService.InteractionChannelType channelType){
         Lead existingLead = isLeadExists(leadMobile);
         if(existingLead == null){
-            int leadChannel = getLearChannel(channelType);
+            int leadChannel = getLeadChannel(channelType);
             Lead lead = new Lead(
                     leadName,
                     leadMobile,
@@ -48,7 +47,7 @@ public class LeadService {
         return existingLead;
     }
 
-    public static int getLearChannel(InteractionService.InteractionChannelType channelType){
+    public static int getLeadChannel(InteractionService.InteractionChannelType channelType){
         int response = ServerConstants.LEAD_CHANNEL_UNKNOWN;
         switch (channelType){
             case SELF:

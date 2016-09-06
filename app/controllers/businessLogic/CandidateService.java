@@ -499,13 +499,13 @@ public class CandidateService
             candidate.setCandidateprofilestatus(CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_DEACTIVE).findUnique());
             candidateStatusDetail.setReason(Reason.find.where().eq("ReasonId", supportCandidateRequest.getDeactivationReason()).findUnique());
             candidateStatusDetail.setStatusExpiryDate(supportCandidateRequest.getDeactivationExpiryDate());
-            InteractionService.CreateInteractionForDeactivateCandidate(candidate.getCandidateUUId(), true);
+            InteractionService.createInteractionForDeactivateCandidate(candidate.getCandidateUUId(), true);
             return candidateStatusDetail;
         } else if(candidate.getCandidateStatusDetail() != null && !supportCandidateRequest.getDeactivationStatus()){
             /* Remove from candidateStatusDetail and change candidateStatus to Active */
             candidate.setCandidateprofilestatus(CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE).findUnique());
 
-            InteractionService.CreateInteractionForActivateCandidate(candidate.getCandidateUUId(), true);
+            InteractionService.createInteractionForActivateCandidate(candidate.getCandidateUUId(), true);
             return null;
         }
         return null;
@@ -998,7 +998,7 @@ public class CandidateService
                 String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_RESET_PASSWORD;
                 String objAUUID = "";
                 objAUUID = existingCandidate.getCandidateUUId();
-                InteractionService.CreateInteractionForResetPasswordAttempt(objAUUID, interactionResult, channelType);
+                InteractionService.createInteractionForResetPasswordAttempt(objAUUID, interactionResult, channelType);
                 resetPasswordResponse.setOtp(randomPIN);
                 resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);
             }

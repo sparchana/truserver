@@ -89,7 +89,7 @@ public class CandidateAlertService {
             }
         }
 
-        InteractionService.CreateInteractionForCandidateAlertService(candidate.getCandidateUUId(),
+        InteractionService.createInteractionForCandidateAlertService(candidate.getCandidateUUId(),
                 result, InteractionService.InteractionChannelType.SELF_ANDROID);
 
         return fetchCandidateResponseBuilder.build();
