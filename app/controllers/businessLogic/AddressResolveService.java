@@ -97,7 +97,8 @@ public class AddressResolveService {
             locality = getLocalityForLatLng(latLng.latitude, latLng.longitude);
         }
         /* Modify Locality object to contain the given latlng instead of locality's latlng */
-        if(locality!= null && locality.getLat() !=0 && locality.getLat() != latitude && latitude != 0){
+        if(locality!= null && locality.getLat() !=0 &&
+                (locality.getLat() != latitude && latitude != 0 || locality.getLng() != longitude && longitude != 0)){
             locality.setLat(latLng.latitude);
             locality.setLng(latLng.longitude);
         }
