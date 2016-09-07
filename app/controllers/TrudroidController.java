@@ -8,7 +8,6 @@ import api.http.httpRequest.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
 import com.google.api.client.util.Base64;
-import com.google.protobuf.Internal;
 import com.google.protobuf.InvalidProtocolBufferException;
 import controllers.businessLogic.*;
 import in.trujobs.proto.*;
@@ -734,6 +733,11 @@ public class TrudroidController {
     }
 
     public static Result mGetJobPostInfo() {
+        /* Interaction Params */
+        String objectAUUId = null;
+        String jobPostUUId = null;
+        String result = null;
+
         GetJobPostDetailsRequest pGetJobPostDetailsRequest = null;
         GetJobPostDetailsResponse.Builder getJobPostDetailsResponse = GetJobPostDetailsResponse.newBuilder();
         try {
@@ -746,24 +750,32 @@ public class TrudroidController {
                 getJobPostDetailsResponse.setStatus(GetJobPostDetailsResponse.Status.SUCCESS);
                 getJobPostDetailsResponse.setJobPost(getJobPostInformationFromJobPostObject(jobPost));
                 Logger.info("Status returned = " + getJobPostDetailsResponse.getStatus());
+                // save Interaction for global
+                jobPostUUId = jobPost.getJobPostUUId();
+                result = "Viewed JobPost: "+jobPost.getJobPostTitle();
             }
 
             //getting company object from DB
             Company company = Company.find.where().eq("companyId", jobPost.getCompany().getCompanyId()).findUnique();
             if (company != null) {
                 getJobPostDetailsResponse.setCompany(getCompanyInfoFromCompanyObject(company, jobPost));
+                result +=" @ "+company.getCompanyName();
             }
 
             //checking if the candidate has applied to this job or now not
             getJobPostDetailsResponse.setAlreadyApplied(false);
             if(!pGetJobPostDetailsRequest.getCandidateMobile().trim().isEmpty()){
                 Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(pGetJobPostDetailsRequest.getCandidateMobile()));
-                JobApplication jobApplication = JobApplication.find.where()
-                        .eq("candidateId", existingCandidate.getCandidateId())
-                        .eq("jobPostId", pGetJobPostDetailsRequest.getJobPostId())
-                        .findUnique();
-                if(jobApplication != null){
-                    getJobPostDetailsResponse.setAlreadyApplied(true);
+                if(existingCandidate!=null){
+                    JobApplication jobApplication = JobApplication.find.where()
+                            .eq("candidateId", existingCandidate.getCandidateId())
+                            .eq("jobPostId", pGetJobPostDetailsRequest.getJobPostId())
+                            .findUnique();
+                    if(jobApplication != null){
+                        getJobPostDetailsResponse.setAlreadyApplied(true);
+                    }
+                    // save Interaction against candidate
+                    objectAUUId = existingCandidate.getCandidateUUId();
                 }
             }
             getJobPostDetailsResponse.setStatus(GetJobPostDetailsResponse.Status.SUCCESS);
@@ -779,6 +791,9 @@ public class TrudroidController {
             getJobPostDetailsResponse.setStatus(GetJobPostDetailsResponse.Status.NO_JOB);
             return badRequest();
         }
+
+        /* save interaction */
+        InteractionService.createInteractionForViewJobPostInfo(objectAUUId, jobPostUUId, result, InteractionService.InteractionChannelType.SELF_ANDROID);
         return ok(Base64.encodeBase64String(getJobPostDetailsResponse.build().toByteArray()));
     }
 
@@ -1357,7 +1372,7 @@ public class TrudroidController {
 
         /* Interaction */
         if(objectAUUID.isEmpty()) {
-            objectAUUID = ServerConstants.SEARCH_UUID;
+            objectAUUID = ServerConstants.TRU_DROID_NOT_LOGGED_UUID;
         }
         interactionParamLocality = jobSearchRequest.getLocalityName().trim();
         if(interactionParamLocality.trim().isEmpty()){
@@ -1379,7 +1394,11 @@ public class TrudroidController {
         return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
     }
 
-        public static Result mResolveLatLng(String latlng){
+    /*
+    * Test API
+    * Only for testing the Address Resolver method Accuracy
+    * */
+    public static Result mResolveLatLng(String latlng){
         List<String> LatLng = Arrays.asList(latlng.trim().split(","));
         Double latitude = 0D;
         Double longitude = 0D;
@@ -1392,9 +1411,17 @@ public class TrudroidController {
         return ok(toJson("LatLng: "+ latlng+" Locality: "+controllers.businessLogic.AddressResolveService.resolveLocalityFor(latitude, longitude)));
     }
 
+
+    /**
+     * If locality is a specific place then the returned locality object contains that place's latlng instead of
+     * locality latlng. Hence different from database.
+     * Ex: if oceanus vista is selected whose locality is kasavanahalli
+     * then returned locality object has oceanus vista's latlng not kasavanahalli lat lng
+     * Logic for this resides inside businessLogic.AddressResolveService.getLocalityForPlaceId()
+     * This insures that the person's home-locality is resolved to locality name yet the selected lat lng is preserved
+     *
+     * */
     public static Result mGetLocalityForLatLngOrPlaceId() {
-        /* if locality is a specific place then the returned locality object contains that place's latlng instead of
-        * locality latlng. Hence different from database.*/
         LatLngOrPlaceIdRequest latLngOrPlaceIdRequest= null;
         try {
             String requestString = request().body().asText();

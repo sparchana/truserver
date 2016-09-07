@@ -118,6 +118,18 @@ public class SmsUtil {
         sendSms(devTeamMobile.get("Adarsh"), msg);
         sendSms(devTeamMobile.get("Archana"), msg);
     }
+    public static void sendLocalityNotResolvedSmsToDevTeam(String unResolvedLocality, String city, String state, Double lat, Double lng)
+    {
+        // Idea is to tweak AddressResolver based on unresolved lat/lng (s)  :D
+
+        String msg = "Bonjour DevTeam !!, AddressResolver was not able to resolve this " + lat+", " + lng
+                + " LatLng "+" with PredictedLocality: "+unResolvedLocality+" to a Proper Locality Object! "
+                + "Max Resolved Info:- City: "+city+" State:"+state;
+
+        sendSms(devTeamMobile.get("Sandy"), msg);
+        sendSms(devTeamMobile.get("Adarsh"), msg);
+        sendSms(devTeamMobile.get("Archana"), msg);
+    }
     public static void sendDuplicateLeadOrCandidateDeleteActionSmsToDevTeam(String mobile)
     {
         // Idea is to keep getting irritated by receiving msg until issue is resolved :D
