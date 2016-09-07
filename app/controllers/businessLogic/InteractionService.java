@@ -1,7 +1,6 @@
 package controllers.businessLogic;
 
 import api.ServerConstants;
-import com.sun.org.apache.regexp.internal.RE;
 import models.entity.Candidate;
 import models.entity.Interaction;
 import models.entity.Lead;
@@ -209,6 +208,19 @@ public class InteractionService {
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
                 ServerConstants.INTERACTION_TYPE_ANDROID_SEARCH,
                 ServerConstants.INTERACTION_NOTE_BLANK,
+                result,
+                channelType.toString()
+        );
+        InteractionService.createInteraction(interaction);
+    }
+    public static void createInteractionForViewJobPostInfo(String objectAUUId, String objectBUUId, String result, InteractionChannelType  channelType){
+        Logger.info("View JobPost Info Interaction Saved for UUID: " + objectAUUId);
+        Interaction interaction = new Interaction(
+                objectAUUId == null? ServerConstants.TRU_DROID_NOT_LOGGED_UUID : objectAUUId,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                objectBUUId,
+                ServerConstants.OBJECT_TYPE_JOB_POST_VIEW,
+                ServerConstants.INTERACTION_TYPE_ANDROID_JOP_POST_VIEW,
                 result,
                 channelType.toString()
         );
