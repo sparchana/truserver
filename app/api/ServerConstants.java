@@ -185,6 +185,6 @@ public class ServerConstants {
     public static final String GOOGLE_SERVER_API_KEY = "AIzaSyCKHf7GijuzKW84Ggz0fFWWHD0y9_onUhg";
 
     /* Non Logged In Search Result UUID */
-    public static final String TRU_DROID_NOT_LOGGED_UUID = "TRU-DROID-NOT-LOGGED-UUID";
+    public static final String TRU_DROID_NOT_LOGGED_UUID = "TRU-DROID-NOT-LOGGEDIN-UUID";
 
 }
