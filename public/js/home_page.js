@@ -118,18 +118,6 @@ $(document).ready(function(){
     try {
         $.ajax({
             type: "POST",
-            url: "/getAllHotJobPosts",
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataAllJobPosts
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-    try {
-        $.ajax({
-            type: "POST",
             url: "/getAllCompanyLogos",
             data: false,
             contentType: false,
@@ -396,22 +384,6 @@ function processDataAllJobPosts(returnedData) {
                     $('[data-toggle="tooltip"]').tooltip()
                 });
 
-                //getting all the job roles
-                var isThere = 0;
-                for(var x=0; x<jobPostJobRoles.length; x++){
-                    if(jobPostJobRoles[x].jobRoleId == jobPost.jobRole.jobRoleId){
-                        isThere = 1;
-                    }
-                }
-                if(isThere == 0){
-                    var jobRoleId = jobPost.jobRole.jobRoleId;
-                    var jobName = jobPost.jobRole.jobName;
-                    var item = {};
-                    item ["jobRoleId"] = jobRoleId;
-                    item ["jobName"] = jobName;
-                    jobPostJobRoles.push(item);
-                }
-
                 //!*  apply button *!/
                 var applyBtnDiv = document.createElement("div");
                 applyBtnDiv.className = "col-sm-2";
@@ -432,87 +404,6 @@ function processDataAllJobPosts(returnedData) {
             }
         });
     }
-    var jobRoleCount = Object.keys(jobPostJobRoles).length;
-    if(jobRoleCount > 0){ //there are at least one job role to display
-        var jobRoleRowCount = Math.floor(jobRoleCount / 6); // 6 because we are showing 6 job roles in a row
-        var remainingJobRoles = jobRoleCount % 6;
-        var startIndex = 0;
-
-        for(var i=0;i<jobRoleRowCount; i++){
-            setJobRoles(jobPostJobRoles, startIndex);
-            startIndex = startIndex + 6;
-        }
-        if(remainingJobRoles > 0){
-            startIndex = jobRoleCount - remainingJobRoles;
-            setJobRoles(jobPostJobRoles, startIndex);
-        }
-    }
-}
-
-function setJobRoles(returnedData, start){
-    var count = 0;
-    var parent = $("#jobRoleGrid");
-    returnedData.forEach(function (jobRole) {
-        if(count >= start && count < (start+6)){
-            var rowDiv = document.createElement("div");
-            rowDiv.className = "row";
-            parent.append(rowDiv);
-
-            var gridDiv = document.createElement("div");
-            rowDiv.className = "col-md-2 col-sm-4 col-xs-6";
-            rowDiv.style = "padding: 0px";
-            rowDiv.appendChild(gridDiv);
-
-            var jobAnchor = document.createElement("a");
-            jobAnchor.onclick = function () {
-                window.location.href = "/job/" + jobRole.jobName.split("/").join('_') + "_jobs" + "/" + jobRole.jobRoleId;
-            };
-            gridDiv.appendChild(jobAnchor);
-
-            var innerDiv = document.createElement("div");
-            innerDiv.id = "jobRole";
-            innerDiv.style = "padding-top: 20%; padding-bottom: 20%";
-            jobAnchor.appendChild(innerDiv);
-
-            var jobIcon = document.createElement("img");
-            jobIcon.src = "/assets/new/img/icons/" + jobRole.jobRoleId + ".svg";
-            jobIcon.setAttribute('width', '50px');
-            jobIcon.setAttribute('alt', jobRole.jobName);
-            innerDiv.appendChild(jobIcon);
-
-            var subDiv = document.createElement("div");
-            subDiv.id = "jobRoleName";
-            subDiv.style = "margin-top: 6px; color: #003557;";
-            subDiv.textContent = jobRole.jobName;
-            innerDiv.appendChild(subDiv);
-        }
-        count++;
-
-        //checking when to end the loop
-        if(count > start + 6){ return true; }
-    });
-}
-
-function processDataForJobPostLocation(returnedData) {
-    $("#jobNameConfirmation").html(returnedData.jobPostTitle);
-    $("#companyNameConfirmation").html(returnedData.company.companyName);
-
-    $('#jobLocality').html('');
-    var defaultOption=$('<option value="-1"></option>').text("Select Preferred Location");
-    $('#jobLocality').append(defaultOption);
-    var jobLocality = returnedData.jobPostToLocalityList;
-    jobLocality.forEach(function (locality) {
-        var item = {};
-        item ["id"] = locality.locality.localityId;
-        item ["name"] = " " + locality.locality.localityName;
-        jobLocalityArray.push(item);
-        var option=$('<option value=' + locality.locality.localityId + '></option>').text(locality.locality.localityName);
-        $('#jobLocality').append(option);
-    });
-}
-
-function confirmApply() {
-    applyJob(jobPostId, prefLocation);
 }
 
 $(function() {

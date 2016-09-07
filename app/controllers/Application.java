@@ -4,6 +4,7 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpResponse.*;
+import com.amazonaws.services.importexport.model.Job;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
 import com.avaje.ebean.cache.ServerCacheManager;
@@ -765,8 +766,12 @@ public class Application extends Controller {
         return ok("0");
     }
 
-    public static Result getAllHotJobPosts() {
+    public static Result getAllNormalJobPosts() {
         List<JobPost> jobPosts = JobPost.find.all();
+        return ok(toJson(jobPosts));
+    }
+    public static Result getAllHotJobPosts() {
+        List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").findList();
         return ok(toJson(jobPosts));
     }
 
@@ -914,6 +919,18 @@ public class Application extends Controller {
     public static Result getAllLocality() {
         List<Locality> localities = Locality.find.setUseQueryCache(!isDevMode).orderBy("localityName").findList();
         return ok(toJson(localities));
+    }
+
+    public static Result getAllJobsRolesWithJobs() {
+        List<JobRole> jobs = JobRole.find.setUseQueryCache(!isDevMode).orderBy("jobName").findList();
+        List<JobRole> jobRolesToReturn = new ArrayList<JobRole>();
+        for(JobRole jobRole : jobs){
+            List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",jobRole.getJobRoleId()).findList();
+            if(jobPostList.size() > 0){
+                jobRolesToReturn.add(jobRole);
+            }
+        }
+        return ok(toJson(jobRolesToReturn));
     }
 
     public static Result getAllJobs() {

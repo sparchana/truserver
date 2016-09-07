@@ -100,6 +100,8 @@ GET         /getAllJobPosts                                               contro
 
 POST        /getAllDegree                                                 controllers.Application.getAllDegree()
 POST        /getAllEducation                                              controllers.Application.getAllEducation()
+POST        /getAllJobsRolesWithJobs                                      controllers.Application.getAllJobsRolesWithJobs()
+POST        /getAllNormalJobPosts                                         controllers.Application.getAllNormalJobPosts()
 POST        /getAllHotJobPosts                                            controllers.Application.getAllHotJobPosts()
 POST        /getAllIdProof                                                controllers.Application.getAllIdProof()
 POST        /getAllJobs                                                   controllers.Application.getAllJobs()
