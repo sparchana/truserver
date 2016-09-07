@@ -88,22 +88,22 @@ public class AddressResolveService {
 
     public static String resolveLocalityFor(Double latitude, Double longitude) {
         new AddressResolveService(latitude, longitude);
-        List<String> nearyByAddressList = new ArrayList<>();
-        nearyByAddressList.addAll(fetchNearByLocality(latitude, longitude, null));
-        return determineLocality(nearyByAddressList);
+        List<String> nearByAddressList = new ArrayList<>();
+        nearByAddressList.addAll(fetchNearByLocality(latitude, longitude, null));
+        return determineLocality(nearByAddressList);
     }
 
     public static String resolveLocalityFor(Double latitude, Double longitude, Integer radius) {
         new AddressResolveService(latitude, longitude);
-        List<String> nearyByAddressList = new ArrayList<>();
-        nearyByAddressList.addAll(fetchNearByLocality(latitude, longitude, radius));
-        return determineLocality(nearyByAddressList);
+        List<String> nearByAddressList = new ArrayList<>();
+        nearByAddressList.addAll(fetchNearByLocality(latitude, longitude, radius));
+        return determineLocality(nearByAddressList);
     }
 
     public static Locality getLocalityForLatLng(Double appxLatitude, Double appxLongitude) {
-        List<String> nearyByAddressList = new ArrayList<>();
-        nearyByAddressList.addAll(fetchNearByLocality(appxLatitude, appxLongitude, null));
-        Locality locality =  Locality.find.where().eq("localityName", determineLocality(nearyByAddressList).trim().toLowerCase()).findUnique();
+        List<String> nearByAddressList = new ArrayList<>();
+        nearByAddressList.addAll(fetchNearByLocality(appxLatitude, appxLongitude, null));
+        Locality locality =  Locality.find.where().eq("localityName", determineLocality(nearByAddressList).trim().toLowerCase()).findUnique();
         if(locality == null){
             Logger.info("Locality is null!!");
         } else if((locality.getLat()==null || locality.getLat() == 0 || locality.getPlaceId() == null)){
@@ -402,6 +402,9 @@ public class AddressResolveService {
 
     /**
      * Return the most probable locality name from a Map<LocalityName, count>
+     * COUNT_LIMIT prevents the loop to go beyond top 2 sanatized locality name
+     * since after that the map contains vague names like cross, street, names etc
+     *
      */
     public static String getMostFrequentLocality(Map<String, Integer> countByWord) {
         int COUNT_LIMIT = 2;
@@ -417,7 +420,7 @@ public class AddressResolveService {
         }
 
         String finalPredictedLocalityName = "";
-        if(matchingLocalities.size() >0 ){
+        if(matchingLocalities.size() >0 ) {
             finalPredictedLocalityName = sortMapByValue(matchingLocalities).entrySet().iterator().next().getKey();
             Logger.info("match founnd in db for:"+finalPredictedLocalityName );
         } else {
