@@ -30,6 +30,7 @@
         <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
 
         <script>
+            localStorage.clear();
             $('html, body').css({
                 'overflow': 'hidden',
                 'height': '100%'
@@ -47,6 +48,7 @@
                 $('#job_cards_inc').load('/jobPostCardView');
             });
         </script>
+
     </head>
     <body>
 
@@ -76,10 +78,16 @@
         <div>
             <div id="sectionOne">
                 <font color="white">
-                    <div class="row">
+                    <div class="row" style="margin-right: 0; margin-left: 0">
                         <div class="col-sm-9" id="headingMain">
-                            <h1 style="letter-spacing: 2px;"><b>Find Entry Level and Experienced Jobs </b></h1>
-                            <h2 style="letter-spacing: 2px; margin-top: 10px">Call 8880007799 to find jobs in top companies!</h2>
+                            <img src="/assets/img/image4.png" style="display: inline-block;" width="14%">
+                            <div style="display: inline-block; width: auto;">
+                                <h1 style="letter-spacing: 2px; text-align: left; margin: 10px;"><b><font size="5">Find Entry Level and Experienced Jobs </font></b></h1>
+                                <h2 style="letter-spacing: 2px; margin: 10px; text-align: left"><font size="5">Call 8880007799 to find jobs in top companies!</font></h2>
+                                <h4 style="letter-spacing: 2px; margin: 10px; text-align: left; display: inline-block; float: left">Download app from</h4>
+                                <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" target="_blank" style="padding-top: 2px; float: left">
+                                    <img src="/assets/img/playstore.png" alt="PlayStore Logo" height="40px"></a>
+                            </div>
                         </div>
                     </div>
                 </font>
@@ -103,32 +111,32 @@
                 <div style="margin-top: 8px">
                     <input type="text" id="candidateJobPref" placeholder="What jobs you are Interested in?">
                     <script type="text/javascript">
-                                            $(document).ready(function() {
-                                                $("#candidateJobPref").tokenInput(getJob(), {
-                                                    theme: "facebook",
-                                                    placeholder: "What jobs you are Interested? (Max: 3)",
-                                                    hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-                                                    minChars: 0,
-                                                    tokenLimit: 3,
-                                                    preventDuplicates: true
-                                                });
-                                            });
-                                            </script>
+                    $(document).ready(function() {
+                        $("#candidateJobPref").tokenInput(getJob(), {
+                            theme: "facebook",
+                            placeholder: "What jobs you are Interested? (Max: 3)",
+                            hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                            minChars: 0,
+                            tokenLimit: 3,
+                            preventDuplicates: true
+                        });
+                    });
+                    </script>
                 </div>
 
                 <div style="margin-top: 8px">
                     <input type="text" id="candidateLocality" style="margin-top: 4px">
                     <script type="text/javascript">
-                                            $(document).ready(function() {
-                                                $("#candidateLocality").tokenInput(getLocality(), {
-                                                    theme: "facebook",
-                                                    placeholder: "Where do you want to Work?",
-                                                    minChars: 3,
-                                                    hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
-                                                    preventDuplicates: true
-                                                });
-                                            });
-                                            </script>
+                    $(document).ready(function() {
+                        $("#candidateLocality").tokenInput(getLocality(), {
+                            theme: "facebook",
+                            placeholder: "Where do you want to Work?",
+                            minChars: 3,
+                            hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
+                            preventDuplicates: true
+                        });
+                    });
+                    </script>
                 </div>
 
                 <button type="submit" id="registerBtnSubmit" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
@@ -145,13 +153,18 @@
         </div>
 
             <!-- start hot job -->
+        <div id="applyToJobs">
+            <h3 id="applyToJobsTitle">
+                Hot Jobs this week
+            </h3>
+        </div>
         <div id="job_cards_inc"></div>
 
         <div class="company_class">
-            Companies Hiring From <Us>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      </Us>
+            Companies Hiring From Us                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      </Us>
         </div>
 
-        <center>
+        <center id="hiringCompanyContent">
             <div class="materialDash"></div>
 
             <div class="container-fluid" id="company_box">
@@ -165,75 +178,7 @@
                                 <div class="container-fluid" id="slider_logo">
                                     <div id="myCarousel" class="carousel slide" data-ride="carousel">
                                             <!-- Wrapper for slides -->
-                                        <div class="carousel-inner" role="listbox">
-                                            <div class="item active">
-                                                <div class="row">
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/swiggy-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/urban_clap-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/pink_blue-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/driveu-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/dunkin_donuts-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/online_system-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="item">
-                                                <div class="row">
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/child_help_foundation-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/vito-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/kalmane_koffees-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/eforce-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/trujobs-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/lifecell-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="item">
-                                                <div class="row">
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/chefkart-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/three_sided_square-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/bavanya.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/pizza_hut-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/Capture.PNG" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/21north.png" alt="Companies Hiring">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
+                                        <div class="carousel-inner" id="hiringCompanies" role="listbox"></div>
                                     </div>
                                 </div>
                             </div>
@@ -246,61 +191,50 @@
             </div>
         </center>
 
-        <div class="sectionStats">
-            <div class="row">
-                <div class="col-sm-4">
-                    <p><img class="hov" src="/assets/img/job_seeker.svg" width="80px"></p>
-                    <h3><b>15000+</b> Job Seekers</h3>
-                </div>
-                <div id="stats" class="col-sm-4">
-                    <p><img class="hov" src="/assets/img/recruiter.svg" width="80px"></p>
-                    <h3><b>50+</b> Companies </h3>
-                </div>
-                <div id="stats" class="col-sm-4">
-                    <p><img class="hov" src="/assets/img/rupee.svg" width="80px"></p>
-                    <h3>Find a job and earn upto <b>30k</b>!</h3>
-                </div>
-            </div>
-        </div>
         <!--  Start Job Icons Box -->
-        <div id="job_box_inc"></div>
-        <script>
-            $(document).ready(function(){
-              $('#job_box_inc').load('/jobRolesGrid');
-            });
-        </script>
-            <div class="appStoreContainer">
-                <div class="row" style="padding:0%;margin:0%">
-                    <div class="col-xs-6" style="padding-left:4%">
-                         <img id="appImg1" src="/assets/img/image1.png">
-                         <img id="appImg2" src="/assets/img/image2.png">
-                         <img id="appImg3" src="/assets/img/image3.png">
-                    </div>
-                    <div class="col-xs-6" id="playStore">
-                        <h2>TruJobs Android App</h2>
-                        <h4>Now we are in your smartphone.Download our TruJobs app from Google Play Store and get easy acsses to more jobs.</h4>
-                            <div class="row" id="stepContainer">
-                                <div class="col-sm-4">
-                                    <img id="step_image" src="/assets/img/step1.svg" style="height: 40px;">
-                                    <p>Now we are in your smartphone.</p>
-                                </div>
-                                <div class="col-xs-4">
-                                    <img id="step_image"  src="/assets/img/step2.svg" style="height: 40px;">
-                                    <p>Now we are in your smartphone.</p>
-                                </div>
-                                <div class="col-xs-4"  >
-                                    <img id="step_image"  src="/assets/img/step3.svg" style="height: 40px;">
-                                    <p>Now we are in your smartphone.</p>
-                                </div>
+        <div class="sectionTwo" style="display: table; width: 100%" id="jobs">
+            <h3 id="jobVacancyHead">Job Roles</h3>
+            <center>
+                <div class="materialDash"></div>
+            </center><br>
+
+            <div id="jobRoleGrid" style="width: auto"></div>
+        </div>
+
+        <!-- App section -->
+        <div class="appStoreContainer">
+            <div class="row" style="padding:0%;margin:0%">
+                <div class="col-xs-6" style="padding-left:4%">
+                     <img id="appImg1" src="/assets/img/image1.png">
+                     <img id="appImg2" src="/assets/img/image2.png">
+                     <img id="appImg3" src="/assets/img/image3.png">
+                </div>
+                <div class="col-xs-6" id="playStore">
+                    <h2>TruJobs Android App</h2>
+                    <h4>Download TruJobs app from Google Play Store and apply to 1000+ jobs.</h4>
+                        <div class="row" id="stepContainer">
+                            <div class="col-sm-4">
+                                <img id="step_image" src="/assets/img/step1.svg" style="height: 20px;">
+                                <p>Download TruJobs app </p>
                             </div>
-                            <div class="row" style="text-align:center">
-                                <a href="#">
-                                <img src="/assets/img/download_btn.png" style="height: 50px;padding-top: 2%">
-                                </a>
+                            <div class="col-xs-4">
+                                <img id="step_image"  src="/assets/img/step2.svg" style="height: 20px;">
+                                <p>Register in less than a minute</p>
+                            </div>
+                            <div class="col-xs-4"  >
+                                <img id="step_image"  src="/assets/img/step3.svg" style="height: 20px;">
+                                <p>Apply to jobs and attend Interviews</p>
                             </div>
                         </div>
-                </div>
+                        <div class="row" id="playStoreDownloadButtonContainer">
+                            <a href="#">
+                            <img src="/assets/img/download_btn.png" id="playStoreDownloadButton">
+                            </a>
+                        </div>
+                    </div>
             </div>
+        </div>
+
         <!-- Are you a candidate -->
         <div class="sectionThree" id="forCandidate">
             <div class="row" style="text-align: center">
@@ -341,6 +275,23 @@
 
                     <!-- Recruiter -->
                 <div class="col-sm-6 hidden-xs" id="recruiterSection"></div>
+            </div>
+        </div>
+
+        <div class="sectionStats">
+            <div class="row">
+                <div class="col-sm-4">
+                    <p><img class="hov" src="/assets/img/job_seeker.svg" width="80px"></p>
+                    <h3><b>15000+</b> Job Seekers</h3>
+                </div>
+                <div id="stats" class="col-sm-4">
+                    <p><img class="hov" src="/assets/img/recruiter.svg" width="80px"></p>
+                    <h3><b>50+</b> Companies </h3>
+                </div>
+                <div id="stats" class="col-sm-4">
+                    <p><img class="hov" src="/assets/img/rupee.svg" width="80px"></p>
+                    <h3>Find a job and earn upto <b>30k</b>!</h3>
+                </div>
             </div>
         </div>
 
@@ -450,7 +401,10 @@
                 $('#scriptContainer').load('/scriptContainer');
             });
         </script>
+
         <script type="text/javascript" src="/assets/js/home_page.js"></script>
+        <script type="text/javascript" src="/assets/js/all_hot_jobs.js"></script>
+        <script type="text/javascript" src="/assets/js/all_job_role_with_jobs.js"></script>
 
     </body>
 </html>

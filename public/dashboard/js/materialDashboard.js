@@ -5,16 +5,7 @@ $(document).ready(function() {
         } else{
             $(".navbar-default").removeClass("fade-background");
         }
-/*        var w = window.innerWidth;
-        if(w > 900){
-            var s = $(window).scrollTop(),
-                opacityVal = (s / 60);
-
-            $('.blurred-image').css('opacity', opacityVal);
-        }*/
     });
-
-
 });
 
 function loadDashboard(){

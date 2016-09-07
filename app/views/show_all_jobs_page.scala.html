@@ -41,6 +41,7 @@
 
               ga('create', 'UA-77156203-1', 'auto');
               ga('send', 'pageview');
+
             </script>
     </head>
     <body>
@@ -52,11 +53,16 @@
         <div id="status">&nbsp;</div>
     </div>
 
-    <!-- Nav start -->
+            <!-- Nav start -->
         <div id="nav_bar_inc"></div>
         <script>
             $(document).ready(function(){
-                $('#nav_bar_inc').load('/navBar');
+                var phone = localStorage.getItem("mobile");
+                if(phone == null){ // not logged in
+                    $('#nav_bar_inc').load('/navBar');
+                } else{
+                    $('#nav_bar_inc').load('/navBarLoggedIn');
+                }
             });
         </script>
         <div class="container">
@@ -85,34 +91,34 @@
                         <div style="margin-top: 8px">
                             <input type="text" id="candidateJobPrefModal" placeholder="What jobs you are Interested in?">
                             <script type="text/javascript">
-                                        $(document).ready(function() {
-                                            $("#candidateJobPrefModal").tokenInput(getJob(), {
-                                                theme: "facebook",
-                                                placeholder: "Jobs Interested? (Max: 3)",
-                                                hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-                                                minChars: 0,
-                                                tokenLimit: 3,
-                                                zindex: 9999999,
-                                                preventDuplicates: true
-                                            });
-                                        });
-                                    </script>
+                                $(document).ready(function() {
+                                    $("#candidateJobPrefModal").tokenInput(getJob(), {
+                                        theme: "facebook",
+                                        placeholder: "Jobs Interested? (Max: 3)",
+                                        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                                        minChars: 0,
+                                        tokenLimit: 3,
+                                        zindex: 9999999,
+                                        preventDuplicates: true
+                                    });
+                                });
+                            </script>
                         </div>
 
                         <div style="margin-top: 8px">
                             <input type="text" id="candidateLocalityModal" placeholder="What jobs you are Interested in?" style="margin-top: 4px">
                             <script type="text/javascript">
-                                        $(document).ready(function() {
-                                            $("#candidateLocalityModal").tokenInput(getLocality(), {
-                                                theme: "facebook",
-                                                placeholder: "Locality Interested?",
-                                                minChars: 3,
-                                                zindex: 9999999,
-                                                hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
-                                                preventDuplicates: true
-                                            });
-                                        });
-                                    </script>
+                                $(document).ready(function() {
+                                    $("#candidateLocalityModal").tokenInput(getLocality(), {
+                                        theme: "facebook",
+                                        placeholder: "Locality Interested?",
+                                        minChars: 3,
+                                        zindex: 9999999,
+                                        hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
+                                        preventDuplicates: true
+                                    });
+                                });
+                            </script>
                         </div>
 
                         <button type="submit" id="registerBtnSubmitModal" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
@@ -122,17 +128,27 @@
             </div>
         </div>
     </div>
-    <!-- Search bar -->
-    <div>
-        <div id="sectionOne">
-            <font color="white">
-                <div class="row">
+        <div id="showJobsSectionOne">
+            <div id="showAllJobsMobileHeader">
+                <h3 style="margin-top: 56px">Download TruJobs App</h3>
+                <center><img src="/assets/img/download_btn.png" style="display: block" width="24%"></center>
+                <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" style="padding: 0px" target="_blank">
+                    <img src="/assets/img/image4.png" style="margin-top: 20px" width="24%">
+                </a>
+            </div>
 
+            <font color="white" id="showJobsSectionOneBody">
+                <img src="/assets/img/image4.png" style="display: inline-block;" width="10%">
+                <div style="display: inline-block; width: auto;">
+                    <h1 style="letter-spacing: 2px; text-align: left; margin: 10px;"><b><font size="5">Find Entry Level and Experienced Jobs </font></b></h1>
+                    <h2 style="letter-spacing: 2px; margin: 10px; text-align: left"><font size="5">Call 8880007799 to find jobs in top companies!</font></h2>
+                    <h4 style="letter-spacing: 2px; margin: 10px; text-align: left; display: inline-block; float: left">Get it from </h4>
+                    <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" style="padding-top: 2px; float: left">
+                        <img src="/assets/img/playstore.png" alt="PlayStore Logo" height="40px"></a>
                 </div>
             </font>
         </div>
-        <!-- End of sectionOne -->
-    </div>
+            <!-- End of sectionOne -->
 
         <div style="text-align: center">
             <div class="errorMsgText" id="alreadyMsgCandidate" style="margin-top: 2%;display: none;">
@@ -184,40 +200,38 @@
             </div>
         </div>
     </div>
+
     <!-- start hot job -->
-        <script>
-            $(function () {
-                $("#hotJobs").scroll(function() {
-                    var w = window.innerWidth;
-                    if(w < 440){
-                        document.documentElement.scrollTop = document.body.scrollTop = 50;
-                    } else{
-                        document.documentElement.scrollTop = document.body.scrollTop = 58;
-                    }
-                });
-            });
-</script>
-    <div id="job_cards_inc"></div>
+
+    <div id="applyToJobs">
+    <h3 id="applyToJobsTitle" style="margin-top: 120px;">
+        Apply to Jobs
+    </h3>
+    </div>
+    <div id="job_cards_inc"><font color="#000"></font></div>
+
     <script>
-                $(document).ready(function(){
-                  $('#job_cards_inc').load('/jobPostCardView');
-                });
-            </script>
+        $(document).ready(function(){
+          $('#job_cards_inc').load('/jobPostCardView');
+        });
+    </script>
 
     <!--  Start Job Icons Box -->
-    <div id="job_box_inc"></div>
-    <script>
-                $(document).ready(function(){
-                  $('#job_box_inc').load('/jobRolesGrid');
-                });
-    </script>
+    <div class="sectionTwo" style="display: table; width: 100%" id="jobs">
+        <h3 id="jobVacancyHead">Job Roles</h3>
+        <center>
+            <div class="materialDash"></div>
+        </center><br>
+
+        <div id="jobRoleGrid" style="width: auto"></div>
+    </div>
     <!-- Start Footer-->
     <div id="footer_inc"></div>
     <script>
-                $(document).ready(function(){
-                $('#footer_inc').load('/footer');
-                });
-            </script>
+        $(document).ready(function(){
+        $('#footer_inc').load('/footer');
+        });
+    </script>
 
     <!-- Including Bootstrap -->
     <script type="text/javascript" src="/assets/js/validation.js"></script>
@@ -237,6 +251,8 @@
                 });
             </script>
         <script type="text/javascript" src="/assets/js/home_page.js"></script>
+        <script type="text/javascript" src="/assets/js/all_jobs.js"></script>
+        <script type="text/javascript" src="/assets/js/all_job_role_with_jobs.js"></script>
         <div id="scriptContainer">
         </div>
         <script>

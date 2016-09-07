@@ -1,7 +1,16 @@
 var jobId = 0;
+var localityArray = [];
+var jobArray = [];
+
+function getLocality(){
+    return localityArray;
+}
+
+function getJob(){
+    return jobArray;
+}
 
 $(document).ready(function(){
-    localStorage.clear();
     $(".navbar-nav li a").click(function(event) {
         $(".navbar-collapse").collapse('hide');
     });
@@ -61,6 +70,17 @@ $(document).ready(function(){
     }
 });
 
+$(window).load(function() {
+    $('html, body').css({
+        'overflow': 'auto',
+        'height': 'auto'
+    });
+    $("#status").fadeOut();
+    $("#loaderLogo").fadeOut();
+    $("#preloader").delay(1000).fadeOut("slow");
+});
+
+
 $(document).ready(function(){
     var jobDetailPageUrl = $(location).attr('href');
     var jobDetailPageUrlBreak = jobDetailPageUrl.split("/");
@@ -79,6 +99,104 @@ $(document).ready(function(){
         }
 });
 
+function processDataCheckLocality(returnedData) {
+    returnedData.forEach(function(locality)
+    {
+        var id = locality.localityId;
+        var name = locality.localityName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        localityArray.push(item);
+    });
+}
+
+function addLocalitiesToModal() {
+    $("#applyButton").addClass("jobApplyBtnModal").removeClass("appliedBtn").prop('disabled',false).html("Apply");
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getJobPostInfo/" + jobPostId + "/0",
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataForJobPostLocation
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function processDataForJobPostLocation(returnedData) {
+    $("#jobNameConfirmation").html(returnedData.jobPostTitle);
+    $("#companyNameConfirmation").html(returnedData.company.companyName);
+
+    $('#jobLocality').html('');
+    var defaultOption=$('<option value="-1"></option>').text("Select Preferred Location");
+    $('#jobLocality').append(defaultOption);
+    var jobLocality = returnedData.jobPostToLocalityList;
+    jobLocality.forEach(function (locality) {
+        var item = {};
+        item ["id"] = locality.locality.localityId;
+        item ["name"] = " " + locality.locality.localityName;
+        jobLocalityArray.push(item);
+        var option=$('<option value=' + locality.locality.localityId + '></option>').text(locality.locality.localityName);
+        $('#jobLocality').append(option);
+    });
+}
+
+function confirmApply() {
+    applyJob(jobPostId, prefLocation);
+}
+
+$(function() {
+    $("#jobLocality").change(function (){
+        if($(this).val() != -1){
+            prefLocation = $(this).val();
+            prefLocationName = $("#jobLocality option:selected").text();
+            $("#applyButton").show();
+        } else{
+            $("#applyButton").hide();
+        }
+    });
+});
+
+function openLogin() {
+    $("#signInPopup").html("Sign In");
+    document.getElementById("resetCheckUserBtn").disabled = false;
+    document.getElementById("resetNewPasswordBtn").disabled = false;
+    $('#form_login_candidate').show();
+    $('#noUserLogin').hide();
+    $('#incorrectMsgLogin').hide();
+    $('#form_forgot_password').hide();
+    $('#errorMsgReset').hide();
+    $('#form_password_reset_otp').hide();
+    $('#form_password_reset_new').hide();
+}
+
+function openSignUp() {
+    $("#myLoginModal").modal("hide");
+}
+
+function resetPassword() {
+    $('#noUserLogin').hide();
+    $('#incorrectMsgLogin').hide();
+    $('#form_login_candidate').hide();
+    $('#form_forgot_password').show();
+}
+
+function processDataCheckJobs(returnedData) {
+    returnedData.forEach(function(job)
+    {
+        var id = job.jobRoleId;
+        var name = job.jobName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        jobArray.push(item);
+    });
+}
+
 function applyJobBtnAction() {
     $('#jobApplyConfirm').modal();
     jobPostId = jobId;
@@ -86,6 +204,7 @@ function applyJobBtnAction() {
     $('#applyButton').hide();
     addLocalitiesToModal();
 }
+
 function processDataForHotJobPost(returnedData) {
     jobId = returnedData.jobPostId;
 

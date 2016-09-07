@@ -4,6 +4,7 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpResponse.*;
+import com.amazonaws.services.importexport.model.Job;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
 import com.avaje.ebean.cache.ServerCacheManager;
@@ -765,6 +766,10 @@ public class Application extends Controller {
         return ok("0");
     }
 
+    public static Result getAllNormalJobPosts() {
+        List<JobPost> jobPosts = JobPost.find.all();
+        return ok(toJson(jobPosts));
+    }
     public static Result getAllHotJobPosts() {
         List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").findList();
         return ok(toJson(jobPosts));
@@ -873,13 +878,37 @@ public class Application extends Controller {
                     jobApplicationGoogleSheetResponse.setCandidateExpiryDate(null);
                 }
 
+                jobApplicationGoogleSheetResponse.setJobApplicationChannel("Website");
+                jobApplicationGoogleSheetResponse.setJobPostIsHot("Not Hot");
+                if(jobpost.getJobPostIsHot()){
+                    jobApplicationGoogleSheetResponse.setJobPostIsHot("Hot");
+                }
+
+                jobApplicationGoogleSheetResponse.setCandidateAge(0);
+                if(candidate.getCandidateDOB() != null){
+                    Date current = new Date();
+                    Date bday = new Date(candidate.getCandidateDOB().getTime());
+
+                    final Calendar calender = new GregorianCalendar();
+                    calender.set(Calendar.HOUR_OF_DAY, 0);
+                    calender.set(Calendar.MINUTE, 0);
+                    calender.set(Calendar.SECOND, 0);
+                    calender.set(Calendar.MILLISECOND, 0);
+                    calender.setTimeInMillis(current.getTime() - bday.getTime());
+
+                    int age = 0;
+                    age = calender.get(Calendar.YEAR) - 1970;
+                    age += (float) calender.get(Calendar.MONTH) / (float) 12;
+                    jobApplicationGoogleSheetResponse.setCandidateAge(age);
+                }
+
                 jobApplicationGoogleSheetResponse.setLanguageKnown(languagesKnown);
                 jobApplicationGoogleSheetResponse.setCandidateJobPref(candidateJobPref);
                 jobApplicationGoogleSheetResponse.setCandidateLocalityPref(candidateLocalityPref);
                 jobApplicationGoogleSheetResponse.setCandidateSkill(candidateSkills);
             }
         }
-        if(Play.isDev(Play.current()) == false){
+        if(!Play.isDev(Play.current())){
             jobApplicationGoogleSheetResponse.setFormUrl(ServerConstants.PROD_GOOGLE_FORM_FOR_JOB_APPLICATION);
         } else{
             jobApplicationGoogleSheetResponse.setFormUrl(ServerConstants.DEV_GOOGLE_FORM_FOR_JOB_APPLICATION);
@@ -890,6 +919,18 @@ public class Application extends Controller {
     public static Result getAllLocality() {
         List<Locality> localities = Locality.find.setUseQueryCache(!isDevMode).orderBy("localityName").findList();
         return ok(toJson(localities));
+    }
+
+    public static Result getAllJobsRolesWithJobs() {
+        List<JobRole> jobs = JobRole.find.setUseQueryCache(!isDevMode).orderBy("jobName").findList();
+        List<JobRole> jobRolesToReturn = new ArrayList<JobRole>();
+        for(JobRole jobRole : jobs){
+            List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",jobRole.getJobRoleId()).findList();
+            if(jobPostList.size() > 0){
+                jobRolesToReturn.add(jobRole);
+            }
+        }
+        return ok(toJson(jobRolesToReturn));
     }
 
     public static Result getAllJobs() {
@@ -1211,11 +1252,13 @@ public class Application extends Controller {
     public static Result renderPageNavBar() {
         return ok(views.html.nav_bar.render());
     }
+    public static Result renderPageNavBarLoggedIn() {
+        return ok(views.html.nav_bar_logged_in.render());
+    }
     public static Result renderGAScript() { return ok(views.html.script.render()); }
     public static Result renderPageFooter() {
         return ok(views.html.footer.render());
     }
-    public static Result renderJobRoleGrid() { return ok(views.html.job_role_grid_view.render());}
     public static Result renderJobPostCards() { return ok(views.html.hot_jobs_card_view.render());}
     public static Result renderShowAllJobs() { return ok(views.html.show_all_jobs_page.render());}
     public static Result renderJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
@@ -1237,5 +1280,10 @@ public class Application extends Controller {
     public static Result getJobRoleWiseJobPosts(String rolePara, Long idPara) {
         List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).findList();
         return ok(toJson(jobPostList));
+    }
+
+    public static Result getAllCompanyLogos() {
+        List<Company> companyList = Company.find.orderBy("companyName").findList();
+        return ok(toJson(companyList));
     }
 }

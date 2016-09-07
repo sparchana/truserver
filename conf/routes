@@ -81,9 +81,9 @@ POST        /signUp                                                       contro
 #new routes
 #~~~~~~~~~~~~~~~~~~~~
 GET         /navBar                                                       controllers.Application.renderPageNavBar()
+GET         /navBarLoggedIn                                               controllers.Application.renderPageNavBarLoggedIn()
 GET         /scriptContainer                                              controllers.Application.renderGAScript()
 GET         /footer                                                       controllers.Application.renderPageFooter()
-GET         /jobRolesGrid                                                 controllers.Application.renderJobRoleGrid()
 GET         /jobPostCardView                                              controllers.Application.renderJobPostCards()
 GET         /showJobs                                                     controllers.Application.renderShowAllJobs()
 GET         /jobs/:jobTitle/:jobLocation/:jobCompany/:jobId               controllers.Application.renderJobPostDetails( jobTitle: String , jobLocation : String , jobCompany :String , jobId : Long )
@@ -100,6 +100,8 @@ GET         /getAllJobPosts                                               contro
 
 POST        /getAllDegree                                                 controllers.Application.getAllDegree()
 POST        /getAllEducation                                              controllers.Application.getAllEducation()
+POST        /getAllJobsRolesWithJobs                                      controllers.Application.getAllJobsRolesWithJobs()
+POST        /getAllNormalJobPosts                                         controllers.Application.getAllNormalJobPosts()
 POST        /getAllHotJobPosts                                            controllers.Application.getAllHotJobPosts()
 POST        /getAllIdProof                                                controllers.Application.getAllIdProof()
 POST        /getAllJobs                                                   controllers.Application.getAllJobs()
@@ -108,6 +110,7 @@ POST        /getAllLanguage                                               contro
 POST        /getAllLocality                                               controllers.Application.getAllLocality()
 POST        /getAllShift                                                  controllers.Application.getAllShift()
 POST        /getAllTransportation                                         controllers.Application.getAllTransportation()
+POST        /getAllCompanyLogos                                           controllers.Application.getAllCompanyLogos()
 POST        /getJobPostInfo/:id/:isSupport                                controllers.Application.getJobPostInfo(id : Long, isSupport : Integer)
 
 # 3rd Party API
