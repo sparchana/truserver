@@ -1,5 +1,6 @@
 var localityArray = [];
 var jobArray = [];
+var shouldAddFooter = true;
 
 function processDataCheckJobs(returnedData) {
     returnedData.forEach(function(job)
@@ -132,17 +133,20 @@ function getSkills(skillList) {
         skillList.forEach(function(candidateSkill)
         {
             if(candidateSkill != null) {
-
-                if(candidateSkill.skillQualifier != null) {
-                    if(candidateSkill.skillQualifier.qualifier == "Yes"){
-                        if(candidateSkill.skill != null) {
-                            skills.push(" " + candidateSkill.skill.skillName);
-                        }
+                if(candidateSkill.candidateSkillResponse != null) {
+                    var resp;
+                    if(candidateSkill.candidateSkillResponse == true){
+                        resp = "Yes"
+                    } else {
+                        resp = "No"
                     }
+                    skills.push(" " + candidateSkill.skill.skillName + " : " + resp);
                 }
             }
         });
-        return skills;
+        if(skills.length > 0){
+            return skills;
+        }
     }
     return "-";
 }
@@ -231,6 +235,21 @@ function getExpiry(expiryObject) {
     return "-";
 }
 
+
+function getLastName(lastName) {
+    if(lastName != null){
+        return lastName;
+    }
+    return "";
+}
+function getFirstName(firstName) {
+    if(firstName != null){
+        return firstName;
+    }
+    return "";
+}
+
+
 function renderSearchResult(returnedData) {
     var status = returnedData.status;
     var candidateList = returnedData.candidateList;
@@ -257,7 +276,7 @@ function renderSearchResult(returnedData) {
                 }
                 returnedDataArray.push({
                     'cLID': '<a href="/candidateSignupSupport/' + newCandidate.lead.leadId + '/false" target="_blank">' + newCandidate.lead.leadId + '</a>',
-                    'candidateFirstName': newCandidate.candidateFirstName + " " + newCandidate.candidateLastName,
+                    'candidateFirstName': getFirstName(newCandidate.candidateFirstName) + " " + getLastName(newCandidate.candidateLastName),
                     'candidateMobile': newCandidate.candidateMobile,
                     'candidateLastWithdrawnSalary': getLastWithdrawnSalary(newCandidate.candidateLastWithdrawnSalary),
                     'candidateJobPref': getJobPref(newCandidate.jobPreferencesList),
@@ -405,17 +424,33 @@ function searchForm(){
         toThisDate: $('#toThisDate').val(),
         languageKnown: $('#languageMultiSelect').val()
     };
-    NProgress.start();
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getSearchCandidateResult",
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(d),
-            success: renderSearchResult
+    if(d.fromThisDate > d.toThisDate){
+        $.notify({
+            title: "Invalid Date Input: ",
+            message: "Selected Date Range is Incorrect. Please Select valid (from/to) Date",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
         });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
+        console.log("wrong date range selection. Please select appropriate from/to Date");
+        shouldAddFooter = false;
+    } else {
+        shouldAddFooter = true;
+        NProgress.start();
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/getSearchCandidateResult",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: renderSearchResult
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
     }
 }
 
@@ -571,10 +606,12 @@ $(function() {
         eventObj.preventDefault();
         searchForm();
         // Setup - add a text input to each footer cell
-        $('#candidateSearchResultTable tfoot th').each( function () {
-            var title = $(this).text();
-            $(this).html( '<input type="text" name="'+title+'"  id="'+title+'" placeholder="'+title+'" />' );
-        });
+        if(shouldAddFooter){
+            $('#candidateSearchResultTable tfoot th').each( function () {
+                var title = $(this).text();
+                $(this).html( '<input type="text" name="'+title+'"  id="'+title+'" placeholder="'+title+'" />' );
+            });
+        }
     }); // end of submit
 
 

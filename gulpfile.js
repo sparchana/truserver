@@ -50,6 +50,7 @@ jsOrder = {
     momentJs: paths.supportJs+"moment-2.8.4.min.js",
     datetimeMomentJs: paths.supportJs+"datetime-moment.js",
     jqueryUi: paths.supportJs+"jquery-ui.js",
+    bsNotify: paths.supportJs+"bootstrap-notify.min.js",
     searchController: paths.supportJs+"searchController.js"
 };
 
@@ -90,7 +91,7 @@ gulp.task('styles', function() {
 
 // JS concat, strip debugging and minify
 gulp.task('supportScripts', function() {
-    gulp.src([jsOrder.bootstrap, jsOrder.jquery, jsOrder.jqDt, jsOrder.npProgress, jsOrder.tokenInput, jsOrder.btnDt, jsOrder.btnFlash, jsOrder.jsZip, jsOrder.vfsFonts, jsOrder.btnHtml5, jsOrder.momentJs, jsOrder.datetimeMomentJs, jsOrder.jqueryUi, jsOrder.searchController])
+    gulp.src([jsOrder.bootstrap, jsOrder.jquery, jsOrder.jqDt, jsOrder.npProgress, jsOrder.tokenInput, jsOrder.btnDt, jsOrder.btnFlash, jsOrder.jsZip, jsOrder.vfsFonts, jsOrder.btnHtml5, jsOrder.momentJs, jsOrder.datetimeMomentJs, jsOrder.jqueryUi, jsOrder.bsNotify, jsOrder.searchController])
         .pipe(concat('sapp.min.js'))
         .pipe(gulpif(argv.prod, uglify(), beautify()))
         .pipe(gulpif(argv.prod, stripDebug()))
