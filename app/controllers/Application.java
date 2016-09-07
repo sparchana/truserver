@@ -4,6 +4,7 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpResponse.*;
+import com.amazonaws.services.importexport.model.Job;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
 import com.avaje.ebean.cache.ServerCacheManager;
@@ -131,8 +132,7 @@ public class Application extends Controller {
                 ServerConstants.LEAD_SOURCE_UNKNOWN
         );
         lead.setLeadType(addLeadRequest.getLeadType());
-        boolean isSupport = false;
-        LeadService.createLead(lead, isSupport);
+        LeadService.createLead(lead, InteractionService.InteractionChannelType.SELF);
         addLeadResponse.setStatus(AddLeadResponse.STATUS_SUCCESS);
         return ok(toJson(addLeadResponse));
     }
@@ -148,8 +148,8 @@ public class Application extends Controller {
         }
         Logger.info("JSON req: " + req);
 
-        boolean isSupport = false;
-        return ok(toJson(CandidateService.signUpCandidate(candidateSignUpRequest, isSupport, ServerConstants.LEAD_SOURCE_UNKNOWN)));
+        InteractionService.InteractionChannelType channelType = InteractionService.InteractionChannelType.SELF;
+        return ok(toJson(CandidateService.signUpCandidate(candidateSignUpRequest, channelType, ServerConstants.LEAD_SOURCE_UNKNOWN)));
     }
     @Security.Authenticated(PartnerSecured.class)
     public static Result signUpSupport() {
@@ -164,9 +164,8 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        boolean isSupport = true;
         return ok(toJson(CandidateService.createCandidateProfile(addSupportCandidateRequest,
-                isSupport,
+                InteractionService.InteractionChannelType.SUPPORT,
                 ServerConstants.UPDATE_ALL_BY_SUPPORT)));
     }
 
@@ -180,8 +179,7 @@ public class Application extends Controller {
             e.printStackTrace();
         }
         Logger.info("Req JSON : " + req);
-        boolean isSupport = false;
-        return ok(toJson(CandidateService.createCandidateProfile(addCandidateRequest, isSupport, ServerConstants.UPDATE_BASIC_PROFILE)));
+        return ok(toJson(CandidateService.createCandidateProfile(addCandidateRequest, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_BASIC_PROFILE)));
     }
 
     public static Result candidateUpdateExperienceDetails() {
@@ -194,8 +192,7 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        boolean isSupport = false;
-        return ok(toJson(CandidateService.createCandidateProfile(addCandidateExperienceRequest, isSupport, ServerConstants.UPDATE_SKILLS_PROFILE)));
+        return ok(toJson(CandidateService.createCandidateProfile(addCandidateExperienceRequest, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_SKILLS_PROFILE)));
     }
 
     public static Result candidateUpdateEducationDetails() {
@@ -207,8 +204,7 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        boolean isSupport = false;
-        return ok(toJson(CandidateService.createCandidateProfile(addCandidateEducationRequest, isSupport, ServerConstants.UPDATE_EDUCATION_PROFILE)));
+        return ok(toJson(CandidateService.createCandidateProfile(addCandidateEducationRequest, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_EDUCATION_PROFILE)));
     }
 
     public static Result addPassword() {
@@ -224,7 +220,7 @@ public class Application extends Controller {
         String userMobile = candidateSignUpRequest.getCandidateAuthMobile();
         String userPassword = candidateSignUpRequest.getCandidatePassword();
 
-        return ok(toJson(AuthService.savePassword(userMobile, userPassword)));
+        return ok(toJson(AuthService.savePassword(userMobile, userPassword, InteractionService.InteractionChannelType.SELF)));
     }
 
     public static Result applyJob() {
@@ -240,7 +236,7 @@ public class Application extends Controller {
         String userMobile = applyJobRequest.getCandidateMobile();
         Integer jobId = applyJobRequest.getJobId();
 
-        return ok(toJson(JobService.applyJob(applyJobRequest)));
+        return ok(toJson(JobService.applyJob(applyJobRequest, InteractionService.InteractionChannelType.SELF)));
     }
 
     @Security.Authenticated(RecSecured.class)
@@ -314,8 +310,7 @@ public class Application extends Controller {
         Logger.info("req JSON: " + req );
         String loginMobile = loginRequest.getCandidateLoginMobile();
         String loginPassword = loginRequest.getCandidateLoginPassword();
-
-        return ok(toJson(CandidateService.login(loginMobile, loginPassword)));
+        return ok(toJson(CandidateService.login(loginMobile, loginPassword, InteractionService.InteractionChannelType.SELF)));
     }
 
     @Security.Authenticated(SecuredUser.class)
@@ -345,7 +340,7 @@ public class Application extends Controller {
         String candidateMobile = resetPasswordResquest.getResetPasswordMobile();
         Logger.info("==> " + candidateMobile);
 
-        return ok(toJson(CandidateService.findUserAndSendOtp(candidateMobile)));
+        return ok(toJson(CandidateService.findUserAndSendOtp(candidateMobile, InteractionService.InteractionChannelType.SELF)));
     }
 
     public static Result processcsv() {
@@ -516,7 +511,12 @@ public class Application extends Controller {
                     Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")). findUnique();
                     objAUUID = candidate.getCandidateUUId();
                 }
-                InteractionService.createInteractionForJobApplicationAttempt(objAUUID, jobPost.getJobPostUUId(), interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName());
+                InteractionService.createInteractionForJobApplicationAttempt(
+                        objAUUID,
+                        jobPost.getJobPostUUId(),
+                        interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName(),
+                        InteractionService.InteractionChannelType.SELF
+                );
             }
 
             return ok(toJson(jobPost));
@@ -766,6 +766,10 @@ public class Application extends Controller {
         return ok("0");
     }
 
+    public static Result getAllNormalJobPosts() {
+        List<JobPost> jobPosts = JobPost.find.all();
+        return ok(toJson(jobPosts));
+    }
     public static Result getAllHotJobPosts() {
         List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").findList();
         return ok(toJson(jobPosts));
@@ -874,13 +878,37 @@ public class Application extends Controller {
                     jobApplicationGoogleSheetResponse.setCandidateExpiryDate(null);
                 }
 
+                jobApplicationGoogleSheetResponse.setJobApplicationChannel("Website");
+                jobApplicationGoogleSheetResponse.setJobPostIsHot("Not Hot");
+                if(jobpost.getJobPostIsHot()){
+                    jobApplicationGoogleSheetResponse.setJobPostIsHot("Hot");
+                }
+
+                jobApplicationGoogleSheetResponse.setCandidateAge(0);
+                if(candidate.getCandidateDOB() != null){
+                    Date current = new Date();
+                    Date bday = new Date(candidate.getCandidateDOB().getTime());
+
+                    final Calendar calender = new GregorianCalendar();
+                    calender.set(Calendar.HOUR_OF_DAY, 0);
+                    calender.set(Calendar.MINUTE, 0);
+                    calender.set(Calendar.SECOND, 0);
+                    calender.set(Calendar.MILLISECOND, 0);
+                    calender.setTimeInMillis(current.getTime() - bday.getTime());
+
+                    int age = 0;
+                    age = calender.get(Calendar.YEAR) - 1970;
+                    age += (float) calender.get(Calendar.MONTH) / (float) 12;
+                    jobApplicationGoogleSheetResponse.setCandidateAge(age);
+                }
+
                 jobApplicationGoogleSheetResponse.setLanguageKnown(languagesKnown);
                 jobApplicationGoogleSheetResponse.setCandidateJobPref(candidateJobPref);
                 jobApplicationGoogleSheetResponse.setCandidateLocalityPref(candidateLocalityPref);
                 jobApplicationGoogleSheetResponse.setCandidateSkill(candidateSkills);
             }
         }
-        if(Play.isDev(Play.current()) == false){
+        if(!Play.isDev(Play.current())){
             jobApplicationGoogleSheetResponse.setFormUrl(ServerConstants.PROD_GOOGLE_FORM_FOR_JOB_APPLICATION);
         } else{
             jobApplicationGoogleSheetResponse.setFormUrl(ServerConstants.DEV_GOOGLE_FORM_FOR_JOB_APPLICATION);
@@ -889,12 +917,24 @@ public class Application extends Controller {
     }
 
     public static Result getAllLocality() {
-        List<Locality> localities = Locality.find.setUseQueryCache(!isDevMode).findList();
+        List<Locality> localities = Locality.find.setUseQueryCache(!isDevMode).orderBy("localityName").findList();
         return ok(toJson(localities));
     }
 
+    public static Result getAllJobsRolesWithJobs() {
+        List<JobRole> jobs = JobRole.find.setUseQueryCache(!isDevMode).orderBy("jobName").findList();
+        List<JobRole> jobRolesToReturn = new ArrayList<JobRole>();
+        for(JobRole jobRole : jobs){
+            List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",jobRole.getJobRoleId()).findList();
+            if(jobPostList.size() > 0){
+                jobRolesToReturn.add(jobRole);
+            }
+        }
+        return ok(toJson(jobRolesToReturn));
+    }
+
     public static Result getAllJobs() {
-        List<JobRole> jobs = JobRole.find.setUseQueryCache(!isDevMode).findList();
+        List<JobRole> jobs = JobRole.find.setUseQueryCache(!isDevMode).orderBy("jobName").findList();
         return ok(toJson(jobs));
     }
 
@@ -914,17 +954,17 @@ public class Application extends Controller {
     }
 
     public static Result getAllLanguage() {
-        List<Language> languages = Language.find.setUseQueryCache(!isDevMode).findList();
+        List<Language> languages = Language.find.setUseQueryCache(!isDevMode).orderBy("languageName").findList();
         return ok(toJson(languages));
     }
 
     public static Result getAllIdProof() {
-        List<IdProof> idProofs = IdProof.find.setUseQueryCache(!isDevMode).findList();
+        List<IdProof> idProofs = IdProof.find.setUseQueryCache(!isDevMode).orderBy("idProofName").findList();
         return ok(toJson(idProofs));
     }
 
     public static Result getAllDegree() {
-        List<Degree> degreeList = Degree.find.setUseQueryCache(!isDevMode).findList();
+        List<Degree> degreeList = Degree.find.setUseQueryCache(!isDevMode).orderBy("degreeName").findList();
         return ok(toJson(degreeList));
     }
 
@@ -1020,7 +1060,7 @@ public class Application extends Controller {
 
     @Security.Authenticated(PartnerSecured.class)
     public static Result getAllLeadSource() {
-        List<LeadSource> leadSources = LeadSource.find.all();
+        List<LeadSource> leadSources = LeadSource.find.orderBy("leadSourceName").findList();
         return ok(toJson(leadSources));
     }
     @Security.Authenticated(PartnerSecured.class)
@@ -1109,9 +1149,9 @@ public class Application extends Controller {
         List<String> jobRoleIdList = Arrays.asList(jobRoleIds.split("\\s*,\\s*"));
         Query<JobExpQuestion> query = JobExpQuestion.find.query();
         query = query.select("*").fetch("jobRole")
-                    .where()
-                    .in("jobRole.jobRoleId", jobRoleIdList)
-                    .query();
+                .where()
+                .in("jobRole.jobRoleId", jobRoleIdList)
+                .query();
         List<JobExpQuestion> response = query.findList();
         if(response != null){
             return ok(toJson(response));
@@ -1208,5 +1248,42 @@ public class Application extends Controller {
 
     public static Result postJob() {
         return redirect("http://goo.gl/Dpsvcn");
+    }
+    public static Result renderPageNavBar() {
+        return ok(views.html.nav_bar.render());
+    }
+    public static Result renderPageNavBarLoggedIn() {
+        return ok(views.html.nav_bar_logged_in.render());
+    }
+    public static Result renderGAScript() { return ok(views.html.script.render()); }
+    public static Result renderPageFooter() {
+        return ok(views.html.footer.render());
+    }
+    public static Result renderJobPostCards() { return ok(views.html.hot_jobs_card_view.render());}
+    public static Result renderShowAllJobs() { return ok(views.html.show_all_jobs_page.render());}
+    public static Result renderJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
+        return ok(views.html.posted_job_details.render());
+    }
+
+    public static Result getJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
+        JobPost jobPost = JobPost.find.where().eq("JobPostId",jobId).findUnique();
+        if (jobPost != null) {
+            return ok(toJson(jobPost));
+        }
+        return ok("Error");
+    }
+
+    public static Result renderJobRoleJobPage(String rolePara, Long idPara) {
+        return ok(views.html.job_role_page.render());
+    }
+
+    public static Result getJobRoleWiseJobPosts(String rolePara, Long idPara) {
+        List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).findList();
+        return ok(toJson(jobPostList));
+    }
+
+    public static Result getAllCompanyLogos() {
+        List<Company> companyList = Company.find.orderBy("companyName").findList();
+        return ok(toJson(companyList));
     }
 }

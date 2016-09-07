@@ -578,7 +578,7 @@ public class MetricsQueryService
                 new StringBuilder("select ls.leadsourcename, count(*) as c from lead l " +
                         " join leadsource ls " +
                         " on l.leadsourceid = ls.leadsourceid " +
-                        " where l.leadchannel in (1,2) ");
+                        " where l.leadchannel in (0,1,2) ");
 
         if (metricDate != null) {
             leadSourcesQueryBuilder.append("and l.leadcreationtimestamp  >= '" + metricDate + "' ");

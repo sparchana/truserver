@@ -46,4 +46,32 @@ public class ResetPasswordResponse {
     public void setCandidateMobile(String candidateMobile) {
         this.candidateMobile = candidateMobile;
     }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public int getOtp() {
+        return otp;
+    }
+
+    public long getAccountStatus() {
+        return accountStatus;
+    }
+
+    public long getCandidateId() {
+        return candidateId;
+    }
+
+    public String getCandidateName() {
+        return candidateName;
+    }
+
+    public String getCandidateEmail() {
+        return candidateEmail;
+    }
+
+    public String getCandidateMobile() {
+        return candidateMobile;
+    }
 }

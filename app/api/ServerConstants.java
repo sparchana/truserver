@@ -54,6 +54,8 @@ public class ServerConstants {
     public static final int LEAD_CHANNEL_WEBSITE= 0;
     public static final int LEAD_CHANNEL_KNOWLARITY= 1;
     public static final int LEAD_CHANNEL_SUPPORT = 2;
+    public static final int LEAD_CHANNEL_ANDROID  = 3;
+    public static final int LEAD_CHANNEL_UNKNOWN  = 4;
 
     public static final int LEAD_STATUS_NEW= 0;
     public static final int LEAD_STATUS_TTC= 1; // TTC: Trying To Convert
@@ -85,6 +87,7 @@ public class ServerConstants {
     public static final int OBJECT_TYPE_CANDIDATE= 4;
     public static final int OBJECT_TYPE_RECRUTER= 5;
     public static final int OBJECT_TYPE_JOB_POST= 6;
+    public static final int OBJECT_TYPE_JOB_POST_VIEW= 7;
 
     public static final int INTERACTION_TYPE_CALL_IN= 1;
     public static final int INTERACTION_TYPE_CALL_OUT= 2;
@@ -96,6 +99,12 @@ public class ServerConstants {
     public static final int INTERACTION_TYPE_TRIED_JOB_APPLY= 8;
     public static final int INTERACTION_TYPE_TRIED_PASSWORD_RESET= 9;
     public static final int INTERACTION_TYPE_PASSWORD_RESET_SUCCESS= 10;
+    public static final int INTERACTION_TYPE_CANDIDATE_ALERT = 11;
+    public static final int INTERACTION_TYPE_ANDROID = 12;
+    public static final int INTERACTION_TYPE_ANDROID_LOGIN = 13;
+    public static final int INTERACTION_TYPE_ANDROID_SIGNUP = 14;
+    public static final int INTERACTION_TYPE_ANDROID_SEARCH = 15;
+    public static final int INTERACTION_TYPE_ANDROID_JOP_POST_VIEW = 16;
 
     public static final boolean FOLLOW_UP_DEACTIVATE = false;
     public static final boolean FOLLOW_UP_ACTIVATE = true;
@@ -129,10 +138,12 @@ public class ServerConstants {
     public static final String SDF_FORMAT_YYYYMMDD = "yyyy-MM-dd";
 
     public static final String PROD_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/1NIGQC5jmSDuQaGUF0Jw1UG-Dz_3huFtZf9Bo7ncPl4g/formResponse";
-    public static final String DEV_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/e/1FAIpQLSe2owE6RMlW8Ynk8p-dWWBuQl0EclR2Go2ua9HGUIXxwMt0cg/formResponse";
+    public static final String DEV_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/e/1FAIpQLSfsj3Lw_QoEfDwvZ9BOU5Wn3wneAxZyWVOw2hR6YwBQ5VnTtA/formResponse";
 
     public static final String PROD_GOOGLE_FORM_FOR_JOB_POSTS = "https://docs.google.com/forms/d/1QVHzqnts0IkD3Wk8in4urqb70BseI9YWZm9B_MgGXUE/formResponse";
     public static final String DEV_GOOGLE_FORM_FOR_JOB_POSTS = "https://docs.google.com/forms/d/e/1FAIpQLSc-Fr7bO7M5HCjNYyC-dnIyzTMiXiywTEaD9twKkCQDeB7Qtg/formResponse";
+
+    public static final Integer IS_HOT = 1;
 
     public static Map<String, String> devTeamMobile;
     static {
@@ -143,4 +154,37 @@ public class ServerConstants {
         devTeamMobile.put("Adarsh", "+918971739586");
         devTeamMobile.put("Sandy", "+919019672209");
     }
+
+    public static final Double DEFAULT_MATCHING_ENGINE_RADIUS = 10.0; // In Kilometers
+
+    // Job Post DB Constants
+    public static final int EXPERIENCE_TYPE_FRESHER_ID = 1;
+    public static final int EXPERIENCE_TYPE_ANY_ID = 5;
+
+    // Job Post DB Constants
+    public static final int EDUCATION_TYPE_ANY = 0; // not in db
+    public static final int EDUCATION_TYPE_LT_10TH_ID = 1;
+    public static final int EDUCATION_TYPE_10TH_PASS_ID = 2;
+    public static final int EDUCATION_TYPE_12TH_PASS_ID = 3;
+    public static final int EDUCATION_TYPE_UG = 4;
+    public static final int EDUCATION_TYPE_PG = 5;
+
+    // MatchingEngine Sort Type
+    public static final int SORT_BY_NEARBY = 1;
+    public static final int SORT_BY_DATE_POSTED = 2;
+    public static final int SORT_BY_SALARY = 3;
+    public static final int SORT_DEFAULT = SORT_BY_NEARBY;
+
+    public static final int GENDER_MALE = 0;
+    public static final int GENDER_FEMALE = 1;
+    public static final int GENDER_ANY= 2;
+
+    /* Constants */
+    public static final double EARTH_RADIUS = 6371.0; // kilometers (or 3958.75 in miles)
+    /* EXTERNAL API KEYS */
+    public static final String GOOGLE_SERVER_API_KEY = "AIzaSyCKHf7GijuzKW84Ggz0fFWWHD0y9_onUhg";
+
+    /* Non Logged In Search Result UUID */
+    public static final String TRU_DROID_NOT_LOGGED_UUID = "TRU-DROID-NOT-LOGGEDIN-UUID";
+
 }

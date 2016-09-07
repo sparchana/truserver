@@ -65,12 +65,12 @@ public class SmsUtil {
     }
 
     public static void sendOTPSms(int otp, String mobile) {
-        String msg = "Welcome to www.Trujobs.in! Use OTP " + otp + " to register and start your job search";
+        String msg = "Use OTP " + otp + " to register and start your job search. Welcome to www.Trujobs.in!";
         sendSms(mobile, msg);
     }
 
     public static void sendResetPasswordOTPSms(int otp, String mobile) {
-        String msg = "Welcome to www.Trujobs.in! Use OTP " + otp + " to reset your password";
+        String msg = "Use OTP " + otp + " to reset your password. Welcome to www.Trujobs.in!";
         sendSms(mobile, msg);
     }
 
@@ -113,6 +113,18 @@ public class SmsUtil {
 
         String msg = "Hi DevTeam, Duplicate Candidate found with phone number " + mobile + "! "
                 + "Please remove the Duplicate Entry";
+
+        sendSms(devTeamMobile.get("Sandy"), msg);
+        sendSms(devTeamMobile.get("Adarsh"), msg);
+        sendSms(devTeamMobile.get("Archana"), msg);
+    }
+    public static void sendLocalityNotResolvedSmsToDevTeam(String unResolvedLocality, String city, String state, Double lat, Double lng)
+    {
+        // Idea is to tweak AddressResolver based on unresolved lat/lng (s)  :D
+
+        String msg = "Bonjour DevTeam !!, AddressResolver was not able to resolve this " + lat+", " + lng
+                + " LatLng "+" with PredictedLocality: "+unResolvedLocality+" to a Proper Locality Object! "
+                + "Max Resolved Info:- City: "+city+" State:"+state;
 
         sendSms(devTeamMobile.get("Sandy"), msg);
         sendSms(devTeamMobile.get("Adarsh"), msg);

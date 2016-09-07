@@ -1,4 +1,4 @@
-/* latin-ext */
+/*#latin-ext*/
 @font-face {
     font-family: 'Lato';
     font-style: normal;
@@ -6,7 +6,7 @@
     src: local('Lato Light'), local('Lato-Light'), url(https://fonts.gstatic.com/s/lato/v11/dPJ5r9gl3kK6ijoeP1IRsvY6323mHUZFJMgTvxaG2iE.woff2) format('woff2');
     unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
 }
-/* latin */
+/*#latin*/
 @font-face {
     font-family: 'Lato';
     font-style: normal;
@@ -155,13 +155,13 @@ body{
 
 #sectionOne {
     background: linear-gradient(
-            rgba(24, 26, 45, 0.6),
-            rgba(24, 26, 45, 0.6)
-    ), url(../img/back_design.png) no-repeat;
+            rgba(24, 26, 45, 0.3),
+            rgba(24, 26, 45, 0.3)
+    ), url(../img/back_design.png) repeat;
     background-size: 100%;
     color: #ffffff;
     font-weight: bold;
-    padding: 5% 3% 4% 3%;
+    padding: 4% 0 0 0;
     text-align: center;
 }
 
@@ -187,6 +187,10 @@ body{
     border-radius: 2px;
 }
 
+#app_screen_header{
+    width: 56%;
+}
+
 .leadBox {
     text-align: center;
     position: relative;
@@ -197,7 +201,7 @@ body{
     background: #ffffff;
     padding: 4px;
     margin-left: 75%;
-    margin-top: -13%;
+    margin-top: -16%;
 }
 
 .sectionStats {
@@ -215,6 +219,10 @@ body{
     border: none;
     background-color: #0065a4;
     color: white;
+}
+#registerBtnSubmitModal{
+    background-color:#0065a4;
+    border-color:#0065a4 ;
 }
 
 #registerBtn{
@@ -473,13 +481,40 @@ hr{
     padding-top: 24px;
     padding-left: 14%;
     padding-bottom: 24px;
-    margin-top: -90px;
+    margin-top: -70px;
 }
-
+#navLogo{
+    margin-top: -4px;
+}
+.appStoreContainer{
+    background: url(/assets/img/backimage_appstore.png) no-repeat;
+    background-size:100% ;
+    padding: 0% 0%;
+}
+#step_image{
+    margin-bottom:4%;
+}
+#playStore{
+    color:white;
+    padding:1% 5% 0% 0%;
+    text-align:left;
+}
+#stepContainer{
+    display: block;
+    text-align:center;
+    margin-top:5%;
+}
 
 @media screen and (max-width: 280px) {
     .panel{
         padding: 0px;
+    }
+    .navbar-brand{
+        letter-spacing: 3px;
+        font-size: 43px;
+        padding: 0;
+        font-family: DeLaFuente;
+        color: #88898c;
     }
     #navLogo{
         height: 24px;
@@ -492,7 +527,6 @@ hr{
         background-color: #ffffff;
     }
 }
-
 #forCandidate {
     background: url(../img/call_center.jpg) no-repeat;
     background-size: 100%;
@@ -501,8 +535,80 @@ hr{
 #firstNameLastName {
     height: 34px;
 }
+.navbar-right{
+    margin-right: -78px;
+}
+#playStoreLogoNavBar{
+    display: none;
+}
+#appImg1,#appImg2,#appImg3{
+    display: inline;
+    height: 40%;
+}
+#playStoreDownloadButtonContainer{
+    text-align:center;
+    padding-bottom: 18px;
+}
+#playStoreDownloadButton{
+    height: 50px;
+    padding-top: 2%;
+}
 
 @media screen and (max-width: 768px) {
+    #jobRoleName{
+        font-size: 10px;
+    }
+    #playStoreDownloadButtonContainer{
+        text-align:left;
+        padding-left: 8%;
+        padding-bottom: 18px;
+    }
+    #playStoreDownloadButton{
+        height: 5%;
+    }
+    #playStore{
+        color:white;
+        text-align:left;
+    }
+    #appImg1 {
+        height: 45%;
+    }
+    #appImg2,#appImg3{
+        display: none;
+    }
+    .navbar-brand{
+        letter-spacing: 3px;
+        font-size: 43px;
+        padding: 0;
+        font-family: DeLaFuente;
+        color: #88898c;
+    }
+    #companyLogoSlider{
+        width: 60%;
+        padding: 4%;
+    }
+    #hiringCompanyContent{
+        height: 62%;
+    }
+    #stepContainer{
+        display: none;
+    }
+    .appStoreContainer{
+        background-size: 300%;
+    }
+    #playStoreLogo{
+        display: none;
+    }
+    #playStoreLogoNavBar{
+        display: block;
+        padding: 0;
+        margin-top: 12px;
+        margin-right: 2px;
+        float: right;
+    }
+    .navbar-right{
+        margin-right:-15px;
+    }
     #customModal {
         margin-left: 2%;
         margin-right: 2%;
@@ -516,9 +622,8 @@ hr{
     }
     #applyToJobs{
         padding: 0;
-        margin: 0;
+        margin: 24px 0px 0px 0px;
         text-align: center;
-        margin-top: 24px;
     }
     #jobLogo{
         margin-top: 4%;
@@ -618,7 +723,7 @@ hr{
     }
 
     #sectionOne {
-        background-size: 260%;
+        background-size: 320%;
         padding-top: 24%;
         padding-bottom: 48%;
     }
@@ -634,7 +739,9 @@ hr{
     #navItem1, #navItem2, #navItem3, #navItem4, #navItem5{
         color: #747474;
     }
+
     #navLogo{
+        margin-top: 12px;
         content:url("/assets/new/img/logo-color.gif");
     }
 
@@ -784,7 +891,7 @@ li .dropdown-menu{
     background: linear-gradient(
             rgba(24, 26, 45, 0.7),
             rgba(24, 26, 45, 0.7)
-    ), url(../img/back_design.png) no-repeat;
+    ), url(../img/back_design.png) repeat;
     background-size: 100%;
 }
 .sectionFive {
@@ -1069,6 +1176,8 @@ padding: 0px;
 #jobRoleNoBorder:hover, #jobRoleRight:hover, #jobRoleBottom:hover, #jobRole:hover {
     background: #f8f2f0;
     color: #003557;
+    cursor: pointer;
+
     /* for slow hove effect*/
 
     -webkit-transition: background 3s;
@@ -1240,4 +1349,8 @@ padding: 0px;
 .affix {
     position:fixed;
     bottom: 50px;
+}
+#job_box_inc a{
+    text-decoration: none;
+    color: #000000;
 }

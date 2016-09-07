@@ -142,11 +142,51 @@ public class JobPost extends Model {
     @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
     private List<JobApplication> jobPostApplicationList;
 
+    @Column(name = "Gender", columnDefinition = "int(1) null")
+    private Integer gender;
+
+
     public static Finder<String, JobPost> find = new Finder(JobPost.class);
 
     public JobPost() {
         this.jobPostUUId = UUID.randomUUID().toString();
         this.jobPostCreateTimestamp = new Timestamp(System.currentTimeMillis());
+    }
+
+    public JobPost(JobPost jobPost) {
+        this.jobPostId = jobPost.jobPostId;
+        this.jobPostUUId  = jobPost.jobPostUUId;
+        this.jobPostCreateTimestamp = jobPost.jobPostCreateTimestamp;
+        this.jobPostUpdateTimestamp  = jobPost.jobPostUpdateTimestamp;
+        this.jobPostMinSalary = jobPost.jobPostMinSalary;
+        this.jobPostMaxSalary  = jobPost.jobPostMaxSalary;
+        this.jobPostStartTime = jobPost.jobPostStartTime;
+        this.jobPostEndTime  = jobPost.jobPostEndTime;
+        this.jobPostIsHot = jobPost.jobPostIsHot;
+        this.jobPostDescription  = jobPost.jobPostDescription;
+        this.jobPostTitle = jobPost.jobPostTitle;
+        this.jobPostIncentives  = jobPost.jobPostIncentives;
+        this.jobPostMinRequirement = jobPost.jobPostMinRequirement;
+        this.jobPostAddress  = jobPost.jobPostAddress;
+        this.latitude = jobPost.latitude;
+        this.longitude  = jobPost.longitude;
+        this.jobPostPinCode = jobPost.jobPostPinCode;
+        this.jobPostVacancies  = jobPost.jobPostVacancies;
+        this.jobPostDescriptionAudio = jobPost.jobPostDescriptionAudio;
+        this.jobPostWorkFromHome  = jobPost.jobPostWorkFromHome;
+        this.jobPostWorkingDays = jobPost.jobPostWorkingDays;
+        this.jobPostStatus  = jobPost.jobPostStatus;
+        this.pricingPlanType = jobPost.pricingPlanType;
+        this.jobRole  = jobPost.jobRole;
+        this.jobPostToLocalityList = jobPost.jobPostToLocalityList;
+        this.jobPostToBenefitsList  = jobPost.jobPostToBenefitsList;
+        this.company = jobPost.company;
+        this.jobPostShift  = jobPost.jobPostShift;
+        this.jobPostExperience = jobPost.jobPostExperience;
+        this.jobPostEducation  = jobPost.jobPostEducation;
+        this.recruiterProfile = jobPost.recruiterProfile;
+        this.jobPostApplicationList = jobPost.jobPostApplicationList;
+        this.gender = jobPost.gender;
     }
 
     public RecruiterProfile getRecruiterProfile() {
@@ -407,5 +447,13 @@ public class JobPost extends Model {
 
     public void setJobPostEducation(Education jobPostEducation) {
         this.jobPostEducation = jobPostEducation;
+    }
+
+    public Integer getGender() {
+        return gender;
+    }
+
+    public void setGender(Integer gender) {
+        this.gender = gender;
     }
 }

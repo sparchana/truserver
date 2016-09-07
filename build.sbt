@@ -10,6 +10,8 @@ testOptions in Test := Seq(Tests.Argument(TestFrameworks.JUnit, "-a"))
 
 lazy val root = (project in file(".")).enablePlugins(PlayJava, PlayEbean)
 
+unmanagedJars in Compile += file(Path.userHome+"/truprojects/trucommon/tru-proto/repos/in.trujobs.proto/tru-proto/1.0.0/tru-proto-1.0.0.jar")
+
 libraryDependencies ++= Seq(
   javaJdbc,
   cache,
@@ -36,8 +38,8 @@ libraryDependencies += "net.sf.opencsv" % "opencsv" % "2.3"
 
 libraryDependencies += "com.typesafe.play" % "play-json_2.11" % "2.5.0"
 
-libraryDependencies += "com.google.code.gson" % "gson" % "2.5"
-
 libraryDependencies += "org.mockito" % "mockito-core" % "1.10.19"
+
+libraryDependencies += "org.json"%"org.json"%"chargebee-1.0"
 
 libraryDependencies += evolutions
