@@ -249,6 +249,25 @@ function getFirstName(firstName) {
     return "";
 }
 
+function getIdProof(idProofList) {
+    var idProofArray = [];
+    console.log(JSON.stringify(idProofList));
+    if(idProofList !=  null){
+        idProofList.forEach(function(candidateIdProof) {
+            if(candidateIdProof != null) {
+                if(candidateIdProof.idProof != null && candidateIdProof.idProof.idProofName != null) {
+                    idProofArray.push(" " + candidateIdProof.idProof.idProofName);
+                }
+            }
+        });
+        if(idProofArray.length > 0){
+            return idProofArray;
+        }
+    } else {
+        return "-";
+    }
+}
+
 
 function renderSearchResult(returnedData) {
     var status = returnedData.status;
@@ -299,7 +318,8 @@ function renderSearchResult(returnedData) {
                     'age': getAge(newCandidate.candidateDOB),
                     'candidateExperienceLetter': getYesNo(newCandidate.candidateExperienceLetter),
                     'isActive': getProperProfileStatus(newCandidate.candidateprofilestatus),
-                    'candidateExpiry': getExpiry(newCandidate.candidateStatusDetail)
+                    'candidateExpiry': getExpiry(newCandidate.candidateStatusDetail),
+                    'candidateIdProofs': getIdProof(newCandidate.idProofReferenceList)
                 })
             });
 
@@ -334,7 +354,8 @@ function renderSearchResult(returnedData) {
                     {"data": "age"},
                     {"data": "candidateExperienceLetter"},
                     {"data": "isActive"},
-                    {"data": "candidateExpiry"}
+                    {"data": "candidateExpiry"},
+                    {"data": "candidateIdProofs"}
                 ],
                 "deferRender": true,
                 "scroller": true,
