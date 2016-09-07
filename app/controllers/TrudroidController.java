@@ -752,7 +752,7 @@ public class TrudroidController {
                 Logger.info("Status returned = " + getJobPostDetailsResponse.getStatus());
                 // save Interaction for global
                 jobPostUUId = jobPost.getJobPostUUId();
-                result = "Viewed "+jobPost.getJobRole().getJobName();
+                result = "Viewed JobPost: "+jobPost.getJobPostTitle();
             }
 
             //getting company object from DB
