@@ -139,13 +139,12 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-
 });
 
 function processDataCheckCompanyLogo(returnedData) {
     var companyCount = Object.keys(returnedData).length;
-    var companyRowCount = Math.floor(companyCount / 6); // 6 because we are showing 6 companies in a row
-    var remainingCompanies = companyCount % 6;
+    var companyRowCount = Math.floor(companyCount / 3); // 3 because we are showing 6 companies in a row
+    var remainingCompanies = companyCount % 3;
 
     var count = 0;
     var start = 0;
@@ -156,13 +155,14 @@ function processDataCheckCompanyLogo(returnedData) {
     parent.append(rowDiv);
 
     returnedData.forEach(function (company) {
-        if(count >= start && count < (start+6)){
+        if(count >= start && count < (start+3)){
             var logoDiv = document.createElement("div");
-            logoDiv.className = "col-sm-2";
+            logoDiv.className = "col-sm-4";
             rowDiv.appendChild(logoDiv);
 
             var companyLogo = document.createElement("img");
             companyLogo.className = "img-responsive";
+            companyLogo.id = "companyLogoSlider";
             companyLogo.setAttribute('alt', "Companies Hiring");
             companyLogo.src = company.companyLogo;
             logoDiv.appendChild(companyLogo);
@@ -170,13 +170,13 @@ function processDataCheckCompanyLogo(returnedData) {
         }
         count++;
         //checking when to end the loop
-        if(count > 6){ return true; }
+        if(count > 3){ return true; }
     });
 
-    startIndex = 6;
+    var startIndex = 3;
     for(var i=1;i<companyRowCount; i++){
         setCompanyLogos(returnedData, startIndex);
-        startIndex = startIndex + 6;
+        startIndex = startIndex + 3;
     }
     if(remainingCompanies > 0){
         startIndex = companyCount - remainingCompanies;
@@ -193,13 +193,14 @@ function setCompanyLogos(returnedData, start){
     parent.append(rowDiv);
 
     returnedData.forEach(function (company) {
-        if(count >= start && count < (start+6)){
+        if(count >= start && count < (start+3)){
             var logoDiv = document.createElement("div");
-            logoDiv.className = "col-sm-2";
+            logoDiv.className = "col-sm-4";
             rowDiv.appendChild(logoDiv);
 
             var companyLogo = document.createElement("img");
             companyLogo.className = "img-responsive";
+            companyLogo.id = "companyLogoSlider";
             companyLogo.setAttribute('alt', "Companies Hiring");
             companyLogo.src = company.companyLogo;
             logoDiv.appendChild(companyLogo);
@@ -207,11 +208,9 @@ function setCompanyLogos(returnedData, start){
         }
         count++;
         //checking when to end the loop
-        if(count > start + 6){ return true; }
+        if(count > start + 3){ return true; }
     });
 }
-
-
 
 function processDataAllJobPosts(returnedData) {
     var jobPostCount = Object.keys(returnedData).length;
@@ -411,8 +410,6 @@ function processDataAllJobPosts(returnedData) {
                     item ["jobRoleId"] = jobRoleId;
                     item ["jobName"] = jobName;
                     jobPostJobRoles.push(item);
-                } else{
-                    console.log("already there");
                 }
 
                 //!*  apply button *!/
@@ -436,17 +433,19 @@ function processDataAllJobPosts(returnedData) {
         });
     }
     var jobRoleCount = Object.keys(jobPostJobRoles).length;
-    var jobRoleRowCount = Math.floor(jobRoleCount / 6); // 6 because we are showing 6 job roles in a row
-    var remainingJobRoles = jobRoleCount % 6;
-    var startIndex = 0;
+    if(jobRoleCount > 0){ //there are at least one job role to display
+        var jobRoleRowCount = Math.floor(jobRoleCount / 6); // 6 because we are showing 6 job roles in a row
+        var remainingJobRoles = jobRoleCount % 6;
+        var startIndex = 0;
 
-    for(var i=0;i<jobRoleRowCount; i++){
-        setJobRoles(jobPostJobRoles, startIndex);
-        startIndex = startIndex + 6;
-    }
-    if(remainingJobRoles > 0){
-        startIndex = jobRoleCount - remainingJobRoles;
-        setJobRoles(jobPostJobRoles, startIndex);
+        for(var i=0;i<jobRoleRowCount; i++){
+            setJobRoles(jobPostJobRoles, startIndex);
+            startIndex = startIndex + 6;
+        }
+        if(remainingJobRoles > 0){
+            startIndex = jobRoleCount - remainingJobRoles;
+            setJobRoles(jobPostJobRoles, startIndex);
+        }
     }
 }
 
@@ -482,6 +481,7 @@ function setJobRoles(returnedData, start){
             innerDiv.appendChild(jobIcon);
 
             var subDiv = document.createElement("div");
+            subDiv.id = "jobRoleName";
             subDiv.style = "margin-top: 6px; color: #003557;";
             subDiv.textContent = jobRole.jobName;
             innerDiv.appendChild(subDiv);
@@ -493,22 +493,6 @@ function setJobRoles(returnedData, start){
     });
 }
 
-
-function addLocalitiesToModal() {
-    $("#applyButton").addClass("jobApplyBtnModal").removeClass("appliedBtn").prop('disabled',false).html("Apply");
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getJobPostInfo/" + jobPostId + "/0",
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataForJobPostLocation
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-}
 function processDataForJobPostLocation(returnedData) {
     $("#jobNameConfirmation").html(returnedData.jobPostTitle);
     $("#companyNameConfirmation").html(returnedData.company.companyName);
@@ -548,6 +532,7 @@ function processCheckLeadStatus() {
     $("#messagePromptModal").modal("show");
     $("#customMsg").html("Thanks! We will get back soon!");
 }
+
 function addLead() {
     var phone = $('#addLeadMobile').val();
     var res = validateMobile(phone);

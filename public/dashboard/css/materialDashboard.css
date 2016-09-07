@@ -298,8 +298,19 @@ hr{
     background-color: #f4cb6c;
     box-shadow: none;
 }
+.navbar-nav>li>a:hover {
+    color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.31);
+}
+.navbar-nav>li>a {
+    color: #ffffff;
+}
 
 @media screen and (max-width: 800px) {
+    .navbar-nav>li>a {
+        color: #3a589a;
+    }
+
     #activeLink{
         color: #3a589a;
         font-weight: bold;

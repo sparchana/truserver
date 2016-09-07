@@ -155,13 +155,13 @@ body{
 
 #sectionOne {
     background: linear-gradient(
-            rgba(24, 26, 45, 0.6),
-            rgba(24, 26, 45, 0.6)
-    ), url(../img/back_design.png) no-repeat;
+            rgba(24, 26, 45, 0.3),
+            rgba(24, 26, 45, 0.3)
+    ), url(../img/back_design.png) repeat;
     background-size: 100%;
     color: #ffffff;
     font-weight: bold;
-    padding: 5% 3% 4% 3%;
+    padding: 4% 0 0 0;
     text-align: center;
 }
 
@@ -187,6 +187,10 @@ body{
     border-radius: 2px;
 }
 
+#app_screen_header{
+    width: 56%;
+}
+
 .leadBox {
     text-align: center;
     position: relative;
@@ -197,7 +201,7 @@ body{
     background: #ffffff;
     padding: 4px;
     margin-left: 75%;
-    margin-top: -13%;
+    margin-top: -16%;
 }
 
 .sectionStats {
@@ -477,7 +481,7 @@ hr{
     padding-top: 24px;
     padding-left: 14%;
     padding-bottom: 24px;
-    margin-top: -90px;
+    margin-top: -70px;
 }
 #navLogo{
     margin-top: -4px;
@@ -504,6 +508,13 @@ hr{
 @media screen and (max-width: 280px) {
     .panel{
         padding: 0px;
+    }
+    .navbar-brand{
+        letter-spacing: 3px;
+        font-size: 43px;
+        padding: 0;
+        font-family: DeLaFuente;
+        color: #88898c;
     }
     #navLogo{
         height: 24px;
@@ -532,15 +543,53 @@ hr{
 }
 #appImg1,#appImg2,#appImg3{
     display: inline;
-    height:350px;
+    height: 40%;
+}
+#playStoreDownloadButtonContainer{
+    text-align:center;
+    padding-bottom: 18px;
+}
+#playStoreDownloadButton{
+    height: 50px;
+    padding-top: 2%;
 }
 
 @media screen and (max-width: 768px) {
+    #jobRoleName{
+        font-size: 10px;
+    }
+    #playStoreDownloadButtonContainer{
+        text-align:left;
+        padding-left: 8%;
+        padding-bottom: 18px;
+    }
+    #playStoreDownloadButton{
+        height: 5%;
+    }
+    #playStore{
+        color:white;
+        margin-left: -6%;
+        text-align:left;
+    }
+    #appImg1 {
+        height: 45%;
+    }
     #appImg2,#appImg3{
         display: none;
     }
-    #appImg1{
-        height: 300px;
+    .navbar-brand{
+        letter-spacing: 3px;
+        font-size: 43px;
+        padding: 0;
+        font-family: DeLaFuente;
+        color: #88898c;
+    }
+    #companyLogoSlider{
+        width: 60%;
+        padding: 4%;
+    }
+    #hiringCompanyContent{
+        height: 62%;
     }
     #stepContainer{
         display: none;
@@ -548,17 +597,14 @@ hr{
     .appStoreContainer{
         background-size: 300%;
     }
-    .navbar-brand{
-        padding:0px 0px;
-    }
     #playStoreLogo{
         display: none;
     }
     #playStoreLogoNavBar{
         display: block;
-        padding:0px;
-        margin-top:4px;
-        margin-right:10px;
+        padding: 0;
+        margin-top: 12px;
+        margin-right: 2px;
         float: right;
     }
     .navbar-right{
@@ -678,7 +724,7 @@ hr{
     }
 
     #sectionOne {
-        background-size: 260%;
+        background-size: 320%;
         padding-top: 24%;
         padding-bottom: 48%;
     }
@@ -696,7 +742,7 @@ hr{
     }
 
     #navLogo{
-        margin-top:10px;
+        margin-top: 12px;
         content:url("/assets/new/img/logo-color.gif");
     }
 
@@ -846,7 +892,7 @@ li .dropdown-menu{
     background: linear-gradient(
             rgba(24, 26, 45, 0.7),
             rgba(24, 26, 45, 0.7)
-    ), url(../img/back_design.png) no-repeat;
+    ), url(../img/back_design.png) repeat;
     background-size: 100%;
 }
 .sectionFive {

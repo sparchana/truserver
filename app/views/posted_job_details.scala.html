@@ -53,22 +53,20 @@
 
     <!-- Nav start -->
     <div id="nav_bar_inc"></div>
-        <script>
-            $(document).ready(function(){
-                var phone = localStorage.getItem("mobile");
-                if(phone == null){ // not logged in
-                    $('#nav_bar_inc').load('/navBar');
-                } else{
-                    $('#nav_bar_inc').load('/navBarLoggedIn');
-                }
+    <script>
+        $(document).ready(function(){
+            var phone = localStorage.getItem("mobile");
+            if(phone == null){ // not logged in
+                $('#nav_bar_inc').load('/navBar');
+            } else{
+                $('#nav_bar_inc').load('/navBarLoggedIn');
+            }
 
-            });
-        </script>
+        });
+    </script>
 
     <div class="container">
-        <div id="fixed-menu-shadow" style="padding-bottom: 0px; padding-top: 8px; display: none" >
-
-        </div>
+        <div id="fixed-menu-shadow" style="padding-bottom: 0px; padding-top: 8px; display: none" ></div>
     </div>
     <div id="mySignUpModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
@@ -91,34 +89,34 @@
                         <div style="margin-top: 8px">
                             <input type="text" id="candidateJobPrefModal" placeholder="What jobs you are Interested in?">
                             <script type="text/javascript">
-                                            $(document).ready(function() {
-                                                $("#candidateJobPrefModal").tokenInput(getJob(), {
-                                                    theme: "facebook",
-                                                    placeholder: "Jobs Interested? (Max: 3)",
-                                                    hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-                                                    minChars: 0,
-                                                    tokenLimit: 3,
-                                                    zindex: 9999999,
-                                                    preventDuplicates: true
-                                                });
-                                            });
-                                        </script>
+                                $(document).ready(function() {
+                                    $("#candidateJobPrefModal").tokenInput(getJob(), {
+                                        theme: "facebook",
+                                        placeholder: "Jobs Interested? (Max: 3)",
+                                        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                                        minChars: 0,
+                                        tokenLimit: 3,
+                                        zindex: 9999999,
+                                        preventDuplicates: true
+                                    });
+                                });
+                            </script>
                         </div>
 
                         <div style="margin-top: 8px">
                             <input type="text" id="candidateLocalityModal" placeholder="What jobs you are Interested in?" style="margin-top: 4px">
                             <script type="text/javascript">
-                                            $(document).ready(function() {
-                                                $("#candidateLocalityModal").tokenInput(getLocality(), {
-                                                    theme: "facebook",
-                                                    placeholder: "Locality Interested?",
-                                                    minChars: 3,
-                                                    zindex: 9999999,
-                                                    hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
-                                                    preventDuplicates: true
-                                                });
-                                            });
-                                        </script>
+                                $(document).ready(function() {
+                                    $("#candidateLocalityModal").tokenInput(getLocality(), {
+                                        theme: "facebook",
+                                        placeholder: "Locality Interested?",
+                                        minChars: 3,
+                                        zindex: 9999999,
+                                        hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
+                                        preventDuplicates: true
+                                    });
+                                });
+                            </script>
                         </div>
                         <button type="submit" id="registerBtnSubmitModal" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
                         <!-- Text input-->
@@ -399,16 +397,6 @@
                 </div>
             </div>
     </div>
-    <!--  Start Job Icons Box -->
-    <div class="sectionTwo" style="display: table; width: 100%" id="jobs">
-        <h3 id="jobVacancyHead">Job Roles</h3>
-        <center>
-            <div class="materialDash"></div>
-        </center><br>
-
-        <div id="jobRoleGrid" style="width: auto"></div>
-    </div>
-
     <!-- Start Footer-->
     <div id="footer_inc"></div>
     <script>
@@ -425,17 +413,17 @@
     <script type="text/javascript" src="/assets/js/login.js"></script>
     <script type="text/javascript" src="/assets/js/signup_candidate.js"></script>
     <script>
-                    $(document).ready(function () {
-                        $(document).click(function (event) {
-                            $(".navbar-collapse").collapse('hide');
-                        });
-                    });
-                    $(document).ready(function(){
-                        $('[data-toggle="tooltip"]').tooltip();
-                    });
-                </script>
+        $(document).ready(function () {
+            $(document).click(function (event) {
+                $(".navbar-collapse").collapse('hide');
+            });
+        });
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
     <script type="text/javascript" src="/assets/js/posted_jobs_page.js"></script>
-    <script type="text/javascript" src="/assets/js/home_page.js"></script>
+@*    <script type="text/javascript" src="/assets/js/home_page.js"></script>*@
     <div id="scriptContainer">
     </div>
         <script>

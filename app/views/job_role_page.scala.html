@@ -163,32 +163,32 @@
         <div style="margin-top: 8px">
           <input type="text" id="candidateJobPref" placeholder="What jobs you are Interested in?">
           <script type="text/javascript">
-                                            $(document).ready(function() {
-                                              $("#candidateJobPref").tokenInput(getJob(), {
-                                                theme: "facebook",
-                                                placeholder: "What jobs you are Interested? (Max: 3)",
-                                                hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-                                                minChars: 0,
-                                                tokenLimit: 3,
-                                                preventDuplicates: true
-                                              });
-                                            });
-                                            </script>
+          $(document).ready(function() {
+            $("#candidateJobPref").tokenInput(getJob(), {
+              theme: "facebook",
+              placeholder: "What jobs you are Interested? (Max: 3)",
+              hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+              minChars: 0,
+              tokenLimit: 3,
+              preventDuplicates: true
+            });
+          });
+          </script>
         </div>
 
         <div style="margin-top: 8px">
           <input type="text" id="candidateLocality" style="margin-top: 4px">
           <script type="text/javascript">
-                                            $(document).ready(function() {
-                                              $("#candidateLocality").tokenInput(getLocality(), {
-                                                theme: "facebook",
-                                                placeholder: "Where do you want to Work?",
-                                                minChars: 3,
-                                                hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
-                                                preventDuplicates: true
-                                              });
-                                            });
-                                            </script>
+          $(document).ready(function() {
+            $("#candidateLocality").tokenInput(getLocality(), {
+              theme: "facebook",
+              placeholder: "Where do you want to Work?",
+              minChars: 3,
+              hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
+              preventDuplicates: true
+            });
+          });
+          </script>
         </div>
 
         <button type="submit" id="registerBtnSubmit" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
@@ -248,15 +248,15 @@
       <!-- start hot job -->
     <div id="job_cards_inc"></div>
     <script>
-            $(document).ready(function(){
-              $('#job_cards_inc').load('/jobPostCardView');
-            });
-        </script>
+        $(document).ready(function(){
+          $('#job_cards_inc').load('/jobPostCardView');
+        });
+    </script>
     <div class="company_class">
-            Companies Hiring From Us
+        Companies Hiring From Us
     </div>
 
-    <center>
+    <center id="hiringCompanyContent">
       <div class="materialDash"></div>
 
       <div class="container-fluid" id="company_box">
@@ -270,55 +270,7 @@
                 <div class="container-fluid" id="slider_logo">
                   <div id="myCarousel" class="carousel slide" data-ride="carousel">
                       <!-- Wrapper for slides -->
-                    <div class="carousel-inner" role="listbox">
-                      <div class="item active">
-                        <div class="row">
-                          <div class="col-sm-2">
-                            <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/urban_clap-min.png" alt="Companies Hiring">
-                          </div>
-                          <div class="col-sm-2">
-                            <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/dunkin_donuts-min.png" alt="Companies Hiring">
-                          </div>
-                          <div class="col-sm-2">
-                            <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/driveu-min.png" alt="Companies Hiring">
-                          </div>
-                          <div class="col-sm-2">
-                            <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/kalmane_koffees-min.png" alt="Companies Hiring">
-                          </div>
-                          <div class="col-sm-2">
-                            <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/swiggy-min.png" alt="Companies Hiring">
-                          </div>
-                          <div class="col-sm-2">
-                            <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/child_help_foundation-min.png" alt="Companies Hiring">
-
-                          </div>
-                        </div>
-                      </div>
-                      <div class="item">
-                        <div class="row">
-                          <div class="col-sm-2">
-                            <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/vlocal_dark-min.png" alt="Companies Hiring">
-                          </div>
-                          <div class="col-sm-2">
-                            <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/kruti-min.png" alt="Companies Hiring">
-                          </div>
-                          <div class="col-sm-2">
-                            <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/pink_blue-min.png" alt="Companies Hiring">
-                          </div>
-                          <div class="col-sm-2">
-                            <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/vito-min.png" alt="Companies Hiring">
-                          </div>
-                          <div class="col-sm-2">
-                            <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/aegis-min.png" alt="Companies Hiring">
-                          </div>
-                          <div class="col-sm-2">
-                            <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/dominos-min.png" alt="Companies Hiring">
-
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
+                    <div class="carousel-inner" id="hiringCompanies" role="listbox"></div>
                   </div>
                 </div>
               </div>

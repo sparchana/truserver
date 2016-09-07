@@ -127,17 +127,19 @@
             </div>
         </div>
     </div>
-    <!-- Search bar -->
-    <div>
-        <div id="sectionOne">
-            <font color="white">
-                <div class="row">
-
+        <div id="showJobsSectionOne">
+            <font color="white" id="showJobsSectionOneBody">
+                <img src="/assets/img/image4.png" style="display: inline-block;" width="10%">
+                <div style="display: inline-block; width: auto;">
+                    <h1 style="letter-spacing: 2px; text-align: left; margin: 10px;"><b><font size="5">Find Entry Level and Experienced Jobs </font></b></h1>
+                    <h2 style="letter-spacing: 2px; margin: 10px; text-align: left"><font size="5">Call 8880007799 to find jobs in top companies!</font></h2>
+                    <h4 style="letter-spacing: 2px; margin: 10px; text-align: left; display: inline-block; float: left">Get it from </h4>
+                    <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" style="padding-top: 2px; float: left">
+                        <img src="/assets/img/playstore.png" alt="PlayStore Logo" height="40px"></a>
                 </div>
             </font>
         </div>
-        <!-- End of sectionOne -->
-    </div>
+            <!-- End of sectionOne -->
 
         <div style="text-align: center">
             <div class="errorMsgText" id="alreadyMsgCandidate" style="margin-top: 2%;display: none;">
@@ -189,20 +191,8 @@
             </div>
         </div>
     </div>
-    <!-- start hot job -->
-        <script>
-            $(function () {
-                $("#hotJobs").scroll(function() {
-                    var w = window.innerWidth;
-                    if(w < 440){
-                        document.documentElement.scrollTop = document.body.scrollTop = 50;
-                    } else{
-                        document.documentElement.scrollTop = document.body.scrollTop = 58;
-                    }
-                });
-            });
-</script>
-    <div id="job_cards_inc"></div>
+
+    <div id="job_cards_inc" style="margin-top: 48px;"><font color="#000"></font></div>
     <script>
         $(document).ready(function(){
           $('#job_cards_inc').load('/jobPostCardView');
