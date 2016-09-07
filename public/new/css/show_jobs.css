@@ -20,6 +20,10 @@
     padding: 5% 0 0 0;
     text-align: center;
 }
+#showAllJobsMobileHeader{
+    display: none;
+}
+
 @media screen and (max-width: 768px){
     #applyToJobs{
         padding: 0;
@@ -32,7 +36,19 @@
         margin-top: 120px;
     }
     #showJobsSectionOne {
-        height: 20%;
+        background: linear-gradient(
+                rgba(24, 26, 45, 0.3),
+                rgba(24, 26, 45, 0.3)
+        ), url(../img/back_design.png) repeat;
+        background-size: 100%;
+        color: #ffffff;
+        font-weight: bold;
+        padding: 5% 0 0 0;
+        text-align: center;
+        height: auto;
+    }
+    #showAllJobsMobileHeader{
+        display: block;
     }
     #showJobsSectionOneBody{
         display: none;

@@ -41,6 +41,7 @@
 
               ga('create', 'UA-77156203-1', 'auto');
               ga('send', 'pageview');
+
             </script>
     </head>
     <body>
@@ -90,34 +91,34 @@
                         <div style="margin-top: 8px">
                             <input type="text" id="candidateJobPrefModal" placeholder="What jobs you are Interested in?">
                             <script type="text/javascript">
-                                        $(document).ready(function() {
-                                            $("#candidateJobPrefModal").tokenInput(getJob(), {
-                                                theme: "facebook",
-                                                placeholder: "Jobs Interested? (Max: 3)",
-                                                hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-                                                minChars: 0,
-                                                tokenLimit: 3,
-                                                zindex: 9999999,
-                                                preventDuplicates: true
-                                            });
-                                        });
-                                    </script>
+                                $(document).ready(function() {
+                                    $("#candidateJobPrefModal").tokenInput(getJob(), {
+                                        theme: "facebook",
+                                        placeholder: "Jobs Interested? (Max: 3)",
+                                        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                                        minChars: 0,
+                                        tokenLimit: 3,
+                                        zindex: 9999999,
+                                        preventDuplicates: true
+                                    });
+                                });
+                            </script>
                         </div>
 
                         <div style="margin-top: 8px">
                             <input type="text" id="candidateLocalityModal" placeholder="What jobs you are Interested in?" style="margin-top: 4px">
                             <script type="text/javascript">
-                                        $(document).ready(function() {
-                                            $("#candidateLocalityModal").tokenInput(getLocality(), {
-                                                theme: "facebook",
-                                                placeholder: "Locality Interested?",
-                                                minChars: 3,
-                                                zindex: 9999999,
-                                                hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
-                                                preventDuplicates: true
-                                            });
-                                        });
-                                    </script>
+                                $(document).ready(function() {
+                                    $("#candidateLocalityModal").tokenInput(getLocality(), {
+                                        theme: "facebook",
+                                        placeholder: "Locality Interested?",
+                                        minChars: 3,
+                                        zindex: 9999999,
+                                        hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
+                                        preventDuplicates: true
+                                    });
+                                });
+                            </script>
                         </div>
 
                         <button type="submit" id="registerBtnSubmitModal" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
@@ -128,6 +129,14 @@
         </div>
     </div>
         <div id="showJobsSectionOne">
+            <div id="showAllJobsMobileHeader">
+                <h3 style="margin-top: 56px">Download TruJobs App</h3>
+                <center><img src="/assets/img/download_btn.png" style="display: block" width="24%"></center>
+                <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" style="padding: 0px" target="_blank">
+                    <img src="/assets/img/image4.png" style="margin-top: 20px" width="24%">
+                </a>
+            </div>
+
             <font color="white" id="showJobsSectionOneBody">
                 <img src="/assets/img/image4.png" style="display: inline-block;" width="10%">
                 <div style="display: inline-block; width: auto;">
@@ -192,7 +201,15 @@
         </div>
     </div>
 
-    <div id="job_cards_inc" style="margin-top: 48px;"><font color="#000"></font></div>
+    <!-- start hot job -->
+
+    <div id="applyToJobs">
+    <h3 id="applyToJobsTitle" style="margin-top: 120px;">
+        Apply to Jobs
+    </h3>
+    </div>
+    <div id="job_cards_inc"><font color="#000"></font></div>
+
     <script>
         $(document).ready(function(){
           $('#job_cards_inc').load('/jobPostCardView');

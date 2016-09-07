@@ -48,6 +48,7 @@
                 $('#job_cards_inc').load('/jobPostCardView');
             });
         </script>
+
     </head>
     <body>
 
@@ -84,7 +85,7 @@
                                 <h1 style="letter-spacing: 2px; text-align: left; margin: 10px;"><b><font size="5">Find Entry Level and Experienced Jobs </font></b></h1>
                                 <h2 style="letter-spacing: 2px; margin: 10px; text-align: left"><font size="5">Call 8880007799 to find jobs in top companies!</font></h2>
                                 <h4 style="letter-spacing: 2px; margin: 10px; text-align: left; display: inline-block; float: left">Download app from</h4>
-                                <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" style="padding-top: 2px; float: left">
+                                <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" target="_blank" style="padding-top: 2px; float: left">
                                     <img src="/assets/img/playstore.png" alt="PlayStore Logo" height="40px"></a>
                             </div>
                         </div>
@@ -152,6 +153,11 @@
         </div>
 
             <!-- start hot job -->
+        <div id="applyToJobs">
+            <h3 id="applyToJobsTitle">
+                Hot Jobs this week
+            </h3>
+        </div>
         <div id="job_cards_inc"></div>
 
         <div class="company_class">
@@ -395,6 +401,7 @@
                 $('#scriptContainer').load('/scriptContainer');
             });
         </script>
+
         <script type="text/javascript" src="/assets/js/home_page.js"></script>
         <script type="text/javascript" src="/assets/js/all_hot_jobs.js"></script>
         <script type="text/javascript" src="/assets/js/all_job_role_with_jobs.js"></script>

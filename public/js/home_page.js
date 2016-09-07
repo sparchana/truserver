@@ -7,8 +7,6 @@ var jobArray = [];
 var prefLocation;
 var prefLocationName;
 
-var jobPostJobRoles = [];
-
 function getLocality(){
     return localityArray;
 }
