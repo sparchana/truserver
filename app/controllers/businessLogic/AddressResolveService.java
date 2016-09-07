@@ -8,6 +8,7 @@ import api.ServerConstants;
 import models.entity.Static.Locality;
 import models.util.LatLng;
 import models.util.LatLngBounds;
+import models.util.SmsUtil;
 import models.util.SphericalUtil;
 import org.apache.commons.lang3.text.WordUtils;
 import org.json.JSONArray;
@@ -51,26 +52,22 @@ import static play.libs.Json.toJson;
  *
  * There is always a chance of error in resolution. Further optimization should reduce it
  *
- * TODO: modify to take "type":"route" into account
- *
- *
- *
  */
 
 public class AddressResolveService {
 
     /* EXTERNAL API URL */
-    public static final String GOOGLE_MAPS_API_BASE_URL = "https://maps.googleapis.com/maps/api";
-    public static final String TYPE_GEOCODE = "/geocode";
-    public static final String TYPE_PLACE = "/place";
-    public static final String NEAR_BY_SEARCH = "/nearbysearch";
-    public static final String OUT_JSON = "/json";
-    public static final String API_KEY = ServerConstants.GOOGLE_SERVER_API_KEY;
-    public static final int DEFAULT_RADIUS = 500; // in meters
-    public static final int RADIUS_INCREMENT = 200; // in meters
-    public static final int API_CALL_LIMIT = 5;
+    private static final String GOOGLE_MAPS_API_BASE_URL = "https://maps.googleapis.com/maps/api";
+    private static final String TYPE_GEOCODE = "/geocode";
+    private static final String TYPE_PLACE = "/place";
+    private static final String NEAR_BY_SEARCH = "/nearbysearch";
+    private static final String OUT_JSON = "/json";
+    private static final String API_KEY = ServerConstants.GOOGLE_SERVER_API_KEY;
+    private static final int DEFAULT_RADIUS = 500; // in meters
+    private static final int RADIUS_INCREMENT = 200; // in meters
+    private static final int API_CALL_LIMIT = 5;
 
-    public static final int DEFAULT_RADIUS_IN_KM = 2; // ofcourse in km
+    private static final int DEFAULT_BOUND_RADIUS_IN_KM = 2; // ofcourse in km
 
     protected static double latitude;
     protected static double longitude;
@@ -78,27 +75,8 @@ public class AddressResolveService {
     public AddressResolveService(){
     }
 
-    public AddressResolveService(Double lat, Double lng){
-        if(lat!=null)latitude = lat;
-        if(lng!=null)longitude = lng;
-    }
-
     /* Sanitization params*/
-    public static String[] toBeRemovedList = {"Bangalore", "bengaluru","Karnataka","India"};
-
-    public static String resolveLocalityFor(Double latitude, Double longitude) {
-        new AddressResolveService(latitude, longitude);
-        List<String> nearByAddressList = new ArrayList<>();
-        nearByAddressList.addAll(fetchNearByLocality(latitude, longitude, null));
-        return determineLocality(nearByAddressList);
-    }
-
-    public static String resolveLocalityFor(Double latitude, Double longitude, Integer radius) {
-        new AddressResolveService(latitude, longitude);
-        List<String> nearByAddressList = new ArrayList<>();
-        nearByAddressList.addAll(fetchNearByLocality(latitude, longitude, radius));
-        return determineLocality(nearByAddressList);
-    }
+    private static String[] toBeRemovedList = {"Bangalore", "bengaluru","Karnataka","India"};
 
     public static Locality getLocalityForLatLng(Double appxLatitude, Double appxLongitude) {
         List<String> nearByAddressList = new ArrayList<>();
@@ -126,29 +104,45 @@ public class AddressResolveService {
         return locality;
     }
 
-    public static String determineLocality(List<String> localityList) {
-        Map<String, Integer> countByLocality = new HashMap<String, Integer>();
-        StringBuilder sb = new StringBuilder();
-        for(String fullAddress : localityList){
-            sb.append(fullAddress.toLowerCase().trim()+", ");
-        }
-        String allAddress = performSanitization(sb.toString());
-        List<String> finalWordList = Arrays.asList(allAddress.toString().split("\\s*,\\s*"));
-        for (String locality: finalWordList) {
-            locality = locality.trim().toLowerCase().replace(".", "");
-            if(!locality.trim().isEmpty() && Arrays.asList(locality.split("\\s* \\s*")).size() < 4 ){
-                if (countByLocality.containsKey(locality)) {
-                    countByLocality.put(locality, countByLocality.get(locality) + 1);
-                } else {
-                    countByLocality.put(locality, 1);
+    public static LatLng getLatLngForPlaceId(String placeId){
+        LatLng latLng = null;
+        Locality locality = Locality.find.where().eq("placeId", placeId).findUnique();
+        if(locality!= null){
+            return new LatLng(locality.getLat(), locality.getLng());
+        } else {
+            StringBuilder sb = new StringBuilder(GOOGLE_MAPS_API_BASE_URL + TYPE_GEOCODE + OUT_JSON);
+            sb.append("?key=" + API_KEY);
+            sb.append("&place_id=" + placeId);
+
+            /* getJson String */
+            StringBuilder jsonResults = executeUrl(sb.toString());
+
+            /* parse Json */
+            try {
+                JSONObject jsonObj = new JSONObject(jsonResults.toString());
+                /**
+                 * It will always return only one result.
+                 */
+                if(jsonObj.getString("status").trim().equalsIgnoreCase("ok")){
+                    JSONObject location = jsonObj.getJSONArray("results")
+                            .getJSONObject(0)
+                            .getJSONObject("geometry")
+                            .getJSONObject("location");
+
+                    //parseAndGetLocality(jsonResults);
+                    latLng = new LatLng(RoundTo6Decimals(location.getDouble("lat")), RoundTo6Decimals(location.getDouble("lng"))) ;
+                    return latLng;
                 }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
+
         }
-        return getMostFrequentLocality(countByLocality);
+        return latLng;
     }
 
     public static List<String> fetchNearByLocality(Double latitude, Double longitude, Integer radius) {
-        new AddressResolveService(latitude, longitude);
+        setLatLngGlobally(latitude, longitude);
         if(radius == null || radius == 0) radius = DEFAULT_RADIUS; // Default: start within 500 meters
         List<String> nearbyLocalityAddressList = new ArrayList<>();
 
@@ -205,6 +199,27 @@ public class AddressResolveService {
         Locality freshLocality = parseAndGetLocality(jsonResults);
         Logger.info("loclaity:"+toJson(freshLocality));
         return freshLocality;
+    }
+
+    private static String determineLocality(List<String> localityList) {
+        Map<String, Integer> countByLocality = new HashMap<String, Integer>();
+        StringBuilder sb = new StringBuilder();
+        for(String fullAddress : localityList){
+            sb.append(fullAddress.toLowerCase().trim()+", ");
+        }
+        String allAddress = performSanitization(sb.toString());
+        List<String> finalWordList = Arrays.asList(allAddress.toString().split("\\s*,\\s*"));
+        for (String locality: finalWordList) {
+            locality = locality.trim().toLowerCase().replace(".", "");
+            if(!locality.trim().isEmpty() && Arrays.asList(locality.split("\\s* \\s*")).size() < 4 ){
+                if (countByLocality.containsKey(locality)) {
+                    countByLocality.put(locality, countByLocality.get(locality) + 1);
+                } else {
+                    countByLocality.put(locality, 1);
+                }
+            }
+        }
+        return getMostFrequentLocality(countByLocality);
     }
 
     private static Locality parseAndGetLocality(StringBuilder jsonResults) {
@@ -323,6 +338,7 @@ public class AddressResolveService {
                         break;
                     } else {
                         Logger.warn("LatLng is of a Remote Area. Couldn't resolved "+locationName+" till locality level. Found Incomplete final obj of interest as : "+locationName+"-"+ cityName+"-"+stateName);
+                        SmsUtil.sendLocalityNotResolvedSmsToDevTeam(locationName, cityName, stateName, latitude, longitude);
                     }
                 }
             }
@@ -331,43 +347,6 @@ public class AddressResolveService {
             return null;
         }
         return freshLocality;
-    }
-
-    public static LatLng getLatLngForPlaceId(String placeId){
-        LatLng latLng = null;
-        Locality locality = Locality.find.where().eq("placeId", placeId).findUnique();
-        if(locality!= null){
-            return new LatLng(locality.getLat(), locality.getLng());
-        } else {
-            StringBuilder sb = new StringBuilder(GOOGLE_MAPS_API_BASE_URL + TYPE_GEOCODE + OUT_JSON);
-            sb.append("?key=" + API_KEY);
-            sb.append("&place_id=" + placeId);
-
-            /* getJson String */
-            StringBuilder jsonResults = executeUrl(sb.toString());
-
-            /* parse Json */
-            try {
-                JSONObject jsonObj = new JSONObject(jsonResults.toString());
-                /**
-                * It will always return only one result.
-                */
-                if(jsonObj.getString("status").trim().equalsIgnoreCase("ok")){
-                    JSONObject location = jsonObj.getJSONArray("results")
-                            .getJSONObject(0)
-                            .getJSONObject("geometry")
-                            .getJSONObject("location");
-
-                    //parseAndGetLocality(jsonResults);
-                    latLng = new LatLng(RoundTo6Decimals(location.getDouble("lat")), RoundTo6Decimals(location.getDouble("lng"))) ;
-                    return latLng;
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-        }
-        return latLng;
     }
 
     private static String performSanitization(String paragraph) {
@@ -379,8 +358,8 @@ public class AddressResolveService {
          * TODO: add better regex expression pattern match to remove noise further
          * */
         paragraph = paragraph.toLowerCase().trim();
-        for(int i = 0; i < toBeRemovedList.length; ++i){
-            paragraph = paragraph.toLowerCase().replaceAll(toBeRemovedList[i].toLowerCase(), "");
+        for (String aToBeRemovedList : toBeRemovedList) {
+            paragraph = paragraph.toLowerCase().replaceAll(aToBeRemovedList.toLowerCase(), "");
         }
         paragraph = paragraph.replaceAll(",,", ",");
         paragraph = paragraph.replaceAll(",\\s,\\s", ",");
@@ -390,7 +369,7 @@ public class AddressResolveService {
         return paragraph;
     }
 
-    public static List<String> getAllLocalityNames(){
+    private static List<String> getAllLocalityNames(){
         /* TODO use query to get the same insted of for-loop*/
         List<Locality> allLocalities = Locality.find.all();
         List<String> allLocalityNameList = new ArrayList<>();
@@ -402,11 +381,11 @@ public class AddressResolveService {
 
     /**
      * Return the most probable locality name from a Map<LocalityName, count>
-     * COUNT_LIMIT prevents the loop to go beyond top 2 sanatized locality name
-     * since after that the map contains vague names like cross, street, names etc
+     * COUNT_LIMIT prevents the loop to go beyond top 2 sanitized locality name
+     * since after that the map may contains vague names like cross, street, names etc
      *
      */
-    public static String getMostFrequentLocality(Map<String, Integer> countByWord) {
+    private static String getMostFrequentLocality(Map<String, Integer> countByWord) {
         int COUNT_LIMIT = 2;
 
         Map<String, Integer> matchingLocalities = new HashMap<>();
@@ -443,7 +422,7 @@ public class AddressResolveService {
     /**
     *  Sort a given map by its value in descending order
     */
-    public static <K, V extends Comparable<? super V>> Map<K, V> sortMapByValue( Map<K, V> map ) {
+    private static <K, V extends Comparable<? super V>> Map<K, V> sortMapByValue(Map<K, V> map) {
         List<Map.Entry<K, V>> list = new LinkedList<>( map.entrySet() );
         Collections.sort( list, new Comparator<Map.Entry<K, V>>() {
             @Override
@@ -464,7 +443,7 @@ public class AddressResolveService {
     /**
      * API Calls : Return Type is a String containing JSON
      */
-    public static StringBuilder getJSONForNearByLocality(Double latitude, Double longitude, int radius) {
+    private static StringBuilder getJSONForNearByLocality(Double latitude, Double longitude, int radius) {
         StringBuilder jsonResults = null;
 
         StringBuilder sb = new StringBuilder(GOOGLE_MAPS_API_BASE_URL + TYPE_PLACE + NEAR_BY_SEARCH + OUT_JSON);
@@ -475,22 +454,7 @@ public class AddressResolveService {
         return executeUrl(sb.toString());
     }
 
-    public static StringBuilder getJSONForAddressToLatLng(String addressToResolve) {
-
-        StringBuilder sb = null;
-        try {
-            sb = new StringBuilder(GOOGLE_MAPS_API_BASE_URL + TYPE_GEOCODE + OUT_JSON);
-            sb.append("?key=" + API_KEY);
-            sb.append("&address="+ URLEncoder.encode(addressToResolve, "utf-8"));
-            sb.append("&bounds="+ URLEncoder.encode(toBounds(), "utf-8"));
-
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return executeUrl(sb.toString());
-    }
-
-    public static StringBuilder getJSONForAddressToLatLng(String addressToResolve, Double latitude, Double longitude) {
+    private static StringBuilder getJSONForAddressToLatLng(String addressToResolve, Double latitude, Double longitude) {
 
         StringBuilder sb = null;
         try {
@@ -505,41 +469,7 @@ public class AddressResolveService {
         return executeUrl(sb.toString());
     }
 
-    /**
-     *
-     *  We have 3 flavours of toBound below to cater most of the req. in different scenario
-     *
-     */
-
-    public static String toBounds() {
-        return boundsToString(toBounds(new LatLng(latitude, longitude), DEFAULT_RADIUS_IN_KM));
-    }
-
-    public static String toBounds(Double latitude, Double longitude) {
-        return boundsToString(toBounds(new LatLng(latitude, longitude), DEFAULT_RADIUS_IN_KM));
-    }
-
-    public static String toBounds(LatLng center) {
-        return boundsToString(toBounds(center, DEFAULT_RADIUS_IN_KM));
-    }
-
-    public static LatLngBounds toBounds(LatLng center, double radius) {
-        LatLng southwest = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 225);
-        LatLng northeast = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 45);
-        return new LatLngBounds(southwest, northeast);
-    }
-
-    public static String boundsToString(LatLngBounds latlngbounds){
-        /**
-         *
-         * https://developers.google.com/maps/documentation/geocoding/intro
-         * The bounds parameter defines the latitude/longitude coordinates of the southwest and northeast corners of this bounding box using a pipe (|)
-         *
-         */
-        return latlngbounds.getSouthwest().toString()+" | " + latlngbounds.getNortheast().toString();
-    }
-
-    public static StringBuilder executeUrl(String urlString){
+    private static StringBuilder executeUrl(String urlString){
         HttpURLConnection conn = null;
         StringBuilder jsonResults = new StringBuilder();
         try{
@@ -547,7 +477,7 @@ public class AddressResolveService {
             conn = (HttpURLConnection) url.openConnection();
             InputStreamReader in = new InputStreamReader(conn.getInputStream());
 
-            Logger.warn("url: "+urlString.toString());
+            Logger.warn("url: "+ urlString);
             // Load the results into a StringBuilder
             int read;
             char[] buff = new char[1024];
@@ -566,5 +496,72 @@ public class AddressResolveService {
             }
         }
         return jsonResults;
+    }
+
+    private static void setLatLngGlobally(Double latitude, Double longitude){
+        AddressResolveService.latitude = latitude;
+        AddressResolveService.longitude = longitude;
+    }
+
+    /**
+     *
+     *  We have 4 flavours of toBound below
+     *
+     */
+    public static LatLngBounds toBounds(LatLng center, double radius) {
+        LatLng southwest = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 225);
+        LatLng northeast = SphericalUtil.computeOffset(center, radius * Math.sqrt(2.0), 45);
+        return new LatLngBounds(southwest, northeast);
+    }
+
+    private static String toBounds(Double latitude, Double longitude) {
+        return boundsToString(toBounds(new LatLng(latitude, longitude), DEFAULT_BOUND_RADIUS_IN_KM));
+    }
+
+    private static String toBounds() {
+        return boundsToString(toBounds(new LatLng(latitude, longitude), DEFAULT_BOUND_RADIUS_IN_KM));
+    }
+
+    private static String toBounds(LatLng center) {
+        return boundsToString(toBounds(center, DEFAULT_BOUND_RADIUS_IN_KM));
+    }
+
+    private static String boundsToString(LatLngBounds latlngbounds){
+        /**
+         *
+         * https://developers.google.com/maps/documentation/geocoding/intro
+         * The bounds parameter defines the latitude/longitude coordinates of the southwest and northeast corners of this bounding box using a pipe (|)
+         *
+         */
+        return latlngbounds.getSouthwest().toString()+" | " + latlngbounds.getNortheast().toString();
+    }
+
+    private static StringBuilder getJSONForAddressToLatLng(String addressToResolve) {
+
+        StringBuilder sb = null;
+        try {
+            sb = new StringBuilder(GOOGLE_MAPS_API_BASE_URL + TYPE_GEOCODE + OUT_JSON);
+            sb.append("?key=" + API_KEY);
+            sb.append("&address="+ URLEncoder.encode(addressToResolve, "utf-8"));
+            sb.append("&bounds="+ URLEncoder.encode(toBounds(), "utf-8"));
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return executeUrl(sb.toString());
+    }
+
+    public static String resolveLocalityFor(Double latitude, Double longitude) {
+        setLatLngGlobally(latitude, longitude);
+        List<String> nearByAddressList = new ArrayList<>();
+        nearByAddressList.addAll(fetchNearByLocality(latitude, longitude, null));
+        return determineLocality(nearByAddressList);
+    }
+
+    public static String resolveLocalityFor(Double latitude, Double longitude, Integer radius) {
+        setLatLngGlobally(latitude, longitude);
+        List<String> nearyByAddressList = new ArrayList<>();
+        nearyByAddressList.addAll(fetchNearByLocality(latitude, longitude, radius));
+        return determineLocality(nearyByAddressList);
     }
 }

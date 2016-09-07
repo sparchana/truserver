@@ -87,6 +87,7 @@ public class ServerConstants {
     public static final int OBJECT_TYPE_CANDIDATE= 4;
     public static final int OBJECT_TYPE_RECRUTER= 5;
     public static final int OBJECT_TYPE_JOB_POST= 6;
+    public static final int OBJECT_TYPE_JOB_POST_VIEW= 7;
 
     public static final int INTERACTION_TYPE_CALL_IN= 1;
     public static final int INTERACTION_TYPE_CALL_OUT= 2;
@@ -103,6 +104,7 @@ public class ServerConstants {
     public static final int INTERACTION_TYPE_ANDROID_LOGIN = 13;
     public static final int INTERACTION_TYPE_ANDROID_SIGNUP = 14;
     public static final int INTERACTION_TYPE_ANDROID_SEARCH = 15;
+    public static final int INTERACTION_TYPE_ANDROID_JOP_POST_VIEW = 16;
 
     public static final boolean FOLLOW_UP_DEACTIVATE = false;
     public static final boolean FOLLOW_UP_ACTIVATE = true;
@@ -183,6 +185,6 @@ public class ServerConstants {
     public static final String GOOGLE_SERVER_API_KEY = "AIzaSyCKHf7GijuzKW84Ggz0fFWWHD0y9_onUhg";
 
     /* Non Logged In Search Result UUID */
-    public static final String SEARCH_UUID = "TRU-DROID-SEARCH-UU-ID";
+    public static final String TRU_DROID_NOT_LOGGED_UUID = "TRU-DROID-NOT-LOGGED-UUID";
 
 }

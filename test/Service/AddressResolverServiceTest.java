@@ -93,7 +93,7 @@ public class AddressResolverServiceTest {
         return Double.valueOf(df2.format(val));
     }
 
-    //@Ignore
+    //@Test
     public void testFetchNearByLocalityMethod() {
         Application fakeApp = fakeApplication();
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
@@ -103,8 +103,8 @@ public class AddressResolverServiceTest {
             }
         });
     }
-    //@Ignore
-    public void testGetJSONForNearByLocality() {
+    //@Test
+    /*public void testGetJSONForNearByLocality() {
         Application fakeApp = fakeApplication();
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
         running(server, () -> {
@@ -121,8 +121,9 @@ public class AddressResolverServiceTest {
                 }
             }
         });
-    }
-    @Ignore
+    }*/
+
+    @Test
     public void testResolveLocalityFor() {
         Application fakeApp = fakeApplication();
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
@@ -134,12 +135,12 @@ public class AddressResolverServiceTest {
             }
         });
     }
-    @Ignore
+    @Test
     public void testToBounds() {
         LatLng latLng = new LatLng(latitude, longitude);
         System.out.println("--testing ToBounds for LatLng"+latitude+","+longitude+" : " + toJson(addressResolveService.toBounds(latLng, 2)));
     }
-    @Ignore
+    @Test
     public void testGetLatLngForPlaceId() {
         Application fakeApp = fakeApplication();
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
@@ -164,7 +165,7 @@ public class AddressResolverServiceTest {
             }
         });
     }
-    @Ignore
+    @Test
     public void testInsertOrUpdateLocality() {
         Application fakeApp = fakeApplication();
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);

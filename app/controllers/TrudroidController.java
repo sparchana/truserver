@@ -8,7 +8,6 @@ import api.http.httpRequest.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
 import com.google.api.client.util.Base64;
-import com.google.protobuf.Internal;
 import com.google.protobuf.InvalidProtocolBufferException;
 import controllers.businessLogic.*;
 import in.trujobs.proto.*;
@@ -734,6 +733,11 @@ public class TrudroidController {
     }
 
     public static Result mGetJobPostInfo() {
+        /* Interaction Params */
+        String objectAUUId = null;
+        String jobPostUUId = null;
+        String result = null;
+
         GetJobPostDetailsRequest pGetJobPostDetailsRequest = null;
         GetJobPostDetailsResponse.Builder getJobPostDetailsResponse = GetJobPostDetailsResponse.newBuilder();
         try {
@@ -746,24 +750,32 @@ public class TrudroidController {
                 getJobPostDetailsResponse.setStatus(GetJobPostDetailsResponse.Status.SUCCESS);
                 getJobPostDetailsResponse.setJobPost(getJobPostInformationFromJobPostObject(jobPost));
                 Logger.info("Status returned = " + getJobPostDetailsResponse.getStatus());
+                // save Interaction for global
+                jobPostUUId = jobPost.getJobPostUUId();
+                result = "Viewed "+jobPost.getJobRole().getJobName();
             }
 
             //getting company object from DB
             Company company = Company.find.where().eq("companyId", jobPost.getCompany().getCompanyId()).findUnique();
             if (company != null) {
                 getJobPostDetailsResponse.setCompany(getCompanyInfoFromCompanyObject(company, jobPost));
+                result +=" @ "+company.getCompanyName();
             }
 
             //checking if the candidate has applied to this job or now not
             getJobPostDetailsResponse.setAlreadyApplied(false);
             if(!pGetJobPostDetailsRequest.getCandidateMobile().trim().isEmpty()){
                 Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(pGetJobPostDetailsRequest.getCandidateMobile()));
-                JobApplication jobApplication = JobApplication.find.where()
-                        .eq("candidateId", existingCandidate.getCandidateId())
-                        .eq("jobPostId", pGetJobPostDetailsRequest.getJobPostId())
-                        .findUnique();
-                if(jobApplication != null){
-                    getJobPostDetailsResponse.setAlreadyApplied(true);
+                if(existingCandidate!=null){
+                    JobApplication jobApplication = JobApplication.find.where()
+                            .eq("candidateId", existingCandidate.getCandidateId())
+                            .eq("jobPostId", pGetJobPostDetailsRequest.getJobPostId())
+                            .findUnique();
+                    if(jobApplication != null){
+                        getJobPostDetailsResponse.setAlreadyApplied(true);
+                    }
+                    // save Interaction against candidate
+                    objectAUUId = existingCandidate.getCandidateUUId();
                 }
             }
             getJobPostDetailsResponse.setStatus(GetJobPostDetailsResponse.Status.SUCCESS);
@@ -779,6 +791,9 @@ public class TrudroidController {
             getJobPostDetailsResponse.setStatus(GetJobPostDetailsResponse.Status.NO_JOB);
             return badRequest();
         }
+
+        /* save interaction */
+        InteractionService.createInteractionForViewJobPostInfo(objectAUUId, jobPostUUId, result, InteractionService.InteractionChannelType.SELF_ANDROID);
         return ok(Base64.encodeBase64String(getJobPostDetailsResponse.build().toByteArray()));
     }
 
@@ -1357,7 +1372,7 @@ public class TrudroidController {
 
         /* Interaction */
         if(objectAUUID.isEmpty()) {
-            objectAUUID = ServerConstants.SEARCH_UUID;
+            objectAUUID = ServerConstants.TRU_DROID_NOT_LOGGED_UUID;
         }
         interactionParamLocality = jobSearchRequest.getLocalityName().trim();
         if(interactionParamLocality.trim().isEmpty()){
