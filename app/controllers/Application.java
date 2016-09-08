@@ -5,6 +5,7 @@ import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpResponse.*;
 import com.amazonaws.services.importexport.model.Job;
+import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
 import com.avaje.ebean.cache.ServerCacheManager;
@@ -223,7 +224,7 @@ public class Application extends Controller {
         return ok(toJson(AuthService.savePassword(userMobile, userPassword, InteractionService.InteractionChannelType.SELF)));
     }
 
-    public static Result applyJob() {
+    public static Result applyJob() throws IOException, JSONException {
         JsonNode req = request().body().asJson();
         ApplyJobRequest applyJobRequest = new ApplyJobRequest();
         ObjectMapper newMapper = new ObjectMapper();
@@ -779,141 +780,6 @@ public class Application extends Controller {
     public static Result getAllJobPosts() {
         List<JobPost> jobPosts = JobPost.find.all();
         return ok(toJson(jobPosts));
-    }
-
-    @Security.Authenticated(SecuredUser.class)
-    public static Result getJobApplicationDetailsForGoogleSheet(Integer jobPostId) {
-        JobApplicationGoogleSheetResponse jobApplicationGoogleSheetResponse = new JobApplicationGoogleSheetResponse();
-
-        //get companyInfo + jobPostInfo
-        JobPost jobpost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
-        if(jobpost != null){
-            jobApplicationGoogleSheetResponse.setJobRoleName(jobpost.getJobPostTitle());
-            jobApplicationGoogleSheetResponse.setCompanyName(jobpost.getCompany().getCompanyName());
-        }
-
-        // get candidate information
-        Lead lead = Lead.find.where().eq("leadId", session().get("leadId")).findUnique();
-        if(lead != null) {
-            Candidate candidate = Candidate.find.where().eq("lead_leadId", lead.getLeadId()).findUnique();
-            if(candidate!=null){
-                jobApplicationGoogleSheetResponse.setCandidateCreationTimestamp(candidate.getCandidateCreateTimestamp());
-                jobApplicationGoogleSheetResponse.setCandidateMobile(candidate.getCandidateMobile());
-                if(candidate.getCandidateLastName() == null){
-                    jobApplicationGoogleSheetResponse.setCandidateName(candidate.getCandidateFirstName());
-                } else{
-                    jobApplicationGoogleSheetResponse.setCandidateName(candidate.getCandidateFirstName() + " " +candidate.getCandidateLastName() );
-                }
-                jobApplicationGoogleSheetResponse.setCandidateLeadId(candidate.getLead().getLeadId());
-                if(candidate.getCandidateGender() != null){
-                    jobApplicationGoogleSheetResponse.setCandidateGender(candidate.getCandidateGender());
-                }
-
-                if(candidate.getCandidateTotalExperience() != null){
-                    jobApplicationGoogleSheetResponse.setCandidateTotalExp(candidate.getCandidateTotalExperience());
-                }
-                jobApplicationGoogleSheetResponse.setCandidateIsAssessed(candidate.getCandidateIsAssessed());
-                jobApplicationGoogleSheetResponse.setCandidateIsEmployed(candidate.getCandidateIsEmployed());
-
-                String languagesKnown = "";
-                String candidateJobPref = "";
-                String candidateLocalityPref = "";
-                String candidateSkills = "";
-
-                //Languages Known
-                if(candidate.getLanguageKnownList() != null && candidate.getLanguageKnownList().size() > 0) {
-                    List<LanguageKnown> languageKnownList = candidate.getLanguageKnownList();
-
-                    for(LanguageKnown l : languageKnownList){
-                        languagesKnown += l.getLanguage().getLanguageName() + "(" + l.getUnderstanding() + ", " +
-                                l.getVerbalAbility() + ", " + l.getReadWrite() + "), ";
-                    }
-                }
-
-                //Skill
-                if(candidate.getCandidateSkillList()!= null && candidate.getCandidateSkillList().size() > 0){
-                    List<CandidateSkill> candidateSkillList = candidate.getCandidateSkillList();
-
-                    for(CandidateSkill skill : candidateSkillList){
-                        candidateSkills += skill.getSkill().getSkillName() + ", ";
-                    }
-                }
-
-                if(candidate.getMotherTongue() != null){
-                    jobApplicationGoogleSheetResponse.setCandidateMotherTongue(candidate.getMotherTongue().getLanguageName());
-                }
-
-                if(candidate.getLocality() != null){
-                    jobApplicationGoogleSheetResponse.setCandidateHomeLocality(candidate.getLocality().getLocalityName());
-                }
-                if(candidate.getCandidateCurrentJobDetail() != null){
-                    jobApplicationGoogleSheetResponse.setCandidateCurrentSalary(candidate.getCandidateCurrentJobDetail().getCandidateCurrentSalary());
-                }
-                if(candidate.getCandidateEducation() != null){
-                    jobApplicationGoogleSheetResponse.setCandidateEducation(candidate.getCandidateEducation().getEducation().getEducationName());
-                }
-
-                //Job Pref
-                List<JobPreference> jobRolePrefList = candidate.getJobPreferencesList();
-
-                for(JobPreference job : jobRolePrefList){
-                    candidateJobPref += job.getJobRole().getJobName() + ", ";
-                }
-
-                //Locality Pref
-                List<LocalityPreference> localityPrefList = candidate.getLocalityPreferenceList();
-
-                for(LocalityPreference locality : localityPrefList){
-                    candidateLocalityPref += locality.getLocality().getLocalityName() + ", ";
-                }
-                jobApplicationGoogleSheetResponse.setCandidateProfileStatus(candidate.getCandidateprofilestatus().getProfileStatusName());
-                if(candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE){
-                    Date expDate = candidate.getCandidateStatusDetail().getStatusExpiryDate();
-                    if(expDate != null){
-                        jobApplicationGoogleSheetResponse.setCandidateExpiryDate(expDate);
-                    } else{
-                        jobApplicationGoogleSheetResponse.setCandidateExpiryDate(null);
-                    }
-                } else{
-                    jobApplicationGoogleSheetResponse.setCandidateExpiryDate(null);
-                }
-
-                jobApplicationGoogleSheetResponse.setJobApplicationChannel("Website");
-                jobApplicationGoogleSheetResponse.setJobPostIsHot("Not Hot");
-                if(jobpost.getJobPostIsHot()){
-                    jobApplicationGoogleSheetResponse.setJobPostIsHot("Hot");
-                }
-
-                jobApplicationGoogleSheetResponse.setCandidateAge(0);
-                if(candidate.getCandidateDOB() != null){
-                    Date current = new Date();
-                    Date bday = new Date(candidate.getCandidateDOB().getTime());
-
-                    final Calendar calender = new GregorianCalendar();
-                    calender.set(Calendar.HOUR_OF_DAY, 0);
-                    calender.set(Calendar.MINUTE, 0);
-                    calender.set(Calendar.SECOND, 0);
-                    calender.set(Calendar.MILLISECOND, 0);
-                    calender.setTimeInMillis(current.getTime() - bday.getTime());
-
-                    int age = 0;
-                    age = calender.get(Calendar.YEAR) - 1970;
-                    age += (float) calender.get(Calendar.MONTH) / (float) 12;
-                    jobApplicationGoogleSheetResponse.setCandidateAge(age);
-                }
-
-                jobApplicationGoogleSheetResponse.setLanguageKnown(languagesKnown);
-                jobApplicationGoogleSheetResponse.setCandidateJobPref(candidateJobPref);
-                jobApplicationGoogleSheetResponse.setCandidateLocalityPref(candidateLocalityPref);
-                jobApplicationGoogleSheetResponse.setCandidateSkill(candidateSkills);
-            }
-        }
-        if(!Play.isDev(Play.current())){
-            jobApplicationGoogleSheetResponse.setFormUrl(ServerConstants.PROD_GOOGLE_FORM_FOR_JOB_APPLICATION);
-        } else{
-            jobApplicationGoogleSheetResponse.setFormUrl(ServerConstants.DEV_GOOGLE_FORM_FOR_JOB_APPLICATION);
-        }
-        return ok(toJson(jobApplicationGoogleSheetResponse));
     }
 
     public static Result getAllLocality() {

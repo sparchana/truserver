@@ -849,7 +849,7 @@ li .dropdown-menu{
     background: linear-gradient(
             rgba(24, 26, 45, 0.7),
             rgba(24, 26, 45, 0.7)
-    ), url(../img/back_design.png) no-repeat;
+    ), url(../img/back_design.png) repeat;
     background-size: 100%;
 }
 .sectionFive {
