@@ -1,5 +1,6 @@
 var localityArray = [];
 var jobArray = [];
+var shouldAddFooter = true;
 
 function processDataCheckJobs(returnedData) {
     returnedData.forEach(function(job)
@@ -132,17 +133,20 @@ function getSkills(skillList) {
         skillList.forEach(function(candidateSkill)
         {
             if(candidateSkill != null) {
-
-                if(candidateSkill.skillQualifier != null) {
-                    if(candidateSkill.skillQualifier.qualifier == "Yes"){
-                        if(candidateSkill.skill != null) {
-                            skills.push(" " + candidateSkill.skill.skillName);
-                        }
+                if(candidateSkill.candidateSkillResponse != null) {
+                    var resp;
+                    if(candidateSkill.candidateSkillResponse == true){
+                        resp = "Yes"
+                    } else {
+                        resp = "No"
                     }
+                    skills.push(" " + candidateSkill.skill.skillName + " : " + resp);
                 }
             }
         });
-        return skills;
+        if(skills.length > 0){
+            return skills;
+        }
     }
     return "-";
 }
@@ -156,7 +160,14 @@ function getHomeLocality(locality) {
 }
 
 function getDateTime(value) {
-    var dateTime = new Date(value).toLocaleDateString() +" "+ ("0" + new Date(value).getHours()).slice(-2) + ":" + ("0" + new Date(value).getMinutes()).slice(-2) +":"+("0" + new Date(value).getSeconds()).slice(-2) ;
+    // 2016-07-20 21:18:07
+    /*
+     * getUTCMonth(): Returns the month according to the UTC (0 - 11).
+     * getUTCFullYear(): Returns the four-digit year according to the UTC.
+     */
+    var dateTime = new Date(value).getUTCFullYear() +"-"+("0" +(new Date(value).getUTCMonth() + 1)).slice(-2)
+        +"-"+("0" +new Date(value).getDate()).slice(-2)+" "+ ("0" + new Date(value).getHours()).slice(-2) + ":"
+        + ("0" + new Date(value).getMinutes()).slice(-2) +":"+("0" + new Date(value).getSeconds()).slice(-2) ;
     return dateTime;
 }
 
@@ -187,9 +198,8 @@ function getYesNo(assesment) {
         } else {
             return "yes";
         }
-    } else {
-        return "-";
     }
+    return "-";
 }
 
 function getExperience(candidateExpList) {
@@ -203,10 +213,8 @@ function getExperience(candidateExpList) {
             }
         });
         return candidateExpArray;
-    } else {
-        return "-";
     }
-
+    return "-";
 }
 function getAge(birthday) { // birthday is in milisec
     var ageDifMs = Date.now() - birthday;
@@ -230,6 +238,38 @@ function getExpiry(expiryObject) {
     }
     return "-";
 }
+
+
+function getLastName(lastName) {
+    if(lastName != null){
+        return lastName;
+    }
+    return "";
+}
+function getFirstName(firstName) {
+    if(firstName != null){
+        return firstName;
+    }
+    return "";
+}
+
+function getIdProof(idProofList) {
+    var idProofArray = [];
+    if(idProofList !=  null){
+        idProofList.forEach(function(candidateIdProof) {
+            if(candidateIdProof != null) {
+                if(candidateIdProof.idProof != null && candidateIdProof.idProof.idProofName != null) {
+                    idProofArray.push(" " + candidateIdProof.idProof.idProofName);
+                }
+            }
+        });
+        if(idProofArray.length > 0){
+            return idProofArray;
+        }
+    }
+    return "-";
+}
+
 
 function renderSearchResult(returnedData) {
     var status = returnedData.status;
@@ -257,7 +297,7 @@ function renderSearchResult(returnedData) {
                 }
                 returnedDataArray.push({
                     'cLID': '<a href="/candidateSignupSupport/' + newCandidate.lead.leadId + '/false" target="_blank">' + newCandidate.lead.leadId + '</a>',
-                    'candidateFirstName': newCandidate.candidateFirstName + " " + newCandidate.candidateLastName,
+                    'candidateFirstName': getFirstName(newCandidate.candidateFirstName) + " " + getLastName(newCandidate.candidateLastName),
                     'candidateMobile': newCandidate.candidateMobile,
                     'candidateLastWithdrawnSalary': getLastWithdrawnSalary(newCandidate.candidateLastWithdrawnSalary),
                     'candidateJobPref': getJobPref(newCandidate.jobPreferencesList),
@@ -280,7 +320,8 @@ function renderSearchResult(returnedData) {
                     'age': getAge(newCandidate.candidateDOB),
                     'candidateExperienceLetter': getYesNo(newCandidate.candidateExperienceLetter),
                     'isActive': getProperProfileStatus(newCandidate.candidateprofilestatus),
-                    'candidateExpiry': getExpiry(newCandidate.candidateStatusDetail)
+                    'candidateExpiry': getExpiry(newCandidate.candidateStatusDetail),
+                    'candidateIdProofs': getIdProof(newCandidate.idProofReferenceList)
                 })
             });
 
@@ -315,7 +356,8 @@ function renderSearchResult(returnedData) {
                     {"data": "age"},
                     {"data": "candidateExperienceLetter"},
                     {"data": "isActive"},
-                    {"data": "candidateExpiry"}
+                    {"data": "candidateExpiry"},
+                    {"data": "candidateIdProofs"}
                 ],
                 "deferRender": true,
                 "scroller": true,
@@ -405,17 +447,33 @@ function searchForm(){
         toThisDate: $('#toThisDate').val(),
         languageKnown: $('#languageMultiSelect').val()
     };
-    NProgress.start();
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getSearchCandidateResult",
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(d),
-            success: renderSearchResult
+    if(d.fromThisDate > d.toThisDate){
+        $.notify({
+            title: "Invalid Date Input: ",
+            message: "Selected Date Range is Incorrect. Please Select valid (from/to) Date",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        },{
+            type: 'danger'
         });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
+        console.log("wrong date range selection. Please select appropriate from/to Date");
+        shouldAddFooter = false;
+    } else {
+        shouldAddFooter = true;
+        NProgress.start();
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/getSearchCandidateResult",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: renderSearchResult
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
     }
 }
 
@@ -571,10 +629,12 @@ $(function() {
         eventObj.preventDefault();
         searchForm();
         // Setup - add a text input to each footer cell
-        $('#candidateSearchResultTable tfoot th').each( function () {
-            var title = $(this).text();
-            $(this).html( '<input type="text" name="'+title+'"  id="'+title+'" placeholder="'+title+'" />' );
-        });
+        if(shouldAddFooter){
+            $('#candidateSearchResultTable tfoot th').each( function () {
+                var title = $(this).text();
+                $(this).html( '<input type="text" name="'+title+'"  id="'+title+'" placeholder="'+title+'" />' );
+            });
+        }
     }); // end of submit
 
 

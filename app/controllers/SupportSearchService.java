@@ -141,8 +141,7 @@ public class SupportSearchService {
         Integer rowLimit = additionalPermissibleCount < queryLimit ? additionalPermissibleCount : queryLimit;
 
         if (rowLimit > 0) {
-            candidateResponseList = query.setMaxRows(rowLimit).findList();
-
+            candidateResponseList = query.orderBy("candidateCreateTimestamp, candidateCreateTimestamp desc").setMaxRows(rowLimit).findList();
             if (candidateResponseList.size() < 1) {
                 Logger.info("Search Response empty");
             }
