@@ -337,12 +337,11 @@ function processDataForSelectedJobPost(returnedData) {
 
                             var salaryDiv = document.createElement("div");
                             salaryDiv.style = "display: inline-block; font-size: 14px";
-                            if (jobPost.jobPostMaxSalary == "0") {
-                                salaryDiv.textContent = jobPost.jobPostMinSalary + " monthly";
-                            } else {
-                                salaryDiv.textContent = jobPost.jobPostMinSalary + " - " + jobPost.jobPostMaxSalary + " monthly";
+                            if(jobPost.jobPostMaxSalary == "0"){
+                                salaryDiv.textContent = rupeeFormatSalary(jobPost.jobPostMinSalary) + " monthly";
+                            } else{
+                                salaryDiv.textContent = rupeeFormatSalary(jobPost.jobPostMinSalary) + " - " + rupeeFormatSalary(jobPost.jobPostMaxSalary) + " monthly";
                             }
-
                             jobBodySubRowCol.appendChild(salaryDiv);
 
                             /*  experience  */
@@ -426,12 +425,15 @@ function processDataForSelectedJobPost(returnedData) {
 
                             var applyBtn = document.createElement("div");
                             applyBtn.className = "jobApplyBtn";
-                            applyBtn.textContent = "View Job";
+                            applyBtn.textContent = "View & Apply";
                             applyBtnDiv.appendChild(applyBtn);
                             applyBtn.onclick=function(){
-                                var jobPostBreak = jobPost.jobPostTitle.replace("/","-");
+                                var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
+                                jobPostBreak = jobPostBreak.toLowerCase();
+                                var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
+                                jobCompany = jobCompany.toLowerCase();
                                 try {
-                                    window.location.href = "/jobs/" + jobPostBreak + "/Bengaluru/" + jobPost.company.companyName + "/" + jobPost.jobPostId;
+                                    window.location.href = "/jobs/" + jobPostBreak + "/bengaluru/" + jobCompany + "/" + jobPost.jobPostId;
                                 } catch (exception) {
                                     console.log("exception occured!!" + exception);
                                 }

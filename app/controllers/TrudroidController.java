@@ -7,6 +7,7 @@ import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
+import com.amazonaws.util.json.JSONException;
 import com.google.api.client.util.Base64;
 import com.google.protobuf.InvalidProtocolBufferException;
 import controllers.businessLogic.*;
@@ -21,6 +22,7 @@ import models.util.SmsUtil;
 import play.Logger;
 import play.mvc.Result;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -318,7 +320,7 @@ public class TrudroidController {
         return jobPostLocalities;
     }
 
-    public static Result mApplyJob() {
+    public static Result mApplyJob() throws IOException, JSONException {
         ApplyJobRequest pApplyJobRequest = null;
         ApplyJobResponse.Builder applyJobResponseBuilder = ApplyJobResponse.newBuilder();
 
@@ -457,7 +459,11 @@ public class TrudroidController {
                 List<JobHistory> jobHistoryList = JobHistory.find.where().eq("candidateId", candidate.getCandidateId()).findList();
                 for (JobHistory jobHistory : jobHistoryList) {
                     if (jobHistory.getCurrentJob()) {
-                        candidateBuilder.setCandidateCurrentCompany(jobHistory.getCandidatePastCompany());
+                        if(jobHistory.getCandidatePastCompany() != null){
+                            candidateBuilder.setCandidateCurrentCompany(jobHistory.getCandidatePastCompany());
+                        } else{
+                            candidateBuilder.setCandidateCurrentCompany("");
+                        }
                         JobRoleObject.Builder jobRoleBuilder = JobRoleObject.newBuilder();
                         if(jobHistory.getJobRole() != null){
                             jobRoleBuilder.setJobRoleName(jobHistory.getJobRole().getJobName());

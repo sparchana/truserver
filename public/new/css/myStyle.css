@@ -179,12 +179,10 @@ body{
 }
 
 #recruiter_form_section {
-    margin-top: 8%;
-    margin-left: 24%;
-    margin-right: 24%;
-    padding: 12px 10px;
-    border: 1px solid rgba(22, 46, 99, 0.24);
-    border-radius: 2px;
+    margin-top: 18%;
+    margin-left: 30%;
+    margin-right: 30%;
+    padding: 36px 10px;
 }
 
 #app_screen_header{
@@ -594,7 +592,7 @@ hr{
         display: none;
     }
     .appStoreContainer{
-        background-size: 300%;
+        background-size: 600%;
     }
     #playStoreLogo{
         display: none;
@@ -668,7 +666,6 @@ hr{
         padding-right: 3%;
     }
     #recruiter_form_section {
-        margin-top: 2%;
         margin-left: 12%;
         margin-right: 12%;
         padding: 10px 8px;
@@ -853,9 +850,6 @@ li .dropdown-menu{
     z-index: -1;
 }
 
-.reg_input{
-	margin-top: 10px;
-}
 .reg_button{
 	margin-top: 20px;
 }
