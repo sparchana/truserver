@@ -25,7 +25,8 @@ var jshint = require('gulp-jshint'),
     minifyCSS = require('gulp-minify-css'),
     argv = require('yargs').argv,
     gulpif = require('gulp-if'),
-    beautify = require('gulp-beautify');
+    beautify = require('gulp-beautify'),
+    del = require('del');
 
 
 // Handy file paths also handler order of file compilation
@@ -64,6 +65,17 @@ cssOrder = {
     btnDt: paths.supportCss+"buttons.dataTables.min.css",
     jqueryUi: paths.supportCss+"jquery-ui.css"
 };
+
+// Clean task
+gulp.task('clean', function () {
+    return del([
+        './public/build/support/*'
+        // here we use a globbing pattern to match everything inside the `mobile` folder
+        //'dist/mobile/**/*',
+        // we don't want to clean this file though so we negate the pattern
+        //'!dist/mobile/deploy.json'
+    ]);
+});
 
 
 // JS hint task
@@ -124,7 +136,7 @@ gulp.task('datatableBundleStyle', function() {
 });
 
 // default gulp task
-gulp.task('default', ['scripts', 'styles', 'supportScripts', 'supportStyles', 'datatableBundleScript', 'datatableBundleStyle'], function() {
+gulp.task('default', ['clean', 'scripts', 'styles', 'supportScripts', 'supportStyles', 'datatableBundleScript', 'datatableBundleStyle'], function() {
     // watch for CSS changes
     gulp.watch(paths.css+'*.css', function() {
         gulp.run('styles');

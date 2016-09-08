@@ -160,7 +160,14 @@ function getHomeLocality(locality) {
 }
 
 function getDateTime(value) {
-    var dateTime = new Date(value).toLocaleDateString() +" "+ ("0" + new Date(value).getHours()).slice(-2) + ":" + ("0" + new Date(value).getMinutes()).slice(-2) +":"+("0" + new Date(value).getSeconds()).slice(-2) ;
+    // 2016-07-20 21:18:07
+    /*
+     * getUTCMonth(): Returns the month according to the UTC (0 - 11).
+     * getUTCFullYear(): Returns the four-digit year according to the UTC.
+     */
+    var dateTime = new Date(value).getUTCFullYear() +"-"+("0" +(new Date(value).getUTCMonth() + 1)).slice(-2)
+        +"-"+("0" +new Date(value).getDate()).slice(-2)+" "+ ("0" + new Date(value).getHours()).slice(-2) + ":"
+        + ("0" + new Date(value).getMinutes()).slice(-2) +":"+("0" + new Date(value).getSeconds()).slice(-2) ;
     return dateTime;
 }
 
@@ -191,9 +198,8 @@ function getYesNo(assesment) {
         } else {
             return "yes";
         }
-    } else {
-        return "-";
     }
+    return "-";
 }
 
 function getExperience(candidateExpList) {
@@ -207,10 +213,8 @@ function getExperience(candidateExpList) {
             }
         });
         return candidateExpArray;
-    } else {
-        return "-";
     }
-
+    return "-";
 }
 function getAge(birthday) { // birthday is in milisec
     var ageDifMs = Date.now() - birthday;
@@ -251,7 +255,6 @@ function getFirstName(firstName) {
 
 function getIdProof(idProofList) {
     var idProofArray = [];
-    console.log(JSON.stringify(idProofList));
     if(idProofList !=  null){
         idProofList.forEach(function(candidateIdProof) {
             if(candidateIdProof != null) {
@@ -263,9 +266,8 @@ function getIdProof(idProofList) {
         if(idProofArray.length > 0){
             return idProofArray;
         }
-    } else {
-        return "-";
     }
+    return "-";
 }
 
 
