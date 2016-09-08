@@ -459,7 +459,11 @@ public class TrudroidController {
                 List<JobHistory> jobHistoryList = JobHistory.find.where().eq("candidateId", candidate.getCandidateId()).findList();
                 for (JobHistory jobHistory : jobHistoryList) {
                     if (jobHistory.getCurrentJob()) {
-                        candidateBuilder.setCandidateCurrentCompany(jobHistory.getCandidatePastCompany());
+                        if(jobHistory.getCandidatePastCompany() != null){
+                            candidateBuilder.setCandidateCurrentCompany(jobHistory.getCandidatePastCompany());
+                        } else{
+                            candidateBuilder.setCandidateCurrentCompany("");
+                        }
                         JobRoleObject.Builder jobRoleBuilder = JobRoleObject.newBuilder();
                         if(jobHistory.getJobRole() != null){
                             jobRoleBuilder.setJobRoleName(jobHistory.getJobRole().getJobName());
