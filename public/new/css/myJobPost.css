@@ -505,7 +505,6 @@ hr{
 .jobApplyBtnV2{
     border: none;
     color: white;
-    margin-top: 4%;
     background: #09ac58;
     padding: 6%;
     width: 120px;
@@ -850,7 +849,7 @@ li .dropdown-menu{
     background: linear-gradient(
             rgba(24, 26, 45, 0.7),
             rgba(24, 26, 45, 0.7)
-    ), url(../img/back_design.png) no-repeat;
+    ), url(../img/back_design.png) repeat;
     background-size: 100%;
 }
 .sectionFive {

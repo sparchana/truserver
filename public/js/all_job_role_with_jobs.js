@@ -51,7 +51,9 @@ function setJobRoles(returnedData, start){
 
             var jobAnchor = document.createElement("a");
             jobAnchor.onclick = function () {
-                window.location.href = "/job/" + jobRole.jobName.split("/").join('_') + "_jobs" + "/" + jobRole.jobRoleId;
+                var jobPostBreak = jobRole.jobName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
+                jobPostBreak = jobPostBreak.toLowerCase();
+                window.location.href = "/job/" + jobPostBreak + "_jobs" + "/" + jobRole.jobRoleId;
             };
             gridDiv.appendChild(jobAnchor);
 

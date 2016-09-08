@@ -220,12 +220,10 @@ function processDataForHotJobPost(returnedData) {
     }
     if (returnedData.jobPostMinSalary != null && returnedData.jobPostMaxSalary != null) {
         if (returnedData.jobPostMaxSalary == null || returnedData.jobPostMaxSalary == "0") {
-            $("#postedJobSalary").html(returnedData.jobPostMinSalary);
-        }else if (returnedData.jobPostMinSalary == null || returnedData.jobPostMinSalary == "0") {
-            $("#postedJobSalary").html(returnedData.jobPostMinSalary);
+            $("#postedJobSalary").html(rupeeFormatSalary(returnedData.jobPostMinSalary)+ " monthly");
         }
         else {
-            $("#postedJobSalary").html(returnedData.jobPostMinSalary + " - " + returnedData.jobPostMaxSalary);
+            $("#postedJobSalary").html(rupeeFormatSalary(returnedData.jobPostMinSalary) + " - " + rupeeFormatSalary(returnedData.jobPostMaxSalary)+ " monthly");
             $("#salaryCondition").html("Salary (Min - Max)");
         }
     }

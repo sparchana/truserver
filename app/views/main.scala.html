@@ -28,6 +28,7 @@
 
         <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
         <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
+        <script type="text/javascript" src="/assets/js/validation.js"></script>
 
         <script>
             localStorage.clear();
@@ -86,7 +87,7 @@
                                 <h2 style="letter-spacing: 2px; margin: 10px; text-align: left"><font size="5">Call 8880007799 to find jobs in top companies!</font></h2>
                                 <h4 style="letter-spacing: 2px; margin: 10px; text-align: left; display: inline-block; float: left">Download app from</h4>
                                 <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" target="_blank" style="padding-top: 2px; float: left">
-                                    <img src="/assets/img/playstore.png" alt="PlayStore Logo" height="40px"></a>
+                                    <img src="/assets/img/download_btn.png" alt="PlayStore Logo" height="40px"></a>
                             </div>
                         </div>
                     </div>
@@ -160,6 +161,16 @@
         </div>
         <div id="job_cards_inc"></div>
 
+        <!--  Start Job Icons Box -->
+        <div class="sectionTwo" style="display: table; width: 100%" id="jobs">
+            <h3 id="jobVacancyHead">Click on Job Roles to View Jobs</h3>
+            <center>
+                <div class="materialDash"></div>
+            </center><br>
+
+            <div id="jobRoleGrid" style="width: auto"></div>
+        </div>
+
         <div class="company_class">
             Companies Hiring From Us                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      </Us>
         </div>
@@ -191,16 +202,6 @@
             </div>
         </center>
 
-        <!--  Start Job Icons Box -->
-        <div class="sectionTwo" style="display: table; width: 100%" id="jobs">
-            <h3 id="jobVacancyHead">Job Roles</h3>
-            <center>
-                <div class="materialDash"></div>
-            </center><br>
-
-            <div id="jobRoleGrid" style="width: auto"></div>
-        </div>
-
         <!-- App section -->
         <div class="appStoreContainer">
             <div class="row" style="padding:0%;margin:0%">
@@ -227,7 +228,7 @@
                             </div>
                         </div>
                         <div class="row" id="playStoreDownloadButtonContainer">
-                            <a href="#">
+                            <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" target="_blank">
                             <img src="/assets/img/download_btn.png" id="playStoreDownloadButton">
                             </a>
                         </div>
@@ -300,7 +301,7 @@
             <div class="row" style="text-align: center">
                 <!-- Recruiter -->
                 <div class="col-sm-6" id="recruiterSection">
-                    <h3>Are you a Recruiter?</h3>
+                    <h3>Are you an Employer?</h3>
                     <br>
                     <div class="row">
                         <div class="col-sm-2"></div>
@@ -333,42 +334,11 @@
 
                 <div class="col-sm-6">
                     <div id="recruiter_form_section">
-                        <form id="form_recruiter" class="form-horizontal" role="form" name="form_candidate" >
-                            <label>Recruiter Registration</label>
-                            <div class="reg_input">
-                                <input type="text" class="form-control" id="leadName" maxLength="49" placeholder="Name(eg: Manjunath)" required>
-                            </div>
-                            <div class="reg_input">
-                                <input type="text" class="form-control" id="leadMobile" placeholder="Mobile(eg: 8880007799)" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10"  required>
-                            </div>
-
-                                <!-- hidden-->
-                            <div class="form-group" style="display: none;">
-                                <input id="leadChannel" name="leadChannel" type="number" value="0" class="form-control input-md" >
-                            </div>
-
-                            <div class="form-group" style="display: none;">
-                                <input id="leadType" name="leadType" type="number" class="form-control input-md" value="3">
-                            </div>
-
-                            <div class="form-group" style="display: none;">
-                                <input id="leadInterest" name="leadInterest" type="text" class="form-control input-md" value="Recruiter Registration">
-                            </div>
-                            <div class="reg_input">
-                                <button type="submit" class="form-control" id="modalBtn">Get in Touch</button>
-                            </div>
-                        </form>
-                        <font color="red">
-                            <div id="thanksMsgRecruiter" style="margin-top: 2%;display: none; color: #2980b9">
-                                <h4>Thanks for applying. We will contact you soon!</h4>
-                            </div>
-                            <div id="errorMsgRecruiter" style="margin-top: 2%;display: none; color: #2980b9">
-                                <h4>Looks like something went wrong. Please try again later!</h4>
-                            </div>
-                            <div id="alreadyMsgRecruiter" style="margin-top: 2%;display: none; color: #2980b9">
-                                <h5>User with the above mobile no. already exists!</h5>
-                            </div>
-                        </font>
+                        <div class="reg_input">
+                            <a href="https://docs.google.com/a/trujobs.in/forms/d/e/1FAIpQLSeJZdQhkEhYToVDkSyQEj0Ec5q9MAoqZTlMisLjMtNRFMDoHg/viewform" target="_blank">
+                            <button type="submit" class="form-control" id="modalBtn">Post Job for FREE</button>
+                                </a>
+                        </div>
                     </div>
 
                 </div>

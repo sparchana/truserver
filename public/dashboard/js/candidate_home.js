@@ -243,24 +243,6 @@ function processDataAllJobPosts(returnedData) {
                 $("#locationMsg_" + jobPost.jobPostId).attr("data-toggle", "tooltip");
                 /*  apply button */
 
-               /* var applyBtnDiv = document.createElement("div");
-                applyBtnDiv.className = "col-sm-2";
-                applyBtnDiv.id = "applyBtnDiv_" + jobPost.jobPostId;
-                applyBtnDiv.onclick = function () {
-                    $('#jobApplyConfirm').modal();
-                    jobPostId = jobPost.jobPostId;
-                    jobLocalityArray = [];
-                    $('#applyButton').hide();
-                    addLocalitiesToModal();
-                };
-                rowDiv.appendChild(applyBtnDiv);
-
-                var applyBtn = document.createElement("button");
-                applyBtn.id = "apply_btn_" + jobPost.jobPostId;
-                applyBtn.className = "jobApplyBtn";
-                applyBtn.textContent = "Apply";
-                applyBtnDiv.appendChild(applyBtn);*/
-
                 var applyBtnDiv = document.createElement("div");
                 applyBtnDiv.className = "col-sm-2";
                 applyBtnDiv.id = "applyBtnDiv_" + jobPost.jobPostId;
@@ -269,34 +251,21 @@ function processDataAllJobPosts(returnedData) {
                 var applyBtn = document.createElement("div");
                 applyBtn.className = "jobApplyBtn";
                 applyBtn.id = "apply_btn_" + jobPost.jobPostId;
-                applyBtn.textContent = "View Job";
+                applyBtn.textContent = "View & Apply";
                 applyBtnDiv.appendChild(applyBtn);
                 applyBtn.onclick=function(){
-                    var jobPostBreak = jobPost.jobPostTitle.replace("/","-");
+                    var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
+                    jobPostBreak = jobPostBreak.toLowerCase();
+                    var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
+                    jobCompany = jobPostBreak.toLowerCase();
                     try {
-                        window.location.href = "/jobs/" + jobPostBreak + "/Bengaluru/" + jobPost.company.companyName + "/" + jobPost.jobPostId;
+                        window.location.href = "/jobs/" + jobPostBreak + "/bengaluru/" + jobCompany + "/" + jobPost.jobPostId;
                     } catch (exception) {
                         console.log("exception occured!!" + exception);
                     }
                 }
             }
         });
-    }
-}
-
-function addLocalitiesToModal() {
-    $("#applyButton").addClass("jobApplyBtnModal").removeClass("appliedBtn").prop('disabled',false).html("Apply");
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getJobPostInfo/" + jobPostId + "/0",
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataForJobPostLocation
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
     }
 }
 

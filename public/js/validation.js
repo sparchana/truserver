@@ -14,6 +14,15 @@ function validateMobile(mobile) {
     }
 }
 
+function rupeeFormatSalary(sal){
+    sal = sal.toString();
+    var lastThree = sal.substring(sal.length-3);
+    var otherNumbers = sal.substring(0, sal.length-3);
+    if(otherNumbers != '')
+        lastThree = ',' + lastThree;
+    return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+}
+
 function validateName(name) {
     var validName = /^[a-zA-Z]+$/;
     var spacing = /^[ ]+$/;
