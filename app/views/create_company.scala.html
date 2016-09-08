@@ -45,14 +45,14 @@
       <div id="recruiterSection" style="width: 68%">
         <form id="recruiter_form">
           <div class="row">
-            <div class="col-sm-3"><h5>Recruiter Name:</h5></div>
+            <div class="col-sm-3"><h5>Recruiter Name:<font color="red">*</font></h5></div>
             <div class="col-sm-9">
               <input id="recruiterName" name="recruiterName" placeholder="Recruiter Name" type="text" class="form-control input-md" >
             </div>
           </div>
 
           <div class="row">
-            <div class="col-sm-3"><h5>Recruiter Mobile:</h5></div>
+            <div class="col-sm-3"><h5>Recruiter Mobile:<font color="red">*</font></h5></div>
             <div class="col-sm-9">
               <input id="recruiterMobile" name="recruiterMobile" maxlength="10" placeholder="Recruiter Mobile" type="text" class="form-control input-md" >
             </div>
@@ -73,7 +73,7 @@
           </div>
 
           <div class="row" style="margin-top: 4px">
-            <div class="col-sm-3"><h5>Your Company:</h5></div>
+            <div class="col-sm-3"><h5>Your Company:<font color="red">*</font></h5></div>
             <div class="col-sm-9">
               <select id="recruiterCompany" class="selectDropdown" ></select>
               Company Not listed? <a onclick="showCompanyForm()">Click Here</a>
@@ -87,10 +87,12 @@
         <form id="company_form">
             <!-- hidden field -->
           <input id="companyId" style="display: none">
+
           <div class="row">
-            <div class="col-sm-3"><h5>Company Name:</h5></div>
+            <div class="col-sm-3"><h5>Company Name:<font color="red">*</font></h5></div>
             <div class="col-sm-9">
-              <input id="companyName" name="companyName" placeholder="Company Name" type="text" class="form-control input-md" >
+              <input id="companyName" style="display: inline-block; width: 94%" name="companyName" placeholder="Company Name" type="text" class="form-control input-md" >
+              <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
             </div>
           </div>
 
@@ -123,10 +125,11 @@
           </div>
 
           <div class="row">
-            <div class="col-sm-3"><h5>Company Logo:</h5></div>
+            <div class="col-sm-3"><h5>Company Logo:<font color="red">*</font></h5></div>
             <div class="col-sm-9">
               <img id="companyLogoOld" width="120px">
-              <input type="file" id="companyLogo" onchange="readURL(this)" accept='image/*'>
+              <input type="file" id="companyLogo" style="display: inline-block; float: left; width: 40%" onchange="readURL(this)"  accept='image/*'>
+              <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
             </div>
           </div>
 

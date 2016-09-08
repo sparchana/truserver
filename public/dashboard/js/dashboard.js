@@ -121,7 +121,7 @@ $(document).ready(function(){
         option.textContent = monthName;
         $('#dob_month').append(option);
     }
-    for(i=new Date().getFullYear();i>=1940;i--){
+    for(i = new Date().getFullYear() - 18;i>=new Date().getFullYear() - 80;i--){
         option = document.createElement("option");
         option.value = i;
         option.textContent = i;

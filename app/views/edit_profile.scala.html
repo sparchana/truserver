@@ -329,15 +329,16 @@
                           <input type="text" id="candidateCurrentJobRole">
                         </div>
                       </div>
-
-                      <div class="row" style="margin-top: 8px">
-                        <div class="col-sm-3"><h5>Last Withdrawn Salary<font color="red">*</font></h5></div>
-                        <div class="col-sm-2">
-                          <input id="candidateLastWithdrawnSalary" placeholder="Salary" type="number" class="form-control input-md">
-                        </div>
-                        <div class="col-sm-2" style="margin-top: 8px">₹/month</div>
-                      </div>
                     </div>
+
+                    <div class="row" style="margin-top: 8px; display: none" id="lastWithdrawnSalaryLayout">
+                      <div class="col-sm-3"><h5>Last Withdrawn Salary<font color="red">*</font></h5></div>
+                      <div class="col-sm-2">
+                        <input id="candidateLastWithdrawnSalary" placeholder="Salary" type="number" class="form-control input-md">
+                      </div>
+                      <div class="col-sm-2" style="margin-top: 8px">₹/month</div>
+                    </div>
+
                   </div>
                 </div>
                 <br>
@@ -476,11 +477,14 @@
         }
 
         function clickFresher() {
+          $("#isEmployedNo").click();
+          $("#lastWithdrawnSalaryLayout").hide();
           $("#totalWorkExperience").hide();
           $("#isEmployedForm").hide();
           $("#isEmployedSelect").hide();
         }
         function clickExperienced() {
+          $("#lastWithdrawnSalaryLayout").show();
           $("#totalWorkExperience").show();
           $("#isEmployedSelect").show();
         }

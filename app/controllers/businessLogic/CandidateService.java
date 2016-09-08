@@ -390,7 +390,7 @@ public class CandidateService
                     return ServerConstants.CANDIDATE_MIN_PROFILE_NOT_COMPLETE;
                 }
             }
-                return ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE;
+            return ServerConstants.CANDIDATE_MIN_PROFILE_COMPLETE;
         }
         return ServerConstants.CANDIDATE_MIN_PROFILE_NOT_COMPLETE;
     }
