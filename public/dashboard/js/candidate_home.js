@@ -269,7 +269,7 @@ function processDataAllJobPosts(returnedData) {
                 var applyBtn = document.createElement("div");
                 applyBtn.className = "jobApplyBtn";
                 applyBtn.id = "apply_btn_" + jobPost.jobPostId;
-                applyBtn.textContent = "View Job";
+                applyBtn.textContent = "View & Apply";
                 applyBtnDiv.appendChild(applyBtn);
                 applyBtn.onclick=function(){
                     var jobPostBreak = jobPost.jobPostTitle.replace("/","-");
