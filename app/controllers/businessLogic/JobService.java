@@ -365,8 +365,13 @@ public class JobService {
         String jobIsHotKey = "entry.1165618058";
 
 
-        String url="https://docs.google.com/forms/d/e/1FAIpQLSfsj3Lw_QoEfDwvZ9BOU5Wn3wneAxZyWVOw2hR6YwBQ5VnTtA/formResponse";
-        String postBody="";
+        String url;
+        if(!Play.isDev(Play.current())){
+            url = ServerConstants.PROD_GOOGLE_FORM_FOR_JOB_APPLICATION;
+        } else{
+            url = ServerConstants.DEV_GOOGLE_FORM_FOR_JOB_APPLICATION;
+        }
+        String postBody;
 
         postBody = jobIdKey +"=" + URLEncoder.encode(jobIdVal,"UTF-8") + "&"
                 + companyNameKey + "=" + URLEncoder.encode(companyNameVal,"UTF-8") + "&"
