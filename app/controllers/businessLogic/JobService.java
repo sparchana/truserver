@@ -268,11 +268,7 @@ public class JobService {
                     candidateSkillsVal += skill.getSkill().getSkillName() + ", ";
                 }
             }
-
-            if(candidate.getMotherTongue() != null){
-                candidateMotherTongueVal = String.valueOf(candidate.getMotherTongue());
-            }
-
+            
             if(candidate.getLocality() != null){
                 candidateHomeLocalityVal = candidate.getLocality().getLocalityName();
             }
