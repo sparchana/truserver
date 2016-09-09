@@ -636,10 +636,12 @@ public class TrudroidController {
         }
 
         //adding job post time Shift
-        TimeShiftObject.Builder timeShiftBuilder = TimeShiftObject.newBuilder();
-        timeShiftBuilder.setTimeShiftId(jobPost.getJobPostShift().getTimeShiftId());
-        timeShiftBuilder.setTimeShiftName(jobPost.getJobPostShift().getTimeShiftName());
-        jobPostBuilder.setJobPostShift(timeShiftBuilder);
+        if(jobPost.getJobPostShift() != null){
+            TimeShiftObject.Builder timeShiftBuilder = TimeShiftObject.newBuilder();
+            timeShiftBuilder.setTimeShiftId(jobPost.getJobPostShift().getTimeShiftId());
+            timeShiftBuilder.setTimeShiftName(jobPost.getJobPostShift().getTimeShiftName());
+            jobPostBuilder.setJobPostShift(timeShiftBuilder);
+        }
 
         //adding job post education
         if (jobPost.getJobPostEducation() != null) {
