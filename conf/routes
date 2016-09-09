@@ -77,6 +77,12 @@ POST        /findUserAndSendOtp                                           contro
 POST        /loginSubmit                                                  controllers.Application.loginSubmit()
 POST        /signUp                                                       controllers.Application.signUp()
 
+# partner routes
+#~~~~~~~~~~~~~~~~~~~~
+
+GET         /partner                                                      controllers.PartnerController.partnerIndex()
+GET         /partnerNavBar                                                controllers.PartnerController.renderPagePartnerNavBar()
+
 #new routes
 #~~~~~~~~~~~~~~~~~~~~
 GET         /navBar                                                       controllers.Application.renderPageNavBar()
