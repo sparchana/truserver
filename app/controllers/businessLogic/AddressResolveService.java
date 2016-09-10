@@ -82,7 +82,7 @@ public class AddressResolveService {
         List<String> nearByAddressList = new ArrayList<>();
         nearByAddressList.addAll(fetchNearByLocality(appxLatitude, appxLongitude, null));
         Locality locality =  Locality.find.where().eq("localityName", determineLocality(nearByAddressList).trim().toLowerCase()).findUnique();
-        if(locality == null){
+        if(locality == null) {
             Logger.info("Locality is null!!");
         } else if((locality.getLat()==null || locality.getLat() == 0 || locality.getPlaceId() == null)){
             locality = insertOrUpdateLocality(locality.getLocalityName(), appxLatitude, appxLongitude);

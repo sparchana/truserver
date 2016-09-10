@@ -1461,8 +1461,7 @@ public class TrudroidController {
             localityObjectResponse.setStatus(LocalityObjectResponse.Status.SUCCESS);
             Logger.info("returned Locality name: "+ locality.getLocalityName());
         } else {
-            Logger.error("Unable to find locality for placeId:"+latLngOrPlaceIdRequest.getPlaceId() +
-                    latLngOrPlaceIdRequest.getPlaceId() + " or lat/lng:"+latLngOrPlaceIdRequest.getLatitude()+
+            Logger.error("Unable to find locality for placeId:"+latLngOrPlaceIdRequest.getPlaceId() + " or lat/lng:"+latLngOrPlaceIdRequest.getLatitude()+
                     "/"+latLngOrPlaceIdRequest.getLatitude());
             localityObjectResponse.setStatus(LocalityObjectResponse.Status.UNKNOWN);
         }
