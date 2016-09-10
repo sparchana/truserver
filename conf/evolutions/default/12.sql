@@ -60,4 +60,6 @@ drop table if exists partner;
 
 drop table if exists partner_auth;
 
+drop table if exists partner_profile_status;
+
 drop table if exists city;
