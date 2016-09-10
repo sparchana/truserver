@@ -244,10 +244,12 @@ public class JobService {
                 candidateIsAssessedVal = "Yes";
             }
 
-            if(candidate.getCandidateIsEmployed() == 0){
-                candidateIsEmployedVal = "No";
-            } else{
-                candidateIsEmployedVal = "Yes";
+            if(candidate.getCandidateIsEmployed() != null){
+                if(candidate.getCandidateIsEmployed() == 1){
+                    candidateIsEmployedVal = "No";
+                } else{
+                    candidateIsEmployedVal = "Yes";
+                }
             }
 
             //Languages Known
