@@ -187,4 +187,9 @@ public class ServerConstants {
     /* Non Logged In Search Result UUID */
     public static final String TRU_DROID_NOT_LOGGED_UUID = "TRU-DROID-NOT-LOGGEDIN-UUID";
 
+    /************************
+     *  Scrapped Data Source
+     ************************/
+    public static int SOURCE_INTERNAL = 0;
+    public static int SOURCE_BABAJOBS = 1;
 }

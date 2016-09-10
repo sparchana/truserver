@@ -177,15 +177,17 @@ public class AddressResolveService {
 
             /* after proper json object is fetched */
             /* extract vicinity */
-            for (int i = 0; i < jsonResultArray.length(); ++i) {
-                try {
-                    JSONObject placeOfInterest = jsonResultArray.getJSONObject(i);
-                    String placeAddress = placeOfInterest.getString("vicinity").trim();
+            if(jsonResultArray != null){
+                for (int i = 0; i < jsonResultArray.length(); ++i) {
+                    try {
+                        JSONObject placeOfInterest = jsonResultArray.getJSONObject(i);
+                        String placeAddress = placeOfInterest.getString("vicinity").trim();
                     /* decreases the count of city from address since mostly the city name appears at the end of address */
-                    placeAddress = placeAddress.lastIndexOf(",") > placeAddress.indexOf(",")? placeAddress.substring(0, placeAddress.lastIndexOf(",")) : placeAddress;
-                    nearbyLocalityAddressList.add(placeAddress.trim());
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                        placeAddress = placeAddress.lastIndexOf(",") > placeAddress.indexOf(",")? placeAddress.substring(0, placeAddress.lastIndexOf(",")) : placeAddress;
+                        nearbyLocalityAddressList.add(placeAddress.trim());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
@@ -198,7 +200,7 @@ public class AddressResolveService {
         StringBuilder jsonResults = getJSONForAddressToLatLng(localityName, lat, lng);
 
         Locality freshLocality = parseAndGetLocality(jsonResults);
-        Logger.info("loclaity:"+toJson(freshLocality));
+        Logger.info("locality:"+toJson(freshLocality));
         return freshLocality;
     }
 

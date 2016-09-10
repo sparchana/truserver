@@ -227,7 +227,7 @@ function processDataForHotJobPost(returnedData) {
             $("#salaryCondition").html("Salary (Min - Max)");
         }
     }
-    if (returnedData.jobPostIncentives != "") {
+    if (returnedData.jobPostIncentives  != null && returnedData.jobPostIncentives != "") {
         $("#postedJobIncentives").html(returnedData.jobPostIncentives);
     }
     //locality
@@ -307,7 +307,7 @@ function processDataForHotJobPost(returnedData) {
         $("#postedJobTiming").html(returnedData.jobPostStartTime + " "+valStart+ " - "+ returnedData.jobPostEndTime +" "+valEnd);
 
     }
-    if (returnedData.jobPostMinRequirement != "") {
+    if (returnedData.jobPostMinRequirement != null && returnedData.jobPostMinRequirement != "") {
         $("#postedJobMinRequirement").html(returnedData.jobPostMinRequirement);
     }
 
@@ -325,8 +325,8 @@ function processDataForHotJobPost(returnedData) {
         $("#postedJobCompanyLocation").html(returnedData.company.companyLocality.localityName);
     }
     if(returnedData.company.companyLogo != null){
-     document.getElementById("postedJobCompanyLogo").src=returnedData.company.companyLogo;
-        document.getElementById("postedCompanyLogo").src=returnedData.company.companyLogo;
+        document.getElementById("postedJobCompanyLogo").src = returnedData.company.companyLogo;
+        document.getElementById("postedCompanyLogo").src = returnedData.company.companyLogo;
     }
     if (returnedData.company.companyWebsite != null ) {
         $("#postedJobCompanyWebsite").html(returnedData.company.companyWebsite);

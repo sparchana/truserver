@@ -35,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static models.util.ParseCSV.parseBabaJobsCSV;
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {
@@ -1151,5 +1152,9 @@ public class Application extends Controller {
     public static Result getAllCompanyLogos() {
         List<Company> companyList = Company.find.orderBy("companyName").findList();
         return ok(toJson(companyList));
+    }
+
+    public static Result bj2tj() {
+        return ok("" + parseBabaJobsCSV());
     }
 }

@@ -146,7 +146,7 @@ POST        /mGetLocalityForLatLngOrPlaceId                               contro
 
 # Test API
 GET         /resolveLatLng/:latlng                                        controllers.TrudroidController.mResolveLatLng(latlng: String)
-
+GET         /bj2tj                                                        controllers.Application.bj2tj()
 # 3rd Party API
 # ~~~~~~~~~~~~~
 GET         /employer/postJob                                             controllers.Application.postJob()

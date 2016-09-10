@@ -170,7 +170,7 @@ function processDataCheckCompanyLogo(returnedData) {
             companyLogo.className = "img-responsive";
             companyLogo.id = "companyLogoSlider";
             companyLogo.setAttribute('alt', "Companies Hiring");
-            companyLogo.src = company.companyLogo;
+            if(company.companyLogo != null) companyLogo.src = company.companyLogo;
             logoDiv.appendChild(companyLogo);
 
         }
@@ -208,7 +208,7 @@ function setCompanyLogos(returnedData, start){
             companyLogo.className = "img-responsive";
             companyLogo.id = "companyLogoSlider";
             companyLogo.setAttribute('alt', "Companies Hiring");
-            companyLogo.src = company.companyLogo;
+            if(company.companyLogo != null) companyLogo.src = company.companyLogo;
             logoDiv.appendChild(companyLogo);
 
         }
@@ -287,7 +287,7 @@ function processDataForSelectedJobPost(returnedData) {
                             rowDiv.appendChild(col);
 
                             var jobLogo = document.createElement("img");
-                            jobLogo.src = jobPost.company.companyLogo;
+                            if(jobPost.company.companyLogo != null) jobLogo.src = jobPost.company.companyLogo;
                             jobLogo.setAttribute('width', '80%');
                             jobLogo.id = "jobLogo";
                             col.appendChild(jobLogo);
@@ -303,6 +303,7 @@ function processDataForSelectedJobPost(returnedData) {
 
                             var hr = document.createElement("hr");
                             jobBodyCol.appendChild(hr);
+
 
                             var jobBodyDetails = document.createElement("div");
                             jobBodyDetails.className = "row";
@@ -345,6 +346,7 @@ function processDataForSelectedJobPost(returnedData) {
                             jobBodySubRowCol.appendChild(salaryDiv);
 
                             /*  experience  */
+
 
                             var bodyColExp = document.createElement("div");
                             bodyColExp.className = "col-sm-3";
@@ -435,52 +437,50 @@ function processDataForSelectedJobPost(returnedData) {
                                 try {
                                     window.location.href = "/jobs/" + jobPostBreak + "/bengaluru/" + jobCompany + "/" + jobPost.jobPostId;
                                 } catch (exception) {
-                                    console.log("exception occured!!" + exception);
+                                    console.log("exception occured!!" + exception.stack);
                                 }
                             }
                         }
                     });
                 } catch (exception) {
-                    console.log("exception occured!!" + exception);
+                    console.log("exception occured!!" + exception.stack);
                 }
              }
         } else{
-            var parent = $("#hotJobs");
-            var hotJobItem = document.createElement("div");
-            hotJobItem.id = "hotJobItem";
-            parent.append(hotJobItem);
+                var parent = $("#hotJobs");
+                var hotJobItem = document.createElement("div");
+                hotJobItem.id = "hotJobItem";
+                parent.append(hotJobItem);
 
-            var centreTag = document.createElement("center");
-            hotJobItem.appendChild(centreTag);
+                var centreTag = document.createElement("center");
+                hotJobItem.appendChild(centreTag);
 
-            var rowDiv = document.createElement("div");
-            rowDiv.className = "row";
-            centreTag.appendChild(rowDiv);
+                var rowDiv = document.createElement("div");
+                rowDiv.className = "row";
+                centreTag.appendChild(rowDiv);
 
-            var col = document.createElement("div");
-            col.className = "col-sm-12";
-            rowDiv.appendChild(col);
+                var col = document.createElement("div");
+                col.className = "col-sm-12";
+                rowDiv.appendChild(col);
 
-            var jobImage = document.createElement("div");
-            jobImage.id = "jobImage";
-            col.appendChild(jobImage);
+                var jobImage = document.createElement("div");
+                jobImage.id = "jobImage";
+                col.appendChild(jobImage);
 
+                var jobImageSrc = document.createElement("img");
+                jobImageSrc.id = "jobImageSrc";
+                jobImage.appendChild(jobImageSrc);
+                $("#jobImageSrc").attr('src', '/assets/img/empty-search.svg');
 
-            var jobImageSrc = document.createElement("img");
-            jobImageSrc.id="jobImageSrc";
-            jobImage.appendChild(jobImageSrc);
-            $("#jobImageSrc").attr('src','/assets/img/empty-search.svg');
+                var jobMsgLine1 = document.createElement("div");
+                jobMsgLine1.id = "jobMsgLine1";
+                col.appendChild(jobMsgLine1);
+                $("#jobMsgLine1").html("Oops!! No relevant jobs found at this movement");
 
-
-            var jobMsgLine1 = document.createElement("div");
-            jobMsgLine1.id = "jobMsgLine1";
-            col.appendChild(jobMsgLine1);
-            $("#jobMsgLine1").html("Oops!! No relevant jobs found at this movement");
-
-            var jobMsgLine2 = document.createElement("div");
-            jobMsgLine2.id = "jobMsgLine2";
-            col.appendChild(jobMsgLine2);
-            $("#jobMsgLine2").html("Register yourself to get updates when new jobs are posted");
+                var jobMsgLine2 = document.createElement("div");
+                jobMsgLine2.id = "jobMsgLine2";
+                col.appendChild(jobMsgLine2);
+                $("#jobMsgLine2").html("Register yourself to get updates when new jobs are posted");
     }
 }
 
@@ -527,7 +527,7 @@ function addLead() {
                 success: processCheckLeadStatus
             });
         } catch (exception) {
-            console.log("exception occured!!" + exception);
+            console.log("exception occured!!" + exception.stack);
         }
     }
 }

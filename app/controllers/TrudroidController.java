@@ -1433,7 +1433,6 @@ public class TrudroidController {
         LatLngOrPlaceIdRequest latLngOrPlaceIdRequest= null;
         try {
             String requestString = request().body().asText();
-            Logger.info("got : "+requestString);
             latLngOrPlaceIdRequest = LatLngOrPlaceIdRequest.parseFrom(Base64.decodeBase64(requestString));
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();

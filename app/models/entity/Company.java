@@ -87,6 +87,9 @@ public class Company extends Model {
     @OneToMany(mappedBy = "recruiterProfile", cascade = CascadeType.ALL)
     private RecruiterProfile recruiterProfile;
 
+    @Column(name = "Source", columnDefinition = "int null")
+    private Integer source; // internal data
+
     public static Finder<String, Company> find = new Finder(Company.class);
 
     public Company() {
@@ -228,5 +231,13 @@ public class Company extends Model {
 
     public void setCompStatus(CompanyStatus compStatus) {
         this.compStatus = compStatus;
+    }
+
+    public Integer getSource() {
+        return source;
+    }
+
+    public void setSource(Integer source) {
+        this.source = source;
     }
 }

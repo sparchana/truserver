@@ -142,6 +142,7 @@ function processDataCheckCompanyLogo(returnedData) {
 
     returnedData.forEach(function (company) {
         if(count >= start && count < (start+3)){
+            console.log(company);
             var logoDiv = document.createElement("div");
             logoDiv.className = "col-sm-4";
             rowDiv.appendChild(logoDiv);
@@ -150,7 +151,9 @@ function processDataCheckCompanyLogo(returnedData) {
             companyLogo.className = "img-responsive";
             companyLogo.id = "companyLogoSlider";
             companyLogo.setAttribute('alt', "Companies Hiring");
-            companyLogo.src = company.companyLogo;
+            if(company.companyLogo != null){
+                companyLogo.src = company.companyLogo;
+            }
             logoDiv.appendChild(companyLogo);
 
         }
@@ -188,7 +191,9 @@ function setCompanyLogos(returnedData, start){
             companyLogo.className = "img-responsive";
             companyLogo.id = "companyLogoSlider";
             companyLogo.setAttribute('alt', "Companies Hiring");
-            companyLogo.src = company.companyLogo;
+            if(company.companyLogo != null){
+                companyLogo.src = company.companyLogo;
+            }
             logoDiv.appendChild(companyLogo);
 
         }
