@@ -46,10 +46,12 @@ public class MatchingEngineService {
         }
         Query<JobPost> query = JobPost.find.query();
 
+/*
         query = query
                 .where()
                 .eq("jobPostIsHot", IS_HOT)
                 .query();
+*/
 
         Logger.info("JobPostIdList Size: "+ jobRoleIds.size());
         if(jobRoleIds != null && !jobRoleIds.isEmpty() ) {

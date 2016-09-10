@@ -89,11 +89,13 @@ public class JobPostService {
         }
 
         Query<JobPost> query = JobPost.find.query();
+/*
 
         query = query
                 .where()
                 .eq("jobPostIsHot", IS_HOT)
                 .query();
+*/
 
         if(jobRoleIds != null && !jobRoleIds.isEmpty() ) {
             query = query.select("*").fetch("jobRole")
