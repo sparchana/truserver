@@ -3,6 +3,9 @@
  */
 
 function validateMobile(mobile) {
+    if(mobile == undefined){
+        return 1;
+    }
     var validMobile = /^[7-9]{1}[0-9]{9}$/i;
     if (mobile.length > 0 && validMobile.test(mobile) === false) {
         return 0; // format is wrong
