@@ -33,6 +33,6 @@ $(function() {
             $("#registerBtnSubmit").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Please Wait");
             document.getElementById("registerBtnSubmit").disabled = true;
         }
-        alert(statusCheck);
+
     }); // end of submit
 }); // end of function

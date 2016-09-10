@@ -95,6 +95,13 @@ public class SmsUtil {
         sendSms(mobile, msg);
     }
 
+    public static void sendWelcomeSmsToPartnerFromWebsite(String name, String mobile)
+    {
+        String msg = "Hi " + name + ", Welcome to Trujobs.in! "
+                + "You are a partner!";
+        sendSms(mobile, msg);
+    }
+
     public static void sendDuplicateLeadSmsToDevTeam(String leadMobile)
     {
         // Idea is to keep getting irritated by receiving msg until issue is resolved :D

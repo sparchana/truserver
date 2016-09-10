@@ -3,6 +3,7 @@ package models.entity;
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import models.util.Util;
+import play.Logger;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -45,7 +46,7 @@ public class PartnerAuth extends Model {
     @Column(name = "auth_update_timestamp", columnDefinition = "timestamp")
     private Timestamp authUpdateTimestamp;
 
-    public static Model.Finder<String, Auth> find = new Model.Finder(Auth.class);
+    public static Model.Finder<String, PartnerAuth> find = new Model.Finder(PartnerAuth.class);
 
     public PartnerAuth() {
         this.authCreateTimestamp = new Timestamp(System.currentTimeMillis());
@@ -53,6 +54,18 @@ public class PartnerAuth extends Model {
         this.authSessionId = UUID.randomUUID().toString();
         this.passwordSalt = Util.randomInt();
     }
+
+    public static void savePassword(PartnerAuth auth) {
+        auth.save();
+        Logger.info("Password Saved!");
+
+    }
+
+    public static void updatePassword(PartnerAuth auth) {
+        Logger.info("inside Auth Update method" );
+        auth.update();
+    }
+
 
     public long getPartnerAuthId() {
         return partnerAuthId;

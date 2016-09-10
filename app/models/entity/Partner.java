@@ -2,6 +2,10 @@ package models.entity;
 
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import models.entity.Static.CandidateProfileStatus;
+import models.entity.Static.PartnerProfileStatus;
+import play.Logger;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -40,6 +44,15 @@ public class Partner extends Model {
     @Column(name = "partner_create_timestamp", columnDefinition = "timestamp not null default current_timestamp")
     private Timestamp partnerCreateTimestamp;
 
+    @JsonManagedReference
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private Lead lead;
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonManagedReference
+    @JoinColumn(name = "partner_status_id", referencedColumnName = "profile_status_id")
+    private PartnerProfileStatus partnerprofilestatus;
+
     @UpdatedTimestamp
     @Column(name = "partner_update_timestamp", columnDefinition = "timestamp")
     private Timestamp partnerUpdateTimestamp;
@@ -49,6 +62,32 @@ public class Partner extends Model {
     public Partner() {
         this.partnerUUId = UUID.randomUUID().toString();
         this.partnerCreateTimestamp = new Timestamp(System.currentTimeMillis());
+    }
+
+    public void registerPartner() {
+        Logger.info("inside registerPartner(), Partner registered/saved" );
+        this.save();
+    }
+    public void partnerUpdate() {
+        Logger.info("inside partnerUpdate(), partner updated" );
+        this.partnerUpdateTimestamp = new Timestamp(System.currentTimeMillis());
+        this.update();
+    }
+
+    public Lead getLead() {
+        return lead;
+    }
+
+    public void setLead(Lead lead) {
+        this.lead = lead;
+    }
+
+    public PartnerProfileStatus getPartnerprofilestatus() {
+        return partnerprofilestatus;
+    }
+
+    public void setPartnerprofilestatus(PartnerProfileStatus partnerprofilestatus) {
+        this.partnerprofilestatus = partnerprofilestatus;
     }
 
     public long getPartnerId() {
