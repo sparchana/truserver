@@ -131,6 +131,23 @@ body{
     text-align: center;
 }
 
+#sectionBody{
+    background: #ffffff;
+    font-weight: bold;
+    color: #402005;
+    padding: 4% 4% 4% 4%;
+    text-align: center;
+}
+
+#partner_thanks{
+    width: 70%;
+}
+
+#headerMsg{
+    font-size: 24px;
+    margin-top: 100px;
+}
+
 .leadBox {
     text-align: center;
     position: relative;
@@ -258,11 +275,18 @@ a:hover{
         margin-left: 8%;
         margin-top: -14%;
     }
+    #headerMsg{
+        margin-top: 0;
+    }
+
     #login_modal{
         margin-left: 0;
         margin-right: 0;
     }
 
+    #partner_thanks{
+        width: 50%;
+    }
 
     .modal-content {
         margin-top: 16%;
