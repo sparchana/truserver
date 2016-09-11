@@ -16,20 +16,36 @@ import static play.mvc.Controller.session;
  * Created by batcoder1 on 5/5/16.
  */
 public class LeadService {
+    public enum LeadType {
+        UNKNOWN,
+        CANDIDATE,
+        RECRUITER,
+        PARTNER;
 
-    public static Lead createOrUpdateConvertedLead(String leadName, String leadMobile, int leadSourceId, InteractionService.InteractionChannelType channelType){
+        public String toString() {
+            return name().charAt(0) + name().substring(1).toLowerCase();
+        }
+    }
+
+    public static Lead createOrUpdateConvertedLead(String leadName, String leadMobile, int leadSourceId, InteractionService.InteractionChannelType channelType, LeadType leadType){
         Lead existingLead = isLeadExists(leadMobile);
+        int leadTypeVal = 0;
+        if(leadType == LeadType.CANDIDATE){
+            leadTypeVal = ServerConstants.TYPE_CANDIDATE;
+        } else if(leadType == LeadType.PARTNER){
+            leadTypeVal = ServerConstants.TYPE_PARTNER;
+        }
         if(existingLead == null){
             int leadChannel = getLeadChannel(channelType);
             Lead lead = new Lead(
                     leadName,
                     leadMobile,
                     leadChannel,
-                    ServerConstants.TYPE_CANDIDATE,
+                    leadTypeVal,
                     leadSourceId
             );
             lead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
-            lead.setLeadType(ServerConstants.TYPE_CANDIDATE);
+            lead.setLeadType(leadTypeVal);
             LeadService.createLead(lead, channelType);
             Logger.info("New Lead Created Successfully");
             return lead;
@@ -37,7 +53,7 @@ public class LeadService {
         else {
             //TODO: No leadUpdateTimeStamp available though lead is updatable
             existingLead.setLeadStatus(ServerConstants.LEAD_STATUS_WON);
-            existingLead.setLeadType(ServerConstants.TYPE_CANDIDATE);
+            existingLead.setLeadType(leadTypeVal);
             existingLead.setLeadSource(getLeadSourceFromLeadSourceId(leadSourceId));
             if(existingLead.getLeadName().trim().isEmpty()){
                 existingLead.setLeadName(leadName);

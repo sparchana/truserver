@@ -24,33 +24,12 @@ function processDataPostReset(returnedData) {
     if(returnedData.status == 1) {
         localStorage.setItem("mobile", "+91" + candidateMobile);
         localStorage.setItem("name", returnedData.candidateFirstName);
-        localStorage.setItem("lastName", returnedData.candidateLastName);
-        localStorage.setItem("assessed", returnedData.isAssessed);
-        localStorage.setItem("minProfile", returnedData.minProfile);
-        localStorage.setItem("isCandidate", "1");
-
-        if(applyJobFlag == 1){
-            $("#myLoginModal").modal("hide");
-            applyJob(applyJobId, prefLocation);
-            applyJobFlag = 0;
-            applyJobId = 0;
-            $("#customSubMsg").html("Logging in ...");
-            $('#customSubMsg').modal({backdrop: 'static', keyboard: false});
-            setTimeout(function(){
-                window.location = "/dashboard/appliedJobs";
-            }, 3000);
-        } else{
-            window.location = "/dashboard";
-        }
-    }
-
-    else if(returnedData.status == 2){
+        window.location = "/partner/home";
+    } else if(returnedData.status == 2){
         document.getElementById("resetNewPasswordBtn").disabled = false;
         $('#incorrectMsg').show();
         $('#errorMsg').hide();
-    }
-
-    else {
+    } else {
         document.getElementById("resetNewPasswordBtn").disabled = false;
         $('#incorrectMsg').hide();
         $('#errorMsg').show();
@@ -78,7 +57,7 @@ $(function() {
                 };
                 $.ajax({
                     type: "POST",
-                    url: "/findUserAndSendOtp",
+                    url: "/findPartnerAndSendOtp",
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(s),
                     success: processDataResetCheckUser
@@ -91,7 +70,7 @@ $(function() {
 
     $("#form_password_reset_otp").submit(function(eventObj) {
         eventObj.preventDefault();
-        var userOtp = $('#candidateForgotOtp').val();
+        var userOtp = $('#partnerForgotOtp').val();
         if(userOtp == returnedOtp){
             $('#form_password_reset_otp').hide();
             $('#form_password_reset_new').show();
@@ -104,7 +83,7 @@ $(function() {
 
     $("#form_password_reset_new").submit(function(eventObj) {
         eventObj.preventDefault();
-        var userPwd = $('#candidateNewPassword').val();
+        var userPwd = $('#partnerNewPassword').val();
         var passwordCheck = validatePassword(userPwd);
         if(passwordCheck == 0){
             alert("Please set min 6 chars for password");
