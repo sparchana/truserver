@@ -122,7 +122,6 @@ $(function() {
         if(statusCheck == 1){
             candidateMobile = phone;
             $("#registerBtnSubmit").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Please Wait");
-            $("#registerBtnSubmit").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Please Wait");
             document.getElementById("registerBtnSubmit").disabled = true;
 
             var d = {

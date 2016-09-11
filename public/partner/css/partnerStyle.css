@@ -78,6 +78,13 @@ body{
     transition:         background-color 0.2s;
 }
 
+.materialDot{
+    height: 6px;
+    width: 6px;
+    border-radius: 100%;
+    background: #2980b9;
+}
+
 .form-control {
     display: block;
     width: 100%;
@@ -108,16 +115,16 @@ body{
     text-align: center;
 }
 
-#sectionPartnerHotItWorks{
-    background: #fdfdc9;
+#sectionPartnerHowItWorks{
+    background: rgba(253, 248, 216, 0.76);
     font-weight: bold;
     color: #402005;
     padding: 2% 4% 2% 4%;
     text-align: center;
-    margin-top: -4%;
+    margin-top: -7%;
 }
 #sectionPartnerEligibility{
-    background: #d4e0fd;
+    background: #ffffff;
     font-weight: bold;
     color: #402005;
     padding: 4% 4% 4% 4%;
@@ -127,14 +134,14 @@ body{
 .leadBox {
     text-align: center;
     position: relative;
-    width: 320px;
+    width: 280px;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.15);
     border-radius: 2px;
     color: #0B4063;
     background: #ffffff;
     padding: 4px;
     margin-left: 75%;
-    margin-top: -6%;
+    margin-top: -9%;
 }
 
 #registerBtnSubmit{
@@ -194,7 +201,6 @@ body{
 }
 
 .modal-content {
-    padding: 4%;
     color: #000000;
 }
 
@@ -202,6 +208,48 @@ body{
     margin-left: 12%;
     margin-right: 12%;
 }
+
+.sectionAllJoRoles{
+    text-decoration: none;
+    background: #fbfbfb;
+    padding-left: 4%;
+    padding-right: 4%;
+    text-align: center;
+}
+
+a:hover, a:active{
+    text-decoration: none;
+}
+
+a:hover{
+    cursor: hand;
+}
+
+#jobRole{
+    border-right: 1px solid #f4eef2;
+    border-bottom: 1px solid #f4eef2;
+}
+
+#jobRoleNoBorder:hover, #jobRoleRight:hover, #jobRoleBottom:hover, #jobRole:hover {
+    background: #faf4f2;
+    color: #003557;
+    cursor: pointer;
+
+    /* for slow hove effect*/
+
+    -webkit-transition: background 3s;
+    -moz-transition:    background 3.5s;
+    -ms-transition:     background 3.5s;
+    -o-transition:      background 3.5s;
+    transition:         background 3.5s;
+
+    -webkit-transition: color 0.2s;
+    -moz-transition:    color 0.2s;
+    -ms-transition:     color 0.2s;
+    -o-transition:      color 0.2s;
+    transition:         color 0.2s;
+}
+
 
 @media screen and (max-width: 768px) {
     .leadBox {
@@ -228,7 +276,7 @@ body{
         padding-bottom: 18%;
     }
 
-    #sectionPartnerHotItWorks{
+    #sectionPartnerHowItWorks{
         font-weight: bold;
         color: #402005;
         padding: 2% 4% 2% 4%;
@@ -242,5 +290,9 @@ body{
         padding: 2% 4% 2% 4%;
         text-align: center;
         margin-top: 4%;
+    }
+
+    .hov{
+        width: 40%;
     }
 }
