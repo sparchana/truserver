@@ -15,9 +15,27 @@
 
     <div class="collapse navbar-collapse" id="navigationbar">
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="#"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">TRUJOBS HOME</font></a></li>
-        <li><a href="#" onclick="openPartnerLogin()"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">LOG IN/SIGN UP</font></a></li>
+        <li><a href="#"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">DASHBOARD</font></a></li>
+        <li><a href="#" onclick="logoutUser()"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">LOGOUT</font></a></li>
       </ul>
     </div>
   </div>
 </nav>
+
+<script>
+  function logoutUser() {
+    localStorage.clear();
+    window.location = "/partner";
+    try {
+      $.ajax({
+        type: "GET",
+        url: "/logoutUser",
+        data: false,
+        contentType: false,
+        processData: false,
+      });
+    } catch (exception) {
+      console.log("exception occured!!" + exception);
+    }
+  }
+</script>

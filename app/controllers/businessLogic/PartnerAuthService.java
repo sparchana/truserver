@@ -55,13 +55,11 @@ public class PartnerAuthService {
                 /* adding session details */
                 addSession(existingAuth, existingPartner);
 
-                partnerSignUpResponse.setStatus(partnerSignUpResponse.STATUS_SUCCESS);
+                partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_SUCCESS);
                 partnerSignUpResponse.setPartnerMobile(existingPartner.getPartnerMobile());
-            }
-
-            else{
+            } else {
                 PartnerAuth auth = new PartnerAuth();
-                auth.setPartnerAuthId(existingAuth.getPartnerId());
+                auth.setPartnerId(existingPartner.getPartnerId());
                 setNewPassword(auth,password);
                 auth.setPartnerAuthStatus(ServerConstants.PARTNER_STATUS_VERIFIED);
                 PartnerAuth.savePassword(auth);
@@ -116,6 +114,6 @@ public class PartnerAuthService {
         session().put("partnerMobile", String.valueOf(partner.getPartnerMobile()));
         session().put("leadId", String.valueOf(partner.getLead().getLeadId()));
         session().put("sessionExpiry", String.valueOf(existingAuth.getAuthSessionIdExpiryMillis()));
-        Logger.info("set-sessionId"+ session().get("partnerMobile"));
+        Logger.info("set-sessionId"+ session().get("sessionId"));
     }
 }

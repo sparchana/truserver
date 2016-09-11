@@ -1,3 +1,101 @@
+@font-face {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 300;
+    src: local('Lato Light'), local('Lato-Light'), url(https://fonts.gstatic.com/s/lato/v11/dPJ5r9gl3kK6ijoeP1IRsvY6323mHUZFJMgTvxaG2iE.woff2) format('woff2');
+    unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+}
+/*#latin*/
+@font-face {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 300;
+    src: local('Lato Light'), local('Lato-Light'), url(https://fonts.gstatic.com/s/lato/v11/EsvMC5un3kjyUhB9ZEPPwg.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+
+::-webkit-scrollbar
+{
+    width: 6px;  /* for vertical scrollbars */
+    height: 6px; /* for horizontal scrollbars */
+}
+
+::-webkit-scrollbar-track
+{
+    background: rgba(255, 255, 255, 1);
+}
+
+::-webkit-scrollbar-thumb
+{
+    background: rgb(84, 85, 99);
+}
+
+::-webkit-input-placeholder { /* WebKit browsers */
+    font-size: 14px;
+    color: #999;
+    font-weight: 300;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    font-size: 14px;
+    color: #999;
+    font-weight: 300;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    font-size: 14px;
+    color: #999;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+    font-size: 14px;
+    color: #999;
+    font-weight: 300;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+body{
+    font-family: Lato;
+}
+.nav > li > a:hover, .nav > li > a:focus{
+    background-color: #003c83;
+    -webkit-transition: background-color 0.2s;
+    -moz-transition:    background-color 0.2s;
+    -ms-transition:     background-color 0.2s;
+    -o-transition:      background-color 0.2s;
+    transition:         background-color 0.2s;
+
+}
+.nav > li > a:active{
+    background-color: #286ab6;
+    -webkit-transition: background-color 0.2s;
+    -moz-transition:    background-color 0.2s;
+    -ms-transition:     background-color 0.2s;
+    -o-transition:      background-color 0.2s;
+    transition:         background-color 0.2s;
+}
+
+.form-control {
+    display: block;
+    width: 100%;
+    height: 40px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857143;
+    color: #555;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid rgba(168, 181, 204, 0.93);
+    border-radius: 2px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+    -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
 #sectionHeader{
     background: linear-gradient(
             rgba(24, 26, 45, 0.6),
@@ -43,7 +141,25 @@
     border: none;
     background-color: #0065a4;
     color: white;
+    -webkit-transition: background-color 0.2s;
+    -moz-transition:    background-color 0.2s;
+    -ms-transition:     background-color 0.2s;
+    -o-transition:      background-color 0.2s;
+    transition:         background-color 0.2s;
+
 }
+
+#registerBtnSubmit:hover{
+    border: none;
+    background-color: #004d81;
+    color: white;
+    -webkit-transition: background-color 0.2s;
+    -moz-transition:    background-color 0.2s;
+    -ms-transition:     background-color 0.2s;
+    -o-transition:      background-color 0.2s;
+    transition:         background-color 0.2s;
+}
+
 
 .sectionFiveMain{
     background: #002144;
@@ -77,6 +193,15 @@
     box-shadow: none;
 }
 
+.modal-content {
+    padding: 4%;
+    color: #000000;
+}
+
+#login_modal{
+    margin-left: 12%;
+    margin-right: 12%;
+}
 
 @media screen and (max-width: 768px) {
     .leadBox {
@@ -84,6 +209,17 @@
         margin-right: 8%;
         margin-left: 8%;
         margin-top: -14%;
+    }
+    #login_modal{
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+
+    .modal-content {
+        margin-top: 16%;
+        padding: 4% 0 4% 0;
+        color: #000000;
     }
 
     #sectionHeader {
