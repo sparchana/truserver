@@ -2,6 +2,7 @@ package models.entity;
 
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
+import controllers.businessLogic.InteractionService;
 import models.util.Util;
 import play.Logger;
 
@@ -122,4 +123,5 @@ public class PartnerAuth extends Model {
     public void setAuthSessionIdExpiryMillis(long authSessionIdExpiryMillis) {
         this.authSessionIdExpiryMillis = authSessionIdExpiryMillis;
     }
+
 }

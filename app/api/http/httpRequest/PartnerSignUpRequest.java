@@ -11,6 +11,9 @@ public class PartnerSignUpRequest {
     protected String partnerName;
     protected String partnerMobile;
 
+    protected String partnerPassword;
+    protected String partnerAuthMobile;
+
     public String getPartnerName() {
         return partnerName;
     }
@@ -25,5 +28,21 @@ public class PartnerSignUpRequest {
 
     public void setPartnerMobile(String partnerMobile) {
         this.partnerMobile = FormValidator.convertToIndianMobileFormat(partnerMobile);
+    }
+
+    public String getpartnerPassword() {
+        return partnerPassword;
+    }
+
+    public void setpartnerPassword(String partnerPassword) {
+        this.partnerPassword = partnerPassword;
+    }
+
+    public String getpartnerAuthMobile() {
+        return FormValidator.convertToIndianMobileFormat(partnerAuthMobile);
+    }
+
+    public void setpartnerAuthMobile(String partnerAuthMobile) {
+        this.partnerAuthMobile = FormValidator.convertToIndianMobileFormat(partnerAuthMobile);
     }
 }

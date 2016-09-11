@@ -36,6 +36,7 @@ public class ServerConstants {
     public static final String INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB = "Candidate applied to a job: ";
     public static final String INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB = "Candidate tried to apply to a job: ";
     public static final String INTERACTION_RESULT_CANDIDATE_TRIED_TO_RESET_PASSWORD = "Candidate tried to reset password";
+    public static final String INTERACTION_RESULT_PARTNER_TRIED_TO_RESET_PASSWORD = "Partner tried to reset password";
     public static final String INTERACTION_RESULT_CANDIDATE_RESET_PASSWORD_SUCCESS = "Candidate reset password done";
     public static final String INTERACTION_RESULT_PARTNER_RESET_PASSWORD_SUCCESS = "Partner reset password done";
     public static final String INTERACTION_CREATED_SELF = "Self";
@@ -55,6 +56,7 @@ public class ServerConstants {
     public static final int TYPE_POTENTIAL_RECRUITER = 3;
     public static final int TYPE_CANDIDATE = 4;
     public static final int TYPE_RECRUITER = 5;
+    public static final int TYPE_PARTNER = 6;
 
     public static final int LEAD_CHANNEL_WEBSITE= 0;
     public static final int LEAD_CHANNEL_KNOWLARITY= 1;
@@ -120,6 +122,7 @@ public class ServerConstants {
 
     public static final int LEAD_SOURCE_UNKNOWN = 1; // 1 is unknown
 
+    public static final int LEAD_SOURCE_WEBSITE = 2;
 
     public static final String LEAD_INTEREST_UNKNOWN = "Unknown";
 

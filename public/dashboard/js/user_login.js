@@ -4,22 +4,28 @@
 
 function checkUserLogin(){
     var userMobile = localStorage.getItem("mobile");
+    var isCandidate = localStorage.getItem("isCandidate");
     var userName = localStorage.getItem("name");
     var userLastName = localStorage.getItem("lastName");
+    console.log(isCandidate);
     if(userMobile != null){
-        try{
-            if(localStorage.getItem("gender") == 0){
-                $("#userImg").attr('src', '/assets/dashboard/img/userMale.svg');
-            } else{
-                $("#userImg").attr('src', '/assets/dashboard/img/userFemale.svg');
+        if(isCandidate == null){
+            logoutUser();
+        } else{
+            try{
+                if(localStorage.getItem("gender") == 0){
+                    $("#userImg").attr('src', '/assets/dashboard/img/userMale.svg');
+                } else{
+                    $("#userImg").attr('src', '/assets/dashboard/img/userFemale.svg');
+                }
+                if(userLastName == "null" || userLastName == null){
+                    document.getElementById("userName").innerHTML = userName;
+                } else{
+                    document.getElementById("userName").innerHTML = userName + " " + userLastName;
+                }
+                document.getElementById("userMobile").innerHTML = userMobile;
+            } catch(err){
             }
-            if(userLastName == "null" || userLastName == null){
-                document.getElementById("userName").innerHTML = userName;
-            } else{
-                document.getElementById("userName").innerHTML = userName + " " + userLastName;
-            }
-            document.getElementById("userMobile").innerHTML = userMobile;
-        } catch(err){
         }
     }
     else{

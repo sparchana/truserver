@@ -4,7 +4,6 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpResponse.*;
-import com.amazonaws.services.importexport.model.Job;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;

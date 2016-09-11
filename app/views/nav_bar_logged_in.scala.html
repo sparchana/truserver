@@ -33,11 +33,10 @@
     </div>
 </nav>
 
-
 <script>
   function logoutUser() {
     localStorage.clear();
-    window.location = "/";
+    window.location = "/partner";
     try {
       $.ajax({
         type: "GET",
