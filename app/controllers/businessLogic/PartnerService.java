@@ -1,0 +1,205 @@
+package controllers.businessLogic;
+
+import api.ServerConstants;
+import api.http.FormValidator;
+import api.http.httpRequest.PartnerSignUpRequest;
+import api.http.httpResponse.CandidateSignUpResponse;
+import api.http.httpResponse.LoginResponse;
+import api.http.httpResponse.PartnerSignUpResponse;
+import api.http.httpResponse.ResetPasswordResponse;
+import models.entity.*;
+import models.entity.Static.PartnerProfileStatus;
+import models.util.SmsUtil;
+import models.util.Util;
+import play.Logger;
+
+import javax.persistence.NonUniqueResultException;
+import java.util.List;
+import java.util.UUID;
+
+import static controllers.businessLogic.InteractionService.createInteractionForSignUpPartner;
+import static models.util.Util.generateOtp;
+import static play.mvc.Controller.session;
+
+/**
+ * Created by adarsh on 9/9/16.
+ */
+public class PartnerService {
+    private static PartnerSignUpResponse createNewPartner(Partner partner, Lead lead) {
+
+        PartnerSignUpResponse partnerSignUpResponse = new PartnerSignUpResponse();
+        PartnerProfileStatus partnerProfileStatus = PartnerProfileStatus.find.where().eq("profile_status_id", ServerConstants.PARTNER_STATE_ACTIVE).findUnique();
+        if(partnerProfileStatus != null){
+            partner.setPartnerprofilestatus(partnerProfileStatus);
+            partner.setLead(lead);
+            partner.registerPartner();
+            partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_SUCCESS);
+            Logger.info("Partner successfully registered " + partner);
+        } else {
+            partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_FAILURE);
+        }
+        return partnerSignUpResponse;
+    }
+
+    public static Partner isPartnerExists(String mobile) {
+        try{
+            Partner existingPartner = Partner.find.where().eq("partner_mobile",
+                    FormValidator.convertToIndianMobileFormat(mobile)).findUnique();
+            if(existingPartner != null) {
+                return existingPartner;
+            }
+        } catch (NonUniqueResultException nu){
+            // get the list of candidate and sort by candidateId
+            // return the lowest primary key candidate Object
+            // register the event with proper info
+
+            List<Partner> existingPartnerList = Partner.find.where().eq("partner_mobile", mobile).findList();
+            if(!existingPartnerList.isEmpty()){
+                existingPartnerList.sort((l1, l2) -> l1.getPartnerId() <= l2.getPartnerId() ? 1 : 0);
+                Logger.info("Duplicate partner Encountered with mobile no: "+ mobile + "- Returned PartnerId = "
+                        + existingPartnerList.get(0).getPartnerId() + " UUID-:"+existingPartnerList.get(0).getPartnerUUId());
+                SmsUtil.sendDuplicatePartnerSmsToDevTeam(mobile);
+                return existingPartnerList.get(0);
+            }
+        }
+        return null;
+    }
+
+    public static PartnerSignUpResponse signUpPartner(PartnerSignUpRequest partnerSignUpRequest,
+                                                        InteractionService.InteractionChannelType channelType,
+                                                        int leadSourceId) {
+
+        PartnerSignUpResponse partnerSignUpResponse = new PartnerSignUpResponse();
+        String result = "";
+        String objectAUUId = "";
+        Logger.info("Checking for mobile number: " + partnerSignUpRequest.getPartnerMobile());
+        Partner partner = isPartnerExists(partnerSignUpRequest.getPartnerMobile());
+        String leadName = partnerSignUpRequest.getPartnerName();
+        Lead lead = LeadService.createOrUpdateConvertedLead(leadName, partnerSignUpRequest.getPartnerMobile(), leadSourceId, channelType, LeadService.LeadType.PARTNER);
+        try {
+            if(partner == null) {
+                partner = new Partner();
+                Logger.info("creating new partner");
+                if(partnerSignUpRequest.getPartnerName()!= null){
+                    partner.setPartnerFirstName(partnerSignUpRequest.getPartnerName());
+                }
+                if(partnerSignUpRequest.getPartnerMobile()!= null){
+                    partner.setPartnerMobile(partnerSignUpRequest.getPartnerMobile());
+                }
+
+                partnerSignUpResponse = createNewPartner(partner, lead);
+                if(!(channelType == InteractionService.InteractionChannelType.SUPPORT)){
+                    // triggers when partner is self created
+                    triggerOtp(partner, partnerSignUpResponse);
+                    result = ServerConstants.INTERACTION_RESULT_NEW_PARTNER;
+                    objectAUUId = partner.getPartnerUUId();
+                }
+            } else {
+                PartnerAuth auth = PartnerAuthService.isAuthExists(partner.getPartnerId());
+                if(auth == null ) {
+                    Logger.info("auth doesn't exists for this partner");
+                    partner.setPartnerFirstName(partnerSignUpRequest.getPartnerName());
+                    if(!(channelType == InteractionService.InteractionChannelType.SUPPORT)){
+                        triggerOtp(partner, partnerSignUpResponse);
+                        result = ServerConstants.INTERACTION_RESULT_EXISTING_PARTNER_VERIFICATION;
+                        objectAUUId = partner.getPartnerUUId();
+                        partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_SUCCESS);
+
+                    }
+                } else{
+                    result = ServerConstants.INTERACTION_RESULT_EXISTING_PARTNER_SIGNUP;
+                    partnerSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
+                }
+                partner.partnerUpdate();
+            }
+
+            //creating interaction
+            createInteractionForSignUpPartner(objectAUUId, result, channelType);
+
+        } catch (NullPointerException n){
+            n.printStackTrace();
+            partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_FAILURE);
+        }
+        return partnerSignUpResponse;
+    }
+
+    private static void triggerOtp(Partner partner, PartnerSignUpResponse partnerSignUpResponse) {
+        int randomPIN = generateOtp();
+        SmsUtil.sendOTPSms(randomPIN, partner.getPartnerMobile());
+
+        partnerSignUpResponse.setPartnerMobile(partner.getPartnerMobile());
+        partnerSignUpResponse.setOtp(randomPIN);
+        partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_SUCCESS);
+    }
+
+    public static LoginResponse login(String loginMobile, String loginPassword, InteractionService.InteractionChannelType channelType){
+        LoginResponse loginResponse = new LoginResponse();
+        Logger.info(" login mobile: " + loginMobile);
+        Partner existingPartner = isPartnerExists(FormValidator.convertToIndianMobileFormat(loginMobile));
+        if(existingPartner == null){
+            loginResponse.setStatus(LoginResponse.STATUS_NO_USER);
+            Logger.info("Partner Does not Exists");
+        } else {
+            long partnerId = existingPartner.getPartnerId();
+            PartnerAuth existingAuth = PartnerAuth.find.where().eq("partner_id", partnerId).findUnique();
+            if(existingAuth != null){
+                if ((existingAuth.getPasswordMd5().equals(Util.md5(loginPassword + existingAuth.getPasswordSalt())))) {
+                    Logger.info(existingPartner.getPartnerFirstName() + " " + existingPartner.getPartnerprofilestatus().getProfileStatusId());
+                    loginResponse.setCandidateId(existingPartner.getPartnerId());
+                    loginResponse.setCandidateFirstName(existingPartner.getPartnerFirstName());
+
+                    loginResponse.setStatus(LoginResponse.STATUS_SUCCESS);
+
+                    existingAuth.setAuthSessionId(UUID.randomUUID().toString());
+                    existingAuth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
+
+                    loginResponse.setAuthSessionId(existingAuth.getAuthSessionId());
+                    loginResponse.setSessionExpiryInMilliSecond(existingAuth.getAuthSessionIdExpiryMillis());
+
+                    /* adding session details */
+                    PartnerAuthService.addSession(existingAuth,existingPartner);
+                    String sessionId = session().get("sessionId");
+                    Logger.info(sessionId + " === ");
+                    existingAuth.update();
+                    InteractionService.createInteractionForLoginCandidate(existingPartner.getPartnerUUId(), channelType, InteractionService.InteractionObjectType.PARTNER);
+                    Logger.info("Login Successful");
+                } else {
+                    loginResponse.setStatus(loginResponse.STATUS_WRONG_PASSWORD);
+                    Logger.info("Incorrect Password");
+                }
+            } else {
+                loginResponse.setStatus(loginResponse.STATUS_NO_USER);
+                Logger.info("No User");
+            }
+        }
+        return loginResponse;
+    }
+
+    public static ResetPasswordResponse findPartnerAndSendOtp(String partnerMobile, InteractionService.InteractionChannelType channelType){
+        ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
+        Partner existingPartner = isPartnerExists(partnerMobile);
+        if(existingPartner != null){
+            Logger.info("Partner Exists");
+            PartnerAuth existingAuth = PartnerAuth.find.where().eq("partner_id", existingPartner.getPartnerId()).findUnique();
+            if(existingAuth == null){
+                resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
+                Logger.info("reset password not allowed as Auth don't exists");
+            } else {
+                int randomPIN = generateOtp();
+                existingPartner.update();
+                SmsUtil.sendResetPasswordOTPSms(randomPIN, existingPartner.getPartnerMobile());
+
+                String interactionResult = ServerConstants.INTERACTION_RESULT_PARTNER_TRIED_TO_RESET_PASSWORD;
+                String objAUUID = "";
+                objAUUID = existingPartner.getPartnerUUId();
+                InteractionService.createInteractionForPartnerResetPassword(objAUUID, interactionResult, channelType);
+                resetPasswordResponse.setOtp(randomPIN);
+                resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);
+            }
+        } else{
+            resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
+            Logger.info("reset password not allowed as password don't exists");
+        }
+        return resetPasswordResponse;
+    }
+}
