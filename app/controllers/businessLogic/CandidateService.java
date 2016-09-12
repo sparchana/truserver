@@ -44,7 +44,9 @@ public class CandidateService
     private static CandidateSignUpResponse createNewCandidate(Candidate candidate, Lead lead) {
 
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
-        CandidateProfileStatus candidateProfileStatus = CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE).findUnique();
+        CandidateProfileStatus candidateProfileStatus =
+                CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE).findUnique();
+
         if(candidateProfileStatus != null){
             candidate.setCandidateprofilestatus(candidateProfileStatus);
             candidate.setLead(lead);
