@@ -7,8 +7,8 @@ import javax.persistence.*;
 /**
  * Created by adarsh on 12/9/16.
  */
-@Entity(name = "partnertype")
-@Table(name = "partnertype")
+@Entity(name = "partner_type")
+@Table(name = "partner_type")
 public class PartnerType extends Model {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
