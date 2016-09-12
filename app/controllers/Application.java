@@ -43,7 +43,12 @@ public class Application extends Controller {
     public static Result index() {
         String sessionId = session().get("sessionId");
         if(sessionId != null){
-            return redirect("/dashboard");
+            String partnerId = session().get("partnerId");
+            if(partnerId != null){
+                return redirect("/partner/home");
+            } else {
+                return redirect("/dashboard");
+            }
         }
         return ok(views.html.index.render());
     }
@@ -1150,5 +1155,14 @@ public class Application extends Controller {
     public static Result getAllCompanyLogos() {
         List<Company> companyList = Company.find.orderBy("companyName").findList();
         return ok(toJson(companyList));
+    }
+
+    public static Result checkCandidateSession() {
+        String sessionCandidateId = session().get("candidateId");
+        if(sessionCandidateId != null){
+            return ok("1");
+        } else{
+            return ok("0");
+        }
     }
 }

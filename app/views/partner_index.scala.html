@@ -4,17 +4,18 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Partner | Trujobs - Best Jobs for Freshers and Experienced Candidates </title>
+    <title>Partner | Trujobs - Register and find jobs for youe candidates</title>
 
     <meta name="keywords" content="driving jobs, fresher jobs, jobs for freshers, job search sites, job posting, sales jobs, beautician jobs,
         medical transcription jobs, online job search, find jobs, receptionist jobs, admin jobs, office assistant jobs,
         plumbing work, teacher job, online teaching jobs, jobs in schools, teacher vacancy, teacher recruitment, entry level jobs,
         delivery boy jobs,call center jobs, BPO jobs, kpo jobs, job job job, data entry jobs, back office jobs,
         receptionist jobs, beautician jobs, experienced jobs, jobs in Bangalore, cashier jobs, entry level jobs,
-        plumber jobs, electrician jobs, job search, accountant jobs, job vacancy, bangalore vacancy">
+        plumber jobs, electrician jobs, job search, accountant jobs, job vacancy, bangalore vacancy, Partner, NGO, Training Center, Freelance HR, Internet Cafe, Job Consultant,
+        Staffing company">
 
-    <meta name="description" content="Search and apply for jobs online. Register for FREE and find best
-        fresher and experienced jobs.Give a missed call at 8880007799 for best jobs." />
+    <meta name="description" content="Register your candidates and apply for jobs on their behalf.
+        Help your candidates find best fresher and experienced jobs. Earn money when they get hired." />
 
     <meta http-equiv="Cache-control" content="public">
       <!-- Bootstrap Core CSS -->
@@ -24,17 +25,21 @@
     <script type="text/javascript" src="/assets/js/jquery.min_1_12_0.js"></script>
     <script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
     <link rel="icon" type="image/png" href="/assets/img/icon.png">
-    <script>
+    <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
+    <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
+    <script type="text/javascript" src="/assets/js/validation.js"></script>
+
+      <script>
         localStorage.clear();
     </script>
   </head>
   <body>
-@*    <div id="preloader">
+    <div id="preloader">
       <div id="loaderLogo">
         <img id="leaderLogo" src="/assets/new/img/logo-color.gif" alt="TruJobs Logo" height="40px">
       </div>
       <div id="status">&nbsp;</div>
-    </div>*@
+    </div>
 
       <!-- Nav start -->
     <div id="nav_bar_inc"></div>
@@ -47,7 +52,8 @@
     <div id="sectionHeader">
         <div class="row" style="margin-right: 0; margin-left: 0">
             <div class="col-sm-9">
-                <h1 style="letter-spacing: 2px; margin: 10px;"><b><font size="5">Welcome to TruJobs partner portal</font></b></h1>
+                <h1 style="letter-spacing: 2px; margin: 10px;"><b><font size="5">Welcome to TruJobs Partner Zone</font></b></h1>
+                <h1 style="letter-spacing: 2px; margin: 10px;"><b><font size="4">Register. Add Candidates. Earn money</font></b></h1>
             </div>
         </div>
     </div>
@@ -121,7 +127,7 @@
                           </div>
                           <hr>
                           <center>
-                Don't have an account?
+                              Don't have an account?
                               <a style="cursor: pointer;" data-toggle="modal" data-target="#mySignUpModal" onClick="openSignUp()">
                                   <font color="#06436a">&nbsp;Sign Up</font></a>
                           </center>
@@ -208,6 +214,11 @@
 
               <input id="partnerName" placeholder="What is your Name" type="text" maxLength="49" class="form-control input-md">
               <input id="partnerMobile" style="margin-top: 8px" placeholder="What is your mobile no.?" name="partnerMobile" type="text" maxlength="10" class="form-control input-md" >
+              <select id="partnerType" class="selectDropdown" style="width: 100%; height: 34px; margin-top: 8px"></select>
+              <div style="margin-top: 8px">
+                  <input type="text" id="partnerLocality" style="margin-top: 8px">
+              </div>
+
 
               <button type="submit" id="registerBtnSubmit" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
                   <!-- Text input-->
@@ -222,18 +233,56 @@
       </div>
   </div>
 
-    <div id="sectionPartnerHowItWorks">
+  <div id="sectionPartnerEligibility">
+      <div style="margin: 0 0 12px 0;"><font size="5">Who all can partner</font></div>
+      <center><div class="materialDot"></div></center>
+      <div class="container">
+          <div class="row" style="padding:4%;margin: 3% 0 0 0">
+              <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                  <p><img class="hov" src="/assets/partner/img/ngo.svg" width="60px"></p>
+                  <h5>NGO</h5>
+              </div>
+              <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                  <p><img class="hov" src="/assets/partner/img/training.svg" width="60px"></p>
+                  <h5>Training Center</h5>
+              </div>
+              <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                  <p><img class="hov" src="/assets/partner/img/consultant.svg" width="60px"></p>
+                  <h5>Job Consultant</h5>
+              </div>
+          </div>
+      </div>
+
+      <div class="container">
+          <div class="row" style="padding:4%;">
+              <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                  <p><img class="hov" src="/assets/partner/img/staffing.svg" width="60px"></p>
+                  <h5>Staffing Company</h5>
+              </div>
+              <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                  <p><img class="hov" src="/assets/partner/img/internet_cafe.svg" width="60px"></p>
+                  <h5>Internet Cafe</h5>
+              </div>
+              <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                  <p><img class="hov" src="/assets/partner/img/freelance.svg" width="60px"></p>
+                  <h5>Freelance HR</h5>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <div id="sectionPartnerHowItWorks">
         <div style="margin: 10px 0 12px 0;"><font size="5">How it Works</font></div>
         <center><div class="materialDot"></div></center>
         <div class="container">
             <div class="row" style="padding:4%;margin: 3% 0 0 0">
                 <div class="col-sm-3" style="padding-left:4%">
                     <p><img class="hov" src="/assets/partner/img/partner.svg" width="80px"></p>
-                    <h5>Register yourself and partner with TruJobs</h5>
+                    <h5>Register yourself as a partner with TruJobs</h5>
                 </div>
                 <div class="col-sm-3" style="padding-left:4%">
                     <p><img class="hov" src="/assets/partner/img/users.svg" width="80px"></p>
-                    <h5>Register your Candidates</h5>
+                    <h5>Add your candidates and create their profile</h5>
                 </div>
                 <div class="col-sm-3" style="padding-left:4%">
                     <p><img class="hov" src="/assets/partner/img/list.svg" width="80px"></p>
@@ -241,56 +290,17 @@
                 </div>
                 <div class="col-sm-3" style="padding-left:4%">
                     <p><img class="hov" src="/assets/partner/img/money.svg" width="80px"></p>
-                    <h5>Earn money when candidates are hired</h5>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div id="sectionPartnerEligibility">
-        <div style="margin: 10px 0 12px 0;"><font size="5">Who all can partner</font></div>
-        <center><div class="materialDot"></div></center>
-        <div class="container">
-            <div class="row" style="padding:4%;margin: 3% 0 0 0">
-                <div class="col-sm-4 col-xs-4" style="padding-left:4%">
-                    <p><img class="hov" src="/assets/partner/img/ngo.svg" width="60px"></p>
-                    <h5>NGO</h5>
-                </div>
-                <div class="col-sm-4 col-xs-4" style="padding-left:4%">
-                    <p><img class="hov" src="/assets/partner/img/training.svg" width="60px"></p>
-                    <h5>Training Center</h5>
-                </div>
-                <div class="col-sm-4 col-xs-4" style="padding-left:4%">
-                    <p><img class="hov" src="/assets/partner/img/consultant.svg" width="60px"></p>
-                    <h5>Job Consultant</h5>
-                </div>
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="row" style="padding:4%;">
-                <div class="col-sm-4 col-xs-4" style="padding-left:4%">
-                    <p><img class="hov" src="/assets/partner/img/staffing.svg" width="60px"></p>
-                    <h5>Staffing Company</h5>
-                </div>
-                <div class="col-sm-4 col-xs-4" style="padding-left:4%">
-                    <p><img class="hov" src="/assets/partner/img/internet_cafe.svg" width="60px"></p>
-                    <h5>Internet Cafe</h5>
-                </div>
-                <div class="col-sm-4 col-xs-4" style="padding-left:4%">
-                    <p><img class="hov" src="/assets/partner/img/freelance.svg" width="60px"></p>
-                    <h5>Freelance HR</h5>
+                    <h5>Earn money when your candidates are hired</h5>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="sectionAllJoRoles" style="display: table; width: 100%" id="jobs">
-        <div style="margin: 10px 0 12px 0;"><font size="5">All Job Roles</font></div>
+        <div style="margin: 10px 0 12px 0;"><font size="5">Click on Job Roles to View Jobs</font></div>
         <center><div class="materialDot"></div></center>
       <div id="jobRoleGrid" style="width: auto; margin-top: 24px"></div>
     </div>
-
-
 
       <!-- Start Footer-->
     <div id="footer_inc"></div>

@@ -4,7 +4,9 @@ import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Static.CandidateProfileStatus;
+import models.entity.Static.Locality;
 import models.entity.Static.PartnerProfileStatus;
+import models.entity.Static.PartnerType;
 import play.Logger;
 
 import javax.persistence.*;
@@ -44,6 +46,16 @@ public class Partner extends Model {
     @Column(name = "partner_create_timestamp", columnDefinition = "timestamp not null default current_timestamp")
     private Timestamp partnerCreateTimestamp;
 
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonManagedReference
+    @JoinColumn(name = "partner_locality")
+    private Locality locality;
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonManagedReference
+    @JoinColumn(name = "partner_type")
+    private PartnerType partnerType;
+
     @JsonManagedReference
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Lead lead;
@@ -72,6 +84,22 @@ public class Partner extends Model {
         Logger.info("inside partnerUpdate(), partner updated" );
         this.partnerUpdateTimestamp = new Timestamp(System.currentTimeMillis());
         this.update();
+    }
+
+    public PartnerType getPartnerType() {
+        return partnerType;
+    }
+
+    public void setPartnerType(PartnerType partnerType) {
+        this.partnerType = partnerType;
+    }
+
+    public Locality getLocality() {
+        return locality;
+    }
+
+    public void setLocality(Locality locality) {
+        this.locality = locality;
     }
 
     public Lead getLead() {

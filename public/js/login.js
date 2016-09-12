@@ -14,7 +14,6 @@ function processDataLogin(returnedData) {
         localStorage.setItem("lastName", returnedData.candidateLastName);
         localStorage.setItem("assessed", returnedData.isAssessed);
         localStorage.setItem("minProfile", returnedData.minProfile);
-        localStorage.setItem("isCandidate", "1");
 
         if(applyJobFlag == 1){
             $("#myLoginModal").modal("hide");
@@ -77,4 +76,3 @@ $(function() {
         }
     }); // end of submit
 }); // end of function
-

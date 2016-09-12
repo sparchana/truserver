@@ -69,6 +69,11 @@ public class SmsUtil {
         sendSms(mobile, msg);
     }
 
+    public static void sendPartnerOTPSms(int otp, String mobile) {
+        String msg = "Use OTP " + otp + " to partner with TruJobs. Welcome to www.Trujobs.in!";
+        sendSms(mobile, msg);
+    }
+
     public static void sendResetPasswordOTPSms(int otp, String mobile) {
         String msg = "Use OTP " + otp + " to reset your password. Welcome to www.Trujobs.in!";
         sendSms(mobile, msg);
@@ -98,7 +103,7 @@ public class SmsUtil {
     public static void sendWelcomeSmsToPartnerFromWebsite(String name, String mobile)
     {
         String msg = "Hi " + name + ", Welcome to Trujobs.in! "
-                + "You are a partner!";
+                + "You are successfully registered as a partner. Login now to add your candidates and help them find jobs!";
         sendSms(mobile, msg);
     }
 

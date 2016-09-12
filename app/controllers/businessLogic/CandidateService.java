@@ -966,7 +966,7 @@ public class CandidateService
                     /* adding session details */
                     AuthService.addSession(existingAuth,existingCandidate);
                     existingAuth.update();
-                    InteractionService.createInteractionForLoginCandidate(existingCandidate.getCandidateUUId(), channelType, InteractionService.InteractionObjectType.CANDIDATE);
+                    InteractionService.createInteractionForLoginCandidate(existingCandidate.getCandidateUUId(), channelType);
                     Logger.info("Login Successful");
                 }
                 else {
