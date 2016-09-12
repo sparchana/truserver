@@ -43,7 +43,6 @@ function checkPartnerLogin() {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-
 }
 
 function processDataPartnerSession(returnedData) {

@@ -48,7 +48,6 @@ function processDataAddAuth(returnedData) {
         localStorage.setItem("leadId", returnedData.leadId);
         localStorage.setItem("assessed", returnedData.isAssessed);
         localStorage.setItem("minProfile", returnedData.minProfile);
-        localStorage.setItem("isCandidate", "1");
 
         if(applyJobFlag == 1){
             $("#myRegistrationModal").modal("hide");

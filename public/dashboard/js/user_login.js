@@ -1,32 +1,43 @@
 /**
  * Created by batcoder1 on 22/6/16.
  */
+function processDataCandidateSession(returnedData) {
+    console.log(returnedData);
+    if(returnedData == 0){
+        logoutUser();
+    }
+}
 
 function checkUserLogin(){
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/checkCandidateSession",
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataCandidateSession
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
     var userMobile = localStorage.getItem("mobile");
-    var isCandidate = localStorage.getItem("isCandidate");
     var userName = localStorage.getItem("name");
     var userLastName = localStorage.getItem("lastName");
-    console.log(isCandidate);
     if(userMobile != null){
-        if(isCandidate == null){
-            logoutUser();
-        } else{
-            try{
-                if(localStorage.getItem("gender") == 0){
-                    $("#userImg").attr('src', '/assets/dashboard/img/userMale.svg');
-                } else{
-                    $("#userImg").attr('src', '/assets/dashboard/img/userFemale.svg');
-                }
-                if(userLastName == "null" || userLastName == null){
-                    document.getElementById("userName").innerHTML = userName;
-                } else{
-                    document.getElementById("userName").innerHTML = userName + " " + userLastName;
-                }
-                document.getElementById("userMobile").innerHTML = userMobile;
-            } catch(err){
+        try{
+            if(localStorage.getItem("gender") == 0){
+                $("#userImg").attr('src', '/assets/dashboard/img/userMale.svg');
+            } else{
+                $("#userImg").attr('src', '/assets/dashboard/img/userFemale.svg');
             }
-        }
+            if(userLastName == "null" || userLastName == null){
+                document.getElementById("userName").innerHTML = userName;
+            } else{
+                document.getElementById("userName").innerHTML = userName + " " + userLastName;
+            }
+            document.getElementById("userMobile").innerHTML = userMobile;
+        } catch(err){}
     }
     else{
         logoutUser();

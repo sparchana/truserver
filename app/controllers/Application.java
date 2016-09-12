@@ -1156,4 +1156,13 @@ public class Application extends Controller {
         List<Company> companyList = Company.find.orderBy("companyName").findList();
         return ok(toJson(companyList));
     }
+
+    public static Result checkCandidateSession() {
+        String sessionCandidateId = session().get("candidateId");
+        if(sessionCandidateId != null){
+            return ok("1");
+        } else{
+            return ok("0");
+        }
+    }
 }
