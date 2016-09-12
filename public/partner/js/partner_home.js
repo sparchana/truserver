@@ -55,11 +55,11 @@ function processDataPartnerProfile(returnedData) {
     if(returnedData != null){
         //name
         if(returnedData.partnerFirstName != null){
+            $("#partnerNameHeading").html("Hi! " + returnedData.partnerFirstName + "! Welcome to TruJobs");
             if(returnedData.partnerLastName != null){
                 $("#partnerName").html(returnedData.partnerFirstName + " " + returnedData.partnerLastName);
             } else{
                 $("#partnerName").html(returnedData.partnerFirstName);
-                $("#partnerNameHeading").html("Hi! " + returnedData.partnerFirstName + "! Welcome to TruJobs");
             }
         }
         //mobile
