@@ -40,12 +40,6 @@ create table partner_profile_status (
 	constraint pk_partner_profile_status primary key (profile_status_id)
 );
 
-create table city (
-  city_id                       bigint signed not null auto_increment not null,
-  city_name                     varchar(255) null,
-  constraint pk_city primary key (city_id)
-);
-
 create table partner_type (
    partner_type_id               bigint signed auto_increment not null,
    partner_type_name             varchar(100) not null,
@@ -81,7 +75,5 @@ drop table if exists partner;
 drop table if exists partner_auth;
 
 drop table if exists partner_profile_status;
-
-drop table if exists city;
 
 drop table if exists partner_type;

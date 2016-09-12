@@ -8,6 +8,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
 import controllers.security.SecuredUser;
+import models.entity.Candidate;
+import models.entity.Lead;
+import models.entity.Partner;
 import models.entity.Static.PartnerType;
 import play.Logger;
 import play.mvc.Result;
@@ -114,5 +117,23 @@ public class PartnerController {
     public static Result getAllPartnerType() {
         List<PartnerType> partnerTypeList = PartnerType.find.all();
         return ok(toJson(partnerTypeList));
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result getPartnerProfileInfo() {
+        Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+        if(partner != null) {
+            return ok(toJson(partner));
+        }
+        return ok("0");
+    }
+
+    public static Result checkPartnerSession() {
+        String sessionPartnerId = session().get("partnerId");
+        if(sessionPartnerId != null){
+            return ok("1");
+        } else{
+            return ok("0");
+        }
     }
 }
