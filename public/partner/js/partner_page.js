@@ -1,6 +1,13 @@
 /**
  * Created by adarsh on 10/9/16.
  */
+
+var localityArray = [];
+
+function getLocality(){
+    return localityArray;
+}
+
 function openPartnerLogin() {
     $('#partnerLoginMobile').val("");
     $('#partnerLoginPassword').val("");
@@ -25,4 +32,31 @@ function resetPassword() {
     $('#incorrectMsgLogin').hide();
     $('#form_login_partner').hide();
     $('#form_forgot_password').show();
+}
+
+$(document).ready(function() {
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllLocality",
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckLocality
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+});
+
+function processDataCheckLocality(returnedData) {
+    returnedData.forEach(function(locality)
+    {
+        var id = locality.localityId;
+        var name = locality.localityName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        localityArray.push(item);
+    });
 }

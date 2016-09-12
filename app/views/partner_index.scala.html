@@ -24,7 +24,11 @@
     <script type="text/javascript" src="/assets/js/jquery.min_1_12_0.js"></script>
     <script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
     <link rel="icon" type="image/png" href="/assets/img/icon.png">
-    <script>
+    <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
+    <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
+    <script type="text/javascript" src="/assets/js/validation.js"></script>
+
+      <script>
         localStorage.clear();
     </script>
   </head>
@@ -121,7 +125,7 @@
                           </div>
                           <hr>
                           <center>
-                Don't have an account?
+                              Don't have an account?
                               <a style="cursor: pointer;" data-toggle="modal" data-target="#mySignUpModal" onClick="openSignUp()">
                                   <font color="#06436a">&nbsp;Sign Up</font></a>
                           </center>
@@ -208,6 +212,22 @@
 
               <input id="partnerName" placeholder="What is your Name" type="text" maxLength="49" class="form-control input-md">
               <input id="partnerMobile" style="margin-top: 8px" placeholder="What is your mobile no.?" name="partnerMobile" type="text" maxlength="10" class="form-control input-md" >
+              <div style="margin-top: 8px">
+                  <input type="text" id="partnerLocality" style="margin-top: 8px">
+                  <script type="text/javascript">
+                    $(document).ready(function() {
+                        $("#candidateLocality").tokenInput(getLocality(), {
+                            theme: "facebook",
+                            placeholder: "Your Locality",
+                            minChars: 3,
+                            tokenLimit: 1,
+                            hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
+                            preventDuplicates: true
+                        });
+                    });
+                    </script>
+              </div>
+
 
               <button type="submit" id="registerBtnSubmit" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
                   <!-- Text input-->
@@ -222,7 +242,45 @@
       </div>
   </div>
 
-    <div id="sectionPartnerHowItWorks">
+  <div id="sectionPartnerEligibility">
+      <div style="margin: 0 0 12px 0;"><font size="5">Who all can partner</font></div>
+      <center><div class="materialDot"></div></center>
+      <div class="container">
+          <div class="row" style="padding:4%;margin: 3% 0 0 0">
+              <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                  <p><img class="hov" src="/assets/partner/img/ngo.svg" width="60px"></p>
+                  <h5>NGO</h5>
+              </div>
+              <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                  <p><img class="hov" src="/assets/partner/img/training.svg" width="60px"></p>
+                  <h5>Training Center</h5>
+              </div>
+              <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                  <p><img class="hov" src="/assets/partner/img/consultant.svg" width="60px"></p>
+                  <h5>Job Consultant</h5>
+              </div>
+          </div>
+      </div>
+
+      <div class="container">
+          <div class="row" style="padding:4%;">
+              <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                  <p><img class="hov" src="/assets/partner/img/staffing.svg" width="60px"></p>
+                  <h5>Staffing Company</h5>
+              </div>
+              <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                  <p><img class="hov" src="/assets/partner/img/internet_cafe.svg" width="60px"></p>
+                  <h5>Internet Cafe</h5>
+              </div>
+              <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                  <p><img class="hov" src="/assets/partner/img/freelance.svg" width="60px"></p>
+                  <h5>Freelance HR</h5>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <div id="sectionPartnerHowItWorks">
         <div style="margin: 10px 0 12px 0;"><font size="5">How it Works</font></div>
         <center><div class="materialDot"></div></center>
         <div class="container">
@@ -242,43 +300,6 @@
                 <div class="col-sm-3" style="padding-left:4%">
                     <p><img class="hov" src="/assets/partner/img/money.svg" width="80px"></p>
                     <h5>Earn money when candidates are hired</h5>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div id="sectionPartnerEligibility">
-        <div style="margin: 10px 0 12px 0;"><font size="5">Who all can partner</font></div>
-        <center><div class="materialDot"></div></center>
-        <div class="container">
-            <div class="row" style="padding:4%;margin: 3% 0 0 0">
-                <div class="col-sm-4 col-xs-4" style="padding-left:4%">
-                    <p><img class="hov" src="/assets/partner/img/ngo.svg" width="60px"></p>
-                    <h5>NGO</h5>
-                </div>
-                <div class="col-sm-4 col-xs-4" style="padding-left:4%">
-                    <p><img class="hov" src="/assets/partner/img/training.svg" width="60px"></p>
-                    <h5>Training Center</h5>
-                </div>
-                <div class="col-sm-4 col-xs-4" style="padding-left:4%">
-                    <p><img class="hov" src="/assets/partner/img/consultant.svg" width="60px"></p>
-                    <h5>Job Consultant</h5>
-                </div>
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="row" style="padding:4%;">
-                <div class="col-sm-4 col-xs-4" style="padding-left:4%">
-                    <p><img class="hov" src="/assets/partner/img/staffing.svg" width="60px"></p>
-                    <h5>Staffing Company</h5>
-                </div>
-                <div class="col-sm-4 col-xs-4" style="padding-left:4%">
-                    <p><img class="hov" src="/assets/partner/img/internet_cafe.svg" width="60px"></p>
-                    <h5>Internet Cafe</h5>
-                </div>
-                <div class="col-sm-4 col-xs-4" style="padding-left:4%">
-                    <p><img class="hov" src="/assets/partner/img/freelance.svg" width="60px"></p>
-                    <h5>Freelance HR</h5>
                 </div>
             </div>
         </div>
