@@ -34,6 +34,16 @@ function resetPassword() {
     $('#form_forgot_password').show();
 }
 
+$(window).load(function() {
+    $('html, body').css({
+        'overflow': 'auto',
+        'height': 'auto'
+    });
+    $("#status").fadeOut();
+    $("#loaderLogo").fadeOut();
+    $("#preloader").delay(500).fadeOut("slow");
+});
+
 $(document).ready(function() {
     try {
         $.ajax({
@@ -43,6 +53,18 @@ $(document).ready(function() {
             contentType: false,
             processData: false,
             success: processDataCheckLocality
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllPartnerType",
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckPartnerType
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
@@ -58,5 +80,16 @@ function processDataCheckLocality(returnedData) {
         item ["id"] = id;
         item ["name"] = name;
         localityArray.push(item);
+    });
+}
+
+function processDataCheckPartnerType(returnedData) {
+    var defaultOption=$('<option value="-1"></option>').text("Select Organization Type");
+    $('#partnerType').append(defaultOption);
+    returnedData.forEach(function(partnerType) {
+        var id = partnerType.partnerTypeId;
+        var name = partnerType.partnerTypeName;
+        var option=$('<option value=' + id + '></option>').text(name);
+        $('#partnerType').append(option);
     });
 }

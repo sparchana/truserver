@@ -98,7 +98,7 @@ public class SmsUtil {
     public static void sendWelcomeSmsToPartnerFromWebsite(String name, String mobile)
     {
         String msg = "Hi " + name + ", Welcome to Trujobs.in! "
-                + "You are a partner!";
+                + "You are successfully registered as a partner. Login now to add your candidates and help them find jobs!";
         sendSms(mobile, msg);
     }
 

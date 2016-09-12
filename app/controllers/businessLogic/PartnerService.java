@@ -8,7 +8,9 @@ import api.http.httpResponse.LoginResponse;
 import api.http.httpResponse.PartnerSignUpResponse;
 import api.http.httpResponse.ResetPasswordResponse;
 import models.entity.*;
+import models.entity.Static.Locality;
 import models.entity.Static.PartnerProfileStatus;
+import models.entity.Static.PartnerType;
 import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
@@ -17,7 +19,9 @@ import javax.persistence.NonUniqueResultException;
 import java.util.List;
 import java.util.UUID;
 
-import static controllers.businessLogic.InteractionService.createInteractionForSignUpPartner;
+import static controllers.businessLogic.PartnerInterationService.createInteractionForPartnerLogin;
+import static controllers.businessLogic.PartnerInterationService.createInteractionForPartnerResetPassword;
+import static controllers.businessLogic.PartnerInterationService.createInteractionForPartnerSignUp;
 import static models.util.Util.generateOtp;
 import static play.mvc.Controller.session;
 
@@ -26,7 +30,6 @@ import static play.mvc.Controller.session;
  */
 public class PartnerService {
     private static PartnerSignUpResponse createNewPartner(Partner partner, Lead lead) {
-
         PartnerSignUpResponse partnerSignUpResponse = new PartnerSignUpResponse();
         PartnerProfileStatus partnerProfileStatus = PartnerProfileStatus.find.where().eq("profile_status_id", ServerConstants.PARTNER_STATE_ACTIVE).findUnique();
         if(partnerProfileStatus != null){
@@ -49,8 +52,8 @@ public class PartnerService {
                 return existingPartner;
             }
         } catch (NonUniqueResultException nu){
-            // get the list of candidate and sort by candidateId
-            // return the lowest primary key candidate Object
+            // get the list of partners and sort by candidateId
+            // return the lowest primary key partner Object
             // register the event with proper info
 
             List<Partner> existingPartnerList = Partner.find.where().eq("partner_mobile", mobile).findList();
@@ -86,7 +89,7 @@ public class PartnerService {
                 if(partnerSignUpRequest.getPartnerMobile()!= null){
                     partner.setPartnerMobile(partnerSignUpRequest.getPartnerMobile());
                 }
-
+                resetPartnerTypeAndLocality(partner, partnerSignUpRequest);
                 partnerSignUpResponse = createNewPartner(partner, lead);
                 if(!(channelType == InteractionService.InteractionChannelType.SUPPORT)){
                     // triggers when partner is self created
@@ -99,6 +102,7 @@ public class PartnerService {
                 if(auth == null ) {
                     Logger.info("auth doesn't exists for this partner");
                     partner.setPartnerFirstName(partnerSignUpRequest.getPartnerName());
+                    resetPartnerTypeAndLocality(partner, partnerSignUpRequest);
                     if(!(channelType == InteractionService.InteractionChannelType.SUPPORT)){
                         triggerOtp(partner, partnerSignUpResponse);
                         result = ServerConstants.INTERACTION_RESULT_EXISTING_PARTNER_VERIFICATION;
@@ -112,9 +116,8 @@ public class PartnerService {
                 }
                 partner.partnerUpdate();
             }
-
             //creating interaction
-            createInteractionForSignUpPartner(objectAUUId, result, channelType);
+            createInteractionForPartnerSignUp(objectAUUId, result, channelType);
 
         } catch (NullPointerException n){
             n.printStackTrace();
@@ -122,6 +125,23 @@ public class PartnerService {
         }
         return partnerSignUpResponse;
     }
+
+    public static void resetPartnerTypeAndLocality(Partner existingPartner, PartnerSignUpRequest partnerSignUpRequest) {
+        PartnerType existingPartnerType = PartnerType.find.where().eq("partner_type_id", partnerSignUpRequest.getPartnerType()).findUnique();
+        if(existingPartnerType != null){
+            existingPartner.setPartnerType(existingPartnerType);
+        } else{
+            Logger.info("Partner type : " + partnerSignUpRequest.getPartnerType() + " does not exists");
+        }
+
+        Locality existingLocality = Locality.find.where().eq("localityId", partnerSignUpRequest.getPartnerLocality()).findUnique();
+        if(existingLocality != null){
+            existingPartner.setLocality(existingLocality);
+        } else{
+            Logger.info("LocalityId : " + partnerSignUpRequest.getPartnerLocality() + " does not exists");
+        }
+    }
+
 
     private static void triggerOtp(Partner partner, PartnerSignUpResponse partnerSignUpResponse) {
         int randomPIN = generateOtp();
@@ -161,7 +181,7 @@ public class PartnerService {
                     String sessionId = session().get("sessionId");
                     Logger.info(sessionId + " === ");
                     existingAuth.update();
-                    InteractionService.createInteractionForLoginCandidate(existingPartner.getPartnerUUId(), channelType, InteractionService.InteractionObjectType.PARTNER);
+                    createInteractionForPartnerLogin(existingPartner.getPartnerUUId(), channelType);
                     Logger.info("Login Successful");
                 } else {
                     loginResponse.setStatus(loginResponse.STATUS_WRONG_PASSWORD);
@@ -192,7 +212,7 @@ public class PartnerService {
                 String interactionResult = ServerConstants.INTERACTION_RESULT_PARTNER_TRIED_TO_RESET_PASSWORD;
                 String objAUUID = "";
                 objAUUID = existingPartner.getPartnerUUId();
-                InteractionService.createInteractionForPartnerResetPassword(objAUUID, interactionResult, channelType);
+                createInteractionForPartnerResetPassword(objAUUID, interactionResult, channelType);
                 resetPasswordResponse.setOtp(randomPIN);
                 resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);
             }

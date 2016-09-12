@@ -86,6 +86,7 @@ GET         /partnerNavBar                                                contro
 GET         /partnerNavBarLoggedIn                                        controllers.PartnerController.renderPagePartnerLoggedInNavbar()
 
 POST        /findPartnerAndSendOtp                                        controllers.PartnerController.findPartnerAndSendOtp()
+POST        /getAllPartnerType                                            controllers.PartnerController.getAllPartnerType()
 POST        /partnerLoginSubmit                                           controllers.PartnerController.loginSubmit()
 POST        /addPartnerPassword                                           controllers.PartnerController.addPassword()
 POST        /partnerSignUp                                                controllers.PartnerController.partnerSignUp()

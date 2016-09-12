@@ -17,7 +17,8 @@ function processDataSignUpSubmit(returnedData) {
         $('#form_otp').show();
 
     } else if(returnedData.status == 3){
-        alert("User already exists! Please login to continue");
+        alert("Partner already exists! Please login to continue");
+        window.location = "/";
     } else {
         document.getElementById("registerBtnSubmit").disabled = false;
         $('#errorMsg').show();
@@ -102,6 +103,8 @@ $(function() {
         var phone = $('#partnerMobile').val();
         var checkPartnerName = validateName(partnerName);
         var res = validateMobile(phone);
+        var selectedPartnerType = $('#partnerType').val();
+        var localitySelected = $('#partnerLocality').val();
 
         //checking first name
         switch(checkPartnerName){
@@ -113,9 +116,15 @@ $(function() {
 
         if(res == 0){
             alert("Enter a valid mobile number");
-            statusCheck=0;
+            statusCheck = 0;
         } else if(res == 1){
             alert("Enter 10 digit mobile number");
+            statusCheck=0;
+        } else if(localitySelected == "") {
+            alert("Please select your Locality");
+            statusCheck=0;
+        } else if(selectedPartnerType == -1) {
+            alert("Please select organization type");
             statusCheck=0;
         }
 
@@ -126,7 +135,9 @@ $(function() {
 
             var d = {
                 partnerName : partnerName,
-                partnerMobile : phone
+                partnerMobile : phone,
+                partnerType : selectedPartnerType,
+                partnerLocality : localitySelected
             };
 
             $.ajax({

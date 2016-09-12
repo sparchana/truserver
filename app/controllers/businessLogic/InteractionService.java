@@ -28,16 +28,6 @@ public class InteractionService {
         }
     }
 
-    public enum InteractionObjectType {
-        UNKNOWN,
-        CANDIDATE,
-        PARTNER;
-
-        public String toString() {
-            return name().charAt(0) + name().substring(1).toLowerCase();
-        }
-    }
-
     public static void createInteractionForSignUpCandidate(String objectAUUId, String result, InteractionChannelType channelType) {
         if(channelType == InteractionChannelType.SELF || channelType == InteractionChannelType.SELF_ANDROID ){
             Interaction interaction = new Interaction(
@@ -121,17 +111,11 @@ public class InteractionService {
         Logger.info("Interaction saved");
     }
 
-    public static void createInteractionForLoginCandidate(String objectAUUId, InteractionChannelType channelType, InteractionObjectType interactionObjectType) {
-        int interactionObject = 0;
-        if(interactionObjectType == InteractionObjectType.CANDIDATE){
-            interactionObject = ServerConstants.OBJECT_TYPE_CANDIDATE;
-        } else if(interactionObjectType == InteractionObjectType.PARTNER){
-            interactionObject = ServerConstants.OBJECT_TYPE_PARTNER;
-        }
+    public static void createInteractionForLoginCandidate(String objectAUUId, InteractionChannelType channelType) {
         if(channelType == InteractionChannelType.SELF || channelType == InteractionChannelType.SELF_ANDROID){
             Interaction interaction = new Interaction(
                     objectAUUId,
-                    interactionObject,
+                    ServerConstants.OBJECT_TYPE_CANDIDATE,
                     channelType == InteractionChannelType.SELF ? ServerConstants.INTERACTION_TYPE_WEBSITE : ServerConstants.INTERACTION_TYPE_ANDROID_LOGIN,
                     ServerConstants.INTERACTION_NOTE_BLANK,
                     ServerConstants.INTERACTION_RESULT_SELF_SIGNEDIN,
@@ -237,32 +221,6 @@ public class InteractionService {
                 objectBUUId,
                 ServerConstants.OBJECT_TYPE_JOB_POST_VIEW,
                 ServerConstants.INTERACTION_TYPE_ANDROID_JOP_POST_VIEW,
-                result,
-                channelType.toString()
-        );
-        InteractionService.createInteraction(interaction);
-    }
-
-    public static void createInteractionForSignUpPartner(String objectAUUId, String result, InteractionChannelType channelType) {
-        if(channelType == InteractionChannelType.SELF || channelType == InteractionChannelType.SELF_ANDROID ){
-            Interaction interaction = new Interaction(
-                    objectAUUId,
-                    ServerConstants.OBJECT_TYPE_PARTNER,
-                    channelType == InteractionChannelType.SELF ? ServerConstants.INTERACTION_TYPE_WEBSITE : ServerConstants.INTERACTION_TYPE_ANDROID_SIGNUP,
-                    ServerConstants.INTERACTION_NOTE_BLANK,
-                    result,
-                    channelType.toString()
-            );
-            InteractionService.createInteraction(interaction);
-        }
-    }
-
-    public static void createInteractionForPartnerResetPassword(String objectAUUId, String result, InteractionChannelType channelType){
-        Interaction interaction = new Interaction(
-                objectAUUId,
-                ServerConstants.OBJECT_TYPE_PARTNER,
-                ServerConstants.INTERACTION_TYPE_PASSWORD_RESET_SUCCESS,
-                ServerConstants.INTERACTION_NOTE_BLANK,
                 result,
                 channelType.toString()
         );

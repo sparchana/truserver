@@ -96,6 +96,19 @@ body{
     background-image: none;
     border: 1px solid #eaeaea;
 }
+
+.selectDropdown, .selectDropdown:active, .selectDropdown:target{
+    color: #999;
+    padding-left: 8px;
+    overflow:scroll;
+    margin-top: 2px;
+    display: inline-block;
+    height: 34px;
+    border: 1px solid #eaeaea;
+    border-radius: 4px;
+    background: #ffffff;
+}
+
 #sectionHeader{
     background: linear-gradient(
             rgba(24, 26, 45, 0.6),
@@ -122,6 +135,7 @@ body{
     color: #402005;
     padding: 0 4% 4% 4%;
     text-align: center;
+    margin-top: -6%;
 }
 
 #sectionBody{
@@ -222,9 +236,38 @@ body{
 .sectionAllJoRoles{
     text-decoration: none;
     background: #fbfbfb;
-    padding-left: 4%;
-    padding-right: 4%;
+    padding: 4% 4% 2% 4%;
     text-align: center;
+}
+
+#preloader  {
+    position: absolute;
+    height: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #fefefe;
+    z-index: 99999999;
+    height: 100%;
+}
+
+#loaderLogo  {
+    width: 200px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: -100px 0 0 -100px;
+}
+
+#status  {
+    width: 200px;
+    height: 136px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background: url(../../img/main_loader.svg) no-repeat center;
+    margin: -100px 0 0 -100px;
 }
 
 a:hover, a:active{

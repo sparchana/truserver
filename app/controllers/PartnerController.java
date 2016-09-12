@@ -1,7 +1,6 @@
 package controllers;
 
 import api.ServerConstants;
-import api.http.httpRequest.CandidateSignUpRequest;
 import api.http.httpRequest.LoginRequest;
 import api.http.httpRequest.PartnerSignUpRequest;
 import api.http.httpRequest.ResetPasswordResquest;
@@ -9,12 +8,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
 import controllers.security.SecuredUser;
-import models.entity.PartnerAuth;
+import models.entity.Static.PartnerType;
 import play.Logger;
 import play.mvc.Result;
 import play.mvc.Security;
 
 import java.io.IOException;
+import java.util.List;
 
 import static play.libs.Json.toJson;
 
@@ -111,4 +111,8 @@ public class PartnerController {
         return ok(toJson(PartnerService.findPartnerAndSendOtp(partnerMobile, InteractionService.InteractionChannelType.SELF)));
     }
 
+    public static Result getAllPartnerType() {
+        List<PartnerType> partnerTypeList = PartnerType.find.all();
+        return ok(toJson(partnerTypeList));
+    }
 }
