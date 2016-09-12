@@ -25,7 +25,7 @@ public class PartnerInterationService {
         if(channelType == InteractionService.InteractionChannelType.SELF || channelType == InteractionService.InteractionChannelType.SELF_ANDROID){
             Interaction interaction = new Interaction(
                     objectAUUId,
-                    ServerConstants.OBJECT_TYPE_CANDIDATE,
+                    ServerConstants.OBJECT_TYPE_PARTNER,
                     channelType == InteractionService.InteractionChannelType.SELF ? ServerConstants.INTERACTION_TYPE_WEBSITE : ServerConstants.INTERACTION_TYPE_ANDROID_LOGIN,
                     ServerConstants.INTERACTION_NOTE_BLANK,
                     ServerConstants.INTERACTION_RESULT_SELF_SIGNEDIN,
@@ -47,5 +47,19 @@ public class PartnerInterationService {
         );
         InteractionService.createInteraction(interaction);
     }
+
+    public static void createInteractionForPartnerProfileUpdate(String uuId, Integer interactionType, String interactionNote, String interactionResult, String createdBy){
+        Interaction interaction = new Interaction(
+                uuId,
+                ServerConstants.OBJECT_TYPE_PARTNER,
+                interactionType,
+                interactionNote,
+                interactionResult,
+                createdBy
+        );
+
+        InteractionService.createInteraction(interaction);
+    }
+
 
 }

@@ -45,11 +45,13 @@ $(window).load(function() {
 });
 
 $(document).ready(function() {
+    //getting all localities
     try {
         $.ajax({
             type: "POST",
             url: "/getAllLocality",
             data: false,
+            async: false,
             contentType: false,
             processData: false,
             success: processDataCheckLocality
@@ -57,11 +59,15 @@ $(document).ready(function() {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+
+
+    //getting all partner types
     try {
         $.ajax({
             type: "POST",
             url: "/getAllPartnerType",
             data: false,
+            async: false,
             contentType: false,
             processData: false,
             success: processDataCheckPartnerType
@@ -69,6 +75,7 @@ $(document).ready(function() {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+
 });
 
 function processDataCheckLocality(returnedData) {
@@ -80,6 +87,14 @@ function processDataCheckLocality(returnedData) {
         item ["id"] = id;
         item ["name"] = name;
         localityArray.push(item);
+    });
+    $("#partnerLocality").tokenInput(getLocality(), {
+        theme: "facebook",
+        placeholder: "Your Locality",
+        minChars: 3,
+        tokenLimit: 1,
+        hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
+        preventDuplicates: true
     });
 }
 

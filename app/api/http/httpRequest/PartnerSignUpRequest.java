@@ -10,6 +10,7 @@ import java.util.List;
  */
 public class PartnerSignUpRequest {
     private String partnerName;
+    private String partnerLastName;
     private String partnerMobile;
 
     private Integer partnerType;
@@ -19,12 +20,21 @@ public class PartnerSignUpRequest {
     private String partnerPassword;
     private String partnerAuthMobile;
 
+
     public String getPartnerName() {
         return partnerName;
     }
 
     public void setPartnerName(String partnerName) {
         this.partnerName = partnerName;
+    }
+
+    public String getPartnerLastName() {
+        return partnerLastName;
+    }
+
+    public void setPartnerLastName(String partnerLastName) {
+        this.partnerLastName = partnerLastName;
     }
 
     public String getPartnerMobile() {

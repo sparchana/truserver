@@ -46,7 +46,6 @@ function checkPartnerLogin() {
 }
 
 function processDataPartnerSession(returnedData) {
-    console.log(returnedData);
     if(returnedData == 0){
         logoutUser();
     }
@@ -60,6 +59,7 @@ function processDataPartnerProfile(returnedData) {
                 $("#partnerName").html(returnedData.partnerFirstName + " " + returnedData.partnerLastName);
             } else{
                 $("#partnerName").html(returnedData.partnerFirstName);
+                $("#partnerNameHeading").html("Hi! " + returnedData.partnerFirstName + "! Welcome to TruJobs");
             }
         }
         //mobile

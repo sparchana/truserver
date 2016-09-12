@@ -1,9 +1,8 @@
 package controllers;
 
 import api.ServerConstants;
-import api.http.httpRequest.LoginRequest;
-import api.http.httpRequest.PartnerSignUpRequest;
-import api.http.httpRequest.ResetPasswordResquest;
+import api.http.FormValidator;
+import api.http.httpRequest.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
@@ -132,6 +131,31 @@ public class PartnerController {
         String sessionPartnerId = session().get("partnerId");
         if(sessionPartnerId != null){
             return ok("1");
+        } else{
+            return ok("0");
+        }
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result partnerEditProfile() {
+        return ok(views.html.partner_edit_proifile.render());
+    }
+
+    public static Result partnerUpdateBasicProfile() {
+        JsonNode req = request().body().asJson();
+        AddPartnerRequest addPartnerRequest = new AddPartnerRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addPartnerRequest = newMapper.readValue(req.toString(), AddPartnerRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Logger.info("Req JSON : " + req);
+        String partnerId = session().get("partnerId");
+        Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
+        if(partner != null){
+            addPartnerRequest.setPartnerMobile(partner.getPartnerMobile());
+            return ok(toJson(PartnerService.createPartnerProfile(addPartnerRequest, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_BASIC_PROFILE)));
         } else{
             return ok("0");
         }

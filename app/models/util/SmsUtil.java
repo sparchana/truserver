@@ -69,6 +69,11 @@ public class SmsUtil {
         sendSms(mobile, msg);
     }
 
+    public static void sendPartnerOTPSms(int otp, String mobile) {
+        String msg = "Use OTP " + otp + " to partner with TruJobs. Welcome to www.Trujobs.in!";
+        sendSms(mobile, msg);
+    }
+
     public static void sendResetPasswordOTPSms(int otp, String mobile) {
         String msg = "Use OTP " + otp + " to reset your password. Welcome to www.Trujobs.in!";
         sendSms(mobile, msg);
