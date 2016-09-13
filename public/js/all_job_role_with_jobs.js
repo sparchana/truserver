@@ -41,6 +41,7 @@ function processDataCheckAllJobRoles(jobPostJobRoles) {
             jobPostJobRoles.forEach(function (jobRoleItem) {
                 if (itemCount >= startIndex && itemCount < startIndex + footerRowCount) {
                     var jobAnchorFooter = document.createElement("a");
+                    jobAnchorFooter.style = "font-size: 12px";
                     jobAnchorFooter.onclick = function () {
                         var jobRoleName = jobRoleItem.jobName;
 

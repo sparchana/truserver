@@ -789,7 +789,7 @@ public class Application extends Controller {
         return ok(toJson(jobPosts));
     }
     public static Result getAllHotJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").findList();
+        List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
         return ok(toJson(jobPosts));
     }
 
