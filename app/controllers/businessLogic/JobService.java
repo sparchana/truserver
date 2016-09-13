@@ -103,7 +103,10 @@ public class JobService {
         return newJobPost;
     }
 
-    public static ApplyJobResponse applyJob(ApplyJobRequest applyJobRequest, InteractionService.InteractionChannelType channelType) throws IOException, JSONException {
+    public static ApplyJobResponse applyJob(ApplyJobRequest applyJobRequest,
+                                            InteractionService.InteractionChannelType channelType)
+            throws IOException, JSONException
+    {
         Logger.info("checking user and jobId: " + applyJobRequest.getCandidateMobile() + " + " + applyJobRequest.getJobId());
         ApplyJobResponse applyJobResponse = new ApplyJobResponse();
         Candidate existingCandidate = CandidateService.isCandidateExists(applyJobRequest.getCandidateMobile());

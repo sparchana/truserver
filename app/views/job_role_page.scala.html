@@ -1,10 +1,11 @@
+@(jobRoleName: String)
 <html>
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>Trujobs - Best Jobs for Freshers and Experienced Candidates </title>
+    <title>Trujobs - Find @jobRoleName.split('_').map(_.capitalize).mkString(" ") for Freshers and Experienced Candidates </title>
 
     <meta name="keywords" content="driving jobs, fresher jobs, jobs for freshers, job search sites, job posting, sales jobs, beautician jobs,
         medical transcription jobs, online job search, find jobs, receptionist jobs, admin jobs, office assistant jobs,
@@ -14,7 +15,7 @@
         plumber jobs, electrician jobs, job search, accountant jobs, job vacancy, bangalore vacancy">
 
     <meta name="description" content="Search and apply for jobs online. Register for FREE and find best
-        fresher and experienced jobs.Give a missed call at 8880007799 for best jobs." />
+        @jobRoleName.split('_').map(_.capitalize).mkString(" "). Give a missed call at 8880007799 for best jobs." />
 
     <meta http-equiv="Cache-control" content="public">
       <!-- Bootstrap Core CSS -->
@@ -138,7 +139,7 @@
         <font color="white">
           <div class="row">
             <div class="col-sm-10" id="headingMain">
-              <h1 style="letter-spacing: 2px;"><b id="jobTitleLine">Register for Driver Jobs</b></h1>
+              <h1 style="letter-spacing: 2px;"><b id="jobTitleLine">Register for @jobRoleName.split('_').map(_.capitalize).mkString(" ")</b></h1>
               <h2 style="letter-spacing: 1px; margin-top: 10px;">Call 8880007799 to find jobs in top companies!</h2>
             </div>
           </div>

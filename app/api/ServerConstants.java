@@ -12,14 +12,19 @@ public class ServerConstants {
     public static final String INTERACTION_RESULT_NEW_LEAD = "New Lead Added";
     public static final String INTERACTION_RESULT_NEW_CANDIDATE = "New Candidate Added";
     public static final String INTERACTION_RESULT_NEW_CANDIDATE_SUPPORT = "New Candidate Added by support";
+    public static final String INTERACTION_RESULT_NEW_PARTNER = "New Partner Added";
     public static final String INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM = "Candidate Info got updated by System";
     public static final String INTERACTION_RESULT_CANDIDATE_BASIC_PROFILE_INFO_UPDATED_SELF = "Candidate Self Updated Basic Profile Info";
+    public static final String INTERACTION_RESULT_PARTNER_BASIC_PROFILE_INFO_UPDATED_SELF = "Partner Self Updated Basic Profile Info";
     public static final String INTERACTION_RESULT_CANDIDATE_SKILLS_PROFILE_INFO_UPDATED_SELF = "Candidate Self Updated Skill Profile Info";
     public static final String INTERACTION_RESULT_CANDIDATE_EDUCATION_PROFILE_INFO_UPDATED_SELF = "Candidate Self Updated Education Profile Info";
     public static final String INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SELF = "Candidate Info got updated by Self";
+    public static final String INTERACTION_RESULT_PARTNER_INFO_UPDATED_SELF = "Partner Info got updated by Self";
     public static final String INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE = "System Updated LeadType to ";
     public static final String INTERACTION_RESULT_EXISTING_CANDIDATE_SIGNUP = "Existing Candidate Tried to Signup";
     public static final String INTERACTION_RESULT_EXISTING_CANDIDATE_VERIFICATION = "Existing Candidate trying to complete self signup";
+    public static final String INTERACTION_RESULT_EXISTING_PARTNER_VERIFICATION = "Existing partner trying to complete self signup";
+    public static final String INTERACTION_RESULT_EXISTING_PARTNER_SIGNUP = "Existing partner Tried to Signup";
     public static final String INTERACTION_RESULT_EXISTING_LEAD = "Existing lead made contact through website";
     public static final String INTERACTION_RESULT_CANDIDATE_FOLLOWED_UP_REQUEST = "Existing candidate requested for a follow up call on ";
     public static final String INTERACTION_RESULT_LEAD_FOLLOWED_UP_REQUEST = "Existing lead requested for a follow up call on ";
@@ -33,7 +38,9 @@ public class ServerConstants {
     public static final String INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB = "Candidate applied to a job: ";
     public static final String INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB = "Candidate tried to apply to a job: ";
     public static final String INTERACTION_RESULT_CANDIDATE_TRIED_TO_RESET_PASSWORD = "Candidate tried to reset password";
+    public static final String INTERACTION_RESULT_PARTNER_TRIED_TO_RESET_PASSWORD = "Partner tried to reset password";
     public static final String INTERACTION_RESULT_CANDIDATE_RESET_PASSWORD_SUCCESS = "Candidate reset password done";
+    public static final String INTERACTION_RESULT_PARTNER_RESET_PASSWORD_SUCCESS = "Partner reset password done";
     public static final String INTERACTION_CREATED_SELF = "Self";
     public static final String INTERACTION_CREATED_SYSTEM = "System";
     public static final String INTERACTION_CREATED_SYSTEM_KNOWLARITY = "System - Knowlarity";
@@ -41,6 +48,7 @@ public class ServerConstants {
     public static final String INTERACTION_CREATED_ERROR = "Error";
     public static final String INTERACTION_NOTE_DUMMY_PASSWORD_CREATED = "Candidate got Registered with Mandatory Info and dummy password by system";
     public static final String INTERACTION_NOTE_SELF_PASSWORD_CHANGED = "Candidate Self Updated Password";
+    public static final String INTERACTION_NOTE_PARTNER_PASSWORD_CHANGED = "Partner Self Updated Password";
     public static final String INTERACTION_NOTE_SELF_SIGNEDUP = "Candidate Self Signed Up";
     public static final String INTERACTION_NOTE_CREATED_BY_ERROR = "Session Username is null";
     public static final String INTERACTION_NOTE_BLANK = "";
@@ -50,6 +58,7 @@ public class ServerConstants {
     public static final int TYPE_POTENTIAL_RECRUITER = 3;
     public static final int TYPE_CANDIDATE = 4;
     public static final int TYPE_RECRUITER = 5;
+    public static final int TYPE_PARTNER = 6;
 
     public static final int LEAD_CHANNEL_WEBSITE= 0;
     public static final int LEAD_CHANNEL_KNOWLARITY= 1;
@@ -72,6 +81,9 @@ public class ServerConstants {
     public static final int CANDIDATE_STATUS_NOT_VERIFIED = 0;
     public static final int CANDIDATE_STATUS_VERIFIED= 1;
 
+    public static final int PARTNER_STATUS_NOT_VERIFIED = 0;
+    public static final int PARTNER_STATUS_VERIFIED= 1;
+
     public static final int CANDIDATE_NOT_ASSESSED = 0;
     public static final int CANDIDATE_ASSESSED= 1;
 
@@ -88,6 +100,7 @@ public class ServerConstants {
     public static final int OBJECT_TYPE_RECRUTER= 5;
     public static final int OBJECT_TYPE_JOB_POST= 6;
     public static final int OBJECT_TYPE_JOB_POST_VIEW= 7;
+    public static final int OBJECT_TYPE_PARTNER= 8;
 
     public static final int INTERACTION_TYPE_CALL_IN= 1;
     public static final int INTERACTION_TYPE_CALL_OUT= 2;
@@ -111,6 +124,7 @@ public class ServerConstants {
 
     public static final int LEAD_SOURCE_UNKNOWN = 1; // 1 is unknown
 
+    public static final int LEAD_SOURCE_WEBSITE = 2;
 
     public static final String LEAD_INTEREST_UNKNOWN = "Unknown";
 
@@ -120,6 +134,9 @@ public class ServerConstants {
 
     public static final int CANDIDATE_STATE_ACTIVE = 1;
     public static final int CANDIDATE_STATE_DEACTIVE = 2;
+
+    public static final int PARTNER_STATE_ACTIVE = 1;
+    public static final int PARTNER_STATE_DEACTIVE = 2;
 
     public static final String INTERACTION_CREATED_BY_AGENT = "AGENT 1";
 

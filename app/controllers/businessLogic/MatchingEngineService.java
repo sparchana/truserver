@@ -36,7 +36,9 @@ public class MatchingEngineService {
      * jobRole Id and generates a List<JobPost> lying within DEFAULT_MATCHING_ENGINE_RADIUS and JobPostToLocalityList
      * are ordered by distance of each JobPostToLocality from candidate's home locality.
      */
-    public static List<JobPost> fetchMatchingJobPostForLatLng(Double lat, Double lng, Double r, List<Long> jobRoleIds, Integer sortOrder) {
+    public static List<JobPost> fetchMatchingJobPostForLatLng(Double lat, Double lng, Double r,
+                                                              List<Long> jobRoleIds, Integer sortOrder)
+    {
         Logger.info("[Matching Engine] for lat/lng "+lat+"/"+lng);
         if (r != null && r > 0) {
             radius = r;
@@ -102,7 +104,6 @@ public class MatchingEngineService {
             throw new IllegalArgumentException();
         }
     }
-
 
     /**
      * getDistanceFromCenter takes center and point {lat, lng} value & returns distance

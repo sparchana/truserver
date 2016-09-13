@@ -76,4 +76,3 @@ $(function() {
         }
     }); // end of submit
 }); // end of function
-

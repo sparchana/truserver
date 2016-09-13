@@ -4,7 +4,6 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpResponse.*;
-import com.amazonaws.services.importexport.model.Job;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
@@ -46,7 +45,12 @@ public class Application extends Controller {
     public static Result index() {
         String sessionId = session().get("sessionId");
         if(sessionId != null){
-            return redirect("/dashboard");
+            String partnerId = session().get("partnerId");
+            if(partnerId != null){
+                return redirect("/partner/home");
+            } else {
+                return redirect("/dashboard");
+            }
         }
         return ok(views.html.index.render());
     }
@@ -370,8 +374,10 @@ public class Application extends Controller {
                         .eq("leadStatus", ServerConstants.LEAD_STATUS_WON)
                         .findList();
                 break;
-            case 3: // get all
-                allLead = Lead.find.all();
+            case 3: // get all except all the partners
+                allLead = Lead.find.where()
+                        .ne("leadType", ServerConstants.TYPE_PARTNER)
+                        .findList();
                 break;
         }
 
@@ -1130,7 +1136,7 @@ public class Application extends Controller {
     public static Result renderJobPostCards() { return ok(views.html.hot_jobs_card_view.render());}
     public static Result renderShowAllJobs() { return ok(views.html.show_all_jobs_page.render());}
     public static Result renderJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
-        return ok(views.html.posted_job_details.render());
+        return ok(views.html.posted_job_details.render(jobCompany,jobTitle));
     }
 
     public static Result getJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
@@ -1140,9 +1146,8 @@ public class Application extends Controller {
         }
         return ok("Error");
     }
-
     public static Result renderJobRoleJobPage(String rolePara, Long idPara) {
-        return ok(views.html.job_role_page.render());
+        return ok(views.html.job_role_page.render(rolePara));
     }
 
     public static Result getJobRoleWiseJobPosts(String rolePara, Long idPara) {
@@ -1159,5 +1164,14 @@ public class Application extends Controller {
 
     public static Result bj2tj() {
         return ok("" + parseBabaJobsCSV());
+    }
+
+    public static Result checkCandidateSession() {
+        String sessionCandidateId = session().get("candidateId");
+        if(sessionCandidateId != null){
+            return ok("1");
+        } else{
+            return ok("0");
+        }
     }
 }

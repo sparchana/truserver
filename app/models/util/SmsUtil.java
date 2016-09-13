@@ -69,6 +69,11 @@ public class SmsUtil {
         sendSms(mobile, msg);
     }
 
+    public static void sendPartnerOTPSms(int otp, String mobile) {
+        String msg = "Use OTP " + otp + " to register as a partner with TruJobs. Welcome to www.Trujobs.in!";
+        sendSms(mobile, msg);
+    }
+
     public static void sendResetPasswordOTPSms(int otp, String mobile) {
         String msg = "Use OTP " + otp + " to reset your password. Welcome to www.Trujobs.in!";
         sendSms(mobile, msg);
@@ -95,6 +100,13 @@ public class SmsUtil {
         sendSms(mobile, msg);
     }
 
+    public static void sendWelcomeSmsToPartnerFromWebsite(String name, String mobile)
+    {
+        String msg = "Hi " + name + ", Welcome to Trujobs.in! "
+                + "You are successfully registered as a partner. Login now to add your candidates and help them find jobs!";
+        sendSms(mobile, msg);
+    }
+
     public static void sendDuplicateLeadSmsToDevTeam(String leadMobile)
     {
         // Idea is to keep getting irritated by receiving msg until issue is resolved :D
@@ -118,6 +130,19 @@ public class SmsUtil {
         sendSms(devTeamMobile.get("Adarsh"), msg);
         sendSms(devTeamMobile.get("Archana"), msg);
     }
+
+    public static void sendDuplicatePartnerSmsToDevTeam(String mobile)
+    {
+        // Idea is to keep getting irritated by receiving msg until issue is resolved :D
+
+        String msg = "Hi DevTeam, Duplicate partner found with phone number " + mobile + "! "
+                + "Please remove the Duplicate Entry";
+
+        sendSms(devTeamMobile.get("Sandy"), msg);
+        sendSms(devTeamMobile.get("Adarsh"), msg);
+        sendSms(devTeamMobile.get("Archana"), msg);
+    }
+
     public static void sendLocalityNotResolvedSmsToDevTeam(String unResolvedLocality, String city, String state, Double lat, Double lng)
     {
         // Idea is to tweak AddressResolver based on unresolved lat/lng (s)  :D
