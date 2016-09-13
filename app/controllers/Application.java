@@ -1128,7 +1128,7 @@ public class Application extends Controller {
     public static Result renderJobPostCards() { return ok(views.html.hot_jobs_card_view.render());}
     public static Result renderShowAllJobs() { return ok(views.html.show_all_jobs_page.render());}
     public static Result renderJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
-        return ok(views.html.posted_job_details.render());
+        return ok(views.html.posted_job_details.render(jobCompany,jobTitle));
     }
 
     public static Result getJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
@@ -1138,9 +1138,8 @@ public class Application extends Controller {
         }
         return ok("Error");
     }
-
     public static Result renderJobRoleJobPage(String rolePara, Long idPara) {
-        return ok(views.html.job_role_page.render());
+        return ok(views.html.job_role_page.render(rolePara));
     }
 
     public static Result getJobRoleWiseJobPosts(String rolePara, Long idPara) {

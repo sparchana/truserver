@@ -552,7 +552,31 @@ hr{
     padding-top: 2%;
 }
 
+#jobRolesFooterContainer{
+    text-align: left;
+}
+#jobRoleName{
+    padding: 1%;
+    color: #ffffff;
+}
+
+#jobRoleName:hover{
+    cursor:pointer;
+    text-decoration: none;
+}
+#contact_container{
+    border-left: 2px solid white;
+    text-align: left;
+}
+
 @media screen and (max-width: 768px) {
+    #contact_container{
+        border-left: 0px;
+        border-top: 2px solid white;
+        margin-top: 10px;
+        padding: 1%;
+        text-align: left;
+    }
     #jobRoleName{
         font-size: 10px;
     }
