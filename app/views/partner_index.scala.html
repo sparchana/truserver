@@ -52,8 +52,11 @@
     <div id="sectionHeader">
         <div class="row" style="margin-right: 0; margin-left: 0">
             <div class="col-sm-9">
-                <h1 style="letter-spacing: 2px; margin: 10px;"><b><font size="5">Welcome to TruJobs Partner Zone</font></b></h1>
-                <h1 style="letter-spacing: 2px; margin: 10px;"><b><font size="4">Register. Add Candidates. Earn money</font></b></h1>
+                <img src="/assets/partner/img/agreement.svg" class="hidden-xs" style="display: inline-block; margin-top: -30px" width="120px">
+                <div style="display: inline-block; width: auto; text-align: left;" id="partnerHeaderText">
+                    <h1 style="letter-spacing: 2px; margin: 10px;"><b><font size="5"><br><center>Welcome to TruJobs Partner Zone</center></font></b></h1>
+                    <h1 style="letter-spacing: 2px; margin: 14px;"><b><font size="4"><center>Register. Add Candidates. Earn money</center></font></b></h1>
+                </div>
             </div>
         </div>
     </div>
@@ -122,7 +125,7 @@
                           </div>
                           <div class="row">
                               <div class="col-sm-12" id="logo">
-                                  <button type="submit" class="form-control" id="registerBtnSubmit" style="margin-top:5px;">Sign In</button>
+                                  <button type="submit" class="form-control" id="registerBtnSubmit" style="margin-top:5px;">Login</button>
                               </div>
                           </div>
                           <hr>
@@ -187,10 +190,10 @@
                               <h5>Incorrect Login Credentials</h5>
                           </div>
                           <div class="errorMsgText" id="errorMsgReset" style="margin-top: 2%;display: none;">
-                              <h5>Partner Does Not Exist!</h5>
+                              <h5>Looks like this mobile is not registered as a partner. Please Sign up to continue!</h5>
                           </div>
                           <div class="errorMsgText" id="noUserLogin" style="margin-top: 2%;display: none;">
-                              <h5>Partner Does Not Exist!</h5>
+                              <h5>Looks like this mobile is not registered as a partner. Please Sign up to continue!</h5>
                           </div>
 
                           <div class="errorMsgText" id="wrongOtp" style="margin-top: 2%;display: none;">
@@ -239,43 +242,58 @@
       </div>
   </div>
 
-  <div id="sectionPartnerEligibility">
-      <div style="margin: 0 0 12px 0;"><font size="5">Who all can partner</font></div>
-      <center><div class="materialDot"></div></center>
-      <div class="container">
-          <div class="row" style="padding:4%;margin: 3% 0 0 0">
-              <div class="col-sm-4 col-xs-4" style="padding-left:4%">
-                  <p><img class="hov" src="/assets/partner/img/ngo.svg" width="60px"></p>
-                  <h5>NGO</h5>
-              </div>
-              <div class="col-sm-4 col-xs-4" style="padding-left:4%">
-                  <p><img class="hov" src="/assets/partner/img/training.svg" width="60px"></p>
-                  <h5>Training Center</h5>
-              </div>
-              <div class="col-sm-4 col-xs-4" style="padding-left:4%">
-                  <p><img class="hov" src="/assets/partner/img/consultant.svg" width="60px"></p>
-                  <h5>Job Consultant</h5>
-              </div>
-          </div>
-      </div>
+  <div class="container">
+      <div class="row" style="margin-right: 0; margin-left: 0">
+          <div class="col-sm-9">
+              <div id="sectionPartnerEligibility">
+                  <div style="margin: 0 0 12px 0;"><font size="5">Who all can partner</font></div>
+                  <center><div class="materialDot"></div></center>
+                      <div class="row" style="padding: 2%; margin: 2% 0 0 0;">
+                          <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                              <img class="hov" src="/assets/partner/img/ngo.svg" width="60px">
+                              <h5>NGO</h5>
+                          </div>
+                          <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                              <img class="hov" src="/assets/partner/img/training.svg" width="60px">
+                              <h5>Training Center</h5>
+                          </div>
+                          <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                              <img class="hov" src="/assets/partner/img/consultant.svg" width="60px">
+                              <h5>Job Consultant</h5>
+                          </div>
+                      </div>
 
-      <div class="container">
-          <div class="row" style="padding:4%;">
-              <div class="col-sm-4 col-xs-4" style="padding-left:4%">
-                  <p><img class="hov" src="/assets/partner/img/staffing.svg" width="60px"></p>
-                  <h5>Staffing Company</h5>
+                      <div class="row" style="padding: 2%;">
+                          <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                              <p><img class="hov" src="/assets/partner/img/staffing.svg" width="60px"></p>
+                              <h5>Staffing Company</h5>
+                          </div>
+                          <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                              <p><img class="hov" src="/assets/partner/img/internet_cafe.svg" width="60px"></p>
+                              <h5>Internet Cafe</h5>
+                          </div>
+                          <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                              <p><img class="hov" src="/assets/partner/img/freelance.svg" width="60px"></p>
+                              <h5>Freelance HR</h5>
+                          </div>
+                      </div>
+                  </div>
               </div>
-              <div class="col-sm-4 col-xs-4" style="padding-left:4%">
-                  <p><img class="hov" src="/assets/partner/img/internet_cafe.svg" width="60px"></p>
-                  <h5>Internet Cafe</h5>
-              </div>
-              <div class="col-sm-4 col-xs-4" style="padding-left:4%">
-                  <p><img class="hov" src="/assets/partner/img/freelance.svg" width="60px"></p>
-                  <h5>Freelance HR</h5>
+
+          <div class="col-sm-3 hidden-xs" style="padding: 0; margin: 0">
+              <div id="partnerStats">
+                  <div id="statBody" style="text-align: left">
+                      <img src="/assets/img/star.svg" height="42px" style="margin-left: -14%; margin-top: -14%">
+                      <div id="statItem">1000+ Job Openings</div>
+                      <div id="statItem">50+ Companies</div>
+                      <div id="statItem">30+ Job Roles</div>
+                      <div id="statItem">Partner Now and Help Your Candidates!</div>
+                  </div>
               </div>
           </div>
       </div>
   </div>
+
 
   <div id="sectionPartnerHowItWorks">
         <div style="margin: 10px 0 12px 0;"><font size="5">How it Works</font></div>
