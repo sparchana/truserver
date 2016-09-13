@@ -70,7 +70,7 @@ public class SmsUtil {
     }
 
     public static void sendPartnerOTPSms(int otp, String mobile) {
-        String msg = "Use OTP " + otp + " to partner with TruJobs. Welcome to www.Trujobs.in!";
+        String msg = "Use OTP " + otp + " to register as a partner with TruJobs. Welcome to www.Trujobs.in!";
         sendSms(mobile, msg);
     }
 

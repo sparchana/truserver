@@ -85,6 +85,9 @@ public class PartnerService {
                 if(partnerSignUpRequest.getPartnerName()!= null){
                     partner.setPartnerFirstName(partnerSignUpRequest.getPartnerName());
                 }
+                if(partnerSignUpRequest.getPartnerLastName()!= null){
+                    partner.setPartnerLastName(partnerSignUpRequest.getPartnerLastName());
+                }
                 if(partnerSignUpRequest.getPartnerMobile()!= null){
                     partner.setPartnerMobile(partnerSignUpRequest.getPartnerMobile());
                 }
@@ -222,14 +225,14 @@ public class PartnerService {
         return resetPasswordResponse;
     }
 
-    public static PartnerSignUpResponse createPartnerProfile(AddPartnerRequest addPartnerRequest, InteractionService.InteractionChannelType channelType,
-                                                               int profileUpdateFlag) {
+    public static PartnerSignUpResponse createPartnerProfile(PartnerProfileRequest partnerProfileRequest, InteractionService.InteractionChannelType channelType,
+                                                             int profileUpdateFlag) {
         PartnerSignUpResponse partnerSignUpResponse = new PartnerSignUpResponse();
         // get partnerBasic obj from req
-        Logger.info("partner profile for mobile " + addPartnerRequest.getPartnerMobile());
+        Logger.info("partner profile for mobile " + partnerProfileRequest.getPartnerMobile());
 
         // Check if this partner exists
-        Partner partner = isPartnerExists(FormValidator.convertToIndianMobileFormat(addPartnerRequest.getPartnerMobile()));
+        Partner partner = isPartnerExists(FormValidator.convertToIndianMobileFormat(partnerProfileRequest.getPartnerMobile()));
 
         if(partner != null){
 
@@ -244,7 +247,7 @@ public class PartnerService {
             if(profileUpdateFlag == ServerConstants.UPDATE_BASIC_PROFILE ||
                     profileUpdateFlag == ServerConstants.UPDATE_ALL_BY_SUPPORT) {
 
-                partnerSignUpResponse = updateBasicProfile(partner, addPartnerRequest);
+                partnerSignUpResponse = updateBasicProfile(partner, partnerProfileRequest);
 
                 // In case of errors, return at this point
                 if(partnerSignUpResponse.getStatus() != PartnerSignUpResponse.STATUS_SUCCESS){
@@ -276,7 +279,7 @@ public class PartnerService {
         return partnerSignUpResponse;
     }
 
-    private static PartnerSignUpResponse updateBasicProfile(Partner partner, AddPartnerRequest request) {
+    private static PartnerSignUpResponse updateBasicProfile(Partner partner, PartnerProfileRequest request) {
 
         PartnerSignUpResponse partnerSignUpResponse = new PartnerSignUpResponse();
 

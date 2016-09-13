@@ -99,7 +99,8 @@ $(function() {
     $("#partner_signup_form").submit(function(eventObj) {
         eventObj.preventDefault();
         var statusCheck = 1;
-        var partnerName = $('#partnerName').val();
+        var partnerName = $('#partnerFirstName').val();
+        var partnerLastName = $('#partnerLastName').val();
         var phone = $('#partnerMobile').val();
         var checkPartnerName = validateName(partnerName);
         var res = validateMobile(phone);
@@ -108,10 +109,10 @@ $(function() {
 
         //checking first name
         switch(checkPartnerName){
-            case 0: alert("Your name contains number. Please Enter a valid Name"); statusCheck=0; break;
-            case 2: alert("Your name cannot be blank spaces. Enter a valid name"); statusCheck=0; break;
-            case 3: alert("Your name contains special symbols. Enter a valid name"); statusCheck=0; break;
-            case 4: alert("Please enter your name"); statusCheck=0; break;
+            case 0: alert("Your first name contains number. Please Enter a valid first name"); statusCheck=0; break;
+            case 2: alert("Your first name cannot be blank spaces. Enter a valid first name"); statusCheck=0; break;
+            case 3: alert("Your first name contains special symbols. Enter a valid first name"); statusCheck=0; break;
+            case 4: alert("Please enter your first name"); statusCheck=0; break;
         }
 
         if(res == 0){
@@ -128,6 +129,19 @@ $(function() {
             statusCheck=0;
         }
 
+        if(partnerLastName != ""){
+            var checkPartnerLastName = validateName(partnerLastName);
+            //checking last name
+            switch(checkPartnerLastName){
+                case 0: alert("Your last name contains number. Please Enter a valid last name"); statusCheck=0; break;
+                case 2: alert("Your last name cannot be blank spaces. Enter a valid last name"); statusCheck=0; break;
+                case 3: alert("Your last name contains special symbols. Enter a valid last name"); statusCheck=0; break;
+                case 4: alert("Please enter your last name"); statusCheck=0; break;
+            }
+        } else{
+            partnerLastName = null;
+        }
+
         if(statusCheck == 1){
             candidateMobile = phone;
             $("#registerBtnSubmit").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Please Wait");
@@ -135,6 +149,7 @@ $(function() {
 
             var d = {
                 partnerName : partnerName,
+                partnerLastName : partnerLastName,
                 partnerMobile : phone,
                 partnerType : selectedPartnerType,
                 partnerLocality : localitySelected

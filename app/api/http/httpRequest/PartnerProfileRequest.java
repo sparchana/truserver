@@ -3,7 +3,7 @@ package api.http.httpRequest;
 /**
  * Created by adarsh on 12/9/16.
  */
-public class AddPartnerRequest extends PartnerSignUpRequest{
+public class PartnerProfileRequest extends PartnerSignUpRequest{
     public String partnerEmail;
     public String partnerOrganizationName;
 

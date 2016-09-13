@@ -320,6 +320,15 @@ a:hover{
         margin-right: 0;
     }
 
+    #partnerFirstName {
+         width: 96%;
+     }
+    #partnerLastName {
+        width: 96%;
+        margin-top: 8px;
+        margin-left: 12px;
+    }
+
     #partner_thanks{
         width: 50%;
     }

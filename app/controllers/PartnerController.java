@@ -1,14 +1,11 @@
 package controllers;
 
 import api.ServerConstants;
-import api.http.FormValidator;
 import api.http.httpRequest.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
 import controllers.security.SecuredUser;
-import models.entity.Candidate;
-import models.entity.Lead;
 import models.entity.Partner;
 import models.entity.Static.PartnerType;
 import play.Logger;
@@ -143,10 +140,10 @@ public class PartnerController {
 
     public static Result partnerUpdateBasicProfile() {
         JsonNode req = request().body().asJson();
-        AddPartnerRequest addPartnerRequest = new AddPartnerRequest();
+        PartnerProfileRequest partnerProfileRequest = new PartnerProfileRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
-            addPartnerRequest = newMapper.readValue(req.toString(), AddPartnerRequest.class);
+            partnerProfileRequest = newMapper.readValue(req.toString(), PartnerProfileRequest.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -154,8 +151,8 @@ public class PartnerController {
         String partnerId = session().get("partnerId");
         Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
         if(partner != null){
-            addPartnerRequest.setPartnerMobile(partner.getPartnerMobile());
-            return ok(toJson(PartnerService.createPartnerProfile(addPartnerRequest, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_BASIC_PROFILE)));
+            partnerProfileRequest.setPartnerMobile(partner.getPartnerMobile());
+            return ok(toJson(PartnerService.createPartnerProfile(partnerProfileRequest, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_BASIC_PROFILE)));
         } else{
             return ok("0");
         }
