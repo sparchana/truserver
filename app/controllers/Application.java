@@ -35,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.avaje.ebean.Expr.eq;
 import static models.util.ParseCSV.parseBabaJobsCSV;
 import static play.libs.Json.toJson;
 
@@ -1145,12 +1146,14 @@ public class Application extends Controller {
     }
 
     public static Result getJobRoleWiseJobPosts(String rolePara, Long idPara) {
-        List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).findList();
+        List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
         return ok(toJson(jobPostList));
     }
 
     public static Result getAllCompanyLogos() {
-        List<Company> companyList = Company.find.orderBy("companyName").findList();
+        List<Company> companyList = Company.find.where()
+                .or(eq("source", null), eq("source", 0))
+                .orderBy("companyName").findList();
         return ok(toJson(companyList));
     }
 

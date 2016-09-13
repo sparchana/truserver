@@ -320,22 +320,34 @@ function processDataForHotJobPost(returnedData) {
     if (returnedData.jobPostDescription != "") {
         $("#postedJobDescription").html(returnedData.jobPostDescription);
     }
-    //Company Details
-    if (returnedData.company.companyLocality != null ) {
-        $("#postedJobCompanyLocation").html(returnedData.company.companyLocality.localityName);
-    }
-    if(returnedData.company.companyLogo != null){
-        document.getElementById("postedJobCompanyLogo").src = returnedData.company.companyLogo;
-        document.getElementById("postedCompanyLogo").src = returnedData.company.companyLogo;
-    }
-    if (returnedData.company.companyWebsite != null ) {
-        $("#postedJobCompanyWebsite").html(returnedData.company.companyWebsite);
-    }
-    if (returnedData.company.companyDescription != "" ) {
-        $("#postedJobCompanyDescriotion").html(returnedData.company.companyDescription);
-    }
-    if (returnedData.company.compType != null ) {
-        $("#postedJobCompanyType").html(returnedData.company.compType.companyTypeName);
-    }
 
+    //Company Details
+    if(returnedData.source == null || returnedData.source == 0){
+        $(".posted_jobs_company_details").show();
+        $("#aboutCompanyTitle").show();
+
+        if (returnedData.company.companyLocality != null ) {
+            $("#postedJobCompanyLocation").html(returnedData.company.companyLocality.localityName);
+        }
+        if(returnedData.company.companyLogo != null){
+            document.getElementById("postedJobCompanyLogo").src = returnedData.company.companyLogo;
+            document.getElementById("postedCompanyLogo").src = returnedData.company.companyLogo;
+        }
+        if (returnedData.company.companyWebsite != null ) {
+            $("#postedJobCompanyWebsite").html(returnedData.company.companyWebsite);
+        }
+        if (returnedData.company.companyDescription != "" ) {
+            $("#postedJobCompanyDescriotion").html(returnedData.company.companyDescription);
+        }
+        if (returnedData.company.compType != null ) {
+            $("#postedJobCompanyType").html(returnedData.company.compType.companyTypeName);
+        }
+    } else {
+        $(".posted_jobs_company_details").hide();
+        $("#aboutCompanyTitle").hide();
+
+        if(returnedData.company.companyLogo != null){
+            document.getElementById("postedJobCompanyLogo").src = returnedData.company.companyLogo;
+        }
+    }
 }

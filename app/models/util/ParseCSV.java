@@ -11,6 +11,7 @@ import models.entity.Static.Experience;
 import models.entity.Static.JobRole;
 import models.entity.Static.JobStatus;
 import models.entity.Static.Locality;
+import org.apache.commons.lang3.text.WordUtils;
 import play.Logger;
 
 import javax.persistence.NonUniqueResultException;
@@ -121,10 +122,15 @@ public class ParseCSV {
             JobStatus jobStatus = JobStatus.find.where().eq("JobStatusId", 2).findUnique(); // Active
             while ((cells = reader.readNext()) != null) {
                 lineCount++;
+                String desc;
                 JobPost jobpost = new JobPost();
-                jobpost.setJobPostTitle(cells[2]);
+                jobpost.setJobPostTitle(WordUtils.capitalize(cells[2]));
                 jobpost.setGender(cells[7].trim().equalsIgnoreCase("Male")? ServerConstants.GENDER_MALE: ServerConstants.GENDER_FEMALE);
-                jobpost.setJobPostDescription(cells[6] + " Languages: " + cells[9]);
+                desc = cells[6].trim();
+                if(!cells[9].trim().isEmpty()){
+                    desc +=" Languages: " + cells[9];
+                }
+                jobpost.setJobPostDescription(desc);
                 jobpost.setJobPostIsHot(false);
                 jobpost.setSource(ServerConstants.SOURCE_BABAJOBS);
                 jobpost.setJobPostMinSalary(Long.parseLong(cells[5])); // no salary range in data set
@@ -137,7 +143,7 @@ public class ParseCSV {
                 jobpost.setJobPostStatus(jobStatus);
 
                 //Logger.info(String.valueOf(toJson(jobpost)));
-                jobpost.save();
+                if(!jobpost.getJobPostToLocalityList().isEmpty()) jobpost.save();
             }
             Logger.info("BJ2TJ !! Csv File Parsed and stored in db!");
         } catch (IOException e) {
@@ -193,7 +199,7 @@ public class ParseCSV {
             /* create company */
             company = new Company();
             companyName = companyName.length() > 49 ? companyName.substring(0, 49) : companyName;
-            company.setCompanyName(companyName);
+            company.setCompanyName(WordUtils.capitalize(companyName));
             company.setSource(ServerConstants.SOURCE_BABAJOBS);
             company.save();
         }

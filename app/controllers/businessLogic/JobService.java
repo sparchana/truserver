@@ -180,6 +180,7 @@ public class JobService {
         String candidateAgeVal = "-";
         String jobApplicationChannelVal = "-";
         String jobIsHotVal = "";
+        int sheetId = ServerConstants.SHEET_MAIN;
 
         if(channelType == InteractionService.InteractionChannelType.SELF_ANDROID){
             jobApplicationChannelVal = "Android";
@@ -201,6 +202,11 @@ public class JobService {
                 jobIsHotVal = "Hot";
             } else{
                 jobIsHotVal = "Not Hot";
+            }
+
+            /* check source for the job and save it to appropriate sheet */
+            if(jobpost.getSource() != null && jobpost.getSource() != ServerConstants.SOURCE_INTERNAL){
+                sheetId = ServerConstants.SHEET_SCRAPPED;
             }
         }
 
@@ -365,8 +371,12 @@ public class JobService {
 
         String url;
         if(!Play.isDev(Play.current())){
-            url = ServerConstants.PROD_GOOGLE_FORM_FOR_JOB_APPLICATION;
-        } else{
+            if(sheetId == ServerConstants.SHEET_MAIN){
+                url = ServerConstants.PROD_GOOGLE_FORM_FOR_JOB_APPLICATION;
+            } else {
+                url = ServerConstants.PROD_GOOGLE_FORM_FOR_SCRAPPED_JOB_APPLICATION;
+            }
+        } else {
             url = ServerConstants.DEV_GOOGLE_FORM_FOR_JOB_APPLICATION;
         }
         String postBody;

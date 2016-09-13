@@ -84,7 +84,7 @@ public class AddressResolveService {
         Locality locality =  Locality.find.where().eq("localityName", determineLocality(nearByAddressList).trim().toLowerCase()).findUnique();
         if(locality == null) {
             Logger.info("Locality is null!!");
-        } else if((locality.getLat()==null || locality.getLat() == 0 || locality.getPlaceId() == null)){
+        } else if((locality.getLat()==null || locality.getLat() == 0 || locality.getPlaceId() == null)) {
             locality = insertOrUpdateLocality(locality.getLocalityName(), appxLatitude, appxLongitude);
         }
         return locality;
@@ -402,9 +402,9 @@ public class AddressResolveService {
         }
 
         String finalPredictedLocalityName = "";
-        if(matchingLocalities.size() >0 ) {
+        if(matchingLocalities.size() > 0 ) {
             finalPredictedLocalityName = sortMapByValue(matchingLocalities).entrySet().iterator().next().getKey();
-            Logger.info("match founnd in db for:"+finalPredictedLocalityName );
+            Logger.info("match found in db for:"+finalPredictedLocalityName );
         } else {
             Map<String, Integer> sortedMap = sortMapByValue(countByWord);
             Iterator it = sortedMap.entrySet().iterator();

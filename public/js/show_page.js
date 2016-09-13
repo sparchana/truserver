@@ -238,7 +238,7 @@ function processDataForSelectedJobPost(returnedData) {
                 if (jobPostCount > 0) {
                 var count = 0;
                 var parent = $("#hotJobs");
-                returnedData.reverse();
+                //returnedData.reverse();
                 try {
                     returnedData.forEach(function (jobPost) {
                         count++;

@@ -94,7 +94,7 @@ public class MatchingEngineService {
                     jobPostsResponseList.add(new JobPost(tempJobPost));
                 }
             }
-            SortJobPostList(jobPostsResponseList, sortOrder, true);
+            sortJobPostList(jobPostsResponseList, sortOrder, true);
             Logger.info("jobPostResponseList:" + jobPostsResponseList);
             return jobPostsResponseList;
         } else {
@@ -124,7 +124,7 @@ public class MatchingEngineService {
         return c * earthRadius;
     }
 
-    public static void SortJobPostList(List<JobPost> jobPostsResponseList, Integer sortOrder, boolean doDefaultSort) {
+    public static void sortJobPostList(List<JobPost> jobPostsResponseList, Integer sortOrder, boolean doDefaultSort) {
         switch (sortOrder) {
             case SORT_BY_SALARY:
                 Logger.info("In mGetAllJobPostsRaw : sorting on Salary");

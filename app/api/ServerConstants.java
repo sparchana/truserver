@@ -139,11 +139,15 @@ public class ServerConstants {
 
     public static final String PROD_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/1NIGQC5jmSDuQaGUF0Jw1UG-Dz_3huFtZf9Bo7ncPl4g/formResponse";
     public static final String DEV_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/e/1FAIpQLSfsj3Lw_QoEfDwvZ9BOU5Wn3wneAxZyWVOw2hR6YwBQ5VnTtA/formResponse";
+    public static final String PROD_GOOGLE_FORM_FOR_SCRAPPED_JOB_APPLICATION = "https://docs.google.com/a/trujobs.in/forms/d/e/1FAIpQLSdrf0MhV6g9sVBtsCOm5hCGfgFgZ_hdaqAT6EAlf1FnOsslnw/formResponse";
 
     public static final String PROD_GOOGLE_FORM_FOR_JOB_POSTS = "https://docs.google.com/forms/d/1QVHzqnts0IkD3Wk8in4urqb70BseI9YWZm9B_MgGXUE/formResponse";
     public static final String DEV_GOOGLE_FORM_FOR_JOB_POSTS = "https://docs.google.com/forms/d/e/1FAIpQLSc-Fr7bO7M5HCjNYyC-dnIyzTMiXiywTEaD9twKkCQDeB7Qtg/formResponse";
 
     public static final Integer IS_HOT = 1;
+
+    public static final int SHEET_MAIN = 1;
+    public static final int SHEET_SCRAPPED = 2;
 
     public static Map<String, String> devTeamMobile;
     static {
