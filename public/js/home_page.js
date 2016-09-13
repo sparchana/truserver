@@ -142,7 +142,6 @@ function processDataCheckCompanyLogo(returnedData) {
 
     returnedData.forEach(function (company) {
         if(count >= start && count < (start+3)){
-            console.log(company);
             var logoDiv = document.createElement("div");
             logoDiv.className = "col-sm-4";
             rowDiv.appendChild(logoDiv);
@@ -155,7 +154,6 @@ function processDataCheckCompanyLogo(returnedData) {
                 companyLogo.src = company.companyLogo;
             }
             logoDiv.appendChild(companyLogo);
-
         }
         count++;
         //checking when to end the loop
