@@ -203,12 +203,34 @@ function setCompanyLogos(returnedData, start){
     });
 }
 
+function createAndAppendDivider(title) {
+    var parent = $("#hotJobs");
+
+    var mainDiv = document.createElement("div");
+    mainDiv.id = "hotJobItemDivider";
+    parent.append(mainDiv);
+
+    var otherJobIcon = document.createElement("img");
+    otherJobIcon.src = "/assets/img/suitcase.svg";
+    otherJobIcon.style = "width: 42px; margin: 8px";
+    otherJobIcon.setAttribute("display", "inline-block");
+    mainDiv.appendChild(otherJobIcon);
+
+    var hotJobItem = document.createElement("span");
+    hotJobItem.setAttribute("display", "inline-block");
+    hotJobItem.textContent = title;
+
+    mainDiv.appendChild(hotJobItem);
+}
+
 function processDataAllJobPosts(returnedData) {
     var jobPostCount = Object.keys(returnedData).length;
     if(jobPostCount > 0){
         var count = 0;
         var parent = $("#hotJobs");
-        returnedData.reverse();
+        //returnedData.reverse();
+        createAndAppendDivider("Popular Jobs");
+        var isDividerPresent = false;
         returnedData.forEach(function (jobPost){
             count++;
             if(count){
@@ -217,6 +239,12 @@ function processDataAllJobPosts(returnedData) {
                 var localities = "";
                 var allLocalities = ""
                 var loopCount = 0;
+
+                if(jobPost.source != null && jobPost.source > 0 && !isDividerPresent){
+                    createAndAppendDivider("Other Jobs");
+                    isDividerPresent = true;
+                };
+
                 jobLocality.forEach(function (locality) {
                     loopCount ++;
                     if(loopCount > 2){

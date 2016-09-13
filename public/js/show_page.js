@@ -270,6 +270,12 @@ function processDataForSelectedJobPost(returnedData) {
                             var localities = "";
                             var allLocalities = "";
                             var loopCount = 0;
+
+                            if(jobPost.source != null && jobPost.source > 0 && !isDividerPresent){
+                                createAndAppendDivider("Other Jobs");
+                                isDividerPresent = true;
+                            };
+
                             jobLocality.forEach(function (locality) {
                                 loopCount++;
                                 if (loopCount > 2) {
@@ -282,11 +288,6 @@ function processDataForSelectedJobPost(returnedData) {
                                     }
                                 }
                             });
-
-                            if(jobPost.source != null && jobPost.source > 0 && !isDividerPresent){
-                                createAndAppendDivider("Other Jobs");
-                                isDividerPresent = true;
-                            };
 
                             loopCount = 0;
                             jobLocality.forEach(function (locality) {

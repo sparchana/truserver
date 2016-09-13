@@ -785,7 +785,7 @@ public class Application extends Controller {
     }
 
     public static Result getAllNormalJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.all();
+        List<JobPost> jobPosts = JobPost.find.where().orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
         return ok(toJson(jobPosts));
     }
     public static Result getAllHotJobPosts() {
