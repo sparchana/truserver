@@ -358,6 +358,15 @@ public class Application extends Controller {
         return ok(toJson(ParseCSV.parseCSV(file)));
     }
 
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result processBabaJCSV() {
+        java.io.File file = (File) request().body().asMultipartFormData().getFile("file").getFile();
+        if(file == null) {
+            return badRequest("error uploading file. Check file type");
+        }
+        return ok(toJson(ParseCSV.parseBabaJobsCSV(file)));
+    }
+
     @Security.Authenticated(Secured.class)
     public static Result getAll(int id){
         List<Lead> allLead = new ArrayList<>();
@@ -1162,8 +1171,9 @@ public class Application extends Controller {
         return ok(toJson(companyList));
     }
 
-    public static Result bj2tj() {
-        return ok("" + parseBabaJobsCSV());
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result scrapArena() {
+        return ok(views.html.ScrapArena.render());
     }
 
     public static Result checkCandidateSession() {

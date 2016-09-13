@@ -111,17 +111,16 @@ public class ParseCSV {
     return totalUniqueLead;
     }
 
-    public static int parseBabaJobsCSV(){
+    public static int parseBabaJobsCSV(File file){
 
         String[] cells;
-        int lineCount = 0;
+        int totalJobPostSaved = 0;
         try {
-            CSVReader reader = new CSVReader(new FileReader("/home/zero/csv-file/One-Month-data.csv"));
+            CSVReader reader = new CSVReader(new FileReader(file));
             reader.readNext();// skip title row
             Logger.info("csv parsing begins");
             JobStatus jobStatus = JobStatus.find.where().eq("JobStatusId", 2).findUnique(); // Active
             while ((cells = reader.readNext()) != null) {
-                lineCount++;
                 String desc;
                 JobPost jobpost = new JobPost();
                 jobpost.setJobPostTitle(WordUtils.capitalize(cells[2]));
@@ -143,17 +142,16 @@ public class ParseCSV {
                 jobpost.setJobPostStatus(jobStatus);
 
                 //Logger.info(String.valueOf(toJson(jobpost)));
-                if(!jobpost.getJobPostToLocalityList().isEmpty()) jobpost.save();
+                if(!jobpost.getJobPostToLocalityList().isEmpty()){
+                    totalJobPostSaved++;
+                    jobpost.save();
+                }
             }
             Logger.info("BJ2TJ !! Csv File Parsed and stored in db!");
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return lineCount;
+        return totalJobPostSaved;
     }
 
     private static List<JobPostToLocality> getLocalityList(String localities, JobPost jobPost) {
