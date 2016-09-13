@@ -36,13 +36,6 @@
                 'overflow': 'hidden',
                 'height': '100%'
             });
-          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-                      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-                  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-          })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-          ga('create', 'UA-77156203-1', 'auto');
-          ga('send', 'pageview');
         </script>
         <script>
             $(document).ready(function(){
@@ -156,7 +149,6 @@
             <!-- start hot job -->
         <div id="applyToJobs">
             <h3 id="applyToJobsTitle">
-                Hot Jobs this week
             </h3>
         </div>
         <div id="job_cards_inc"></div>
@@ -344,15 +336,72 @@
                 </div>
             </div>
         </div>
-    <!-- Start Footer-->
+            <!-- Are you a partner -->
+        <div class="sectionThree"  id="forPartner" style="background: #FDF8D8">
+            <div class="row" style="text-align: center">
+                    <!-- Recruiter -->
+                <div class="col-sm-6" id="recruiterSection">
+                    <h3>Want to be a Partner? Join us today</h3>
+                    <br>
+                    <div class="row">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-1">
+                            <img src="/assets/new/img/circle_2_1.svg" width="52px">
+                        </div>
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Register yourself as a partner with TruJobs</h4></div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-1">
+                            <img src="/assets/img/name.svg" width="52px">
+                        </div>
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Add your candidates and create their profile</h4></div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-1">
+                            <img src="/assets/img/apply.svg" width="52px">
+                        </div>
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Browse jobs and apply on behalf of your candidates</h4></div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-1">
+                            <img src="/assets/img/salary_min.svg" width="52px">
+                        </div>
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Earn money when your candidates are hired</h4></div>
+                    </div>
+                    <br>
+                </div>
+
+                <div class="col-sm-6">
+                    <div id="recruiter_form_section">
+                        <div class="reg_input">
+                            <a href="/partner">
+                                <button type="submit" class="form-control" id="modalBtn">Partner for FREE</button>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <!-- Start Footer-->
         <div id="footer_inc"></div>
         <script>
             $(document).ready(function(){
-            $('#footer_inc').load('/footer');
+                $('#footer_inc').load('/footer');
             });
         </script>
 
-            <!-- Including Bootstrap -->
+        <!-- Including Bootstrap -->
 
         <script>
             $(document).ready(function () {
