@@ -96,9 +96,8 @@ body{
     background-image: none;
     border: 1px solid #eaeaea;
 }
-
-.selectDropdown, .selectDropdown:active, .selectDropdown:target{
-    color: #999;
+.selectDropdown{
+    color: #000;
     padding-left: 8px;
     overflow:scroll;
     margin-top: 2px;
@@ -107,6 +106,9 @@ body{
     border: 1px solid #eaeaea;
     border-radius: 4px;
     background: #ffffff;
+}
+option:checked {
+    color : #000;
 }
 
 #sectionHeader{
@@ -117,7 +119,7 @@ body{
     background-size: 100%;
     font-weight: bold;
     color: #fff;
-    padding: 6% 4% 4% 4%;
+    padding: 5% 4% 2% 4%;
     text-align: center;
 }
 
@@ -165,7 +167,7 @@ body{
     background: #ffffff;
     padding: 4px;
     margin-left: 75%;
-    margin-top: -9%;
+    margin-top: -11%;
 }
 
 #registerBtnSubmit{
@@ -282,6 +284,17 @@ a:hover{
     border-right: 1px solid #f4eef2;
     border-bottom: 1px solid #f4eef2;
 }
+#jobRoleName{
+    padding: 1%;
+    color: #ffffff;
+}
+
+#jobRoleName:hover{
+    cursor:pointer;
+    color: #82a1b0;
+    text-decoration: none;
+}
+
 
 #jobRoleNoBorder:hover, #jobRoleRight:hover, #jobRoleBottom:hover, #jobRole:hover {
     background: #faf4f2;
@@ -303,6 +316,11 @@ a:hover{
     transition:         color 0.2s;
 }
 
+#contact_container{
+    border-left: 2px solid white;
+    text-align: left;
+}
+
 
 @media screen and (max-width: 768px) {
     .leadBox {
@@ -313,6 +331,17 @@ a:hover{
     }
     #headerMsg{
         margin-top: 0;
+    }
+    #contact_container{
+        border-left: 0px;
+        border-top: 2px solid white;
+        margin-top: 10px;
+        padding: 1%;
+        text-align: left;
+    }
+
+    #partnerHeaderText{
+        margin-top: -48px;
     }
 
     #login_modal{

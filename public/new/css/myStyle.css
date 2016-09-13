@@ -562,6 +562,7 @@ hr{
 
 #jobRoleName:hover{
     cursor:pointer;
+    color: #82a1b0;
     text-decoration: none;
 }
 #contact_container{
