@@ -4,7 +4,6 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpResponse.*;
-import com.amazonaws.services.importexport.model.Job;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
@@ -44,7 +43,12 @@ public class Application extends Controller {
     public static Result index() {
         String sessionId = session().get("sessionId");
         if(sessionId != null){
-            return redirect("/dashboard");
+            String partnerId = session().get("partnerId");
+            if(partnerId != null){
+                return redirect("/partner/home");
+            } else {
+                return redirect("/dashboard");
+            }
         }
         return ok(views.html.index.render());
     }
@@ -368,8 +372,10 @@ public class Application extends Controller {
                         .eq("leadStatus", ServerConstants.LEAD_STATUS_WON)
                         .findList();
                 break;
-            case 3: // get all
-                allLead = Lead.find.all();
+            case 3: // get all except all the partners
+                allLead = Lead.find.where()
+                        .ne("leadType", ServerConstants.TYPE_PARTNER)
+                        .findList();
                 break;
         }
 
@@ -1150,5 +1156,14 @@ public class Application extends Controller {
     public static Result getAllCompanyLogos() {
         List<Company> companyList = Company.find.orderBy("companyName").findList();
         return ok(toJson(companyList));
+    }
+
+    public static Result checkCandidateSession() {
+        String sessionCandidateId = session().get("candidateId");
+        if(sessionCandidateId != null){
+            return ok("1");
+        } else{
+            return ok("0");
+        }
     }
 }

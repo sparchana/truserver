@@ -95,7 +95,7 @@ public class CandidateService
         Logger.info("Checking for mobile number: " + candidateSignUpRequest.getCandidateMobile());
         Candidate candidate = isCandidateExists(candidateSignUpRequest.getCandidateMobile());
         String leadName = candidateSignUpRequest.getCandidateFirstName()+ " " + candidateSignUpRequest.getCandidateSecondName();
-        Lead lead = LeadService.createOrUpdateConvertedLead(leadName, candidateSignUpRequest.getCandidateMobile(), leadSourceId, channelType);
+        Lead lead = LeadService.createOrUpdateConvertedLead(leadName, candidateSignUpRequest.getCandidateMobile(), leadSourceId, channelType, LeadService.LeadType.CANDIDATE);
         try {
             if(candidate == null) {
                 candidate = new Candidate();
@@ -258,7 +258,8 @@ public class CandidateService
             if(request.getCandidateMobile() != null){
                 // If a lead already exists for this candiate, update its status to 'WON'. If not create a new lead
                 // with status 'WON'
-                Lead lead = createOrUpdateConvertedLead(request.getCandidateFirstName() +" " + request.getCandidateSecondName(), request.getCandidateMobile(), request.getLeadSource(), channelType);
+                Lead lead = createOrUpdateConvertedLead(request.getCandidateFirstName() +" " + request.getCandidateSecondName(), request.getCandidateMobile(),
+                        request.getLeadSource(), channelType, LeadService.LeadType.CANDIDATE);
                 Logger.info("Lead : " + lead.getLeadId() + " created or updated for candidate with mobile: "
                         + request.getCandidateMobile());
                 candidate.setLead(lead);
