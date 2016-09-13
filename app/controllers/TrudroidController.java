@@ -1427,7 +1427,6 @@ public class TrudroidController {
         LatLngOrPlaceIdRequest latLngOrPlaceIdRequest= null;
         try {
             String requestString = request().body().asText();
-            Logger.info("got : "+requestString);
             latLngOrPlaceIdRequest = LatLngOrPlaceIdRequest.parseFrom(Base64.decodeBase64(requestString));
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
@@ -1456,8 +1455,7 @@ public class TrudroidController {
             localityObjectResponse.setStatus(LocalityObjectResponse.Status.SUCCESS);
             Logger.info("returned Locality name: "+ locality.getLocalityName());
         } else {
-            Logger.error("Unable to find locality for placeId:"+latLngOrPlaceIdRequest.getPlaceId() +
-                    latLngOrPlaceIdRequest.getPlaceId() + " or lat/lng:"+latLngOrPlaceIdRequest.getLatitude()+
+            Logger.error("Unable to find locality for placeId:"+latLngOrPlaceIdRequest.getPlaceId() + " or lat/lng:"+latLngOrPlaceIdRequest.getLatitude()+
                     "/"+latLngOrPlaceIdRequest.getLatitude());
             localityObjectResponse.setStatus(LocalityObjectResponse.Status.UNKNOWN);
         }

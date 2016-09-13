@@ -34,6 +34,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.avaje.ebean.Expr.eq;
+import static models.util.ParseCSV.parseBabaJobsCSV;
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {
@@ -354,6 +356,15 @@ public class Application extends Controller {
             return badRequest("error uploading file. Check file type");
         }
         return ok(toJson(ParseCSV.parseCSV(file)));
+    }
+
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result processBabaJCSV() {
+        java.io.File file = (File) request().body().asMultipartFormData().getFile("file").getFile();
+        if(file == null) {
+            return badRequest("error uploading file. Check file type");
+        }
+        return ok(toJson(ParseCSV.parseBabaJobsCSV(file)));
     }
 
     @Security.Authenticated(Secured.class)
@@ -774,7 +785,7 @@ public class Application extends Controller {
     }
 
     public static Result getAllNormalJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.all();
+        List<JobPost> jobPosts = JobPost.find.where().orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
         return ok(toJson(jobPosts));
     }
     public static Result getAllHotJobPosts() {
@@ -1149,13 +1160,20 @@ public class Application extends Controller {
     }
 
     public static Result getJobRoleWiseJobPosts(String rolePara, Long idPara) {
-        List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).findList();
+        List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
         return ok(toJson(jobPostList));
     }
 
     public static Result getAllCompanyLogos() {
-        List<Company> companyList = Company.find.orderBy("companyName").findList();
+        List<Company> companyList = Company.find.where()
+                .or(eq("source", null), eq("source", 0))
+                .orderBy("companyName").findList();
         return ok(toJson(companyList));
+    }
+
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result scrapArena() {
+        return ok(views.html.ScrapArena.render());
     }
 
     public static Result checkCandidateSession() {

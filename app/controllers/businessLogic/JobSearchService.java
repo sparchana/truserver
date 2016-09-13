@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static api.ServerConstants.IS_HOT;
+import static com.avaje.ebean.Expr.eq;
 import static controllers.businessLogic.MatchingEngineService.sortJobPostList;
 import static play.libs.Json.toJson;
 
@@ -22,7 +23,10 @@ import static play.libs.Json.toJson;
 public class JobSearchService {
 
     public static List<JobPost> getAllJobPosts() {
-        return JobPost.find.where().eq("jobPostIsHot", ServerConstants.IS_HOT).findList();
+        return JobPost.find.where()
+                .eq("jobPostIsHot", ServerConstants.IS_HOT)
+                .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
+                .findList();
     }
 
     public static List<JobPost> getMatchingJobPosts(List<Long> jobRoleIds, Integer sortOrder) {
@@ -32,9 +36,17 @@ public class JobSearchService {
 
         Query<JobPost> query = JobPost.find.query();
 
+/*
+
         query = query
                 .where()
                 .eq("jobPostIsHot", IS_HOT)
+                .query();
+*/
+
+        query = query
+                .where()
+                .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
                 .query();
 
         if(jobRoleIds != null && !jobRoleIds.isEmpty() ) {
