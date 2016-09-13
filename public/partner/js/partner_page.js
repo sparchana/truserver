@@ -14,7 +14,7 @@ function openPartnerLogin() {
     $('#form_login_partner').show();
     $('#form_forgot_password').hide();
     $('#partnerLoginModal').modal('show');
-    $("#signInPopup").html("Sign In to Trujobs Partner");
+    $("#signInPopup").html("Login to Trujobs Partner");
     $('#noUserLogin').hide();
     $('#incorrectMsgLogin').hide();
     $('#form_forgot_password').hide();

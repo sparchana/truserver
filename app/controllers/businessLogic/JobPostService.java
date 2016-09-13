@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static api.ServerConstants.IS_HOT;
-import static controllers.businessLogic.MatchingEngineService.SortJobPostList;
+import static controllers.businessLogic.MatchingEngineService.sortJobPostList;
 import static models.util.Validator.isValidLocalityName;
 import static play.libs.Json.toJson;
 
@@ -103,7 +103,7 @@ public class JobPostService {
         }
         List<JobPost> jobPostsResponseList = query.findList();
         boolean doDefaultSort = false;
-        SortJobPostList(jobPostsResponseList, sortOrder, doDefaultSort);
+        sortJobPostList(jobPostsResponseList, sortOrder, doDefaultSort);
         return jobPostsResponseList;
     }
 
