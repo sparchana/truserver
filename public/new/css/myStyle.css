@@ -398,6 +398,14 @@ a:hover{
     background: #ffffff;
 }
 
+#hotJobItemDivider{
+    padding: 1% 2% 1% 0;
+    display: table;
+    font-size: 24px;
+    margin-left: 13%;
+    margin-right: 13%;
+}
+
 #jobBody {
     margin-top: -8px;
     text-align: left;
@@ -562,6 +570,7 @@ hr{
 
 #jobRoleName:hover{
     cursor:pointer;
+    color: #82a1b0;
     text-decoration: none;
 }
 #contact_container{

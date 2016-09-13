@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static api.ServerConstants.*;
+import static com.avaje.ebean.Expr.eq;
 
 /**
  * Matching Engine Service receives a {latitude, longitude} pair along with jobRoleId list
@@ -48,9 +49,16 @@ public class MatchingEngineService {
         }
         Query<JobPost> query = JobPost.find.query();
 
+/*
         query = query
                 .where()
                 .eq("jobPostIsHot", IS_HOT)
+                .query();
+*/
+        /* TODO: until trudroid code is unable to handle diff source jobpost, filter out all the internal jobs */
+        query = query
+                .where()
+                .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
                 .query();
 
         Logger.info("JobPostIdList Size: "+ jobRoleIds.size());

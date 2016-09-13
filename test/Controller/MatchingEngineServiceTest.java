@@ -56,6 +56,9 @@ public class MatchingEngineServiceTest {
         this.pointLng = pointLng;
         this.expectedResult = expectedResult;
         this.radius = radius;
+        if(iDs == null){
+            iDs = new ArrayList<>();
+        }
         this.iDs.addAll(ids);
     }
     /**

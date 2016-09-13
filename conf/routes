@@ -164,7 +164,13 @@ POST        /mGetCandidateUpdateEducationProfileStatics                   contro
 POST        /mGetLocalityForLatLngOrPlaceId                               controllers.TrudroidController.mGetLocalityForLatLngOrPlaceId()
 
 # Test API
+# ~~~~~~~~~~~~~
 GET         /resolveLatLng/:latlng                                        controllers.TrudroidController.mResolveLatLng(latlng: String)
+
+# Scrap API
+# ~~~~~~~~~~~~~
+GET         /support/administrator/scrapCSV/dashboard                     controllers.Application.scrapArena()
+POST        /support/administrator/scrapCSV/processBabaJCSV               controllers.Application.processBabaJCSV()
 
 # 3rd Party API
 # ~~~~~~~~~~~~~

@@ -1,5 +1,4 @@
 # --- !Ups
-
 create table partner (
   partner_id                    bigint signed auto_increment not null,
   partner_uuid                  varchar(255) not null not null,

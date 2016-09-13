@@ -1,7 +1,7 @@
 package Controller;
 
 import common.TestConstants;
-import controllers.businessLogic.JobPostService;
+import controllers.businessLogic.JobSearchService;
 import in.trujobs.proto.JobFilterRequest;
 import models.entity.JobPost;
 import org.junit.Test;
@@ -78,7 +78,7 @@ public class TruControllerTest {
         Application fakeApp = fakeApplication();
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
         running(server, () -> {
-            List<JobPost> jobPostList = JobPostService.filterJobs(jobFilterRequest.build(), null);
+            List<JobPost> jobPostList = JobSearchService.filterJobs(jobFilterRequest.build(), null);
             if (jobPostList == null) return;
             assertEquals(expectedSize, jobPostList.size());
             System.out.println("[test case] testFilterJobs: resultSize:-----------------------------------------------" + jobPostList.size());
