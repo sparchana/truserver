@@ -218,6 +218,26 @@ function setCompanyLogos(returnedData, start){
     });
 }
 
+function createAndAppendDivider(title) {
+    var parent = $("#hotJobs");
+
+    var mainDiv = document.createElement("div");
+    mainDiv.id = "hotJobItemDivider";
+    parent.append(mainDiv);
+
+    var otherJobIcon = document.createElement("img");
+    otherJobIcon.src = "/assets/img/suitcase.svg";
+    otherJobIcon.style = "width: 42px; margin: 8px";
+    otherJobIcon.setAttribute("display", "inline-block");
+    mainDiv.appendChild(otherJobIcon);
+
+    var hotJobItem = document.createElement("span");
+    hotJobItem.setAttribute("display", "inline-block");
+    hotJobItem.textContent = title;
+
+    mainDiv.appendChild(hotJobItem);
+}
+
 function processDataForSelectedJobPost(returnedData) {
         var allJobDetailPageUrl = $(location).attr('href');
         var allJobDetailPageUrlBreak = allJobDetailPageUrl.split("/");
@@ -238,8 +258,10 @@ function processDataForSelectedJobPost(returnedData) {
                 if (jobPostCount > 0) {
                 var count = 0;
                 var parent = $("#hotJobs");
+                var isDividerPresent = false;
                 //returnedData.reverse();
                 try {
+                    createAndAppendDivider("Popular Jobs");
                     returnedData.forEach(function (jobPost) {
                         count++;
                         if (count) {
@@ -260,6 +282,11 @@ function processDataForSelectedJobPost(returnedData) {
                                     }
                                 }
                             });
+
+                            if(jobPost.source != null && jobPost.source > 0 && !isDividerPresent){
+                                createAndAppendDivider("Other Jobs");
+                                isDividerPresent = true;
+                            };
 
                             loopCount = 0;
                             jobLocality.forEach(function (locality) {
