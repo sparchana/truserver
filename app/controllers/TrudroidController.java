@@ -7,6 +7,7 @@ import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
+import com.amazonaws.util.json.JSONException;
 import com.google.api.client.util.Base64;
 import com.google.protobuf.InvalidProtocolBufferException;
 import controllers.businessLogic.*;
@@ -21,12 +22,13 @@ import models.util.SmsUtil;
 import play.Logger;
 import play.mvc.Result;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static controllers.businessLogic.JobPostService.*;
+import static controllers.businessLogic.JobSearchService.*;
 import static models.util.Util.generateOtp;
 import static models.util.Validator.isValidLocalityName;
 import static play.libs.Json.toJson;
@@ -240,7 +242,7 @@ public class TrudroidController {
 
     public static Result mGetAllJobPosts() {
         JobPostResponse.Builder jobPostResponseBuilder = JobPostResponse.newBuilder();
-        jobPostResponseBuilder.addAllJobPost(getJobPostObjectListFromJobPostList(mGetAllJobPostsRaw()));
+        jobPostResponseBuilder.addAllJobPost(convertToJobPostResponseList(getAllJobPosts()));
         return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
     }
 
@@ -262,8 +264,9 @@ public class TrudroidController {
         return jobRoleListToReturn;
     }
 
-    private static List<JobPostObject> getJobPostObjectListFromJobPostList(List<JobPost> jobPostList) {
+    private static List<JobPostObject> convertToJobPostResponseList(List<JobPost> jobPostList) {
         List<JobPostObject> jobPostListToReturn = new ArrayList<>();
+
         if (jobPostList == null) {
             return jobPostListToReturn;
         }
@@ -318,7 +321,7 @@ public class TrudroidController {
         return jobPostLocalities;
     }
 
-    public static Result mApplyJob() {
+    public static Result mApplyJob() throws IOException, JSONException {
         ApplyJobRequest pApplyJobRequest = null;
         ApplyJobResponse.Builder applyJobResponseBuilder = ApplyJobResponse.newBuilder();
 
@@ -457,7 +460,11 @@ public class TrudroidController {
                 List<JobHistory> jobHistoryList = JobHistory.find.where().eq("candidateId", candidate.getCandidateId()).findList();
                 for (JobHistory jobHistory : jobHistoryList) {
                     if (jobHistory.getCurrentJob()) {
-                        candidateBuilder.setCandidateCurrentCompany(jobHistory.getCandidatePastCompany());
+                        if(jobHistory.getCandidatePastCompany() != null){
+                            candidateBuilder.setCandidateCurrentCompany(jobHistory.getCandidatePastCompany());
+                        } else{
+                            candidateBuilder.setCandidateCurrentCompany("");
+                        }
                         JobRoleObject.Builder jobRoleBuilder = JobRoleObject.newBuilder();
                         if(jobHistory.getJobRole() != null){
                             jobRoleBuilder.setJobRoleName(jobHistory.getJobRole().getJobName());
@@ -630,10 +637,12 @@ public class TrudroidController {
         }
 
         //adding job post time Shift
-        TimeShiftObject.Builder timeShiftBuilder = TimeShiftObject.newBuilder();
-        timeShiftBuilder.setTimeShiftId(jobPost.getJobPostShift().getTimeShiftId());
-        timeShiftBuilder.setTimeShiftName(jobPost.getJobPostShift().getTimeShiftName());
-        jobPostBuilder.setJobPostShift(timeShiftBuilder);
+        if(jobPost.getJobPostShift() != null){
+            TimeShiftObject.Builder timeShiftBuilder = TimeShiftObject.newBuilder();
+            timeShiftBuilder.setTimeShiftId(jobPost.getJobPostShift().getTimeShiftId());
+            timeShiftBuilder.setTimeShiftName(jobPost.getJobPostShift().getTimeShiftName());
+            jobPostBuilder.setJobPostShift(timeShiftBuilder);
+        }
 
         //adding job post education
         if (jobPost.getJobPostEducation() != null) {
@@ -839,7 +848,7 @@ public class TrudroidController {
         localityName = localityName.trim();
         Logger.info("setting home loality to "+localityName);
         Locality mLocality = null;
-        if(placeId!=null || !placeId.trim().isEmpty()){
+        if(placeId != null || !placeId.trim().isEmpty()){
             mLocality = Locality.find.where().eq("placeId", placeId).findUnique();
             if(mLocality != null) {
                 return mLocality;
@@ -849,7 +858,7 @@ public class TrudroidController {
             if (mLocality != null) {
                 if(mLocality.getLat() == null || mLocality.getLat() == 0.0
                         || mLocality.getLng() == null || mLocality.getLng() == 0.0) {
-                    Logger.info("updating lat lng for : "+localityName+" in static table Locality");
+                    Logger.info("updating lat lng for : " + localityName+" in static table Locality");
                     mLocality.setLat(latitude);
                     mLocality.setLng(longitude);
                     mLocality.setPlaceId(placeId);
@@ -1295,44 +1304,37 @@ public class TrudroidController {
                 List<JobRole> jobRoleList = JobRole.find.where().in("jobRoleId", jobRoleIdList).findList();
                 if( jobRoleList != null){
                     for(JobRole jobRole: jobRoleList){
-                        interactionParamJobRole +=jobRole.getJobName() + ", ";
+                        interactionParamJobRole += jobRole.getJobName() + ", ";
                     }
                     interactionParamJobRole = interactionParamJobRole.substring(0, interactionParamJobRole.length() - 2);
                 }
             }
         }
+
         if(jobSearchRequest.hasJobFilterRequest()) {
             Logger.info("Filter by other filter options  triggered ") ;
             jobFilterRequestBuilder = jobSearchRequest.getJobFilterRequest().toBuilder();
 
             interactionParamFilter = "Sal: "+jobFilterRequestBuilder.getSalary()+", Edu: " + jobFilterRequestBuilder.getEdu()+", Exp: "+jobFilterRequestBuilder.getExp()+", Gen: "+jobFilterRequestBuilder.getGender();
-            /* override the filter candidateMobile with search candidateMobile */
-            if(jobFilterRequestBuilder.getCandidateMobile().trim().isEmpty()){
+            // override the filter candidateMobile with search candidateMobile
+            if (jobFilterRequestBuilder.getCandidateMobile().trim().isEmpty()){
                 jobFilterRequestBuilder.setCandidateMobile(jobSearchRequest.getCandidateMobile());
             }
-            /* override the filter lat/lng with search lat/lng */
+            // override the filter lat/lng with search lat/lng
             jobFilterRequestBuilder.setJobSearchLatitude(jobSearchRequest.getLatitude());
             jobFilterRequestBuilder.setJobSearchLongitude(jobSearchRequest.getLongitude());
             jobPostList.addAll(filterJobs(jobFilterRequestBuilder.build(), jobRoleIdList));
         } else {
-            Logger.info("No Misc. Filter Applied. Search Jobs with/without jobRoleIdList: "+jobRoleIdList.size());
-            if(jobSearchRequest.getLatitude() != 0.0
-                    && jobSearchRequest.getLongitude() != 0.0) {
-                Logger.info("Job Search triggered with given LatLng");
-                try {
-                    jobPostList.addAll(
-                            mGetMatchingJobPostsByLatLngRaw(jobSearchRequest.getCandidateMobile()
-                                    , jobSearchRequest.getLatitude(), jobSearchRequest.getLongitude(), jobRoleIdList, ServerConstants.SORT_DEFAULT));
-                } catch (NullPointerException n) {
-
-                }
+            if(jobSearchRequest.getLatitude() != 0.0 && jobSearchRequest.getLongitude() != 0.0) {
+                jobPostList.addAll(
+                        getMatchingJobPosts(jobSearchRequest.getLatitude(), jobSearchRequest.getLongitude(),
+                                            jobRoleIdList, ServerConstants.SORT_DEFAULT));
             } else {
-                Logger.info("No LatLong found");
-                jobPostList.addAll((mGetMatchingJobPostsRaw(jobSearchRequest.getCandidateMobile(), null, jobRoleIdList)));
+                jobPostList.addAll((getMatchingJobPosts(jobRoleIdList, null)));
             }
         }
 
-        List<JobPostObject> jobPostListToReturn = getJobPostObjectListFromJobPostList(jobPostList);
+        List<JobPostObject> jobPostListToReturn = convertToJobPostResponseList(jobPostList);
 
         //checking if the job is already applied or not
         if((jobSearchRequest != null && !jobSearchRequest.getCandidateMobile().trim().isEmpty())
@@ -1425,7 +1427,6 @@ public class TrudroidController {
         LatLngOrPlaceIdRequest latLngOrPlaceIdRequest= null;
         try {
             String requestString = request().body().asText();
-            Logger.info("got : "+requestString);
             latLngOrPlaceIdRequest = LatLngOrPlaceIdRequest.parseFrom(Base64.decodeBase64(requestString));
         } catch (InvalidProtocolBufferException e) {
             e.printStackTrace();
@@ -1454,8 +1455,7 @@ public class TrudroidController {
             localityObjectResponse.setStatus(LocalityObjectResponse.Status.SUCCESS);
             Logger.info("returned Locality name: "+ locality.getLocalityName());
         } else {
-            Logger.error("Unable to find locality for placeId:"+latLngOrPlaceIdRequest.getPlaceId() +
-                    latLngOrPlaceIdRequest.getPlaceId() + " or lat/lng:"+latLngOrPlaceIdRequest.getLatitude()+
+            Logger.error("Unable to find locality for placeId:"+latLngOrPlaceIdRequest.getPlaceId() + " or lat/lng:"+latLngOrPlaceIdRequest.getLatitude()+
                     "/"+latLngOrPlaceIdRequest.getLatitude());
             localityObjectResponse.setStatus(LocalityObjectResponse.Status.UNKNOWN);
         }

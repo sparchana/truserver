@@ -15,7 +15,6 @@ function processDataApplyJob(returnedData) {
     $("#messagePromptModal").modal("show");
     $("#jobApplyConfirm").modal("hide");
     if(returnedData.status == 1){
-        postToGoogle();
         $('#customMsgIcon').attr('src', "/assets/img/jobApplied.png");
         $("#customMsg").html("Your Job Application is Successful");
         try{
@@ -45,6 +44,7 @@ function applyJob(id, localityId){
     applyJobFlag = 1;
     applyJobId = id;
     var phone = localStorage.getItem("mobile");
+
     if(phone == null){ // not logged in
         $("#jobApplyConfirm").modal("hide");
         openLogin();
@@ -70,90 +70,3 @@ function applyJob(id, localityId){
         }
     }
 } // end of submit
-
-function postToGoogle() {
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/getJobApplicationDetailsForGoogleSheet/" + applyJobId,
-            data: false,
-            async: false,
-            contentType: false,
-            processData: false,
-            success: processDataGetJobGoogleSheetDetails
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-}
-
-function processDataGetJobGoogleSheetDetails(returnedData) {
-    if(returnedData.candidateGender != null)
-        candidateGender = ((returnedData.candidateGender == 0) ? "Male" : "Female");
-    if(returnedData.candidateIsEmployed != null)
-        isEmployed = ((returnedData.candidateIsEmployed == 0) ? "No" : "Yes");
-    if(returnedData.candidateIsAssessed != null)
-        isAssessed = ((returnedData.candidateIsAssessed == 0) ? "No" : "Yes");
-
-    var value = returnedData.candidateCreationTimestamp;
-    var candidateCreateTimestamp = new Date(value).toLocaleDateString() +" "+ new Date(value).getHours() +":"+new Date(value).getMinutes()+":"+new Date(value).getSeconds();
-    value = returnedData.candidateExpiryDate;
-    var candidateExpiryDate;
-    if(value != null){
-        candidateExpiryDate = new Date(value).toLocaleDateString();
-    } else{
-        candidateExpiryDate = "-";
-    }
-
-    var formUrl = returnedData.formUrl;
-    var totalExperienceInYrs = "";
-    var totalExperience = returnedData.candidateTotalExp;
-    if(totalExperience != null || totalExperience != undefined){
-        totalExperienceInYrs = getInYearMonthFormat(totalExperience);
-    }
-    try {
-        $.ajax({
-            url: formUrl,
-            data: {
-                "entry.1388755113": applyJobId, //jobId
-                "entry.1115234203": ((returnedData.companyName != null) ? returnedData.companyName : ""),
-                "entry.1422779518": ((returnedData.jobRoleName != null) ? returnedData.jobRoleName : ""),
-                "entry.942294281": ((returnedData.candidateLeadId != null) ? returnedData.candidateLeadId : ""),
-                "entry.1345077393": ((returnedData.candidateName != null) ? returnedData.candidateName : ""),
-                "entry.1859090779": ((returnedData.candidateMobile != null) ? returnedData.candidateMobile : ""),
-                "entry.2079461892": candidateGender,
-                "entry.2071290015": totalExperienceInYrs,
-                "entry.179139422": isEmployed,
-                "entry.1488146275": isAssessed,
-                "entry.67497584": ((returnedData.languageKnown != null) ? returnedData.languageKnown : ""),
-                "entry.441069988": ((returnedData.candidateMotherTongue != null) ? returnedData.candidateMotherTongue : ""),
-                "entry.1350761294": ((returnedData.candidateHomeLocality != null) ? returnedData.candidateHomeLocality : ""),
-                "entry.2057814300": ((returnedData.candidateLocalityPref != null) ? returnedData.candidateLocalityPref : ""),
-                "entry.598773915": ((returnedData.candidateJobPref != null) ? returnedData.candidateJobPref : ""),
-                "entry.125850326": ((returnedData.candidateCurrentSalary != null) ? returnedData.candidateCurrentSalary : ""),
-                "entry.240702722": ((returnedData.candidateEducation != null) ? returnedData.candidateEducation : ""),
-                "entry.190053755": ((returnedData.candidateSkill != null) ? returnedData.candidateSkill : ""),
-                "entry.971982828": candidateCreateTimestamp,
-                "entry.98308337": prefLocationName,
-                "entry.46689276": returnedData.candidateProfileStatus,
-                "entry.1180627971": candidateExpiryDate,
-                "entry.791725694": returnedData.candidateAge,
-                "entry.528024717": returnedData.jobApplicationChannel,
-                "entry.1165618058": returnedData.jobPostIsHot
-            },
-            type: "POST",
-            dataType: "xml",
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-}
-
-function getInYearMonthFormat(d){
-    if(d == null) {
-        return "-";
-    } else {
-        var totalYear = Math.round((parseInt(d)/12)*100)/100;
-        return totalYear;
-    }
-}

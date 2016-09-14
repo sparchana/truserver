@@ -75,15 +75,22 @@
           </button>
           <div itemscope itemtype ="http://schema.org/logo">
             <a class="navbar-brand" href="/dashboard"><img id="navLogo" itemprop="Brand" src="/assets/new/img/logo-main.gif" alt="TruJobs Logo" height="32px" style="margin-top: -8px;"></a>
+            <a class="hidden-xs" href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" style="padding: 0px">
+              <img id="playStoreLogoNavBar"  src="/assets/img/download_btn.png" alt="PlayStore Logo" height="54%"></a>
           </div>
         </div>
 
         <div class="collapse navbar-collapse" id="navigationbar">
           <ul class="nav navbar-nav navbar-right">
+            <li class="hidden-xs">
+                <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" target="_blank">
+                    <img src="/assets/img/download_btn.png" style="height:30px;margin-top: -6px; margin-right: -16px;">
+                </a>
+            </li>
             <li><a href="/dashboard">Dashboard</a></li>
             <li><a href="#" id="activeLink">My Jobs</a></li>
             <li><a href="/dashboard/editProfile">Profile</a></li>
-            <li><a href="/dashboard#applyJobs">Apply to Jobs</a></li>
+            <li><a href="/showJobs">Apply to Jobs</a></li>
             <li><a href="#" onclick="logoutUser()">Log Out</a></li>
           </ul>
         </div>

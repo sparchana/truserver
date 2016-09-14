@@ -4,7 +4,7 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpResponse.*;
-import com.amazonaws.services.importexport.model.Job;
+import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
 import com.avaje.ebean.cache.ServerCacheManager;
@@ -34,16 +34,23 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.avaje.ebean.Expr.eq;
+import static models.util.ParseCSV.parseBabaJobsCSV;
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {
 
-    private static boolean isDevMode = Play.isDev(Play.current());
+    private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());
 
     public static Result index() {
         String sessionId = session().get("sessionId");
         if(sessionId != null){
-            return redirect("/dashboard");
+            String partnerId = session().get("partnerId");
+            if(partnerId != null){
+                return redirect("/partner/home");
+            } else {
+                return redirect("/dashboard");
+            }
         }
         return ok(views.html.index.render());
     }
@@ -223,7 +230,7 @@ public class Application extends Controller {
         return ok(toJson(AuthService.savePassword(userMobile, userPassword, InteractionService.InteractionChannelType.SELF)));
     }
 
-    public static Result applyJob() {
+    public static Result applyJob() throws IOException, JSONException {
         JsonNode req = request().body().asJson();
         ApplyJobRequest applyJobRequest = new ApplyJobRequest();
         ObjectMapper newMapper = new ObjectMapper();
@@ -351,6 +358,15 @@ public class Application extends Controller {
         return ok(toJson(ParseCSV.parseCSV(file)));
     }
 
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result processBabaJCSV() {
+        java.io.File file = (File) request().body().asMultipartFormData().getFile("file").getFile();
+        if(file == null) {
+            return badRequest("error uploading file. Check file type");
+        }
+        return ok(toJson(ParseCSV.parseBabaJobsCSV(file)));
+    }
+
     @Security.Authenticated(Secured.class)
     public static Result getAll(int id){
         List<Lead> allLead = new ArrayList<>();
@@ -367,8 +383,10 @@ public class Application extends Controller {
                         .eq("leadStatus", ServerConstants.LEAD_STATUS_WON)
                         .findList();
                 break;
-            case 3: // get all
-                allLead = Lead.find.all();
+            case 3: // get all except all the partners
+                allLead = Lead.find.where()
+                        .ne("leadType", ServerConstants.TYPE_PARTNER)
+                        .findList();
                 break;
         }
 
@@ -767,153 +785,21 @@ public class Application extends Controller {
     }
 
     public static Result getAllNormalJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.all();
+        List<JobPost> jobPosts = JobPost.find.where().orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
         return ok(toJson(jobPosts));
     }
     public static Result getAllHotJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").findList();
+        List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
         return ok(toJson(jobPosts));
     }
 
     @Security.Authenticated(Secured.class)
     public static Result getAllJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.all();
+        List<JobPost> jobPosts = JobPost.find.where()
+                                             .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
+                                             .orderBy().desc("jobPostUpdateTimestamp")
+                                             .findList();
         return ok(toJson(jobPosts));
-    }
-
-    @Security.Authenticated(SecuredUser.class)
-    public static Result getJobApplicationDetailsForGoogleSheet(Integer jobPostId) {
-        JobApplicationGoogleSheetResponse jobApplicationGoogleSheetResponse = new JobApplicationGoogleSheetResponse();
-
-        //get companyInfo + jobPostInfo
-        JobPost jobpost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
-        if(jobpost != null){
-            jobApplicationGoogleSheetResponse.setJobRoleName(jobpost.getJobPostTitle());
-            jobApplicationGoogleSheetResponse.setCompanyName(jobpost.getCompany().getCompanyName());
-        }
-
-        // get candidate information
-        Lead lead = Lead.find.where().eq("leadId", session().get("leadId")).findUnique();
-        if(lead != null) {
-            Candidate candidate = Candidate.find.where().eq("lead_leadId", lead.getLeadId()).findUnique();
-            if(candidate!=null){
-                jobApplicationGoogleSheetResponse.setCandidateCreationTimestamp(candidate.getCandidateCreateTimestamp());
-                jobApplicationGoogleSheetResponse.setCandidateMobile(candidate.getCandidateMobile());
-                if(candidate.getCandidateLastName() == null){
-                    jobApplicationGoogleSheetResponse.setCandidateName(candidate.getCandidateFirstName());
-                } else{
-                    jobApplicationGoogleSheetResponse.setCandidateName(candidate.getCandidateFirstName() + " " +candidate.getCandidateLastName() );
-                }
-                jobApplicationGoogleSheetResponse.setCandidateLeadId(candidate.getLead().getLeadId());
-                if(candidate.getCandidateGender() != null){
-                    jobApplicationGoogleSheetResponse.setCandidateGender(candidate.getCandidateGender());
-                }
-
-                if(candidate.getCandidateTotalExperience() != null){
-                    jobApplicationGoogleSheetResponse.setCandidateTotalExp(candidate.getCandidateTotalExperience());
-                }
-                jobApplicationGoogleSheetResponse.setCandidateIsAssessed(candidate.getCandidateIsAssessed());
-                jobApplicationGoogleSheetResponse.setCandidateIsEmployed(candidate.getCandidateIsEmployed());
-
-                String languagesKnown = "";
-                String candidateJobPref = "";
-                String candidateLocalityPref = "";
-                String candidateSkills = "";
-
-                //Languages Known
-                if(candidate.getLanguageKnownList() != null && candidate.getLanguageKnownList().size() > 0) {
-                    List<LanguageKnown> languageKnownList = candidate.getLanguageKnownList();
-
-                    for(LanguageKnown l : languageKnownList){
-                        languagesKnown += l.getLanguage().getLanguageName() + "(" + l.getUnderstanding() + ", " +
-                                l.getVerbalAbility() + ", " + l.getReadWrite() + "), ";
-                    }
-                }
-
-                //Skill
-                if(candidate.getCandidateSkillList()!= null && candidate.getCandidateSkillList().size() > 0){
-                    List<CandidateSkill> candidateSkillList = candidate.getCandidateSkillList();
-
-                    for(CandidateSkill skill : candidateSkillList){
-                        candidateSkills += skill.getSkill().getSkillName() + ", ";
-                    }
-                }
-
-                if(candidate.getMotherTongue() != null){
-                    jobApplicationGoogleSheetResponse.setCandidateMotherTongue(candidate.getMotherTongue().getLanguageName());
-                }
-
-                if(candidate.getLocality() != null){
-                    jobApplicationGoogleSheetResponse.setCandidateHomeLocality(candidate.getLocality().getLocalityName());
-                }
-                if(candidate.getCandidateCurrentJobDetail() != null){
-                    jobApplicationGoogleSheetResponse.setCandidateCurrentSalary(candidate.getCandidateCurrentJobDetail().getCandidateCurrentSalary());
-                }
-                if(candidate.getCandidateEducation() != null){
-                    jobApplicationGoogleSheetResponse.setCandidateEducation(candidate.getCandidateEducation().getEducation().getEducationName());
-                }
-
-                //Job Pref
-                List<JobPreference> jobRolePrefList = candidate.getJobPreferencesList();
-
-                for(JobPreference job : jobRolePrefList){
-                    candidateJobPref += job.getJobRole().getJobName() + ", ";
-                }
-
-                //Locality Pref
-                List<LocalityPreference> localityPrefList = candidate.getLocalityPreferenceList();
-
-                for(LocalityPreference locality : localityPrefList){
-                    candidateLocalityPref += locality.getLocality().getLocalityName() + ", ";
-                }
-                jobApplicationGoogleSheetResponse.setCandidateProfileStatus(candidate.getCandidateprofilestatus().getProfileStatusName());
-                if(candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE){
-                    Date expDate = candidate.getCandidateStatusDetail().getStatusExpiryDate();
-                    if(expDate != null){
-                        jobApplicationGoogleSheetResponse.setCandidateExpiryDate(expDate);
-                    } else{
-                        jobApplicationGoogleSheetResponse.setCandidateExpiryDate(null);
-                    }
-                } else{
-                    jobApplicationGoogleSheetResponse.setCandidateExpiryDate(null);
-                }
-
-                jobApplicationGoogleSheetResponse.setJobApplicationChannel("Website");
-                jobApplicationGoogleSheetResponse.setJobPostIsHot("Not Hot");
-                if(jobpost.getJobPostIsHot()){
-                    jobApplicationGoogleSheetResponse.setJobPostIsHot("Hot");
-                }
-
-                jobApplicationGoogleSheetResponse.setCandidateAge(0);
-                if(candidate.getCandidateDOB() != null){
-                    Date current = new Date();
-                    Date bday = new Date(candidate.getCandidateDOB().getTime());
-
-                    final Calendar calender = new GregorianCalendar();
-                    calender.set(Calendar.HOUR_OF_DAY, 0);
-                    calender.set(Calendar.MINUTE, 0);
-                    calender.set(Calendar.SECOND, 0);
-                    calender.set(Calendar.MILLISECOND, 0);
-                    calender.setTimeInMillis(current.getTime() - bday.getTime());
-
-                    int age = 0;
-                    age = calender.get(Calendar.YEAR) - 1970;
-                    age += (float) calender.get(Calendar.MONTH) / (float) 12;
-                    jobApplicationGoogleSheetResponse.setCandidateAge(age);
-                }
-
-                jobApplicationGoogleSheetResponse.setLanguageKnown(languagesKnown);
-                jobApplicationGoogleSheetResponse.setCandidateJobPref(candidateJobPref);
-                jobApplicationGoogleSheetResponse.setCandidateLocalityPref(candidateLocalityPref);
-                jobApplicationGoogleSheetResponse.setCandidateSkill(candidateSkills);
-            }
-        }
-        if(!Play.isDev(Play.current())){
-            jobApplicationGoogleSheetResponse.setFormUrl(ServerConstants.PROD_GOOGLE_FORM_FOR_JOB_APPLICATION);
-        } else{
-            jobApplicationGoogleSheetResponse.setFormUrl(ServerConstants.DEV_GOOGLE_FORM_FOR_JOB_APPLICATION);
-        }
-        return ok(toJson(jobApplicationGoogleSheetResponse));
     }
 
     public static Result getAllLocality() {
@@ -970,7 +856,9 @@ public class Application extends Controller {
 
     @Security.Authenticated(RecSecured.class)
     public static Result getAllCompany() {
-        List<Company> companyList = Company.find.orderBy("companyName").findList();
+        List<Company> companyList = Company.find.where()
+                .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
+                .orderBy("companyName").findList();
         return ok(toJson(companyList));
     }
 
@@ -1262,7 +1150,7 @@ public class Application extends Controller {
     public static Result renderJobPostCards() { return ok(views.html.hot_jobs_card_view.render());}
     public static Result renderShowAllJobs() { return ok(views.html.show_all_jobs_page.render());}
     public static Result renderJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
-        return ok(views.html.posted_job_details.render());
+        return ok(views.html.posted_job_details.render(jobCompany,jobTitle));
     }
 
     public static Result getJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
@@ -1272,18 +1160,33 @@ public class Application extends Controller {
         }
         return ok("Error");
     }
-
     public static Result renderJobRoleJobPage(String rolePara, Long idPara) {
-        return ok(views.html.job_role_page.render());
+        return ok(views.html.job_role_page.render(rolePara));
     }
 
     public static Result getJobRoleWiseJobPosts(String rolePara, Long idPara) {
-        List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).findList();
+        List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
         return ok(toJson(jobPostList));
     }
 
     public static Result getAllCompanyLogos() {
-        List<Company> companyList = Company.find.orderBy("companyName").findList();
+        List<Company> companyList = Company.find.where()
+                .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
+                .orderBy("companyName").findList();
         return ok(toJson(companyList));
+    }
+
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result scrapArena() {
+        return ok(views.html.ScrapArena.render());
+    }
+
+    public static Result checkCandidateSession() {
+        String sessionCandidateId = session().get("candidateId");
+        if(sessionCandidateId != null){
+            return ok("1");
+        } else{
+            return ok("0");
+        }
     }
 }

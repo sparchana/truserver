@@ -150,9 +150,10 @@ function processDataCheckCompanyLogo(returnedData) {
             companyLogo.className = "img-responsive";
             companyLogo.id = "companyLogoSlider";
             companyLogo.setAttribute('alt', "Companies Hiring");
-            companyLogo.src = company.companyLogo;
+            if(company.companyLogo != null){
+                companyLogo.src = company.companyLogo;
+            }
             logoDiv.appendChild(companyLogo);
-
         }
         count++;
         //checking when to end the loop
@@ -188,7 +189,9 @@ function setCompanyLogos(returnedData, start){
             companyLogo.className = "img-responsive";
             companyLogo.id = "companyLogoSlider";
             companyLogo.setAttribute('alt', "Companies Hiring");
-            companyLogo.src = company.companyLogo;
+            if(company.companyLogo != null){
+                companyLogo.src = company.companyLogo;
+            }
             logoDiv.appendChild(companyLogo);
 
         }
@@ -198,12 +201,34 @@ function setCompanyLogos(returnedData, start){
     });
 }
 
+function createAndAppendDivider(title) {
+    var parent = $("#hotJobs");
+
+    var mainDiv = document.createElement("div");
+    mainDiv.id = "hotJobItemDivider";
+    parent.append(mainDiv);
+
+    var otherJobIcon = document.createElement("img");
+    otherJobIcon.src = "/assets/img/suitcase.png";
+    otherJobIcon.style = "width: 42px; margin: 8px";
+    otherJobIcon.setAttribute("display", "inline-block");
+    mainDiv.appendChild(otherJobIcon);
+
+    var hotJobItem = document.createElement("span");
+    hotJobItem.setAttribute("display", "inline-block");
+    hotJobItem.textContent = title;
+
+    mainDiv.appendChild(hotJobItem);
+}
+
 function processDataAllJobPosts(returnedData) {
     var jobPostCount = Object.keys(returnedData).length;
     if(jobPostCount > 0){
         var count = 0;
         var parent = $("#hotJobs");
-        returnedData.reverse();
+        //returnedData.reverse();
+        createAndAppendDivider("Popular Jobs");
+        var isDividerPresent = false;
         returnedData.forEach(function (jobPost){
             count++;
             if(count){
@@ -212,6 +237,12 @@ function processDataAllJobPosts(returnedData) {
                 var localities = "";
                 var allLocalities = ""
                 var loopCount = 0;
+
+                if(jobPost.source != null && jobPost.source > 0 && !isDividerPresent){
+                    createAndAppendDivider("Other Jobs");
+                    isDividerPresent = true;
+                };
+
                 jobLocality.forEach(function (locality) {
                     loopCount ++;
                     if(loopCount > 2){
@@ -301,11 +332,10 @@ function processDataAllJobPosts(returnedData) {
                 var salaryDiv = document.createElement("div");
                 salaryDiv.style = "display: inline-block; font-size: 14px";
                 if(jobPost.jobPostMaxSalary == "0"){
-                    salaryDiv.textContent = jobPost.jobPostMinSalary + " monthly";
+                    salaryDiv.textContent = rupeeFormatSalary(jobPost.jobPostMinSalary) + " monthly";
                 } else{
-                    salaryDiv.textContent = jobPost.jobPostMinSalary + " - " + jobPost.jobPostMaxSalary + " monthly";
+                    salaryDiv.textContent = rupeeFormatSalary(jobPost.jobPostMinSalary) + " - " + rupeeFormatSalary(jobPost.jobPostMaxSalary) + " monthly";
                 }
-
                 jobBodySubRowCol.appendChild(salaryDiv);
 
                 //!*  experience  *!/
@@ -389,12 +419,15 @@ function processDataAllJobPosts(returnedData) {
 
                 var applyBtn = document.createElement("div");
                 applyBtn.className = "jobApplyBtn";
-                applyBtn.textContent = "View Job";
+                applyBtn.textContent = "View & Apply";
                 applyBtnDiv.appendChild(applyBtn);
                 applyBtn.onclick=function(){
-                    var jobPostBreak = jobPost.jobPostTitle.replace("/","-");
+                    var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
+                    jobPostBreak = jobPostBreak.toLowerCase();
+                    var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
+                    jobCompany = jobCompany.toLowerCase();
                     try {
-                        window.location.href = "/jobs/" + jobPostBreak + "/Bengaluru/" + jobPost.company.companyName + "/" + jobPost.jobPostId;
+                        window.location.href = "/jobs/" + jobPostBreak + "/bengaluru/" + jobCompany + "/" + jobPost.jobPostId;
                     } catch (exception) {
                         console.log("exception occured!!" + exception);
                     }

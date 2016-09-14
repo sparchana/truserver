@@ -28,6 +28,8 @@ import static play.test.Helpers.testServer;
 
 /**
  * Created by zero on 25/8/16.
+ *
+ * prod/activator-1.3.9-minimal/bin/activator "test-only Service.AddressResolverServiceTest"
  */
 
 @RunWith(Parameterized.class)
@@ -85,6 +87,9 @@ public class AddressResolverServiceTest {
                 {MethodType.getLocalityForPlaceId , 13.0900634, 77.4855548, null, null, null,"ChIJlUeN4XAjrjsRmPV7w7hr4-0"},
                 {MethodType.insertOrUpdateLocality , 12.9240482,77.652965, null, null, "Kadubeesanahalli", null},
                 {MethodType.insertOrUpdateLocality , 12.9364468, 77.6261231, null, null, "Bellandur", null},
+                {MethodType.insertOrUpdateLocality , 12.8780608, 77.4443807, null, null, "Kumbalgodu", null},
+                {MethodType.insertOrUpdateLocality , 12.9527508, 76.57483089999999, null, null, "Hirisave", null},
+                {MethodType.insertOrUpdateLocality , 23.4839689, 85.47907029999999, null, null, "Ormanjhi", null},
         });
     }
 

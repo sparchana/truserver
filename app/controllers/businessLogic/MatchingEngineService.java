@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static api.ServerConstants.*;
+import static com.avaje.ebean.Expr.eq;
 
 /**
  * Matching Engine Service receives a {latitude, longitude} pair along with jobRoleId list
@@ -36,7 +37,9 @@ public class MatchingEngineService {
      * jobRole Id and generates a List<JobPost> lying within DEFAULT_MATCHING_ENGINE_RADIUS and JobPostToLocalityList
      * are ordered by distance of each JobPostToLocality from candidate's home locality.
      */
-    public static List<JobPost> fetchMatchingJobPostForLatLng(Double lat, Double lng, Double r, List<Long> jobRoleIds, Integer sortOrder) {
+    public static List<JobPost> fetchMatchingJobPostForLatLng(Double lat, Double lng, Double r,
+                                                              List<Long> jobRoleIds, Integer sortOrder)
+    {
         Logger.info("[Matching Engine] for lat/lng "+lat+"/"+lng);
         if (r != null && r > 0) {
             radius = r;
@@ -46,9 +49,16 @@ public class MatchingEngineService {
         }
         Query<JobPost> query = JobPost.find.query();
 
+/*
         query = query
                 .where()
                 .eq("jobPostIsHot", IS_HOT)
+                .query();
+*/
+        /* TODO: until trudroid code is unable to handle diff source jobpost, filter out all the internal jobs */
+        query = query
+                .where()
+                .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
                 .query();
 
         Logger.info("JobPostIdList Size: "+ jobRoleIds.size());
@@ -92,7 +102,7 @@ public class MatchingEngineService {
                     jobPostsResponseList.add(new JobPost(tempJobPost));
                 }
             }
-            SortJobPostList(jobPostsResponseList, sortOrder, true);
+            sortJobPostList(jobPostsResponseList, sortOrder, true);
             Logger.info("jobPostResponseList:" + jobPostsResponseList);
             return jobPostsResponseList;
         } else {
@@ -100,7 +110,6 @@ public class MatchingEngineService {
             throw new IllegalArgumentException();
         }
     }
-
 
     /**
      * getDistanceFromCenter takes center and point {lat, lng} value & returns distance
@@ -122,7 +131,7 @@ public class MatchingEngineService {
         return c * earthRadius;
     }
 
-    public static void SortJobPostList(List<JobPost> jobPostsResponseList, Integer sortOrder, boolean doDefaultSort) {
+    public static void sortJobPostList(List<JobPost> jobPostsResponseList, Integer sortOrder, boolean doDefaultSort) {
         switch (sortOrder) {
             case SORT_BY_SALARY:
                 Logger.info("In mGetAllJobPostsRaw : sorting on Salary");

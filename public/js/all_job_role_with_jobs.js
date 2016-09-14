@@ -32,6 +32,37 @@ function processDataCheckAllJobRoles(jobPostJobRoles) {
             startIndex = jobRoleCount - remainingJobRoles;
             setJobRoles(jobPostJobRoles, startIndex);
         }
+        //Setting footer links
+       var footerRowCount = Object.keys(jobPostJobRoles).length / 4;
+        startIndex = 0;
+        for(var i = 0; i< 4; i++) {
+            var parentFooter = $("#jobRoleFooter_" + (i + 1));
+            var itemCount = 0;
+            jobPostJobRoles.forEach(function (jobRoleItem) {
+                if (itemCount >= startIndex && itemCount < startIndex + footerRowCount) {
+                    var jobAnchorFooter = document.createElement("a");
+                    jobAnchorFooter.style = "font-size: 12px";
+                    jobAnchorFooter.onclick = function () {
+                        var jobRoleName = jobRoleItem.jobName;
+
+                        var jobRoleId = jobRoleItem.jobRoleId;
+                        var jobPostBreak = jobRoleName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g, '_');
+                        jobPostBreak = jobPostBreak.toLowerCase();
+                        window.location.href = "/job/" + jobPostBreak + "_jobs" + "/" + jobRoleId;
+                    };
+
+                    var jobRoleNameFooter = document.createElement("div");
+                    jobRoleNameFooter.id = "jobRoleName";
+                    jobRoleNameFooter.textContent = jobRoleItem.jobName + " Jobs";
+                    jobAnchorFooter.appendChild(jobRoleNameFooter);
+
+                    parentFooter.append(jobAnchorFooter);
+                }
+                itemCount = itemCount + 1;
+            });
+
+            startIndex += footerRowCount;
+        }
     }
 }
 
@@ -39,7 +70,7 @@ function setJobRoles(returnedData, start){
     var count = 0;
     var parent = $("#jobRoleGrid");
     returnedData.forEach(function (jobRole) {
-        if(count >= start && count < (start + 4)){
+        if(count >= start && count < (start + 4)) {
             var rowDiv = document.createElement("div");
             rowDiv.className = "row";
             parent.append(rowDiv);
@@ -51,7 +82,9 @@ function setJobRoles(returnedData, start){
 
             var jobAnchor = document.createElement("a");
             jobAnchor.onclick = function () {
-                window.location.href = "/job/" + jobRole.jobName.split("/").join('_') + "_jobs" + "/" + jobRole.jobRoleId;
+                var jobPostBreak = jobRole.jobName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g, '_');
+                jobPostBreak = jobPostBreak.toLowerCase();
+                window.location.href = "/job/" + jobPostBreak + "_jobs" + "/" + jobRole.jobRoleId;
             };
             gridDiv.appendChild(jobAnchor);
 
@@ -73,7 +106,6 @@ function setJobRoles(returnedData, start){
             innerDiv.appendChild(subDiv);
         }
         count++;
-
         //checking when to end the loop
         if(count > start + 4){ return true; }
     });

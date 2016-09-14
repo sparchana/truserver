@@ -220,16 +220,14 @@ function processDataForHotJobPost(returnedData) {
     }
     if (returnedData.jobPostMinSalary != null && returnedData.jobPostMaxSalary != null) {
         if (returnedData.jobPostMaxSalary == null || returnedData.jobPostMaxSalary == "0") {
-            $("#postedJobSalary").html(returnedData.jobPostMinSalary);
-        }else if (returnedData.jobPostMinSalary == null || returnedData.jobPostMinSalary == "0") {
-            $("#postedJobSalary").html(returnedData.jobPostMinSalary);
+            $("#postedJobSalary").html(rupeeFormatSalary(returnedData.jobPostMinSalary)+ " monthly");
         }
         else {
-            $("#postedJobSalary").html(returnedData.jobPostMinSalary + " - " + returnedData.jobPostMaxSalary);
+            $("#postedJobSalary").html(rupeeFormatSalary(returnedData.jobPostMinSalary) + " - " + rupeeFormatSalary(returnedData.jobPostMaxSalary)+ " monthly");
             $("#salaryCondition").html("Salary (Min - Max)");
         }
     }
-    if (returnedData.jobPostIncentives != "") {
+    if (returnedData.jobPostIncentives  != null && returnedData.jobPostIncentives != "") {
         $("#postedJobIncentives").html(returnedData.jobPostIncentives);
     }
     //locality
@@ -309,7 +307,7 @@ function processDataForHotJobPost(returnedData) {
         $("#postedJobTiming").html(returnedData.jobPostStartTime + " "+valStart+ " - "+ returnedData.jobPostEndTime +" "+valEnd);
 
     }
-    if (returnedData.jobPostMinRequirement != "") {
+    if (returnedData.jobPostMinRequirement != null && returnedData.jobPostMinRequirement != "") {
         $("#postedJobMinRequirement").html(returnedData.jobPostMinRequirement);
     }
 
@@ -322,22 +320,34 @@ function processDataForHotJobPost(returnedData) {
     if (returnedData.jobPostDescription != "") {
         $("#postedJobDescription").html(returnedData.jobPostDescription);
     }
-    //Company Details
-    if (returnedData.company.companyLocality != null ) {
-        $("#postedJobCompanyLocation").html(returnedData.company.companyLocality.localityName);
-    }
-    if(returnedData.company.companyLogo != null){
-     document.getElementById("postedJobCompanyLogo").src=returnedData.company.companyLogo;
-        document.getElementById("postedCompanyLogo").src=returnedData.company.companyLogo;
-    }
-    if (returnedData.company.companyWebsite != null ) {
-        $("#postedJobCompanyWebsite").html(returnedData.company.companyWebsite);
-    }
-    if (returnedData.company.companyDescription != "" ) {
-        $("#postedJobCompanyDescriotion").html(returnedData.company.companyDescription);
-    }
-    if (returnedData.company.compType != null ) {
-        $("#postedJobCompanyType").html(returnedData.company.compType.companyTypeName);
-    }
 
+    //Company Details
+    if(returnedData.source == null || returnedData.source == 0){
+        $(".posted_jobs_company_details").show();
+        $("#aboutCompanyTitle").show();
+
+        if (returnedData.company.companyLocality != null ) {
+            $("#postedJobCompanyLocation").html(returnedData.company.companyLocality.localityName);
+        }
+        if(returnedData.company.companyLogo != null){
+            document.getElementById("postedJobCompanyLogo").src = returnedData.company.companyLogo;
+            document.getElementById("postedCompanyLogo").src = returnedData.company.companyLogo;
+        }
+        if (returnedData.company.companyWebsite != null ) {
+            $("#postedJobCompanyWebsite").html(returnedData.company.companyWebsite);
+        }
+        if (returnedData.company.companyDescription != "" ) {
+            $("#postedJobCompanyDescriotion").html(returnedData.company.companyDescription);
+        }
+        if (returnedData.company.compType != null ) {
+            $("#postedJobCompanyType").html(returnedData.company.compType.companyTypeName);
+        }
+    } else {
+        $(".posted_jobs_company_details").hide();
+        $("#aboutCompanyTitle").hide();
+
+        if(returnedData.company.companyLogo != null){
+            document.getElementById("postedJobCompanyLogo").src = returnedData.company.companyLogo;
+        }
+    }
 }

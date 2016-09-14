@@ -3,6 +3,9 @@
  */
 
 function validateMobile(mobile) {
+    if(mobile == undefined){
+        return 1;
+    }
     var validMobile = /^[7-9]{1}[0-9]{9}$/i;
     if (mobile.length > 0 && validMobile.test(mobile) === false) {
         return 0; // format is wrong
@@ -12,6 +15,18 @@ function validateMobile(mobile) {
     else{
         return 2; // passed
     }
+}
+
+function rupeeFormatSalary(sal){
+    if(sal != null){
+        sal = sal.toString();
+        var lastThree = sal.substring(sal.length-3);
+        var otherNumbers = sal.substring(0, sal.length-3);
+        if(otherNumbers != '')
+            lastThree = ',' + lastThree;
+        return otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+    }
+    return "";
 }
 
 function validateName(name) {
@@ -51,4 +66,9 @@ function validatePassword(password) {
     else{
         return 2; // valid password
     }
+}
+
+function validateEmail(email) {
+    var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
 }
