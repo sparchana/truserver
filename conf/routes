@@ -177,7 +177,7 @@ POST        /support/administrator/scrapCSV/processBabaJCSV               contro
 GET         /employer/postJob                                             controllers.Application.postJob()
 
 # Analytics/Super Admin Panel
-# ~~~~~~~~~n
+# ~~~~~~~~~
 
 ## 'R' of CRUD - API
 ## ---------------
