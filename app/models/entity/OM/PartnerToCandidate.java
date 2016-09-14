@@ -34,9 +34,8 @@ public class PartnerToCandidate extends Model {
     @JoinColumn(name = "PartnerId", referencedColumnName= "PartnerId")
     private Partner partner;
 
-    @ManyToOne
     @JsonManagedReference
-    @JoinColumn(name = "CandidateId", referencedColumnName = "CandidateId")
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Candidate candidate;
 
     public PartnerToCandidate(){

@@ -1,8 +1,11 @@
 package models.entity;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.PrivateOwned;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import models.entity.OM.IDProofReference;
+import models.entity.OM.PartnerToCandidate;
 import models.entity.Static.CandidateProfileStatus;
 import models.entity.Static.Locality;
 import models.entity.Static.PartnerProfileStatus;
@@ -11,6 +14,7 @@ import play.Logger;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -68,6 +72,12 @@ public class Partner extends Model {
     @UpdatedTimestamp
     @Column(name = "partner_update_timestamp", columnDefinition = "timestamp")
     private Timestamp partnerUpdateTimestamp;
+
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "partner", cascade = CascadeType.ALL)
+    private List<PartnerToCandidate> partnerToCandidateList;
+
 
     public static Finder<String, Partner> find = new Finder(Partner.class);
 
