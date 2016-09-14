@@ -1,7 +1,5 @@
 # --- !Ups
 
-alter table auth add column authismobileverified int signed not null;
-
 create table partner_to_candidate (
   partner_to_candidate_id       bigint signed auto_increment not null,
   partner_to_candidate_create_timestamp timestamp not null default current_timestamp,
@@ -18,8 +16,6 @@ create index ix_partner_to_candidate_partner_id on partner_to_candidate (partner
 alter table partner_to_candidate add constraint fk_partner_to_candidate_candidate_candidateid foreign key (candidate_candidateid) references candidate (candidateid) on delete restrict on update restrict;
 
 # --- !Downs
-
-alter table auth drop column authismobileverified;
 
 alter table partner_to_candidate drop foreign key fk_partner_to_candidate_partner_id;
 drop index ix_partner_to_candidate_partner_id on partner_to_candidate;
