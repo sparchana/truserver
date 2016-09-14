@@ -40,7 +40,7 @@ import static play.libs.Json.toJson;
 
 public class Application extends Controller {
 
-    private static boolean isDevMode = Play.isDev(Play.current());
+    private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());
 
     public static Result index() {
         String sessionId = session().get("sessionId");
@@ -795,7 +795,10 @@ public class Application extends Controller {
 
     @Security.Authenticated(Secured.class)
     public static Result getAllJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.all();
+        List<JobPost> jobPosts = JobPost.find.where()
+                                             .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
+                                             .orderBy().desc("jobPostUpdateTimestamp")
+                                             .findList();
         return ok(toJson(jobPosts));
     }
 
@@ -853,7 +856,9 @@ public class Application extends Controller {
 
     @Security.Authenticated(RecSecured.class)
     public static Result getAllCompany() {
-        List<Company> companyList = Company.find.orderBy("companyName").findList();
+        List<Company> companyList = Company.find.where()
+                .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
+                .orderBy("companyName").findList();
         return ok(toJson(companyList));
     }
 
@@ -1178,7 +1183,7 @@ public class Application extends Controller {
 
     public static Result getAllCompanyLogos() {
         List<Company> companyList = Company.find.where()
-                .or(eq("source", null), eq("source", 0))
+                .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
                 .orderBy("companyName").findList();
         return ok(toJson(companyList));
     }
