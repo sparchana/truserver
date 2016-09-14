@@ -3,10 +3,12 @@ package controllers.businessLogic;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
+import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
 import api.http.httpResponse.PartnerSignUpResponse;
 import api.http.httpResponse.ResetPasswordResponse;
 import models.entity.*;
+import models.entity.OM.PartnerToCandidate;
 import models.entity.Static.Locality;
 import models.entity.Static.PartnerProfileStatus;
 import models.entity.Static.PartnerType;
@@ -348,4 +350,17 @@ public class PartnerService {
         return partnerSignUpResponse;
     }
 
+    public static CandidateSignUpResponse createPartnerToCandidateMapping(Partner partner, String candidateMobile) {
+        Logger.info("Checking candidate with mobile: " + candidateMobile);
+        CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
+        Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(candidateMobile));
+        if(existingCandidate != null){
+            PartnerToCandidate partnerToCandidate = new PartnerToCandidate();
+            partnerToCandidate.setCandidate(existingCandidate);
+            partnerToCandidate.setPartner(partner);
+            partnerToCandidate.savePartnerToCandidate(partnerToCandidate);
+        }
+        candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+        return candidateSignUpResponse;
+    }
 }

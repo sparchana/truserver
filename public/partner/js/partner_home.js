@@ -104,4 +104,3 @@ function logoutUser() {
         console.log("exception occured!!" + exception);
     }
 }
-

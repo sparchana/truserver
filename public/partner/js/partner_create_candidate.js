@@ -584,9 +584,8 @@ $(function() {
                 //skill
                 candidateSkills: skillMap,
 
-                deactivationStatus: false,
+                deactivationStatus: false
             };
-            console.log(d);
             $.ajax({
                 type: "POST",
                 url: "/partnerCreateCandidateSubmit",
@@ -599,7 +598,13 @@ $(function() {
 }); // end of function
 
 function processDataSignUpSupportSubmit(returnedData) {
-    console.log(returnedData);
+    if(returnedData.status == "1"){ //success
+        window.location = "/partner/home";
+    } else if(returnedData.status == "-1"){
+        logoutUser();
+    } else{
+        notifyError("Something went wrong. Please try again later");
+    }
 }
 
 function notifyError(msg){
