@@ -209,7 +209,7 @@ function createAndAppendDivider(title) {
     parent.append(mainDiv);
 
     var otherJobIcon = document.createElement("img");
-    otherJobIcon.src = "/assets/img/suitcase.svg";
+    otherJobIcon.src = "/assets/img/suitcase.png";
     otherJobIcon.style = "width: 42px; margin: 8px";
     otherJobIcon.setAttribute("display", "inline-block");
     mainDiv.appendChild(otherJobIcon);
