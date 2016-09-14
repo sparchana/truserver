@@ -404,7 +404,7 @@ $(function() {
         var c_dob = String(selectedDob);
 
         //experience
-        var experienceStatus = $('input:radio[name="workExperience"]:checked').val(); // 1 -> "wxperienced"; 0 -> fresher
+        var experienceStatus = $('input:radio[name="workExperience"]:checked').val(); // 1 -> "experienced"; 0 -> fresher
 
         var expMonth = parseInt($('#candidateTotalExperienceMonth').val());
         var expYear = parseInt($('#candidateTotalExperienceYear').val());
@@ -481,6 +481,8 @@ $(function() {
                 case 3: notifyError("Last name contains special symbols. Enter a valid last name"); statusCheck=0; break;
                 case 4: notifyError("Please enter your last name"); statusCheck=0; break;
             }
+        } else {
+            lastName = null;
         }
         var res = validateMobile(phone);
         if(res == 0){
@@ -495,7 +497,7 @@ $(function() {
         } else if(selectedHomeLocality == "") {
             notifyError("Please Enter your Home Locality");
             statusCheck=0;
-        } else if($('#candidateTimeShiftPref').val() == -1){
+        } else if(selectedTimeShift == -1){
             statusCheck=0;
             notifyError("Please Enter Your Preferred Work Shift");
         }  else if($('#dob_day').val() == "" || $('#dob_month').val() == "" || $('#dob_year').val() == ""){
@@ -507,16 +509,16 @@ $(function() {
         } else if(experienceStatus == null){
             statusCheck=0;
             notifyError("Please Select your work experience");
-        } else if($('#candidateCurrentJobSalary').val() > 99999){
+        } else if(candidateLastWithdrawnSalary > 99999){
             statusCheck=0;
             notifyError("Please Enter a valid Salary")
         } else if(experienceStatus == 1 && totalExp == 0){
             notifyError("Select Total Years of Experience");
             statusCheck=0;
-        } else if(experienceStatus == 1 && $('input:radio[name="isEmployed"]:checked').val() == null){
+        } else if(experienceStatus == 1 && currentlyEmployed == null){
             statusCheck=0;
             notifyError("Please answer \"Are you currently working?\"");
-        } else if((experienceStatus == 1)  && ($('#candidateLastWithdrawnSalary').val() == null || $('#candidateLastWithdrawnSalary').val() == "" || $('#candidateLastWithdrawnSalary').val() == "0")){
+        } else if((experienceStatus == 1)  && (candidateLastWithdrawnSalary == null || candidateLastWithdrawnSalary == "" || candidateLastWithdrawnSalary) == "0"){
             statusCheck=0;
             notifyError("Enter your Last Withdrawn Salary");
         } else if(languageMap.length == 0 || languageMap.length == null){
@@ -525,14 +527,80 @@ $(function() {
         } else if(highestEducation == undefined){
             notifyError("Select your Highest Education");
             statusCheck=0;
-        } else if(((highestEducation == 4) || (highestEducation == 5)) && $('#candidateHighestDegree').val() == -1){
+        } else if(((highestEducation == 4) || (highestEducation == 5)) && selectedDegree == -1){
             notifyError("Please select your Degree");
             statusCheck=0;
         }
-        console.log(statusCheck);
 
+        if(statusCheck == 1){
+            var candidatePreferredJob = [];
+            /* Candidate job role preferences  */
+            for (var i = 0; i < jobSelected.length; i++) {
+                candidatePreferredJob.push(parseInt(jobSelected[i]));
+            }
+
+            if(experienceStatus == 0){
+                totalExp = 0;
+                candidateCurrentCompanyVal = null;
+                candidateCurrentJobRole = null;
+                candidateLastWithdrawnSalary = null;
+            }
+            if(currentlyEmployed == 0){
+                candidateCurrentCompanyVal = null;
+                candidateCurrentJobRole = null;
+            }
+            if(highestEducation < 4){
+                selectedDegree = null;
+                candidateInstitute = null;
+            }
+
+            var d = {
+                //mandatory fields
+                candidateFirstName: firstName,
+                candidateSecondName: lastName,
+                candidateMobile: phone,
+                candidateJobPref: candidatePreferredJob,
+                candidateHomeLocality: selectedHomeLocality,
+                candidateTimeShiftPref: selectedTimeShift,
+
+                //experience
+                candidateDob: c_dob,
+                candidateGender: selectedGender,
+                candidateIsEmployed: currentlyEmployed,
+                candidateTotalExperience: totalExp,
+                candidateCurrentCompany: candidateCurrentCompanyVal,
+                candidateCurrentJobRoleId: candidateCurrentJobRole,
+                candidateLastWithdrawnSalary: candidateLastWithdrawnSalary,
+
+                // education
+                candidateEducationLevel: highestEducation,
+                candidateDegree: selectedDegree,
+                candidateEducationInstitute: candidateInstitute,
+                candidateEducationCompletionStatus: parseInt(educationCompletionStatus),
+
+                // language
+                candidateLanguageKnown: languageMap,
+
+                //skill
+                candidateSkills: skillMap,
+
+                deactivationStatus: false,
+            };
+            console.log(d);
+            $.ajax({
+                type: "POST",
+                url: "/partnerCreateCandidateSubmit",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: processDataSignUpSupportSubmit
+            });
+        }
     }); // end of submit
 }); // end of function
+
+function processDataSignUpSupportSubmit(returnedData) {
+    console.log(returnedData);
+}
 
 function notifyError(msg){
     $.notify({

@@ -466,21 +466,27 @@ public class CandidateService
         }
 
         try{
-            candidate.setJobHistoryList(getJobHistoryListFromAddSupportCandidate(supportCandidateRequest.getPastCompanyList(), candidate));
+            if(supportCandidateRequest.getPastCompanyList() != null ){
+                candidate.setJobHistoryList(getJobHistoryListFromAddSupportCandidate(supportCandidateRequest.getPastCompanyList(), candidate));
+            }
         } catch(Exception e){
             Logger.info(" Exception while setting past job details");
             e.printStackTrace();
         }
 
         try{
-            candidate.setIdProofReferenceList(getCandidateIdProofListFromAddSupportCandidate(supportCandidateRequest.getCandidateIdProof(), candidate));
+            if(supportCandidateRequest.getPastCompanyList() != null ){
+                candidate.setIdProofReferenceList(getCandidateIdProofListFromAddSupportCandidate(supportCandidateRequest.getCandidateIdProof(), candidate));
+            }
         } catch(Exception e){
             Logger.info(" Exception while setting idproof reference list");
             e.printStackTrace();
         }
 
         try{
-            candidate.setCandidateExpList(getCandidateExpListFromAddSupportCandidate(supportCandidateRequest.getExpList(), candidate));
+            if(supportCandidateRequest.getPastCompanyList() != null ){
+                candidate.setCandidateExpList(getCandidateExpListFromAddSupportCandidate(supportCandidateRequest.getExpList(), candidate));
+            }
         } catch(Exception e){
             Logger.info(" Exception while setting explist reference list");
             e.printStackTrace();
@@ -816,6 +822,7 @@ public class CandidateService
     private static List<JobHistory> getJobHistoryListFromAddSupportCandidate(List<AddSupportCandidateRequest.PastCompany> pastCompanyList, Candidate candidate) {
         List<JobHistory> response = new ArrayList<>();
         // TODO: loop through the req and then store it in List
+        Logger.info(pastCompanyList.size() + " ==== ");
         for(AddSupportCandidateRequest.PastCompany pastCompany: pastCompanyList){
             if((pastCompany == null) || (pastCompany.getJobRoleId() == null)){
                 Logger.info("Past company name not mentioned");

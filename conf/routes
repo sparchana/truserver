@@ -91,6 +91,7 @@ GET         /getPartnerProfileInfo                                        contro
 GET         /partnerNavBarLoggedIn                                        controllers.PartnerController.renderPagePartnerLoggedInNavbar()
 GET         /partner/ifExists/:mobile                                     controllers.Application.ifCandidateExists(mobile: String)
 
+POST        /partnerCreateCandidateSubmit                                 controllers.PartnerController.partnerCreateCandidateSubmit()
 POST        /findPartnerAndSendOtp                                        controllers.PartnerController.findPartnerAndSendOtp()
 POST        /getAllPartnerType                                            controllers.PartnerController.getAllPartnerType()
 POST        /partnerLoginSubmit                                           controllers.PartnerController.loginSubmit()

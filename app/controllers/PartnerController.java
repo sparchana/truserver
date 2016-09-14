@@ -162,4 +162,25 @@ public class PartnerController {
             return ok("0");
         }
     }
+
+    public static Result partnerCreateCandidateSubmit() {
+        JsonNode req = request().body().asJson();
+        AddSupportCandidateRequest addSupportCandidateRequest = new AddSupportCandidateRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addSupportCandidateRequest = newMapper.readValue(req.toString(), AddSupportCandidateRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Logger.info("Req JSON : " + req);
+        String partnerId = session().get("partnerId");
+        Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
+        if(partner != null){
+            return ok(toJson(CandidateService.createCandidateProfile(addSupportCandidateRequest,
+                    InteractionService.InteractionChannelType.SUPPORT, //here SUPPORT == PARTNER
+                    ServerConstants.UPDATE_ALL_BY_SUPPORT)));
+        } else{
+            return ok("-1");
+        }
+    }
 }
