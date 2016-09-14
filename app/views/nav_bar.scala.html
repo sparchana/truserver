@@ -3,6 +3,7 @@
 <script type="text/javascript" src="/assets/js/reset_password.js"></script>
 <script type="text/javascript" src="/assets/js/validation.js"></script>
 <script type="text/javascript" src="/assets/js/login.js"></script>
+
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container">
             <div class="navbar-header">
@@ -23,14 +24,15 @@
                 <ul class="nav navbar-nav navbar-right">
                     <li class="hidden-xs">
                         <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" target="_blank">
-                            <font id="navItem1" color="#0065a4" style="font-size: 12px; letter-spacing: 1px;">DOWNLOAD APP </font>
-                            <img src="/assets/img/download_btn.png" style="height:30px;margin-top: -6px; margin-right: -16px;">
+                            <img src="/assets/img/download_btn.png" style="height: 30px;margin-top: -6px; margin-right: -16px;">
                         </a>
                     </li>
                     <li> <a href="/"><font id="navItem1" color="#0065a4" style="font-size: 12px; letter-spacing: 1px;">HOME</font></a></li>
                     <li> <a href="/showJobs"><font id="navItem2" color="#0065a4" style="font-size: 12px; letter-spacing: 1px;">APPLY TO JOBS</font></a></li>
                     <li> <a href="https://docs.google.com/a/trujobs.in/forms/d/e/1FAIpQLSeJZdQhkEhYToVDkSyQEj0Ec5q9MAoqZTlMisLjMtNRFMDoHg/viewform" target="_blank">
                         <font id="navItem4" color="#0065a4"  style="font-size: 12px; letter-spacing: 1px;">FOR EMPLOYERS</font></a></li>
+                    <li> <a href="/partner">
+                        <font id="navItem4" color="#0065a4"  style="font-size: 12px; letter-spacing: 1px;">FOR PARTNERS</font></a></li>
                     <li> <a style="cursor: pointer;" data-toggle="modal" data-target="#myLoginModal" onClick="openLogin()">
                         <font id="navItem5" color="#0065a4"  style="font-size: 12px; letter-spacing: 1px;">
                             <img src="/assets/new/img/sign_up.png" height="16px" style="margin-right: 6px"/>SIGN IN
@@ -106,7 +108,7 @@
     <div class="modal-dialog modal-sm">
         <div class="modal-content" style="text-align: center">
             <img src="/assets/img/logo.gif" height="40px" alt="TruJobs Logo">
-            <form id="form_otp" role="form" name="form_otp" style="display: none">
+            <div id="form_otp" role="form" name="form_otp" style="display: none">
                 <div class="c_form" style="margin-left: 10%; margin-right: 10%;" align="center">
                     <h5 id="helpTextSignUp">Enter OTP</h5>
 
@@ -114,10 +116,10 @@
                         <input id="candidateOtp" style="width: 80%;" min="1000" max="9999" name="candidateOtp" type="number" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
                     </div>
 
-                    <button type="submit" id="verifyOtpBtn" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none">Verify OTP</button>
+                    <button id="verifyOtpBtn" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none">Verify OTP</button>
 
                 </div>
-            </form>
+            </div>
 
             <form id="form_auth" role="form" name="form_auth" style="display: none">
                 <div class="c_form" style="margin-left: 10%; margin-right: 10%;" align="center">

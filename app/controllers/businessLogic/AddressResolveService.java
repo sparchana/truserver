@@ -82,9 +82,9 @@ public class AddressResolveService {
         List<String> nearByAddressList = new ArrayList<>();
         nearByAddressList.addAll(fetchNearByLocality(appxLatitude, appxLongitude, null));
         Locality locality =  Locality.find.where().eq("localityName", determineLocality(nearByAddressList).trim().toLowerCase()).findUnique();
-        if(locality == null){
+        if(locality == null) {
             Logger.info("Locality is null!!");
-        } else if((locality.getLat()==null || locality.getLat() == 0 || locality.getPlaceId() == null)){
+        } else if((locality.getLat()==null || locality.getLat() == 0 || locality.getPlaceId() == null)) {
             locality = insertOrUpdateLocality(locality.getLocalityName(), appxLatitude, appxLongitude);
         }
         return locality;
@@ -177,15 +177,17 @@ public class AddressResolveService {
 
             /* after proper json object is fetched */
             /* extract vicinity */
-            for (int i = 0; i < jsonResultArray.length(); ++i) {
-                try {
-                    JSONObject placeOfInterest = jsonResultArray.getJSONObject(i);
-                    String placeAddress = placeOfInterest.getString("vicinity").trim();
+            if(jsonResultArray != null){
+                for (int i = 0; i < jsonResultArray.length(); ++i) {
+                    try {
+                        JSONObject placeOfInterest = jsonResultArray.getJSONObject(i);
+                        String placeAddress = placeOfInterest.getString("vicinity").trim();
                     /* decreases the count of city from address since mostly the city name appears at the end of address */
-                    placeAddress = placeAddress.lastIndexOf(",") > placeAddress.indexOf(",")? placeAddress.substring(0, placeAddress.lastIndexOf(",")) : placeAddress;
-                    nearbyLocalityAddressList.add(placeAddress.trim());
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                        placeAddress = placeAddress.lastIndexOf(",") > placeAddress.indexOf(",")? placeAddress.substring(0, placeAddress.lastIndexOf(",")) : placeAddress;
+                        nearbyLocalityAddressList.add(placeAddress.trim());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
@@ -198,7 +200,7 @@ public class AddressResolveService {
         StringBuilder jsonResults = getJSONForAddressToLatLng(localityName, lat, lng);
 
         Locality freshLocality = parseAndGetLocality(jsonResults);
-        Logger.info("loclaity:"+toJson(freshLocality));
+        Logger.info("locality:"+toJson(freshLocality));
         return freshLocality;
     }
 
@@ -400,9 +402,9 @@ public class AddressResolveService {
         }
 
         String finalPredictedLocalityName = "";
-        if(matchingLocalities.size() >0 ) {
+        if(matchingLocalities.size() > 0 ) {
             finalPredictedLocalityName = sortMapByValue(matchingLocalities).entrySet().iterator().next().getKey();
-            Logger.info("match founnd in db for:"+finalPredictedLocalityName );
+            Logger.info("match found in db for:"+finalPredictedLocalityName );
         } else {
             Map<String, Integer> sortedMap = sortMapByValue(countByWord);
             Iterator it = sortedMap.entrySet().iterator();

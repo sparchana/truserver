@@ -27,6 +27,7 @@ function processDataPostReset(returnedData) {
         localStorage.setItem("lastName", returnedData.candidateLastName);
         localStorage.setItem("assessed", returnedData.isAssessed);
         localStorage.setItem("minProfile", returnedData.minProfile);
+
         if(applyJobFlag == 1){
             $("#myLoginModal").modal("hide");
             applyJob(applyJobId, prefLocation);

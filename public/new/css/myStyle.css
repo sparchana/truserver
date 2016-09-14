@@ -398,6 +398,14 @@ a:hover{
     background: #ffffff;
 }
 
+#hotJobItemDivider{
+    padding: 1% 2% 1% 0;
+    display: table;
+    font-size: 24px;
+    margin-left: 13%;
+    margin-right: 13%;
+}
+
 #jobBody {
     margin-top: -8px;
     text-align: left;
@@ -533,9 +541,6 @@ hr{
 #firstNameLastName {
     height: 34px;
 }
-.navbar-right{
-    margin-right: -78px;
-}
 #playStoreLogoNavBar{
     display: none;
 }
@@ -560,25 +565,64 @@ hr{
     color: #ffffff;
 }
 
+#forBtn{
+    margin: 24px 12px 24px 0;
+    width: 180px;
+    color: #fff;
+    float: left;
+    padding: 12px 0 12px 0;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #fff;
+    display: inline-block;
+    -webkit-transition: background 0.2s;
+    -moz-transition:    background 0.2s;
+    -ms-transition:     background 0.2s;
+    -o-transition:      background 0.2s;
+    transition:         background 0.2s;
+}
+
+#forBtn:hover{
+    cursor: hand;
+    background: #fff;
+    color: #06436a;
+    font-weight: bold;
+    border: 1px solid #fff;
+    display: inline-block;
+
+    -webkit-transition: background 0.2s;
+    -moz-transition:    background 0.2s;
+    -ms-transition:     background 0.2s;
+    -o-transition:      background 0.2s;
+    transition:         background 0.2s;
+
+}
+
+
 #jobRoleName:hover{
     cursor:pointer;
+    color: #82a1b0;
     text-decoration: none;
 }
 #contact_container{
-    border-left: 2px solid white;
+    font-size: 14px;
+    border-left: 1px solid white;
     text-align: left;
 }
 
 @media screen and (max-width: 768px) {
     #contact_container{
-        border-left: 0px;
-        border-top: 2px solid white;
+        border-left: none;
+        border-top: 1px solid white;
         margin-top: 10px;
-        padding: 1%;
-        text-align: left;
+        padding: 4% 1% 1% 1%;
+        text-align: center;
     }
     #jobRoleName{
-        font-size: 10px;
+        font-size: 12px;
+    }
+    #forBtn{
+        width: 100%;
     }
     #playStoreDownloadButtonContainer{
         text-align:left;
@@ -693,7 +737,7 @@ hr{
         margin-left: 12%;
         margin-right: 12%;
         padding: 10px 8px;
-        box-shadow:0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
+        margin-top: 0;
     }
     #hot_job_section {
         margin-top: 8%;
@@ -1073,7 +1117,7 @@ padding: 0px;
 	width:85%;
 	position: absolute;
 	z-index: 2;
-	border:0px #2196F3 solid;
+	border: 0px #2196F3 solid;
 	margin-left: auto;
 	margin-right:auto;
 	padding-bottom: 5px;

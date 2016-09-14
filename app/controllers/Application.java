@@ -4,7 +4,6 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpResponse.*;
-import com.amazonaws.services.importexport.model.Job;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
@@ -35,6 +34,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.avaje.ebean.Expr.eq;
+import static models.util.ParseCSV.parseBabaJobsCSV;
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {
@@ -44,7 +45,12 @@ public class Application extends Controller {
     public static Result index() {
         String sessionId = session().get("sessionId");
         if(sessionId != null){
-            return redirect("/dashboard");
+            String partnerId = session().get("partnerId");
+            if(partnerId != null){
+                return redirect("/partner/home");
+            } else {
+                return redirect("/dashboard");
+            }
         }
         return ok(views.html.index.render());
     }
@@ -352,6 +358,15 @@ public class Application extends Controller {
         return ok(toJson(ParseCSV.parseCSV(file)));
     }
 
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result processBabaJCSV() {
+        java.io.File file = (File) request().body().asMultipartFormData().getFile("file").getFile();
+        if(file == null) {
+            return badRequest("error uploading file. Check file type");
+        }
+        return ok(toJson(ParseCSV.parseBabaJobsCSV(file)));
+    }
+
     @Security.Authenticated(Secured.class)
     public static Result getAll(int id){
         List<Lead> allLead = new ArrayList<>();
@@ -368,8 +383,10 @@ public class Application extends Controller {
                         .eq("leadStatus", ServerConstants.LEAD_STATUS_WON)
                         .findList();
                 break;
-            case 3: // get all
-                allLead = Lead.find.all();
+            case 3: // get all except all the partners
+                allLead = Lead.find.where()
+                        .ne("leadType", ServerConstants.TYPE_PARTNER)
+                        .findList();
                 break;
         }
 
@@ -768,11 +785,11 @@ public class Application extends Controller {
     }
 
     public static Result getAllNormalJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.all();
+        List<JobPost> jobPosts = JobPost.find.where().orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
         return ok(toJson(jobPosts));
     }
     public static Result getAllHotJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").findList();
+        List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
         return ok(toJson(jobPosts));
     }
 
@@ -1143,12 +1160,28 @@ public class Application extends Controller {
     }
 
     public static Result getJobRoleWiseJobPosts(String rolePara, Long idPara) {
-        List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).findList();
+        List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
         return ok(toJson(jobPostList));
     }
 
     public static Result getAllCompanyLogos() {
-        List<Company> companyList = Company.find.orderBy("companyName").findList();
+        List<Company> companyList = Company.find.where()
+                .or(eq("source", null), eq("source", 0))
+                .orderBy("companyName").findList();
         return ok(toJson(companyList));
+    }
+
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result scrapArena() {
+        return ok(views.html.ScrapArena.render());
+    }
+
+    public static Result checkCandidateSession() {
+        String sessionCandidateId = session().get("candidateId");
+        if(sessionCandidateId != null){
+            return ok("1");
+        } else{
+            return ok("0");
+        }
     }
 }

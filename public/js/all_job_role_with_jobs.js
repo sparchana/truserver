@@ -41,6 +41,7 @@ function processDataCheckAllJobRoles(jobPostJobRoles) {
             jobPostJobRoles.forEach(function (jobRoleItem) {
                 if (itemCount >= startIndex && itemCount < startIndex + footerRowCount) {
                     var jobAnchorFooter = document.createElement("a");
+                    jobAnchorFooter.style = "font-size: 12px";
                     jobAnchorFooter.onclick = function () {
                         var jobRoleName = jobRoleItem.jobName;
 
@@ -52,7 +53,7 @@ function processDataCheckAllJobRoles(jobPostJobRoles) {
 
                     var jobRoleNameFooter = document.createElement("div");
                     jobRoleNameFooter.id = "jobRoleName";
-                    jobRoleNameFooter.textContent = jobRoleItem.jobName;
+                    jobRoleNameFooter.textContent = jobRoleItem.jobName + " Jobs";
                     jobAnchorFooter.appendChild(jobRoleNameFooter);
 
                     parentFooter.append(jobAnchorFooter);
@@ -104,7 +105,7 @@ function setJobRoles(returnedData, start){
             subDiv.textContent = jobRole.jobName;
             innerDiv.appendChild(subDiv);
         }
-        count++
+        count++;
         //checking when to end the loop
         if(count > start + 4){ return true; }
     });

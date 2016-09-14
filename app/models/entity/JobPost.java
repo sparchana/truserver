@@ -1,5 +1,6 @@
 package models.entity;
 
+import api.ServerConstants;
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.PrivateOwned;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
@@ -145,12 +146,16 @@ public class JobPost extends Model {
     @Column(name = "Gender", columnDefinition = "int(1) null")
     private Integer gender;
 
+    @Column(name = "Source", columnDefinition = "int null")
+    private Integer source; // internal data
+
 
     public static Finder<String, JobPost> find = new Finder(JobPost.class);
 
     public JobPost() {
         this.jobPostUUId = UUID.randomUUID().toString();
         this.jobPostCreateTimestamp = new Timestamp(System.currentTimeMillis());
+        this.source = ServerConstants.SOURCE_INTERNAL;
     }
 
     public JobPost(JobPost jobPost) {
@@ -187,6 +192,7 @@ public class JobPost extends Model {
         this.recruiterProfile = jobPost.recruiterProfile;
         this.jobPostApplicationList = jobPost.jobPostApplicationList;
         this.gender = jobPost.gender;
+        this.source = jobPost.source;
     }
 
     public RecruiterProfile getRecruiterProfile() {
@@ -455,5 +461,13 @@ public class JobPost extends Model {
 
     public void setGender(Integer gender) {
         this.gender = gender;
+    }
+
+    public Integer getSource() {
+        return source;
+    }
+
+    public void setSource(Integer source) {
+        this.source = source;
     }
 }

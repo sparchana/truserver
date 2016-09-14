@@ -6,93 +6,47 @@ import com.avaje.ebean.Query;
 import in.trujobs.proto.*;
 import models.entity.Candidate;
 import models.entity.JobPost;
-import models.entity.OM.JobPostToLocality;
-import models.entity.OM.JobPreference;
-import models.entity.Static.Locality;
+import models.entity.Static.JobRole;
 import play.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static api.ServerConstants.IS_HOT;
-import static controllers.businessLogic.MatchingEngineService.SortJobPostList;
-import static models.util.Validator.isValidLocalityName;
+import static com.avaje.ebean.Expr.eq;
+import static controllers.businessLogic.MatchingEngineService.sortJobPostList;
 import static play.libs.Json.toJson;
 
 /**
  * Created by zero on 15/8/16.
  */
-public class JobPostService {
-    public static List<JobPostObject> getJobPostObjectListFromJobPostList(List<JobPost> jobPostList) {
-        List<JobPostObject> jobPostListToReturn = new ArrayList<>();
+public class JobSearchService {
 
-        if (jobPostList == null) {
-            return jobPostListToReturn;
-        }
-
-        for (models.entity.JobPost jobPost : jobPostList) {
-            JobPostObject.Builder jobPostBuilder
-                    = JobPostObject.newBuilder();
-            jobPostBuilder.setJobPostCreationMillis(jobPost.getJobPostCreateTimestamp().getTime());
-            jobPostBuilder.setJobPostId(jobPost.getJobPostId());
-            jobPostBuilder.setJobPostTitle(jobPost.getJobPostTitle());
-            jobPostBuilder.setJobPostCompanyName(jobPost.getCompany().getCompanyName());
-            jobPostBuilder.setJobPostMinSalary(jobPost.getJobPostMinSalary());
-            jobPostBuilder.setJobPostMaxSalary(jobPost.getJobPostMaxSalary());
-            jobPostBuilder.setVacancies(jobPost.getJobPostVacancies());
-
-            JobRoleObject.Builder jobRoleBuilder = JobRoleObject.newBuilder();
-
-            if (jobPost.getJobRole() != null) {
-                jobPostBuilder.setJobRole(jobPost.getJobRole().getJobName());
-            }
-
-            jobPostBuilder.setJobPostCompanyLogo(jobPost.getCompany().getCompanyLogo());
-
-            ExperienceObject.Builder experienceBuilder = ExperienceObject.newBuilder();
-            experienceBuilder.setExperienceId(jobPost.getJobPostExperience().getExperienceId());
-            experienceBuilder.setExperienceType(jobPost.getJobPostExperience().getExperienceType());
-            jobPostBuilder.setJobPostExperience(experienceBuilder);
-
-            if (jobPost.getJobPostShift() != null) {
-                TimeShiftObject.Builder timeShiftBuilder = TimeShiftObject.newBuilder();
-
-                timeShiftBuilder.setTimeShiftId(jobPost.getJobPostShift().getTimeShiftId());
-                timeShiftBuilder.setTimeShiftName(jobPost.getJobPostShift().getTimeShiftName());
-                jobPostBuilder.setJobPostShift(timeShiftBuilder);
-            }
-
-            List<LocalityObject> jobPostLocalities = new ArrayList<>();
-            List<JobPostToLocality> localityList = jobPost.getJobPostToLocalityList();
-            for (JobPostToLocality locality : localityList) {
-                LocalityObject.Builder localityBuilder
-                        = LocalityObject.newBuilder();
-                localityBuilder.setLocalityId(locality.getLocality().getLocalityId());
-                localityBuilder.setLocalityName(locality.getLocality().getLocalityName());
-                jobPostLocalities.add(localityBuilder.build());
-            }
-            jobPostBuilder.addAllJobPostLocality(jobPostLocalities);
-
-            jobPostListToReturn.add(jobPostBuilder.build());
-        }
-
-        return jobPostListToReturn;
+    public static List<JobPost> getAllJobPosts() {
+        return JobPost.find.where()
+                .eq("jobPostIsHot", ServerConstants.IS_HOT)
+                .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
+                .findList();
     }
 
-    public static List<JobPost> mGetAllJobPostsRaw() {
-        return JobPost.find.where().eq("jobPostIsHot", ServerConstants.IS_HOT).findList();
-    }
-
-    public static List<JobPost> mGetAllJobPostsRaw(Integer sortOrder, List<Long> jobRoleIds) {
+    public static List<JobPost> getMatchingJobPosts(List<Long> jobRoleIds, Integer sortOrder) {
         if(sortOrder == null){
             sortOrder = ServerConstants.SORT_DEFAULT;
         }
 
         Query<JobPost> query = JobPost.find.query();
 
+/*
+
         query = query
                 .where()
                 .eq("jobPostIsHot", IS_HOT)
+                .query();
+*/
+
+        query = query
+                .where()
+                .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
                 .query();
 
         if(jobRoleIds != null && !jobRoleIds.isEmpty() ) {
@@ -101,28 +55,69 @@ public class JobPostService {
                     .in("jobRole.jobRoleId", jobRoleIds)
                     .query();
         }
+
         List<JobPost> jobPostsResponseList = query.findList();
+
         boolean doDefaultSort = false;
-        SortJobPostList(jobPostsResponseList, sortOrder, doDefaultSort);
+
+        sortJobPostList(jobPostsResponseList, sortOrder, doDefaultSort);
+
         return jobPostsResponseList;
     }
 
+    public static List<JobPost> getMatchingJobPosts(Double latitude, Double longitude,
+                                                    List<Long> jobRoleIds, Integer sortOrder)
+    {
+        sortOrder = sortOrder == null ? ServerConstants.SORT_DEFAULT:sortOrder;
 
+        return MatchingEngineService.fetchMatchingJobPostForLatLng(
+                latitude, longitude, null, jobRoleIds, sortOrder);
+    }
 
-    public static Locality getOrCreateLocality(String localityName) {
-        // validate localityName
-        localityName = localityName.trim();
-        if (localityName != null && isValidLocalityName(localityName)) {
-            Locality locality = Locality.find.where().eq("localityName", localityName).findUnique();
-            if (locality != null) {
-                return locality;
+    public static List<JobPost> getRelevantJobsPostsForCandidate(String mobile) {
+
+        String candidateMobile = FormValidator.convertToIndianMobileFormat(mobile);
+
+        Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
+
+        double lat = 0.00;
+        double lng = 0.00;
+        List<Long> jobRoleIds = new ArrayList<Long>();
+
+        if (existingCandidate != null) {
+            // check if this candidate has lat-long details, of so use this for search
+            if (existingCandidate.getCandidateLocalityLat() != null && existingCandidate.getCandidateLocalityLng() != null &&
+                    existingCandidate.getCandidateLocalityLat() != 0.0 && existingCandidate.getCandidateLocalityLng() != 0.0)
+            {
+                lat = existingCandidate.getCandidateLocalityLat();
+                lng = existingCandidate.getCandidateLocalityLng();
+            }
+            else if (existingCandidate.getLocality() != null &&
+                     existingCandidate.getLocality().getLat() != null &&
+                     existingCandidate.getLocality().getLng() != null &&
+                     existingCandidate.getLocality().getLat() != 0.0 &&
+                     existingCandidate.getLocality().getLat() != 0.0)
+            {
+                // if candidate's home locality is mentioned, we will use that for search
+                lat = existingCandidate.getLocality().getLat();
+                lng = existingCandidate.getLocality().getLng();
+            }
+
+            if (existingCandidate.getJobPreferencesList() != null && !existingCandidate.getJobPreferencesList().isEmpty()) {
+                for (int i = 0; i <= existingCandidate.getJobPreferencesList().size(); i++) {
+                    jobRoleIds.add(existingCandidate.getJobPreferencesList().get(i).getJobRole().getJobRoleId());
+                }
+            }
+
+            if (lat == 0.0 || lng == 0.0) {
+                return getMatchingJobPosts(jobRoleIds, ServerConstants.SORT_DEFAULT);
+            }
+            else {
+                return getMatchingJobPosts(lat, lng, jobRoleIds, ServerConstants.SORT_DEFAULT);
             }
         }
-        Locality locality = new Locality();
-        locality.setLocalityName(localityName);
-        locality.save();
-        locality = Locality.find.where().eq("localityName", localityName).findUnique();
-        return locality;
+
+        return getAllJobPosts();
     }
 
     public static List<JobPost> filterJobs(JobFilterRequest jobFilterRequest, List<Long> jobRoleIds) {
@@ -139,11 +134,11 @@ public class JobPostService {
             /* filter on searched lat/lng */
             if(jobFilterRequest.getJobSearchLongitude() != 0.0
                     && jobFilterRequest.getJobSearchLatitude() != 0.0) {
-                jobPostList = mGetMatchingJobPostsByLatLngRaw(jobFilterRequest.getCandidateMobile(),
-                        jobFilterRequest.getJobSearchLatitude(), jobFilterRequest.getJobSearchLongitude(), jobRoleIds, sortOrder);
+                jobPostList = getMatchingJobPosts(jobFilterRequest.getJobSearchLatitude(),
+                        jobFilterRequest.getJobSearchLongitude(), jobRoleIds, sortOrder);
             } else {
-                /* filter over candidate's lat/lng or over all the the jobpost */
-                jobPostList = mGetMatchingJobPostsRaw(jobFilterRequest.getCandidateMobile(), sortOrder, jobRoleIds);
+                // if no lat long is available return all jobs matching given jobrole ids in given sort order
+                jobPostList = getMatchingJobPosts(jobRoleIds, sortOrder);
             }
 
             if (jobPostList != null) {
@@ -247,51 +242,5 @@ public class JobPostService {
             default:
                 return 0L;
         }
-    }
-
-    public static List<JobPost> mGetMatchingJobPostsByLatLngRaw(String mobile, Double latitude, Double longitude,
-                                                                List<Long> jobRoleIds, Integer sortOrder) {
-        mobile = FormValidator.convertToIndianMobileFormat(mobile);
-        if (mobile != null && !mobile.trim().isEmpty()) {
-            Logger.info("getMatchingJob for Mobile: " + mobile);
-            Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
-            if (existingCandidate != null) {
-                sortOrder = sortOrder == null ? ServerConstants.SORT_DEFAULT:sortOrder;
-                return MatchingEngineService.fetchMatchingJobPostForLatLng(
-                        latitude, longitude, null, jobRoleIds, sortOrder);
-            }
-        } else {
-            Logger.info("Job Search Req with NO mobile Number.");
-        }
-        return MatchingEngineService.fetchMatchingJobPostForLatLng(
-                latitude, longitude, null, jobRoleIds, sortOrder);
-    }
-
-    /**
-     *
-     * This method is called when lat/lng is 0 or not available
-     * if its 0.0 then all jobs are returned
-     *
-     */
-    public static List<JobPost> mGetMatchingJobPostsRaw(String mobile, Integer sortOrder, List<Long> jobRoleIds) {
-        mobile = FormValidator.convertToIndianMobileFormat(mobile);
-        if (mobile != null && !mobile.trim().isEmpty()) {
-            Logger.info("getMatchingJob for Mobile: " + mobile);
-            Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
-            if (existingCandidate != null) {
-                if (existingCandidate.getCandidateLocalityLat() == null || existingCandidate.getCandidateLocalityLng() == null) {
-                    return mGetAllJobPostsRaw();
-                } else {
-                    /*return MatchingEngineService.fetchMatchingJobPostForLatLng(
-                            existingCandidate.getCandidateLocalityLat(), existingCandidate.getCandidateLocalityLng(), null
-                            , jobRoleIds, sortOrder);*/
-                    return mGetAllJobPostsRaw(sortOrder, jobRoleIds);
-                }
-            }
-        } else {
-            Logger.info("In mGetMatchingJobPostsRaw: No Mobile Number found. All job search triggered in App: ");
-            return mGetAllJobPostsRaw(sortOrder, jobRoleIds);
-        }
-        return null;
     }
 }
