@@ -137,12 +137,4 @@ public class Auth extends Model {
     public void setAuthUpdateTimestamp(Timestamp authUpdateTimestamp) {
         this.authUpdateTimestamp = authUpdateTimestamp;
     }
-
-    public int getAuthIsMobileVerified() {
-        return authIsMobileVerified;
-    }
-
-    public void setAuthIsMobileVerified(int authIsMobileVerified) {
-        this.authIsMobileVerified = authIsMobileVerified;
-    }
 }

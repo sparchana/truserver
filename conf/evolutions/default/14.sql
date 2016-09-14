@@ -17,6 +17,8 @@ alter table partner_to_candidate add constraint fk_partner_to_candidate_candidat
 
 # --- !Downs
 
+drop table if exists partner_to_candidate;
+
 alter table partner_to_candidate drop foreign key fk_partner_to_candidate_partner_id;
 drop index ix_partner_to_candidate_partner_id on partner_to_candidate;
 
