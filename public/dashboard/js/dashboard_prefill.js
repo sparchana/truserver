@@ -537,9 +537,7 @@ function saveCandidateExperienceDetails(){
 
         if(experienceStatus == 1 && totalExp == 0){
             alert("Select Total Years of Experience");
-        }
-
-        else if(experienceStatus == 1 && $('input:radio[name="isEmployed"]:checked').val() == null){
+        } else if(experienceStatus == 1 && $('input:radio[name="isEmployed"]:checked').val() == null){
             alert("Please answer \"Are you currently working?\"");
         } else if((experienceStatus == 1)  && ($('#candidateLastWithdrawnSalary').val() == null || $('#candidateLastWithdrawnSalary').val() == "" || $('#candidateLastWithdrawnSalary').val() == "0")){
             alert("Enter your Last Withdrawn Salary");

@@ -1087,6 +1087,18 @@ public class Application extends Controller {
         return ok("0");
     }
 
+    @Security.Authenticated(SecuredUser.class)
+    public static Result ifCandidateExists(String mobile) {
+        if(mobile != null){
+            mobile = FormValidator.convertToIndianMobileFormat(mobile);
+            Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
+            if(existingCandidate != null) {
+                return ok("1");
+            }
+        }
+        return ok("0");
+    }
+
     @Security.Authenticated(PartnerSecured.class)
     public static Result getAllDeactivationReason() {
         List<Reason> deactivationReasons = Reason.find.all();

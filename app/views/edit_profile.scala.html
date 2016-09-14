@@ -1,510 +1,546 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <meta name="keywords" content="freshers jobs, driver jobs, delivery boy jobs, field sales agent,call center jobs, BPO jobs, data entry jobs, back office jobs, receptionist jobs, beautician jobs, waiter jobs, cook jobs, restaurant jobs, cashier jobs, experienced jobs, jobs in Bangalore, driver jobs, delivery boy jobs, field sales agent,call center jobs, BPO jobs, data entry jobs, back office jobs, receptionist jobs, beautician jobs, waiter jobs, cook jobs, restaurant jobs, cashier jobs, full time jobs, part time jobs, entry level jobs, plumber jobs, electrician jobs">
-    <meta name="description" content="TruJobs helps you find the right job! Give a missed call at 8880007799 for Best Jobs. We pre-screen, match and schedule interviews for Jobs" />
-    <title>Edit Profile - Trujobs</title>
+        <meta name="keywords" content="freshers jobs, driver jobs, delivery boy jobs, field sales agent,call center jobs, BPO jobs, data entry jobs, back office jobs, receptionist jobs, beautician jobs, waiter jobs, cook jobs, restaurant jobs, cashier jobs, experienced jobs, jobs in Bangalore, driver jobs, delivery boy jobs, field sales agent,call center jobs, BPO jobs, data entry jobs, back office jobs, receptionist jobs, beautician jobs, waiter jobs, cook jobs, restaurant jobs, cashier jobs, full time jobs, part time jobs, entry level jobs, plumber jobs, electrician jobs">
+        <meta name="description" content="TruJobs helps you find the right job! Give a missed call at 8880007799 for Best Jobs. We pre-screen, match and schedule interviews for Jobs" />
+        <title>Edit Profile - Trujobs</title>
 
-    <link rel="icon" type="image/png" href="/assets/img/icon.png">
-    <link href="/assets/dashboard/css/bootstrap.min.css" rel="stylesheet">
-    <script type="text/javascript" src="/assets/js/jquery.min_1_12_0.js"></script>
-    <script type="text/javascript" src="/assets/dashboard/js/user_login.js"></script>
-    <script type="text/javascript" src="/assets/dashboard/js/dashboard.js"></script>
+        <link rel="icon" type="image/png" href="/assets/img/icon.png">
+        <link href="/assets/dashboard/css/bootstrap.min.css" rel="stylesheet">
+        <script type="text/javascript" src="/assets/js/jquery.min_1_12_0.js"></script>
+        <script type="text/javascript" src="/assets/dashboard/js/user_login.js"></script>
+        <script type="text/javascript" src="/assets/dashboard/js/dashboard.js"></script>
 
-    <link rel="stylesheet" type="text/css" href="/assets/new/css/myStyle.css">
-    <link href="/assets/dashboard/css/dashboard.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/materialDashboard.css">
-    <script type="text/javascript" src="/assets/dashboard/js/materialDashboard.js"></script>
-    <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
-    <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
+        <link rel="stylesheet" type="text/css" href="/assets/new/css/myStyle.css">
+        <link href="/assets/dashboard/css/dashboard.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/materialDashboard.css">
+        <script type="text/javascript" src="/assets/dashboard/js/materialDashboard.js"></script>
+        <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
+        <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
 
-    <script type="text/javascript">
+        <script type="text/javascript">
       $('html, body').css({
-        'overflow': 'hidden',
-        'height': '100%'
+          'overflow': 'hidden',
+          'height': '100%'
       });
-      function showAppliedJobs(){
-        window.location = "/dashboard/appliedJobs";
+      function showAppliedJobs() {
+          window.location = "/dashboard/appliedJobs";
       }
-      function showEditProfile(){
-        window.location = "/dashboard/editProfile";
+      function showEditProfile() {
+          window.location = "/dashboard/editProfile";
       }
       </script>
-  </head>
+    </head>
 
-  <body>
-    <div id="preloader">
-      <div id="loaderLogo">
-        <img id="leaderLogo" src="/assets/new/img/logo-color.gif" alt="TruJobs Logo" height="40px">
-      </div>
-      <div id="status">&nbsp;</div>
-    </div>
-
-    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-      <div class="container">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigationbar">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-
-          </button>
-          <div itemscope itemtype ="http://schema.org/logo">
-            <a class="navbar-brand" href="/dashboard"><img id="navLogo" itemprop="Brand" src="/assets/new/img/logo-main.gif" alt="TruJobs Logo" height="32px" style="margin-top: -8px;"></a>
-            <a class="hidden-xs" href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" style="padding: 0px">
-              <img id="playStoreLogoNavBar"  src="/assets/img/download_btn.png" alt="PlayStore Logo" height="54%"></a>
-          </div>
-        </div>
-
-        <div class="collapse navbar-collapse" id="navigationbar">
-          <ul class="nav navbar-nav navbar-right">
-            <li class="hidden-xs">
-              <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" target="_blank">
-                <img src="/assets/img/download_btn.png" style="height:30px;margin-top: -6px; margin-right: -16px;">
-              </a>
-            </li>
-            <li><a href="/dashboard">Dashboard</a></li>
-            <li><a href="/dashboard/appliedJobs">My Jobs</a></li>
-            <li><a href="/dashboard/editProfile" id="activeLink">Profile</a></li>
-            <li><a href="/showJobs">Apply to Jobs</a></li>
-            <li><a href="#" onclick="logoutUser()">Log Out</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-
-    <div id="blurred-image-container">
-      <div class="img-src"></div>
-      <div class="img-src blurred-image"></div>
-      <div id="overlay"></div>
-    </div>
-
-    <div id="sectionHead">
-      <img src="/assets/dashboard/img/userMale.svg" id="userImg">
-      <h4>
-        <b>
-          <div id="userName" style="display : inline-block"></div>
-          <div id="userAge" style="display : inline-block"></div>
-          <div id="userGender" style="display : inline-block"></div>
-        </b>
-      </h4>
-      <h5><div id="userMobile" style="display : inline-block"></div>, Bangalore</h5>
-
-      <div id="darkPanel">
-        <div id="inblockDiv">
-          Jobs Applied<br><b id="jobCount">6</b>
-        </div>
-
-        <div id="inblockDiv" style="margin-left: 16px">Profile<br>
-          <a href="/dashboard/editProfile"><div id="indicatorBtnRed" class="profileIncomplete" style="display:none"><b><font color="#fff">Incomplete</font></b></div></a>
-          <div class="profileComplete" style="display:none"><b>Complete</b></div>
-        </div>
-
-        <div id="inblockDiv" style="margin-left: 16px">Assessment<br>
-          <a href="http://bit.ly/trujobstest" target="_blank"><div class="assessmentIncomplete" id="indicatorBtnRed" style="display: none"><b><font color="#fff">Incomplete</font></b></div></a>
-          <div class="assessmentComplete" style="display: none"><b>Complete</b></div>
-        </div>
-
-      </div>
-    </div>
-    <div id="sectionBody" class="startBody" style="padding-left: 6%; padding-right: 6%; padding-top: 2%; padding-bottom: 2%">
-      <div id="editProfileBody">
-        <div class="container-fluid">
-          <div class="row">
-            <div style="display: inline-block">
-              <h2>Edit Profile</h2>
+    <body>
+        <div id="preloader">
+            <div id="loaderLogo">
+                <img id="leaderLogo" src="/assets/new/img/logo-color.gif" alt="TruJobs Logo" height="40px">
             </div>
-            <div style="display: inline-block; margin-left: 16%">
-              <center class="visible-lg">
-                <div>
-                  <div id="editBasic" style="display: inline-block; cursor: pointer" >
-                    <img id="basicImg" src="/assets/dashboard/img/basic_enable.png" height="42px">
-                  </div>
+            <div id="status">&nbsp;</div>
+        </div>
 
-                  <div style="display: inline-block; height: 0px; width: 152px">
-                    <img src="/assets/new/img/arrow_right_hot.png">
-                  </div>
+        <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigationbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
 
-                  <div id="editSkills" style="display: inline-block; cursor: pointer">
-                    <img id="skillImg" src="/assets/dashboard/img/skills_disable.png" height="42px">
-                  </div>
-
-                  <div style="display: inline-block; height: 0px; width: 152px">
-                    <img src="/assets/new/img/arrow_right_hot.png">
-                  </div>
-
-                  <div id="editEducation" style="display: inline-block; cursor: pointer">
-                    <img id="educationImg" src="/assets/dashboard/img/education_disable.png" height="42px">
-                  </div>
+                    </button>
+                    <div itemscope itemtype ="http://schema.org/logo">
+                        <a class="navbar-brand" href="/dashboard"><img id="navLogo" itemprop="Brand" src="/assets/new/img/logo-main.gif" alt="TruJobs Logo" height="32px" style="margin-top: -8px;"></a>
+                        <a class="hidden-xs" href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" style="padding: 0px">
+                            <img id="playStoreLogoNavBar" src="/assets/img/download_btn.png" alt="PlayStore Logo" height="54%"></a>
+                    </div>
                 </div>
-                  <!-- Heading -->
 
-                <div style="margin-top: -24px">
-                  <div style="display: inline-block">
-                    <h5 id="basicHeading" style="color: #2980b9">Basic Information</h5>
-                  </div>
-
-                  <div style="display: inline-block; height: 0px; width: 84px">
-                          </div>
-
-                  <div style="display: inline-block">
-                    <h5 id="skillsHeading" style="color: #9f9f9f">Experience & Skills</h5>
-                  </div>
-
-                  <div style="display: inline-block; height: 42px; width: 84px"></div>
-
-                  <div style="display: inline-block">
-                    <h5 id="educationHeading" style="color: #9f9f9f">Education Details</h5>
-                  </div>
+                <div class="collapse navbar-collapse" id="navigationbar">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="hidden-xs">
+                            <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" target="_blank">
+                                <img src="/assets/img/download_btn.png" style="height: 30px;
+                                    margin-top: -6px;
+                                    margin-right: -16px;">
+                            </a>
+                        </li>
+                        <li><a href="/dashboard">Dashboard</a></li>
+                        <li><a href="/dashboard/appliedJobs">My Jobs</a></li>
+                        <li><a href="/dashboard/editProfile" id="activeLink">Profile</a></li>
+                        <li><a href="/showJobs">Apply to Jobs</a></li>
+                        <li><a href="#" onclick="logoutUser()">Log Out</a></li>
+                    </ul>
                 </div>
-              </center>
             </div>
-            <hr style="margin-top: 10px">
-            <div id="basicProfileSection">
-              <h4>Let’s create your profile in 3 easy steps!</h4>
-              <form id="candidateUpdateBasicProfile" method="post">
-                <div id="profileTitleEditProfile"><font size="2"><b>BASIC DETAILS</b></font></div>
-                <div class="profileBodyEditProfile">
-                  <div class="row">
-                    <div class="col-sm-3" ><h5>Name<font color="red">*</font></h5></div>
-                    <div class="col-sm-5">
-                      <div class="row">
-                        <div class="col-sm-6">
-                          <input id="candidateFirstName" name="candidateFirstName" maxLength="49" placeholder="First Name" type="text" class="form-control input-md" required>
-                        </div>
-                        <div class="col-sm-6">
-                          <input style="width: 100%" id="candidateSecondName" name="candidateSecondName" maxLength="49" placeholder="Last Name" type="text" class="form-control input-md candidateSecondNameDashboard">
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+        </nav>
 
-                  <div class="row" style="margin-top: 8px">
-                    <div class="col-sm-3"><h5>Mobile No.<font color="red">*</font></h5></div>
-                    <div class="col-sm-5">
-                      <input id="candidateMobile" placeholder="What is your mobile no.?" name="candidateMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" class="form-control input-md" disabled>
-                    </div>
-                  </div>
+        <div id="blurred-image-container">
+            <div class="img-src"></div>
+            <div class="img-src blurred-image"></div>
+            <div id="overlay"></div>
+        </div>
 
-                  <div class="row" style="margin-top: 8px">
-                    <div class="col-sm-3"><h5>Job Role Preference(s)(Max: 3)<font color="red">*</font></h5></div>
-                    <div class="col-sm-5">
-                      <input type="text" id="candidateJobPref">
-                      <script type="text/javascript">
-                        $(document).ready(function() {
-                          $("#candidateJobPref").tokenInput(getJob(), {
-                            theme: "facebook",
-                            placeholder: "What job roles are you interested?",
-                            hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-                            minChars: 0,
-                            tokenLimit: 3,
-                            prePopulate: jobPrefArray,
-                            preventDuplicates: true
-                          });
-                        });
-                    </script>
-                    </div>
-                  </div>
+        <div id="sectionHead">
+            <img src="/assets/dashboard/img/userMale.svg" id="userImg">
+            <h4>
+                <b>
+                    <div id="userName" style="display: inline-block"></div>
+                    <div id="userAge" style="display: inline-block"></div>
+                    <div id="userGender" style="display: inline-block"></div>
+                </b>
+            </h4>
+            <h5><div id="userMobile" style="display: inline-block"></div>, Bangalore</h5>
 
-                  <div class="row" style="margin-top: 8px">
-                    <div class="col-sm-3"><h5>Locality Preference(s)<font color="red">*</font></h5></div>
-                    <div class="col-sm-5">
-                      <input type="text" id="candidateLocalityPref" placeholder="Where do you want to work?">
-                      <script type="text/javascript">
-                          $(document).ready(function() {
-                            $("#candidateLocalityPref").tokenInput(getLocality(), {
-                              theme: "facebook",
-                              placeholder: "Where do you want to work?",
-                              hintText: "Start typing Area (eg. BTM Layout, Bellandur..)",
-                              minChars: 0,
-                              prePopulate: localityPrefArray,
-                              preventDuplicates: true
-                            });
-                          });
-                      </script>
-                    </div>
-                  </div>
+            <div id="darkPanel">
+                <div id="inblockDiv">
+          Jobs Applied<br> <b id="jobCount">6</b>
+        </div>
 
-                  <div class="row" style="margin-top: 8px">
-                    <div class="col-sm-3" style="margin-top: 5px"><h5 style="margin-top: 4px">Preferred work shift<font color="red">*</font></h5></div>
-                    <div class="col-sm-9">
-                      <select id="candidateTimeShiftPref" class="selectDropdown" style="width: 206px; height: 34px;"></select>
-                    </div>
-                  </div>
+                <div id="inblockDiv" style="margin-left: 16px">Profile<br>
+                    <a href="/dashboard/editProfile"><div id="indicatorBtnRed" class="profileIncomplete" style="display: none"><b><font color="#fff">Incomplete</font></b></div></a>
+                    <div class="profileComplete" style="display: none"><b>Complete</b></div>
+        </div>
 
-                  <div class="row" style="margin-top: 8px">
-                    <div class="col-sm-3"><h5>Date of Birth<font color="red">*</font></h5></div>
-                    <div class="col-sm-5">
-                      <select id="dob_day" class="selectDropdown">
-                        <option value="">Day</option>
-                      </select>
+                <div id="inblockDiv" style="margin-left: 16px">Assessment<br>
+                    <a href="http://bit.ly/trujobstest" target="_blank"><div class="assessmentIncomplete" id="indicatorBtnRed" style="display: none"><b><font color="#fff">Incomplete</font></b></div></a>
+                    <div class="assessmentComplete" style="display: none"><b>Complete</b></div>
+        </div>
 
-                      <select id="dob_month" class="selectDropdown">
-                        <option value="">Month</option>
-                      </select>
-
-                      <select id="dob_year" class="selectDropdown">
-                        <option value="">Year</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div class="row" style="margin-top: 8px">
-                    <div class="col-sm-3"><h5>Gender<font color="red">*</font></h5></div>
-                    <div class="col-sm-5" style="margin-top: 4px">
-                      <div style="width: 100%; height: 34px;" class="btn-group" data-toggle="buttons">
-                        <label class="btn btn-custom-check" style="width: 103px">
-                          <input type="radio" name="gender" id="genderMale" value="0">&nbsp;Male&nbsp;&nbsp;
-                        </label>
-                        <label class="btn btn-custom-check" style="width: 103px">
-                          <input type="radio" name="gender" id="genderFemale" value="1">&nbsp;Female
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <br>
-                  <!-- next/save btn -->
-                <button type="submit" id="saveBtn" class="btn btn-primary" style="float: right">
-                  <div style="display: inline-block">Next</div>
-                  <div style="margin-left: 8px; display: inline-block">
-                    <img src="/assets/dashboard/img/next_arrow.png" height="28px">
-                  </div>
-                </button>
-              </form>
             </div>
-
-            <div id="skillProfileSection">
-              <h4>Let us know about your work experience</h4>
-              <form id="candidateUpdateLanguageAndSkills" method="post">
-                <div id="profileTitleEditProfile"><font size="2"><b>WORK EXPERIENCE</b></font></div>
-                <div class="profileBodyEditProfile">
-                  <div id="language_details">
+        </div>
+        <div id="sectionBody" class="startBody" style="padding-left: 6%;
+            padding-right: 6%;
+            padding-top: 2%;
+            padding-bottom: 2%">
+            <div id="editProfileBody">
+                <div class="container-fluid">
                     <div class="row">
-                      <div class="col-sm-3"><h5>Your Work Experience<font color="red">*</font></h5></div>
-                      <div class="col-sm-5">
-                        <div class="btn-group" data-toggle="buttons">
-                          <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickFresher()">
-                            <input type="radio" name="workExperience" id="fresher" value="0">Fresher
-                          </label>
-                          <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickExperienced()">
-                            <input type="radio" name="workExperience" id="experienced" value="1">Experienced
-                          </label>
+                        <div style="display: inline-block">
+                            <h2>Edit Profile</h2>
                         </div>
-                      </div>
-                    </div>
+                        <div style="display: inline-block;
+                            margin-left: 16%">
+                            <center class="visible-lg">
+                                <div>
+                                    <div id="editBasic" style="display: inline-block;
+                                        cursor: pointer" >
+                                        <img id="basicImg" src="/assets/dashboard/img/basic_enable.png" height="42px">
+                                    </div>
 
-                    <div class="row" id="totalWorkExperience" style="margin-top: 8px">
-                      <div class="col-sm-3"><h5>Total Work Experience<font color="red">*</font></h5></div>
-                      <div class="col-sm-5">
-                        <select class="selectDropdown" style="width: 136px" id="candidateTotalExperienceYear"></select>
-                        <select id="candidateTotalExperienceMonth" style="width: 136px" class="selectDropdown"></select>
-                      </div>
-                    </div>
+                                    <div style="display: inline-block;
+                                        height: 0px;
+                                        width: 152px">
+                                        <img src="/assets/new/img/arrow_right_hot.png">
+                                    </div>
 
-                    <div id="isEmployedSelect" class="row" style="margin-top: 8px">
-                      <div class="col-sm-3"><h5>Are You Currently Working?<font color="red">*</font></h5></div>
-                      <div class="col-sm-5">
-                        <div class="btn-group" data-toggle="buttons" style="margin-top: 4px">
-                          <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickWorkingYes()">
-                            <input type="radio" name="isEmployed" id="isEmployedYes" value="1">&nbsp;Yes&nbsp;&nbsp;
-                          </label>
-                          <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickWorkingNo()">
-                            <input type="radio" name="isEmployed" id="isEmployedNo" value="0">&nbsp;No&nbsp;&nbsp;
-                          </label>
+                                    <div id="editSkills" style="display: inline-block;
+                                        cursor: pointer">
+                                        <img id="skillImg" src="/assets/dashboard/img/skills_disable.png" height="42px">
+                                    </div>
+
+                                    <div style="display: inline-block;
+                                        height: 0px;
+                                        width: 152px">
+                                        <img src="/assets/new/img/arrow_right_hot.png">
+                                    </div>
+
+                                    <div id="editEducation" style="display: inline-block;
+                                        cursor: pointer">
+                                        <img id="educationImg" src="/assets/dashboard/img/education_disable.png" height="42px">
+                                    </div>
+                                </div>
+                                    <!-- Heading -->
+
+                                <div style="margin-top: -24px">
+                                    <div style="display: inline-block">
+                                        <h5 id="basicHeading" style="color: #2980b9">Basic Information</h5>
+                                    </div>
+
+                                    <div style="display: inline-block;
+                                        height: 0px;
+                                        width: 84px"></div>
+
+                                    <div style="display: inline-block">
+                                        <h5 id="skillsHeading" style="color: #9f9f9f">Experience & Skills</h5>
+                                    </div>
+
+                                    <div style="display: inline-block;
+                                        height: 42px;
+                                        width: 84px"></div>
+
+                                    <div style="display: inline-block">
+                                        <h5 id="educationHeading" style="color: #9f9f9f">Education Details</h5>
+                                    </div>
+                                </div>
+                            </center>
                         </div>
-                      </div>
-                    </div>
+                        <hr style="margin-top: 10px">
+                        <div id="basicProfileSection">
+                            <h4>Let’s create your profile in 3 easy steps!</h4>
+                            <form id="candidateUpdateBasicProfile" method="post">
+                                <div id="profileTitleEditProfile"><font size="2"><b>BASIC DETAILS</b></font></div>
+                                <div class="profileBodyEditProfile">
+                                    <div class="row">
+                                        <div class="col-sm-3" ><h5>Name<font color="red">*</font></h5></div>
+                                        <div class="col-sm-5">
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <input id="candidateFirstName" name="candidateFirstName" maxLength="49" placeholder="First Name" type="text" class="form-control input-md" required>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <input style="width: 100%" id="candidateSecondName" name="candidateSecondName" maxLength="49" placeholder="Last Name" type="text" class="form-control input-md candidateSecondNameDashboard">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                    <div id="isEmployedForm" class="subSectionBody" style="margin-top: 8px;">
-                      <h4>Tell us about your current company</h4>
-                      <hr>
-                      <div class="row" >
-                        <div class="col-sm-3"><h5>Current Company<div style="color : #9f9f9f; font-size: 12px">(optional)</div></h5></div>
-                        <div class="col-sm-5">
-                          <input id="candidateCurrentCompany" placeholder="What is your Company name?" maxLength="99" style="width: 275px" type="text" class="form-control input-md">
+                                    <div class="row" style="margin-top: 8px">
+                                        <div class="col-sm-3"><h5>Mobile No.<font color="red">*</font></h5></div>
+                                        <div class="col-sm-5">
+                                            <input id="candidateMobile" placeholder="What is your mobile no.?" name="candidateMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" class="form-control input-md" disabled>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" style="margin-top: 8px">
+                                        <div class="col-sm-3"><h5>Job Role Preference(s)(Max: 3)<font color="red">*</font></h5></div>
+                                        <div class="col-sm-5">
+                                            <input type="text" id="candidateJobPref">
+                                            <script type="text/javascript">
+                                                $(document).ready(function () {
+                                                    $("#candidateJobPref").tokenInput(getJob(), {
+                                                        theme: "facebook",
+                                                        placeholder: "What job roles are you interested?",
+                                                        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                                                        minChars: 0,
+                                                        tokenLimit: 3,
+                                                        prePopulate: jobPrefArray,
+                                                        preventDuplicates: true
+                                                    });
+                                                });
+                                            </script>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" style="margin-top: 8px">
+                                        <div class="col-sm-3"><h5>Locality Preference(s)<font color="red">*</font></h5></div>
+                                        <div class="col-sm-5">
+                                            <input type="text" id="candidateLocalityPref" placeholder="Where do you want to work?">
+                                            <script type="text/javascript">
+                                                $(document).ready(function () {
+                                                    $("#candidateLocalityPref").tokenInput(getLocality(), {
+                                                        theme: "facebook",
+                                                        placeholder: "Where do you want to work?",
+                                                        hintText: "Start typing Area (eg. BTM Layout, Bellandur..)",
+                                                        minChars: 0,
+                                                        prePopulate: localityPrefArray,
+                                                        preventDuplicates: true
+                                                    });
+                                                });
+                                            </script>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" style="margin-top: 8px">
+                                        <div class="col-sm-3" style="margin-top: 5px"><h5 style="margin-top: 4px">Preferred work shift<font color="red">*</font></h5></div>
+                                        <div class="col-sm-9">
+                                            <select id="candidateTimeShiftPref" class="selectDropdown" style="width: 206px;
+                                                height: 34px;"></select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" style="margin-top: 8px">
+                                        <div class="col-sm-3"><h5>Date of Birth<font color="red">*</font></h5></div>
+                                        <div class="col-sm-5">
+                                            <select id="dob_day" class="selectDropdown">
+                                                <option value="">Day</option>
+                                            </select>
+
+                                            <select id="dob_month" class="selectDropdown">
+                                                <option value="">Month</option>
+                                            </select>
+
+                                            <select id="dob_year" class="selectDropdown">
+                                                <option value="">Year</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" style="margin-top: 8px">
+                                        <div class="col-sm-3"><h5>Gender<font color="red">*</font></h5></div>
+                                        <div class="col-sm-5" style="margin-top: 4px">
+                                            <div style="width: 100%;
+                                                height: 34px;" class="btn-group" data-toggle="buttons">
+                                                <label class="btn btn-custom-check" style="width: 103px">
+                                                    <input type="radio" name="gender" id="genderMale" value="0"> &nbsp;Male&nbsp;&nbsp;
+                                                </label>
+                                                <label class="btn btn-custom-check" style="width: 103px">
+                                                    <input type="radio" name="gender" id="genderFemale" value="1"> &nbsp;Female
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                                    <!-- next/save btn -->
+                                <button type="submit" id="saveBtn" class="btn btn-primary" style="float: right">
+                                    <div style="display: inline-block">Next</div>
+                                    <div style="margin-left: 8px;
+                                        display: inline-block">
+                                        <img src="/assets/dashboard/img/next_arrow.png" height="28px">
+                                    </div>
+                                </button>
+                            </form>
                         </div>
-                      </div>
-                      <div class="row" style="margin-top: 8px">
-                        <div class="col-sm-3"><h5>What Job Role are you in ?<div style="color : #9f9f9f; font-size: 12px">(optional)</div></h5></div>
-                        <div class="col-sm-5">
-                          <input type="text" id="candidateCurrentJobRole">
+
+                        <div id="skillProfileSection">
+                            <h4>Let us know about your work experience</h4>
+                            <form id="candidateUpdateLanguageAndSkills" method="post">
+                                <div id="profileTitleEditProfile"><font size="2"><b>WORK EXPERIENCE</b></font></div>
+                                <div class="profileBodyEditProfile">
+                                    <div id="language_details">
+                                        <div class="row">
+                                            <div class="col-sm-3"><h5>Your Work Experience<font color="red">*</font></h5></div>
+                                            <div class="col-sm-5">
+                                                <div class="btn-group" data-toggle="buttons">
+                                                    <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickFresher()">
+                                                        <input type="radio" name="workExperience" id="fresher" value="0">
+                                                        Fresher
+                                                    </label>
+                                                    <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickExperienced()">
+                                                        <input type="radio" name="workExperience" id="experienced" value="1">
+                                                        Experienced
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row" id="totalWorkExperience" style="margin-top: 8px">
+                                            <div class="col-sm-3"><h5>Total Work Experience<font color="red">*</font></h5></div>
+                                            <div class="col-sm-5">
+                                                <select class="selectDropdown" style="width: 136px" id="candidateTotalExperienceYear"></select>
+                                                <select id="candidateTotalExperienceMonth" style="width: 136px" class="selectDropdown"></select>
+                                            </div>
+                                        </div>
+
+                                        <div id="isEmployedSelect" class="row" style="margin-top: 8px">
+                                            <div class="col-sm-3"><h5>Are You Currently Working?<font color="red">*</font></h5></div>
+                                            <div class="col-sm-5">
+                                                <div class="btn-group" data-toggle="buttons" style="margin-top: 4px">
+                                                    <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickWorkingYes()">
+                                                        <input type="radio" name="isEmployed" id="isEmployedYes" value="1"> &nbsp;Yes&nbsp;&nbsp;
+                                                    </label>
+                                                    <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickWorkingNo()">
+                                                        <input type="radio" name="isEmployed" id="isEmployedNo" value="0"> &nbsp;No&nbsp;&nbsp;
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="isEmployedForm" class="subSectionBody" style="margin-top: 8px;">
+                                            <h4>Tell us about your current company</h4>
+                                            <hr>
+                                            <div class="row" >
+                                                <div class="col-sm-3"><h5>Current Company<div style="color: #9f9f9f;
+                                                    font-size: 12px">(optional)</div></h5>
+                                                </div>
+                                                <div class="col-sm-5">
+                                                    <input id="candidateCurrentCompany" placeholder="What is your Company name?" maxLength="99" style="width: 275px" type="text" class="form-control input-md">
+                                                </div>
+                                            </div>
+                                            <div class="row" style="margin-top: 8px">
+                                                <div class="col-sm-3"><h5>What Job Role are you in ?<div style="color: #9f9f9f;
+                                                    font-size: 12px">(optional)</div></h5>
+                                                </div>
+                                                <div class="col-sm-5">
+                                                    <input type="text" id="candidateCurrentJobRole">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row" style="margin-top: 8px;
+                                            display: none" id="lastWithdrawnSalaryLayout">
+                                            <div class="col-sm-3"><h5>Last Withdrawn Salary<font color="red">*</font></h5></div>
+                                            <div class="col-sm-2">
+                                                <input id="candidateLastWithdrawnSalary" placeholder="Salary" type="number" class="form-control input-md">
+                                            </div>
+                                            <div class="col-sm-2" style="margin-top: 8px">₹/month</div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <br>
+                                <div id="profileTitleEditProfile"><font size="2"><b>LANGUAGE DETAILS</b></font></div>
+                                <div class="profileBodyEditProfile">
+                                    <table id="languageTable" class="table table-striped" cellspacing="0" width="100%">
+                                        <h5>Languages you know</h5>
+                                        <thead></thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                                <br>
+                                <div class="skillSection">
+                                    <div id="profileTitleEditProfile"><font size="2"><b>SKILLS/REQUIREMENTS</b></font></div>
+                                    <div class="profileBodyEditProfile">
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div id="skill_details">
+                                                    <table id="skillTable" class="table table-striped" cellspacing="0" width="100%">
+                                                        <thead></thead>
+                                                        <tbody></tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr>
+
+                                    <!-- next/save btn -->
+                                <button type="submit" id="saveBtn" class="btn btn-primary" style="float: right;
+                                    margin: 2px">
+                                    <div style="display: inline-block">Next</div>
+                                    <div style="margin-left: 8px;
+                                        display: inline-block">
+                                        <img src="/assets/dashboard/img/next_arrow.png" height="28px">
+                                    </div>
+                                </button>
+                                <div id="skillBack" class="btn btn-primary" style="margin: 2px;
+                                    float: right">
+                                    <div style="display: inline-block">
+                                        <img src="/assets/dashboard/img/back_arrow.png" height="28px">
+                                    </div>
+                                    <div style="margin-left: 8px;
+                                        display: inline-block">Back</div>
+                                </div>
+                            </form>
                         </div>
-                      </div>
-                    </div>
 
-                    <div class="row" style="margin-top: 8px; display: none" id="lastWithdrawnSalaryLayout">
-                      <div class="col-sm-3"><h5>Last Withdrawn Salary<font color="red">*</font></h5></div>
-                      <div class="col-sm-2">
-                        <input id="candidateLastWithdrawnSalary" placeholder="Salary" type="number" class="form-control input-md">
-                      </div>
-                      <div class="col-sm-2" style="margin-top: 8px">₹/month</div>
-                    </div>
+                        <div id="educationProfileSection">
+                            <h4>Tell us about your educational background!</h4>
+                            <form id="candidateUpdateEducationDetails" method="post">
+                                <div class="profileBodyEditProfile">
+                                    <div id="profileTitleEditProfile"><font size="2"><b>YOUR EDUCATION</b></font></div>
+                                    <hr>
 
-                  </div>
+                                    <div class="row" style="margin-top: 4px">
+                                        <div class="col-sm-3"><h5>Highest Education Qualification?<font color="red">*</font></h5></div>
+                                        <div class="col-sm-9">
+                                            <div style="width: 100%;
+                                                height: 34px;" id="candidateHighestEducation" class="btn-group" data-toggle="buttons"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row" id="eduConfirm">
+                                        <div class="col-sm-3"><h5>Have you successfully completed this course?</h5></div>
+                                        <div class="col-sm-9" style="margin-top: 1%">
+                                            <input type="radio" name="candidateEducationCompletionStatus" id="eduCompleted" value="1"> &nbsp;Yes&nbsp;&nbsp;
+                                            <input type="radio" name="candidateEducationCompletionStatus" id="eduCompletedNot" value="0"> &nbsp;No
+                                        </div>
+                                    </div>
+
+                                    <div id="educationalInstitute" style="display: none">
+                                        <div class="row" style="margin-top: 4px">
+                                            <div class="col-sm-3"><h5>Highest Education Degree?<font color="red">*</font></h5></div>
+                                            <div class="col-sm-5">
+                                                <select class="selectDropdown" id="candidateHighestDegree" style="width: 326px"></select>
+                                            </div>
+                                        </div>
+                                        <div class="row" style="margin-top: 4px">
+                                            <div class="col-sm-3"><h5>Last Attended Education Institute?<div style="color: #9f9f9f;
+                                                font-size: 12px">(optional)</div></h5>
+                                            </div>
+                                            <div class="col-sm-5">
+                                                <input id="candidateEducationInstitute" style="width: 326px" placeholder="Which was the last college u went to?" type="text" class="form-control input-md">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <hr id="educationHr">
+
+                                    <!-- next/save btn -->
+                                <button type="submit" id="saveBtn" class="btn btn-primary" style="float: right;
+                                    margin: 2px">
+                                    <div style="display: inline-block">Save</div>
+                                    <div style="margin-left: 8px;
+                                        display: inline-block">
+                                        <img src="/assets/dashboard/img/save.png" height="28px">
+                                    </div>
+                                </button>
+
+                                <div id="educationBack" class="btn btn-primary" style="margin: 2px;
+                                    float: right">
+                                    <div style="display: inline-block">
+                                        <img src="/assets/dashboard/img/back_arrow.png" height="28px">
+                                    </div>
+                                    <div style="margin-left: 8px;
+                                        display: inline-block">Back</div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <br>
-                <div id="profileTitleEditProfile"><font size="2"><b>LANGUAGE DETAILS</b></font></div>
-                <div class="profileBodyEditProfile">
-                  <table id="languageTable" class="table table-striped" cellspacing="0" width="100%">
-                    <h5>Languages you know</h5>
-                    <thead></thead>
-                    <tbody></tbody>
-                  </table>
-                </div>
-                <br>
-                <div class="skillSection">
-                  <div id="profileTitleEditProfile"><font size="2"><b>SKILLS/REQUIREMENTS</b></font></div>
-                  <div class="profileBodyEditProfile">
-                    <div class="row">
-                      <div class="col-sm-12">
-                        <div id="skill_details">
-                          <table id="skillTable" class="table table-striped" cellspacing="0" width="100%">
-                            <thead></thead>
-                            <tbody></tbody>
-                          </table>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <hr>
-
-                  <!-- next/save btn -->
-                <button type="submit" id="saveBtn" class="btn btn-primary" style="float: right; margin: 2px">
-                  <div style="display: inline-block">Next</div>
-                  <div style="margin-left: 8px; display: inline-block">
-                    <img src="/assets/dashboard/img/next_arrow.png" height="28px">
-                  </div>
-                </button>
-                <div id="skillBack" class="btn btn-primary" style="margin: 2px; float: right">
-                  <div style="display: inline-block">
-                    <img src="/assets/dashboard/img/back_arrow.png" height="28px">
-                  </div>
-                  <div style="margin-left: 8px; display: inline-block">Back</div>
-                </div>
-              </form>
             </div>
-
-            <div id="educationProfileSection">
-              <h4>Tell us about your educational background!</h4>
-              <form id="candidateUpdateEducationDetails" method="post">
-                <div class="profileBodyEditProfile">
-                  <div id="profileTitleEditProfile"><font size="2"><b>YOUR EDUCATION</b></font></div>
-                  <hr>
-
-                  <div class="row" style="margin-top: 4px">
-                    <div class="col-sm-3"><h5>Highest Education Qualification?<font color="red">*</font></h5></div>
-                    <div class="col-sm-9">
-                      <div style="width: 100%; height: 34px;" id="candidateHighestEducation" class="btn-group" data-toggle="buttons">
-                        </div>
-                    </div>
-                  </div>
-
-                  <div class="row" id="eduConfirm">
-                    <div class="col-sm-3"><h5>Have you successfully completed this course?</h5></div>
-                    <div class="col-sm-9" style="margin-top: 1%">
-                      <input type="radio" name="candidateEducationCompletionStatus" id="eduCompleted" value="1">&nbsp;Yes&nbsp;&nbsp;
-                      <input type="radio" name="candidateEducationCompletionStatus" id="eduCompletedNot" value="0">&nbsp;No
-                    </div>
-                  </div>
-
-                  <div id="educationalInstitute" style="display: none">
-                    <div class="row" style="margin-top: 4px">
-                      <div class="col-sm-3"><h5>Highest Education Degree?<font color="red">*</font></h5></div>
-                      <div class="col-sm-5">
-                        <select class="selectDropdown" id="candidateHighestDegree" style="width: 326px"></select>
-                      </div>
-                    </div>
-                    <div class="row" style="margin-top: 4px">
-                      <div class="col-sm-3"><h5>Last Attended Education Institute?<div style="color : #9f9f9f; font-size: 12px">(optional)</div></h5></div>
-                      <div class="col-sm-5">
-                        <input id="candidateEducationInstitute" style="width: 326px" placeholder="Which was the last college u went to?" type="text" class="form-control input-md">
-                      </div>
-                    </div>
-                  </div>
-
-                </div>
-                <hr id="educationHr">
-
-                  <!-- next/save btn -->
-                <button type="submit" id="saveBtn" class="btn btn-primary" style="float: right; margin: 2px">
-                  <div style="display: inline-block">Save</div>
-                  <div style="margin-left: 8px; display: inline-block">
-                    <img src="/assets/dashboard/img/save.png" height="28px">
-                  </div>
-                </button>
-
-                <div id="educationBack" class="btn btn-primary" style="margin: 2px; float: right">
-                  <div style="display: inline-block">
-                    <img src="/assets/dashboard/img/back_arrow.png" height="28px">
-                  </div>
-                  <div style="margin-left: 8px; display: inline-block">Back</div>
-                </div>
-              </form>
-            </div>
-          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="footer" itemscope itemtype ="http://schema.org/contactPoint">
+        <div class="footer" itemscope itemtype ="http://schema.org/contactPoint">
                 © 2016 Trujobs.in | Bengaluru, India. All Right Reserved.
-      <a href="/privacy" target="/privacy" title="Privacy Policy"> <font color="#f0f8ff">
+            <a href="/privacy" target="/privacy" title="Privacy Policy"> <font color="#f0f8ff">
                     Privacy Policy&nbsp;&nbsp;</font> </a>
-    </div>
+        </div>
 
-      <!-- Including Bootstrap -->
-    <script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/assets/js/validation.js"></script>
-    <script type="text/javascript" src="/assets/dashboard/js/dashboard_prefill.js"></script>
-      <!-- Menu Toggle Script -->
-    <script>
-        function showBasicSection(){
-          $("#basicProfileSection").show();
-          $("#skillProfileSection").hide();
-          $("#educationProfileSection").hide();
+            <!-- Including Bootstrap -->
+        <script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/assets/js/validation.js"></script>
+        <script type="text/javascript" src="/assets/dashboard/js/dashboard_prefill.js"></script>
+            <!-- Menu Toggle Script -->
+        <script>
+        function showBasicSection() {
+            $("#basicProfileSection").show();
+            $("#skillProfileSection").hide();
+            $("#educationProfileSection").hide();
         }
 
-        function showSkillSection(){
-          $("#basicProfileSection").hide();
-          $("#skillProfileSection").show();
-          $("#educationProfileSection").hide();
+        function showSkillSection() {
+            $("#basicProfileSection").hide();
+            $("#skillProfileSection").show();
+            $("#educationProfileSection").hide();
         }
 
         function showEducationSection() {
-          $("#basicProfileSection").hide();
-          $("#skillProfileSection").hide();
-          $("#educationProfileSection").show();
+            $("#basicProfileSection").hide();
+            $("#skillProfileSection").hide();
+            $("#educationProfileSection").show();
         }
 
         function clickFresher() {
-          $("#isEmployedNo").click();
-          $("#lastWithdrawnSalaryLayout").hide();
-          $("#totalWorkExperience").hide();
-          $("#isEmployedForm").hide();
-          $("#isEmployedSelect").hide();
+            $("#isEmployedNo").click();
+            $("#lastWithdrawnSalaryLayout").hide();
+            $("#totalWorkExperience").hide();
+            $("#isEmployedForm").hide();
+            $("#isEmployedSelect").hide();
         }
         function clickExperienced() {
-          $("#lastWithdrawnSalaryLayout").show();
-          $("#totalWorkExperience").show();
-          $("#isEmployedSelect").show();
+            $("#lastWithdrawnSalaryLayout").show();
+            $("#totalWorkExperience").show();
+            $("#isEmployedSelect").show();
         }
 
         function clickWorkingYes() {
-          $("#isEmployedSelect").show();
-          $("#isEmployedForm").show();
+            $("#isEmployedSelect").show();
+            $("#isEmployedForm").show();
         }
 
         function clickWorkingNo() {
-          $("#isEmployedForm").hide();
+            $("#isEmployedForm").hide();
         }
     </script>
 
-  </body>
+    </body>
 </html>

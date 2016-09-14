@@ -138,6 +138,11 @@ public class PartnerController {
         return ok(views.html.partner_edit_proifile.render());
     }
 
+    @Security.Authenticated(SecuredUser.class)
+    public static Result partnerCreateCandidate() {
+        return ok(views.html.partner_create_candidate.render());
+    }
+
     public static Result partnerUpdateBasicProfile() {
         JsonNode req = request().body().asJson();
         PartnerProfileRequest partnerProfileRequest = new PartnerProfileRequest();

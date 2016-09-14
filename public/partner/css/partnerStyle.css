@@ -367,8 +367,22 @@ a:hover{
     font-size: 14px;
 }
 
+.btn-custom-check, .btn-check {
+    background: #ececec;
+    border: 1px solid #e0e0e0;
+    width: 104px;
+}
+
+.btn-custom-check.active {
+    background: #286ab6;
+    border: 1px solid #2870a3;
+    color: #ffffff;
+}
 
 @media screen and (max-width: 768px) {
+    #eduConfirm{
+        margin-top: 24%;
+    }
     .leadBox {
         width: 84%;
         margin-right: 8%;
@@ -445,4 +459,11 @@ a:hover{
     #jobRoleName{
         font-size: 11px;
     }
+    .educationBtn {
+        width: 66px;
+        padding: 8px 2px;
+        font-size: 9px;
+    }
 }
+
+

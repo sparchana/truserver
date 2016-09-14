@@ -83,6 +83,7 @@ body{
 }
 
 #profileTitleEditProfile {
+    width: 100%;
     color: #fff;
     padding: 1%;
     background-color: #286ab6;
