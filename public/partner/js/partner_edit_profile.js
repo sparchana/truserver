@@ -8,7 +8,7 @@ function processDataUpdateProfile(returnedData) {
     if(returnedData.status == 1){
         window.location = "/partner/home";
     } else{
-        alert("Something went wrong while updating profile");
+        notifyError("Something went wrong while updating profile");
     }
 }
 
@@ -107,7 +107,7 @@ $(function() {
         eventObj.preventDefault();
         //entered values
         var statusCheck = 1;
-        var firstName = $("#partnerName").val();
+        var firstName = $("#partnerFirstName").val();
         var lastName = $("#partnerLastName").val();
         var email = $("#partnerEmail").val();
         var organizationType = $("#partnerType").val();
@@ -119,34 +119,33 @@ $(function() {
 
         //checking first name
         switch(checkPartnerFirstName){
-            case 0: alert("Your first name contains number. Please Enter a valid first name"); statusCheck=0; break;
-            case 2: alert("Your first name cannot be blank spaces. Enter a valid first name"); statusCheck=0; break;
-            case 3: alert("Your first name contains special symbols. Enter a valid first name"); statusCheck=0; break;
-            case 4: alert("Please enter your first name"); statusCheck=0; break;
+            case 0: notifyError("Your first name contains number. Please Enter a valid first name"); statusCheck=0; break;
+            case 2: notifyError("Your first name cannot be blank spaces. Enter a valid first name"); statusCheck=0; break;
+            case 3: notifyError("Your first name contains special symbols. Enter a valid first name"); statusCheck=0; break;
+            case 4: notifyError("Please enter your first name"); statusCheck=0; break;
         }
         //checking last name
         if(lastName != ""){
             switch(checkPartnerLastName){
-                case 0: alert("Your last name contains number. Please Enter a valid last name"); statusCheck=0; break;
-                case 2: alert("Your last name cannot be blank spaces. Enter a valid last name"); statusCheck=0; break;
-                case 3: alert("Your last name contains special symbols. Enter a valid last name"); statusCheck=0; break;
-                case 4: alert("Please enter your last name"); statusCheck=0; break;
+                case 0: notifyError("Your last name contains number. Please Enter a valid last name"); statusCheck=0; break;
+                case 2: notifyError("Your last name cannot be blank spaces. Enter a valid last name"); statusCheck=0; break;
+                case 3: notifyError("Your last name contains special symbols. Enter a valid last name"); statusCheck=0; break;
+                case 4: notifyError("Please enter your last name"); statusCheck=0; break;
             }
         } else{
             lastName = null;
         }
 
         if(organizationType == null || organizationType == -1){
-            alert("Please select organization type");
+            notifyError("Please select organization type");
             statusCheck = 0;
         } else if(!validateEmail(email)){
-            alert("Enter a valid email");
+            notifyError("Enter a valid email");
             statusCheck = 0;
-        } /*else if(organizationLocality == ""){
-            alert("Enter organization Locality");
+        } else if(organizationLocality == ""){
+            notifyError("Enter organization Locality");
             statusCheck = 0;
-        }*/
-        console.log(organizationLocality);
+        }
         if(statusCheck == 1){
             try {
                 var s = {
@@ -170,3 +169,16 @@ $(function() {
         }
     }); // end of submit
 }); // end of function
+
+function notifyError(msg){
+    $.notify({
+        message: msg,
+        animate: {
+            enter: 'animated lightSpeedIn',
+            exit: 'animated lightSpeedOut'
+        }
+    },{
+        type: 'danger'
+    });
+}
+

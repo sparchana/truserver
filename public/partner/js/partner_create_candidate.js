@@ -208,7 +208,8 @@ function processDataCheckDegree(returnedData) {
 // form_candidate ajax script
 $(function () {
     $('#candidateMobile').change(function () {
-        if ($('#candidateMobile').val().length == 10) {
+        var res = validateMobile($('#candidateMobile').val());
+        if(res == 2){
             $.notify({
                 message: "Please wait while we check if the candidate already exists.",
                 animate: {
@@ -224,6 +225,8 @@ $(function () {
                 contentType: "application/json; charset=utf-8",
                 success: ifMobileExists
             });
+        } else {
+            notifyError("Please enter a valid phone number");
         }
     });
 
@@ -618,4 +621,3 @@ function notifyError(msg){
         type: 'danger'
     });
 }
-
