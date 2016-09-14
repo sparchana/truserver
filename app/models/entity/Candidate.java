@@ -186,11 +186,6 @@ public class Candidate extends Model {
     @Column(name = "CandidatePlaceLng", columnDefinition = "double null")
     private Double candidateLocalityLng;
 
-    @JsonManagedReference
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "partner_to_candidate_id", referencedColumnName = "languageId")
-    private PartnerToCandidate partnerToCandidate;
-
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
     public Candidate() {
