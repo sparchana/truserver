@@ -281,7 +281,7 @@ public class AddressResolveService {
                                     isDesiredData = true;
                                 }
                             }
-                            else if(cityName==null && tempTypesArray.get(j).toString().equalsIgnoreCase("administrative_area_level_2")) {
+                            else if(cityName == null && tempTypesArray.get(j).toString().equalsIgnoreCase("administrative_area_level_2")) {
                                 cityName = objectOfInterest.getString("long_name");
                                 Logger.info("cityName: "+cityName);
                             }
