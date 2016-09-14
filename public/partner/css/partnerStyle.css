@@ -193,6 +193,40 @@ option:checked {
 
 }
 
+#forBtn{
+    margin: 24px 12px 24px 0;
+    width: 140px;
+    color: #fff;
+    float: left;
+    padding: 12px 0 12px 0;
+    border-radius: 8px;
+    text-align: center;
+    border: 1px solid #fff;
+    display: inline-block;
+    -webkit-transition: background 0.6s;
+    -moz-transition:    background 0.6s;
+    -ms-transition:     background 0.6s;
+    -o-transition:      background 0.6s;
+    transition:         background 0.6s;
+}
+
+#forBtn:hover{
+    cursor: hand;
+    background: #fff;
+    color: #06436a;
+    font-weight: bold;
+    border: 1px solid #fff;
+    display: inline-block;
+
+    -webkit-transition: background 0.6s;
+    -moz-transition:    background 0.6s;
+    -ms-transition:     background 0.6s;
+    -o-transition:      background 0.6s;
+    transition:         background 0.6s;
+
+}
+
+
 #registerBtnSubmit:hover{
     border: none;
     background-color: #004d81;
@@ -209,7 +243,7 @@ option:checked {
     background: #002144;
 }
 .sectionFive {
-    padding: 2% 2%;
+    padding: 4% 8%;
     text-align: center;
     color: #ffffff;
 }
@@ -330,6 +364,7 @@ a:hover{
 #contact_container{
     border-left: 2px solid white;
     text-align: left;
+    font-size: 14px;
 }
 
 
@@ -343,12 +378,15 @@ a:hover{
     #headerMsg{
         margin-top: 0;
     }
+    #forBtn{
+        width: 100%;
+    }
     #contact_container{
-        border-left: 0px;
-        border-top: 2px solid white;
+        border-left: none;
+        border-top: 1px solid white;
         margin-top: 10px;
-        padding: 1%;
-        text-align: left;
+        padding: 4% 1% 1% 1%;
+        text-align: center;
     }
 
     #partnerHeaderText{
@@ -403,5 +441,8 @@ a:hover{
 
     .hov{
         width: 40%;
+    }
+    #jobRoleName{
+        font-size: 11px;
     }
 }

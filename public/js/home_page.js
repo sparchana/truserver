@@ -142,7 +142,6 @@ function processDataCheckCompanyLogo(returnedData) {
 
     returnedData.forEach(function (company) {
         if(count >= start && count < (start+3)){
-            console.log(company);
             var logoDiv = document.createElement("div");
             logoDiv.className = "col-sm-4";
             rowDiv.appendChild(logoDiv);
@@ -155,7 +154,6 @@ function processDataCheckCompanyLogo(returnedData) {
                 companyLogo.src = company.companyLogo;
             }
             logoDiv.appendChild(companyLogo);
-
         }
         count++;
         //checking when to end the loop
@@ -211,7 +209,7 @@ function createAndAppendDivider(title) {
     parent.append(mainDiv);
 
     var otherJobIcon = document.createElement("img");
-    otherJobIcon.src = "/assets/img/suitcase.svg";
+    otherJobIcon.src = "/assets/img/suitcase.png";
     otherJobIcon.style = "width: 42px; margin: 8px";
     otherJobIcon.setAttribute("display", "inline-block");
     mainDiv.appendChild(otherJobIcon);
