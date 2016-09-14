@@ -1,12 +1,16 @@
 package controllers;
 
 import api.ServerConstants;
+import api.http.FormValidator;
 import api.http.httpRequest.*;
+import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.PartnerSignUpResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
 import controllers.security.SecuredUser;
+import models.entity.Candidate;
+import models.entity.OM.PartnerToCandidate;
 import models.entity.Partner;
 import models.entity.Static.PartnerType;
 import play.Logger;
@@ -158,12 +162,7 @@ public class PartnerController {
         Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
         if(partner != null){
             partnerProfileRequest.setPartnerMobile(partner.getPartnerMobile());
-            PartnerSignUpResponse partnerSignUpResponse = PartnerService.createPartnerProfile(partnerProfileRequest, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_BASIC_PROFILE);
-            if(partnerSignUpResponse.getStatus() == PartnerSignUpResponse.STATUS_SUCCESS){
-                // link partnerToCandidate mapping
-
-            }
-            return ok(toJson(partnerSignUpResponse));
+            return ok(toJson(PartnerService.createPartnerProfile(partnerProfileRequest, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_BASIC_PROFILE)));
         } else{
             return ok("0");
         }
@@ -182,9 +181,21 @@ public class PartnerController {
         String partnerId = session().get("partnerId");
         Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
         if(partner != null){
-            return ok(toJson(CandidateService.createCandidateProfile(addSupportCandidateRequest,
-                    InteractionService.InteractionChannelType.SUPPORT, //here SUPPORT == PARTNER
-                    ServerConstants.UPDATE_ALL_BY_SUPPORT)));
+            Candidate candidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+            if(candidate == null){
+                CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
+                        InteractionService.InteractionChannelType.SUPPORT, //here SUPPORT == PARTNER
+                        ServerConstants.UPDATE_ALL_BY_SUPPORT);
+                if(candidateSignUpResponse.getStatus() == CandidateSignUpResponse.STATUS_SUCCESS){
+                    return ok(toJson(PartnerService.createPartnerToCandidateMapping(partner, addSupportCandidateRequest.getCandidateMobile())));
+                } else{
+                    return ok("0");
+                }
+            } else{
+                //candidate already there in the database; hence ignoring
+                return ok("0");
+            }
+
         } else{
             return ok("-1");
         }

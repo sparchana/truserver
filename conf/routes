@@ -80,7 +80,6 @@ POST        /signUp                                                       contro
 
 # partner routes
 #~~~~~~~~~~~~~~~~~~~~
-
 GET         /checkPartnerSession                                          controllers.PartnerController.checkPartnerSession()
 GET         /partner                                                      controllers.PartnerController.partnerIndex()
 GET         /partner/home                                                 controllers.PartnerController.partnerHome()

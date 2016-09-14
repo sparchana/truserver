@@ -92,8 +92,7 @@ function getJob() {
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
-    }
-    return jobArray;
+    } return jobArray
 }
 
 function processDataCheckJobs(returnedData) {
@@ -143,5 +142,21 @@ function processDataCheckPartnerType(returnedData) {
         });
     } catch (e){
         console.log("exception!");
+    }
+}
+
+function logoutUser() {
+    localStorage.clear();
+    window.location = "/partner";
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/logoutUser",
+            data: false,
+            contentType: false,
+            processData: false,
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
     }
 }

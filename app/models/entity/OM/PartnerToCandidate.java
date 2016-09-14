@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
 import models.entity.Partner;
+import play.Logger;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -42,6 +43,10 @@ public class PartnerToCandidate extends Model {
         this.partnerToCandidateCreateTimeStamp = new Timestamp(System.currentTimeMillis());
     }
 
+    public void savePartnerToCandidate(PartnerToCandidate partnerToCandidate){
+        Logger.info("Saving partnerToCandidateMapping");
+        partnerToCandidate.save();
+    }
     public static Finder<String, PartnerToCandidate> find = new Finder(PartnerToCandidate.class);
 
     public Long getPartnerToCandidateId() {
