@@ -2,6 +2,7 @@ package controllers;
 
 import api.ServerConstants;
 import api.http.httpRequest.*;
+import api.http.httpResponse.PartnerSignUpResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
@@ -157,7 +158,12 @@ public class PartnerController {
         Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
         if(partner != null){
             partnerProfileRequest.setPartnerMobile(partner.getPartnerMobile());
-            return ok(toJson(PartnerService.createPartnerProfile(partnerProfileRequest, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_BASIC_PROFILE)));
+            PartnerSignUpResponse partnerSignUpResponse = PartnerService.createPartnerProfile(partnerProfileRequest, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_BASIC_PROFILE);
+            if(partnerSignUpResponse.getStatus() == PartnerSignUpResponse.STATUS_SUCCESS){
+                // link partnerToCandidate mapping
+
+            }
+            return ok(toJson(partnerSignUpResponse));
         } else{
             return ok("0");
         }

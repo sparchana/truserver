@@ -46,6 +46,10 @@ public class Auth extends Model {
     @Column(name = "authUpdateTimestamp", columnDefinition = "timestamp null")
     private Timestamp authUpdateTimestamp;
 
+    @Column(name = "AuthIsMobileVerified", columnDefinition = "int signed not null", nullable = false)
+    private int authIsMobileVerified; // 1 -> verified, 0 -> Not-Yet-Verified
+
+
     public static Model.Finder<String, Auth> find = new Model.Finder(Auth.class);
 
     public Auth(){
@@ -136,5 +140,13 @@ public class Auth extends Model {
 
     public void setAuthUpdateTimestamp(Timestamp authUpdateTimestamp) {
         this.authUpdateTimestamp = authUpdateTimestamp;
+    }
+
+    public int getAuthIsMobileVerified() {
+        return authIsMobileVerified;
+    }
+
+    public void setAuthIsMobileVerified(int authIsMobileVerified) {
+        this.authIsMobileVerified = authIsMobileVerified;
     }
 }
