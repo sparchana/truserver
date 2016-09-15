@@ -17,6 +17,7 @@ import models.entity.OM.*;
 import models.entity.OO.CandidateEducation;
 import models.entity.OO.CandidateStatusDetail;
 import models.entity.OO.TimeShiftPreference;
+import models.entity.Partner;
 import models.entity.Static.*;
 import models.util.SmsUtil;
 import models.util.Util;
@@ -351,6 +352,10 @@ public class CandidateService
                     interactionResult = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE_SUPPORT;
                 } else if(channelType == InteractionChannelType.PARTNER){
                     interactionResult = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE_PARTNER;
+                    Partner partner = Partner.find.where().eq("partner_id", session().get("sessionId")).findUnique();
+                    if(partner != null){
+                        PartnerService.createPartnerToCandidateMapping(partner, candidate.getCandidateMobile());
+                    }
                 }
             }
             else {

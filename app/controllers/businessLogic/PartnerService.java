@@ -360,6 +360,7 @@ public class PartnerService {
             partnerToCandidate.setCandidate(existingCandidate);
             partnerToCandidate.setPartner(partner);
             partnerToCandidate.savePartnerToCandidate(partnerToCandidate);
+
             String interactionResult = ServerConstants.INTERACTION_RESULT_PARTNER_CREATED_NEW_CANDIDATE;
             String createdBy = ServerConstants.INTERACTION_CREATED_PARTNER;
             Integer interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;

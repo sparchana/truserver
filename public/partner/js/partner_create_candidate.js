@@ -189,8 +189,8 @@ $(document).ready(function() {
         if(leadId != undefined){
             try {
                 $.ajax({
-                    type: "GET",
-                    url: "/getCandidateInfo/" + leadId,
+                    type: "POST",
+                    url: "/getPartnerCandidate/" + leadId,
                     data: false,
                     async: false,
                     contentType: false,
@@ -265,6 +265,7 @@ function processDataCheckLocality(returnedData) {
 
 
 function processDataAndFillAllFields(returnedData) {
+    console.log(returnedData);
     if (returnedData == "0") {
     } else {
         $("#candidateFirstName").val(returnedData.candidateFirstName);

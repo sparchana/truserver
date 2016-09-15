@@ -188,14 +188,9 @@ public class PartnerController {
         String partnerId = session().get("partnerId");
         Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
         if(partner != null){
-            CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
+            return ok(toJson(CandidateService.createCandidateProfile(addSupportCandidateRequest,
                     InteractionService.InteractionChannelType.PARTNER,
-                    ServerConstants.UPDATE_ALL_BY_SUPPORT);
-            if(candidateSignUpResponse.getStatus() == CandidateSignUpResponse.STATUS_SUCCESS){
-                return ok(toJson(PartnerService.createPartnerToCandidateMapping(partner, addSupportCandidateRequest.getCandidateMobile())));
-            } else{
-                return ok("0");
-            }
+                    ServerConstants.UPDATE_ALL_BY_SUPPORT)));
         } else{
             return ok("-1");
         }
@@ -206,6 +201,7 @@ public class PartnerController {
         return ok(views.html.partner_candidates.render());
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result getMyCandidates(){
         Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
         if(partner != null){
@@ -236,5 +232,18 @@ public class PartnerController {
 
         }
         return ok("0");
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result getPartnerCandidate(long leadId) {
+        Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
+        if(lead != null) {
+            Candidate candidate = CandidateService.isCandidateExists(lead.getLeadMobile());
+            if(candidate!=null){
+                return ok(toJson(candidate));
+            }
+        }
+        return ok("0");
+
     }
 }

@@ -161,7 +161,11 @@ function logoutUser() {
 
 // rendering data table in partner/myCandidates
 function viewCandidate(leadId) {
-    window.location = "/partner/candidate/" + leadId;
+    window.open(
+        '/partner/candidate/' + leadId,
+        '_blank' // <- This is what makes it open in a new window.
+    );
+/*    window.location = "/partner/candidate/" + leadId;*/
 }
 
 function renderCandidateTable() {
@@ -177,7 +181,7 @@ function renderCandidateTable() {
                             'candidateName' : candidate.candidateName,
                             'candidateMobile' :  candidate.candidateMobile,
                             'candidateCreationTimestamp' : candidate.creationTimestamp,
-                            'btnView' : '<input type="submit" value="View" style="width:100px" onclick="viewCandidate('+candidate.leadId+')" id="viewCandidateBtn" class="btn btn-primary">'
+                            'btnView' : '<input type="submit" value="View" style="width:100%" onclick="viewCandidate('+candidate.leadId+')" id="viewCandidateBtn" class="btn btn-primary">'
                         })
                     });
                     return returned_data;
