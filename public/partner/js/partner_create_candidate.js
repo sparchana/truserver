@@ -356,9 +356,13 @@ function processDataAndFillAllFields(returnedData) {
         try {
             if (returnedData.candidateIsEmployed != null) {
                 if (returnedData.candidateIsEmployed == 1) {
-                    $('input[id=employed]').attr('checked', true);
+                    $('input[id=isEmployedYes]').attr('checked', true);
+                    $('input[id=isEmployedYes]').parent().addClass('active').siblings().removeClass('active');
+                    $("#isEmployedForm").show();
                 } else {
-                    $('input[id=employedNot]').attr('checked', true);
+                    $('input[id=isEmployedNo]').attr('checked', true);
+                    $('input[id=isEmployedNo]').parent().addClass('active').siblings().removeClass('active');
+                    $("#isEmployedForm").hide();
                 }
             }
         } catch (err) {
@@ -378,24 +382,19 @@ function processDataAndFillAllFields(returnedData) {
                     document.getElementById("fresher").checked = true;
                     $('#fresher').parent().addClass('active').siblings().removeClass('active');
                     $("#totalWorkExperience").hide();
+                    $("#lastWithdrawnSalaryLayout").hide();
+                    $("#isEmployedSelect").hide();
+
                 }
                 else {
+                    $("#lastWithdrawnSalaryLayout").show();
+                    $("#isEmployedSelect").show();
                     document.getElementById("experienced").checked = true;
                     $('#experienced').parent().addClass('active').siblings().removeClass('active');
                     $("#totalWorkExperience").show();
                     $("#candidateTotalExperienceYear").val(parseInt((totalExperience / 12)).toString()); // years
                     $("#candidateTotalExperienceMonth").val(totalExperience % 12); // years
-
-                    candidateExps = returnedData.candidateExpList;
-                    candidatePastJobExp = returnedData.jobHistoryList;
-                    if(candidateExps != null){
-                        generateExperience(jobPrefString);
-                        prefillCandidateExp(candidateExps);
-                        if(candidatePastJobExp != null){
-                            prefillCandidatePastJobExp(candidatePastJobExp);
-                        }
-                    }
-                }
+                 }
             }
         } catch (err) {
             console.log(err);
@@ -406,6 +405,11 @@ function processDataAndFillAllFields(returnedData) {
                 if (returnedData.candidateEducation.education != null) {
                     document.getElementById("highestEducation" + returnedData.candidateEducation.education.educationId).checked = true;
                     $("#highestEducation" + returnedData.candidateEducation.education.educationId).parent().addClass('active').siblings().removeClass('active');
+                    if(returnedData.candidateEducation.education.educationId > 3){
+                        $("#educationalInstitute").show();
+                    } else{
+                        $("#educationalInstitute").hide();
+                    }
                 }
                 if (returnedData.candidateEducation.degree != null) {
                     $("#candidateHighestDegree").val(returnedData.candidateEducation.degree.degreeId);
@@ -835,16 +839,16 @@ $(function() {
             statusCheck=0;
         } else if(selectedTimeShift == -1){
             statusCheck=0;
-            notifyError("Please Enter Your Preferred Work Shift");
+            notifyError("Please select Preferred Work Shift");
         }  else if($('#dob_day').val() == "" || $('#dob_month').val() == "" || $('#dob_year').val() == ""){
             statusCheck=0;
-            notifyError("Please Select your Date of Birth");
+            notifyError("Please Select Date of Birth");
         } else if(selectedGender == undefined) {
             statusCheck=0;
-            notifyError("Please Select your Gender");
+            notifyError("Please Select Gender");
         } else if(experienceStatus == null){
             statusCheck=0;
-            notifyError("Please Select your work experience");
+            notifyError("Please Select work experience");
         } else if(candidateLastWithdrawnSalary > 99999){
             statusCheck=0;
             notifyError("Please Enter a valid Salary")
@@ -853,15 +857,15 @@ $(function() {
             statusCheck=0;
         } else if(experienceStatus == 1 && currentlyEmployed == null){
             statusCheck=0;
-            notifyError("Please answer \"Are you currently working?\"");
-        } else if((experienceStatus == 1)  && (candidateLastWithdrawnSalary == null || candidateLastWithdrawnSalary == "" || candidateLastWithdrawnSalary) == "0"){
+            notifyError("Please answer \"Is the candidate currently working?\"");
+        } else if((experienceStatus == 1)  && (candidateLastWithdrawnSalary == undefined || candidateLastWithdrawnSalary == null || candidateLastWithdrawnSalary == "" || candidateLastWithdrawnSalary == "0") ){
             statusCheck=0;
-            notifyError("Enter your Last Withdrawn Salary");
+            notifyError("Enter enter Last Withdrawn Salary");
         } else if(languageMap.length == 0 || languageMap.length == null){
             notifyError("Select specify candidate's known language");
             statusCheck=0;
         } else if(highestEducation == undefined){
-            notifyError("Select your Highest Education");
+            notifyError("Select Highest Education");
             statusCheck=0;
         } else if(((highestEducation == 4) || (highestEducation == 5)) && selectedDegree == -1){
             notifyError("Please select your Degree");
@@ -936,7 +940,7 @@ $(function() {
 
 function processDataSignUpSupportSubmit(returnedData) {
     if(returnedData.status == "1"){ //success
-        window.location = "/partner/home";
+        //window.location = "/partner/home";
     } else if(returnedData.status == "-1"){
         logoutUser();
     } else{

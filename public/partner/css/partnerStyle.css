@@ -246,6 +246,30 @@ option:checked {
 
 }
 
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    display: initial;
+    border: transparent;
+    background: transparent;
+}
+
+.dataTables_wrapper:hover .dataTables_paginate:hover .paginate_button:hover{
+    display: initial;
+    background: transparent;
+    border: transparent;
+    color: black;
+}
+
+.pagination>li>a, .pagination>li>span, .pagination>li>a:hover, .pagination>li>span:hover  {
+    position: relative;
+    float: left;
+    padding: 6px 12px;
+    line-height: 1.42857143;
+    text-decoration: none;
+    color: #004d81;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    margin-left: -1px;
+}
 
 #registerBtnSubmit:hover{
     border: none;
