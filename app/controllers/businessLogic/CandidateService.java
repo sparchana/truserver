@@ -354,7 +354,11 @@ public class CandidateService
                 }
             }
             else {
-                interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM;
+                if(channelType == InteractionChannelType.PARTNER){ //candidate profile getting edited by a partner
+                    interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_PARTNER;
+                } else{ //candidate profile is getting edited by candidate
+                    interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM;
+                }
             }
         }
 

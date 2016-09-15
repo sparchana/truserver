@@ -383,6 +383,13 @@ a:hover{
     #eduConfirm{
         margin-top: 24%;
     }
+    .createCandidateLastName{
+        margin-top: 8px;
+    }
+    #languageName{
+        margin-top: 6px;
+        font-size: 11px;
+    }
     .leadBox {
         width: 84%;
         margin-right: 8%;

@@ -144,8 +144,8 @@ public class PartnerController {
     }
 
     @Security.Authenticated(SecuredUser.class)
-    public static Result partnerCreateCandidate() {
-        return ok(views.html.partner_create_candidate.render());
+    public static Result partnerCreateCandidate(long candidateId) {
+        return ok(views.html.partner_create_candidate.render(candidateId));
     }
 
     public static Result partnerUpdateBasicProfile() {
@@ -181,22 +181,21 @@ public class PartnerController {
         String partnerId = session().get("partnerId");
         Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
         if(partner != null){
-            Candidate candidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
-            if(candidate == null){
-                CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
-                        InteractionService.InteractionChannelType.PARTNER,
-                        ServerConstants.UPDATE_ALL_BY_SUPPORT);
-                if(candidateSignUpResponse.getStatus() == CandidateSignUpResponse.STATUS_SUCCESS){
-                    return ok(toJson(PartnerService.createPartnerToCandidateMapping(partner, addSupportCandidateRequest.getCandidateMobile())));
-                } else{
-                    return ok("0");
-                }
+            CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
+                    InteractionService.InteractionChannelType.PARTNER,
+                    ServerConstants.UPDATE_ALL_BY_SUPPORT);
+            if(candidateSignUpResponse.getStatus() == CandidateSignUpResponse.STATUS_SUCCESS){
+                return ok(toJson(PartnerService.createPartnerToCandidateMapping(partner, addSupportCandidateRequest.getCandidateMobile())));
             } else{
-                //candidate already there in the database; hence ignoring
                 return ok("0");
             }
         } else{
             return ok("-1");
         }
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result partnerCandidates() {
+        return ok(views.html.partner_candidates.render());
     }
 }

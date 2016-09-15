@@ -39,7 +39,7 @@ function processDataCheckAllJobRoles(jobPostJobRoles) {
                     };
                     var jobRoleNameFooter = document.createElement("div");
                     jobRoleNameFooter.id = "jobRoleName";
-                    jobRoleNameFooter.textContent = jobRoleItem.jobName;
+                    jobRoleNameFooter.textContent = jobRoleItem.jobName + " Jobs";
                     jobAnchorFooter.appendChild(jobRoleNameFooter);
 
                     parentFooter.append(jobAnchorFooter);

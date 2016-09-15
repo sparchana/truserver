@@ -207,25 +207,13 @@ function prefillSkillProfile(){
         });
     }
 
-
-
     /* language and skills */
-    try{
-        if(candidateInformation.motherTongue != null){
-            $("#candidateMotherTongue").val(candidateInformation.motherTongue.languageId);
-        }
-        else{
-            $("#candidateMotherTongue").val(-1);
-        }
-    }
-    catch(err){
-        console.log(err);
-    }
 
     if(candidateInformation.languageKnownList != null) {
         prefillLanguageTable(candidateInformation.languageKnownList);
     }
 
+    console.log(candidateInformation.candidateSkillList);
     if(candidateInformation.candidateSkillList != null) {
         var skillList = candidateInformation.candidateSkillList;
         skillList.forEach(function (skillElement) {

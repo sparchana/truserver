@@ -6,6 +6,23 @@ var languageArray = [];
 var skillMap = [];
 var educationArray = [];
 var languageMap = [];
+var localityArray = [];
+var jobArray = [];
+
+var jobPrefArray = [];
+var localityPrefArray = [];
+var currentLocationArray = [];
+var candidateSkill = [];
+
+var jobPrefString;
+
+function getLocality(){
+    return localityArray;
+}
+
+function getJob() {
+    return jobArray;
+}
 
 function checkPartnerLogin() {
     try {
@@ -35,6 +52,21 @@ $(document).ready(function() {
     $("#isEmployedForm").hide();
     $("#isEmployedSelect").hide();
     checkPartnerLogin();
+
+    //getting all partner types
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllPartnerType",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckPartnerType
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
     try {
         $.ajax({
             type: "POST",
@@ -150,7 +182,302 @@ $(document).ready(function() {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+    var pathname = window.location.pathname; // Returns path only
+    var leadId = pathname.split('/');
+    leadId = leadId[(leadId.length) - 1];
+    if(leadId != '0'){ //this is for viewing a profile
+        if(leadId != undefined){
+            try {
+                $.ajax({
+                    type: "GET",
+                    url: "/getCandidateInfo/" + leadId,
+                    data: false,
+                    async: false,
+                    contentType: false,
+                    processData: false,
+                    success: processDataAndFillAllFields,
+                    error: false
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
+        }
+    }
+
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllLocality",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckLocality
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+    //getting all jobRoles
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllJobs",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckJobs
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+
 });
+
+
+function processDataCheckJobs(returnedData) {
+    jobArray = [];
+    returnedData.forEach(function(jobRole)
+    {
+        var id = jobRole.jobRoleId;
+        var name = jobRole.jobName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        jobArray.push(item);
+    });
+
+}
+
+function processDataCheckLocality(returnedData) {
+    localityArray = [];
+    returnedData.forEach(function(locality) {
+        var id = locality.localityId;
+        var name = locality.localityName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        localityArray.push(item);
+    });
+}
+
+
+function processDataAndFillAllFields(returnedData) {
+    if (returnedData == "0") {
+    } else {
+        $("#candidateFirstName").val(returnedData.candidateFirstName);
+        if (returnedData.candidateLastName == "null" || returnedData.candidateLastName == null) {
+            $("#candidateLastName").val(undefined);
+        } else {
+            $("#candidateLastName").val(returnedData.candidateLastName);
+        }
+
+        $("#candidateMobile").val(returnedData.candidateMobile.substring(3, 13));
+        $("#candidateMobile").attr("disabled", "disabled");
+
+        /* get Candidate's job preference */
+        try {
+            var jobPref = returnedData.jobPreferencesList;
+            jobPref.forEach(function (job) {
+                var id = job.jobRole.jobRoleId;
+                var name = job.jobRole.jobName;
+                var item = {};
+                item ["id"] = id;
+                item ["name"] = name;
+                jobPrefArray.push(item);
+                jobPrefString +=id + ",";
+            });
+            jobPrefString = jobPrefString.substring(0, jobPrefString.length - 1);
+        } catch (err) {
+            console.log(err);
+        }
+
+        /* get Candidate's home location */
+        if (returnedData.locality != null) {
+            try {
+                var item = {};
+                item ["id"] = returnedData.locality.localityId;
+                item ["name"] = returnedData.locality.localityName;
+                currentLocationArray.push(item);
+
+            } catch (err) {
+                console.log("homeLocality" + err);
+            }
+        }
+
+        // populate past company and past sal fields
+        try {
+            var jobHistory = returnedData.jobHistoryList;
+            jobHistory.forEach(function (historyItem) {
+                $("#candidateCurrentCompany").val(historyItem.candidatePastCompany);
+                // job role here
+            });
+        } catch (err) {
+            console.log(err);
+        }
+
+
+        try {
+            if (returnedData.candidateDOB != null) {
+                var date = JSON.parse(returnedData.candidateDOB);
+                var yr = new Date(date).getFullYear();
+                var month = ('0' + parseInt(new Date(date).getMonth() + 1)).slice(-2);
+                var d = ('0' + new Date(date).getDate()).slice(-2);
+                $("#candidateDob").val(yr + "-" + month + "-" + d);
+                $("#dob_day").val(d);
+                $("#dob_month").val(month);
+                $("#dob_year").val(yr);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+
+        try {
+            if (returnedData.candidateGender != null) {
+                if (returnedData.candidateGender == 0) {
+                    $('input[id=genderMale]').attr('checked', true);
+                    $('input[id=genderMale]').parent().addClass('active').siblings().removeClass('active');
+                } else {
+                    $('input[id=genderFemale]').attr('checked', true);
+                    $('input[id=genderFemale]').parent().addClass('active').siblings().removeClass('active');
+                }
+            }
+        } catch (err) {
+            console.log(err);
+        }
+
+        try {
+            if (returnedData.candidateIsEmployed != null) {
+                if (returnedData.candidateIsEmployed == 1) {
+                    $('input[id=employed]').attr('checked', true);
+                } else {
+                    $('input[id=employedNot]').attr('checked', true);
+                }
+            }
+        } catch (err) {
+            console.log(err);
+        }
+
+        try {
+            if (returnedData.timeShiftPreference != null) {
+                $("#candidateTimeShift").val(returnedData.timeShiftPreference.timeShift.timeShiftId);
+            }
+            if(returnedData.candidateLastWithdrawnSalary != null){
+                $('#candidateLastWithdrawnSalary').val(returnedData.candidateLastWithdrawnSalary);
+            }
+            if (returnedData.candidateTotalExperience != null) {
+                var totalExperience = parseInt(returnedData.candidateTotalExperience);
+                if (totalExperience == 0) {
+                    document.getElementById("fresher").checked = true;
+                    $('#fresher').parent().addClass('active').siblings().removeClass('active');
+                    $("#totalWorkExperience").hide();
+                }
+                else {
+                    document.getElementById("experienced").checked = true;
+                    $('#experienced').parent().addClass('active').siblings().removeClass('active');
+                    $("#totalWorkExperience").show();
+                    $("#candidateTotalExperienceYear").val(parseInt((totalExperience / 12)).toString()); // years
+                    $("#candidateTotalExperienceMonth").val(totalExperience % 12); // years
+
+                    candidateExps = returnedData.candidateExpList;
+                    candidatePastJobExp = returnedData.jobHistoryList;
+                    if(candidateExps != null){
+                        generateExperience(jobPrefString);
+                        prefillCandidateExp(candidateExps);
+                        if(candidatePastJobExp != null){
+                            prefillCandidatePastJobExp(candidatePastJobExp);
+                        }
+                    }
+                }
+            }
+        } catch (err) {
+            console.log(err);
+        }
+
+        try {
+            if (returnedData.candidateEducation != null) {
+                if (returnedData.candidateEducation.education != null) {
+                    document.getElementById("highestEducation" + returnedData.candidateEducation.education.educationId).checked = true;
+                    $("#highestEducation" + returnedData.candidateEducation.education.educationId).parent().addClass('active').siblings().removeClass('active');
+                }
+                if (returnedData.candidateEducation.degree != null) {
+                    $("#candidateHighestDegree").val(returnedData.candidateEducation.degree.degreeId);
+                }
+                if (returnedData.candidateEducation.candidateLastInstitute != null) {
+                    $("#candidateEducationInstitute").val(returnedData.candidateEducation.candidateLastInstitute);
+                }
+                if (returnedData.candidateEducation.candidateEducationCompletionStatus != null) {
+                    if (returnedData.candidateEducation.candidateEducationCompletionStatus == '1') {
+                        // hasCompletedEducation
+                        $('input[id=eduCompleted]').attr('checked', true);
+                    } else {
+                        $('input[id=eduCompletedNot]').attr('checked', true);
+                    }
+                }
+            }
+        } catch (err) {
+            console.log(err);
+        }
+
+
+        if (returnedData.languageKnownList != null) {
+            prefillLanguageTable(returnedData.languageKnownList);
+        }
+
+        if (returnedData.candidateSkillList != null) {
+            var skillList = returnedData.candidateSkillList;
+            skillList.forEach(function (skillElement) {
+                var obj = {};
+                obj["skillName"] = skillElement.skill.skillName;
+                obj["skillResponse"] = skillElement.candidateSkillResponse;
+                candidateSkill.push(obj);
+            });
+        }
+    }
+}
+
+function prefillLanguageTable(languageKnownList) {
+    $('table#languageTable tr').each(function () {
+        $(this).find('input').each(function () {
+            //do your stuff, you can use $(this) to get current cell
+            var x = document.createElement("INPUT");
+            x = $(this).get(0);
+            languageKnownList.forEach(function (languageKnown) {
+                if (x.id == languageKnown.language.languageId) {
+                    if (languageKnown.verbalAbility == "1" && x.name == "s") {
+                        x.checked = true;
+                        $(x).parent().addClass('active').siblings().removeClass('active');
+                    } else if (languageKnown.readWrite == "1" && x.name == "rw") {
+                        x.checked = true;
+                        $(x).parent().addClass('active').siblings().removeClass('active');
+                    } else if (languageKnown.understanding == "1" && x.name == "u") {
+                        x.checked = true;
+                        $(x).parent().addClass('active').siblings().removeClass('active');
+                    }
+                }
+            });
+        });
+    });
+}
+
+function prefillSkills(candidateSkillList) {
+    $('table#skillTable tr').each(function () {
+        $(this).find('input').each(function () {
+            //do your stuff, you can use $(this) to get current cell
+            var skillResponse = document.createElement("INPUT");
+            skillResponse = $(this).get(0);
+            candidateSkillList.forEach(function (skillElement) {
+                if (skillResponse.name == skillElement.skillName && skillResponse.value == skillElement.skillResponse) {
+                    skillResponse.checked = true;
+                    skillResponse.click();
+                }
+            });
+        });
+    });
+}
+
 
 function checkInstitute() {
     var selectedEducation = $('input:radio[name="highestEducation"]:checked').val();
@@ -252,7 +579,6 @@ function ifMobileExists(returnedId) {
     }
 }
 
-
 function generateSkills(){
     var selectedJobPref = $('#candidateJobPref').val();
     if (selectedJobPref != null && selectedJobPref !== '') {
@@ -272,6 +598,7 @@ function generateSkills(){
             console.log("exception occured!!" + exception);
         }
     }
+    prefillSkills(candidateSkill);
 }
 
 function processDataCheckSkills(returnedData) {
@@ -380,7 +707,7 @@ function populateLanguages(l, lId) {
             var cell3 = row.insertCell(2);
             var cell4 = row.insertCell(3);
 
-            cell1.innerHTML = l[i];
+            cell1.innerHTML = "<div id=\"languageName\">" + l[i] + "</div>";
             cell2.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check educationBtn\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"u\" value=0 >Understand</label></div>";
             cell3.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check educationBtn\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >Speak</label></div>";
             cell4.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check educationBtn\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"rw\" value=0 >Read/Write</label></div>";

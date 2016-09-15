@@ -14,6 +14,7 @@ public class ServerConstants {
     public static final String INTERACTION_RESULT_NEW_CANDIDATE_SUPPORT = "New Candidate Added by support";
     public static final String INTERACTION_RESULT_NEW_CANDIDATE_PARTNER = "New Candidate Added by partner";
     public static final String INTERACTION_RESULT_NEW_PARTNER = "New Partner Added";
+    public static final String INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_PARTNER = "Candidate Info got updated by Partner";
     public static final String INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM = "Candidate Info got updated by System";
     public static final String INTERACTION_RESULT_CANDIDATE_BASIC_PROFILE_INFO_UPDATED_SELF = "Candidate Self Updated Basic Profile Info";
     public static final String INTERACTION_RESULT_PARTNER_BASIC_PROFILE_INFO_UPDATED_SELF = "Partner Self Updated Basic Profile Info";
