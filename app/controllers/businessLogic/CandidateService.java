@@ -352,7 +352,7 @@ public class CandidateService
                     interactionResult = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE_SUPPORT;
                 } else if(channelType == InteractionChannelType.PARTNER){
                     interactionResult = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE_PARTNER;
-                    Partner partner = Partner.find.where().eq("partner_id", session().get("sessionId")).findUnique();
+                    Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
                     if(partner != null){
                         PartnerService.createPartnerToCandidateMapping(partner, candidate.getCandidateMobile());
                     }

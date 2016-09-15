@@ -8,6 +8,7 @@ function processDataUpdateProfile(returnedData) {
     if(returnedData.status == 1){
         window.location = "/partner/home";
     } else{
+        $("#registerBtnSubmit").addClass("btn-primary").removeClass("appliedBtn").prop('disabled', false).html("Save");
         notifyError("Something went wrong while updating profile");
     }
 }
@@ -147,6 +148,7 @@ $(function() {
             statusCheck = 0;
         }
         if(statusCheck == 1){
+            $("#registerBtnSubmit").addClass("btn-primary").removeClass("appliedBtn").prop('disabled', true).html("Save");
             try {
                 var s = {
                     partnerName: firstName,

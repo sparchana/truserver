@@ -318,16 +318,13 @@ function processDataAndFillMinProfile(returnedData) {
         var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1HwEWPzZD4BFCyeRf5HO_KqNXyaMporxYQfg5lhOoA2g/edit#gid=496359801');
 
         function sendAndDraw() {
-            console.log("inside send and draw method");
             var val = localStorage.getItem("mobile");
             query.setQuery('select C where C=' + val.substring(3, 13));
             query.send(handleQueryResponse);
         }
 
         function handleQueryResponse(response) {
-            console.log("inside handleJqueryResponse method");
             if (response.isError()) {
-                console.log(" google parse error");
                 return;
             }
             data = response.getDataTable();
@@ -438,9 +435,7 @@ function processDataAndFillMinProfile(returnedData) {
         if(returnedData.candidateEducation.education != null) {
             document.getElementById("userEducationLevel").innerHTML = returnedData.candidateEducation.education.educationName;
         }
-    } catch(err){
-        console.log("education is null");
-    }
+    } catch(err){}
 
     /* Work Experience */
     if(returnedData.candidateTotalExperience != null){

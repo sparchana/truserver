@@ -6,7 +6,6 @@ var applyJobFlag = 0;
 var applyJobId = 0;
 
 function processDataLogin(returnedData) {
-    console.log(returnedData);
     if(returnedData.status == 1) {
         // Store
         localStorage.setItem("mobile", "+91" + candidateMobile);
@@ -48,7 +47,6 @@ $(function() {
         eventObj.preventDefault();
         var phone  = $('#candidateLoginMobile').val();
         var password = $('#candidateLoginPassword').val();
-        console.log(phone + " " + password);
         if(phone == null || phone == ""){
             alert("Enter your Phone Number");
         } else if(password == null || password == ""){
@@ -58,7 +56,6 @@ $(function() {
             try {
 
                 candidateMobile = phone;
-                console.log("phone: " + phone);
                 var s = {
                     candidateLoginMobile: phone,
                     candidateLoginPassword : password

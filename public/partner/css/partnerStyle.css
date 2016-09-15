@@ -193,6 +193,18 @@ option:checked {
 
 }
 
+.registerPartnerBtnSubmit{
+    border: none;
+    background-color: #0065a4;
+    color: white;
+    -webkit-transition: background-color 0.2s;
+    -moz-transition:    background-color 0.2s;
+    -ms-transition:     background-color 0.2s;
+    -o-transition:      background-color 0.2s;
+    transition:         background-color 0.2s;
+
+}
+
 .pagination>.active>a, .pagination>.active>span, .pagination>.active>a:hover, .pagination>.active>span:hover, .pagination>.active>a:focus, .pagination>.active>span:focus {
     z-index: 2;
     color: #fff;
@@ -236,6 +248,17 @@ option:checked {
 
 
 #registerBtnSubmit:hover{
+    border: none;
+    background-color: #004d81;
+    color: white;
+    -webkit-transition: background-color 0.2s;
+    -moz-transition:    background-color 0.2s;
+    -ms-transition:     background-color 0.2s;
+    -o-transition:      background-color 0.2s;
+    transition:         background-color 0.2s;
+}
+
+.registerPartnerBtnSubmit:hover{
     border: none;
     background-color: #004d81;
     color: white;

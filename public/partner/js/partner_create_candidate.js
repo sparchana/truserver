@@ -53,6 +53,8 @@ $(document).ready(function() {
     $("#isEmployedSelect").hide();
     checkPartnerLogin();
 
+    $("#registerBtnSubmit").addClass("btn-primary").removeClass("appliedBtn").prop('disabled', true).html("Save");
+
     //getting all partner types
     try {
         $.ajax({
@@ -187,6 +189,8 @@ $(document).ready(function() {
     leadId = leadId[(leadId.length) - 1];
     if(leadId != '0'){ //this is for viewing a profile
         if(leadId != undefined){
+            $("#registerBtnSubmit").addClass("btn-primary").removeClass("appliedBtn").prop('disabled', false).html("Save");
+
             try {
                 $.ajax({
                     type: "POST",
@@ -568,6 +572,7 @@ function ifMobileExists(returnedId) {
         document.getElementById("partnerCandidateProfile").reset();
         notifyError("Candidate already exists in the database. Create a different candidate");
     } else{
+        $("#registerBtnSubmit").addClass("btn-primary").removeClass("appliedBtn").prop('disabled', false).html("Save");
         $.notify({
             message: "Candidate with the specified mobile doesn't exists! Please continue",
             animate: {
@@ -864,6 +869,7 @@ $(function() {
         }
 
         if(statusCheck == 1){
+            $("#registerBtnSubmit").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Saving");
             var candidatePreferredJob = [];
             /* Candidate job role preferences  */
             for (var i = 0; i < jobSelected.length; i++) {
@@ -934,6 +940,7 @@ function processDataSignUpSupportSubmit(returnedData) {
     } else if(returnedData.status == "-1"){
         logoutUser();
     } else{
+        $("#registerBtnSubmit").addClass("btn-primary").removeClass("appliedBtn").prop('disabled', false).html("Save");
         notifyError("Something went wrong. Please try again later");
     }
 }

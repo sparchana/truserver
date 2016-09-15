@@ -20,7 +20,6 @@ function processDataResetCheckUser(returnedData) {
 }
 
 function processDataPostReset(returnedData) {
-    console.log("returedData :" + returnedData.status);
     if(returnedData.status == 1) {
         localStorage.setItem("mobile", "+91" + candidateMobile);
         localStorage.setItem("name", returnedData.candidateFirstName);
@@ -115,10 +114,9 @@ $(function() {
             try {
                 var phone = candidateMobile;
                 var password = $('#candidateNewPassword').val();
-                console.log("phone: " + phone);
                 var s = {
                     candidatePassword : password,
-                    candidateAuthMobile : phone,
+                    candidateAuthMobile : phone
                 };
                 $.ajax({
                     type: "POST",
