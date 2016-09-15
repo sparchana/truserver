@@ -5,11 +5,14 @@ import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.PartnerSignUpResponse;
+import api.http.httpResponse.SupportDashboardElementResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
 import controllers.security.SecuredUser;
 import models.entity.Candidate;
+import models.entity.Interaction;
+import models.entity.Lead;
 import models.entity.OM.PartnerToCandidate;
 import models.entity.Partner;
 import models.entity.Static.PartnerType;
@@ -18,7 +21,11 @@ import play.mvc.Result;
 import play.mvc.Security;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static play.libs.Json.toJson;
 
@@ -197,5 +204,37 @@ public class PartnerController {
     @Security.Authenticated(SecuredUser.class)
     public static Result partnerCandidates() {
         return ok(views.html.partner_candidates.render());
+    }
+
+    public static Result getMyCandidates(){
+        Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+        if(partner != null){
+            List<PartnerToCandidate> partnerToCandidateList = PartnerToCandidate.find.where().eq("partner_id", partner.getPartnerId()).findList();
+            ArrayList<PartnerCandidatesResponse> responses = new ArrayList<>();
+
+            SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT);
+
+            for(PartnerToCandidate partnerToCandidate : partnerToCandidateList) {
+                PartnerCandidatesResponse response = new PartnerCandidatesResponse();
+
+                response.setCandidateId(partnerToCandidate.getCandidate().getCandidateId());
+                response.setCreationTimestamp(sfd.format(partnerToCandidate.getCandidate().getCandidateCreateTimestamp()));
+                response.setLeadId(partnerToCandidate.getCandidate().getLead().getLeadId());
+                if(partnerToCandidate.getCandidate().getCandidateFirstName() != null){
+                    response.setCandidateName(partnerToCandidate.getCandidate().getCandidateFirstName());
+                    if(partnerToCandidate.getCandidate().getCandidateLastName() != null){
+                        response.setCandidateName(partnerToCandidate.getCandidate().getCandidateFirstName() + " " + partnerToCandidate.getCandidate().getCandidateLastName());
+                    }
+                }
+                response.setCandidateMobile(partnerToCandidate.getCandidate().getCandidateMobile());
+                responses.add(response);
+            }
+            return ok(toJson(responses));
+        } else{
+            //partner does not exists
+            Logger.info("Partner not available");
+
+        }
+        return ok("0");
     }
 }

@@ -4,7 +4,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Create Candidate - Partner | Trujobs - Best Jobs for Freshers and Experienced Candidates </title>
+        <title>My Candidates - Partner | Trujobs - Best Jobs for Freshers and Experienced Candidates </title>
 
         <meta name="keywords" content="driving jobs, fresher jobs, jobs for freshers, job search sites, job posting, sales jobs, beautician jobs,
             medical transcription jobs, online job search, find jobs, receptionist jobs, admin jobs, office assistant jobs,
@@ -18,10 +18,14 @@
         <meta http-equiv="Cache-control" content="public">
             <!-- Bootstrap Core CSS -->
         <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="/assets/partner/css/partnerStyle.css">
         <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/materialDashboard.css">
+        <link rel="stylesheet" type="text/css" href="/assets/partner/css/partnerStyle.css">
 
         <script type="text/javascript" src="/assets/js/jquery.min_1_12_0.js"></script>
+        <script type="text/javascript" src="/assets/support/js/datatables.min.js"></script>
+        <script type="text/javascript" src="/assets/partner/js/dataTables.rowReorder.min.js"></script>
+        <script type="text/javascript" src="/assets/partner/js/dataTables.responsive.min.js"></script>
+
         <script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
         <link rel="icon" type="image/png" href="/assets/img/icon.png">
 
@@ -32,7 +36,7 @@
         <link rel="stylesheet" href="/assets/support/css/dataTables.bootstrap.min.css">
         <link rel="stylesheet" href="/assets/support/css/jquery.dataTables.min.css">
 
-        <script type="text/javascript" src="/assets/support/js/bootstrap-notify.min.js"></script>
+
     </head>
     <body>
         <div id="preloader">
@@ -47,6 +51,7 @@
         <script>
               $(document).ready(function () {
                   $('#nav_bar_inc').load('/partnerNavBarLoggedIn');
+                  renderCandidateTable();
               });
         </script>
 
@@ -56,18 +61,20 @@
         </div>
 
         <div class="container" style="padding-bottom: 24px">
-            <table id="leadTable" class="table table-striped table-bordered" style="margin-top: 16px" cellspacing="0" width="100%">
-                <thead>
-                    <tr>
-                        <th>Candidate ID</th>
-                        <th>Candidate Name</th>
-                        <th>Candidate Mobile</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-
+            <div style="margin-top: 16px; min-height: 560px">
+                <table id="leadTable" class="table table-striped table-bordered" style="margin-top: 16px" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Candidate ID</th>
+                            <th>Candidate Name</th>
+                            <th>Candidate Mobile</th>
+                            <th>Candidate Creation Date</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
             <!-- Start Footer-->
         <div id="footer_inc"></div>

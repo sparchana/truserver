@@ -80,12 +80,13 @@ POST        /signUp                                                       contro
 
 # partner routes
 #~~~~~~~~~~~~~~~~~~~~
+GET         /getMyCandidates                                              controllers.PartnerController.getMyCandidates()
 GET         /checkPartnerSession                                          controllers.PartnerController.checkPartnerSession()
 GET         /partner                                                      controllers.PartnerController.partnerIndex()
 GET         /partner/home                                                 controllers.PartnerController.partnerHome()
 GET         /partner/editProfile                                          controllers.PartnerController.partnerEditProfile()
 GET         /partner/candidate/:id                                        controllers.PartnerController.partnerCreateCandidate(id : Long)
-GET         /partner/partnerCandidates                                    controllers.PartnerController.partnerCandidates()
+GET         /partner/myCandidates                                         controllers.PartnerController.partnerCandidates()
 GET         /partnerNavBar                                                controllers.PartnerController.renderPagePartnerNavBar()
 GET         /getPartnerProfileInfo                                        controllers.PartnerController.getPartnerProfileInfo()
 GET         /partnerNavBarLoggedIn                                        controllers.PartnerController.renderPagePartnerLoggedInNavbar()

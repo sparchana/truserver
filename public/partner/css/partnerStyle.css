@@ -193,6 +193,14 @@ option:checked {
 
 }
 
+.pagination>.active>a, .pagination>.active>span, .pagination>.active>a:hover, .pagination>.active>span:hover, .pagination>.active>a:focus, .pagination>.active>span:focus {
+    z-index: 2;
+    color: #fff;
+    background-color: #0065a4;
+    border-color: #0065a4;
+    cursor: default;
+}
+
 #forBtn{
     margin: 24px 12px 24px 0;
     width: 140px;
@@ -238,12 +246,34 @@ option:checked {
     transition:         background-color 0.2s;
 }
 
+#viewCandidateBtn{
+    border: none;
+    background-color: #0064a8;
+    color: white;
+    -webkit-transition: background-color 0.2s;
+    -moz-transition:    background-color 0.2s;
+    -ms-transition:     background-color 0.2s;
+    -o-transition:      background-color 0.2s;
+    transition:         background-color 0.2s;
+}
+
+#viewCandidateBtn:hover{
+    border: none;
+    background-color: #004d81;
+    color: white;
+    -webkit-transition: background-color 0.2s;
+    -moz-transition:    background-color 0.2s;
+    -ms-transition:     background-color 0.2s;
+    -o-transition:      background-color 0.2s;
+    transition:         background-color 0.2s;
+}
+
 
 .sectionFiveMain{
     background: #002144;
 }
 .sectionFive {
-    padding: 4% 8%;
+    padding: 2% 0 2% 0;
     text-align: center;
     color: #ffffff;
 }
@@ -380,6 +410,11 @@ a:hover{
 }
 
 @media screen and (max-width: 768px) {
+    #viewCandidateBtn{
+        padding: 8px;
+        width: auto;
+        margin: 8px;
+    }
     #eduConfirm{
         margin-top: 24%;
     }

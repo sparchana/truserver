@@ -125,9 +125,7 @@ function processDataCheckLocality(returnedData) {
             hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
             preventDuplicates: true
         });
-    } catch(e){
-        console.log("exception");
-    }
+    } catch(e){}
 }
 
 function processDataCheckPartnerType(returnedData) {
@@ -155,6 +153,50 @@ function logoutUser() {
             data: false,
             contentType: false,
             processData: false,
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+// rendering data table in partner/myCandidates
+function viewCandidate(leadId) {
+    window.location = "/partner/candidate/" + leadId;
+}
+
+function renderCandidateTable() {
+    try {
+        var table = $('table#leadTable').DataTable({
+            "ajax": {
+                "url": "/getMyCandidates",
+                "dataSrc": function (returnedData) {
+                    var returned_data = new Array();
+                    returnedData.forEach(function (candidate) {
+                        returned_data.push({
+                            'candidateId': candidate.candidateId,
+                            'candidateName' : candidate.candidateName,
+                            'candidateMobile' :  candidate.candidateMobile,
+                            'candidateCreationTimestamp' : candidate.creationTimestamp,
+                            'btnView' : '<input type="submit" value="View" style="width:100px" onclick="viewCandidate('+candidate.leadId+')" id="viewCandidateBtn" class="btn btn-primary">'
+                        })
+                    });
+                    return returned_data;
+                }
+            },
+            "deferRender": true,
+            "columns": [
+                { "data": "candidateId" },
+                { "data": "candidateName" },
+                { "data": "candidateMobile" },
+                { "data": "candidateCreationTimestamp" },
+                { "data": "btnView" }
+            ],
+            rowReorder: {
+                selector: 'td:nth-child(2)'
+            },
+            "order": [[3, "desc"]],
+            responsive: true,
+            "destroy": true
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);

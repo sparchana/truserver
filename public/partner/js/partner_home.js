@@ -10,7 +10,7 @@ $(window).load(function() {
     });
     $("#status").fadeOut();
     $("#loaderLogo").fadeOut();
-    $("#preloader").delay(1000).fadeOut("slow");
+    $("#preloader").delay(500).fadeOut("slow");
 });
 
 $(document).ready(function(){

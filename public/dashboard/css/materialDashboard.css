@@ -309,7 +309,8 @@ hr{
 
 @media screen and (max-width: 800px) {
     .navbar-nav>li>a {
-        color: #3a589a;
+        background-color: #286ab6;
+        color: #fff;
     }
 
     #activeLink{
@@ -344,7 +345,6 @@ hr{
     }
 
     li{
-        margin-top: -10px;
         background-color: #ffffff;
     }
 
