@@ -12,6 +12,7 @@ public class ServerConstants {
     public static final String INTERACTION_RESULT_NEW_LEAD = "New Lead Added";
     public static final String INTERACTION_RESULT_NEW_CANDIDATE = "New Candidate Added";
     public static final String INTERACTION_RESULT_NEW_CANDIDATE_SUPPORT = "New Candidate Added by support";
+    public static final String INTERACTION_RESULT_NEW_CANDIDATE_PARTNER = "New Candidate Added by partner";
     public static final String INTERACTION_RESULT_NEW_PARTNER = "New Partner Added";
     public static final String INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM = "Candidate Info got updated by System";
     public static final String INTERACTION_RESULT_CANDIDATE_BASIC_PROFILE_INFO_UPDATED_SELF = "Candidate Self Updated Basic Profile Info";
@@ -32,6 +33,7 @@ public class ServerConstants {
     public static final String INTERACTION_RESULT_EXISTING_CANDIDATE_CALLED_BACK = "Existing Candidate Called Back";
     public static final String INTERACTION_RESULT_FIRST_INBOUND_CALL = "First Inbound Call";
     public static final String INTERACTION_RESULT_SELF_SIGNEDIN = "Candidate Self Signed In";
+    public static final String INTERACTION_RESULT_PARTNER_SIGNEDIN = "Partner Self Signed In";
     public static final String INTERACTION_RESULT_CANDIDATE_DEACTIVATED= "Candidate Deactivated";
     public static final String INTERACTION_RESULT_CANDIDATE_ACTIVATED= "Candidate Activated";
 
@@ -41,9 +43,11 @@ public class ServerConstants {
     public static final String INTERACTION_RESULT_PARTNER_TRIED_TO_RESET_PASSWORD = "Partner tried to reset password";
     public static final String INTERACTION_RESULT_CANDIDATE_RESET_PASSWORD_SUCCESS = "Candidate reset password done";
     public static final String INTERACTION_RESULT_PARTNER_RESET_PASSWORD_SUCCESS = "Partner reset password done";
+    public static final String INTERACTION_RESULT_PARTNER_CREATED_NEW_CANDIDATE = "New candidate created by Partner";
     public static final String INTERACTION_CREATED_SELF = "Self";
     public static final String INTERACTION_CREATED_SYSTEM = "System";
     public static final String INTERACTION_CREATED_SYSTEM_KNOWLARITY = "System - Knowlarity";
+    public static final String INTERACTION_CREATED_PARTNER = "Partner";
 
     public static final String INTERACTION_CREATED_ERROR = "Error";
     public static final String INTERACTION_NOTE_DUMMY_PASSWORD_CREATED = "Candidate got Registered with Mandatory Info and dummy password by system";

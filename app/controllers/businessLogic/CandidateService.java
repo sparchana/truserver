@@ -207,6 +207,9 @@ public class CandidateService
         } else if(channelType == InteractionChannelType.SELF_ANDROID){
             interactionType = ServerConstants.INTERACTION_TYPE_ANDROID;
             createdBy = channelType.toString();
+        } else if(channelType == InteractionChannelType.PARTNER){
+            interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+            createdBy = channelType.toString();
         }
 
         if(candidate == null){
@@ -327,18 +330,28 @@ public class CandidateService
         // set the default interaction note string
         interactionNote = ServerConstants.INTERACTION_NOTE_BLANK;
 
-        if(channelType == InteractionChannelType.SUPPORT){
+        if(channelType == InteractionChannelType.SUPPORT || channelType == InteractionChannelType.PARTNER){
             // update additional fields that are part of the support request
             updateOthersBySupport(candidate, request);
 
             AddSupportCandidateRequest supportCandidateRequest = (AddSupportCandidateRequest) request;
 
-            createdBy = session().get("sessionUsername");
-            interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT;
-            interactionNote = supportCandidateRequest.getSupportNote();
+            if(channelType == InteractionChannelType.SUPPORT){
+                createdBy = session().get("sessionUsername");
+                interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT;
+                interactionNote = supportCandidateRequest.getSupportNote();
+            } else{
+                // candidate being created by partner
+                createdBy = session().get("partnerName");
+                interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+            }
 
             if (isNewCandidate) {
-                interactionResult = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE_SUPPORT;
+                if(channelType == InteractionChannelType.SUPPORT){
+                    interactionResult = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE_SUPPORT;
+                } else if(channelType == InteractionChannelType.PARTNER){
+                    interactionResult = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE_PARTNER;
+                }
             }
             else {
                 interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM;
@@ -348,7 +361,7 @@ public class CandidateService
         // check if we have auth record for this candidate. if we dont have, create one with a temporary password
         Auth auth = AuthService.isAuthExists(candidate.getCandidateId());
         if (auth == null) {
-            if(channelType == InteractionChannelType.SUPPORT){
+            if(channelType == InteractionChannelType.SUPPORT || channelType == InteractionChannelType.PARTNER){
                 // TODO: differentiate between in/out call
                 createAndSaveDummyAuthFor(candidate);
                 interactionResult += " & " + ServerConstants.INTERACTION_NOTE_DUMMY_PASSWORD_CREATED;

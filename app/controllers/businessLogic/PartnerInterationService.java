@@ -28,7 +28,7 @@ public class PartnerInterationService {
                     ServerConstants.OBJECT_TYPE_PARTNER,
                     channelType == InteractionService.InteractionChannelType.SELF ? ServerConstants.INTERACTION_TYPE_WEBSITE : ServerConstants.INTERACTION_TYPE_ANDROID_LOGIN,
                     ServerConstants.INTERACTION_NOTE_BLANK,
-                    ServerConstants.INTERACTION_RESULT_SELF_SIGNEDIN,
+                    ServerConstants.INTERACTION_RESULT_PARTNER_SIGNEDIN,
                     channelType.toString()
             );
             InteractionService.createInteraction(interaction);
@@ -61,5 +61,18 @@ public class PartnerInterationService {
         InteractionService.createInteraction(interaction);
     }
 
+    public static void createInteractionForPartnerToCandidateMapping(String objectAUUId, String objectBUUId, Integer interactionType, String interactionResult, String createdBy){
+        Interaction interaction = new Interaction(
+                objectAUUId,
+                ServerConstants.OBJECT_TYPE_JOB_POST,
+                objectBUUId,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                interactionType,
+                interactionResult,
+                createdBy
+        );
+
+        InteractionService.createInteraction(interaction);
+    }
 
 }

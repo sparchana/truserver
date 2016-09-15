@@ -184,7 +184,7 @@ public class PartnerController {
             Candidate candidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
             if(candidate == null){
                 CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
-                        InteractionService.InteractionChannelType.SUPPORT, //here SUPPORT == PARTNER
+                        InteractionService.InteractionChannelType.PARTNER,
                         ServerConstants.UPDATE_ALL_BY_SUPPORT);
                 if(candidateSignUpResponse.getStatus() == CandidateSignUpResponse.STATUS_SUCCESS){
                     return ok(toJson(PartnerService.createPartnerToCandidateMapping(partner, addSupportCandidateRequest.getCandidateMobile())));
@@ -195,7 +195,6 @@ public class PartnerController {
                 //candidate already there in the database; hence ignoring
                 return ok("0");
             }
-
         } else{
             return ok("-1");
         }

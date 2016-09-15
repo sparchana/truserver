@@ -21,7 +21,8 @@ public class InteractionService {
         SELF,
         SELF_ANDROID,
         SUPPORT,
-        KNOWLARITY;
+        KNOWLARITY,
+        PARTNER;
 
         public String toString() {
             return name().charAt(0) + name().substring(1).toLowerCase();
