@@ -44,7 +44,6 @@ public class PartnerToCandidate extends Model {
     }
 
     public void savePartnerToCandidate(PartnerToCandidate partnerToCandidate){
-        Logger.info("Saving partnerToCandidateMapping");
         partnerToCandidate.save();
     }
     public static Finder<String, PartnerToCandidate> find = new Finder(PartnerToCandidate.class);

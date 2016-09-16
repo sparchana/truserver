@@ -497,7 +497,7 @@ public class CandidateService
         }
 
         try{
-            if(supportCandidateRequest.getPastCompanyList() != null ){
+            if(supportCandidateRequest.getCandidateIdProof() != null ){
                 candidate.setIdProofReferenceList(getCandidateIdProofListFromAddSupportCandidate(supportCandidateRequest.getCandidateIdProof(), candidate));
             }
         } catch(Exception e){
@@ -506,7 +506,7 @@ public class CandidateService
         }
 
         try{
-            if(supportCandidateRequest.getPastCompanyList() != null ){
+            if(supportCandidateRequest.getExpList() != null ){
                 candidate.setCandidateExpList(getCandidateExpListFromAddSupportCandidate(supportCandidateRequest.getExpList(), candidate));
             }
         } catch(Exception e){
@@ -844,7 +844,6 @@ public class CandidateService
     private static List<JobHistory> getJobHistoryListFromAddSupportCandidate(List<AddSupportCandidateRequest.PastCompany> pastCompanyList, Candidate candidate) {
         List<JobHistory> response = new ArrayList<>();
         // TODO: loop through the req and then store it in List
-        Logger.info(pastCompanyList.size() + " ==== ");
         for(AddSupportCandidateRequest.PastCompany pastCompany: pastCompanyList){
             if((pastCompany == null) || (pastCompany.getJobRoleId() == null)){
                 Logger.info("Past company name not mentioned");

@@ -236,14 +236,27 @@ public class PartnerController {
 
     @Security.Authenticated(SecuredUser.class)
     public static Result getPartnerCandidate(long leadId) {
-        Lead lead = Lead.find.where().eq("leadId", leadId).findUnique();
-        if(lead != null) {
-            Candidate candidate = CandidateService.isCandidateExists(lead.getLeadMobile());
-            if(candidate!=null){
-                return ok(toJson(candidate));
+        Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+        if(partner != null){ //checking if partner is logged in or not
+            Lead lead = Lead.find.where().eq("leadId", leadId).findUnique(); //getting candidate profile from db
+            if(lead != null) {
+                Candidate candidate = CandidateService.isCandidateExists(lead.getLeadMobile());
+                if(candidate != null){ //checking if the candidate was created by the requested partner
+                    PartnerToCandidate partnerToCandidate = PartnerToCandidate.find
+                            .where()
+                            .eq("candidate_candidateid", candidate.getCandidateId())
+                            .findUnique();
+                    if(partnerToCandidate != null){
+                        if(partnerToCandidate.getPartner().getPartnerId() == partner.getPartnerId()){
+                            return ok(toJson(candidate));
+                        } else{
+                            return ok("-1");
+                        }
+                    }
+
+                }
             }
         }
         return ok("0");
-
     }
 }

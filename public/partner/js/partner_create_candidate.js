@@ -271,6 +271,9 @@ function processDataCheckLocality(returnedData) {
 
 function processDataAndFillAllFields(returnedData) {
     if (returnedData == "0") {
+        notifyError("Something went wrong. Please try again!");
+    } else if(returnedData == "-1"){
+        notifyError("Your are not authorized to view other candidate's details!!");
     } else {
         $("#candidateFirstName").val(returnedData.candidateFirstName);
         if (returnedData.candidateLastName == "null" || returnedData.candidateLastName == null) {
