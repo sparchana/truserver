@@ -75,16 +75,23 @@ body{
 }
 
 #profileTitle{
-    color: #fff;
+/*    color: #fff;
     padding: 2%;
-    background-color: #286ab6;
+    background-color: #286ab6;*/
+    width: 100%;
+    color: #286ab6;
+    padding: 16px;
+    border-left: 3px solid #ffaf00;
+    background-color: #f8f8f8;
+
 }
 
 #profileTitleEditProfile {
     width: 100%;
-    color: #fff;
-    padding: 1%;
-    background-color: #286ab6;
+    color: #286ab6;
+    padding: 16px;
+    border-left: 3px solid #ffaf00;
+    background-color: #f8f8f8;
 }
 
 #indicatorBtnRed{

@@ -45,6 +45,38 @@ $(window).load(function() {
     $("#preloader").delay(500).fadeOut("slow");
 });
 
+function checkPartnerLogin() {
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/checkPartnerSession",
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataPartnerSession
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function processDataPartnerSession(returnedData) {
+    if(returnedData == 0){
+        logoutUser();
+    }
+}
+
+
+function processDataUpdateProfile(returnedData) {
+    if(returnedData.status == 1){
+        window.location = "/partner/home";
+    } else{
+        $("#registerBtnSubmit").addClass("btn-primary").removeClass("appliedBtn").prop('disabled', false).html("Save");
+        notifyError("Something went wrong while updating profile");
+    }
+}
+
+
 $(document).ready(function() {
     //getting all localities
     try {
