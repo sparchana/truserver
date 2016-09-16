@@ -65,7 +65,7 @@ $(window).load(function() {
     });
     $("#status").fadeOut();
     $("#loaderLogo").fadeOut();
-    $("#preloader").delay(1000).fadeOut("slow");
+    $("#preloader").delay(500).fadeOut("slow");
 });
 
 $(document).ready(function(){
@@ -118,7 +118,7 @@ $(document).ready(function(){
     allJobDetailPageUrlBreak.reverse();
 
     $("#sectionOne").css("background-image","linear-gradient(rgba(24, 26, 45, 0.4),rgba(24, 26, 45, 0.4))" +
-        ",url(/assets/img/"+allJobDetailPageUrlBreak[0]+".png)");
+        ",url(/assets/common/img/"+allJobDetailPageUrlBreak[0]+".png)");
 
     try {
         $.ajax({
@@ -226,7 +226,7 @@ function createAndAppendDivider(title) {
     parent.append(mainDiv);
 
     var otherJobIcon = document.createElement("img");
-    otherJobIcon.src = "/assets/img/suitcase.png";
+    otherJobIcon.src = "/assets/common/img/suitcase.png";
     otherJobIcon.style = "width: 42px; margin: 8px";
     otherJobIcon.setAttribute("display", "inline-block");
     mainDiv.appendChild(otherJobIcon);
@@ -358,7 +358,7 @@ function processDataForSelectedJobPost(returnedData) {
                             jobBodySubRowCol.appendChild(salaryIconDiv);
 
                             var salaryIcon = document.createElement("img");
-                            salaryIcon.src = "/assets/img/salary.svg";
+                            salaryIcon.src = "/assets/common/img/salary.svg";
                             salaryIcon.setAttribute('height', '15px');
                             salaryIcon.style = "margin-top: -4px";
                             salaryIconDiv.appendChild(salaryIcon);
@@ -394,7 +394,7 @@ function processDataForSelectedJobPost(returnedData) {
                             jobBodySubRowColExp.appendChild(expIconDiv);
 
                             var expIcon = document.createElement("img");
-                            expIcon.src = "/assets/img/workExp.svg";
+                            expIcon.src = "/assets/common/img/workExp.svg";
                             expIcon.setAttribute('height', '15px');
                             expIcon.style = "margin-top: -4px";
                             expIconDiv.appendChild(expIcon);
@@ -424,7 +424,7 @@ function processDataForSelectedJobPost(returnedData) {
                             jobBodySubRowColLoc.appendChild(locIconDiv);
 
                             var locIcon = document.createElement("img");
-                            locIcon.src = "/assets/img/location.svg";
+                            locIcon.src = "/assets/common/img/location.svg";
                             locIcon.setAttribute('height', '15px');
                             locIcon.style = "margin-top: -4px";
                             locIconDiv.appendChild(locIcon);
@@ -498,7 +498,7 @@ function processDataForSelectedJobPost(returnedData) {
                 var jobImageSrc = document.createElement("img");
                 jobImageSrc.id = "jobImageSrc";
                 jobImage.appendChild(jobImageSrc);
-                $("#jobImageSrc").attr('src', '/assets/img/empty-search.svg');
+                $("#jobImageSrc").attr('src', '/assets/common/img/empty-search.svg');
 
                 var jobMsgLine1 = document.createElement("div");
                 jobMsgLine1.id = "jobMsgLine1";

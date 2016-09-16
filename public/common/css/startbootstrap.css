@@ -41,7 +41,7 @@ p.dm-promo-deal {
 
 .well {
     background-color: #fff;
-    background-image: url(/assets/img/premium-bg.png)
+    background-image: url(/assets/common/img/premium-bg.png)
 }
 
 header.marquee {
@@ -49,7 +49,7 @@ header.marquee {
     text-align: center;
     color: #fff;
     background-color: #b84d45;
-    background-image: url(/assets/img/bg.png)
+    background-image: url(/assets/common/img/bg.png)
 }
 
 header.marquee .brand-name {
@@ -165,7 +165,7 @@ header.marquee .btn-cta:hover {
     text-align: center;
     color: rgba(255, 255, 255, .8);
     background-color: #b84d45;
-    background-image: url(/assets/img/bg.png);
+    background-image: url(/assets/common/img/bg.png);
     margin-bottom: 40px;
     font-size: 20px
 }
@@ -286,7 +286,7 @@ header.marquee #carbonads {
 
 .previews .thumbnail {
     text-align: center;
-    background-image: url(/assets/img/premium-bg.png);
+    background-image: url(/assets/common/img/premium-bg.png);
     margin-bottom: 15px
 }
 
@@ -365,7 +365,7 @@ p.hosting-offer {
 .cta-mail {
     color: #fff;
     background-color: #b84d45;
-    background-image: url(/assets/img/bg.png);
+    background-image: url(/assets/common/img/bg.png);
     padding: 50px 0;
     margin-top: 50px
 }

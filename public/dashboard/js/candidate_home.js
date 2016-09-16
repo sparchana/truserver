@@ -113,7 +113,7 @@ function processDataAllJobPosts(returnedData) {
 
                 var jobLogo = document.createElement("img");
                 jobLogo.src = jobPost.company.companyLogo;
-                /*                jobLogo.src = "/assets/new/img/" + jobPost.company.companyLogo + ".png";*/
+                /*                jobLogo.src = "/assets/common/img/" + jobPost.company.companyLogo + ".png";*/
                 jobLogo.setAttribute('width', '80%');
                 jobLogo.id = "jobLogo";
                 col.appendChild(jobLogo);
@@ -155,7 +155,7 @@ function processDataAllJobPosts(returnedData) {
                 jobBodySubRowCol.appendChild(salaryIconDiv);
 
                 var salaryIcon = document.createElement("img");
-                salaryIcon.src = "/assets/img/salary.svg";
+                salaryIcon.src = "/assets/common/img/salary.svg";
                 salaryIcon.setAttribute('height', '15px');
                 salaryIcon.style = "margin-top: -4px";
                 salaryIconDiv.appendChild(salaryIcon);
@@ -191,7 +191,7 @@ function processDataAllJobPosts(returnedData) {
                 jobBodySubRowColExp.appendChild(expIconDiv);
 
                 var expIcon = document.createElement("img");
-                expIcon.src = "/assets/img/workExp.svg";
+                expIcon.src = "/assets/common/img/workExp.svg";
                 expIcon.setAttribute('height', '15px');
                 expIcon.style = "margin-top: -4px";
                 expIconDiv.appendChild(expIcon);
@@ -221,7 +221,7 @@ function processDataAllJobPosts(returnedData) {
                 jobBodySubRowColLoc.appendChild(locIconDiv);
 
                 var locIcon = document.createElement("img");
-                locIcon.src = "/assets/img/location.svg";
+                locIcon.src = "/assets/common/img/location.svg";
                 locIcon.setAttribute('height', '15px');
                 locIcon.style = "margin-top: -4px";
                 locIconDiv.appendChild(locIcon);

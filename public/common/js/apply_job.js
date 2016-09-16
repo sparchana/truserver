@@ -15,7 +15,7 @@ function processDataApplyJob(returnedData) {
     $("#messagePromptModal").modal("show");
     $("#jobApplyConfirm").modal("hide");
     if(returnedData.status == 1){
-        $('#customMsgIcon').attr('src', "/assets/img/jobApplied.png");
+        $('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
         $("#customMsg").html("Your Job Application is Successful");
         try{
             $("#apply_btn_" + applyJobId).addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Already Applied");
@@ -24,16 +24,16 @@ function processDataApplyJob(returnedData) {
             console.log(err);
         }
     } else if(returnedData.status == 2){
-        $('#customMsgIcon').attr('src', "/assets/img/jobApplied.png");
+        $('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
         $("#customMsg").html("Oops! Something went Wrong. Unable to apply");
     } else if(returnedData.status == 3){
-        $('#customMsgIcon').attr('src', "/assets/img/alreadyApplied.png");
+        $('#customMsgIcon').attr('src', "/assets/common/img/alreadyApplied.png");
         $("#customMsg").html("Looks like you already applied for this Job. Click My Jobs to view your applied Jobs");
     } else if(returnedData.status == 4){
-        $('#customMsgIcon').attr('src', "/assets/img/logo.gif");
+        $('#customMsgIcon').attr('src', "/assets/common/img/logo.gif");
         $("#customMsg").html("Oops! Candidate does't Exists");
     } else{
-        $('#customMsgIcon').attr('src', "/assets/img/logo.gif");
+        $('#customMsgIcon').attr('src', "/assets/common/img/logo.gif");
         $("#customMsg").html("Oops! Looks like the job is no longer available");
     }
 }

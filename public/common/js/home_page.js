@@ -66,7 +66,7 @@ $(window).load(function() {
     });
     $("#status").fadeOut();
     $("#loaderLogo").fadeOut();
-    $("#preloader").delay(1000).fadeOut("slow");
+    $("#preloader").delay(500).fadeOut("slow");
 });
 
 $(document).ready(function(){
@@ -209,7 +209,7 @@ function createAndAppendDivider(title) {
     parent.append(mainDiv);
 
     var otherJobIcon = document.createElement("img");
-    otherJobIcon.src = "/assets/img/suitcase.png";
+    otherJobIcon.src = "/assets/common/img/suitcase.png";
     otherJobIcon.style = "width: 42px; margin: 8px";
     otherJobIcon.setAttribute("display", "inline-block");
     mainDiv.appendChild(otherJobIcon);
@@ -323,7 +323,7 @@ function processDataAllJobPosts(returnedData) {
                 jobBodySubRowCol.appendChild(salaryIconDiv);
 
                 var salaryIcon = document.createElement("img");
-                salaryIcon.src = "/assets/img/salary.svg";
+                salaryIcon.src = "/assets/common/img/salary.svg";
                 salaryIcon.setAttribute('height', '15px');
                 salaryIcon.style = "margin-top: -4px";
                 salaryIconDiv.appendChild(salaryIcon);
@@ -358,7 +358,7 @@ function processDataAllJobPosts(returnedData) {
                 jobBodySubRowColExp.appendChild(expIconDiv);
 
                 var expIcon = document.createElement("img");
-                expIcon.src = "/assets/img/workExp.svg";
+                expIcon.src = "/assets/common/img/workExp.svg";
                 expIcon.setAttribute('height', '15px');
                 expIcon.style = "margin-top: -4px";
                 expIconDiv.appendChild(expIcon);
@@ -388,7 +388,7 @@ function processDataAllJobPosts(returnedData) {
                 jobBodySubRowColLoc.appendChild(locIconDiv);
 
                 var locIcon = document.createElement("img");
-                locIcon.src = "/assets/img/location.svg";
+                locIcon.src = "/assets/common/img/location.svg";
                 locIcon.setAttribute('height', '15px');
                 locIcon.style = "margin-top: -4px";
                 locIconDiv.appendChild(locIcon);

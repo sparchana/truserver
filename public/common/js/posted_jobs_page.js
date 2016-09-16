@@ -322,7 +322,7 @@ function processDataForHotJobPost(returnedData) {
     }
 
     //Company Details
-    if(returnedData.source == null || returnedData.source == 0){
+    if(returnedData.source != null || returnedData.source != 0){
         $(".posted_jobs_company_details").show();
         $("#aboutCompanyTitle").show();
 

@@ -246,7 +246,7 @@ body{
 }
 
 .sectionTwo {
-	background: #ffffff;
+    padding-bottom: 24px;
     text-align: center;
 }
 
@@ -489,7 +489,7 @@ hr{
     margin-top: -4px;
 }
 .appStoreContainer{
-    background: url(/assets/img/backimage_appstore.png) no-repeat;
+    background: url(/assets/common/img/backimage_appstore.png) no-repeat;
     background-size:100% ;
     padding: 0% 0%;
 }
@@ -885,7 +885,7 @@ hr{
 
     #navLogo{
         margin-top: 12px;
-        content:url("/assets/new/img/logo-color.gif");
+        content:url("/assets/common/img/logo-color.gif");
     }
     .modal .modal-dialog {
         width: 80%;

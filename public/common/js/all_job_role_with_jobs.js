@@ -97,7 +97,7 @@ function setJobRoles(returnedData, start){
             jobAnchor.appendChild(innerDiv);
 
             var jobIcon = document.createElement("img");
-            jobIcon.src = "/assets/new/img/icons/" + jobRole.jobRoleId + ".svg";
+            jobIcon.src = "/assets/common/img/icons/" + jobRole.jobRoleId + ".svg";
             jobIcon.setAttribute('width', '50px');
             jobIcon.setAttribute('alt', jobRole.jobName);
             innerDiv.appendChild(jobIcon);

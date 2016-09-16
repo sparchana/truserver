@@ -708,7 +708,7 @@ hr{
         color: #747474;
     }
     #navLogo{
-        content:url("/assets/new/img/logo-color.gif");
+        content:url("/assets/common/img/logo-color.gif");
     }
 
     #jobRole, #jobRoleRight, #jobRoleBottom, #jobRoleNoBorder{
