@@ -8,6 +8,7 @@ import api.http.httpResponse.PartnerSignUpResponse;
 import api.http.httpResponse.SupportDashboardElementResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import controllers.businessLogic.*;
 import controllers.security.SecuredUser;
 import models.entity.Candidate;
@@ -185,12 +186,24 @@ public class PartnerController {
             e.printStackTrace();
         }
         Logger.info("Req JSON : " + req);
+        Boolean isNewCandidate = false;
+        Candidate candidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+        if(candidate == null){
+            isNewCandidate = true; //checking if the candidate exists
+        }
         String partnerId = session().get("partnerId");
         Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
         if(partner != null){
-            return ok(toJson(CandidateService.createCandidateProfile(addSupportCandidateRequest,
+            CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
                     InteractionService.InteractionChannelType.PARTNER,
-                    ServerConstants.UPDATE_ALL_BY_SUPPORT)));
+                    ServerConstants.UPDATE_ALL_BY_SUPPORT);
+            if(candidateSignUpResponse.getStatus() == CandidateSignUpResponse.STATUS_SUCCESS){
+                if(isNewCandidate){ //save a record in partnerToCandidate
+                    candidateSignUpResponse =
+                            PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+                }
+            }
+            return ok(toJson(candidateSignUpResponse));
         } else{
             return ok("-1");
         }

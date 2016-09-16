@@ -358,16 +358,12 @@ public class CandidateService
                     interactionResult = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE_SUPPORT;
                 } else if(channelType == InteractionChannelType.PARTNER){
                     interactionResult = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE_PARTNER;
-                    Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
-                    if(partner != null){
-                        PartnerService.createPartnerToCandidateMapping(partner, candidate.getCandidateMobile());
-                    }
                 }
             }
             else {
                 if(channelType == InteractionChannelType.PARTNER){ //candidate profile getting edited by a partner
                     interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_PARTNER;
-                } else{ //candidate profile is getting edited by candidate
+                } else{ //getting edited by support user
                     interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM;
                 }
             }
