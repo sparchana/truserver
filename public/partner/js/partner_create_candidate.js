@@ -934,8 +934,8 @@ $(function() {
 }); // end of function
 
 function processDataSignUpSupportSubmit(returnedData) {
-    if(returnedData.status == "1"){ //successf
-        window.location = "/partner/home";
+    if(returnedData.status == "1"){ //success
+        window.location = "/partner/myCandidates";
     } else if(returnedData.status == "-1"){
         logoutUser();
     } else{

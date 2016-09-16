@@ -43,18 +43,20 @@ public class InteractionService {
         }
     }
 
-    public static void createInteractionForCreateCandidateProfile(String uuId, Integer interactionType, String interactionNote, String interactionResult, String createdBy){
+    public static void createInteractionForCreateCandidateProfile(String objAuuId, String objBuuId, Integer objBType, Integer interactionType, String interactionNote, String interactionResult, String createdBy){
         Interaction interaction = new Interaction(
-                uuId,
+                objAuuId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
+                objBuuId,
+                objBType,
                 interactionType,
                 interactionNote,
                 interactionResult,
                 createdBy
         );
-
         InteractionService.createInteraction(interaction);
     }
+
 
     public static void createInteractionForFollowUpRequest(String followUpMobile, Timestamp followUpSchedule){
         Candidate candidate = CandidateService.isCandidateExists(followUpMobile);

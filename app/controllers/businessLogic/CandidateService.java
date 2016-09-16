@@ -131,7 +131,7 @@ public class CandidateService
                     e.printStackTrace();
                 }
                 candidateSignUpResponse = createNewCandidate(candidate, lead);
-                if(!(channelType == InteractionChannelType.SUPPORT)){
+                if(!(channelType == InteractionChannelType.SUPPORT || channelType == InteractionChannelType.PARTNER)){
                     // triggers when candidate is self created
                     triggerOtp(candidate, candidateSignUpResponse);
                     result = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE;
@@ -381,7 +381,17 @@ public class CandidateService
         // check if we have enough details required to complete the minimum profile
         candidate.setIsMinProfileComplete(isMinProfileComplete(candidate));
 
-        InteractionService.createInteractionForCreateCandidateProfile(candidate.getCandidateUUId(),
+        String objAUUId = candidate.getCandidateUUId();
+        String objBUUId = "";
+
+        Integer objBType = null;
+
+        Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+        if(partner != null){
+            objBType = ServerConstants.OBJECT_TYPE_PARTNER;
+            objBUUId = partner.getPartnerUUId();
+        }
+        InteractionService.createInteractionForCreateCandidateProfile(objAUUId, objBUUId, objBType,
                 interactionType, interactionNote, interactionResult, createdBy);
 
         candidate.update();
