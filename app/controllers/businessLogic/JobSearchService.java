@@ -25,7 +25,6 @@ public class JobSearchService {
     public static List<JobPost> getAllJobPosts() {
         return JobPost.find.where()
                 .eq("jobPostIsHot", ServerConstants.IS_HOT)
-                .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
                 .findList();
     }
 
@@ -43,11 +42,13 @@ public class JobSearchService {
                 .eq("jobPostIsHot", IS_HOT)
                 .query();
 */
+/*
 
         query = query
                 .where()
                 .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
                 .query();
+*/
 
         if(jobRoleIds != null && !jobRoleIds.isEmpty() ) {
             query = query.select("*").fetch("jobRole")

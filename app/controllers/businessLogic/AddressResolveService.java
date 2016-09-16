@@ -54,7 +54,7 @@ import static play.libs.Json.toJson;
  *
  * There is always a chance of error in resolution. Further optimization should reduce it
  *
- * Tag: v2.0
+ * Tag: v2.1
  */
 
 public class AddressResolveService {

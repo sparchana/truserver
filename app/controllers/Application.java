@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
+import controllers.businessLogic.Assessment.AssessmentService;
 import controllers.security.*;
 import models.entity.*;
 import models.entity.OM.*;
@@ -26,6 +27,7 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
+import scala.Int;
 
 import java.io.File;
 import java.io.IOException;
@@ -1188,5 +1190,13 @@ public class Application extends Controller {
         } else{
             return ok("0");
         }
+    }
+
+    public static Result getAssessmentQuestion(String jobRoleId, Integer limit) {
+        Logger.info("limit:"+limit);
+        if(jobRoleId != null){
+            return ok(toJson(AssessmentService.getQuestions(Long.valueOf(jobRoleId))));
+        }
+        return ok(toJson(AssessmentService.getQuestions(null)));
     }
 }

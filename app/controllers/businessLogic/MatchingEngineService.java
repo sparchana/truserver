@@ -55,11 +55,13 @@ public class MatchingEngineService {
                 .eq("jobPostIsHot", IS_HOT)
                 .query();
 */
-        /* TODO: until trudroid code is unable to handle diff source jobpost, filter out all the internal jobs */
+
+/*        *//* TODO: until trudroid code is unable to handle diff source jobpost, filter out all the internal jobs *//*
         query = query
                 .where()
                 .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
                 .query();
+*/
 
         Logger.info("JobPostIdList Size: "+ jobRoleIds.size());
         if(jobRoleIds != null && !jobRoleIds.isEmpty() ) {

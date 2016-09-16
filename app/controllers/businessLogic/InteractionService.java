@@ -214,9 +214,9 @@ public class InteractionService {
         InteractionService.createInteraction(interaction);
     }
     public static void createInteractionForViewJobPostInfo(String objectAUUId, String objectBUUId, String result, InteractionChannelType  channelType){
-        Logger.info("View JobPost Info Interaction Saved for UUID: " + objectAUUId);
+        Logger.info("View JobPost Info Interaction Saved for UUID: " + objectAUUId == null ? ServerConstants.TRU_DROID_NOT_LOGGED_UUID : objectAUUId);
         Interaction interaction = new Interaction(
-                objectAUUId == null? ServerConstants.TRU_DROID_NOT_LOGGED_UUID : objectAUUId,
+                objectAUUId == null ? ServerConstants.TRU_DROID_NOT_LOGGED_UUID : objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
                 objectBUUId,
                 ServerConstants.OBJECT_TYPE_JOB_POST_VIEW,
