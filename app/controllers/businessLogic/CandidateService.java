@@ -1009,6 +1009,7 @@ public class CandidateService
                     loginResponse.setAuthSessionId(existingAuth.getAuthSessionId());
                     loginResponse.setSessionExpiryInMilliSecond(existingAuth.getAuthSessionIdExpiryMillis());
 
+                    loginResponse.setIsCandidateVerified(existingAuth.getAuthStatus());
                     /* adding session details */
                     AuthService.addSession(existingAuth,existingCandidate);
                     existingAuth.update();

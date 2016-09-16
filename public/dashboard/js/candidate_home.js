@@ -392,15 +392,17 @@ function processDataAndFillMinProfile(returnedData) {
         var jobRoles = "";
         var count = 0;
         var jobPref = returnedData.jobPreferencesList;
-        jobPref.forEach(function (job){
-            count ++;
-            var name = job.jobRole.jobName;
-            jobRoles += name;
-            if(count < Object.keys(jobPref).length){
-                jobRoles += ", ";
-            }
-        });
-        document.getElementById("userJobs").innerHTML = jobRoles;
+        if(jobPref.length > 0){
+            jobPref.forEach(function (job){
+                count ++;
+                var name = job.jobRole.jobName;
+                jobRoles += name;
+                if(count < Object.keys(jobPref).length){
+                    jobRoles += ", ";
+                }
+            });
+            document.getElementById("userJobs").innerHTML = jobRoles;
+        }
     } catch(err){
         console.log(err);
     }
@@ -409,15 +411,17 @@ function processDataAndFillMinProfile(returnedData) {
         var localities = "";
         count = 0;
         var localityPref = returnedData.localityPreferenceList;
-        localityPref.forEach(function (individualLocality){
-            count++;
-            var name = individualLocality.locality.localityName;
-            localities += name;
-            if(count < Object.keys(localityPref).length){
-                localities += ", ";
-            }
-        });
-        document.getElementById("userLocality").innerHTML = localities;
+        if(localityPref.length > 0){
+            localityPref.forEach(function (individualLocality){
+                count++;
+                var name = individualLocality.locality.localityName;
+                localities += name;
+                if(count < Object.keys(localityPref).length){
+                    localities += ", ";
+                }
+            });
+            document.getElementById("userLocality").innerHTML = localities;
+        }
     } catch(err){
         console.log("getCandidateLocalityPref error"+err);
     }

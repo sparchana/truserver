@@ -55,6 +55,25 @@ function processDataPostReset(returnedData) {
     }
 }
 
+function resetPassword(phone) {
+        candidateMobile = phone;
+        document.getElementById("resetCheckUserBtn").disabled = true;
+        try {
+            var s = {
+                resetPasswordMobile : phone
+            };
+            $.ajax({
+                type: "POST",
+                url: "/findUserAndSendOtp",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(s),
+                success: processDataResetCheckUser
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+}
+
 // form_forgot_password ajax script
 $(function() {
     $("#form_forgot_password").submit(function(eventObj) {
@@ -67,23 +86,8 @@ $(function() {
         else if(phoneRes == 1){ // mobile no. less than 1 digits
             alert("Enter 10 digit mobile number");
         }
-        else{
-            candidateMobile = phone;
-            document.getElementById("resetCheckUserBtn").disabled = true;
-            try {
-                var s = {
-                    resetPasswordMobile : phone
-                };
-                $.ajax({
-                    type: "POST",
-                    url: "/findUserAndSendOtp",
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify(s),
-                    success: processDataResetCheckUser
-                });
-            } catch (exception) {
-                console.log("exception occured!!" + exception);
-            }
+        else {
+            resetPassword(phone);
         }
     }); // end of submit
 

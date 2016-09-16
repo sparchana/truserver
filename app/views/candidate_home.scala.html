@@ -162,7 +162,7 @@
             </div>
         </div>
         <div id="sectionBody" class="startBody">
-            <div class="profileBody">
+            <div class="container profileBody">
                 <h3 style="display: inline-block">Profile</h3>
                 <a href="/dashboard/editProfile"><div id="editBtn">&nbsp;</div></a>
                 <hr>
@@ -186,7 +186,7 @@
                             </div>
                             <div style="display: inline-block; margin-top: 4px">
                                 <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Preferred Job Location(s)</div>
-                                <div id="userLocality" style="margin-left: 4px; display: inline-block">...</div>
+                                <div id="userLocality" style="margin-left: 4px; display: inline-block">Not Specified</div>
                             </div>
                         </div>
                     </div>
@@ -255,22 +255,23 @@
                     </div>
                 </div>
             </div>
-            <div class="profileBody" id="applyJobs">
+            <div class="container" id="applyJobs">
                 <h3>Apply to Jobs</h3>
                 <hr>
                 <div id="hotJobs"></div>
                 <br>
             </div>
         </div>
-        <div class="footer" itemscope itemtype ="http://schema.org/contactPoint">
-                © 2016 Trujobs.in | Bengaluru, India. All Right Reserved.
-            <a href="/privacy" target="/privacy" title="Privacy Policy"> <font color="#f0f8ff">
-                    Privacy Policy&nbsp;&nbsp;</font> </a>
-        </div>
+        <div id="footer_inc"></div>
 
         <script type="text/javascript" src="/assets/js/apply_job.js"></script>
+        <script type="text/javascript" src="/assets/js/all_job_role_footer.js"></script>
         <script>
             $(document).ready(function(){
+                $(document).ready(function () {
+                    $('#footer_inc').load('/footer');
+                });
+
                 $('[data-toggle="tooltip"]').tooltip();
             });
         </script>
@@ -289,6 +290,7 @@
         <noscript>
             <img height="1" width="1" style="display:none"
             src="https://www.facebook.com/tr?id=535139956654403&ev=PageView&noscript=1"/>
+            <script type="text/javascript" src="/assets/js/all_job_role_footer.js"></script>
         </noscript>
             <!-- End Facebook Pixel Code -->
     </body>

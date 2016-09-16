@@ -27,7 +27,6 @@ public class AuthService {
         auth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
         session("sessionId", auth.getAuthSessionId());
         session("sessionExpiry", String.valueOf(auth.getAuthSessionIdExpiryMillis()));
-
     }
 
     public static CandidateSignUpResponse savePassword(String mobile, String password, InteractionService.InteractionChannelType channelType){
@@ -42,6 +41,7 @@ public class AuthService {
             if(existingAuth != null){
                 // If candidate exists and has a password, reset the old password
                 Logger.info("Resetting password");
+                existingAuth.setAuthStatus(ServerConstants.CANDIDATE_STATUS_VERIFIED);
                 setNewPassword(existingAuth, password);
                 Auth.savePassword(existingAuth);
                 String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_RESET_PASSWORD_SUCCESS;
@@ -91,9 +91,8 @@ public class AuthService {
                 if(existingCandidate.getLocality()!= null && existingCandidate.getLocality().getLocalityName()!=null){
                     candidateSignUpResponse.setCandidateHomeLocalityName(existingCandidate.getLocality().getLocalityName());
                 }
-            }
 
-            else{
+            } else{
                 Auth auth = new Auth();
                 auth.setCandidateId(existingCandidate.getCandidateId());
                 setNewPassword(auth,password);

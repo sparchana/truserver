@@ -5,29 +5,40 @@ var candidateMobile;
 var applyJobFlag = 0;
 var applyJobId = 0;
 
+function postLogin(returnedData) {
+    // Store
+    localStorage.setItem("mobile", "+91" + candidateMobile);
+    localStorage.setItem("name", returnedData.candidateFirstName);
+    localStorage.setItem("lastName", returnedData.candidateLastName);
+    localStorage.setItem("assessed", returnedData.isAssessed);
+    localStorage.setItem("minProfile", returnedData.minProfile);
+
+    if(applyJobFlag == 1){
+        $("#myLoginModal").modal("hide");
+        applyJob(applyJobId, prefLocation);
+        applyJobFlag = 0;
+        applyJobId = 0;
+        $("#customSubMsg").html("Logging in ...");
+        $('#customSubMsg').modal({backdrop: 'static', keyboard: false});
+        setTimeout(function(){
+            window.location = "/dashboard/appliedJobs";
+        }, 3000);
+
+    } else{
+        window.location = "/dashboard";
+    }
+}
 function processDataLogin(returnedData) {
     if(returnedData.status == 1) {
-        // Store
-        localStorage.setItem("mobile", "+91" + candidateMobile);
-        localStorage.setItem("name", returnedData.candidateFirstName);
-        localStorage.setItem("lastName", returnedData.candidateLastName);
-        localStorage.setItem("assessed", returnedData.isAssessed);
-        localStorage.setItem("minProfile", returnedData.minProfile);
-
-        if(applyJobFlag == 1){
+        if(returnedData.isCandidateVerified == 0){ //candidate has not been verified
             $("#myLoginModal").modal("hide");
-            applyJob(applyJobId, prefLocation);
-            applyJobFlag = 0;
-            applyJobId = 0;
-            $("#customSubMsg").html("Logging in ...");
-            $('#customSubMsg').modal({backdrop: 'static', keyboard: false});
-            setTimeout(function(){
-                window.location = "/dashboard/appliedJobs";
-            }, 3000);
-
+            $('#myRegistrationModal').modal('show');
+            $('#form_otp').show();
+            resetPassword(candidateMobile);
         } else{
-            window.location = "/dashboard";
+            postLogin(returnedData);
         }
+
     }
 
     else if(returnedData.status == 3){
