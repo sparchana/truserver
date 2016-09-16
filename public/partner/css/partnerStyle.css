@@ -407,9 +407,24 @@ a:hover{
     cursor: hand;
 }
 
+#jobRoleNameFooter{
+    padding: 1%;
+    color: #ffffff;
+}
+
+#jobRoleNameFooter:hover{
+    cursor:pointer;
+    text-decoration: none;
+    color: #82a1b0;
+}
+
+
 #jobRole{
+    padding-top: 20%;
+    padding-bottom: 20%;
     border-right: 1px solid #f4eef2;
     border-bottom: 1px solid #f4eef2;
+    background: #ffffff;
 }
 #jobRoleName{
     padding: 1%;
@@ -561,6 +576,10 @@ a:hover{
         width: 66px;
         padding: 8px 2px;
         font-size: 9px;
+    }
+    #jobRoleNameFooter{
+        font-size: 12px;
+        color: #ffffff;
     }
 }
 

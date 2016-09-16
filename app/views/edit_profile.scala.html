@@ -496,57 +496,57 @@
             </div>
         </div>
 
-        <div class="footer" itemscope itemtype ="http://schema.org/contactPoint">
-                © 2016 Trujobs.in | Bengaluru, India. All Right Reserved.
-            <a href="/privacy" target="/privacy" title="Privacy Policy"> <font color="#f0f8ff">
-                    Privacy Policy&nbsp;&nbsp;</font> </a>
-        </div>
+        <div id="footer_inc"></div>
 
             <!-- Including Bootstrap -->
         <script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="/assets/js/validation.js"></script>
         <script type="text/javascript" src="/assets/dashboard/js/dashboard_prefill.js"></script>
+        <script type="text/javascript" src="/assets/js/all_job_role_footer.js"></script>
             <!-- Menu Toggle Script -->
         <script>
-        function showBasicSection() {
-            $("#basicProfileSection").show();
-            $("#skillProfileSection").hide();
-            $("#educationProfileSection").hide();
-        }
+            $(document).ready(function () {
+                $('#footer_inc').load('/footer');
+            });
+            function showBasicSection() {
+                $("#basicProfileSection").show();
+                $("#skillProfileSection").hide();
+                $("#educationProfileSection").hide();
+            }
 
-        function showSkillSection() {
-            $("#basicProfileSection").hide();
-            $("#skillProfileSection").show();
-            $("#educationProfileSection").hide();
-        }
+            function showSkillSection() {
+                $("#basicProfileSection").hide();
+                $("#skillProfileSection").show();
+                $("#educationProfileSection").hide();
+            }
 
-        function showEducationSection() {
-            $("#basicProfileSection").hide();
-            $("#skillProfileSection").hide();
-            $("#educationProfileSection").show();
-        }
+            function showEducationSection() {
+                $("#basicProfileSection").hide();
+                $("#skillProfileSection").hide();
+                $("#educationProfileSection").show();
+            }
 
-        function clickFresher() {
-            $("#isEmployedNo").click();
-            $("#lastWithdrawnSalaryLayout").hide();
-            $("#totalWorkExperience").hide();
-            $("#isEmployedForm").hide();
-            $("#isEmployedSelect").hide();
-        }
-        function clickExperienced() {
-            $("#lastWithdrawnSalaryLayout").show();
-            $("#totalWorkExperience").show();
-            $("#isEmployedSelect").show();
-        }
+            function clickFresher() {
+                $("#isEmployedNo").click();
+                $("#lastWithdrawnSalaryLayout").hide();
+                $("#totalWorkExperience").hide();
+                $("#isEmployedForm").hide();
+                $("#isEmployedSelect").hide();
+            }
+            function clickExperienced() {
+                $("#lastWithdrawnSalaryLayout").show();
+                $("#totalWorkExperience").show();
+                $("#isEmployedSelect").show();
+            }
 
-        function clickWorkingYes() {
-            $("#isEmployedSelect").show();
-            $("#isEmployedForm").show();
-        }
+            function clickWorkingYes() {
+                $("#isEmployedSelect").show();
+                $("#isEmployedForm").show();
+            }
 
-        function clickWorkingNo() {
-            $("#isEmployedForm").hide();
-        }
+            function clickWorkingNo() {
+                $("#isEmployedForm").hide();
+            }
     </script>
 
     </body>

@@ -150,15 +150,17 @@
       </div>
     </div>
 
-    <div class="footer" itemscope itemtype ="http://schema.org/contactPoint">
-                © 2016 Trujobs.in | Bengaluru, India. All Right Reserved.
-      <a href="/privacy" target="/privacy" title="Privacy Policy"> <font color="#f0f8ff">
-                    Privacy Policy&nbsp;&nbsp;</font> </a>
-    </div>
+    <div id="footer_inc"></div>
 
-      <!-- Including Bootstrap -->
+    <script>
+        $(document).ready(function () {
+            $('#footer_inc').load('/footer');
+        });
+    </script>
+    <!-- Including Bootstrap -->
     <script src="/assets/dashboard/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/assets/dashboard/js/applied_jobs.js"></script>
+    <script type="text/javascript" src="/assets/js/all_job_role_footer.js"></script>
       <!-- Menu Toggle Script -->
     <script>
             $(document).ready(function(){
