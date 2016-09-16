@@ -111,6 +111,11 @@ option:checked {
     color : #000;
 }
 
+.custom_container{
+    margin-left: 14%;
+    margin-right: 14%;
+}
+
 #sectionHeader{
     background: linear-gradient(
             rgba(24, 26, 45, 0.3),
@@ -491,6 +496,10 @@ a:hover{
         padding: 4% 1% 1% 1%;
         text-align: center;
     }
+    .custom_container{
+        margin: 0;
+    }
+
 
     #partnerHeaderText{
         margin-top: -48px;
