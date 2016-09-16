@@ -52,7 +52,7 @@ function processDataCheckAllJobRoles(jobPostJobRoles) {
                     };
 
                     var jobRoleNameFooter = document.createElement("div");
-                    jobRoleNameFooter.id = "jobRoleName";
+                    jobRoleNameFooter.id = "jobRoleNameFooter";
                     jobRoleNameFooter.textContent = jobRoleItem.jobName + " Jobs";
                     jobAnchorFooter.appendChild(jobRoleNameFooter);
 
@@ -72,15 +72,19 @@ function setJobRoles(returnedData, start){
     returnedData.forEach(function (jobRole) {
         if(count >= start && count < (start + 4)) {
             var rowDiv = document.createElement("div");
+            rowDiv.style = "margin-right: 0%;margin-left: 0%;";
             rowDiv.className = "row";
             parent.append(rowDiv);
 
             var gridDiv = document.createElement("div");
             rowDiv.className = "col-md-3 col-sm-4 col-xs-6";
-            rowDiv.style = "padding: 0px";
+            rowDiv.id="gridDiv";
+            rowDiv.style = "padding: 0px;margin-right: 0%;margin-left: 0%;";
             rowDiv.appendChild(gridDiv);
 
             var jobAnchor = document.createElement("a");
+            jobAnchor.style = "margin-right: 0%;margin-left: 0%;";
+           /* jobAnchor.style= "margin:0px";*/
             jobAnchor.onclick = function () {
                 var jobPostBreak = jobRole.jobName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g, '_');
                 jobPostBreak = jobPostBreak.toLowerCase();
@@ -90,7 +94,6 @@ function setJobRoles(returnedData, start){
 
             var innerDiv = document.createElement("div");
             innerDiv.id = "jobRole";
-            innerDiv.style = "padding-top: 20%; padding-bottom: 20%";
             jobAnchor.appendChild(innerDiv);
 
             var jobIcon = document.createElement("img");
