@@ -114,7 +114,7 @@
                                             placeholder: "What is candidate's home location?",
                                             hintText: "Start typing localities (eg. Cook, Delivery boy..)",
                                             minChars: 0,
-                                            tokenLimit: 3,
+                                            tokenLimit: 1,
                                             prePopulate: currentLocationArray,
                                             preventDuplicates: true
                                         });
@@ -222,18 +222,18 @@
                                 <div class="col-sm-5">
                                     <input type="text" id="candidateCurrentJobRole">
                                     <script type="text/javascript">
-                                                $(document).ready(function () {
-                                                    $("#candidateCurrentJobRole").tokenInput(getJob(), {
-                                                        theme: "facebook",
-                                                        placeholder: "What is candidate's current job role?",
-                                                        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-                                                        minChars: 0,
-                                                        prePopulate: currentJobRole,
-                                                        tokenLimit: 3,
-                                                        preventDuplicates: true
-                                                    });
-                                                });
-                                            </script>
+                                        $(document).ready(function () {
+                                            $("#candidateCurrentJobRole").tokenInput(getJob(), {
+                                                theme: "facebook",
+                                                placeholder: "What is candidate's current job role?",
+                                                hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                                                minChars: 0,
+                                                prePopulate: currentJobRole,
+                                                tokenLimit: 3,
+                                                preventDuplicates: true
+                                            });
+                                        });
+                                    </script>
                                 </div>
                             </div>
                         </div>

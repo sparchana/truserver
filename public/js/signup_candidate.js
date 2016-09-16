@@ -80,7 +80,7 @@ $(function() {
             var lastNameCheck = validateName(lastName);
         }
         var res = validateMobile(phone);
-        var localitySelected = $('#candidateLocality').val();
+        var homeLocalitySelected = $('#candidateHomeLocality').val();
         var jobSelected = $('#candidateJobPref').val();
 
         //checking first name
@@ -97,7 +97,7 @@ $(function() {
         } else if(res == 1){
             alert("Enter 10 digit mobile number");
             statusCheck=0;
-        } else if(localitySelected == "") {
+        } else if(homeLocalitySelected == "") {
             alert("Please Enter your Job Localities");
             statusCheck=0;
         }
@@ -121,18 +121,12 @@ $(function() {
             document.getElementById("registerBtnSubmit").disabled = true;
             try {
                 var candidatePreferredJob = [];
-                var candidatePreferredLocality = [];
 
                 var jobPref = $('#candidateJobPref').val().split(",");
-                var localityPref = $('#candidateLocality').val().split(",");
 
                 var i;
                 for(i=0;i<jobPref.length; i++){
                     candidatePreferredJob.push(parseInt(jobPref[i]));
-                }
-
-                for(i=0;i<localityPref.length; i++){
-                    candidatePreferredLocality.push(parseInt(localityPref[i]));
                 }
 
                 $('#alreadyMsgCandidate').hide();
@@ -140,7 +134,7 @@ $(function() {
                     candidateFirstName : firstName,
                     candidateSecondName : lastName,
                     candidateMobile : phone,
-                    candidateLocality : candidatePreferredLocality,
+                    candidateHomeLocality : homeLocalitySelected,
                     candidateJobPref : candidatePreferredJob
                 };
 
@@ -170,7 +164,7 @@ $(function() {
             var lastNameCheck = validateName(lastName);
         }
         var res = validateMobile(phone);
-        var localitySelected = $('#candidateLocalityModal').val();
+        var homeLocalitySelected = $('#candidateHomeLocalityModal').val();
         var jobSelected = $('#candidateJobPrefModal').val();
 
         //checking first name
@@ -187,7 +181,7 @@ $(function() {
         } else if(res == 1){
             alert("Enter 10 digit mobile number");
             statusCheck=0;
-        } else if(localitySelected == "") {
+        } else if(homeLocalitySelected == "") {
             alert("Please Enter your Job Localities");
             statusCheck=0;
         }
@@ -214,18 +208,12 @@ $(function() {
             } catch(e){}
             try {
                 var candidatePreferredJob = [];
-                var candidatePreferredLocality = [];
 
                 var jobPref = $('#candidateJobPrefModal').val().split(",");
-                var localityPref = $('#candidateLocalityModal').val().split(",");
 
                 var i;
                 for(i=0;i<jobPref.length; i++){
                     candidatePreferredJob.push(parseInt(jobPref[i]));
-                }
-
-                for(i=0;i<localityPref.length; i++){
-                    candidatePreferredLocality.push(parseInt(localityPref[i]));
                 }
 
                 $('#alreadyMsgCandidate').hide();
@@ -233,7 +221,7 @@ $(function() {
                     candidateFirstName : firstName,
                     candidateSecondName : lastName,
                     candidateMobile : phone,
-                    candidateLocality : candidatePreferredLocality,
+                    candidateHomeLocality : homeLocalitySelected,
                     candidateJobPref : candidatePreferredJob
                 };
 
@@ -251,26 +239,21 @@ $(function() {
     }); // end of submit
 }); // end of function
 
-// form_otp ajax script
-$(function() {
-    $("#form_otp").submit(function(eventObj) {
-        eventObj.preventDefault();
-            var userOtp = $('#candidateOtp').val();
-            if(userOtp == returnedOtp){
-                    $('#incorrectOtpMsg').hide();
-                    $('#form_otp').hide();
-                    $('#form_auth').show();
-                    $('#errorMsg').hide();
-                    $('#incorrectMsg').hide();
-                }
-                else {
-                    $('#incorrectOtpMsg').show();
-                    $('#errorMsg').hide();
-                    $('#candidateOtp').val('');
-                }
-
-    }); // end of submit
-}); // end of function
+//verify otp
+function verifyOtp(){
+    var userOtp = $('#candidateOtp').val();
+    if (userOtp == returnedOtp) {
+        $('#incorrectOtpMsg').hide();
+        $('#form_otp').hide();
+        $('#form_auth').show();
+        $('#errorMsg').hide();
+        $('#incorrectMsg').hide();
+    } else {
+        $('#incorrectOtpMsg').show();
+        $('#errorMsg').hide();
+        $('#candidateOtp').val('');
+    }
+}
 
 // form_auth ajax script
 $(function() {

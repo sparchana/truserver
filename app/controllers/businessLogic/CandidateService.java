@@ -124,6 +124,12 @@ public class CandidateService
                     candidate.setJobPreferencesList(getCandidateJobPreferenceList(jobsList, candidate));
                 }
 
+                try{
+                    candidate.setLocality(Locality.find.where().eq("localityId", candidateSignUpRequest.getCandidateHomeLocality()).findUnique());
+                } catch(Exception e){
+                    Logger.info(" Exception while setting home locality");
+                    e.printStackTrace();
+                }
                 candidateSignUpResponse = createNewCandidate(candidate, lead);
                 if(!(channelType == InteractionChannelType.SUPPORT)){
                     // triggers when candidate is self created
@@ -426,12 +432,14 @@ public class CandidateService
 
         AddSupportCandidateRequest supportCandidateRequest = (AddSupportCandidateRequest) request;
 
+/*
         try{
             candidate.setLocality(Locality.find.where().eq("localityId", supportCandidateRequest.getCandidateHomeLocality()).findUnique());
         } catch(Exception e){
             Logger.info(" Exception while setting home locality");
             e.printStackTrace();
         }
+*/
 
         try{
             candidate.setCandidatePhoneType(supportCandidateRequest.getCandidatePhoneType());
@@ -710,6 +718,7 @@ public class CandidateService
         // not just update but createOrUpdateConvertedLead
         Logger.info("Inside updateBasicProfile");
 
+
         // initialize to default value. We will change this value later if any exception occurs
         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
@@ -717,6 +726,13 @@ public class CandidateService
         candidate.setCandidateFirstName(request.getCandidateFirstName());
         candidate.setCandidateLastName(request.getCandidateSecondName());
         candidate.setCandidateUpdateTimestamp(new Timestamp(System.currentTimeMillis()));
+
+        try{
+            candidate.setLocality(Locality.find.where().eq("localityId", request.getCandidateHomeLocality()).findUnique());
+        } catch(Exception e){
+            Logger.info(" Exception while setting home locality");
+            e.printStackTrace();
+        }
 
         try {
             if(request.getCandidateDob() != null)

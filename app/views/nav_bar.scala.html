@@ -81,13 +81,13 @@
                     </div>
 
                     <div style="margin-top: 8px">
-                        <input type="text" id="candidateLocalityModal" placeholder="What jobs you are Interested in?" style="margin-top: 4px">
+                        <input type="text" id="candidateHomeLocalityModal" placeholder="What jobs you are Interested in?" style="margin-top: 4px">
                         <script type="text/javascript">
                                     $(document).ready(function() {
-                                        $("#candidateLocalityModal").tokenInput(getLocality(), {
+                                        $("#candidateHomeLocalityModal").tokenInput(getLocality(), {
                                             theme: "facebook",
                                             placeholder: "Locality Interested?",
-                                            minChars: 3,
+                                            minChars: 1,
                                             zindex: 9999999,
                                             hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
                                             preventDuplicates: true
@@ -116,7 +116,7 @@
                         <input id="candidateOtp" style="width: 80%;" min="1000" max="9999" name="candidateOtp" type="number" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
                     </div>
 
-                    <button id="verifyOtpBtn" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none">Verify OTP</button>
+                    <button id="verifyOtpBtn" onclick="verifyOtp()" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none">Verify OTP</button>
 
                 </div>
             </div>

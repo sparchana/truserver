@@ -3,6 +3,7 @@
  */
 
 var candidateSkill = [];
+var currentLocationArray = [];
 
 /* start of javascript */
 $(document).ready(function(){
@@ -73,6 +74,29 @@ function prefillBasicProfile() {
     /* Time Shift */
     if (candidateInformation.timeShiftPreference != null) {
         $("#candidateTimeShiftPref").val(candidateInformation.timeShiftPreference.timeShift.timeShiftId);
+    }
+
+    /* get Candidate's home location */
+    if (candidateInformation.locality != null) {
+        try {
+            var item = {};
+            item ["id"] = candidateInformation.locality.localityId;
+            item ["name"] = candidateInformation.locality.localityName;
+            currentLocationArray.push(item);
+        } catch (err) {
+        }
+    }
+
+    if($("#candidateHomeLocality").val() == ""){
+        $("#candidateHomeLocality").tokenInput(getLocality(), {
+            theme: "facebook",
+            placeholder: "Where do you Live?",
+            hintText: "Start typing jobs (eg. BTM Layout, Bellandur..)",
+            minChars: 0,
+            prePopulate: currentLocationArray,
+            tokenLimit: 1,
+            preventDuplicates: true
+        });
     }
 
     /* Candidate DOB */
@@ -166,6 +190,7 @@ function prefillSkillProfile(){
             } catch(err){
                 console.log(err);
             }
+
             /* current company details */
             try {
                 if(candidateInformation.candidateLastWithdrawnSalary != null){
@@ -408,6 +433,7 @@ function saveCandidateBasicProfile(){
     var selectedGender = $('input:radio[name="gender"]:checked').val();
 
     var localitySelected = $('#candidateLocalityPref').val();
+    var homeLocalitySelected = $('#candidateHomeLocality').val();
     var jobSelected = $('#candidateJobPref').val();
     var selectedDob = $('#dob_year').val() + "-" + $('#dob_month').val() + "-" + $('#dob_day').val();
     var c_dob = String(selectedDob);
@@ -484,6 +510,7 @@ function saveCandidateBasicProfile(){
                 candidateMobile: $('#candidateMobile').val(),
                 candidateLocality: candidatePreferredLocality,
                 candidateJobPref: candidatePreferredJob,
+                candidateHomeLocality: homeLocalitySelected,
 
                 //others
                 candidateDob: c_dob,
