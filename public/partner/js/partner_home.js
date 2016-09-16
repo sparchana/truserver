@@ -30,27 +30,6 @@ $(document).ready(function(){
     }
 });
 
-function checkPartnerLogin() {
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/checkPartnerSession",
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataPartnerSession
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-}
-
-function processDataPartnerSession(returnedData) {
-    if(returnedData == 0){
-        logoutUser();
-    }
-}
-
 function processDataPartnerProfile(returnedData) {
     if(returnedData != null){
         //name

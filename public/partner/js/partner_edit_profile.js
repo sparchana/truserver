@@ -22,12 +22,6 @@ $(document).ready(function(){
 });
 
 
-function processDataPartnerSession(returnedData) {
-    if(returnedData == 0){
-        logoutUser();
-    }
-}
-
 function processDataPartnerProfile(returnedData) {
     if(returnedData != null){
         //name

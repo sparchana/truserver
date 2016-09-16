@@ -58,6 +58,7 @@ input::-webkit-inner-spin-button {
 }
 
 body{
+    background: #fcfcfc;
     font-family: Lato;
 }
 .nav > li > a:hover, .nav > li > a:focus{
@@ -132,7 +133,7 @@ option:checked {
     background: rgba(253, 248, 216, 0.76);
     font-weight: bold;
     color: #402005;
-    padding: 2% 4% 2% 4%;
+    padding: 2% 0 2% 0;
     text-align: center;
     margin-top: -2%;
 }
