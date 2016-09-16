@@ -333,10 +333,10 @@ function processDataForHotJobPost(returnedData) {
             document.getElementById("postedJobCompanyLogo").src = returnedData.company.companyLogo;
             document.getElementById("postedCompanyLogo").src = returnedData.company.companyLogo;
         }
-        if (returnedData.company.companyWebsite != null ) {
+        if (returnedData.company.companyWebsite != null && returnedData.company.companyWebsite != "") {
             $("#postedJobCompanyWebsite").html(returnedData.company.companyWebsite);
         }
-        if (returnedData.company.companyDescription != "" ) {
+        if (returnedData.company.companyDescription != null && returnedData.company.companyDescription != "") {
             $("#postedJobCompanyDescriotion").html(returnedData.company.companyDescription);
         }
         if (returnedData.company.compType != null ) {
