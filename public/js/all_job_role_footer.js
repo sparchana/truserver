@@ -29,6 +29,7 @@ function processDataCheckAllJobRoles(jobPostJobRoles) {
             jobPostJobRoles.forEach(function (jobRoleItem) {
                 if (itemCount >= startIndex && itemCount < startIndex + footerRowCount) {
                     var jobAnchorFooter = document.createElement("a");
+                    jobAnchorFooter.style = "font-size: 12px";
                     jobAnchorFooter.onclick = function () {
                         var jobRoleName = jobRoleItem.jobName;
 
@@ -38,7 +39,7 @@ function processDataCheckAllJobRoles(jobPostJobRoles) {
                         window.location.href = "/job/" + jobPostBreak + "_jobs" + "/" + jobRoleId;
                     };
                     var jobRoleNameFooter = document.createElement("div");
-                    jobRoleNameFooter.id = "jobRoleName";
+                    jobRoleNameFooter.id = "jobRoleNameFooter";
                     jobRoleNameFooter.textContent = jobRoleItem.jobName + " Jobs";
                     jobAnchorFooter.appendChild(jobRoleNameFooter);
 
