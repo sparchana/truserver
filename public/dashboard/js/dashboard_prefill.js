@@ -446,44 +446,47 @@ function saveCandidateBasicProfile(){
     
     //checking first name
     switch(firstNameCheck){
-        case 0: alert("First name contains number. Please Enter a valid First Name"); statusCheck=0; break;
-        case 2: alert("First Name cannot be blank spaces. Enter a valid first name"); statusCheck=0; break;
-        case 3: alert("First name contains special symbols. Enter a valid first name"); statusCheck=0; break;
-        case 4: alert("Please enter your first name"); statusCheck=0; break;
+        case 0: notifyError("First name contains number. Please Enter a valid First Name"); statusCheck=0; break;
+        case 2: notifyError("First Name cannot be blank spaces. Enter a valid first name"); statusCheck=0; break;
+        case 3: notifyError("First name contains special symbols. Enter a valid first name"); statusCheck=0; break;
+        case 4: notifyError("Please enter your first name"); statusCheck=0; break;
     }
 
     if(res == 0){
-        alert("Enter a valid mobile number");
+        notifyError("Enter a valid mobile number");
         statusCheck=0;
     } else if(res == 1){
-        alert("Enter 10 digit mobile number");
+        notifyError("Enter 10 digit mobile number");
+        statusCheck=0;
+    } else if(homeLocalitySelected == "") {
+        notifyError("Please Enter your Home location");
         statusCheck=0;
     } else if(localitySelected == "") {
-        alert("Please Enter your Job Localities");
+        notifyError("Please Enter your Job Locality preference");
         statusCheck=0;
     } else if(jobSelected == "") {
-        alert("Please Enter the Jobs you are Interested");
+        notifyError("Please Enter the Jobs you are Interested");
         statusCheck=0;
     } else if($('#candidateTimeShiftPref').val() == -1){
         statusCheck=0;
-        alert("Please Enter Your Preferred Work Shift");
+        notifyError("Please Enter Your Preferred Work Shift");
     }  else if($('#dob_day').val() == "" || $('#dob_month').val() == "" || $('#dob_year').val() == ""){
         statusCheck=0;
-        alert("Please Select your Date of Birth");
+        notifyError("Please Select your Date of Birth");
     } else if(dobCheck == 0){
-        alert("Please select a valid date of birth");
+        notifyError("Please select a valid date of birth");
         statusCheck=0;
     } else if(selectedGender == undefined) {
         statusCheck=0;
-        alert("Please Select your Gender");
+        notifyError("Please Select your Gender");
     }
 
     //checking last name
     switch(lastNameCheck){
-        case 0: alert("Last name contains number. Please Enter a valid Last Name"); statusCheck=0; break;
-        case 2: alert("Last Name cannot be blank spaces. Enter a valid Last name"); statusCheck=0; break;
-        case 3: alert("Last name contains special symbols. Enter a valid Last name"); statusCheck=0; break;
-        case 4: alert("Please enter your Last name"); statusCheck=0; break;
+        case 0: notifyError("Last name contains number. Please Enter a valid Last Name"); statusCheck=0; break;
+        case 2: notifyError("Last Name cannot be blank spaces. Enter a valid Last name"); statusCheck=0; break;
+        case 3: notifyError("Last name contains special symbols. Enter a valid Last name"); statusCheck=0; break;
+        case 4: notifyError("Please enter your Last name"); statusCheck=0; break;
     }
 
     if(statusCheck == 1){
@@ -537,9 +540,9 @@ function saveCandidateBasicProfile(){
 function saveCandidateExperienceDetails(){
     var experienceStatus = $('input:radio[name="workExperience"]:checked').val();
     if(experienceStatus == null){
-        alert("Please Select your work experience");
+        notifyError("Please Select your work experience");
     } else if($('#candidateCurrentJobSalary').val() > 99999){
-        alert("Please Enter a valid Salary")
+        notifyError("Please Enter a valid Salary")
     }
     else{
         /* calculate total experience in months */
@@ -551,11 +554,11 @@ function saveCandidateExperienceDetails(){
         }
 
         if(experienceStatus == 1 && totalExp == 0){
-            alert("Select Total Years of Experience");
+            notifyError("Select Total Years of Experience");
         } else if(experienceStatus == 1 && $('input:radio[name="isEmployed"]:checked').val() == null){
-            alert("Please answer \"Are you currently working?\"");
+            notifyError("Please answer \"Are you currently working?\"");
         } else if((experienceStatus == 1)  && ($('#candidateLastWithdrawnSalary').val() == null || $('#candidateLastWithdrawnSalary').val() == "" || $('#candidateLastWithdrawnSalary').val() == "0")){
-            alert("Enter your Last Withdrawn Salary");
+            notifyError("Enter your Last Withdrawn Salary");
         }
 
         else{
@@ -643,11 +646,11 @@ function saveCandidateExperienceDetails(){
 function saveCandidateEducationDetails(){
     var highestEducation = $('input:radio[name="highestEducation"]:checked').val();
     if(highestEducation == undefined){
-        alert("Select your Highest Education");
+        notifyError("Select your Highest Education");
     }
     else{
         if(((highestEducation == 4) || (highestEducation == 5)) && $('#candidateHighestDegree').val() == -1){
-            alert("Please select your Degree");
+            notifyError("Please select your Degree");
         }
         else{
             var selectedDegree = $('#candidateHighestDegree').val();
@@ -676,4 +679,16 @@ function saveCandidateEducationDetails(){
             }
         }
     }
+}
+
+function notifyError(msg){
+    $.notify({
+        message: msg,
+        animate: {
+            enter: 'animated lightSpeedIn',
+            exit: 'animated lightSpeedOut'
+        }
+    },{
+        type: 'danger'
+    });
 }

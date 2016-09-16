@@ -384,7 +384,7 @@ public class CandidateService
         String objAUUId = candidate.getCandidateUUId();
         String objBUUId = "";
 
-        Integer objBType = null;
+        Integer objBType = 0;
 
         Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
         if(partner != null){

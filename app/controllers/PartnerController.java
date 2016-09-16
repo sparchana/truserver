@@ -44,11 +44,11 @@ public class PartnerController {
         if(sessionId != null){
             return redirect("/partner/home");
         }
-        return ok(views.html.partner_index.render());
+        return ok(views.html.Partner.partner_index.render());
     }
 
     public static Result renderPagePartnerNavBar() {
-        return ok(views.html.partner_nav_bar.render());
+        return ok(views.html.Partner.partner_nav_bar.render());
     }
 
     public static Result partnerSignUp() {
@@ -101,11 +101,11 @@ public class PartnerController {
 
     @Security.Authenticated(SecuredUser.class)
     public static Result partnerHome() {
-        return ok(views.html.partner_home.render());
+        return ok(views.html.Partner.partner_home.render());
     }
 
     public static Result renderPagePartnerLoggedInNavbar() {
-        return ok(views.html.partner_logged_in_nav_bar.render());
+        return ok(views.html.Partner.partner_logged_in_nav_bar.render());
     }
 
     public static Result findPartnerAndSendOtp() {
@@ -148,12 +148,12 @@ public class PartnerController {
 
     @Security.Authenticated(SecuredUser.class)
     public static Result partnerEditProfile() {
-        return ok(views.html.partner_edit_proifile.render());
+        return ok(views.html.Partner.partner_edit_proifile.render());
     }
 
     @Security.Authenticated(SecuredUser.class)
     public static Result partnerCreateCandidate(long candidateId) {
-        return ok(views.html.partner_create_candidate.render(candidateId));
+        return ok(views.html.Partner.partner_create_candidate.render(candidateId));
     }
 
     public static Result partnerUpdateBasicProfile() {
@@ -211,7 +211,7 @@ public class PartnerController {
 
     @Security.Authenticated(SecuredUser.class)
     public static Result partnerCandidates() {
-        return ok(views.html.partner_candidates.render());
+        return ok(views.html.Partner.partner_candidates.render());
     }
 
     @Security.Authenticated(SecuredUser.class)
