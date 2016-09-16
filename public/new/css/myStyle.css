@@ -67,6 +67,8 @@ body{
     background: #fcfcfc;
     font-family: Lato;
     color: #3a3c3b;
+    width: auto;
+
 }
 
 #preloader  {
@@ -560,11 +562,48 @@ hr{
 #jobRolesFooterContainer{
     text-align: left;
 }
-#jobRoleName{
+#jobRoleNameFooter{
     padding: 1%;
     color: #ffffff;
 }
+#jobRoleNameFooter:hover{
+    cursor:pointer;
+    text-decoration: none;
+}
+#jobRoleBottom{
+    border-bottom: 1px solid #f4eef2;
+    background: #ffffff;
+}
 
+#jobRoleNoBorder{
+    background: #ffffff;
+}
+
+#jobRoleRight{
+    border-right: 1px solid #f4eef2;
+    background: #ffffff;
+}
+
+
+#jobRoleNoBorder:hover, #jobRoleRight:hover, #jobRoleBottom:hover, #jobRole:hover {
+    background: #f8f2f0;
+    color: #003557;
+    cursor: pointer;
+
+    /* for slow hove effect*/
+
+    -webkit-transition: background 3s;
+    -moz-transition:    background 3.5s;
+    -ms-transition:     background 3.5s;
+    -o-transition:      background 3.5s;
+    transition:         background 3.5s;
+
+    -webkit-transition: color 0.2s;
+    -moz-transition:    color 0.2s;
+    -ms-transition:     color 0.2s;
+    -o-transition:      color 0.2s;
+    transition:         color 0.2s;
+}
 #forBtn{
     margin: 24px 12px 24px 0;
     width: 140px;
@@ -609,8 +648,27 @@ hr{
     border-left: 1px solid white;
     text-align: left;
 }
-
+#jobRole{
+    padding-top: 20%;
+    padding-bottom: 20%;
+    border-right: 1px solid #f4eef2;
+    border-bottom: 1px solid #f4eef2;
+    background: #ffffff;
+}
 @media screen and (max-width: 768px) {
+    .sectionTwo {
+        background: #ffffff;
+        padding: 4% 8%;
+        text-align: center;
+    }
+    #jobRole, #jobRoleRight, #jobRoleBottom, #jobRoleNoBorder{
+        border: 1px solid #f9f3f7;
+        background: #ffffff;
+        padding-top: 20%;
+        padding-bottom:20%;
+        margin-right: 0%;
+        margin-left: 0%;
+    }
     #contact_container{
         border-left: none;
         border-top: 1px solid white;
@@ -620,6 +678,11 @@ hr{
     }
     #jobRoleName{
         font-size: 11px;
+        color: #000000;
+    }
+    #jobRoleNameFooter{
+        font-size: 11px;
+        color: #ffffff;
     }
     #forBtn{
         width: 100%;
@@ -808,11 +871,6 @@ hr{
     #navLogo{
         margin-top: 12px;
         content:url("/assets/new/img/logo-color.gif");
-    }
-
-    #jobRole, #jobRoleRight, #jobRoleBottom, #jobRoleNoBorder{
-        border: 1px solid #f9f3f7;
-        background: #ffffff;
     }
     .modal .modal-dialog {
         width: 80%;
@@ -1213,46 +1271,6 @@ padding: 0px;
 	font-size: 25px;
 	color:#06436a;
 	letter-spacing: 1px;
-}
-
-#jobRoleBottom{
-    border-bottom: 1px solid #f4eef2;
-    background: #ffffff;
-}
-
-#jobRoleNoBorder{
-    background: #ffffff;
-}
-
-#jobRoleRight{
-    border-right: 1px solid #f4eef2;
-    background: #ffffff;
-}
-
-#jobRole{
-    border-right: 1px solid #f4eef2;
-    border-bottom: 1px solid #f4eef2;
-    background: #ffffff;
-}
-
-#jobRoleNoBorder:hover, #jobRoleRight:hover, #jobRoleBottom:hover, #jobRole:hover {
-    background: #f8f2f0;
-    color: #003557;
-    cursor: pointer;
-
-    /* for slow hove effect*/
-
-    -webkit-transition: background 3s;
-    -moz-transition:    background 3.5s;
-    -ms-transition:     background 3.5s;
-    -o-transition:      background 3.5s;
-    transition:         background 3.5s;
-
-    -webkit-transition: color 0.2s;
-    -moz-transition:    color 0.2s;
-    -ms-transition:     color 0.2s;
-    -o-transition:      color 0.2s;
-    transition:         color 0.2s;
 }
 
 .thumbnail {
