@@ -1322,9 +1322,8 @@ li .dropdown-menu{
      box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
  }
 .posted_job_details_container{
-    margin-top:50px;
-    padding: 2% 9%;
-    background-color:white;
+    margin-top: 90px;
+    \background-color:white;
 
 }
 .posted_job_details_center{
@@ -1341,8 +1340,7 @@ li .dropdown-menu{
     text-align: left;
 }
  .posted_jobs_company_details{
-     margin-top:0px;
-     padding: 2% 9%;
+     margin-top: 24px;
      background-color:white;
 
  }
@@ -1360,10 +1358,10 @@ li .dropdown-menu{
     padding: 1% 9%;
     background-color:white;
 }
- #aboutCompanyTitle{
-     padding-left: 9%;
- font-size: 32px;
- }
+#aboutCompanyTitle{
+    margin-top: 24px;
+    font-size: 32px;
+}
 #job_box_inc a{
     text-decoration: none;
     color: #000000;

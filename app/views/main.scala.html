@@ -60,8 +60,9 @@
               $('#nav_bar_inc').load('/navBar');
             });
         </script>
-        <div class="container">
-            <div id="fixed-menu" style="padding-bottom: 12px; padding-top: 8px; display: none" >
+
+        <div id="fixed-menu" style="padding-bottom: 12px; padding-top: 8px; display: none" >
+            <div class="custom_container">
                 <div id="leadFormBox" class="input-group">
                     <input type="text" class="form-control" placeholder="Enter mobile number" id="addLeadMobile" pattern="[7-9]{1}[0-9]{9}" maxlength="10">
                     <button class="btn btn-default" type="button" onclick="addLead()" id="addLeadMobileButton">Find Job Now</button>
@@ -69,12 +70,12 @@
             </div>
         </div>
 
-        <div>
-            <div id="sectionOne">
+        <div id="sectionOne">
+            <div class="container hidden-xs">
                 <font color="white">
-                    <div class="row" style="margin-right: 0; margin-left: 0">
-                        <div class="col-sm-9" id="headingMain">
-                            <img src="/assets/img/image4.png" style="display: inline-block;" width="14%">
+                    <div class="row">
+                        <div class="col-sm-9" style="margin: 0; padding: 0">
+                            <img src="/assets/img/image4.png" style="display: inline-block; margin-left: -136px" width="150px">
                             <div style="display: inline-block; width: auto;">
                                 <h1 style="letter-spacing: 2px; text-align: left; margin: 10px;"><b><font size="5">Find Entry Level and Experienced Jobs </font></b></h1>
                                 <h2 style="letter-spacing: 2px; margin: 10px; text-align: left"><font size="5">Call 8880007799 to find jobs in top companies!</font></h2>
@@ -86,25 +87,26 @@
                     </div>
                 </font>
             </div>
-                <!-- End of sectionOne -->
         </div>
-        <div class="leadBox">
-            <form id="form_signup_candidate"  style="margin-top: 0%; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
-                <h4 style="font-weight: bold">Job Seeker Registration</h4>
-                <div class="row" id="firstNameLastName">
-                    <div class="col-sm-6" style="padding: 0 4px 0 16px">
-                        <input id="candidateFirstName" placeholder="First name" type="text" maxLength="49" class="form-control input-md">
+            <!-- End of sectionOne -->
+        <div class="container">
+            <div class="leadBox">
+                <form id="form_signup_candidate"  style="margin-top: 0%; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
+                    <h4 style="font-weight: bold">Job Seeker Registration</h4>
+                    <div class="row" id="firstNameLastName">
+                        <div class="col-sm-6" style="padding: 0 4px 0 16px">
+                            <input id="candidateFirstName" placeholder="First name" type="text" maxLength="49" class="form-control input-md">
+                        </div>
+                        <div class="col-sm-6" style="padding: 0 16px 0 4px">
+                            <input id="candidateSecondName" placeholder="Last name" type="text" maxLength="49" class="form-control input-md candidateSecondNameMain" >
+                        </div>
                     </div>
-                    <div class="col-sm-6" style="padding: 0 16px 0 4px">
-                        <input id="candidateSecondName" placeholder="Last name" type="text" maxLength="49" class="form-control input-md candidateSecondNameMain" >
-                    </div>
-                </div>
 
-                <input id="candidateMobile" style="margin-top: 8px" placeholder="What is your mobile no.?" name="candidateMobile" type="text" maxlength="10" class="form-control input-md" >
+                    <input id="candidateMobile" style="margin-top: 8px" placeholder="What is your mobile no.?" name="candidateMobile" type="text" maxlength="10" class="form-control input-md" >
 
-                <div style="margin-top: 8px">
-                    <input type="text" id="candidateJobPref" placeholder="What jobs you are Interested in?">
-                    <script type="text/javascript">
+                    <div style="margin-top: 8px">
+                        <input type="text" id="candidateJobPref" placeholder="What jobs you are Interested in?">
+                        <script type="text/javascript">
                     $(document).ready(function() {
                         $("#candidateJobPref").tokenInput(getJob(), {
                             theme: "facebook",
@@ -116,11 +118,11 @@
                         });
                     });
                     </script>
-                </div>
+                    </div>
 
-                <div style="margin-top: 8px">
-                    <input type="text" id="candidateLocality" style="margin-top: 4px">
-                    <script type="text/javascript">
+                    <div style="margin-top: 8px">
+                        <input type="text" id="candidateLocality" style="margin-top: 4px">
+                        <script type="text/javascript">
                     $(document).ready(function() {
                         $("#candidateLocality").tokenInput(getLocality(), {
                             theme: "facebook",
@@ -131,27 +133,25 @@
                         });
                     });
                     </script>
-                </div>
+                    </div>
 
-                <button type="submit" id="registerBtnSubmit" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
-                    <!-- Text input-->
-            </form>
+                    <button type="submit" id="registerBtnSubmit" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
+                        <!-- Text input-->
+                </form>
 
 
-            <div style="text-align: center">
-                <div class="errorMsgText" id="alreadyMsgCandidate" style="margin-top: 2%;display: none;">
-                    <h5>User Already Exists! Please <a data-toggle="modal" data-target="#myLoginModal" style="cursor: hand; color: #888888">Login</a> to Continue</h5>
-                    <br>
+                <div style="text-align: center">
+                    <div class="errorMsgText" id="alreadyMsgCandidate" style="margin-top: 2%;display: none;">
+                        <h5>User Already Exists! Please <a data-toggle="modal" data-target="#myLoginModal" style="cursor: hand; color: #888888">Login</a> to Continue</h5>
+                        <br>
+                    </div>
                 </div>
             </div>
         </div>
 
-            <!-- start hot job -->
-        <div id="applyToJobs">
-            <h3 id="applyToJobsTitle">
-            </h3>
+        <div class="container">
+            <div id="job_cards_inc"></div>
         </div>
-        <div id="job_cards_inc"></div>
 
         <!--  Start Job Icons Box -->
         <div class="sectionTwo" style="display: table; width: 100%" id="jobs">
@@ -160,7 +160,9 @@
                 <div class="materialDash"></div>
             </center><br>
 
-            <div id="jobRoleGrid" style="width: auto"></div>
+            <div class="custom_container">
+                <div id="jobRoleGrid" style="width: auto"></div>
+            </div>
         </div>
 
         <div class="company_class">

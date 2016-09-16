@@ -186,14 +186,14 @@ body{
 .leadBox {
     text-align: center;
     position: relative;
-    width: 22%;
+    width: 300px;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.15);
     border-radius: 2px;
     color: #0B4063;
     background: #ffffff;
     padding: 4px;
     margin-left: 75%;
-    margin-top: -13%;
+    margin-top: -11%;
 }
 
 .sectionStats {
@@ -236,7 +236,6 @@ body{
 
 .sectionTwo {
     background: #ffffff;
-    padding: 2% 8%;
     text-align: center;
 }
 
@@ -366,35 +365,8 @@ a:hover{
     margin-top: 12%;
 }
 
-#hotJobs{
-    height: auto;
-    max-height: 66%;
-    overflow: scroll;
-    padding-bottom: 10px;
-    padding-left: 16px;
-    padding-right: 16px;
-}
-
 #hotJobs::-webkit-scrollbar {
     width: 0 !important;
-}
-
-#hotJobItem{
-    border-left: 2px rgba(46, 131, 213, 0.6) solid;
-    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.09);
-    padding: 1%;
-    margin-left: 13%;
-    margin-right: 13%;
-    margin-top: 8px;
-    background: #ffffff;
-}
-
-#hotJobItemDivider{
-    padding: 1% 2% 1% 0;
-    display: table;
-    font-size: 24px;
-    margin-left: 13%;
-    margin-right: 13%;
 }
 
 #jobBody {
@@ -521,16 +493,6 @@ hr{
         width: 40%;
     }
 
-    #hotJobItem{
-        border: none;
-        box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.09);
-        padding: 2%;
-        margin-left: 0%;
-        margin-right: 0%;
-        margin-top: 8px;
-        background: #ffffff;
-    }
-
     #jobBodyDetails {
         padding-top: 4%;
         padding-left: 10%;
@@ -647,7 +609,7 @@ hr{
 
     .leadBox {
         width: 84%;
-        margin-top: -54%;
+        margin-top: -48%;
         margin-right: 8%;
         margin-left: 8%;
     }

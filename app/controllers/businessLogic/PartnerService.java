@@ -361,10 +361,6 @@ public class PartnerService {
             partnerToCandidate.setPartner(partner);
             partnerToCandidate.savePartnerToCandidate(partnerToCandidate);
 
-            String interactionResult = ServerConstants.INTERACTION_RESULT_PARTNER_CREATED_NEW_CANDIDATE;
-            String createdBy = ServerConstants.INTERACTION_CREATED_PARTNER;
-            Integer interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
-            PartnerInterationService.createInteractionForPartnerToCandidateMapping(partner.getPartnerUUId(), existingCandidate.getCandidateUUId(), interactionType, interactionResult, createdBy);
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
         } else {
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);

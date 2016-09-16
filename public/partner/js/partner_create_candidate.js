@@ -13,6 +13,7 @@ var jobPrefArray = [];
 var localityPrefArray = [];
 var currentLocationArray = [];
 var candidateSkill = [];
+var currentJobRole = [];
 
 var jobPrefString;
 
@@ -269,7 +270,6 @@ function processDataCheckLocality(returnedData) {
 
 
 function processDataAndFillAllFields(returnedData) {
-    console.log(returnedData);
     if (returnedData == "0") {
     } else {
         $("#candidateFirstName").val(returnedData.candidateFirstName);
@@ -394,7 +394,20 @@ function processDataAndFillAllFields(returnedData) {
                     $("#totalWorkExperience").show();
                     $("#candidateTotalExperienceYear").val(parseInt((totalExperience / 12)).toString()); // years
                     $("#candidateTotalExperienceMonth").val(totalExperience % 12); // years
-                 }
+
+                    if(returnedData.jobHistoryList != null){
+                        var candidatePastJobList = returnedData.jobHistoryList;
+                        candidatePastJobList.forEach(function (jobHistory) {
+                            if(jobHistory.candidatePastCompany != null && jobHistory.candidatePastCompany != "" && jobHistory.currentJob != false && jobHistory.jobRole != null){
+                                $("#candidateCurrentCompany").val(jobHistory.candidatePastCompany);
+                                var item = {};
+                                item ["id"] = jobHistory.jobRole.jobRoleId;
+                                item ["name"] = jobHistory.jobRole.jobName;
+                                currentJobRole.push(item);
+                            }
+                        });
+                    }
+                }
             }
         } catch (err) {
             console.log(err);
@@ -939,8 +952,8 @@ $(function() {
 }); // end of function
 
 function processDataSignUpSupportSubmit(returnedData) {
-    if(returnedData.status == "1"){ //success
-        //window.location = "/partner/home";
+    if(returnedData.status == "1"){ //successf
+        window.location = "/partner/home";
     } else if(returnedData.status == "-1"){
         logoutUser();
     } else{

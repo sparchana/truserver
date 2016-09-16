@@ -159,9 +159,9 @@ body{
             rgba(24, 26, 45, 0.3)
     ), url(../img/back_design.png) repeat;
     background-size: 100%;
-    color: #ffffff;
     font-weight: bold;
-    padding: 4% 0 0 0;
+    color: #fff;
+    padding: 6% 4% 0 4%;
     text-align: center;
 }
 
@@ -188,18 +188,17 @@ body{
 #app_screen_header{
     width: 56%;
 }
-
 .leadBox {
     text-align: center;
     position: relative;
-    width: 22%;
+    width: 300px;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.15);
     border-radius: 2px;
     color: #0B4063;
     background: #ffffff;
     padding: 4px;
     margin-left: 75%;
-    margin-top: -16%;
+    margin-top: -19%;
 }
 
 .sectionStats {
@@ -246,8 +245,12 @@ body{
 
 .sectionTwo {
 	background: #ffffff;
-    padding: 4% 8%;
     text-align: center;
+}
+
+.custom_container{
+    margin-left: 14%;
+    margin-right: 14%;
 }
 
 .sectionThree {
@@ -323,17 +326,14 @@ a:hover{
 #leadFormBox{
     display: inline-block;
     height: 24px;
-    margin-left: 9%;
 }
 
-#fixed-menu
-{
+#fixed-menu {
     margin-top: 50px;
-    margin-left: -9%;
     background: rgba(0, 0, 0, 0.175);
     position: fixed;
     text-align: left;
-    width: 113.5%;
+    width: 100%;
     height: 48px;
     color: #ffffff;
     padding: 8px;
@@ -378,10 +378,8 @@ a:hover{
 }
 
 #hotJobs{
-    height: 66%;
+    height: 72%;
     overflow: scroll;
-    padding-left: 16px;
-    padding-right: 16px;
 }
 
 #hotJobs::-webkit-scrollbar {
@@ -391,10 +389,8 @@ a:hover{
 #hotJobItem{
     border-left: 2px rgba(46, 131, 213, 0.6) solid;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.09);
-    padding: 1%;
-    margin-left: 13%;
-    margin-right: 13%;
-    margin-top: 8px;
+    padding: 18px;
+    margin: 8px 4px 0 4px;
     background: #ffffff;
 }
 
@@ -402,8 +398,6 @@ a:hover{
     padding: 1% 2% 1% 0;
     display: table;
     font-size: 24px;
-    margin-left: 13%;
-    margin-right: 13%;
 }
 
 #jobBody {
@@ -611,6 +605,23 @@ hr{
 }
 
 @media screen and (max-width: 768px) {
+    #hotJobs{
+        margin-top: 24px;
+        height: 66%;
+        overflow: scroll;
+    }
+
+    .custom_container{
+        margin: 0;
+    }
+
+    #hotJobItemDivider{
+        padding: 1% 2% 1% 0;
+        display: table;
+        text-align: center;
+        font-size: 24px;
+    }
+
     #contact_container{
         border-left: none;
         border-top: 1px solid white;
@@ -790,7 +801,10 @@ hr{
     #sectionOne {
         background-size: 320%;
         padding-top: 24%;
-        padding-bottom: 48%;
+        padding-bottom: 18%;
+/*        background-size: 320%;
+        padding-top: 24%;
+        padding-bottom: 48%;*/
     }
 
     .sectionStats {
@@ -821,7 +835,6 @@ hr{
 
     .leadBox {
         width: 84%;
-        margin-top: -54%;
         margin-right: 8%;
         margin-left: 8%;
     }

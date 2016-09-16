@@ -113,8 +113,8 @@ option:checked {
 
 #sectionHeader{
     background: linear-gradient(
-            rgba(24, 26, 45, 0.6),
-            rgba(24, 26, 45, 0.6)
+            rgba(24, 26, 45, 0.3),
+            rgba(24, 26, 45, 0.3)
     ), url(../img/back_design.png) repeat;
     background-size: 100%;
     font-weight: bold;
@@ -178,7 +178,7 @@ option:checked {
     background: #ffffff;
     padding: 4px;
     margin-left: 75%;
-    margin-top: -11%;
+    margin-top: -13%;
 }
 
 #registerBtnSubmit{

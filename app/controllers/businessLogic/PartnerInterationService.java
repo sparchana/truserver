@@ -60,19 +60,4 @@ public class PartnerInterationService {
 
         InteractionService.createInteraction(interaction);
     }
-
-    public static void createInteractionForPartnerToCandidateMapping(String objectAUUId, String objectBUUId, Integer interactionType, String interactionResult, String createdBy){
-        Interaction interaction = new Interaction(
-                objectAUUId,
-                ServerConstants.OBJECT_TYPE_JOB_POST,
-                objectBUUId,
-                ServerConstants.OBJECT_TYPE_CANDIDATE,
-                interactionType,
-                interactionResult,
-                createdBy
-        );
-
-        InteractionService.createInteraction(interaction);
-    }
-
 }
