@@ -52,6 +52,7 @@ import static play.libs.Json.toJson;
  *
  * There is always a chance of error in resolution. Further optimization should reduce it
  *
+ * Tag: v2.0
  */
 
 public class AddressResolveService {
@@ -235,6 +236,7 @@ public class AddressResolveService {
         String placeId = null;
         String cityName = null;
         String stateName = null;
+        String country = null;
         /* Parse JSON */
         try {
             jsonObj = new JSONObject(jsonResults.toString());
@@ -260,21 +262,36 @@ public class AddressResolveService {
                             *  since api's hierarchy is such that sublocality_2 is found before sublocality_1
                             *  and both have sublocality as type. hence in hierarchy whichever element with type sublocality
                             *  is found at last that value persists through out the process
+                            *
+                            *  administrative_area_level_2 gives city/district level info
                             * */
                             if(tempTypesArray.get(j).toString().equalsIgnoreCase("sublocality")
                                     || tempTypesArray.get(j).toString().equalsIgnoreCase("route")
                                     || tempTypesArray.get(j).toString().equalsIgnoreCase("neighborhood") ) {
                                 locationName = objectOfInterest.getString("long_name");
                                 Logger.info("Found locationName: "+locationName );
-
                                 isDesiredData = true;
                             } else if(tempTypesArray.get(j).toString().equalsIgnoreCase("locality")) {
+                                if(locationName != null){
+                                    cityName = objectOfInterest.getString("long_name");
+                                    Logger.info("cityName: "+cityName);
+                                } else {
+                                    locationName = objectOfInterest.getString("long_name");
+                                    Logger.info("LocationName:: " + locationName);
+                                    isDesiredData = true;
+                                }
+                            }
+                            else if(cityName == null && tempTypesArray.get(j).toString().equalsIgnoreCase("administrative_area_level_2")) {
                                 cityName = objectOfInterest.getString("long_name");
                                 Logger.info("cityName: "+cityName);
                             }
                             else if(tempTypesArray.get(j).toString().equalsIgnoreCase("administrative_area_level_1")) {
                                 stateName = objectOfInterest.getString("long_name");
                                 Logger.info("stateName: "+stateName);
+                            }
+                            else if(tempTypesArray.get(j).toString().equalsIgnoreCase("country")) {
+                                country = objectOfInterest.getString("long_name");
+                                Logger.info("country: "+country);
                             }
                         }
                     }
@@ -299,7 +316,7 @@ public class AddressResolveService {
                             freshLocality.setLng(longitude);
                             freshLocality.setCity(WordUtils.capitalize(cityName));
                             freshLocality.setState(WordUtils.capitalize(stateName));
-                            freshLocality.setCountry("India");
+                            freshLocality.setCountry(country);
                             freshLocality.setPlaceId(placeId);
                             freshLocality.save();
 
@@ -331,7 +348,7 @@ public class AddressResolveService {
                                 freshLocality.setState(stateName); isChanged=true;
                             }
                             if(freshLocality.getCountry() == null || freshLocality.getCountry().trim().isEmpty()) {
-                                freshLocality.setCountry("India"); isChanged=true;
+                                freshLocality.setCountry(country); isChanged=true;
                             }
                             if(isChanged){
                                 Logger.warn("Static Data "+freshLocality.getLocalityName() + " in Locality update");
@@ -341,7 +358,7 @@ public class AddressResolveService {
                         break;
                     } else {
                         Logger.warn("LatLng is of a Remote Area. Couldn't resolved "+locationName+" till locality level. Found Incomplete final obj of interest as : "+locationName+"-"+ cityName+"-"+stateName);
-                        SmsUtil.sendLocalityNotResolvedSmsToDevTeam(locationName, cityName, stateName, latitude, longitude);
+                        SmsUtil.sendLocalityNotResolvedSmsToDevTeam(locationName, cityName, stateName);
                     }
                 }
             }

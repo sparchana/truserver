@@ -19,7 +19,7 @@ import static api.ServerConstants.devTeamMobile;
 public class SmsUtil {
 
     public static String sendSms(String toPhone, String msg) {
-        boolean isDevMode = play.api.Play.isDev(play.api.Play.current());
+        boolean isDevMode = play.api.Play.isDev(play.api.Play.current()) || play.api.Play.isTest(play.api.Play.current());
 
         String uname = Play.application().configuration().getString("sms.gateway.user");
         String id = Play.application().configuration().getString("sms.gateway.password");
@@ -143,12 +143,11 @@ public class SmsUtil {
         sendSms(devTeamMobile.get("Archana"), msg);
     }
 
-    public static void sendLocalityNotResolvedSmsToDevTeam(String unResolvedLocality, String city, String state, Double lat, Double lng)
+    public static void sendLocalityNotResolvedSmsToDevTeam(String unResolvedLocality, String city, String state)
     {
         // Idea is to tweak AddressResolver based on unresolved lat/lng (s)  :D
 
-        String msg = "Bonjour DevTeam !!, AddressResolver was not able to resolve this " + lat+", " + lng
-                + " LatLng "+" with PredictedLocality: "+unResolvedLocality+" to a Proper Locality Object! "
+        String msg = "Bonjour DevTeam !! AddressResolver was not able to resolve PredictedLocality: "+unResolvedLocality+" to a Proper Locality Object! "
                 + "Max Resolved Info:- City: "+city+" State:"+state;
 
         sendSms(devTeamMobile.get("Sandy"), msg);
