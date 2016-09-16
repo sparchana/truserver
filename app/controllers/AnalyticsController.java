@@ -52,7 +52,8 @@ public class AnalyticsController extends Controller {
                 Date ed = analyticsRequest.getToThisDate();
                 Boolean shouldUploadToGs = false;
                 if(analyticsRequest.getUpdateGoogleSheet() != null && analyticsRequest.getUpdateGoogleSheet() ){
-                    shouldUploadToGs = true;
+                    Logger.info("UpdateGoogleSheet Req:"+analyticsRequest.getUpdateGoogleSheet());
+                    //shouldUploadToGs = true;
                 }
 
                 List<String> headerList = new ArrayList<>();
