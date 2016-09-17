@@ -207,6 +207,11 @@ public class CandidateService
         String interactionNote;
         boolean isNewCandidate = false;
 
+        String objAUUId = "";
+        String objBUUId = "";
+
+        Integer objBType = 0;
+
         if(channelType == InteractionChannelType.SUPPORT){
             createdBy = session().get("sessionUsername");
             interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM;
@@ -337,6 +342,7 @@ public class CandidateService
         // set the default interaction note string
         interactionNote = ServerConstants.INTERACTION_NOTE_BLANK;
 
+
         if(channelType == InteractionChannelType.SUPPORT || channelType == InteractionChannelType.PARTNER){
             // update additional fields that are part of the support request
             updateOthersBySupport(candidate, request);
@@ -358,11 +364,21 @@ public class CandidateService
                     interactionResult = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE_SUPPORT;
                 } else if(channelType == InteractionChannelType.PARTNER){
                     interactionResult = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE_PARTNER;
+                    Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+                    if(partner != null){
+                        objBType = ServerConstants.OBJECT_TYPE_PARTNER;
+                        objBUUId = partner.getPartnerUUId();
+                    }
                 }
             }
             else {
                 if(channelType == InteractionChannelType.PARTNER){ //candidate profile getting edited by a partner
                     interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_PARTNER;
+                    Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+                    if(partner != null){
+                        objBType = ServerConstants.OBJECT_TYPE_PARTNER;
+                        objBUUId = partner.getPartnerUUId();
+                    }
                 } else{ //getting edited by support user
                     interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM;
                 }
@@ -381,16 +397,7 @@ public class CandidateService
         // check if we have enough details required to complete the minimum profile
         candidate.setIsMinProfileComplete(isMinProfileComplete(candidate));
 
-        String objAUUId = candidate.getCandidateUUId();
-        String objBUUId = "";
-
-        Integer objBType = 0;
-
-        Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
-        if(partner != null){
-            objBType = ServerConstants.OBJECT_TYPE_PARTNER;
-            objBUUId = partner.getPartnerUUId();
-        }
+        objAUUId = candidate.getCandidateUUId();
         InteractionService.createInteractionForCreateCandidateProfile(objAUUId, objBUUId, objBType,
                 interactionType, interactionNote, interactionResult, createdBy);
 
@@ -501,33 +508,17 @@ public class CandidateService
             e.printStackTrace();
         }
 
-        try{
-            if(supportCandidateRequest.getPastCompanyList() != null ){
-                candidate.setJobHistoryList(getJobHistoryListFromAddSupportCandidate(supportCandidateRequest.getPastCompanyList(), candidate));
-            }
-        } catch(Exception e){
-            Logger.info(" Exception while setting past job details");
-            e.printStackTrace();
+        if(supportCandidateRequest.getPastCompanyList() != null ){
+            candidate.setJobHistoryList(getJobHistoryListFromAddSupportCandidate(supportCandidateRequest.getPastCompanyList(), candidate));
         }
 
-        try{
-            if(supportCandidateRequest.getCandidateIdProof() != null ){
-                candidate.setIdProofReferenceList(getCandidateIdProofListFromAddSupportCandidate(supportCandidateRequest.getCandidateIdProof(), candidate));
-            }
-        } catch(Exception e){
-            Logger.info(" Exception while setting idproof reference list");
-            e.printStackTrace();
+        if(supportCandidateRequest.getCandidateIdProof() != null ){
+            candidate.setIdProofReferenceList(getCandidateIdProofListFromAddSupportCandidate(supportCandidateRequest.getCandidateIdProof(), candidate));
         }
 
-        try{
-            if(supportCandidateRequest.getExpList() != null ){
-                candidate.setCandidateExpList(getCandidateExpListFromAddSupportCandidate(supportCandidateRequest.getExpList(), candidate));
-            }
-        } catch(Exception e){
-            Logger.info(" Exception while setting explist reference list");
-            e.printStackTrace();
+        if(supportCandidateRequest.getExpList() != null ){
+            candidate.setCandidateExpList(getCandidateExpListFromAddSupportCandidate(supportCandidateRequest.getExpList(), candidate));
         }
-
     }
 
     private static CandidateStatusDetail getCandidateStatusDetail(AddSupportCandidateRequest supportCandidateRequest, Candidate candidate) {

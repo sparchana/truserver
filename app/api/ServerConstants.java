@@ -130,6 +130,7 @@ public class ServerConstants {
     public static final int LEAD_SOURCE_UNKNOWN = 1; // 1 is unknown
 
     public static final int LEAD_SOURCE_WEBSITE = 2;
+    public static final int LEAD_SOURCE_PARTNER = 3;
 
     public static final String LEAD_INTEREST_UNKNOWN = "Unknown";
 

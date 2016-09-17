@@ -194,6 +194,7 @@ public class PartnerController {
         String partnerId = session().get("partnerId");
         Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
         if(partner != null){
+            addSupportCandidateRequest.setLeadSource(ServerConstants.LEAD_SOURCE_PARTNER);
             CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
                     InteractionService.InteractionChannelType.PARTNER,
                     ServerConstants.UPDATE_ALL_BY_SUPPORT);
