@@ -222,7 +222,7 @@ public class PartnerController {
             List<PartnerToCandidate> partnerToCandidateList = PartnerToCandidate.find.where().eq("partner_id", partner.getPartnerId()).findList();
             ArrayList<PartnerCandidatesResponse> responses = new ArrayList<>();
 
-            SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT);
+            SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
 
             for(PartnerToCandidate partnerToCandidate : partnerToCandidateList) {
                 PartnerCandidatesResponse response = new PartnerCandidatesResponse();
@@ -272,5 +272,11 @@ public class PartnerController {
             }
         }
         return ok("0");
+    }
+
+    public static Result logoutPartner() {
+        session().clear();
+        Logger.info("Partner Logged Out");
+        return ok(views.html.Partner.partner_index.render());
     }
 }

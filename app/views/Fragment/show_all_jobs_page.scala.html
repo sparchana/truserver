@@ -57,12 +57,28 @@
             <!-- Nav start -->
         <div id="nav_bar_inc"></div>
         <script>
-            $(document).ready(function(){
-                var phone = localStorage.getItem("mobile");
-                if(phone == null){ // not logged in
-                    $('#nav_bar_inc').load('/navBar');
-                } else{
+            function processDataCheckNavBar(returnedData) {
+                if(returnedData == '1'){
                     $('#nav_bar_inc').load('/navBarLoggedIn');
+                } else if(returnedData == '2'){
+                    $('#nav_bar_inc').load('/partnerNavBarLoggedIn');
+                } else {
+                    $('#nav_bar_inc').load('/navBar');
+                }
+            }
+
+            $(document).ready(function(){
+                try {
+                    $.ajax({
+                        type: "GET",
+                        url: "/checkNavBar",
+                        data: false,
+                        contentType: false,
+                        processData: false,
+                        success: processDataCheckNavBar
+                    });
+                } catch (exception) {
+                    console.log("exception occured!!" + exception);
                 }
             });
         </script>

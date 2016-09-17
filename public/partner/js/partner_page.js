@@ -175,13 +175,13 @@ function processDataCheckPartnerType(returnedData) {
     }
 }
 
-function logoutUser() {
+function logoutPartner() {
     localStorage.clear();
     window.location = "/partner";
     try {
         $.ajax({
             type: "GET",
-            url: "/logoutUser",
+            url: "/logoutPartner",
             data: false,
             contentType: false,
             processData: false,

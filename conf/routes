@@ -80,6 +80,7 @@ POST        /signUp                                                       contro
 
 # partner routes
 #~~~~~~~~~~~~~~~~~~~~
+GET         /logoutPartner                                                controllers.PartnerController.logoutPartner()
 GET         /getMyCandidates                                              controllers.PartnerController.getMyCandidates()
 GET         /checkPartnerSession                                          controllers.PartnerController.checkPartnerSession()
 GET         /partner                                                      controllers.PartnerController.partnerIndex()
@@ -120,6 +121,7 @@ GET         /jobs/:rolePara/:idPara                                       contro
 GET         /                                                             controllers.Application.index()
 GET         /getAllSkills/:id                                             controllers.Application.getAllSkills(id : String)
 GET         /getAllJobPosts                                               controllers.Application.getAllJobPosts()
+GET         /checkNavBar                                                  controllers.Application.checkNavBar()
 
 POST        /getAllDegree                                                 controllers.Application.getAllDegree()
 POST        /getAllEducation                                              controllers.Application.getAllEducation()

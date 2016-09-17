@@ -67,19 +67,3 @@ function processDataPartnerProfile(returnedData) {
         }
     }
 }
-
-function logoutUser() {
-    localStorage.clear();
-    window.location = "/partner";
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/logoutUser",
-            data: false,
-            contentType: false,
-            processData: false,
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-}

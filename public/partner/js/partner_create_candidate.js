@@ -805,7 +805,7 @@ $(function() {
             case 0: notifyError("First name contains number. Please Enter a valid First Name"); statusCheck=0; break;
             case 2: notifyError("First Name cannot be blank spaces. Enter a valid first name"); statusCheck=0; break;
             case 3: notifyError("First name contains special symbols. Enter a valid first name"); statusCheck=0; break;
-            case 4: notifyError("Please enter your first name"); statusCheck=0; break;
+            case 4: notifyError("Please enter candidate's first name"); statusCheck=0; break;
         }
         if(lastName != "" || lastName != undefined){
             var lastNameCheck = validateName(lastName);
@@ -814,7 +814,7 @@ $(function() {
                 case 0: notifyError("Last name contains number. Please Enter a valid last Name"); statusCheck=0; break;
                 case 2: notifyError("Last Name cannot be blank spaces. Enter a valid last name"); statusCheck=0; break;
                 case 3: notifyError("Last name contains special symbols. Enter a valid last name"); statusCheck=0; break;
-                case 4: notifyError("Please enter your last name"); statusCheck=0; break;
+                case 4: notifyError("Please enter candidate's last name"); statusCheck=0; break;
             }
         } else {
             lastName = null;
@@ -830,7 +830,7 @@ $(function() {
             notifyError("Please Enter the Jobs you are Interested");
             statusCheck=0;
         } else if(selectedHomeLocality == "") {
-            notifyError("Please Enter your Home Locality");
+            notifyError("Please Enter candidate Home Locality");
             statusCheck=0;
         } else if(selectedTimeShift == -1){
             statusCheck=0;
@@ -863,7 +863,7 @@ $(function() {
             notifyError("Select Highest Education");
             statusCheck=0;
         } else if(((highestEducation == 4) || (highestEducation == 5)) && selectedDegree == -1){
-            notifyError("Please select your Degree");
+            notifyError("Please select candidate's Degree");
             statusCheck=0;
         }
 
@@ -937,7 +937,7 @@ function processDataSignUpSupportSubmit(returnedData) {
     if(returnedData.status == "1"){ //success
         window.location = "/partner/myCandidates";
     } else if(returnedData.status == "-1"){
-        logoutUser();
+        logoutPartner();
     } else{
         $("#registerBtnSubmit").addClass("btn-primary").removeClass("appliedBtn").prop('disabled', false).html("Save");
         notifyError("Something went wrong. Please try again later");

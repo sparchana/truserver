@@ -1201,4 +1201,16 @@ public class Application extends Controller {
             return ok("0");
         }
     }
+
+    public static Result checkNavBar() {
+        if(session().get("partnerId") != null){
+            // partner logged in
+            return ok("2");
+        } else if(session().get("sessionId") != null){
+            // candidate logged in
+            return ok("1");
+        } else{
+            return ok("0");
+        }
+    }
 }

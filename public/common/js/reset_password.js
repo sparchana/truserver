@@ -55,7 +55,7 @@ function processDataPostReset(returnedData) {
     }
 }
 
-function resetPassword(phone) {
+function requestOtp(phone) {
         candidateMobile = phone;
         document.getElementById("resetCheckUserBtn").disabled = true;
         try {
@@ -87,7 +87,7 @@ $(function() {
             alert("Enter 10 digit mobile number");
         }
         else {
-            resetPassword(phone);
+            requestOtp(phone);
         }
     }); // end of submit
 
