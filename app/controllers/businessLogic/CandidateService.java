@@ -87,7 +87,8 @@ public class CandidateService
     public static CandidateSignUpResponse signUpCandidate(CandidateSignUpRequest candidateSignUpRequest,
                                                           InteractionChannelType channelType,
                                                           int leadSourceId) {
-        List<Integer> localityList = candidateSignUpRequest.getCandidateLocality();
+        List<Integer> localityList = new ArrayList<>();
+        localityList.add(candidateSignUpRequest.getCandidateHomeLocality());
         List<Integer> jobsList = candidateSignUpRequest.getCandidateJobPref();
 
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
@@ -117,19 +118,19 @@ public class CandidateService
                 if(candidateSignUpRequest.getCandidateThirdMobile() != null){
                     candidate.setCandidateThirdMobile(candidateSignUpRequest.getCandidateThirdMobile());
                 }
-                if(localityList != null){
-                    candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(localityList, candidate));
+
+                if(candidateSignUpRequest.getCandidateHomeLocality() != null){
+                    Locality locality = Locality.find.where().eq("localityId", candidateSignUpRequest.getCandidateHomeLocality()).findUnique();
+                    if(locality != null){
+                        candidate.setLocality(locality);
+                        candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(localityList, candidate));
+                    }
                 }
+
                 if(jobsList != null){
                     candidate.setJobPreferencesList(getCandidateJobPreferenceList(jobsList, candidate));
                 }
 
-                try{
-                    candidate.setLocality(Locality.find.where().eq("localityId", candidateSignUpRequest.getCandidateHomeLocality()).findUnique());
-                } catch(Exception e){
-                    Logger.info(" Exception while setting home locality");
-                    e.printStackTrace();
-                }
                 candidateSignUpResponse = createNewCandidate(candidate, lead);
                 if(!(channelType == InteractionChannelType.SUPPORT || channelType == InteractionChannelType.PARTNER)){
                     // triggers when candidate is self created
@@ -143,9 +144,15 @@ public class CandidateService
                     Logger.info("auth doesn't exists for this candidate");
                     candidate.setCandidateFirstName(candidateSignUpRequest.getCandidateFirstName());
                     candidate.setCandidateLastName(candidateSignUpRequest.getCandidateSecondName());
-                    if(localityList != null) {
-                        resetLocalityAndJobPref(candidate, getCandidateLocalityPreferenceList(localityList, candidate), getCandidateJobPreferenceList(jobsList, candidate));
+
+                    if(candidate.getLocality() != null){
+                        Locality locality = Locality.find.where().eq("localityId", candidateSignUpRequest.getCandidateHomeLocality()).findUnique();
+                        if(locality != null){
+                            candidate.setLocality(locality);
+                            resetLocalityAndJobPref(candidate, getCandidateLocalityPreferenceList(localityList, candidate), getCandidateJobPreferenceList(jobsList, candidate));
+                        }
                     }
+
                     if(!(channelType == InteractionChannelType.SUPPORT)){
                         triggerOtp(candidate, candidateSignUpResponse);
                         result = ServerConstants.INTERACTION_RESULT_EXISTING_CANDIDATE_VERIFICATION;
@@ -258,9 +265,17 @@ public class CandidateService
                 candidate.setJobPreferencesList(getCandidateJobPreferenceList(request.getCandidateJobPref(), candidate));
             }
 
-            // update new locality preferences
-            if(request.getCandidateLocality() != null){
-                candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(request.getCandidateLocality(), candidate));
+            List<Integer> localityList = new ArrayList<>();
+            if(request.getCandidateHomeLocality() != null){
+                Locality locality = Locality.find.where().eq("localityId", request.getCandidateHomeLocality()).findUnique();
+                if(locality != null){
+                    candidate.setLocality(locality);
+                    localityList.add(request.getCandidateHomeLocality());
+                    candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(localityList, candidate));
+                }
+            } else{
+                localityList.add((int) candidate.getLocality().getLocalityId());
+                candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(localityList, candidate));
             }
 
             if(request.getCandidateFirstName()!= null && !request.getCandidateFirstName().trim().isEmpty()) {
@@ -724,6 +739,12 @@ public class CandidateService
         candidate.setCandidateLastName(request.getCandidateSecondName());
         candidate.setCandidateUpdateTimestamp(new Timestamp(System.currentTimeMillis()));
 
+        //this case comes when saving basic profile from android app
+        if(request.getCandidateHomeLocality() == null){
+            if(candidate.getLocality() != null){
+                request.setCandidateHomeLocality((int) candidate.getLocality().getLocalityId());
+            }
+        }
         try{
             candidate.setLocality(Locality.find.where().eq("localityId", request.getCandidateHomeLocality()).findUnique());
         } catch(Exception e){

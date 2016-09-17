@@ -431,7 +431,6 @@ function saveCandidateBasicProfile(){
     var res = validateMobile(phone);
     var selectedGender = $('input:radio[name="gender"]:checked').val();
 
-    var localitySelected = $('#candidateLocalityPref').val();
     var homeLocalitySelected = $('#candidateHomeLocality').val();
     var jobSelected = $('#candidateJobPref').val();
     var selectedDob = $('#dob_year').val() + "-" + $('#dob_month').val() + "-" + $('#dob_day').val();
@@ -459,9 +458,6 @@ function saveCandidateBasicProfile(){
         statusCheck=0;
     } else if(homeLocalitySelected == "") {
         notifyError("Please Enter your Home location");
-        statusCheck=0;
-    } else if(localitySelected == "") {
-        notifyError("Please Enter your Locality preference");
         statusCheck=0;
     } else if(jobSelected == "") {
         notifyError("Please Enter the Jobs you are Interested");
@@ -491,7 +487,6 @@ function saveCandidateBasicProfile(){
     if(statusCheck == 1){
         document.getElementById("saveBtn").disabled = true;
         var candidatePreferredJob = [];
-        var candidatePreferredLocality = [];
 
         var jobPref = $('#candidateJobPref').val().split(",");
         var localityPref = $('#candidateHomeLocality').val().split(",");
@@ -501,16 +496,12 @@ function saveCandidateBasicProfile(){
             candidatePreferredJob.push(parseInt(jobPref[i]));
         }
 
-        for(i=0;i<localityPref.length; i++){
-            candidatePreferredLocality.push(parseInt(localityPref[i]));
-        }
         try {
             var d = {
                 //mandatory fields
                 candidateFirstName: $('#candidateFirstName').val(),
                 candidateSecondName: $('#candidateSecondName').val(),
                 candidateMobile: $('#candidateMobile').val(),
-                candidateLocality: candidatePreferredLocality,
                 candidateJobPref: candidatePreferredJob,
                 candidateHomeLocality: homeLocalitySelected,
 

@@ -1518,10 +1518,10 @@ function saveProfileForm() {
             type: 'danger'
         });
         statusCheck = 0;
-    } else if (localitySelected == "") {
+    } else if ($("#candidateHomeLocality").val() == "") {
         $.notify({
             title: "Invalid Input: ",
-            message: "Please Enter your Job Localities",
+            message: "Please Enter your current Localities",
             animate: {
                 enter: 'animated lightSpeedIn',
                 exit: 'animated lightSpeedOut'
@@ -1728,21 +1728,13 @@ function saveProfileForm() {
             }
 
             var candidatePreferredJob = [];
-            var candidatePreferredLocality = [];
 
             var jobPref = $('#candidateJobPref').val().split(",");
-            var localityPref = $('#candidateHomeLocality').val().split(",");
-
             var i;
 
             /* Candidate job role preferences  */
             for (i = 0; i < jobPref.length; i++) {
                 candidatePreferredJob.push(parseInt(jobPref[i]));
-            }
-
-            /* Candidate locality Preferences */
-            for (i = 0; i < localityPref.length; i++) {
-                candidatePreferredLocality.push(parseInt(localityPref[i]));
             }
 
             // past job company names
@@ -1818,7 +1810,6 @@ function saveProfileForm() {
                 candidateMobile: $('#candidateMobile').val(),
                 candidateSecondMobile: $('#candidateSecondMobile').val(),
                 candidateThirdMobile: $('#candidateThirdMobile').val(),
-                candidateLocality: candidatePreferredLocality,
                 candidateJobPref: candidatePreferredJob,
 
                 leadSource: $('#leadSource').val(),

@@ -98,7 +98,7 @@ $(function() {
             alert("Enter 10 digit mobile number");
             statusCheck=0;
         } else if(homeLocalitySelected == "") {
-            alert("Please Enter your Job Localities");
+            alert("Please Enter your Home Locality");
             statusCheck=0;
         }
         else if(jobSelected == "") {
@@ -116,7 +116,6 @@ $(function() {
         
         if(statusCheck == 1){
             candidateMobile = phone;
-            $("#registerBtnSubmit").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Please Wait");
             $("#registerBtnSubmit").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Please Wait");
             document.getElementById("registerBtnSubmit").disabled = true;
             try {
