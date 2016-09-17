@@ -219,7 +219,7 @@ public class PartnerController {
             List<PartnerToCandidate> partnerToCandidateList = PartnerToCandidate.find.where().eq("partner_id", partner.getPartnerId()).findList();
             ArrayList<PartnerCandidatesResponse> responses = new ArrayList<>();
 
-            SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
+            SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT);
 
             for(PartnerToCandidate partnerToCandidate : partnerToCandidateList) {
                 PartnerCandidatesResponse response = new PartnerCandidatesResponse();
@@ -271,7 +271,6 @@ public class PartnerController {
                             return ok("-1");
                         }
                     }
-
                 }
             }
         }

@@ -283,38 +283,14 @@ function renderCandidateTable() {
     }
 }
 
-function notifySuccess(msg){
-    $.notify({
-        message: msg,
-        animate: {
-            enter: 'animated lightSpeedIn',
-            exit: 'animated lightSpeedOut'
-        }
-    },{
-        type: 'success'
-    });
+function notifyWarning(msg){
+    $.notify(msg, "info");
 }
 
 function notifyError(msg){
-    $.notify({
-        message: msg,
-        animate: {
-            enter: 'animated lightSpeedIn',
-            exit: 'animated lightSpeedOut'
-        }
-    },{
-        type: 'danger'
-    });
+    $.notify(msg, "error");
 }
 
-function notifyWarning(msg){
-    $.notify({
-        message: msg,
-        animate: {
-            enter: 'animated lightSpeedIn',
-            exit: 'animated lightSpeedOut'
-        }
-    },{
-        type: 'warning'
-    });
+function notifySuccess(msg){
+    $.notify(msg, "success");
 }

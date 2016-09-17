@@ -541,15 +541,7 @@ $(function () {
     $('#candidateMobile').change(function () {
         var res = validateMobile($('#candidateMobile').val());
         if(res == 2){
-            $.notify({
-                message: "Please wait while we check if the candidate already exists.",
-                animate: {
-                    enter: 'animated lightSpeedIn',
-                    exit: 'animated lightSpeedOut'
-                }
-            },{
-                type: 'warning'
-            });
+            notifyInfo("Please wait while we check if the candidate already exists");
             $.ajax({
                 type: "GET",
                 url: "/partner/ifExists/"+$('#candidateMobile').val(),
@@ -557,7 +549,7 @@ $(function () {
                 success: ifMobileExists
             });
         } else {
-            notifyError("Please enter a valid phone number");
+            notifyErrorWithPrompt($("#candidateMobile"), "Please enter a valid phone number");
         }
     });
 
@@ -572,15 +564,7 @@ function ifMobileExists(returnedId) {
         notifyError("Candidate already exists in the database. Create a different candidate");
     } else{
         $("#registerBtnSubmit").addClass("btn-primary").removeClass("appliedBtn").prop('disabled', false).html("Save");
-        $.notify({
-            message: "Candidate with the specified mobile doesn't exists! Please continue",
-            animate: {
-                enter: 'animated lightSpeedIn',
-                exit: 'animated lightSpeedOut'
-            }
-        },{
-            type: 'success'
-        });
+        notifySuccess("Candidate with the specified mobile doesn't exists! Please continue");
     }
 }
 
@@ -802,8 +786,18 @@ $(function() {
 
         //checking first name
         switch(firstNameCheck){
-            case 0: notifyError("First name contains number. Please Enter a valid First Name"); statusCheck=0; break;
-            case 2: notifyError("First Name cannot be blank spaces. Enter a valid first name"); statusCheck=0; break;
+            case 0: notifyError("First name contains number. Please Enter a valid First Name");
+                    statusCheck=0;
+                    $("#candidateFirstName").notify(
+                        "Please enter a valid phone number",
+                        { position:"bottom center" }
+                    ); break;
+            case 2: notifyError("First Name cannot be blank spaces. Enter a valid first name");
+                    statusCheck=0;
+                    $("#candidateFirstName").notify(
+                        "Please enter a valid phone number",
+                        { position:"bottom center" }
+                    ); break;
             case 3: notifyError("First name contains special symbols. Enter a valid first name"); statusCheck=0; break;
             case 4: notifyError("Please enter candidate's first name"); statusCheck=0; break;
         }
@@ -811,59 +805,59 @@ $(function() {
             var lastNameCheck = validateName(lastName);
             //checking first name
             switch(lastNameCheck){
-                case 0: notifyError("Last name contains number. Please Enter a valid last Name"); statusCheck=0; break;
-                case 2: notifyError("Last Name cannot be blank spaces. Enter a valid last name"); statusCheck=0; break;
-                case 3: notifyError("Last name contains special symbols. Enter a valid last name"); statusCheck=0; break;
-                case 4: notifyError("Please enter candidate's last name"); statusCheck=0; break;
+                case 0: notifyErrorWithPrompt($("#candidateLastName"), "Last name contains number. Please Enter a valid last Name"); statusCheck=0; break;
+                case 2: notifyErrorWithPrompt($("#candidateLastName"), "Last Name cannot be blank spaces. Enter a valid last name"); statusCheck=0; break;
+                case 3: notifyErrorWithPrompt($("#candidateLastName"), "Last name contains special symbols. Enter a valid last name"); statusCheck=0; break;
+                case 4: notifyErrorWithPrompt($("#candidateLastName"), "Please enter candidate's last name"); statusCheck=0; break;
             }
         } else {
             lastName = null;
         }
         var res = validateMobile(phone);
         if(res == 0){
-            notifyError("Enter a valid mobile number");
+            notifyErrorWithPrompt($("#candidateMobile"), "Please enter a valid phone number");
             statusCheck=0;
         } else if(res == 1){
-            notifyError("Enter 10 digit mobile number");
+            notifyErrorWithPrompt($("#candidateMobile"), "Enter 10 digit mobile number");
             statusCheck=0;
         }  else if(jobSelected == "") {
-            notifyError("Please Enter the Jobs you are Interested");
+            notifyErrorWithPrompt($("#candidateJobPrefField"), "Please Enter the Jobs you are Interested");
             statusCheck=0;
         } else if(selectedHomeLocality == "") {
-            notifyError("Please Enter candidate Home Locality");
+            notifyErrorWithPrompt($("#candidateHomeLocalityField"), "Please Enter candidate Home Locality");
             statusCheck=0;
         } else if(selectedTimeShift == -1){
+            notifyErrorWithPrompt($("#candidateTimeShift"), "Please select Preferred Work Shift");
             statusCheck=0;
-            notifyError("Please select Preferred Work Shift");
         }  else if($('#dob_day').val() == "" || $('#dob_month').val() == "" || $('#dob_year').val() == ""){
+            notifyErrorWithPrompt($("#candidateDobField"), "Please Select Date of Birth");
             statusCheck=0;
-            notifyError("Please Select Date of Birth");
         } else if(selectedGender == undefined) {
             statusCheck=0;
-            notifyError("Please Select Gender");
+            notifyErrorWithPrompt($("#candidateGenderField"), "Please Select Gender");
         } else if(experienceStatus == null){
+            notifyErrorWithPrompt($("#candidateWorkExpField"), "Please Select work experience");
             statusCheck=0;
-            notifyError("Please Select work experience");
         } else if(candidateLastWithdrawnSalary > 99999){
+            notifyErrorWithPrompt($("#candidateLastWithdrawnSalary"), "Please Enter a valid Salary");
             statusCheck=0;
-            notifyError("Please Enter a valid Salary")
         } else if(experienceStatus == 1 && totalExp == 0){
-            notifyError("Select Total Years of Experience");
+            notifyErrorWithPrompt($("#candidateTotalWorkExpField"), "Select Total Years of Experience");
             statusCheck=0;
         } else if(experienceStatus == 1 && currentlyEmployed == null){
+            notifyErrorWithPrompt($("#currentlyWorkingField"), "Please answer \"Is the candidate currently working?\"");
             statusCheck=0;
-            notifyError("Please answer \"Is the candidate currently working?\"");
         } else if((experienceStatus == 1)  && (candidateLastWithdrawnSalary == undefined || candidateLastWithdrawnSalary == null || candidateLastWithdrawnSalary == "" || candidateLastWithdrawnSalary == "0") ){
+            notifyErrorWithPrompt($("#candidateLastWithdrawnSalary"), "Enter enter Last Withdrawn Salary");
             statusCheck=0;
-            notifyError("Enter enter Last Withdrawn Salary");
         } else if(languageMap.length == 0 || languageMap.length == null){
-            notifyError("Select specify candidate's known language");
+            notifyErrorWithPrompt($("#languageField"), "Select specify candidate's known language");
             statusCheck=0;
         } else if(highestEducation == undefined){
-            notifyError("Select Highest Education");
+            notifyErrorWithPrompt($("#educationField"), "Select Highest Education");
             statusCheck=0;
         } else if(((highestEducation == 4) || (highestEducation == 5)) && selectedDegree == -1){
-            notifyError("Please select candidate's Degree");
+            notifyErrorWithPrompt($("#candidateHighestDegree"), "Please select candidate's Degree");
             statusCheck=0;
         }
 
@@ -944,14 +938,23 @@ function processDataSignUpSupportSubmit(returnedData) {
     }
 }
 
+function notifyInfo(msg){
+    $.notify(msg, "info");
+}
+
 function notifyError(msg){
-    $.notify({
-        message: msg,
-        animate: {
-            enter: 'animated lightSpeedIn',
-            exit: 'animated lightSpeedOut'
-        }
-    },{
-        type: 'danger'
-    });
+    $.notify(msg, "error");
+}
+
+function notifySuccess(msg){
+    $.notify(msg, "success");
+}
+
+function notifyErrorWithPrompt(element, msg){
+    $(window).scrollTop(element.offset().top - 60);
+    element.notify(
+        msg,
+        { position:"bottom center" }
+    );
+    notifyError(msg);
 }

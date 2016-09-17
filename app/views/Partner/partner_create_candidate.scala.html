@@ -31,7 +31,7 @@
 
         <script type="text/javascript" src="/assets/partner/js/partner_page.js"></script>
         <script type="text/javascript" src="/assets/partner/js/partner_create_candidate.js"></script>
-        <script type="text/javascript" src="/assets/support/js/bootstrap-notify.min.js"></script>
+        <script type="text/javascript" src="/assets/partner/js/notify.min.js"></script>
     </head>
     <body>
         <div id="preloader">
@@ -84,7 +84,7 @@
 
                         <div class="row" style="margin-top: 8px">
                             <div class="col-sm-3"><h5>Job Role Preference(s)(Max: 3)<font color="red">*</font></h5></div>
-                            <div class="col-sm-5">
+                            <div class="col-sm-5" id="candidateJobPrefField">
                                 <input type="text" id="candidateJobPref">
                                 <script type="text/javascript">
                                     $(document).ready(function () {
@@ -105,7 +105,7 @@
 
                         <div class="row" style="margin-top: 8px">
                             <div class="col-sm-3"><h5>Candidate Home Locality<font color="red">*</font></h5></div>
-                            <div class="col-sm-5">
+                            <div class="col-sm-5" id="candidateHomeLocalityField">
                                 <input type="text" id="candidateHomeLocality">
                                 <script type="text/javascript">
                                     $(document).ready(function () {
@@ -133,7 +133,7 @@
 
                         <div class="row" style="margin-top: 8px">
                             <div class="col-sm-3"><h5>Date of Birth<font color="red">*</font></h5></div>
-                            <div class="col-sm-5">
+                            <div class="col-sm-5" id="candidateDobField">
                                 <select id="dob_day" class="selectDropdown">
                                     <option value="">Day</option>
                                 </select>
@@ -150,7 +150,7 @@
 
                         <div class="row" style="margin-top: 8px">
                             <div class="col-sm-3"><h5>Gender<font color="red">*</font></h5></div>
-                            <div class="col-sm-5" style="margin-top: 4px">
+                            <div class="col-sm-5" style="margin-top: 4px" id="candidateGenderField">
                                 <div style="width: 100%; height: 34px;" class="btn-group" data-toggle="buttons">
                                     <label class="btn btn-custom-check" style="width: 103px">
                                         <input type="radio" name="gender" id="genderMale" value="0">&nbsp;Male&nbsp;&nbsp;
@@ -168,8 +168,8 @@
                     <div id="editProfileBody">
                         <div class="row">
                             <div class="col-sm-3"><h5>Candidate Work Experience<font color="red">*</font></h5></div>
-                            <div class="col-sm-5">
-                                <div class="btn-group" data-toggle="buttons">
+                            <div class="col-sm-5" id="candidateWorkExpField">
+                                <div class="btn-group" data-toggle="buttons" id="fresherExperience">
                                     <label class="btn btn-custom-check" style="width: 104px" onclick="clickFresher()">
                                         <input type="radio" name="workExperience" id="fresher" value="0">
                                         Fresher
@@ -184,7 +184,7 @@
 
                         <div class="row" id="totalWorkExperience" style="margin-top: 8px">
                             <div class="col-sm-3"><h5>Total Work Experience<font color="red">*</font></h5></div>
-                            <div class="col-sm-5">
+                            <div class="col-sm-5" id="candidateTotalWorkExpField">
                                 <select class="selectDropdown" style="width: 136px" id="candidateTotalExperienceYear"></select>
                                 <select id="candidateTotalExperienceMonth" style="width: 136px" class="selectDropdown"></select>
                             </div>
@@ -192,7 +192,7 @@
 
                         <div id="isEmployedSelect" class="row" style="margin-top: 8px">
                             <div class="col-sm-3"><h5>Is the candidate Currently Working?<font color="red">*</font></h5></div>
-                            <div class="col-sm-5">
+                            <div class="col-sm-5" id="currentlyWorkingField">
                                 <div class="btn-group" data-toggle="buttons" style="margin-top: 4px">
                                     <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickWorkingYes()">
                                         <input type="radio" name="isEmployed" id="isEmployedYes" value="1"> &nbsp;Yes&nbsp;&nbsp;
@@ -255,7 +255,7 @@
                     <div id="editProfileBody">
                         <div class="profileBodyEditProfile">
                             <table id="languageTable" class="table table-striped" cellspacing="0" width="100%">
-                                <h5>Candidate known languages</h5>
+                                <h5 id="languageField">Candidate known languages</h5>
                                 <thead></thead>
                                 <tbody></tbody>
                             </table>
@@ -268,7 +268,7 @@
                     <div id="editProfileBody">
                         <div class="row">
                             <div class="col-sm-12">
-                                <div id="skill_details">
+                                <div id="skill_details" >
                                     <table id="skillTable" class="table table-striped" cellspacing="0" width="100%">
                                         <thead></thead>
                                         <tbody></tbody>
@@ -284,7 +284,7 @@
                     <div id="editProfileBody">
                         <div class="row" style="margin-top: 4px">
                             <div class="col-sm-3"><h5>Highest Education Qualification?<font color="red">*</font></h5></div>
-                            <div class="col-sm-9">
+                            <div class="col-sm-9" id="educationField">
                                 <div style="width: 100%;
                                     height: 34px;" id="candidateHighestEducation" class="btn-group" data-toggle="buttons"></div>
                             </div>
