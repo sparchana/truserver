@@ -234,7 +234,8 @@ public class TrudroidController {
 
     public static Result mGetAllJobRoles() {
         JobRoleResponse.Builder jobRoleResponseBuilder = JobRoleResponse.newBuilder();
-        List<models.entity.Static.JobRole> jobRoleList = models.entity.Static.JobRole.find.all();
+        List<models.entity.Static.JobRole> jobRoleList =
+                models.entity.Static.JobRole.find.where().orderBy().asc("jobName").findList();
 
         jobRoleResponseBuilder.addAllJobRole(getJobRoleObjectListFromJobRoleList(jobRoleList));
         return ok(Base64.encodeBase64String(jobRoleResponseBuilder.build().toByteArray()));
@@ -303,6 +304,9 @@ public class TrudroidController {
 
             List<JobPostToLocality> localityList = jobPost.getJobPostToLocalityList();
             jobPostBuilder.addAllJobPostLocality(getLocalityFromJobToLocalityObject(localityList));
+
+            jobPostBuilder.setJobPostSource(jobPost.getSource());
+
             jobPostListToReturn.add(jobPostBuilder.build());
         }
 
