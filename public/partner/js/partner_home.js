@@ -31,6 +31,9 @@ $(document).ready(function(){
 });
 
 function processDataPartnerProfile(returnedData) {
+    if(returnedData == '0'){
+        logoutPartner();
+    }
     if(returnedData != null){
         //name
         if(returnedData.partnerFirstName != null){

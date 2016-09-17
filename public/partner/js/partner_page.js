@@ -73,6 +73,7 @@ function processDataUpdateProfile(returnedData) {
     } else{
         $("#registerBtnSubmit").addClass("btn-primary").removeClass("appliedBtn").prop('disabled', false).html("Save");
         notifyError("Something went wrong while updating profile");
+        logoutPartner();
     }
 }
 
