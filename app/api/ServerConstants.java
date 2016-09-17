@@ -161,6 +161,8 @@ public class ServerConstants {
     public static final String PROD_GOOGLE_FORM_FOR_JOB_POSTS = "https://docs.google.com/forms/d/1QVHzqnts0IkD3Wk8in4urqb70BseI9YWZm9B_MgGXUE/formResponse";
     public static final String DEV_GOOGLE_FORM_FOR_JOB_POSTS = "https://docs.google.com/forms/d/e/1FAIpQLSc-Fr7bO7M5HCjNYyC-dnIyzTMiXiywTEaD9twKkCQDeB7Qtg/formResponse";
 
+    public static final String PROD_GOOGLE_FORM_FOR_ASSESSMENT = "https://docs.google.com/a/trujobs.in/forms/d/e/1FAIpQLSeDM-7BUxaK_9ThdN4E5e7zTP-Px3MFudQRPXOZ8K8n1V_Kyg/formResponse";
+
     public static final Integer IS_HOT = 1;
 
     public static final int SHEET_MAIN = 1;

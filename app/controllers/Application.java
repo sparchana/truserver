@@ -27,7 +27,6 @@ import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
-import scala.Int;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +36,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.avaje.ebean.Expr.eq;
-import static models.util.ParseCSV.parseBabaJobsCSV;
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {
@@ -1185,18 +1183,39 @@ public class Application extends Controller {
 
     public static Result checkCandidateSession() {
         String sessionCandidateId = session().get("candidateId");
-        if(sessionCandidateId != null){
+        if(sessionCandidateId != null) {
             return ok("1");
         } else{
             return ok("0");
         }
     }
 
-    public static Result getAssessmentQuestion(String jobRoleId, Integer limit) {
-        Logger.info("limit:"+limit);
-        if(jobRoleId != null){
-            return ok(toJson(AssessmentService.getQuestions(Long.valueOf(jobRoleId))));
+    public static Result getAssessmentQuestion(String jobRoleId, Integer limit, String jobPostId) {
+        if(session().get("candidateId") != null){
+            Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")).findUnique();
+            if(candidate.getCandidateIsAssessed() == 1) {
+                return ok("Already Done");
+            }
         }
-        return ok(toJson(AssessmentService.getQuestions(null)));
+        if(jobRoleId != null){
+            return ok(toJson(AssessmentService.getQuestions(Long.valueOf(jobRoleId), jobPostId == null ? null : Long.valueOf(jobPostId))));
+        }
+        return ok(toJson(AssessmentService.getQuestions(null, null)));
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result submitAssessment() {
+        JsonNode assessmentRequestJson = request().body().asJson();
+        if(assessmentRequestJson == null){
+            return badRequest();
+        }
+        AssessmentRequest assessmentRequest= new AssessmentRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            assessmentRequest = newMapper.readValue(assessmentRequestJson.toString(), AssessmentRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ok(toJson(AssessmentService.addAssessedInfoToGS(assessmentRequest, Long.parseLong(session().get("candidateId")))));
     }
 }

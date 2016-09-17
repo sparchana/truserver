@@ -42,6 +42,7 @@ function checkUserLogin(){
     else{
         logoutUser();
     }
+    console.log("=== "+ localStorage.getItem("assessed"));
     if(localStorage.getItem("assessed") == 0){
         $(".assessmentComplete").hide();
         $(".assessmentIncomplete").show();

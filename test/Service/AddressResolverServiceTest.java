@@ -94,6 +94,7 @@ public class AddressResolverServiceTest {
                 {MethodType.insertOrUpdateLocality , 12.9527508, 76.57483089999999, null, null, "Hirisave", null},
                 {MethodType.insertOrUpdateLocality , 23.4839689, 85.47907029999999, null, null, "Ormanjhi", null},
                 {MethodType.insertOrUpdateLocality , 12.800494, 77.713612, null, null, "Chandapura", null},
+                {MethodType.insertOrUpdateLocality , 12.9746376,77.607561, null, null, "MG Road", null},
                 {MethodType.insertOrUpdateAllEmptyLocality, null, null, null, null, null, null},
         });
     }
@@ -189,7 +190,7 @@ public class AddressResolverServiceTest {
         });
     }
 
-/*    @Ignore
+/*  @Ignore
     public void testPopulateLocality() {
         Application fakeApp = fakeApplication();
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
@@ -209,5 +210,6 @@ public class AddressResolverServiceTest {
                 }
             }
         });
-    }*/
+    }
+*/
 }

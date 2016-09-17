@@ -541,6 +541,9 @@ public class Candidate extends Model {
     public void setCandidateLocalityLng(Double candidateLocalityLng) {
         this.candidateLocalityLng = candidateLocalityLng;
     }
+    public String getCandidateFullName(){
+        return this.candidateFirstName + " " + (this.candidateLastName != null ? this.candidateLastName : "");
+    }
 }
 
 

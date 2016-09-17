@@ -315,7 +315,7 @@ function processDataAndFillMinProfile(returnedData) {
     } else {
         var options = {'showRowNumber': true};
         var data;
-        var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1HwEWPzZD4BFCyeRf5HO_KqNXyaMporxYQfg5lhOoA2g/edit#gid=496359801');
+        var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1eDiROxy2KVFv5EAwCEIq5uWUNvy1JK3yhgzdxXU3wlw/edit#gid=397623696');
 
         function sendAndDraw() {
             console.log("inside send and draw method");

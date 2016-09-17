@@ -849,23 +849,12 @@ public class TrudroidController {
         Logger.info("setting home loality to "+localityName);
         Locality mLocality = null;
         if(placeId != null || !placeId.trim().isEmpty()){Locality locality;
-            try {
-                mLocality =  Locality.find.where().eq("placeId", placeId).findList().get(0);
-
-            } catch (IndexOutOfBoundsException e){
-                /* List is empty hence locality set to null */
-                mLocality = null;
-            }
+            mLocality =  Locality.find.setMaxRows(1).where().eq("placeId", placeId).findUnique();
             if(mLocality != null) {
                 return mLocality;
             }
         } else if (localityName != null && isValidLocalityName(localityName)) {
-            try {
-                mLocality =  Locality.find.where().eq("localityName", localityName).findList().get(0);
-            } catch (IndexOutOfBoundsException e){
-                /* List is empty hence locality set to null */
-                mLocality = null;
-            }
+            mLocality =  Locality.find.setMaxRows(1).where().eq("localityName", localityName).findUnique();
             if (mLocality != null) {
                 if(mLocality.getLat() == null || mLocality.getLat() == 0.0
                         || mLocality.getLng() == null || mLocality.getLng() == 0.0) {
@@ -884,12 +873,7 @@ public class TrudroidController {
         locality.setLng(longitude);
         locality.setPlaceId(placeId);
         locality.save();
-        try {
-            locality =  Locality.find.where().eq("localityName", localityName).findList().get(0);
-        } catch (IndexOutOfBoundsException e){
-            /* List is empty hence locality set to null */
-            locality = null;
-        }
+        locality =  Locality.find.setMaxRows(1).where().eq("localityName", localityName).findUnique();
         return locality;
     }
 

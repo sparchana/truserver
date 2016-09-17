@@ -46,7 +46,7 @@ public class AssessmentQuestion extends Model {
     private String answer;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonManagedReference
     @JoinColumn(name = "JobRoleId", referencedColumnName = "JobRoleId")
     private JobRole jobRole;
 

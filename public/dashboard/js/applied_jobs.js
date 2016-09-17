@@ -13,6 +13,9 @@ $(window).load(function() {
 
 $(document).ready(function(){
     checkUserLogin();
+    $("#assessmentDiv a").click(function() {
+        getAssessmentQuestions(null, null);
+    });
     
     try {
         $.ajax({
