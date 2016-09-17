@@ -252,7 +252,7 @@ function processDataAndFillAllFields(returnedData) {
     if (returnedData == "0") {
         notifyError("Something went wrong. Please try again!");
     } else if(returnedData == "-1"){
-        notifyError("Your are not authorized to view other candidate's details!!");
+        notifyError("You are not authorized to view other candidate's details!!");
     } else {
         $("#candidateFirstName").val(returnedData.candidateFirstName);
         if (returnedData.candidateLastName == "null" || returnedData.candidateLastName == null) {
@@ -604,7 +604,13 @@ function processDataCheckSkills(returnedData) {
 
         var ques = document.createElement("div");
         ques.id = "skillQues";
-        ques.textContent = singleSkill.skill.skillQuestion;
+        var skillQuestion = singleSkill.skill.skillQuestion;
+        skillQuestion = skillQuestion.replace("Do", "Does");
+        skillQuestion = skillQuestion.replace("you", "your candidate");
+        skillQuestion = skillQuestion.replace("Have", "Has");
+        skillQuestion = skillQuestion.replace("have", "has");
+        skillQuestion = skillQuestion.replace("Are", "Is");
+        ques.textContent = skillQuestion;
 
         var lbl = document.createElement("div");
         lbl.className = "btn-group";
@@ -786,20 +792,10 @@ $(function() {
 
         //checking first name
         switch(firstNameCheck){
-            case 0: notifyError("First name contains number. Please Enter a valid First Name");
-                    statusCheck=0;
-                    $("#candidateFirstName").notify(
-                        "Please enter a valid phone number",
-                        { position:"bottom center" }
-                    ); break;
-            case 2: notifyError("First Name cannot be blank spaces. Enter a valid first name");
-                    statusCheck=0;
-                    $("#candidateFirstName").notify(
-                        "Please enter a valid phone number",
-                        { position:"bottom center" }
-                    ); break;
-            case 3: notifyError("First name contains special symbols. Enter a valid first name"); statusCheck=0; break;
-            case 4: notifyError("Please enter candidate's first name"); statusCheck=0; break;
+            case 0: notifyErrorWithPrompt($("#candidateFirstName"), "First name contains number. Please Enter a valid first Name"); statusCheck=0; break;
+            case 2: notifyErrorWithPrompt($("#candidateFirstName"), "First Name cannot be blank spaces. Enter a valid first name"); statusCheck=0; break;
+            case 3: notifyErrorWithPrompt($("#candidateFirstName"), "First name contains special symbols. Enter a valid first name"); statusCheck=0; break;
+            case 4: notifyErrorWithPrompt($("#candidateFirstName"), "Please enter candidate's first name"); statusCheck=0; break;
         }
         if(lastName != "" || lastName != undefined){
             var lastNameCheck = validateName(lastName);
@@ -821,10 +817,10 @@ $(function() {
             notifyErrorWithPrompt($("#candidateMobile"), "Enter 10 digit mobile number");
             statusCheck=0;
         }  else if(jobSelected == "") {
-            notifyErrorWithPrompt($("#candidateJobPrefField"), "Please Enter the Jobs you are Interested");
+            notifyErrorWithPrompt($("#candidateJobPrefField"), "Please select your candidate's interested jobs");
             statusCheck=0;
         } else if(selectedHomeLocality == "") {
-            notifyErrorWithPrompt($("#candidateHomeLocalityField"), "Please Enter candidate Home Locality");
+            notifyErrorWithPrompt($("#candidateHomeLocalityField"), "Please Enter candidate's Home Locality");
             statusCheck=0;
         } else if(selectedTimeShift == -1){
             notifyErrorWithPrompt($("#candidateTimeShift"), "Please select Preferred Work Shift");
