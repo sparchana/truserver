@@ -258,7 +258,7 @@ public class CandidateService
             if(request.getCandidateMobile() != null){
                 // If a lead already exists for this candiate, update its status to 'WON'. If not create a new lead
                 // with status 'WON'
-                Lead lead = createOrUpdateConvertedLead(request.getCandidateFirstName() +" " + request.getCandidateSecondName(), request.getCandidateMobile(),
+                Lead lead = createOrUpdateConvertedLead(request.getCandidateFirstName() + " " + request.getCandidateSecondName(), request.getCandidateMobile(),
                         request.getLeadSource(), channelType, LeadService.LeadType.CANDIDATE);
                 Logger.info("Lead : " + lead.getLeadId() + " created or updated for candidate with mobile: "
                         + request.getCandidateMobile());

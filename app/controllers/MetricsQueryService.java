@@ -5,6 +5,7 @@ import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
 import com.avaje.ebean.SqlQuery;
 import com.avaje.ebean.SqlRow;
+import controllers.businessLogic.InteractionService;
 import models.entity.Developer;
 import models.entity.Static.LeadSource;
 import org.apache.commons.lang3.time.DateUtils;
@@ -161,6 +162,7 @@ public class MetricsQueryService
         Integer websiteLeadsCount = 0;
         Integer knowlarityLeadsCount = 0;
         Integer supportLeadsCount = 0;
+        Integer androidLeadsCount = 0;
 
         while (leadResultsItr.hasNext()) {
             SqlRow leadRow = leadResultsItr.next();
@@ -173,15 +175,19 @@ public class MetricsQueryService
             else if (leadRow.get("leadchannel").equals(ServerConstants.LEAD_CHANNEL_SUPPORT)) {
                 supportLeadsCount = leadRow.getInteger("count(*)");
             }
+            else if (leadRow.get("leadchannel").equals(ServerConstants.LEAD_CHANNEL_ANDROID)) {
+                androidLeadsCount = leadRow.getInteger("count(*)");
+            }
         }
 
-        Integer totalLeads = websiteLeadsCount + knowlarityLeadsCount + supportLeadsCount;
+        Integer totalLeads = websiteLeadsCount + knowlarityLeadsCount + supportLeadsCount + androidLeadsCount;
 
         Map<String, Object> headerToValueMap = indexToHeaderToValueMap.get(index);
 
         headerToValueMap.put(MetricsConstants.METRIC_HEADER_TOTAL_LEADS, totalLeads);
         headerToValueMap.put(MetricsConstants.METRIC_HEADER_WEBSITE_LEADS, websiteLeadsCount);
         headerToValueMap.put(MetricsConstants.METRIC_HEADER_KNOWLARITY_LEADS, knowlarityLeadsCount);
+        headerToValueMap.put(MetricsConstants.METRIC_HEADER_ANDROID_LEADS, androidLeadsCount);
 
         indexToHeaderToValueMap.put(index, headerToValueMap);
 
@@ -226,6 +232,8 @@ public class MetricsQueryService
 
         Integer websiteSignupsCount = 0;
         Integer supportSignupsCount = 0;
+        Integer androidSignupsCount = 0;
+
         Integer totalSignUpsCount;
 
         while (signupResultsItr.hasNext()) {
@@ -233,18 +241,22 @@ public class MetricsQueryService
             if (signupRow.get("createdby").equals(ServerConstants.INTERACTION_CREATED_SELF)) {
                 websiteSignupsCount = signupRow.getInteger("count(distinct(interaction.objectauuid))");
             }
+            else if (signupRow.get("createdby").equals(InteractionService.InteractionChannelType.SELF_ANDROID.toString())) {
+                androidSignupsCount += signupRow.getInteger("count(distinct(interaction.objectauuid))");
+            }
             else {
                 supportSignupsCount += signupRow.getInteger("count(distinct(interaction.objectauuid))");
             }
         }
 
-        totalSignUpsCount = websiteSignupsCount + supportSignupsCount;
+        totalSignUpsCount = websiteSignupsCount + supportSignupsCount + androidSignupsCount;
 
         Map<String, Object> headerToValueMap = indexToHeaderToValueMap.get(index);
 
         headerToValueMap.put(MetricsConstants.METRIC_HEADER_TOTAL_CANDIDATES, totalSignUpsCount);
         headerToValueMap.put(MetricsConstants.METRIC_HEADER_WEBSITE_CANDIDATES, websiteSignupsCount);
         headerToValueMap.put(MetricsConstants.METRIC_HEADER_SUPPORT_CANDIDATES, supportSignupsCount);
+        headerToValueMap.put(MetricsConstants.METRIC_HEADER_ANDROID_CANDIDATES, androidSignupsCount);
 
         indexToHeaderToValueMap.put(index, headerToValueMap);
 
@@ -640,12 +652,13 @@ public class MetricsQueryService
     {
         // Build the query string
         StringBuilder activeCandidatesQueryBuilder =
-                new StringBuilder("select result, creationtimestamp, candidatename, candidatemobile, candidateid, localityname, candidate.candidatecreatetimestamp " +
+                new StringBuilder("select result, createdby, creationtimestamp, candidatename, candidatemobile, candidateid, localityname, candidate.candidatecreatetimestamp " +
                         " from interaction join candidate " +
                         " on interaction.objectauuid = candidate.candidateuuid " +
                         " left join locality " +
                         " on locality.localityid = candidate.candidatehomelocality " +
-                        " where createdby = '" + ServerConstants.INTERACTION_CREATED_SELF + "' ");
+                        " where createdby in ('" + ServerConstants.INTERACTION_CREATED_SELF + "','" +
+                        InteractionService.InteractionChannelType.SELF_ANDROID.toString() +"') ");
 
         if (metricDate != null) {
             activeCandidatesQueryBuilder.append("and creationtimestamp >= '" + metricDate + "' ");
@@ -685,6 +698,7 @@ public class MetricsQueryService
 
                 SqlRow activeCandidateRow = activeCandidatessResultsItr.next();
                 headerToValueMap.put("Activity", (String) activeCandidateRow.get("result"));
+                headerToValueMap.put("Channel", (String) activeCandidateRow.get("createdby"));
                 headerToValueMap.put("Candidate Name", (String) activeCandidateRow.get("candidatename"));
                 headerToValueMap.put("Candidate Mobile", (String) activeCandidateRow.get("candidatemobile"));
                 headerToValueMap.put("Candidate ID", (Long) activeCandidateRow.get("candidateid"));
