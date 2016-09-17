@@ -11,11 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import controllers.businessLogic.*;
 import controllers.security.SecuredUser;
-import models.entity.Candidate;
-import models.entity.Interaction;
-import models.entity.Lead;
+import models.entity.*;
 import models.entity.OM.PartnerToCandidate;
-import models.entity.Partner;
 import models.entity.Static.PartnerType;
 import play.Logger;
 import play.mvc.Result;
@@ -236,6 +233,13 @@ public class PartnerController {
                         response.setCandidateName(partnerToCandidate.getCandidate().getCandidateFirstName() + " " + partnerToCandidate.getCandidate().getCandidateLastName());
                     }
                 }
+                Auth auth = Auth.find.where().eq("candidateId", partnerToCandidate.getCandidate().getCandidateId()).findUnique();
+                if(auth != null){
+                    response.setCandidateStatus(auth.getAuthStatus());
+                    if(auth.getAuthStatus() == ServerConstants.CANDIDATE_STATUS_VERIFIED){
+                        response.setCandidateActiveDeactive(partnerToCandidate.getCandidate().getCandidateprofilestatus().getProfileStatusId());
+                    }
+                }
                 response.setCandidateMobile(partnerToCandidate.getCandidate().getCandidateMobile());
                 responses.add(response);
             }
@@ -278,5 +282,17 @@ public class PartnerController {
         session().clear();
         Logger.info("Partner Logged Out");
         return ok(views.html.Partner.partner_index.render());
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result sendCandidateVerificationSMS(String mobile) {
+        Logger.info("trying to send verification SMS to mobile no: " + FormValidator.convertToIndianMobileFormat(mobile));
+        Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(mobile));
+        if(existingCandidate != null){
+            PartnerService.sendCandidateVerificationSms(existingCandidate);
+            return ok("1");
+        }else{
+            return ok("0");
+        }
     }
 }

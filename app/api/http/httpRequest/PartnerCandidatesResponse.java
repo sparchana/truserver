@@ -9,6 +9,8 @@ public class PartnerCandidatesResponse {
     public String candidateName;
     public String candidateMobile;
     public String creationTimestamp;
+    public int candidateStatus;
+    public int candidateActiveDeactive;
 
     public long getLeadId() {
         return leadId;
@@ -48,5 +50,21 @@ public class PartnerCandidatesResponse {
 
     public void setCreationTimestamp(String creationTimestamp) {
         this.creationTimestamp = creationTimestamp;
+    }
+
+    public int getCandidateStatus() {
+        return candidateStatus;
+    }
+
+    public void setCandidateStatus(int candidateStatus) {
+        this.candidateStatus = candidateStatus;
+    }
+
+    public int getCandidateActiveDeactive() {
+        return candidateActiveDeactive;
+    }
+
+    public void setCandidateActiveDeactive(int candidateActiveDeactive) {
+        this.candidateActiveDeactive = candidateActiveDeactive;
     }
 }

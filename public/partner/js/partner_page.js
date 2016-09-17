@@ -200,6 +200,31 @@ function viewCandidate(leadId) {
 /*    window.location = "/partner/candidate/" + leadId;*/
 }
 
+function verifyCandidate(mobile) {
+    notifyWarning("Sending verification SMS to candidate with mobile: " + ("+" + mobile));
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/sendCandidateVerificationSMS/" + ("+" + mobile),
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataVerificationMsgCheck
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function processDataVerificationMsgCheck(returnedData) {
+    if(returnedData == '1'){
+        notifySuccess("Verification SMS sent!")
+    } else{
+        notifyError("Verification SMS sending failed!")
+    }
+}
+
 function renderCandidateTable() {
     try {
         var table = $('table#leadTable').DataTable({
@@ -213,7 +238,25 @@ function renderCandidateTable() {
                             'candidateName' : candidate.candidateName,
                             'candidateMobile' :  candidate.candidateMobile,
                             'candidateCreationTimestamp' : candidate.creationTimestamp,
-                            'btnView' : '<input type="submit" value="View" style="width:100%" onclick="viewCandidate('+candidate.leadId+')" id="viewCandidateBtn" class="btn btn-primary">'
+                            'candidateStatus' : function() {
+                                if (candidate.candidateStatus != null){
+                                    if(candidate.candidateStatus == "1"){
+                                        var statusVal;
+                                        if(candidate.candidateActiveDeactive == '1'){
+                                            statusVal = "Active";
+                                            return '<img src=\"/assets/partner/img/verified.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font color="#00b334" size=\"2\">&nbsp;&nbsp;' + statusVal +'</font></div>';
+                                        } else{
+                                            statusVal = "Deactivated";
+                                            return '<img src=\"/assets/partner/img/not_verified.svg\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font size=\"2\">&nbsp;&nbsp;' + statusVal +'</font></div>';
+                                        }
+                                    } else{
+                                        return '<img src=\"/assets/partner/img/not_verified.svg\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; cursor: hand\" onclick=\"verifyCandidate('+ candidate.candidateMobile+')\"><font size=\"2\">&nbsp;&nbsp;Verify via SMS</font></div>';
+                                    }
+                                } else {
+                                    return "-";
+                                }
+                            },
+                            'btnView' : '<input type="submit" value="View/Edit" style="width:100%" onclick="viewCandidate('+candidate.leadId+')" id="viewCandidateBtn" class="btn btn-primary">'
                         })
                     });
                     return returned_data;
@@ -225,6 +268,7 @@ function renderCandidateTable() {
                 { "data": "candidateName" },
                 { "data": "candidateMobile" },
                 { "data": "candidateCreationTimestamp" },
+                { "data": "candidateStatus" },
                 { "data": "btnView" }
             ],
             rowReorder: {
@@ -237,4 +281,40 @@ function renderCandidateTable() {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+}
+
+function notifySuccess(msg){
+    $.notify({
+        message: msg,
+        animate: {
+            enter: 'animated lightSpeedIn',
+            exit: 'animated lightSpeedOut'
+        }
+    },{
+        type: 'success'
+    });
+}
+
+function notifyError(msg){
+    $.notify({
+        message: msg,
+        animate: {
+            enter: 'animated lightSpeedIn',
+            exit: 'animated lightSpeedOut'
+        }
+    },{
+        type: 'danger'
+    });
+}
+
+function notifyWarning(msg){
+    $.notify({
+        message: msg,
+        animate: {
+            enter: 'animated lightSpeedIn',
+            exit: 'animated lightSpeedOut'
+        }
+    },{
+        type: 'warning'
+    });
 }

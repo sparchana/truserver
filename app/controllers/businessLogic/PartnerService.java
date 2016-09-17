@@ -367,4 +367,14 @@ public class PartnerService {
         }
         return candidateSignUpResponse;
     }
+
+    public static void sendCandidateVerificationSms(Candidate existingCandidate) {
+        Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
+        if(existingAuth != null){
+            String dummyPassword = String.valueOf(Util.randomLong());
+            AuthService.setNewPassword(existingAuth, dummyPassword);
+            existingAuth.update();
+            SmsUtil.sendVerificationSms(existingCandidate.getCandidateFirstName(), existingCandidate.getCandidateMobile(), dummyPassword);
+        }
+    }
 }
