@@ -58,6 +58,7 @@ input::-webkit-inner-spin-button {
 }
 
 body{
+    background: #fcfcfc;
     font-family: Lato;
 }
 .nav > li > a:hover, .nav > li > a:focus{
@@ -111,6 +112,11 @@ option:checked {
     color : #000;
 }
 
+.custom_container{
+    margin-left: 14%;
+    margin-right: 14%;
+}
+
 #sectionHeader{
     background: linear-gradient(
             rgba(24, 26, 45, 0.6),
@@ -127,14 +133,14 @@ option:checked {
     background: rgba(253, 248, 216, 0.76);
     font-weight: bold;
     color: #402005;
-    padding: 2% 4% 2% 4%;
+    padding: 2% 0 2% 0;
     text-align: center;
     margin-top: -2%;
 }
 #sectionPartnerEligibility{
     font-weight: bold;
     color: #402005;
-    padding: 0 4% 4% 4%;
+    padding: 0 4% 8% 4%;
     text-align: center;
     margin-top: -9%;
 }
@@ -178,7 +184,7 @@ option:checked {
     background: #ffffff;
     padding: 4px;
     margin-left: 75%;
-    margin-top: -11%;
+    margin-top: -13%;
 }
 
 #registerBtnSubmit{
@@ -191,6 +197,26 @@ option:checked {
     -o-transition:      background-color 0.2s;
     transition:         background-color 0.2s;
 
+}
+
+.registerPartnerBtnSubmit{
+    border: none;
+    background-color: #0065a4;
+    color: white;
+    -webkit-transition: background-color 0.2s;
+    -moz-transition:    background-color 0.2s;
+    -ms-transition:     background-color 0.2s;
+    -o-transition:      background-color 0.2s;
+    transition:         background-color 0.2s;
+
+}
+
+.pagination>.active>a, .pagination>.active>span, .pagination>.active>a:hover, .pagination>.active>span:hover, .pagination>.active>a:focus, .pagination>.active>span:focus {
+    z-index: 2;
+    color: #fff;
+    background-color: #0065a4;
+    border-color: #0065a4;
+    cursor: default;
 }
 
 #forBtn{
@@ -226,8 +252,65 @@ option:checked {
 
 }
 
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    display: initial;
+    border: transparent;
+    background: transparent;
+}
+
+.dataTables_wrapper:hover .dataTables_paginate:hover .paginate_button:hover{
+    display: initial;
+    background: transparent;
+    border: transparent;
+    color: black;
+}
+
+.pagination>li>a, .pagination>li>span, .pagination>li>a:hover, .pagination>li>span:hover  {
+    position: relative;
+    float: left;
+    padding: 6px 12px;
+    line-height: 1.42857143;
+    text-decoration: none;
+    color: #004d81;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    margin-left: -1px;
+}
 
 #registerBtnSubmit:hover{
+    border: none;
+    background-color: #004d81;
+    color: white;
+    -webkit-transition: background-color 0.2s;
+    -moz-transition:    background-color 0.2s;
+    -ms-transition:     background-color 0.2s;
+    -o-transition:      background-color 0.2s;
+    transition:         background-color 0.2s;
+}
+
+.registerPartnerBtnSubmit:hover{
+    border: none;
+    background-color: #004d81;
+    color: white;
+    -webkit-transition: background-color 0.2s;
+    -moz-transition:    background-color 0.2s;
+    -ms-transition:     background-color 0.2s;
+    -o-transition:      background-color 0.2s;
+    transition:         background-color 0.2s;
+}
+
+#viewCandidateBtn{
+    border: none;
+    background-color: #0064a8;
+    color: white;
+    -webkit-transition: background-color 0.2s;
+    -moz-transition:    background-color 0.2s;
+    -ms-transition:     background-color 0.2s;
+    -o-transition:      background-color 0.2s;
+    transition:         background-color 0.2s;
+}
+
+#viewCandidateBtn:hover{
     border: none;
     background-color: #004d81;
     color: white;
@@ -243,7 +326,7 @@ option:checked {
     background: #002144;
 }
 .sectionFive {
-    padding: 4% 8%;
+    padding: 2% 0 2% 0;
     text-align: center;
     color: #ffffff;
 }
@@ -313,7 +396,7 @@ option:checked {
     position: absolute;
     left: 50%;
     top: 50%;
-    background: url(../../img/main_loader.svg) no-repeat center;
+    background: url(../img/main_loader.svg) no-repeat center;
     margin: -100px 0 0 -100px;
 }
 
@@ -325,9 +408,24 @@ a:hover{
     cursor: hand;
 }
 
+#jobRoleNameFooter{
+    padding: 1%;
+    color: #ffffff;
+}
+
+#jobRoleNameFooter:hover{
+    cursor:pointer;
+    text-decoration: none;
+    color: #82a1b0;
+}
+
+
 #jobRole{
+    padding-top: 20%;
+    padding-bottom: 20%;
     border-right: 1px solid #f4eef2;
     border-bottom: 1px solid #f4eef2;
+    background: #ffffff;
 }
 #jobRoleName{
     padding: 1%;
@@ -367,8 +465,34 @@ a:hover{
     font-size: 14px;
 }
 
+.btn-custom-check, .btn-check {
+    background: #ececec;
+    border: 1px solid #e0e0e0;
+    width: 104px;
+}
+
+.btn-custom-check.active {
+    background: #286ab6;
+    border: 1px solid #2870a3;
+    color: #ffffff;
+}
 
 @media screen and (max-width: 768px) {
+    #viewCandidateBtn{
+        padding: 8px;
+        width: auto;
+        margin: 8px;
+    }
+    #eduConfirm{
+        margin-top: 24%;
+    }
+    .createCandidateLastName{
+        margin-top: 8px;
+    }
+    #languageName{
+        margin-top: 6px;
+        font-size: 11px;
+    }
     .leadBox {
         width: 84%;
         margin-right: 8%;
@@ -388,6 +512,10 @@ a:hover{
         padding: 4% 1% 1% 1%;
         text-align: center;
     }
+    .custom_container{
+        margin: 0;
+    }
+
 
     #partnerHeaderText{
         margin-top: -48px;
@@ -445,4 +573,15 @@ a:hover{
     #jobRoleName{
         font-size: 11px;
     }
+    .educationBtn {
+        width: 66px;
+        padding: 8px 2px;
+        font-size: 9px;
+    }
+    #jobRoleNameFooter{
+        font-size: 12px;
+        color: #ffffff;
+    }
 }
+
+

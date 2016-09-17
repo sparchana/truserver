@@ -80,15 +80,22 @@ POST        /signUp                                                       contro
 
 # partner routes
 #~~~~~~~~~~~~~~~~~~~~
-
+GET         /logoutPartner                                                controllers.PartnerController.logoutPartner()
+GET         /getMyCandidates                                              controllers.PartnerController.getMyCandidates()
 GET         /checkPartnerSession                                          controllers.PartnerController.checkPartnerSession()
 GET         /partner                                                      controllers.PartnerController.partnerIndex()
 GET         /partner/home                                                 controllers.PartnerController.partnerHome()
 GET         /partner/editProfile                                          controllers.PartnerController.partnerEditProfile()
+GET         /partner/candidate/:id                                        controllers.PartnerController.partnerCreateCandidate(id : Long)
+GET         /partner/myCandidates                                         controllers.PartnerController.partnerCandidates()
 GET         /partnerNavBar                                                controllers.PartnerController.renderPagePartnerNavBar()
 GET         /getPartnerProfileInfo                                        controllers.PartnerController.getPartnerProfileInfo()
 GET         /partnerNavBarLoggedIn                                        controllers.PartnerController.renderPagePartnerLoggedInNavbar()
+GET         /partner/ifExists/:mobile                                     controllers.Application.ifCandidateExists(mobile: String)
 
+POST        /getPartnerCandidate/:id                                      controllers.PartnerController.getPartnerCandidate(id : Long)
+POST        /sendCandidateVerificationSMS/:mobile                         controllers.PartnerController.sendCandidateVerificationSMS(mobile : String)
+POST        /partnerCreateCandidateSubmit                                 controllers.PartnerController.partnerCreateCandidateSubmit()
 POST        /findPartnerAndSendOtp                                        controllers.PartnerController.findPartnerAndSendOtp()
 POST        /getAllPartnerType                                            controllers.PartnerController.getAllPartnerType()
 POST        /partnerLoginSubmit                                           controllers.PartnerController.loginSubmit()
@@ -115,6 +122,7 @@ GET         /jobs/:rolePara/:idPara                                       contro
 GET         /                                                             controllers.Application.index()
 GET         /getAllSkills/:id                                             controllers.Application.getAllSkills(id : String)
 GET         /getAllJobPosts                                               controllers.Application.getAllJobPosts()
+GET         /checkNavBar                                                  controllers.Application.checkNavBar()
 
 POST        /getAllDegree                                                 controllers.Application.getAllDegree()
 POST        /getAllEducation                                              controllers.Application.getAllEducation()

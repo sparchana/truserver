@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+  <head>
+    <meta charset="UTF-8">
+    <title>Recruiter Details - Support | Trujobs.in</title>
+    <link rel="stylesheet" href="/assets/support/css/material.indigo-pink.min.css">
+
+    <link rel="stylesheet" href="/assets/support/css/bootstrap.min.css">
+
+    <script type="text/javascript" src="/assets/support/js/jquery-1.12.0.min.js"></script>
+    <link rel="stylesheet" href="/assets/common/css/token-input.css" type="text/css" />
+    <link rel="stylesheet" href="/assets/common/css/token-input-facebook.css" type="text/css" />
+
+    <link rel="stylesheet" href="/assets/support/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css">
+    <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/dashboard.css">
+
+    <link rel="stylesheet" href="/assets/support/css/bootstrap-datetimepicker.min.css">
+    <script type="text/javascript" src="/assets/support/js/Moment.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lato" />
+    <link rel="stylesheet" href="/assets/support/css/nprogress.css">
+    <link rel="stylesheet" href="/assets/support/css/animate.css">
+    <script type="text/javascript" src="/assets/support/js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
+
+    <script type="text/javascript" src="/assets/support/js/recruiter_details.js"></script>
+    <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
+    <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css">
+  </head>
+
+  <body style="font-size: 13px;">
+    <div class="container">
+      <h2>
+        Recruiter Section
+        <a href="/support">
+          <button class="btn" style="align-items: flex-end">Support Home</button>
+        </a>
+        <a href="/logout">
+          <button class="btn btn-danger" style="align-items: flex-end">Logout</button>
+        </a>
+      </h2>
+      <hr>
+
+      <div id="recruiterSection" style="width: 68%">
+        <form id="recruiter_form">
+          <div class="row">
+            <div class="col-sm-3"><h5>Recruiter Name:</h5></div>
+            <div class="col-sm-9">
+              <input id="recruiterName" name="recruiterName" placeholder="Recruiter Name" type="text" class="form-control input-md" >
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Recruiter Mobile:</h5></div>
+            <div class="col-sm-9">
+              <input id="recruiterMobile" name="recruiterMobile" maxlength="10" placeholder="Recruiter Mobile" type="text" class="form-control input-md" disabled>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Recruiter Landline (optional) :</h5></div>
+            <div class="col-sm-9">
+              <input id="recruiterLandline" name="recruiterLandline" placeholder="Recruiter Landline" type="text" class="form-control input-md" >
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Recruiter Email:</h5></div>
+            <div class="col-sm-9">
+              <input id="recruiterEmail" name="recruiterEmail" placeholder="Recruiter Email" type="text" class="form-control input-md" >
+            </div>
+          </div>
+
+          <div class="row" style="margin-top: 4px">
+            <div class="col-sm-3"><h5>Recruiter's Company:</h5></div>
+            <div class="col-sm-9">
+              <select id="recruiterCompany" class="selectDropdown" ></select>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <button class="btn btn-default" onclick="saveRecruiter()">Save</button>
+      <br>
+    </div>
+      <!-- Javascript import -->
+    <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+    <script type="text/javascript" src="/assets/support/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
+    <script type="text/javascript" src="/assets/support/js/bootstrap-datetimepicker.min.js"></script>
+  </body>
+</html>

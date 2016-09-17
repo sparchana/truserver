@@ -77,6 +77,21 @@ public class Interaction extends Model {
         this.creationTimestamp = new Timestamp(System.currentTimeMillis());
     }
 
+    // Two object constructor with custom params
+    public Interaction(String objectAUUId, int objectAType, String objectBUUId, int objectBType, int interactionType, String interactionNote, String result, String createdBy){
+        // no need to set creationTimestamp, It is set By - default
+        this.objectAUUId = objectAUUId;
+        this.objectAType = objectAType;
+        this.objectBUUId = objectBUUId;
+        this.objectBType = objectBType;
+        this.note = interactionNote;
+        this.interactionType = interactionType;
+        this.result = result;
+        this.createdBy = (createdBy == null) ? ServerConstants.INTERACTION_CREATED_ERROR : createdBy;
+        this.creationTimestamp = new Timestamp(System.currentTimeMillis());
+    }
+
+
     public static void addInteraction(Interaction interaction){
         interaction.save();
     }

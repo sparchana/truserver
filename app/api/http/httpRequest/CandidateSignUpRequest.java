@@ -17,9 +17,18 @@ public class CandidateSignUpRequest{
     protected String candidateThirdMobile;
     protected List<Integer> candidateLocality;
     protected List<Integer> candidateJobPref;
+    public Integer candidateHomeLocality;
 
     protected String candidatePassword;
     protected String candidateAuthMobile;
+
+    public Integer getCandidateHomeLocality() {
+        return candidateHomeLocality;
+    }
+
+    public void setCandidateHomeLocality(Integer candidateHomeLocality) {
+        this.candidateHomeLocality = candidateHomeLocality;
+    }
 
     public void setCandidateFirstName(String candidateFirstName) {
         this.candidateFirstName = candidateFirstName;
