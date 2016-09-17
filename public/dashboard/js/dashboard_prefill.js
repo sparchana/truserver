@@ -462,7 +462,7 @@ function saveCandidateBasicProfile(){
         notifyError("Please Enter your Home location");
         statusCheck=0;
     } else if(localitySelected == "") {
-        notifyError("Please Enter your Job Locality preference");
+        notifyError("Please Enter your Locality preference");
         statusCheck=0;
     } else if(jobSelected == "") {
         notifyError("Please Enter the Jobs you are Interested");
