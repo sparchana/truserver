@@ -25,7 +25,7 @@ $(document).ready(function(){
             type: "POST",
             url: "/getAllHotJobPosts",
             data: false,
-            async: false,
+            async: true,
             contentType: false,
             processData: false,
             success: processDataAllJobPosts
@@ -49,7 +49,7 @@ $(document).ready(function(){
             type: "GET",
             url: "/getCandidateInfoDashboard",
             data: false,
-            async: false,
+            async: true,
             contentType: false,
             processData: false,
             success: processDataAndFillMinProfile
@@ -408,19 +408,8 @@ function processDataAndFillMinProfile(returnedData) {
     }
 
     try {
-        var localities = "";
-        count = 0;
-        var localityPref = returnedData.localityPreferenceList;
-        if(localityPref.length > 0){
-            localityPref.forEach(function (individualLocality){
-                count++;
-                var name = individualLocality.locality.localityName;
-                localities += name;
-                if(count < Object.keys(localityPref).length){
-                    localities += ", ";
-                }
-            });
-            document.getElementById("userLocality").innerHTML = localities;
+        if(returnedData.locality != null){
+            document.getElementById("userLocality").innerHTML = returnedData.locality.localityName;
         }
     } catch(err){
         console.log("getCandidateLocalityPref error"+err);

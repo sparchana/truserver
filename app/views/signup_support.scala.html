@@ -189,18 +189,18 @@
                         </div>
 
                         <div class="row" style="margin-top: 4px">
-                            <div class="col-sm-3"><h5>Locality Preference:</h5></div>
+                            <div class="col-sm-3"><h5>Current Location:</h5></div>
                             <div class="col-sm-9">
-                                <input type="text" id="candidateLocalityPref" placeholder="Where do you want to work?">
+                                <input type="text" id="candidateHomeLocality">
                                 <script type="text/javascript">
                                         $(document).ready(function() {
-                                            $("#candidateLocalityPref").tokenInput(getLocality(), {
+                                            $("#candidateHomeLocality").tokenInput(getLocality(), {
                                                 theme: "facebook",
-                                                placeholder: "Where do you want to work?",
-                                                hintText: "Start typing Area (eg. BTM Layout, Bellandur..)",
+                                                placeholder: "Where do you Live?",
+                                                hintText: "Start typing jobs (eg. BTM Layout, Bellandur..)",
                                                 minChars: 0,
-                                                tokenLimit: 3,
-                                                prePopulate: localityPrefArray,
+                                                prePopulate: currentLocationArray,
+                                                tokenLimit: 1,
                                                 preventDuplicates: true
                                             });
                                         });
@@ -233,26 +233,6 @@
                                 <div class="col-sm-9" style="margin-top: 6px;">
                                     <input type="radio" name="gender" id="genderMale" value="0">&nbsp;Male&nbsp;&nbsp;
                                     <input type="radio" name="gender" id="genderFemale" value="1">&nbsp;Female
-                                </div>
-                            </div>
-
-                            <div class="row" style="margin-top: 4px">
-                                <div class="col-sm-3"><h5>Current Location:</h5></div>
-                                <div class="col-sm-9">
-                                    <input type="text" id="candidateHomeLocality">
-                                    <script type="text/javascript">
-                                            $(document).ready(function() {
-                                                $("#candidateHomeLocality").tokenInput(getLocality(), {
-                                                    theme: "facebook",
-                                                    placeholder: "Where do you Live?",
-                                                    hintText: "Start typing jobs (eg. BTM Layout, Bellandur..)",
-                                                    minChars: 0,
-                                                    prePopulate: currentLocationArray,
-                                                    tokenLimit: 1,
-                                                    preventDuplicates: true
-                                                });
-                                            });
-                                    </script>
                                 </div>
                             </div>
 

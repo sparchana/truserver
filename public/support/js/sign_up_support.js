@@ -1345,7 +1345,7 @@ function saveProfileForm() {
     }
     var res = validateMobile(phone);
 
-    var localitySelected = $('#candidateLocalityPref').val();
+    var localitySelected = $('#candidateHomeLocality').val();
     var jobSelected = $('#candidateJobPref').val();
 
     var selectedDob = $('#candidateDob').val();
@@ -1731,7 +1731,7 @@ function saveProfileForm() {
             var candidatePreferredLocality = [];
 
             var jobPref = $('#candidateJobPref').val().split(",");
-            var localityPref = $('#candidateLocalityPref').val().split(",");
+            var localityPref = $('#candidateHomeLocality').val().split(",");
 
             var i;
 

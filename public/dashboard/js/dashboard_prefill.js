@@ -238,7 +238,6 @@ function prefillSkillProfile(){
         prefillLanguageTable(candidateInformation.languageKnownList);
     }
 
-    console.log(candidateInformation.candidateSkillList);
     if(candidateInformation.candidateSkillList != null) {
         var skillList = candidateInformation.candidateSkillList;
         skillList.forEach(function (skillElement) {
@@ -495,7 +494,7 @@ function saveCandidateBasicProfile(){
         var candidatePreferredLocality = [];
 
         var jobPref = $('#candidateJobPref').val().split(",");
-        var localityPref = $('#candidateLocalityPref').val().split(",");
+        var localityPref = $('#candidateHomeLocality').val().split(",");
 
         var i;
         for(i=0;i<jobPref.length; i++){

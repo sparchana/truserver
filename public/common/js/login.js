@@ -34,7 +34,7 @@ function processDataLogin(returnedData) {
             $("#myLoginModal").modal("hide");
             $('#myRegistrationModal').modal('show');
             $('#form_otp').show();
-            resetPassword(candidateMobile);
+            requestOtp(candidateMobile);
         } else{
             postLogin(returnedData);
         }
