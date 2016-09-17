@@ -336,7 +336,7 @@ function processDataForHotJobPost(returnedData) {
         if (returnedData.company.companyWebsite != null && returnedData.company.companyWebsite != "") {
             $("#postedJobCompanyWebsite").html(returnedData.company.companyWebsite);
         }
-        if (returnedData.company.companyDescription != "" ) {
+        if (returnedData.company.companyDescription != null && returnedData.company.companyDescription != "") {
             $("#postedJobCompanyDescriotion").html(returnedData.company.companyDescription);
         }
         if (returnedData.company.compType != null ) {
