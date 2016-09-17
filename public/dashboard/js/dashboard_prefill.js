@@ -489,7 +489,6 @@ function saveCandidateBasicProfile(){
         var candidatePreferredJob = [];
 
         var jobPref = $('#candidateJobPref').val().split(",");
-        var localityPref = $('#candidateHomeLocality').val().split(",");
 
         var i;
         for(i=0;i<jobPref.length; i++){

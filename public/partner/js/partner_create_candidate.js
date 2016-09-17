@@ -701,6 +701,7 @@ function populateLanguages(l, lId) {
             var cell2 = row.insertCell(1);
             var cell3 = row.insertCell(2);
             var cell4 = row.insertCell(3);
+            cell1.style.width = '262px';
 
             cell1.innerHTML = "<div id=\"languageName\">" + l[i] + "</div>";
             cell2.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check educationBtn\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"u\" value=0 >Understand</label></div>";
