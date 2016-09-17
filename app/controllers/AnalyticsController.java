@@ -66,7 +66,7 @@ public class AnalyticsController extends Controller {
                 }
 
                 Map<String, Map<Date, Map<Integer, Map<String, Object>>>> mapOfHeaderMap =
-                        MetricsQueryService.queryAndUpdateMetrics(headerList, sd, ed, true);
+                        MetricsQueryService.queryAndUpdateMetrics(headerList, sd, ed, shouldUploadToGs);
                 //Logger.info("Metrics Query JSON Result:" + toJson(mapOfHeaderMap));
                 return ok(toJson(mapOfHeaderMap));
         }
