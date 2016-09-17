@@ -508,3 +508,8 @@ function resetPassword() {
     $('#form_login_candidate').hide();
     $('#form_forgot_password').show();
 }
+
+function homeLinkPNF() {
+    window.location.href = "/";
+
+}
