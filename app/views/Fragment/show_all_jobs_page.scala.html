@@ -1,0 +1,283 @@
+    <html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Trujobs - Best Jobs for Freshers and Experienced Candidates </title>
+
+        <meta name="keywords" content="driving jobs, fresher jobs, jobs for freshers, job search sites, job posting, sales jobs, beautician jobs,
+            medical transcription jobs, online job search, find jobs, receptionist jobs, admin jobs, office assistant jobs,
+            plumbing work, teacher job, online teaching jobs, jobs in schools, teacher vacancy, teacher recruitment, entry level jobs,
+            delivery boy jobs,call center jobs, BPO jobs, kpo jobs, job job job, data entry jobs, back office jobs,
+            receptionist jobs, beautician jobs, experienced jobs, jobs in Bangalore, cashier jobs, entry level jobs,
+            plumber jobs, electrician jobs, job search, accountant jobs, job vacancy, bangalore vacancy">
+
+        <meta name="description" content="Search and apply for jobs online. Register for FREE and find best
+            fresher and experienced jobs.Give a missed call at 8880007799 for best jobs." />
+
+        <meta http-equiv="Cache-control" content="public">
+        <!-- Bootstrap Core CSS -->
+        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/show_jobs.css">
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css">
+
+        <script type="text/javascript" src="/assets/common/js/jquery.min_1_12_0.js"></script>
+        <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+        <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
+
+        <link rel="stylesheet" href="/assets/common/css/token-input-facebook.css" type="text/css" />
+        <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
+
+        <script>
+                $('html, body').css({
+                    'overflow': 'hidden',
+                    'height': '100%'
+                });
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                          (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-77156203-1', 'auto');
+              ga('send', 'pageview');
+
+            </script>
+    </head>
+    <body>
+
+    <div id="preloader">
+        <div id="loaderLogo">
+            <img id="leaderLogo" src="/assets/common/img/logo-color.gif" alt="TruJobs Logo" height="40px">
+        </div>
+        <div id="status">&nbsp;</div>
+    </div>
+
+            <!-- Nav start -->
+        <div id="nav_bar_inc"></div>
+        <script>
+            function processDataCheckNavBar(returnedData) {
+                if(returnedData == '1'){
+                    $('#nav_bar_inc').load('/navBarLoggedIn');
+                } else if(returnedData == '2'){
+                    $('#nav_bar_inc').load('/partnerNavBarLoggedIn');
+                } else {
+                    $('#nav_bar_inc').load('/navBar');
+                }
+            }
+
+            $(document).ready(function(){
+                try {
+                    $.ajax({
+                        type: "GET",
+                        url: "/checkNavBar",
+                        data: false,
+                        contentType: false,
+                        processData: false,
+                        success: processDataCheckNavBar
+                    });
+                } catch (exception) {
+                    console.log("exception occured!!" + exception);
+                }
+            });
+        </script>
+        <div class="container">
+            <div id="fixed-menu-shadow" style="padding-bottom: 12px; padding-top: 8px; display: none" >
+
+            </div>
+        </div>
+    <div id="mySignUpModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-body" id="model_size">
+                    <form id="form_signup_candidate_modal"  style="margin-top: 0%; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
+                        <h4 style="font-weight: bold"><center><font color="#0B4063">Sign Up to Apply Jobs</font></center></h4>
+                        <div class="row" id="firstNameLastName">
+                            <div class="col-sm-6" style="padding: 0 4px 0 16px">
+                                <input id="candidateFirstNameModal" placeholder="First name" type="text" maxLength="49" class="form-control input-md">
+                            </div>
+                            <div class="col-sm-6" style="padding: 0 16px 0 4px">
+                                <input id="candidateSecondNameModal" placeholder="Last name" type="text" maxLength="49" class="form-control input-md candidateSecondNameMain" >
+                            </div>
+                        </div>
+
+                        <input id="candidateMobileModal" style="margin-top: 8px" placeholder="Mobile No." name="candidateMobile" type="text" maxlength="10" class="form-control input-md" >
+
+                        <div style="margin-top: 8px">
+                            <input type="text" id="candidateJobPrefModal" placeholder="What jobs you are Interested in?">
+                            <script type="text/javascript">
+                                $(document).ready(function() {
+                                    $("#candidateJobPrefModal").tokenInput(getJob(), {
+                                        theme: "facebook",
+                                        placeholder: "Jobs Interested? (Max: 3)",
+                                        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                                        minChars: 0,
+                                        tokenLimit: 3,
+                                        zindex: 9999999,
+                                        preventDuplicates: true
+                                    });
+                                });
+                            </script>
+                        </div>
+
+                        <div style="margin-top: 8px">
+                            <input type="text" id="candidateLocalityModal" placeholder="What jobs you are Interested in?" style="margin-top: 4px">
+                            <script type="text/javascript">
+                                $(document).ready(function() {
+                                    $("#candidateLocalityModal").tokenInput(getLocality(), {
+                                        theme: "facebook",
+                                        placeholder: "Locality Interested?",
+                                        minChars: 3,
+                                        zindex: 9999999,
+                                        hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
+                                        preventDuplicates: true
+                                    });
+                                });
+                            </script>
+                        </div>
+
+                        <button type="submit" id="registerBtnSubmitModal" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
+                        <!-- Text input-->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+        <div id="sectionOne">
+            <div class="container hidden-xs">
+                <font color="white">
+                    <div class="row">
+                        <div class="col-sm-12" style="margin: 0; padding: 0">
+                            <img src="/assets/common/img/image6.png" style="display: inline-block; margin-left: -60px;" width="150px">
+                            <img src="/assets/common/img/image5.png" style="display: inline-block; margin-left: -60px" width="150px">
+                            <img src="/assets/common/img/image4.png" style="display: inline-block; margin-left: -60px" width="150px">
+                            <div style="display: inline-block; width: auto;">
+                                <h1 style="letter-spacing: 2px; text-align: left; margin: 10px;"><b><font size="5">Find Entry Level and Experienced Jobs </font></b></h1>
+                                <h2 style="letter-spacing: 2px; margin: 10px; text-align: left"><font size="5">Call 8880007799 to find jobs in top companies!</font></h2>
+                                <h4 style="letter-spacing: 2px; margin: 10px; text-align: left; display: inline-block; float: left">Download app from</h4>
+                                <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" target="_blank" style="padding-top: 2px; float: left">
+                                    <img src="/assets/common/img/download_btn.png" alt="PlayStore Logo" height="40px"></a>
+                            </div>
+                        </div>
+                    </div>
+                </font>
+            </div>
+        </div>
+            <!-- End of sectionOne -->
+
+        <div style="text-align: center">
+            <div class="errorMsgText" id="alreadyMsgCandidate" style="margin-top: 2%;display: none;">
+                <h5>User Already Exists! Please <a data-toggle="modal" data-target="#myLoginModal" style="cursor: hand; color: #888888">Login</a> to Continue</h5>
+                <br>
+            </div>
+        </div>
+
+    <!-- confirm job modal -->
+    <div class="modal fade" id="jobApplyConfirm" tabindex="-1" role="dialog" aria-labelledby="jobApplyConfirm">
+        <div class="modal-dialog" role="document" id="customModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Job Application Confirmation</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="confirmationMsg">
+                        <center>
+                            <img src="/assets/common/img/jobApply.png" width="48px">
+                        </center>
+                        <center>
+                            <h5>You are applying for <b><div style="display: inline-block" id="jobNameConfirmation"></div></b> job at <b><div style="display: inline-block" id="companyNameConfirmation"></div></b>.</h5>
+                            <h5>Please select the location where you can work:</h5>
+                            <select id="jobLocality" class="selectDropdown"></select>
+                            <button type="submit" onclick="confirmApply()" id="applyButton" class="jobApplyBtnModal" style="display : none; margin: 6px">Apply</button>
+                        </center>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- custom message modal -->
+    <div class="modal fade" id="messagePromptModal" tabindex="-1" role="dialog" aria-labelledby="messagePromptModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">TruJobs</h4>
+                </div>
+                <div class="modal-body">
+                    <center>
+                        <img id="customMsgIcon" width="48px">
+                        <div id="customMsg" style="padding: 16px"></div>
+                        <div id="customSubMsg" style="padding: 16px"></div>
+                    </center>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- start hot job -->
+
+    <div class="container" style="margin-top: 24px">
+        <div id="job_cards_inc"></div>
+    </div>
+
+    <font color="#000"></font>
+
+    <script>
+        $(document).ready(function(){
+          $('#job_cards_inc').load('/jobPostCardView');
+        });
+    </script>
+
+    <!--  Start Job Icons Box -->
+    <div class="sectionTwo" style="display: table; width: 100%" id="jobs">
+        <h3 id="jobVacancyHead">Click on Job Roles to View Jobs</h3>
+        <center>
+            <div class="materialDash"></div>
+        </center><br>
+
+    <div class="custom_container">
+        <div id="jobRoleGrid" style="width: auto"></div>
+    </div>
+
+    </div>
+    <!-- Start Footer-->
+    <div id="footer_inc"></div>
+    <script>
+        $(document).ready(function(){
+        $('#footer_inc').load('/footer');
+        });
+    </script>
+
+    <!-- Including Bootstrap -->
+    <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+    <script type="text/javascript" src="/assets/common/js/add_lead.js"></script>
+    <script type="text/javascript" src="/assets/common/js/apply_job.js"></script>
+    <script type="text/javascript" src="/assets/common/js/reset_password.js"></script>
+    <script type="text/javascript" src="/assets/common/js/login.js"></script>
+    <script type="text/javascript" src="/assets/common/js/signup_candidate.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(document).click(function (event) {
+                $(".navbar-collapse").collapse('hide');
+            });
+        });
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+    <script type="text/javascript" src="/assets/common/js/home_page.js"></script>
+    <script type="text/javascript" src="/assets/common/js/all_jobs.js"></script>
+    <script type="text/javascript" src="/assets/common/js/all_job_role_with_jobs.js"></script>
+    <div id="scriptContainer">
+    </div>
+    <script>
+        $(document).ready(function(){
+            $('#scriptContainer').load('/scriptContainer');
+        });
+    </script>
+    </body>
+    </html>

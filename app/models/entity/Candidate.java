@@ -186,7 +186,6 @@ public class Candidate extends Model {
     @Column(name = "CandidatePlaceLng", columnDefinition = "double null")
     private Double candidateLocalityLng;
 
-
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
     public Candidate() {

@@ -2,7 +2,6 @@
  * Created by batcoder1 on 22/6/16.
  */
 function processDataCandidateSession(returnedData) {
-    console.log(returnedData);
     if(returnedData == 0){
         logoutUser();
     }

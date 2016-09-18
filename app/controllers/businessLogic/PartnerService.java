@@ -3,10 +3,12 @@ package controllers.businessLogic;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
+import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
 import api.http.httpResponse.PartnerSignUpResponse;
 import api.http.httpResponse.ResetPasswordResponse;
 import models.entity.*;
+import models.entity.OM.PartnerToCandidate;
 import models.entity.Static.Locality;
 import models.entity.Static.PartnerProfileStatus;
 import models.entity.Static.PartnerType;
@@ -23,6 +25,7 @@ import static controllers.businessLogic.PartnerInterationService.createInteracti
 import static controllers.businessLogic.PartnerInterationService.createInteractionForPartnerSignUp;
 import static models.util.Util.generateOtp;
 import static play.mvc.Controller.session;
+import static play.mvc.Results.ok;
 
 /**
  * Created by adarsh on 9/9/16.
@@ -348,4 +351,30 @@ public class PartnerService {
         return partnerSignUpResponse;
     }
 
+    public static CandidateSignUpResponse createPartnerToCandidateMapping(Partner partner, String candidateMobile) {
+        Logger.info("Checking candidate with mobile: " + candidateMobile);
+        CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
+        Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(candidateMobile));
+        if(existingCandidate != null){
+            PartnerToCandidate partnerToCandidate = new PartnerToCandidate();
+            partnerToCandidate.setCandidate(existingCandidate);
+            partnerToCandidate.setPartner(partner);
+            partnerToCandidate.savePartnerToCandidate(partnerToCandidate);
+
+            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+        } else {
+            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
+        }
+        return candidateSignUpResponse;
+    }
+
+    public static void sendCandidateVerificationSms(Candidate existingCandidate) {
+        Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
+        if(existingAuth != null){
+            String dummyPassword = String.valueOf(Util.randomLong());
+            AuthService.setNewPassword(existingAuth, dummyPassword);
+            existingAuth.update();
+            SmsUtil.sendVerificationSms(existingCandidate.getCandidateFirstName(), existingCandidate.getCandidateMobile(), dummyPassword);
+        }
+    }
 }

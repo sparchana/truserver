@@ -23,6 +23,9 @@ function processAssessmentQuestions(returnedData) {
         if(returnedData == "Already Done"){
             return;
         }
+        if($(".assessment-modal").size() > 0){
+            return;
+        }
         var assessmentBody = $('<div id="assessment_body"></div>');
         var prevJobRole = null;
         var jobRoleContainer;

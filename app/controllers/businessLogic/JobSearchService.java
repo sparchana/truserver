@@ -41,8 +41,7 @@ public class JobSearchService {
                 .where()
                 .eq("jobPostIsHot", IS_HOT)
                 .query();
-*/
-/*
+
 
         query = query
                 .where()

@@ -30,10 +30,10 @@ public class AssessmentService {
     public static List<AssessmentQuestion> getQuestions(Long jobRoleId, Long jobPostId){
         List<AssessmentQuestion> assessmentQuestionList = new ArrayList<>();
         if(jobRoleId != null) {
-            assessmentQuestionList.add(AssessmentQuestion.find.where().eq("jobRoleId", jobRoleId).orderBy().asc("jobRoleId").findUnique());
+            assessmentQuestionList.addAll(AssessmentQuestion.find.where().eq("jobRoleId", jobRoleId).orderBy().asc("jobRoleId").findList());
         } else if(jobPostId != null){
             JobPost jobPost = JobPost.find.where().eq("jobPost", jobPostId).findUnique();
-            assessmentQuestionList.add(AssessmentQuestion.find.where().eq("jobRoleId", jobPost.getJobRole().getJobRoleId()).orderBy().asc("jobRoleId").findUnique());
+            assessmentQuestionList.addAll(AssessmentQuestion.find.where().eq("jobRoleId", jobPost.getJobRole().getJobRoleId()).orderBy().asc("jobRoleId").findList());
         } else{
             assessmentQuestionList.addAll(AssessmentQuestion.find.orderBy().asc("jobRoleId").findList());
         }

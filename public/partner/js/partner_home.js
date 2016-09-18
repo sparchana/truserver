@@ -10,7 +10,7 @@ $(window).load(function() {
     });
     $("#status").fadeOut();
     $("#loaderLogo").fadeOut();
-    $("#preloader").delay(1000).fadeOut("slow");
+    $("#preloader").delay(500).fadeOut("slow");
 });
 
 $(document).ready(function(){
@@ -30,28 +30,10 @@ $(document).ready(function(){
     }
 });
 
-function checkPartnerLogin() {
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/checkPartnerSession",
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataPartnerSession
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-}
-
-function processDataPartnerSession(returnedData) {
-    if(returnedData == 0){
-        logoutUser();
-    }
-}
-
 function processDataPartnerProfile(returnedData) {
+    if(returnedData == '0'){
+        logoutPartner();
+    }
     if(returnedData != null){
         //name
         if(returnedData.partnerFirstName != null){
@@ -88,20 +70,3 @@ function processDataPartnerProfile(returnedData) {
         }
     }
 }
-
-function logoutUser() {
-    localStorage.clear();
-    window.location = "/partner";
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/logoutUser",
-            data: false,
-            contentType: false,
-            processData: false,
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-}
-

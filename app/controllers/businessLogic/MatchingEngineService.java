@@ -16,6 +16,7 @@ import java.util.List;
 
 import static api.ServerConstants.*;
 import static com.avaje.ebean.Expr.eq;
+import static com.avaje.ebean.Expr.in;
 
 /**
  * Matching Engine Service receives a {latitude, longitude} pair along with jobRoleId list
@@ -54,9 +55,7 @@ public class MatchingEngineService {
                 .where()
                 .eq("jobPostIsHot", IS_HOT)
                 .query();
-*/
 
-/*        *//* TODO: until trudroid code is unable to handle diff source jobpost, filter out all the internal jobs *//*
         query = query
                 .where()
                 .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
@@ -155,5 +154,22 @@ public class MatchingEngineService {
                 }
                 break;
         }
+
+        // Temporary fix to sort all internal jobs on top
+        ArrayList<JobPost> internalJobPosts = new ArrayList<JobPost>();
+        ArrayList<JobPost> externalJobPosts = new ArrayList<JobPost>();
+
+        for (JobPost jobPost : jobPostsResponseList) {
+            if (jobPost.getSource() == ServerConstants.SOURCE_INTERNAL) {
+                internalJobPosts.add(jobPost);
+            }
+            else {
+                externalJobPosts.add(jobPost);
+            }
+        }
+
+        jobPostsResponseList.clear();
+        jobPostsResponseList.addAll(internalJobPosts);
+        jobPostsResponseList.addAll(externalJobPosts);
     }
 }
