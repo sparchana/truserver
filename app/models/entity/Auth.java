@@ -46,6 +46,9 @@ public class Auth extends Model {
     @Column(name = "authUpdateTimestamp", columnDefinition = "timestamp null")
     private Timestamp authUpdateTimestamp;
 
+    @Column(name = "Otp", columnDefinition = "int signed not null", nullable = false)
+    private int otp;
+
     public static Model.Finder<String, Auth> find = new Model.Finder(Auth.class);
 
     public Auth(){
@@ -136,5 +139,13 @@ public class Auth extends Model {
 
     public void setAuthUpdateTimestamp(Timestamp authUpdateTimestamp) {
         this.authUpdateTimestamp = authUpdateTimestamp;
+    }
+
+    public int getOtp() {
+        return otp;
+    }
+
+    public void setOtp(int otp) {
+        this.otp = otp;
     }
 }

@@ -861,6 +861,7 @@ $(function() {
         if(statusCheck == 1){
             $("#registerBtnSubmit").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Saving");
             var candidatePreferredJob = [];
+            jobSelected = $('#candidateJobPref').val().split(",");
             /* Candidate job role preferences  */
             for (var i = 0; i < jobSelected.length; i++) {
                 candidatePreferredJob.push(parseInt(jobSelected[i]));
@@ -881,8 +882,11 @@ $(function() {
                 candidateInstitute = null;
             }
 
+            candidateUnVerifiedMobile = phone;
+
             var d = {
                 //mandatory fields
+                leadSource: 25, //partner channel is '25'
                 candidateFirstName: firstName,
                 candidateSecondName: lastName,
                 candidateMobile: phone,
@@ -926,7 +930,13 @@ $(function() {
 
 function processDataSignUpSupportSubmit(returnedData) {
     if(returnedData.status == "1"){ //success
-        window.location = "/partner/myCandidates";
+        if(returnedData.otp != 0){
+            $("#messagePromptModal").modal("show");
+            $('#customMsgIcon').attr('src', "/assets/partner/img/applied.png");
+            $("#customMsg").html("Thank you for registering! To complete registration please enter the OTP that was sent to candidate's mobile number:" +  $('#candidateMobile').val());
+        } else{
+            window.location = "/partner/myCandidates";
+        }
     } else if(returnedData.status == "-1"){
         logoutPartner();
     } else{
