@@ -1,0 +1,349 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Partner | Trujobs - Register and find jobs for your candidates</title>
+
+    <meta name="keywords" content="driving jobs, fresher jobs, jobs for freshers, job search sites, job posting, sales jobs, beautician jobs,
+        medical transcription jobs, online job search, find jobs, receptionist jobs, admin jobs, office assistant jobs,
+        plumbing work, teacher job, online teaching jobs, jobs in schools, teacher vacancy, teacher recruitment, entry level jobs,
+        delivery boy jobs,call center jobs, BPO jobs, kpo jobs, job job job, data entry jobs, back office jobs,
+        receptionist jobs, beautician jobs, experienced jobs, jobs in Bangalore, cashier jobs, entry level jobs,
+        plumber jobs, electrician jobs, job search, accountant jobs, job vacancy, bangalore vacancy, Partner, NGO, Training Center, Freelance HR, Internet Cafe, Job Consultant,
+        Staffing company">
+
+    <meta name="description" content="Register your candidates and apply for jobs on their behalf.
+        Help your candidates find best fresher and experienced jobs. Earn money when they get hired." />
+
+    <meta http-equiv="Cache-control" content="public">
+      <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
+
+
+    <script type="text/javascript" src="/assets/common/js/jquery.min_1_12_0.js"></script>
+    <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+    <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
+    <link rel="stylesheet" href="/assets/common/css/token-input-facebook.css" type="text/css" />
+    <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
+    <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+    <link rel="stylesheet" type="text/css" href="/assets/partner/css/partnerStyle.css">
+
+      <script>
+        localStorage.clear();
+    </script>
+  </head>
+  <body>
+    <div id="preloader">
+      <div id="loaderLogo">
+        <img id="leaderLogo" src="/assets/common/img/logo-color.gif" alt="TruJobs Logo" height="40px">
+      </div>
+      <div id="status">&nbsp;</div>
+    </div>
+
+      <!-- Nav start -->
+    <div id="nav_bar_inc"></div>
+    <script>
+        $(document).ready(function(){
+            $('#nav_bar_inc').load('/partnerNavBar');
+        });
+    </script>
+
+    <div id="sectionHeader">
+        <div class="row" style="margin-right: 0; margin-left: 0">
+            <div class="col-sm-9">
+                <img src="/assets/partner/img/agreement.svg" class="hidden-xs" style="display: inline-block; margin-top: -30px" width="120px">
+                <div style="display: inline-block; width: auto; text-align: left;" id="partnerHeaderText">
+                    <h1 style="letter-spacing: 2px; margin: 10px;"><b><font size="5"><br><center>Welcome to TruJobs Partner Zone</center></font></b></h1>
+                    <h1 style="letter-spacing: 2px; margin: 14px;"><b><font size="4"><center>Register. Add Candidates. Earn money</center></font></b></h1>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  <div class="modal fade bs-example-modal-sm" id="partnerOtpVerificationModel" tabindex="-1" role="dialog" aria-labelledby="partnerOtpVerificationModel">
+      <div class="modal-dialog modal-sm">
+          <div class="modal-content" style="text-align: center">
+              <img src="/assets/common/img/logo.gif" height="40px" alt="TruJobs Logo">
+              <form id="form_otp" role="form" name="form_otp" style="display: none">
+                  <div class="c_form" style="margin-left: 10%; margin-right: 10%;" align="center">
+                      <h5 id="helpTextSignUp">Enter OTP</h5>
+
+                      <div class="form-group">
+                          <input id="partnerOtp" style="width: 80%;" min="1000" max="9999" name="partnerOtp" type="number" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
+                      </div>
+
+                      <button type="submit" id="verifyOtpBtn" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none">Verify OTP</button>
+
+                  </div>
+              </form>
+
+              <form id="form_auth" role="form" name="form_auth" style="display: none">
+                  <div class="c_form" style="margin-left: 10%; margin-right: 10%;" align="center">
+                      <h4>Enter a password</h4>
+                      <div class="form-group">
+                          <input id="partnerPassword" minlength="6" name="partnerPassword" type="password" placeholder="Enter password (Min. 6 characters)" class="form-control input-md" required>
+                      </div>
+
+                      <button type="submit" class="btn btn-primary" id="btnSubmit" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none">Create Account</button>
+                  </div>
+              </form>
+              <div id="incorrectOtpMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                  <h5>Incorrect OTP Code. Please Enter Again</h5>
+              </div>
+
+              <div id="errorMsg" style="margin-top: 2%;display: none; color: #2980b9">
+                  <h4>Looks like something went wrong. Please try again later!</h4>
+              </div>
+          </div>
+      </div>
+  </div>       <!-- Lead form block ends -->
+
+  <div id="partnerLoginModal" class="modal fade" role="dialog">
+      <div class="modal-dialog">
+              <!-- Modal content-->
+          <div class="modal-content" id="login_modal">
+              <div class="modal-body" id="model_size">
+                  <form id="form_login_partner" class="form-horizontal" role="form" name="form_login_partner">
+                      <div class="line_up" id="signInPopup" style="text-align: center; font-size: 18px; padding: 8px">Sign In to </div>
+                      <div class="container-fluid" id="main_signin_box">
+                          <div class="row" style="text-align: center">
+                              <div class="col-sm-12" id="logo">
+                                  <input class="form-control" id="partnerLoginMobile" placeholder="Mobile Number" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" required>
+                              </div>
+                          </div>
+                          <div class="row" style="margin-top: 6px">
+                              <div class="col-sm-12" id="pass_input" style="margin-bottom:12px;">
+                                  <input type="password" class="form-control" id="partnerLoginPassword" placeholder="Password" required>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-xs-6"></div>
+                              <div class="col-xs-6 pull-right" style="text-align:right;">
+                                  <a style="cursor: pointer;" onclick="resetPassword()"><font color="#06436a">Forgot Password?</font></a>
+                              </div>
+                          </div>
+                          <div class="row">
+                              <div class="col-sm-12" id="logo">
+                                  <button type="submit" class="form-control" id="registerBtnSubmit" style="margin-top:5px;">Sign In</button>
+                              </div>
+                          </div>
+                          <hr>
+                          <center>
+                              Don't have an account?
+                              <a style="cursor: pointer;" data-toggle="modal" data-target="#mySignUpModal" onClick="openSignUp()">
+                                  <font color="#06436a">&nbsp;Sign Up</font></a>
+                          </center>
+                      </div>
+                  </form>
+
+                  <form id="form_forgot_password" style="display: none" class="form-horizontal" role="form" name="form_forgot_password" >
+                      <div align="center">
+                          <div class="line_up">Reset Password</div>
+                              <!-- Text input-->
+                          <br>
+                          <h5>Enter your mobile No</h5>
+                          <div class="form-group">
+                              <input style="width: 80%;" id="resetPasswordMobile" placeholder="Mobile No. (eg: 8880007799)" class="form-control input-md" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" required>
+                          </div>
+
+                          <button type="submit" class="btn btn-primary" id="resetCheckUserBtn" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none">Submit</button>
+
+                      </div>
+                  </form>
+
+                  <form id="form_password_reset_otp" style="display: none" class="form-horizontal" role="form">
+                      <div align="center">
+                          <div class="line_up">Reset Password</div>
+                              <!-- Text input-->
+                          <br>
+                          <h5 id="helpText"></h5>
+
+                          <div class="form-group">
+                              <input style="width: 80%;" id="partnerForgotOtp" type="number" minlength="1000" maxlength="9999" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
+                          </div>
+                          <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none" >Verify OTP</button>
+
+                      </div>
+                  </form>
+
+                  <form id="form_password_reset_new" style="display: none" class="form-horizontal" role="form">
+                      <div align="center">
+                          <div class="line_up">Reset Password</div>
+                              <!-- Text input-->
+                          <br>
+                          <h5>Enter New Password</h5>
+
+                          <div class="form-group">
+                              <input style="width: 80%;" id="partnerNewPassword" type="password" placeholder="Enter new Password" class="form-control input-md" required>
+                          </div>
+                          <button type="submit" class="btn btn-primary" id="resetNewPasswordBtn" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none" >Reset Password</button>
+                      </div>
+                  </form>
+
+                  <center>
+                      <font color="red">
+                          <div class="errorMsgText" id="incorrectMsg" style="margin-top: 2%;display: none;">
+                              <h5>Incorrect Login Credentials</h5>
+                          </div>
+                          <div class="errorMsgText" id="incorrectMsgLogin" style="margin-top: 2%;display: none;" >
+                              <h5>Incorrect Login Credentials</h5>
+                          </div>
+                          <div class="errorMsgText" id="errorMsgReset" style="margin-top: 2%;display: none;">
+                              <h5>Looks like this mobile is not registered as a partner. Please Sign up to continue!</h5>
+                          </div>
+                          <div class="errorMsgText" id="noUserLogin" style="margin-top: 2%;display: none;">
+                              <h5>Looks like this mobile is not registered as a partner. Please Sign up to continue!</h5>
+                          </div>
+
+                          <div class="errorMsgText" id="wrongOtp" style="margin-top: 2%;display: none;">
+                              <h5>Incorrect OTP!</h5>
+                          </div>
+
+                          <div class="errorMsgText" id="errorMsg" style="margin-top: 2%;display: none;">
+                              <h5>Looks like something went wrong. Please try again later!</h5>
+                          </div>
+                      </font>
+                  </center>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <div class="container">
+      <div class="leadBox">
+          <form id="partner_signup_form" style="margin-top: 0%; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="partner_signup_form" >
+              <h4 style="font-weight: bold">Partner Registration</h4>
+              <div class="row" id="firstNameLastName">
+                  <div class="col-sm-6" style="padding: 0 4px 0 16px">
+                      <input id="partnerFirstName" placeholder="First name" type="text" maxLength="49" class="form-control input-md">
+                  </div>
+                  <div class="col-sm-6" style="padding: 0 16px 0 4px">
+                      <input id="partnerLastName" placeholder="Last name" type="text" maxLength="49" class="form-control input-md candidateSecondNameMain" >
+                  </div>
+              </div>
+              <input id="partnerMobile" style="margin-top: 8px" placeholder="What is your mobile no.?" name="partnerMobile" type="text" maxlength="10" class="form-control input-md" >
+              <select id="partnerType" class="selectDropdown" style="width: 100%; height: 34px; margin-top: 8px"></select>
+              <div style="margin-top: 8px">
+                  <input type="text" id="partnerLocality" style="margin-top: 8px">
+              </div>
+
+
+              <button type="submit" id="registerPartnerBtnSubmit" class="btn btn-primary registerPartnerBtnSubmit" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
+                  <!-- Text input-->
+          </form>
+
+          <div style="text-align: center">
+              <div class="errorMsgText" id="alreadyMsgCandidate" style="margin-top: 2%;display: none;">
+                  <h5>Partner Already Exists! Please <a data-toggle="modal" data-target="#myLoginModal" style="cursor: hand; color: #888888">Login</a> to Continue</h5>
+                  <br>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <div class="container">
+      <div class="row" style="margin-right: 0; margin-left: 0">
+          <div class="col-sm-9">
+              <div id="sectionPartnerEligibility">
+                  <div style="margin: 0 0 12px 0;"><font size="5">Who all can partner</font></div>
+                  <center><div class="materialDot"></div></center>
+                      <div class="row" style="padding: 2%; margin: 2% 0 0 0;">
+                          <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                              <img class="hov" src="/assets/partner/img/ngo.svg" width="60px">
+                              <h5>NGO</h5>
+                          </div>
+                          <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                              <img class="hov" src="/assets/partner/img/training.svg" width="60px">
+                              <h5>Training Center</h5>
+                          </div>
+                          <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                              <img class="hov" src="/assets/partner/img/consultant.svg" width="60px">
+                              <h5>Job Consultant</h5>
+                          </div>
+                      </div>
+
+                      <div class="row" style="padding: 2%;">
+                          <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                              <p><img class="hov" src="/assets/partner/img/staffing.svg" width="60px"></p>
+                              <h5>Staffing Company</h5>
+                          </div>
+                          <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                              <p><img class="hov" src="/assets/partner/img/internet_cafe.svg" width="60px"></p>
+                              <h5>Internet Cafe</h5>
+                          </div>
+                          <div class="col-sm-4 col-xs-4" style="padding-left:4%">
+                              <p><img class="hov" src="/assets/partner/img/freelance.svg" width="60px"></p>
+                              <h5>Freelance HR</h5>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+          <div class="col-sm-3 hidden-xs" style="padding: 0; margin: 0">
+              <div id="partnerStats">
+                  <div id="statBody" style="text-align: left">
+                      <img src="/assets/common/img/star.svg" height="42px" style="margin-left: -14%; margin-top: -14%">
+                      <div id="statItem">1000+ Job Openings</div>
+                      <div id="statItem">50+ Companies</div>
+                      <div id="statItem">30+ Job Roles</div>
+                      <div id="statItem">Partner Now and Help Your Candidates!</div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+
+
+  <div id="sectionPartnerHowItWorks">
+        <div style="margin: 10px 0 12px 0;"><font size="5">How it Works</font></div>
+        <center><div class="materialDot"></div></center>
+        <div class="container">
+            <div class="row" style="padding:4%;margin: 3% 0 0 0">
+                <div class="col-sm-3" style="padding-left:4%">
+                    <p><img class="hov" src="/assets/partner/img/partner.svg" width="80px"></p>
+                    <h5>Register yourself as a partner with TruJobs</h5>
+                </div>
+                <div class="col-sm-3" style="padding-left:4%">
+                    <p><img class="hov" src="/assets/partner/img/users.svg" width="80px"></p>
+                    <h5>Add your candidates and create their profile</h5>
+                </div>
+                <div class="col-sm-3" style="padding-left:4%">
+                    <p><img class="hov" src="/assets/partner/img/list.svg" width="80px"></p>
+                    <h5>Browse jobs and apply on behalf of your candidates</h5>
+                </div>
+                <div class="col-sm-3" style="padding-left:4%">
+                    <p><img class="hov" src="/assets/partner/img/money.svg" width="80px"></p>
+                    <h5>Earn money when your candidates are hired</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sectionAllJoRoles" id="sectionPartnerAllJoRoles" style="display: table; width: 100%">
+        <div class="custom_container">
+            <div style="margin: 10px 0 12px 0;"><font size="5">Click on Job Roles to View Jobs</font></div>
+            <center><div class="materialDot"></div></center>
+            <div id="jobRoleGrid" style="width: auto; margin-top: 24px"></div>
+        </div>
+    </div>
+
+      <!-- Start Footer-->
+      <div id="footer_inc"></div>
+      <script>
+            $(document).ready(function(){
+                $('#footer_inc').load('/footer');
+            });
+      </script>
+
+    <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+    <script type="text/javascript" src="/assets/partner/js/partner_page.js"></script>
+    <script type="text/javascript" src="/assets/partner/js/partner_signup.js"></script>
+    <script type="text/javascript" src="/assets/partner/js/partner_login.js"></script>
+    <script type="text/javascript" src="/assets/partner/js/partner_reset_password.js"></script>
+    <script type="text/javascript" src="/assets/common/js/all_job_role_with_jobs.js"></script>
+
+
+  </body>
+</html>

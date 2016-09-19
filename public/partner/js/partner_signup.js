@@ -5,7 +5,6 @@ var returnedOtp;
 var candidateMobile;
 
 function processDataSignUpSubmit(returnedData) {
-    console.log("returedData :" + returnedData.status);
     if(returnedData.status == 1) {
         returnedOtp = returnedData.otp;
 
@@ -20,7 +19,8 @@ function processDataSignUpSubmit(returnedData) {
         alert("Partner already exists! Please login to continue");
         window.location = "/";
     } else {
-        document.getElementById("registerBtnSubmit").disabled = false;
+        $("#registerPartnerBtnSubmit").addClass("btn-primary registerPartnerBtnSubmit").removeClass("appliedBtn").prop('disabled', false).html("Register for FREE");
+        document.getElementById("registerPartnerBtnSubmit").disabled = false;
         $('#errorMsg').show();
         $('#partnerMobile').val('');
         $('#partnerName').val('');
@@ -28,12 +28,8 @@ function processDataSignUpSubmit(returnedData) {
 }
 
 function processDataAddAuth(returnedData) {
-    console.log(returnedData);
     if(returnedData.status == 1) {
         // Store
-        localStorage.setItem("mobile", "+91" + candidateMobile);
-        localStorage.setItem("name", returnedData.candidateFirstName);
-
         window.location = "/partner/home";
 
     } else {
@@ -144,7 +140,7 @@ $(function() {
 
         if(statusCheck == 1){
             candidateMobile = phone;
-            $("#registerBtnSubmit").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Please Wait");
+            $("#registerPartnerBtnSubmit").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Please Wait");
             document.getElementById("registerBtnSubmit").disabled = true;
 
             var d = {

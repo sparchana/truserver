@@ -67,8 +67,6 @@ body{
 }
 
 .profileBody{
-    padding-left: 4%;
-    padding-right: 4%;
     padding-top: 1%;
 }
 
@@ -77,15 +75,23 @@ body{
 }
 
 #profileTitle{
-    color: #fff;
+/*    color: #fff;
     padding: 2%;
-    background-color: #286ab6;
+    background-color: #286ab6;*/
+    width: 100%;
+    color: #286ab6;
+    padding: 16px;
+    border-left: 3px solid #ffaf00;
+    background-color: #f8f8f8;
+
 }
 
 #profileTitleEditProfile {
-    color: #fff;
-    padding: 1%;
-    background-color: #286ab6;
+    width: 100%;
+    color: #286ab6;
+    padding: 16px;
+    border-left: 3px solid #ffaf00;
+    background-color: #f8f8f8;
 }
 
 #indicatorBtnRed{
@@ -116,8 +122,8 @@ body{
 .img-src {
     position: absolute;
     background:linear-gradient(
-            rgba(65, 69, 121, 0.4),
-            rgba(12, 12, 24, 0.4)
+            rgba(65, 69, 121, 0.3),
+            rgba(12, 12, 24, 0.3)
     ), url(../img/dashboard_back.png) repeat;
     background-size: 80%;
     top: -10%;
@@ -177,8 +183,6 @@ body{
     border-left: 2px rgba(46, 131, 213, 0.6) solid;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.09);
     padding: 2%;
-    margin-left: 11%;
-    margin-right: 11%;
     margin-top: 8px;
     background: #ffffff;
 }
@@ -308,7 +312,8 @@ hr{
 
 @media screen and (max-width: 800px) {
     .navbar-nav>li>a {
-        color: #3a589a;
+        background-color: #286ab6;
+        color: #fff;
     }
 
     #activeLink{
@@ -343,7 +348,6 @@ hr{
     }
 
     li{
-        margin-top: -10px;
         background-color: #ffffff;
     }
 
@@ -363,7 +367,7 @@ hr{
     }
 
     #navLogo{
-        content:url("/assets/new/img/logo-main.gif");
+        content:url("/assets/common/img/logo-main.gif");
     }
 
     .navbar-default {

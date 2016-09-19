@@ -3,10 +3,9 @@ package controllers.businessLogic;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
-import api.http.httpResponse.LoginResponse;
-import api.http.httpResponse.PartnerSignUpResponse;
-import api.http.httpResponse.ResetPasswordResponse;
+import api.http.httpResponse.*;
 import models.entity.*;
+import models.entity.OM.PartnerToCandidate;
 import models.entity.Static.Locality;
 import models.entity.Static.PartnerProfileStatus;
 import models.entity.Static.PartnerType;
@@ -23,6 +22,7 @@ import static controllers.businessLogic.PartnerInterationService.createInteracti
 import static controllers.businessLogic.PartnerInterationService.createInteractionForPartnerSignUp;
 import static models.util.Util.generateOtp;
 import static play.mvc.Controller.session;
+import static play.mvc.Results.ok;
 
 /**
  * Created by adarsh on 9/9/16.
@@ -348,4 +348,58 @@ public class PartnerService {
         return partnerSignUpResponse;
     }
 
+    public static CandidateSignUpResponse createPartnerToCandidateMapping(Partner partner, String candidateMobile) {
+        Logger.info("Checking candidate with mobile: " + candidateMobile);
+        CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
+        Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(candidateMobile));
+        if(existingCandidate != null){
+            PartnerToCandidate partnerToCandidate = new PartnerToCandidate();
+            partnerToCandidate.setCandidate(existingCandidate);
+            partnerToCandidate.setPartner(partner);
+            partnerToCandidate.savePartnerToCandidate(partnerToCandidate);
+
+            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+        } else {
+            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
+        }
+        return candidateSignUpResponse;
+    }
+
+    public static void sendCandidateVerificationSms(Candidate existingCandidate) {
+        Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
+        if(existingAuth != null){
+            Integer dummyOtp = Util.generateOtp();
+            AuthService.setNewPassword(existingAuth, String.valueOf(dummyOtp));
+            existingAuth.setOtp(dummyOtp);
+            existingAuth.update();
+            SmsUtil.sendOtpToPartnerCreatedCandidate(dummyOtp, existingCandidate.getCandidateMobile());
+        } else{
+            Logger.info("Auth doesnot exists");
+        }
+    }
+
+    public static VerifyCandidateResponse verifyCandidateByPartner(VerifyCandidateRequest verifyCandidateRequest) {
+        VerifyCandidateResponse verifyCandidateResponse = new VerifyCandidateResponse();
+        Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(verifyCandidateRequest.getCandidateMobile()));
+        if(existingCandidate != null){
+            Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
+            if(existingAuth != null){
+                // auth for the user is present
+                if(verifyCandidateRequest.getUserOtp() == existingAuth.getOtp()){
+                    verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_SUCCESS);
+                    existingAuth.setAuthStatus(ServerConstants.CANDIDATE_STATUS_VERIFIED);
+                    existingAuth.update();
+                    CandidateService.sendDummyAuthForCandidateByPartner(existingCandidate);
+                } else{
+                    verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_WRONG_OTP);
+                }
+            } else{
+                // no auth found for the user
+                verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_FAILURE);
+            }
+        } else{
+            verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_FAILURE);
+        }
+        return verifyCandidateResponse;
+    }
 }

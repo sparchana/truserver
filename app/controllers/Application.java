@@ -57,7 +57,7 @@ public class Application extends Controller {
 
     @Security.Authenticated(RecSecured.class)
     public static Result showCompanyAndJob() {
-        return ok(views.html.company_and_job.render());
+        return ok(views.html.Recs.company_and_job.render());
     }
 
     @Security.Authenticated(PartnerSecured.class)
@@ -322,17 +322,17 @@ public class Application extends Controller {
 
     @Security.Authenticated(SecuredUser.class)
     public static Result dashboard() {
-        return ok(views.html.candidate_home.render());
+        return ok(views.html.CandidateDashboard.candidate_home.render());
     }
 
     @Security.Authenticated(SecuredUser.class)
     public static Result editProfile() {
-        return ok(views.html.edit_profile.render());
+        return ok(views.html.CandidateDashboard.edit_profile.render());
     }
 
     @Security.Authenticated(SecuredUser.class)
     public static Result appliedJobs() {
-        return ok(views.html.candidate_applied_job.render());
+        return ok(views.html.CandidateDashboard.candidate_applied_job.render());
     }
 
     public static Result findUserAndSendOtp() {
@@ -582,17 +582,17 @@ public class Application extends Controller {
 
     @Security.Authenticated(RecSecured.class)
     public static Result companyInfoHome(Long id) {
-        return ok(views.html.company_details.render());
+        return ok(views.html.Recs.company_details.render());
     }
 
     @Security.Authenticated(RecSecured.class)
     public static Result recruiterInfoHome(Long id) {
-        return ok(views.html.recruiter_details.render());
+        return ok(views.html.Recs.recruiter_details.render());
     }
 
     @Security.Authenticated(RecSecured.class)
     public static Result jobPostInfoHome(Long id) {
-        return ok(views.html.job_post_details.render());
+        return ok(views.html.Recs.job_post_details.render());
     }
 
     public static Result supportAuth() {
@@ -905,7 +905,7 @@ public class Application extends Controller {
 
     @Security.Authenticated(RecSecured.class)
     public static Result createCompany() {
-        return ok(views.html.create_company.render());
+        return ok(views.html.Recs.create_company.render());
     }
 
     @Security.Authenticated(PartnerSecured.class)
@@ -1092,6 +1092,18 @@ public class Application extends Controller {
         return ok("0");
     }
 
+    @Security.Authenticated(SecuredUser.class)
+    public static Result ifCandidateExists(String mobile) {
+        if(mobile != null){
+            mobile = FormValidator.convertToIndianMobileFormat(mobile);
+            Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
+            if(existingCandidate != null) {
+                return ok("1");
+            }
+        }
+        return ok("0");
+    }
+
     @Security.Authenticated(PartnerSecured.class)
     public static Result getAllDeactivationReason() {
         List<Reason> deactivationReasons = Reason.find.all();
@@ -1138,19 +1150,19 @@ public class Application extends Controller {
         return redirect("http://goo.gl/Dpsvcn");
     }
     public static Result renderPageNavBar() {
-        return ok(views.html.nav_bar.render());
+        return ok(views.html.Fragment.nav_bar.render());
     }
     public static Result renderPageNavBarLoggedIn() {
-        return ok(views.html.nav_bar_logged_in.render());
+        return ok(views.html.Fragment.nav_bar_logged_in.render());
     }
-    public static Result renderGAScript() { return ok(views.html.script.render()); }
+    public static Result renderGAScript() { return ok(views.html.Fragment.script.render()); }
     public static Result renderPageFooter() {
-        return ok(views.html.footer.render());
+        return ok(views.html.Fragment.footer.render());
     }
-    public static Result renderJobPostCards() { return ok(views.html.hot_jobs_card_view.render());}
-    public static Result renderShowAllJobs() { return ok(views.html.show_all_jobs_page.render());}
+    public static Result renderJobPostCards() { return ok(views.html.Fragment.hot_jobs_card_view.render());}
+    public static Result renderShowAllJobs() { return ok(views.html.Fragment.show_all_jobs_page.render());}
     public static Result renderJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
-        return ok(views.html.posted_job_details.render(jobCompany,jobTitle));
+        return ok(views.html.Fragment.posted_job_details.render(jobCompany,jobTitle));
     }
 
     public static Result getJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
@@ -1161,7 +1173,7 @@ public class Application extends Controller {
         return ok("Error");
     }
     public static Result renderJobRoleJobPage(String rolePara, Long idPara) {
-        return ok(views.html.job_role_page.render(rolePara));
+        return ok(views.html.Fragment.job_role_page.render(rolePara));
     }
 
     public static Result getJobRoleWiseJobPosts(String rolePara, Long idPara) {
@@ -1184,6 +1196,18 @@ public class Application extends Controller {
     public static Result checkCandidateSession() {
         String sessionCandidateId = session().get("candidateId");
         if(sessionCandidateId != null){
+            return ok("1");
+        } else{
+            return ok("0");
+        }
+    }
+
+    public static Result checkNavBar() {
+        if(session().get("partnerId") != null){
+            // partner logged in
+            return ok("2");
+        } else if(session().get("sessionId") != null){
+            // candidate logged in
             return ok("1");
         } else{
             return ok("0");

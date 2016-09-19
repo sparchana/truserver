@@ -163,7 +163,7 @@ function prePopulateJobSection(jobApplication) {
             jobBodySubRowCol.appendChild(salaryIconDiv);
 
             var salaryIcon = document.createElement("img");
-            salaryIcon.src = "/assets/img/salary.svg";
+            salaryIcon.src = "/assets/common/img/salary.svg";
             salaryIcon.setAttribute('height', '15px');
             salaryIcon.style = "margin-top: -4px";
             salaryIconDiv.appendChild(salaryIcon);
@@ -199,7 +199,7 @@ function prePopulateJobSection(jobApplication) {
             jobBodySubRowColExp.appendChild(expIconDiv);
 
             var expIcon = document.createElement("img");
-            expIcon.src = "/assets/img/workExp.svg";
+            expIcon.src = "/assets/common/img/workExp.svg";
             expIcon.setAttribute('height', '15px');
             expIcon.style = "margin-top: -4px";
             expIconDiv.appendChild(expIcon);
@@ -229,7 +229,7 @@ function prePopulateJobSection(jobApplication) {
             jobBodySubRowColLoc.appendChild(locIconDiv);
 
             var locIcon = document.createElement("img");
-            locIcon.src = "/assets/img/location.svg";
+            locIcon.src = "/assets/common/img/location.svg";
             locIcon.setAttribute('height', '15px');
             locIcon.style = "margin-top: -4px";
             locIconDiv.appendChild(locIcon);

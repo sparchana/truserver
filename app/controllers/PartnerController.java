@@ -1,20 +1,33 @@
 package controllers;
 
 import api.ServerConstants;
+import api.http.FormValidator;
 import api.http.httpRequest.*;
+import api.http.httpResponse.CandidateSignUpResponse;
+import api.http.httpResponse.PartnerSignUpResponse;
+import api.http.httpResponse.SupportDashboardElementResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import controllers.businessLogic.*;
 import controllers.security.SecuredUser;
-import models.entity.Partner;
+import models.entity.*;
+import models.entity.OM.PartnerToCandidate;
+import models.entity.Static.LeadSource;
 import models.entity.Static.PartnerType;
+import models.util.SmsUtil;
 import play.Logger;
 import play.mvc.Result;
 import play.mvc.Security;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import static models.util.Util.generateOtp;
 import static play.libs.Json.toJson;
 
 import static play.mvc.Controller.request;
@@ -27,15 +40,15 @@ import static play.mvc.Results.redirect;
  */
 public class PartnerController {
     public static Result partnerIndex() {
-        String sessionId = session().get("sessionId");
+        String sessionId = session().get("partnerId");
         if(sessionId != null){
             return redirect("/partner/home");
         }
-        return ok(views.html.partner_index.render());
+        return ok(views.html.Partner.partner_index.render());
     }
 
     public static Result renderPagePartnerNavBar() {
-        return ok(views.html.partner_nav_bar.render());
+        return ok(views.html.Partner.partner_nav_bar.render());
     }
 
     public static Result partnerSignUp() {
@@ -88,11 +101,11 @@ public class PartnerController {
 
     @Security.Authenticated(SecuredUser.class)
     public static Result partnerHome() {
-        return ok(views.html.partner_home.render());
+        return ok(views.html.Partner.partner_home.render());
     }
 
     public static Result renderPagePartnerLoggedInNavbar() {
-        return ok(views.html.partner_logged_in_nav_bar.render());
+        return ok(views.html.Partner.partner_logged_in_nav_bar.render());
     }
 
     public static Result findPartnerAndSendOtp() {
@@ -135,7 +148,12 @@ public class PartnerController {
 
     @Security.Authenticated(SecuredUser.class)
     public static Result partnerEditProfile() {
-        return ok(views.html.partner_edit_proifile.render());
+        return ok(views.html.Partner.partner_edit_proifile.render());
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result partnerCreateCandidate(long candidateId) {
+        return ok(views.html.Partner.partner_create_candidate.render(candidateId));
     }
 
     public static Result partnerUpdateBasicProfile() {
@@ -156,5 +174,154 @@ public class PartnerController {
         } else{
             return ok("0");
         }
+    }
+
+    public static Result partnerCreateCandidateSubmit() {
+        JsonNode req = request().body().asJson();
+        AddSupportCandidateRequest addSupportCandidateRequest = new AddSupportCandidateRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addSupportCandidateRequest = newMapper.readValue(req.toString(), AddSupportCandidateRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Logger.info("Req JSON : " + req);
+        Boolean isNewCandidate = false;
+        Candidate candidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+        if(candidate == null){
+            isNewCandidate = true; //checking if the candidate exists
+        }
+        String partnerId = session().get("partnerId");
+        Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
+        if(partner != null){
+            LeadSource leadSource = LeadSource.find.where().eq("leadSourceId", addSupportCandidateRequest.getLeadSource()).findUnique();
+            if(leadSource != null){
+                addSupportCandidateRequest.setLeadSource(leadSource.getLeadSourceId());
+            }
+            CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
+                    InteractionService.InteractionChannelType.PARTNER,
+                    ServerConstants.UPDATE_ALL_BY_SUPPORT);
+            if(candidateSignUpResponse.getStatus() == CandidateSignUpResponse.STATUS_SUCCESS){
+                if(isNewCandidate){ //save a record in partnerToCandidate
+                    candidateSignUpResponse =
+                            PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+                    int randomPIN = generateOtp();
+                    Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+                    Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
+                    if(existingAuth != null){
+                        existingAuth.setOtp(randomPIN);
+                        existingAuth.update();
+                    }
+                    SmsUtil.sendOtpToPartnerCreatedCandidate(randomPIN, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+                    candidateSignUpResponse.setOtp(randomPIN);
+                } else{
+                    candidateSignUpResponse.setOtp(0);
+                }
+            }
+            return ok(toJson(candidateSignUpResponse));
+        } else{
+            return ok("-1");
+        }
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result partnerCandidates() {
+        return ok(views.html.Partner.partner_candidates.render());
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result getMyCandidates(){
+        Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+        if(partner != null){
+            List<PartnerToCandidate> partnerToCandidateList = PartnerToCandidate.find.where().eq("partner_id", partner.getPartnerId()).findList();
+            ArrayList<PartnerCandidatesResponse> responses = new ArrayList<>();
+
+            SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT);
+
+            for(PartnerToCandidate partnerToCandidate : partnerToCandidateList) {
+                PartnerCandidatesResponse response = new PartnerCandidatesResponse();
+
+                response.setCandidateId(partnerToCandidate.getCandidate().getCandidateId());
+                response.setCreationTimestamp(sfd.format(partnerToCandidate.getCandidate().getCandidateCreateTimestamp()));
+                response.setLeadId(partnerToCandidate.getCandidate().getLead().getLeadId());
+                if(partnerToCandidate.getCandidate().getCandidateFirstName() != null){
+                    response.setCandidateName(partnerToCandidate.getCandidate().getCandidateFirstName());
+                    if(partnerToCandidate.getCandidate().getCandidateLastName() != null){
+                        response.setCandidateName(partnerToCandidate.getCandidate().getCandidateFirstName() + " " + partnerToCandidate.getCandidate().getCandidateLastName());
+                    }
+                }
+                Auth auth = Auth.find.where().eq("candidateId", partnerToCandidate.getCandidate().getCandidateId()).findUnique();
+                if(auth != null){
+                    response.setCandidateStatus(auth.getAuthStatus());
+                    if(auth.getAuthStatus() == ServerConstants.CANDIDATE_STATUS_VERIFIED){
+                        response.setCandidateActiveDeactive(partnerToCandidate.getCandidate().getCandidateprofilestatus().getProfileStatusId());
+                    }
+                }
+                response.setCandidateMobile(partnerToCandidate.getCandidate().getCandidateMobile());
+                responses.add(response);
+            }
+            return ok(toJson(responses));
+        } else{
+            //partner does not exists
+            Logger.info("Partner not available");
+
+        }
+        return ok("0");
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result getPartnerCandidate(long leadId) {
+        Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+        if(partner != null){ //checking if partner is logged in or not
+            Lead lead = Lead.find.where().eq("leadId", leadId).findUnique(); //getting candidate profile from db
+            if(lead != null) {
+                Candidate candidate = CandidateService.isCandidateExists(lead.getLeadMobile());
+                if(candidate != null){ //checking if the candidate was created by the requested partner
+                    PartnerToCandidate partnerToCandidate = PartnerToCandidate.find
+                            .where()
+                            .eq("candidate_candidateid", candidate.getCandidateId())
+                            .findUnique();
+                    if(partnerToCandidate != null){
+                        if(partnerToCandidate.getPartner().getPartnerId() == partner.getPartnerId()){
+                            return ok(toJson(candidate));
+                        } else{
+                            return ok("-1");
+                        }
+                    }
+                }
+            }
+        }
+        return ok("0");
+    }
+
+    public static Result logoutPartner() {
+        session().clear();
+        Logger.info("Partner Logged Out");
+        return ok(views.html.Partner.partner_index.render());
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result sendCandidateVerificationSMS(String mobile) {
+        Logger.info("trying to send verification SMS to mobile no: " + FormValidator.convertToIndianMobileFormat(mobile));
+        Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(mobile));
+        if(existingCandidate != null){
+            PartnerService.sendCandidateVerificationSms(existingCandidate);
+            return ok("1");
+        }else{
+            return ok("0");
+        }
+    }
+
+    public static Result verifyCandidateUsingOtp() {
+        JsonNode req = request().body().asJson();
+        VerifyCandidateRequest verifyCandidateRequest = new VerifyCandidateRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            verifyCandidateRequest = newMapper.readValue(req.toString(), VerifyCandidateRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Logger.info("Req JSON : " + req);
+        return ok(toJson(PartnerService.verifyCandidateByPartner(verifyCandidateRequest)));
     }
 }

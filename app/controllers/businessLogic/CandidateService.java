@@ -17,6 +17,7 @@ import models.entity.OM.*;
 import models.entity.OO.CandidateEducation;
 import models.entity.OO.CandidateStatusDetail;
 import models.entity.OO.TimeShiftPreference;
+import models.entity.Partner;
 import models.entity.Static.*;
 import models.util.SmsUtil;
 import models.util.Util;
@@ -86,7 +87,8 @@ public class CandidateService
     public static CandidateSignUpResponse signUpCandidate(CandidateSignUpRequest candidateSignUpRequest,
                                                           InteractionChannelType channelType,
                                                           int leadSourceId) {
-        List<Integer> localityList = candidateSignUpRequest.getCandidateLocality();
+        List<Integer> localityList = new ArrayList<>();
+        localityList.add(candidateSignUpRequest.getCandidateHomeLocality());
         List<Integer> jobsList = candidateSignUpRequest.getCandidateJobPref();
 
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
@@ -116,15 +118,21 @@ public class CandidateService
                 if(candidateSignUpRequest.getCandidateThirdMobile() != null){
                     candidate.setCandidateThirdMobile(candidateSignUpRequest.getCandidateThirdMobile());
                 }
-                if(localityList != null){
-                    candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(localityList, candidate));
+
+                if(candidateSignUpRequest.getCandidateHomeLocality() != null){
+                    Locality locality = Locality.find.where().eq("localityId", candidateSignUpRequest.getCandidateHomeLocality()).findUnique();
+                    if(locality != null){
+                        candidate.setLocality(locality);
+                        candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(localityList, candidate));
+                    }
                 }
+
                 if(jobsList != null){
                     candidate.setJobPreferencesList(getCandidateJobPreferenceList(jobsList, candidate));
                 }
 
                 candidateSignUpResponse = createNewCandidate(candidate, lead);
-                if(!(channelType == InteractionChannelType.SUPPORT)){
+                if(!(channelType == InteractionChannelType.SUPPORT || channelType == InteractionChannelType.PARTNER)){
                     // triggers when candidate is self created
                     triggerOtp(candidate, candidateSignUpResponse);
                     result = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE;
@@ -136,9 +144,15 @@ public class CandidateService
                     Logger.info("auth doesn't exists for this candidate");
                     candidate.setCandidateFirstName(candidateSignUpRequest.getCandidateFirstName());
                     candidate.setCandidateLastName(candidateSignUpRequest.getCandidateSecondName());
-                    if(localityList != null) {
-                        resetLocalityAndJobPref(candidate, getCandidateLocalityPreferenceList(localityList, candidate), getCandidateJobPreferenceList(jobsList, candidate));
+
+                    if(candidate.getLocality() != null){
+                        Locality locality = Locality.find.where().eq("localityId", candidateSignUpRequest.getCandidateHomeLocality()).findUnique();
+                        if(locality != null){
+                            candidate.setLocality(locality);
+                            resetLocalityAndJobPref(candidate, getCandidateLocalityPreferenceList(localityList, candidate), getCandidateJobPreferenceList(jobsList, candidate));
+                        }
                     }
+
                     if(!(channelType == InteractionChannelType.SUPPORT)){
                         triggerOtp(candidate, candidateSignUpResponse);
                         result = ServerConstants.INTERACTION_RESULT_EXISTING_CANDIDATE_VERIFICATION;
@@ -146,7 +160,8 @@ public class CandidateService
                         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
                     } else {//TODO: will never come to this point, hence to be removed
-                        createAndSaveDummyAuthFor(candidate);
+                        Boolean isSupport = true;
+                        createAndSaveDummyAuthFor(candidate, isSupport);
                         result = ServerConstants.INTERACTION_RESULT_EXISTING_CANDIDATE_VERIFICATION;
                         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
                     }
@@ -200,12 +215,20 @@ public class CandidateService
         String interactionNote;
         boolean isNewCandidate = false;
 
+        String objAUUId = "";
+        String objBUUId = "";
+
+        Integer objBType = 0;
+
         if(channelType == InteractionChannelType.SUPPORT){
             createdBy = session().get("sessionUsername");
             interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM;
             interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT;
         } else if(channelType == InteractionChannelType.SELF_ANDROID){
             interactionType = ServerConstants.INTERACTION_TYPE_ANDROID;
+            createdBy = channelType.toString();
+        } else if(channelType == InteractionChannelType.PARTNER){
+            interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
             createdBy = channelType.toString();
         }
 
@@ -243,9 +266,17 @@ public class CandidateService
                 candidate.setJobPreferencesList(getCandidateJobPreferenceList(request.getCandidateJobPref(), candidate));
             }
 
-            // update new locality preferences
-            if(request.getCandidateLocality() != null){
-                candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(request.getCandidateLocality(), candidate));
+            List<Integer> localityList = new ArrayList<>();
+            if(request.getCandidateHomeLocality() != null){
+                Locality locality = Locality.find.where().eq("localityId", request.getCandidateHomeLocality()).findUnique();
+                if(locality != null){
+                    candidate.setLocality(locality);
+                    localityList.add(request.getCandidateHomeLocality());
+                    candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(localityList, candidate));
+                }
+            } else{
+                localityList.add((int) candidate.getLocality().getLocalityId());
+                candidate.setLocalityPreferenceList(getCandidateLocalityPreferenceList(localityList, candidate));
             }
 
             if(request.getCandidateFirstName()!= null && !request.getCandidateFirstName().trim().isEmpty()) {
@@ -327,37 +358,67 @@ public class CandidateService
         // set the default interaction note string
         interactionNote = ServerConstants.INTERACTION_NOTE_BLANK;
 
-        if(channelType == InteractionChannelType.SUPPORT){
+
+        if(channelType == InteractionChannelType.SUPPORT || channelType == InteractionChannelType.PARTNER){
             // update additional fields that are part of the support request
             updateOthersBySupport(candidate, request);
 
             AddSupportCandidateRequest supportCandidateRequest = (AddSupportCandidateRequest) request;
 
-            createdBy = session().get("sessionUsername");
-            interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT;
-            interactionNote = supportCandidateRequest.getSupportNote();
+            if(channelType == InteractionChannelType.SUPPORT){
+                createdBy = session().get("sessionUsername");
+                interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT;
+                interactionNote = supportCandidateRequest.getSupportNote();
+            } else{
+                // candidate being created by partner
+                createdBy = session().get("partnerName");
+                interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+            }
 
             if (isNewCandidate) {
-                interactionResult = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE_SUPPORT;
+                if(channelType == InteractionChannelType.SUPPORT){
+                    interactionResult = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE_SUPPORT;
+                } else if(channelType == InteractionChannelType.PARTNER){
+                    interactionResult = ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE_PARTNER;
+                    Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+                    if(partner != null){
+                        objBType = ServerConstants.OBJECT_TYPE_PARTNER;
+                        objBUUId = partner.getPartnerUUId();
+                    }
+                }
             }
             else {
-                interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM;
+                if(channelType == InteractionChannelType.PARTNER){ //candidate profile getting edited by a partner
+                    interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_PARTNER;
+                    Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+                    if(partner != null){
+                        objBType = ServerConstants.OBJECT_TYPE_PARTNER;
+                        objBUUId = partner.getPartnerUUId();
+                    }
+                } else{ //getting edited by support user
+                    interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM;
+                }
             }
         }
 
         // check if we have auth record for this candidate. if we dont have, create one with a temporary password
         Auth auth = AuthService.isAuthExists(candidate.getCandidateId());
         if (auth == null) {
-            if(channelType == InteractionChannelType.SUPPORT){
+            if(channelType == InteractionChannelType.SUPPORT || channelType == InteractionChannelType.PARTNER){
                 // TODO: differentiate between in/out call
-                createAndSaveDummyAuthFor(candidate);
+                Boolean isSupport = false;
+                if(channelType == InteractionChannelType.SUPPORT){
+                    isSupport = true;
+                }
+                createAndSaveDummyAuthFor(candidate, isSupport);
                 interactionResult += " & " + ServerConstants.INTERACTION_NOTE_DUMMY_PASSWORD_CREATED;
             }
         }
         // check if we have enough details required to complete the minimum profile
         candidate.setIsMinProfileComplete(isMinProfileComplete(candidate));
 
-        InteractionService.createInteractionForCreateCandidateProfile(candidate.getCandidateUUId(),
+        objAUUId = candidate.getCandidateUUId();
+        InteractionService.createInteractionForCreateCandidateProfile(objAUUId, objBUUId, objBType,
                 interactionType, interactionNote, interactionResult, createdBy);
 
         candidate.update();
@@ -404,12 +465,14 @@ public class CandidateService
 
         AddSupportCandidateRequest supportCandidateRequest = (AddSupportCandidateRequest) request;
 
+/*
         try{
             candidate.setLocality(Locality.find.where().eq("localityId", supportCandidateRequest.getCandidateHomeLocality()).findUnique());
         } catch(Exception e){
             Logger.info(" Exception while setting home locality");
             e.printStackTrace();
         }
+*/
 
         try{
             candidate.setCandidatePhoneType(supportCandidateRequest.getCandidatePhoneType());
@@ -465,27 +528,17 @@ public class CandidateService
             e.printStackTrace();
         }
 
-        try{
+        if(supportCandidateRequest.getPastCompanyList() != null ){
             candidate.setJobHistoryList(getJobHistoryListFromAddSupportCandidate(supportCandidateRequest.getPastCompanyList(), candidate));
-        } catch(Exception e){
-            Logger.info(" Exception while setting past job details");
-            e.printStackTrace();
         }
 
-        try{
+        if(supportCandidateRequest.getCandidateIdProof() != null ){
             candidate.setIdProofReferenceList(getCandidateIdProofListFromAddSupportCandidate(supportCandidateRequest.getCandidateIdProof(), candidate));
-        } catch(Exception e){
-            Logger.info(" Exception while setting idproof reference list");
-            e.printStackTrace();
         }
 
-        try{
+        if(supportCandidateRequest.getExpList() != null ){
             candidate.setCandidateExpList(getCandidateExpListFromAddSupportCandidate(supportCandidateRequest.getExpList(), candidate));
-        } catch(Exception e){
-            Logger.info(" Exception while setting explist reference list");
-            e.printStackTrace();
         }
-
     }
 
     private static CandidateStatusDetail getCandidateStatusDetail(AddSupportCandidateRequest supportCandidateRequest, Candidate candidate) {
@@ -682,6 +735,7 @@ public class CandidateService
         // not just update but createOrUpdateConvertedLead
         Logger.info("Inside updateBasicProfile");
 
+
         // initialize to default value. We will change this value later if any exception occurs
         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
@@ -689,6 +743,19 @@ public class CandidateService
         candidate.setCandidateFirstName(request.getCandidateFirstName());
         candidate.setCandidateLastName(request.getCandidateSecondName());
         candidate.setCandidateUpdateTimestamp(new Timestamp(System.currentTimeMillis()));
+
+        //this case comes when saving basic profile from android app
+        if(request.getCandidateHomeLocality() == null){
+            if(candidate.getLocality() != null){
+                request.setCandidateHomeLocality((int) candidate.getLocality().getLocalityId());
+            }
+        }
+        try{
+            candidate.setLocality(Locality.find.where().eq("localityId", request.getCandidateHomeLocality()).findUnique());
+        } catch(Exception e){
+            Logger.info(" Exception while setting home locality");
+            e.printStackTrace();
+        }
 
         try {
             if(request.getCandidateDob() != null)
@@ -965,6 +1032,7 @@ public class CandidateService
                     loginResponse.setAuthSessionId(existingAuth.getAuthSessionId());
                     loginResponse.setSessionExpiryInMilliSecond(existingAuth.getAuthSessionIdExpiryMillis());
 
+                    loginResponse.setIsCandidateVerified(existingAuth.getAuthStatus());
                     /* adding session details */
                     AuthService.addSession(existingAuth,existingCandidate);
                     existingAuth.update();
@@ -1038,7 +1106,7 @@ public class CandidateService
         return candidateLocalityPreferenceList;
     }
 
-    private static void createAndSaveDummyAuthFor(Candidate candidate) {
+    private static void createAndSaveDummyAuthFor(Candidate candidate, Boolean isSupport) {
         // create dummy auth
         Auth authToken = new Auth(); // constructor instantiate createtimestamp, updatetimestamp, sessionid, authpasswordsalt
         String dummyPassword = String.valueOf(Util.randomLong());
@@ -1047,8 +1115,10 @@ public class CandidateService
         authToken.setPasswordMd5(Util.md5(dummyPassword + authToken.getPasswordSalt()));
         authToken.save();
 
-        SmsUtil.sendWelcomeSmsFromSupport(candidate.getCandidateFirstName(), candidate.getCandidateMobile(), dummyPassword);
-        Logger.info("Dummy auth created + otp triggered + auth saved for " + candidate.getCandidateMobile());
+        if(isSupport){
+            SmsUtil.sendWelcomeSmsFromSupport(candidate.getCandidateFirstName(), candidate.getCandidateMobile(), dummyPassword);
+            Logger.info("Dummy auth created + otp triggered + auth saved for " + candidate.getCandidateMobile());
+        }
     }
 
     public static void resetLocalityAndJobPref(Candidate existingCandidate, List<LocalityPreference> localityPreferenceList, List<JobPreference> jobPreferencesList) {
@@ -1287,5 +1357,18 @@ public class CandidateService
                 + " has " + p2CompletedFieldCount + " p2 fields completed out of " + p2FieldCount);
 
         return (p2CompletedFieldCount / p2FieldCount);
+    }
+
+    public static void sendDummyAuthForCandidateByPartner(Candidate candidate) {
+        // create dummy auth
+        Auth authToken = Auth.find.where().eq("candidateId", candidate.getCandidateId()).findUnique();
+        if(authToken != null){
+            String dummyPassword = String.valueOf(Util.randomLong());
+            authToken.setCandidateId(candidate.getCandidateId());
+            authToken.setPasswordMd5(Util.md5(dummyPassword + authToken.getPasswordSalt()));
+            authToken.save();
+            SmsUtil.sendWelcomeSmsFromSupport(candidate.getCandidateFirstName(), candidate.getCandidateMobile(), dummyPassword);
+            Logger.info("Dummy auth saved and sent to " + candidate.getCandidateMobile());
+        }
     }
 }

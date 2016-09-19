@@ -87,7 +87,7 @@ public class SmsUtil {
     public static void sendWelcomeSmsFromSupport(String name, String mobile, String password)
     {
         String msg = "Hi " + name + ", Welcome to www.Trujobs.in! Your login details are Username: "
-                + mobile.substring(3, 13) + " and password: " + password + ". Use this to login at trujobs.in !!";
+                + mobile.substring(3, 13) + " and password: " + password + ". Log on to trujobs.in or download app at http://bit.ly/2d7zDqR to login and apply to jobs!!";
 
         sendSms(mobile, msg);
     }
@@ -184,4 +184,10 @@ public class SmsUtil {
         }
         return deliveryReport;
     }
+
+    public static void sendOtpToPartnerCreatedCandidate(int otp, String mobile) {
+        String msg = "Hi. You have been registered by on TruJobs for job search. Provide OTP: " + otp + " to complete registration.";
+        sendSms(mobile, msg);
+    }
+
 }
