@@ -1,3 +1,21 @@
+<script>
+    function logoutPartner() {
+        window.location = "/partner";
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/logoutPartner",
+                data: false,
+                contentType: false,
+                processData: false,
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+
+</script>
+
 <nav class="navbar navbar-fixed-top" style="background: #286ab6" role="navigation">
   <div class="container">
     <div class="navbar-header">

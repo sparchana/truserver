@@ -176,29 +176,12 @@ function processDataCheckPartnerType(returnedData) {
     }
 }
 
-function logoutPartner() {
-    localStorage.clear();
-    window.location = "/partner";
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/logoutPartner",
-            data: false,
-            contentType: false,
-            processData: false,
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-}
-
 // rendering data table in partner/myCandidates
 function viewCandidate(leadId) {
     window.open(
         '/partner/candidate/' + leadId,
-        '_blank' // <- This is what makes it open in a new window.
+        '_blank'
     );
-/*    window.location = "/partner/candidate/" + leadId;*/
 }
 
 function verifyCandidate(mobile) {
