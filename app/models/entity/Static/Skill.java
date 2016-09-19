@@ -32,9 +32,15 @@ public class Skill extends Model{
     @OneToMany(mappedBy = "skill", cascade = CascadeType.REMOVE)
     private List<SkillQualifier> skillQualifierList;
 
+    @JsonBackReference
+    @OneToMany(mappedBy = "skill", cascade = CascadeType.REMOVE)
+    private List<AssessmentQuestion> assessmentQuestionList;
+
     public String getSkillName() {
         return skillName;
     }
+
+    public static Model.Finder<String, Skill> find = new Model.Finder(Skill.class);
 
     public void setSkillName(String skillName) {
         this.skillName = skillName;
@@ -47,8 +53,6 @@ public class Skill extends Model{
     public void setJobToSkillList(List<JobToSkill> jobToSkillList) {
         this.jobToSkillList = jobToSkillList;
     }
-
-    public static Model.Finder<String, Skill> find = new Model.Finder(Skill.class);
 
     public void setSkillId(int skillId) {
         this.skillId = skillId;
@@ -72,5 +76,13 @@ public class Skill extends Model{
 
     public int getSkillId() {
         return skillId;
+    }
+
+    public List<AssessmentQuestion> getAssessmentQuestionList() {
+        return assessmentQuestionList;
+    }
+
+    public void setAssessmentQuestionList(List<AssessmentQuestion> assessmentQuestionList) {
+        this.assessmentQuestionList = assessmentQuestionList;
     }
 }

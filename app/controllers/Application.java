@@ -1209,10 +1209,11 @@ public class Application extends Controller {
                 return ok("Already Done");
             }
         }
-        if(jobRoleId != null){
-            return ok(toJson(AssessmentService.getQuestions(Long.valueOf(jobRoleId), jobPostId == null ? null : Long.valueOf(jobPostId))));
+        List<AssessmentQuestion> assessmentQuestionList = AssessmentService.getQuestions(jobRoleId == null ? null : Long.valueOf(jobRoleId), jobPostId == null ? null : Long.valueOf(jobPostId));
+        if(assessmentQuestionList.size() < 1){
+            return ok("NA");
         }
-        return ok(toJson(AssessmentService.getQuestions(null, null)));
+        return ok(toJson(assessmentQuestionList));
     }
 
     @Security.Authenticated(SecuredUser.class)

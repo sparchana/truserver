@@ -13,19 +13,21 @@ import java.util.List;
  * Created by zero on 14/9/16.
  */
 
-@Entity(name = "assessmentquestion")
-@Table(name = "assessmentquestion")
+@Entity(name = "assessment_question")
+@Table(name = "assessment_question")
 public class AssessmentQuestion extends Model {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name = "AssessmentQuestionId", columnDefinition = "int unsigned", unique = true)
+    @Column(name = "assessment_question_id", columnDefinition = "int unsigned", unique = true)
     private int  assessmentQuestionId;
 
-    @Column(name = "QuestionText", columnDefinition = "text null")
+    @Column(name = "question_text", columnDefinition = "text null")
     private String questionText;
 
-    @Column(name = "QuestionType", columnDefinition = "int null")
-    private int questionType;
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "assessment_question_type_id", referencedColumnName = "assessment_question_type_id")
+    private AssessmentQuestionType assessmentQuestionType;
 
     @Column(name = "OptionA", columnDefinition = "text null")
     private String optionA;
@@ -50,6 +52,11 @@ public class AssessmentQuestion extends Model {
     @JoinColumn(name = "JobRoleId", referencedColumnName = "JobRoleId")
     private JobRole jobRole;
 
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "SkillId", referencedColumnName = "SkillId")
+    private Skill skill;
+
     public static Finder<String, AssessmentQuestion> find = new Finder(AssessmentQuestion.class);
 
     public int getAssessmentQuestionId() {
@@ -62,14 +69,6 @@ public class AssessmentQuestion extends Model {
 
     public void setQuestionText(String questionText) {
         this.questionText = questionText;
-    }
-
-    public int getQuestionType() {
-        return questionType;
-    }
-
-    public void setQuestionType(int questionType) {
-        this.questionType = questionType;
     }
 
     public String getOptionA() {
@@ -126,5 +125,21 @@ public class AssessmentQuestion extends Model {
 
     public void setJobRole(JobRole jobRole) {
         this.jobRole = jobRole;
+    }
+
+    public Skill getSkill() {
+        return skill;
+    }
+
+    public void setSkill(Skill skill) {
+        this.skill = skill;
+    }
+
+    public AssessmentQuestionType getAssessmentQuestionType() {
+        return assessmentQuestionType;
+    }
+
+    public void setAssessmentQuestionType(AssessmentQuestionType assessmentQuestionType) {
+        this.assessmentQuestionType = assessmentQuestionType;
     }
 }

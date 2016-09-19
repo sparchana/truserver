@@ -287,7 +287,7 @@ function processDataForJobPostLocation(returnedData) {
 }
 
 function confirmApply() {
-    applyJob(jobPostId, prefLocation);
+    applyJob(jobPostId, prefLocation, true);
 }
 
 $(function() {

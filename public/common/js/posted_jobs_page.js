@@ -66,7 +66,7 @@ $(document).ready(function(){
             success: processDataAllJobPosts
         });
     } catch (exception) {
-        console.log("exception occured!!" + exception.stack);
+        console.log("exception occured!!" + exception);
     }
 });
 
@@ -146,8 +146,7 @@ function processDataForJobPostLocation(returnedData) {
 }
 
 function confirmApply() {
-    getAssessmentQuestions(null, jobPostId);
-    applyJob(jobPostId, prefLocation);
+    applyJob(jobPostId, prefLocation, true);
 }
 
 $(function() {

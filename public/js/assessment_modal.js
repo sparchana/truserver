@@ -20,7 +20,7 @@ function createRadioButton(name, value, text, id) {
 
 function processAssessmentQuestions(returnedData) {
     if(returnedData != null){
-        if(returnedData == "Already Done"){
+        if(returnedData == "Already Done" || returnedData == "NA"){
             return;
         }
         if($(".assessment-modal").size() > 0){
@@ -37,7 +37,7 @@ function processAssessmentQuestions(returnedData) {
                 var questionCard = $('<div id='+"QuestionID_" + assessmentQ.jobRole.jobRoleId +"_"+ assessmentQ.assessmentQuestionId+' class= "question_contianer"></div>').text(assessmentQ.questionText);
                 var optionCardContainer = $('<div id='+"OptionContainerID_" + assessmentQ.jobRole.jobRoleId +"_"+ assessmentQ.assessmentQuestionId+' class= "row optionContainer"></div>');
 
-                if(assessmentQ.questionType == 1) {
+                if(assessmentQ.assessmentQuestionType != null &&  assessmentQ.assessmentQuestionType.assessmentQuestionTypeId == 1) {
                     var optionCard;
                     optionCard = createRadioButton( "RN_" + assessmentQ.jobRole.jobRoleId +"_"+ assessmentQ.assessmentQuestionId, assessmentQ.optionA, assessmentQ.optionA, "OID_" + assessmentQ.jobRole.jobRoleId +"_"+ assessmentQ.assessmentQuestionId +"_1");
                     if(optionCard != null) optionCardContainer.append(optionCard);

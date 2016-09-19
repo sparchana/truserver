@@ -29,13 +29,14 @@ function processDataPostReset(returnedData) {
 
         if(applyJobFlag == 1){
             $("#myLoginModal").modal("hide");
-            applyJob(applyJobId, prefLocation);
-            applyJobFlag = 0;
-            applyJobId = 0;
+            applyJob(applyJobId, prefLocation, false);
             $("#customSubMsg").html("Logging in ...");
             $('#customSubMsg').modal({backdrop: 'static', keyboard: false});
+            var jp_id = applyJobId;
+            applyJobFlag = 0;
+            applyJobId = 0;
             setTimeout(function(){
-                window.location = "/dashboard/appliedJobs";
+                window.location = "/dashboard/appliedJobs/?assessment=true&jp_id="+jp_id;
             }, 3000);
         } else{
             window.location = "/dashboard";

@@ -31,7 +31,7 @@
         'height': '100%'
       });
       function showAppliedJobs(){
-        window.location = "/dashboard/appliedJobs";
+        window.location = "/dashboard/appliedJobs/";
       }
       function showEditProfile(){
           window.location = "/dashboard/editProfile";
@@ -169,6 +169,17 @@
     <script>
             $(document).ready(function(){
               $('[data-toggle="tooltip"]').tooltip();
+                var pathElement = window.location.search.split('&');
+                var assessmentElement = pathElement[(pathElement.length) - 2];
+
+                if(assessmentElement != null && assessmentElement.split("=")[(pathElement.length) - 2] == "?assessment" && assessmentElement.split("=")[(pathElement.length) - 1] == "true"){
+                    var jpElement= pathElement[(pathElement.length) - 1];
+                    if(jpElement.split("=")[(pathElement.length) - 2] == "jp_id"){
+                        var jp_id = jpElement.split("=")[(pathElement.length) - 1];
+                        getAssessmentQuestions(null, jp_id);
+                    }
+                }
+
             });
     </script>
 

@@ -32,8 +32,8 @@ public class AssessmentService {
         if(jobRoleId != null) {
             assessmentQuestionList.addAll(AssessmentQuestion.find.where().eq("jobRoleId", jobRoleId).orderBy().asc("jobRoleId").findList());
         } else if(jobPostId != null){
-            JobPost jobPost = JobPost.find.where().eq("jobPost", jobPostId).findUnique();
-            assessmentQuestionList.addAll(AssessmentQuestion.find.where().eq("jobRoleId", jobPost.getJobRole().getJobRoleId()).orderBy().asc("jobRoleId").findList());
+            JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+            if(jobPost != null) assessmentQuestionList.addAll(AssessmentQuestion.find.where().eq("jobRoleId", jobPost.getJobRole().getJobRoleId()).orderBy().asc("jobRoleId").findList());
         } else{
             assessmentQuestionList.addAll(AssessmentQuestion.find.orderBy().asc("jobRoleId").findList());
         }
@@ -200,9 +200,9 @@ public class AssessmentService {
         }
     }
 
-    public static class AssessmentSheetCol {
-        public String question;
-        public String answer;
-        public String correctAnswer;
+    private static class AssessmentSheetCol {
+        String question;
+        String answer;
+        String correctAnswer;
     }
 }
