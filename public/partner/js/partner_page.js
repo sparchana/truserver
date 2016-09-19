@@ -238,10 +238,10 @@ function renderCandidateTable() {
                                         var statusVal;
                                         if(candidate.candidateActiveDeactive == '1'){
                                             statusVal = "Active";
-                                            return '<button type="button" class="mLabel" style="width:100%" >'+ '<img src=\"/assets/partner/img/verified.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font color="#00b334" size=\"2\">&nbsp;&nbsp;' + statusVal +'</font></div>' +'</button>';
+                                            return '<div class="mLabel" style="width:100%" >'+ '<img src=\"/assets/partner/img/verified.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font color="#00b334" size=\"2\">&nbsp;&nbsp;' + statusVal +'</font></div>' +'</div>';
                                         } else{
                                             statusVal = "Deactivated";
-                                            return '<img src=\"/assets/partner/img/not_verified.svg\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font size=\"2\">&nbsp;&nbsp;' + statusVal +'</font></div>';
+                                            return '<div class="mLabel" style="width:100%" >'+ '<img src=\"/assets/partner/img/not_verified.svg\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font size=\"2\">&nbsp;&nbsp;' + statusVal +'</font></div>' +'</div>';
                                         }
                                     } else{
                                         return '<button type="button" class="mBtn orange" style="width:100%" onclick=\"verifyCandidate('+ candidate.candidateMobile+')\" >'+ '<img src=\"/assets/partner/img/warning.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; cursor: hand\" >&nbsp;&nbsp;Verify</div>' +'</button>';
@@ -285,6 +285,7 @@ function verifyCandidateOtp(){
         candidateMobile: candidateMobile,
         userOtp: candidateOtp
     };
+    $("#verifyOtp").prop('disabled',true);
     $.ajax({
         type: "POST",
         url: "/verifyCandidateUsingOtp",
@@ -295,6 +296,7 @@ function verifyCandidateOtp(){
 }
 
 function processDataVerifyCandidate(returnedData) {
+    $("#verifyOtp").prop('disabled', false);
     if(returnedData.status == 1){
         $('#customMsgIcon').attr('src', "/assets/partner/img/correct.png");
         $("#customMsg").html("candidate Verified");
