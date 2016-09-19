@@ -299,7 +299,7 @@ function processDataVerifyCandidate(returnedData) {
     $("#verifyOtp").prop('disabled', false);
     if(returnedData.status == 1){
         $('#customMsgIcon').attr('src', "/assets/partner/img/correct.png");
-        $("#customMsg").html("candidate Verified");
+        $("#customMsg").html("Verification completed! Candidate is successfully registered.");
         $("#candidateOtp").hide();
         $("#verifyOtp").hide();
         $("#homeBtn").show();

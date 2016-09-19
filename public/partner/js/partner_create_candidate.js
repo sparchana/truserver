@@ -886,6 +886,7 @@ $(function() {
 
             var d = {
                 //mandatory fields
+                leadSource: 25, //partner channel is '25'
                 candidateFirstName: firstName,
                 candidateSecondName: lastName,
                 candidateMobile: phone,
@@ -932,8 +933,7 @@ function processDataSignUpSupportSubmit(returnedData) {
         if(returnedData.otp != 0){
             $("#messagePromptModal").modal("show");
             $('#customMsgIcon').attr('src', "/assets/partner/img/applied.png");
-            $("#customMsg").html("Thank you for registering " +  $('#candidateFirstName').val() + " with mobile: +91" +  $('#candidateMobile').val()
-                + ". Please verify the candidate by entering the OTP received by the candidate");
+            $("#customMsg").html("Thank you for registering! To complete registration please enter the OTP that was sent to candidate's mobile number:" +  $('#candidateMobile').val());
         } else{
             window.location = "/partner/myCandidates";
         }

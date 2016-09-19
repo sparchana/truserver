@@ -194,7 +194,7 @@ public class PartnerController {
         String partnerId = session().get("partnerId");
         Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
         if(partner != null){
-            LeadSource leadSource = LeadSource.find.where().eq("leadSourceId", "25").findUnique();
+            LeadSource leadSource = LeadSource.find.where().eq("leadSourceId", addSupportCandidateRequest.getLeadSource()).findUnique();
             if(leadSource != null){
                 addSupportCandidateRequest.setLeadSource(leadSource.getLeadSourceId());
             }

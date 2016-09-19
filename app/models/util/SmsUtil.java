@@ -186,7 +186,7 @@ public class SmsUtil {
     }
 
     public static void sendOtpToPartnerCreatedCandidate(int otp, String mobile) {
-        String msg = "Use OTP " + otp + " verify your profile";
+        String msg = "Hi. You have been registered by on TruJobs for job search. Provide OTP: " + otp + " to complete registration.";
         sendSms(mobile, msg);
     }
 
