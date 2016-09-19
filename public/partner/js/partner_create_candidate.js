@@ -945,6 +945,40 @@ function processDataSignUpSupportSubmit(returnedData) {
     }
 }
 
+function verifyCandidateOtp(){
+    var candidateOtp = $("#candidateOtp").val();
+    var candidateMobile = candidateUnVerifiedMobile;
+    var d = {
+        candidateMobile: candidateMobile,
+        userOtp: candidateOtp
+    };
+    $("#verifyOtp").prop('disabled',true);
+    $.ajax({
+        type: "POST",
+        url: "/verifyCandidateUsingOtp",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(d),
+        success: processDataVerifyCandidate
+    });
+}
+
+function processDataVerifyCandidate(returnedData) {
+    $("#verifyOtp").prop('disabled', false);
+    if(returnedData.status == 1){
+        $('#customMsgIcon').attr('src', "/assets/partner/img/correct.png");
+        $("#customMsg").html("Verification completed! Candidate is successfully registered.");
+        $("#candidateOtp").hide();
+        $("#verifyOtp").hide();
+        $("#homeBtn").show();
+    } else if(returnedData.status == 2){
+        $('#customMsgIcon').attr('src', "/assets/partner/img/wrong.png");
+        $("#customMsg").html("Incorrect OTP. Please enter correct OTP!");
+    } else{
+        $("#customMsg").html("Something went wrong! Please try again");
+        $('#customMsgIcon').attr('src', "/assets/partner/img/wrong.png");
+    }
+}
+
 function notifyInfo(msg){
     $.notify(msg, "info");
 }
