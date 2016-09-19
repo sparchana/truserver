@@ -160,7 +160,8 @@ public class CandidateService
                         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
                     } else {//TODO: will never come to this point, hence to be removed
-                        createAndSaveDummyAuthFor(candidate);
+                        Boolean isSupport = true;
+                        createAndSaveDummyAuthFor(candidate, isSupport);
                         result = ServerConstants.INTERACTION_RESULT_EXISTING_CANDIDATE_VERIFICATION;
                         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
                     }
@@ -403,9 +404,13 @@ public class CandidateService
         // check if we have auth record for this candidate. if we dont have, create one with a temporary password
         Auth auth = AuthService.isAuthExists(candidate.getCandidateId());
         if (auth == null) {
-            if(channelType == InteractionChannelType.SUPPORT){
+            if(channelType == InteractionChannelType.SUPPORT || channelType == InteractionChannelType.PARTNER){
                 // TODO: differentiate between in/out call
-                createAndSaveDummyAuthFor(candidate);
+                Boolean isSupport = false;
+                if(channelType == InteractionChannelType.SUPPORT){
+                    isSupport = true;
+                }
+                createAndSaveDummyAuthFor(candidate, isSupport);
                 interactionResult += " & " + ServerConstants.INTERACTION_NOTE_DUMMY_PASSWORD_CREATED;
             }
         }
@@ -1101,7 +1106,7 @@ public class CandidateService
         return candidateLocalityPreferenceList;
     }
 
-    private static void createAndSaveDummyAuthFor(Candidate candidate) {
+    private static void createAndSaveDummyAuthFor(Candidate candidate, Boolean isSupport) {
         // create dummy auth
         Auth authToken = new Auth(); // constructor instantiate createtimestamp, updatetimestamp, sessionid, authpasswordsalt
         String dummyPassword = String.valueOf(Util.randomLong());
@@ -1110,8 +1115,10 @@ public class CandidateService
         authToken.setPasswordMd5(Util.md5(dummyPassword + authToken.getPasswordSalt()));
         authToken.save();
 
-        SmsUtil.sendWelcomeSmsFromSupport(candidate.getCandidateFirstName(), candidate.getCandidateMobile(), dummyPassword);
-        Logger.info("Dummy auth created + otp triggered + auth saved for " + candidate.getCandidateMobile());
+        if(isSupport){
+            SmsUtil.sendWelcomeSmsFromSupport(candidate.getCandidateFirstName(), candidate.getCandidateMobile(), dummyPassword);
+            Logger.info("Dummy auth created + otp triggered + auth saved for " + candidate.getCandidateMobile());
+        }
     }
 
     public static void resetLocalityAndJobPref(Candidate existingCandidate, List<LocalityPreference> localityPreferenceList, List<JobPreference> jobPreferencesList) {
@@ -1350,5 +1357,18 @@ public class CandidateService
                 + " has " + p2CompletedFieldCount + " p2 fields completed out of " + p2FieldCount);
 
         return (p2CompletedFieldCount / p2FieldCount);
+    }
+
+    public static void sendDummyAuthForCandidateByPartner(Candidate candidate) {
+        // create dummy auth
+        Auth authToken = Auth.find.where().eq("candidateId", candidate.getCandidateId()).findUnique();
+        if(authToken != null){
+            String dummyPassword = String.valueOf(Util.randomLong());
+            authToken.setCandidateId(candidate.getCandidateId());
+            authToken.setPasswordMd5(Util.md5(dummyPassword + authToken.getPasswordSalt()));
+            authToken.save();
+            SmsUtil.sendWelcomeSmsFromSupport(candidate.getCandidateFirstName(), candidate.getCandidateMobile(), dummyPassword);
+            Logger.info("Dummy auth saved and sent to " + candidate.getCandidateMobile());
+        }
     }
 }

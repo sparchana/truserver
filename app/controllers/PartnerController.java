@@ -202,6 +202,12 @@ public class PartnerController {
                     candidateSignUpResponse =
                             PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
                     int randomPIN = generateOtp();
+                    Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+                    Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
+                    if(existingAuth != null){
+                        existingAuth.setOtp(randomPIN);
+                        existingAuth.update();
+                    }
                     SmsUtil.sendOtpToPartnerCreatedCandidate(randomPIN, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
                     candidateSignUpResponse.setOtp(randomPIN);
                 } else{
@@ -300,5 +306,18 @@ public class PartnerController {
         }else{
             return ok("0");
         }
+    }
+
+    public static Result verifyCandidateUsingOtp() {
+        JsonNode req = request().body().asJson();
+        VerifyCandidateRequest verifyCandidateRequest = new VerifyCandidateRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            verifyCandidateRequest = newMapper.readValue(req.toString(), VerifyCandidateRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Logger.info("Req JSON : " + req);
+        return ok(toJson(PartnerService.verifyCandidateByPartner(verifyCandidateRequest)));
     }
 }

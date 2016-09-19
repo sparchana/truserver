@@ -881,6 +881,8 @@ $(function() {
                 candidateInstitute = null;
             }
 
+            candidateUnVerifiedMobile = phone;
+
             var d = {
                 //mandatory fields
                 candidateFirstName: firstName,
@@ -928,7 +930,7 @@ function processDataSignUpSupportSubmit(returnedData) {
     if(returnedData.status == "1"){ //success
         if(returnedData.otp != 0){
             $("#messagePromptModal").modal("show");
-            $('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
+            $('#customMsgIcon').attr('src', "/assets/partner/img/applied.png");
             $("#customMsg").html("Thank you for registering " +  $('#candidateFirstName').val() + " with mobile: +91" +  $('#candidateMobile').val()
                 + ". Please verify the candidate by entering the OTP received by the candidate");
         } else{
@@ -940,11 +942,6 @@ function processDataSignUpSupportSubmit(returnedData) {
         $("#registerBtnSubmit").addClass("btn-primary").removeClass("appliedBtn").prop('disabled', false).html("Save");
         notifyError("Something went wrong. Please try again later");
     }
-}
-
-function verifyCandidateOtp(){
-    var candidateOtp = $("#candidateOtp").val();
-    console.log(candidateOtp);
 }
 
 function notifyInfo(msg){
