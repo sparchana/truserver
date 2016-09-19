@@ -541,7 +541,7 @@ $(function () {
     $('#candidateMobile').change(function () {
         var res = validateMobile($('#candidateMobile').val());
         if(res == 2){
-            notifyInfo("Please wait while we check if the candidate already exist");
+            notifyInfo("Please wait while we check if the candidate already exists");
             $.ajax({
                 type: "GET",
                 url: "/partner/ifExists/"+$('#candidateMobile').val(),
@@ -561,10 +561,10 @@ $(function () {
 function ifMobileExists(returnedId) {
     if(returnedId != null && returnedId != "0"){
         document.getElementById("partnerCandidateProfile").reset();
-        notifyError("Candidate already exist in the database. Create a different candidate");
+        notifyError("Candidate already exists in the database. Create a different candidate");
     } else{
         $("#registerBtnSubmit").addClass("btn-primary").removeClass("appliedBtn").prop('disabled', false).html("Save");
-        notifySuccess("Candidate with the specified mobile doesn't exist! Please continue");
+        notifySuccess("Candidate with the specified mobile doesn't exists! Please continue");
     }
 }
 

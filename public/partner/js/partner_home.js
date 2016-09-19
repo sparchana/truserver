@@ -31,7 +31,6 @@ $(document).ready(function(){
 });
 
 function processDataPartnerProfile(returnedData) {
-    console.log(returnedData);
     if(returnedData == '0'){
         logoutPartner();
     }
