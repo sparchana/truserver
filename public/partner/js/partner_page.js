@@ -64,7 +64,7 @@ function checkPartnerLogin() {
 
 function processDataPartnerSession(returnedData) {
     if(returnedData == 0){
-        logoutUser();
+        logoutPartner();
     }
 }
 
