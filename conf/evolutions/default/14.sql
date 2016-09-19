@@ -5,7 +5,7 @@ create table partner_to_candidate (
   partner_to_candidate_create_timestamp timestamp not null default current_timestamp,
   partner_id                    bigint signed,
   candidate_candidateid         bigint signed,
-  partner_to_candidate_update_timestamp datetime(6) not null,
+  partner_to_candidate_update_timestamp datetime(6) null,
   constraint uq_partner_to_candidate_candidate_candidateid unique (candidate_candidateid),
   constraint pk_partner_to_candidate primary key (partner_to_candidate_id)
 );

@@ -28,12 +28,8 @@ function processDataSignUpSubmit(returnedData) {
 }
 
 function processDataAddAuth(returnedData) {
-    console.log(returnedData);
     if(returnedData.status == 1) {
         // Store
-        localStorage.setItem("mobile", "+91" + candidateMobile);
-        localStorage.setItem("name", returnedData.candidateFirstName);
-
         window.location = "/partner/home";
 
     } else {

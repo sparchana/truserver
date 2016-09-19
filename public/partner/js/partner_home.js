@@ -31,6 +31,7 @@ $(document).ready(function(){
 });
 
 function processDataPartnerProfile(returnedData) {
+    console.log(returnedData);
     if(returnedData == '0'){
         logoutPartner();
     }
@@ -55,7 +56,9 @@ function processDataPartnerProfile(returnedData) {
         }
 
         //partner company name
-        if(returnedData.partnerCompany != null){
+        if(returnedData.partnerCompany == null || returnedData.partnerCompany == ""){
+            $("#organizationName").html("Not Specified");
+        } else {
             $("#organizationName").html(returnedData.partnerCompany);
         }
 
