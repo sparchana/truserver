@@ -40,7 +40,7 @@ import static play.mvc.Results.redirect;
  */
 public class PartnerController {
     public static Result partnerIndex() {
-        String sessionId = session().get("sessionId");
+        String sessionId = session().get("partnerId");
         if(sessionId != null){
             return redirect("/partner/home");
         }
