@@ -190,6 +190,11 @@ public class SmsUtil {
                 + mobile.substring(3, 13) + " and password: " + password + ". Log on to trujobs.in or download app at http://bit.ly/2d7zDqR to login and apply to jobs!!";
 
         sendSms(mobile, msg);
-
     }
+
+    public static void sendOtpToPartnerCreatedCandidate(int otp, String mobile) {
+        String msg = "Use OTP " + otp + " verify your profile";
+        sendSms(mobile, msg);
+    }
+
 }

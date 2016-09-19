@@ -14,6 +14,7 @@ import controllers.security.SecuredUser;
 import models.entity.*;
 import models.entity.OM.PartnerToCandidate;
 import models.entity.Static.PartnerType;
+import models.util.SmsUtil;
 import play.Logger;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static models.util.Util.generateOtp;
 import static play.libs.Json.toJson;
 
 import static play.mvc.Controller.request;
@@ -199,6 +201,11 @@ public class PartnerController {
                 if(isNewCandidate){ //save a record in partnerToCandidate
                     candidateSignUpResponse =
                             PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+                    int randomPIN = generateOtp();
+                    SmsUtil.sendOtpToPartnerCreatedCandidate(randomPIN, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+                    candidateSignUpResponse.setOtp(randomPIN);
+                } else{
+                    candidateSignUpResponse.setOtp(0);
                 }
             }
             return ok(toJson(candidateSignUpResponse));

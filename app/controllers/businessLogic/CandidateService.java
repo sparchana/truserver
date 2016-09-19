@@ -403,7 +403,7 @@ public class CandidateService
         // check if we have auth record for this candidate. if we dont have, create one with a temporary password
         Auth auth = AuthService.isAuthExists(candidate.getCandidateId());
         if (auth == null) {
-            if(channelType == InteractionChannelType.SUPPORT || channelType == InteractionChannelType.PARTNER){
+            if(channelType == InteractionChannelType.SUPPORT){
                 // TODO: differentiate between in/out call
                 createAndSaveDummyAuthFor(candidate);
                 interactionResult += " & " + ServerConstants.INTERACTION_NOTE_DUMMY_PASSWORD_CREATED;
