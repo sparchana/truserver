@@ -1,19 +1,22 @@
 <script>
     function logoutPartner() {
-        window.location = "/partner";
         try {
             $.ajax({
                 type: "GET",
                 url: "/logoutPartner",
                 data: false,
+                async: false,
                 contentType: false,
                 processData: false,
+                success: processDataLogoutPartner
             });
         } catch (exception) {
             console.log("exception occured!!" + exception);
         }
     }
-
+    function processDataLogoutPartner() {
+        window.location = "/partner";
+    }
 </script>
 
 <nav class="navbar navbar-fixed-top" style="background: #286ab6" role="navigation">
@@ -37,7 +40,7 @@
         <li><a href="/partner/candidate/0"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">ADD CANDIDATES</font></a></li>
         <li><a href="/partner/myCandidates"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">MY CANDIDATES</font></a></li>
         <li><a href="/partner/editProfile"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">PROFILE</font></a></li>
-        <li><a href="/partner" onclick="logoutPartner()"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">LOGOUT</font></a></li>
+        <li><a href="#" onclick="logoutPartner()"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">LOGOUT</font></a></li>
       </ul>
     </div>
   </div>
