@@ -13,6 +13,7 @@ import controllers.businessLogic.*;
 import controllers.security.SecuredUser;
 import models.entity.*;
 import models.entity.OM.PartnerToCandidate;
+import models.entity.Static.LeadSource;
 import models.entity.Static.PartnerType;
 import models.util.SmsUtil;
 import play.Logger;
@@ -193,7 +194,10 @@ public class PartnerController {
         String partnerId = session().get("partnerId");
         Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
         if(partner != null){
-            addSupportCandidateRequest.setLeadSource(ServerConstants.LEAD_SOURCE_PARTNER);
+            LeadSource leadSource = LeadSource.find.where().eq("leadSourceId", "25").findUnique();
+            if(leadSource != null){
+                addSupportCandidateRequest.setLeadSource(leadSource.getLeadSourceId());
+            }
             CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
                     InteractionService.InteractionChannelType.PARTNER,
                     ServerConstants.UPDATE_ALL_BY_SUPPORT);

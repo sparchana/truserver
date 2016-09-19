@@ -861,6 +861,7 @@ $(function() {
         if(statusCheck == 1){
             $("#registerBtnSubmit").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Saving");
             var candidatePreferredJob = [];
+            jobSelected = $('#candidateJobPref').val().split(",");
             /* Candidate job role preferences  */
             for (var i = 0; i < jobSelected.length; i++) {
                 candidatePreferredJob.push(parseInt(jobSelected[i]));
