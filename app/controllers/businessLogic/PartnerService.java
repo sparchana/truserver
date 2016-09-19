@@ -3,10 +3,7 @@ package controllers.businessLogic;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
-import api.http.httpResponse.CandidateSignUpResponse;
-import api.http.httpResponse.LoginResponse;
-import api.http.httpResponse.PartnerSignUpResponse;
-import api.http.httpResponse.ResetPasswordResponse;
+import api.http.httpResponse.*;
 import models.entity.*;
 import models.entity.OM.PartnerToCandidate;
 import models.entity.Static.Locality;
@@ -371,10 +368,38 @@ public class PartnerService {
     public static void sendCandidateVerificationSms(Candidate existingCandidate) {
         Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
         if(existingAuth != null){
-            String dummyPassword = String.valueOf(Util.randomLong());
-            AuthService.setNewPassword(existingAuth, dummyPassword);
+            Integer dummyOtp = Util.generateOtp();
+            AuthService.setNewPassword(existingAuth, String.valueOf(dummyOtp));
+            existingAuth.setOtp(dummyOtp);
             existingAuth.update();
-            SmsUtil.sendVerificationSms(existingCandidate.getCandidateFirstName(), existingCandidate.getCandidateMobile(), dummyPassword);
+            SmsUtil.sendOtpToPartnerCreatedCandidate(dummyOtp, existingCandidate.getCandidateMobile());
+        } else{
+            Logger.info("Auth doesnot exists");
         }
+    }
+
+    public static VerifyCandidateResponse verifyCandidateByPartner(VerifyCandidateRequest verifyCandidateRequest) {
+        VerifyCandidateResponse verifyCandidateResponse = new VerifyCandidateResponse();
+        Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(verifyCandidateRequest.getCandidateMobile()));
+        if(existingCandidate != null){
+            Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
+            if(existingAuth != null){
+                // auth for the user is present
+                if(verifyCandidateRequest.getUserOtp() == existingAuth.getOtp()){
+                    verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_SUCCESS);
+                    existingAuth.setAuthStatus(ServerConstants.CANDIDATE_STATUS_VERIFIED);
+                    existingAuth.update();
+                    CandidateService.sendDummyAuthForCandidateByPartner(existingCandidate);
+                } else{
+                    verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_WRONG_OTP);
+                }
+            } else{
+                // no auth found for the user
+                verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_FAILURE);
+            }
+        } else{
+            verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_FAILURE);
+        }
+        return verifyCandidateResponse;
     }
 }

@@ -881,6 +881,8 @@ $(function() {
                 candidateInstitute = null;
             }
 
+            candidateUnVerifiedMobile = phone;
+
             var d = {
                 //mandatory fields
                 candidateFirstName: firstName,
@@ -926,7 +928,14 @@ $(function() {
 
 function processDataSignUpSupportSubmit(returnedData) {
     if(returnedData.status == "1"){ //success
-        window.location = "/partner/myCandidates";
+        if(returnedData.otp != 0){
+            $("#messagePromptModal").modal("show");
+            $('#customMsgIcon').attr('src', "/assets/partner/img/applied.png");
+            $("#customMsg").html("Thank you for registering " +  $('#candidateFirstName').val() + " with mobile: +91" +  $('#candidateMobile').val()
+                + ". Please verify the candidate by entering the OTP received by the candidate");
+        } else{
+            window.location = "/partner/myCandidates";
+        }
     } else if(returnedData.status == "-1"){
         logoutPartner();
     } else{

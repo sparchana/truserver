@@ -5,6 +5,8 @@
 var localityArray = [];
 var jobArray = [];
 
+var candidateUnVerifiedMobile;
+
 function getLocality(){
     return localityArray;
 }
@@ -185,8 +187,9 @@ function viewCandidate(leadId) {
 }
 
 function verifyCandidate(mobile) {
+    candidateUnVerifiedMobile = ("+" + mobile);
     notifyWarning("Sending verification SMS to candidate with mobile: " + ("+" + mobile));
-    try {
+        try {
         $.ajax({
             type: "POST",
             url: "/sendCandidateVerificationSMS/" + ("+" + mobile),
@@ -201,9 +204,16 @@ function verifyCandidate(mobile) {
     }
 }
 
+function myCandidates(){
+    window.location = "/partner/myCandidates";
+}
+
 function processDataVerificationMsgCheck(returnedData) {
     if(returnedData == '1'){
         notifySuccess("Verification SMS sent!")
+        $("#messagePromptModal").modal("show");
+        $('#customMsgIcon').attr('src', "/assets/partner/img/applied.png");
+        $("#customMsg").html("Please verify the candidate by entering the OTP received by the candidate");
     } else{
         notifyError("Verification SMS sending failed!")
     }
@@ -218,34 +228,35 @@ function renderCandidateTable() {
                     var returned_data = new Array();
                     returnedData.forEach(function (candidate) {
                         returned_data.push({
-                            'candidateId': candidate.candidateId,
-                            'candidateName' : candidate.candidateName,
-                            'candidateMobile' :  candidate.candidateMobile,
-                            'candidateCreationTimestamp' : candidate.creationTimestamp,
+                            'candidateId': '<div class="mLabel" style="width:100%" >'+ candidate.candidateId + '</div>',
+                            'candidateName' : '<div class="mLabel" style="width:100%" >'+ candidate.candidateName + '</div>',
+                            'candidateMobile' : '<div class="mLabel" style="width:100%" >'+ candidate.candidateMobile + '</div>',
+                            'candidateCreationTimestamp' : '<div class="mLabel" style="width:100%" >'+ candidate.creationTimestamp + '</div>',
                             'candidateStatus' : function() {
                                 if (candidate.candidateStatus != null){
                                     if(candidate.candidateStatus == "1"){
                                         var statusVal;
                                         if(candidate.candidateActiveDeactive == '1'){
                                             statusVal = "Active";
-                                            return '<img src=\"/assets/partner/img/verified.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font color="#00b334" size=\"2\">&nbsp;&nbsp;' + statusVal +'</font></div>';
+                                            return '<div class="mLabel" style="width:100%" >'+ '<img src=\"/assets/partner/img/verified.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font color="#00b334" size=\"2\">&nbsp;&nbsp;' + statusVal +'</font></div>' +'</div>';
                                         } else{
                                             statusVal = "Deactivated";
-                                            return '<img src=\"/assets/partner/img/not_verified.svg\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font size=\"2\">&nbsp;&nbsp;' + statusVal +'</font></div>';
+                                            return '<div class="mLabel" style="width:100%" >'+ '<img src=\"/assets/partner/img/not_verified.svg\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font size=\"2\">&nbsp;&nbsp;' + statusVal +'</font></div>' +'</div>';
                                         }
                                     } else{
-                                        return '<img src=\"/assets/partner/img/not_verified.svg\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; cursor: hand\" onclick=\"verifyCandidate('+ candidate.candidateMobile+')\"><font size=\"2\">&nbsp;&nbsp;Verify via SMS</font></div>';
+                                        return '<button type="button" class="mBtn orange" style="width:100%" onclick=\"verifyCandidate('+ candidate.candidateMobile+')\" >'+ '<img src=\"/assets/partner/img/warning.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; cursor: hand\" >&nbsp;&nbsp;Verify</div>' +'</button>';
                                     }
                                 } else {
                                     return "-";
                                 }
                             },
-                            'btnView' : '<input type="submit" value="View/Edit" style="width:100%" onclick="viewCandidate('+candidate.leadId+')" id="viewCandidateBtn" class="btn btn-primary">'
+                            'btnView' : '<button type="button" class="mBtn blue" style="width:100%" onclick="viewCandidate('+candidate.leadId+')" id="viewCandidateBtn" >'+ 'View/Edit' +'</button>'
                         })
                     });
                     return returned_data;
                 }
             },
+
             "deferRender": true,
             "columns": [
                 { "data": "candidateId" },
@@ -266,6 +277,41 @@ function renderCandidateTable() {
         console.log("exception occured!!" + exception);
     }
 }
+
+function verifyCandidateOtp(){
+    var candidateOtp = $("#candidateOtp").val();
+    var candidateMobile = candidateUnVerifiedMobile;
+    var d = {
+        candidateMobile: candidateMobile,
+        userOtp: candidateOtp
+    };
+    $("#verifyOtp").prop('disabled',true);
+    $.ajax({
+        type: "POST",
+        url: "/verifyCandidateUsingOtp",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(d),
+        success: processDataVerifyCandidate
+    });
+}
+
+function processDataVerifyCandidate(returnedData) {
+    $("#verifyOtp").prop('disabled', false);
+    if(returnedData.status == 1){
+        $('#customMsgIcon').attr('src', "/assets/partner/img/correct.png");
+        $("#customMsg").html("candidate Verified");
+        $("#candidateOtp").hide();
+        $("#verifyOtp").hide();
+        $("#homeBtn").show();
+    } else if(returnedData.status == 2){
+        $('#customMsgIcon').attr('src', "/assets/partner/img/wrong.png");
+        $("#customMsg").html("Incorrect OTP. Please enter correct OTP!");
+    } else{
+        $("#customMsg").html("Something went wrong! Please try again");
+        $('#customMsgIcon').attr('src', "/assets/partner/img/wrong.png");
+    }
+}
+
 
 function notifyWarning(msg){
     $.notify(msg, "info");
