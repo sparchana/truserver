@@ -269,23 +269,6 @@ function processDataAllJobPosts(returnedData) {
     }
 }
 
-function processDataForJobPostLocation(returnedData) {
-    $("#jobNameConfirmation").html(returnedData.jobPostTitle);
-    $("#companyNameConfirmation").html(returnedData.company.companyName);
-    $('#jobLocality').html('');
-    var defaultOption=$('<option value="-1"></option>').text("Select Preferred Location");
-    $('#jobLocality').append(defaultOption);
-    var jobLocality = returnedData.jobPostToLocalityList;
-    jobLocality.forEach(function (locality) {
-        var item = {};
-        item ["id"] = locality.locality.localityId;
-        item ["name"] = " " + locality.locality.localityName;
-        jobLocalityArray.push(item);
-        var option=$('<option value=' + locality.locality.localityId + '></option>').text(locality.locality.localityName);
-        $('#jobLocality').append(option);
-    });
-}
-
 function confirmApply() {
     applyJob(jobPostId, prefLocation);
 }
@@ -303,10 +286,22 @@ $(function() {
 });
 
 function processDataAndFillMinProfile(returnedData) {
+    console.log(returnedData);
+    if(returnedData.candidateLastName == "" || returnedData.candidateLastName == null){
+        document.getElementById("userName").innerHTML = returnedData.candidateFirstName;
+    } else{
+        document.getElementById("userName").innerHTML = returnedData.candidateFirstName + " " + returnedData.candidateLastName;
+    }
+    document.getElementById("userMobile").innerHTML = returnedData.candidateMobile;
+
     minProfileComplete = returnedData.isMinProfileComplete;
     if(returnedData.isMinProfileComplete == 0){ // profile not complete
+        $(".profileComplete").hide();
+        $(".profileIncomplete").show();
         localStorage.setItem("minProfile", 0);
     } else{
+        $(".profileComplete").show();
+        $(".profileIncomplete").hide();
         localStorage.setItem("minProfile", 1);
     }
     if(returnedData.candidateIsAssessed == 1){
@@ -381,12 +376,10 @@ function processDataAndFillMinProfile(returnedData) {
         var birthDate = new Date(yr + "-" + month + "-" + d);
         var age = today.getFullYear() - birthDate.getFullYear();
         var m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate()))
-        {
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
             age--;
         }
         document.getElementById("userAge").innerHTML = ", " + age + " years";
-
     }
     try {
         var jobRoles = "";

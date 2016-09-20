@@ -20,27 +20,6 @@ function checkUserLogin(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-    var userMobile = localStorage.getItem("mobile");
-    var userName = localStorage.getItem("name");
-    var userLastName = localStorage.getItem("lastName");
-    if(userMobile != null){
-        try{
-            if(localStorage.getItem("gender") == 0){
-                $("#userImg").attr('src', '/assets/dashboard/img/userMale.svg');
-            } else{
-                $("#userImg").attr('src', '/assets/dashboard/img/userFemale.svg');
-            }
-            if(userLastName == "null" || userLastName == null){
-                document.getElementById("userName").innerHTML = userName;
-            } else{
-                document.getElementById("userName").innerHTML = userName + " " + userLastName;
-            }
-            document.getElementById("userMobile").innerHTML = userMobile;
-        } catch(err){}
-    }
-    else{
-        logoutUser();
-    }
     if(localStorage.getItem("assessed") == 0){
         $(".assessmentComplete").hide();
         $(".assessmentIncomplete").show();
