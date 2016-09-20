@@ -62,8 +62,8 @@ public class PartnerController {
         }
         Logger.info("JSON req: " + req);
 
-        InteractionService.InteractionChannelType channelType = InteractionService.InteractionChannelType.SELF;
-        return ok(toJson(PartnerService.signUpPartner(partnerSignUpRequest, channelType, ServerConstants.LEAD_SOURCE_WEBSITE)));
+        InteractionService.InteractionChannelType channelType = InteractionService.InteractionChannelType.PARTNER;
+        return ok(toJson(PartnerService.signUpPartner(partnerSignUpRequest, channelType, ServerConstants.LEAD_SOURCE_PARTNER)));
 
     }
 

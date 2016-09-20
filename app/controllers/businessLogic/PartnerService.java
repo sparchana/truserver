@@ -1,5 +1,6 @@
 package controllers.businessLogic;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
@@ -17,9 +18,9 @@ import javax.persistence.NonUniqueResultException;
 import java.util.List;
 import java.util.UUID;
 
-import static controllers.businessLogic.PartnerInterationService.createInteractionForPartnerLogin;
-import static controllers.businessLogic.PartnerInterationService.createInteractionForPartnerResetPassword;
-import static controllers.businessLogic.PartnerInterationService.createInteractionForPartnerSignUp;
+import static controllers.businessLogic.PartnerInteractionService.createInteractionForPartnerLogin;
+import static controllers.businessLogic.PartnerInteractionService.createInteractionForPartnerResetPassword;
+import static controllers.businessLogic.PartnerInteractionService.createInteractionForPartnerSignUp;
 import static models.util.Util.generateOtp;
 import static play.mvc.Controller.session;
 import static play.mvc.Results.ok;
@@ -96,7 +97,7 @@ public class PartnerService {
                 if(!(channelType == InteractionService.InteractionChannelType.SUPPORT)){
                     // triggers when partner is self created
                     triggerOtp(partner, partnerSignUpResponse);
-                    result = ServerConstants.INTERACTION_RESULT_NEW_PARTNER;
+                    result = InteractionConstants.INTERACTION_RESULT_NEW_PARTNER;
                     objectAUUId = partner.getPartnerUUId();
                 }
             } else {
@@ -107,19 +108,19 @@ public class PartnerService {
                     resetPartnerTypeAndLocality(partner, partnerSignUpRequest);
                     if(!(channelType == InteractionService.InteractionChannelType.SUPPORT)){
                         triggerOtp(partner, partnerSignUpResponse);
-                        result = ServerConstants.INTERACTION_RESULT_EXISTING_PARTNER_VERIFICATION;
+                        result = InteractionConstants.INTERACTION_RESULT_EXISTING_PARTNER_VERIFICATION;
                         objectAUUId = partner.getPartnerUUId();
                         partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_SUCCESS);
 
                     }
                 } else{
-                    result = ServerConstants.INTERACTION_RESULT_EXISTING_PARTNER_SIGNUP;
+                    result = InteractionConstants.INTERACTION_RESULT_EXISTING_PARTNER_SIGNUP;
                     partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_EXISTS);
                 }
                 partner.partnerUpdate();
             }
             //creating interaction
-            createInteractionForPartnerSignUp(objectAUUId, result, channelType);
+            createInteractionForPartnerSignUp(objectAUUId, result);
 
         } catch (NullPointerException n){
             n.printStackTrace();
@@ -211,7 +212,7 @@ public class PartnerService {
                 existingPartner.update();
                 SmsUtil.sendResetPasswordOTPSms(randomPIN, existingPartner.getPartnerMobile());
 
-                String interactionResult = ServerConstants.INTERACTION_RESULT_PARTNER_TRIED_TO_RESET_PASSWORD;
+                String interactionResult = InteractionConstants.INTERACTION_RESULT_PARTNER_TRIED_TO_RESET_PASSWORD;
                 String objAUUID = "";
                 objAUUID = existingPartner.getPartnerUUId();
                 createInteractionForPartnerResetPassword(objAUUID, interactionResult, channelType);
@@ -237,9 +238,8 @@ public class PartnerService {
         if(partner != null){
 
             // Initialize some basic interaction details
-            String createdBy = ServerConstants.INTERACTION_CREATED_SELF;
-            String interactionResult = ServerConstants.INTERACTION_RESULT_PARTNER_INFO_UPDATED_SELF;
-            Integer interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+            String createdBy = InteractionConstants.INTERACTION_CREATED_SELF;
+            String interactionResult = InteractionConstants.INTERACTION_RESULT_PARTNER_INFO_UPDATED_SELF;
 
             String interactionNote;
 
@@ -257,15 +257,14 @@ public class PartnerService {
 
                 // Set the appropriate interaction result
                 if(profileUpdateFlag == ServerConstants.UPDATE_BASIC_PROFILE) {
-                    interactionResult = ServerConstants.INTERACTION_RESULT_PARTNER_BASIC_PROFILE_INFO_UPDATED_SELF;
+                    interactionResult = InteractionConstants.INTERACTION_RESULT_PARTNER_BASIC_PROFILE_INFO_UPDATED_SELF;
                 }
             }
 
             // set the default interaction note string
-            interactionNote = ServerConstants.INTERACTION_NOTE_BLANK;
+            interactionNote = InteractionConstants.INTERACTION_NOTE_BLANK;
 
-            PartnerInterationService.createInteractionForPartnerProfileUpdate(partner.getPartnerUUId(),
-                    interactionType, interactionNote, interactionResult, createdBy);
+            PartnerInteractionService.createInteractionForPartnerProfileUpdate(partner.getPartnerUUId(), interactionNote, interactionResult, createdBy);
 
             partner.update();
 
