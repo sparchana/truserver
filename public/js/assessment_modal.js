@@ -1,13 +1,16 @@
 function createRadioButton(name, value, text, id) {
     var label = document.createElement("label");
-    label.style.margin = "8px";
+    label.style.margin = "8px 16px";
     label.class = "col-md-4";
     var radio = document.createElement("input");
     radio.type = "radio";
-    radio.style.margin = "3px";
+    radio.style.margin = "3px 6px";
     radio.name = name;
     radio.value = value;
     radio.id = id;
+    radio.onclick = function () {
+        $('.btn-success.btn-modal-submit').prop('disabled', false);
+    };
 
     label.appendChild(radio);
 
@@ -29,12 +32,15 @@ function processAssessmentQuestions(returnedData) {
         var assessmentBody = $('<div id="assessment_body"></div>');
         var prevJobRole = null;
         var jobRoleContainer;
+        var qCount = 0;
         returnedData.forEach(function (assessmentQ) {
             if(assessmentQ != null){
+                qCount++;
                 if(prevJobRole == null || prevJobRole != assessmentQ.jobRole.jobRoleId){
-                    jobRoleContainer = $('<div id="job_role_container_'+assessmentQ.jobRole.jobRoleId+'"><h4>'+assessmentQ.jobRole.jobName+'</h4></div>');
+                    jobRoleContainer = $('<div id="job_role_container_'+assessmentQ.jobRole.jobRoleId+'" class=""><h4 class="asssessmentTitle"> Assessment for '+assessmentQ.jobRole.jobName+'</h4></div>');
+                    qCount = 1;
                 }
-                var questionCard = $('<div id='+"QuestionID_" + assessmentQ.jobRole.jobRoleId +"_"+ assessmentQ.assessmentQuestionId+' class= "question_contianer"></div>').text(assessmentQ.questionText);
+                var questionCard = $('<div id='+"QuestionID_" + assessmentQ.jobRole.jobRoleId +"_"+ assessmentQ.assessmentQuestionId+' class= "question_contianer"></div>').text("Q"+ qCount +". "+assessmentQ.questionText);
                 var optionCardContainer = $('<div id='+"OptionContainerID_" + assessmentQ.jobRole.jobRoleId +"_"+ assessmentQ.assessmentQuestionId+' class= "row optionContainer"></div>');
 
                 if(assessmentQ.assessmentQuestionType != null &&  assessmentQ.assessmentQuestionType.assessmentQuestionTypeId == 1) {
@@ -62,7 +68,7 @@ function processAssessmentQuestions(returnedData) {
         });
         bootbox.dialog({
             className: "assessment-modal",
-            title: "Assessment Wizard",
+            title: "<h2 class='assessment-modal-title' style='color: #286ab6'>Job Application Assessment</h2>",
             message: assessmentBody,
             closeButton: true,
             animate: true,
@@ -74,9 +80,11 @@ function processAssessmentQuestions(returnedData) {
                     }
                 },
                 "Submit": {
-                    className: "btn-primary",
+                    className: "btn-success btn-modal-submit",
                     callback: function() {
-                        triggerFinalSubmission();
+                        if($("#assessment_body input[type='radio']:checked").size() > 0){
+                            triggerFinalSubmission();
+                        }
                     }
                 }
             },
@@ -84,6 +92,8 @@ function processAssessmentQuestions(returnedData) {
                 console.log(result);
             }
         });
+        $('.btn-success.btn-modal-submit').prop('disabled', true);
+
     }
 }
 

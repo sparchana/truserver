@@ -54,7 +54,7 @@ public class AssessmentService {
                 }
                 int l = optionList.size();
                 if(optionList.size() == 0){
-                    return null;
+                    return "NA";
                 }
                 Long prevJobRoleId =  optionList.get(0).getJobRoleId();
 
@@ -112,7 +112,7 @@ public class AssessmentService {
                 return "ok";
             }
         }
-        return null;
+        return "NA";
     }
 
     private static boolean shouldBeMarkedAsAssessed(List<Long> assessmentJobRoleIdList, List<Long> jobPrefJobRoleIdList){

@@ -20,3 +20,15 @@ body.assessment-modal .modal-open {
     margin-left: 0;
     margin-right: 0;
 }
+
+.asssessmentTitle{
+    /*    color: #fff;
+        padding: 2%;
+        background-color: #286ab6;*/
+    width: 100%;
+    color: #286ab6;
+    padding: 16px;
+    border-left: 3px solid #ffaf00;
+    background-color: #f8f8f8;
+
+}
