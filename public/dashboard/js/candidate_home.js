@@ -286,7 +286,6 @@ $(function() {
 });
 
 function processDataAndFillMinProfile(returnedData) {
-    console.log(returnedData);
     if(returnedData.candidateLastName == "" || returnedData.candidateLastName == null){
         document.getElementById("userName").innerHTML = returnedData.candidateFirstName;
     } else{
