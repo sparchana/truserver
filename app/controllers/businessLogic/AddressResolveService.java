@@ -54,7 +54,7 @@ import static play.libs.Json.toJson;
  *
  * There is always a chance of error in resolution. Further optimization should reduce it
  *
- * Tag: v2.0
+ * Tag: v2.1
  */
 
 public class AddressResolveService {
@@ -84,13 +84,7 @@ public class AddressResolveService {
     public static Locality getLocalityForLatLng(Double appxLatitude, Double appxLongitude) {
         List<String> nearByAddressList = new ArrayList<>();
         nearByAddressList.addAll(fetchNearByLocality(appxLatitude, appxLongitude, null));
-        Locality locality;
-        try {
-            locality = Locality.find.where().eq("localityName", determineLocality(nearByAddressList).trim().toLowerCase()).findList().get(0);
-        } catch (IndexOutOfBoundsException e){
-            /* List is empty hence locality set to null */
-            locality = null;
-        }
+        Locality locality = Locality.find.setMaxRows(1).where().eq("localityName", determineLocality(nearByAddressList).trim().toLowerCase()).findUnique();
         if(locality == null) {
             Logger.info("Locality is null!!");
         } else if((locality.getLat()==null || locality.getLat() == 0 || locality.getPlaceId() == null)) {
@@ -101,13 +95,7 @@ public class AddressResolveService {
 
     public static Locality getLocalityForPlaceId(String placeId){
         LatLng latLng = getLatLngForPlaceId(placeId);
-        Locality locality;
-        try {
-            locality =  Locality.find.where().eq("placeId", placeId).findList().get(0);
-        } catch (IndexOutOfBoundsException e){
-            /* List is empty hence locality set to null */
-            locality = null;
-        }
+        Locality locality =  Locality.find.setMaxRows(1).where().eq("placeId", placeId).findUnique();
         if(locality== null){
             locality = getLocalityForLatLng(latLng.latitude, latLng.longitude);
         }
@@ -122,13 +110,7 @@ public class AddressResolveService {
 
     public static LatLng getLatLngForPlaceId(String placeId){
         LatLng latLng = null;
-        Locality locality;
-        try {
-            locality =  Locality.find.where().eq("placeId", placeId).findList().get(0);
-        } catch (IndexOutOfBoundsException e){
-            /* List is empty hence locality set to null */
-            locality = null;
-        }
+        Locality locality =  Locality.find.setMaxRows(1).where().eq("placeId", placeId).findUnique();
         if(locality!= null){
             return new LatLng(locality.getLat(), locality.getLng());
         } else {
@@ -329,16 +311,13 @@ public class AddressResolveService {
                         placeId = addressJsonObj.getString("place_id");
                         Logger.info("DesiredData Found - placeId: "+ placeId + " locationName:"+ locationName);
 
-                        List<Locality> localityList = Locality.find.where()
+                        freshLocality  = Locality.find.setMaxRows(1).where()
                                 .or(eq("placeId", placeId), or(
                                         like("localityName", locationName.trim().toLowerCase() + "%"),
                                         like("localityName", locationNameShort.trim().toLowerCase() + "%")
                                     )
                                 )
-                                .findList();
-                        if(localityList.size() > 0){
-                            freshLocality = localityList.get(0);
-                        }
+                                .findUnique();
 
                         if(freshLocality==null) {
                             freshLocality = new Locality();
@@ -353,13 +332,7 @@ public class AddressResolveService {
 
 
                             /* Re-Check if it got saved */
-                            Locality newlocality;
-                            try {
-                                newlocality =  Locality.find.where().eq("placeId", freshLocality.getPlaceId()).findList().get(0);
-                            } catch (IndexOutOfBoundsException e){
-                                /* List is empty hence locality set to null */
-                                newlocality = null;
-                            }
+                            Locality newlocality =  Locality.find.setMaxRows(1).where().eq("placeId", freshLocality.getPlaceId()).findUnique();
                             if(newlocality!= null){
                                 Logger.info("Successfully saved new found locality i.e. "+freshLocality.getLocalityName()+" into db");
                                 return newlocality;

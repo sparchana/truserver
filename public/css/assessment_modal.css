@@ -1,0 +1,37 @@
+
+/* Important part */
+.assessment-modal .modal-dialog{
+    overflow-y: initial !important;
+    width:70% !important;
+}
+.assessment-modal .modal-body{
+    height: 400px;
+    overflow-y: auto;
+}
+.question_contianer {
+    margin: 16px 8px;
+}
+body.assessment-modal.modal-open {
+    overflow: hidden;
+    position:fixed;
+    width: 100%;
+}
+.assessment-modal .row.optionContainer{
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.asssessmentTitle{
+    /*    color: #fff;
+        padding: 2%;
+        background-color: #286ab6;*/
+    width: 100%;
+    color: #286ab6;
+    padding: 16px;
+    border-left: 3px solid #ffaf00;
+    background-color: #f8f8f8;
+
+}
+.assessment-modal.modal-content {
+    padding: 1%;
+}

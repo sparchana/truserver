@@ -6,26 +6,27 @@ var applyJobFlag = 0;
 var applyJobId = 0;
 
 function postLogin(returnedData) {
-    if(applyJobFlag == 1){
-        $("#myLoginModal").modal("hide");
-        applyJob(applyJobId, prefLocation);
-        applyJobFlag = 0;
-        applyJobId = 0;
-        $("#customSubMsg").html("Logging in ...");
-        $('#customSubMsg').modal({backdrop: 'static', keyboard: false});
-        setTimeout(function(){
-            window.location = "/dashboard/appliedJobs";
-        }, 3000);
-
-    } else{
-        window.location = "/dashboard";
-    }
     // Store
     localStorage.setItem("mobile", "+91" + candidateMobile);
     localStorage.setItem("name", returnedData.candidateFirstName);
     localStorage.setItem("lastName", returnedData.candidateLastName);
     localStorage.setItem("assessed", returnedData.isAssessed);
     localStorage.setItem("minProfile", returnedData.minProfile);
+
+    if(applyJobFlag == 1){
+        $("#myLoginModal").modal("hide");
+        applyJob(applyJobId, prefLocation, false);
+        $("#customSubMsg").html("Logging in ...");
+        $('#customSubMsg').modal({backdrop: 'static', keyboard: false});
+        var jp_id = applyJobId;
+        applyJobFlag = 0;
+        applyJobId = 0;
+        setTimeout(function(){
+            window.location = "/dashboard/appliedJobs/?assessment=true&jp_id="+jp_id;
+        }, 3000);
+    } else{
+        window.location = "/dashboard";
+    }
 }
 function processDataLogin(returnedData) {
     if(returnedData.status == 1) {

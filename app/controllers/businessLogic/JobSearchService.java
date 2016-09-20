@@ -42,10 +42,12 @@ public class JobSearchService {
                 .eq("jobPostIsHot", IS_HOT)
                 .query();
 
+
         query = query
                 .where()
                 .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
-                .query();*/
+                .query();
+*/
 
         if(jobRoleIds != null && !jobRoleIds.isEmpty() ) {
             query = query.select("*").fetch("jobRole")
