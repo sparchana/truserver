@@ -40,32 +40,35 @@ public class AssessmentService {
             if(!assessmentRequest.getResponseList().isEmpty()){
 
                 List<AssessmentSheetCol> colList = new ArrayList<>();
-                Long prevJobRoleId = null;
                 List<AssessmentRequest.AssessmentOption> optionList = assessmentRequest.getResponseList();
                 List<Long> assessmentQuestionIdList = new ArrayList<>();
-                List<Long> jobRoleIdList = new ArrayList<>();
+                List<Long> assessmentJobRoleIdList = new ArrayList<>();
 
                 optionList.sort((o1, o2) -> o1.getJobRoleId() >= o2.getJobRoleId() ? 1 : 0);
 
                 for(AssessmentRequest.AssessmentOption option : optionList) {
                     assessmentQuestionIdList.add(option.getAssessmentQuestionId());
-                    if(!jobRoleIdList.contains(option.getJobRoleId())) {
-                        jobRoleIdList.add(option.getJobRoleId());
+                    if(!assessmentJobRoleIdList.contains(option.getJobRoleId())) {
+                        assessmentJobRoleIdList.add(option.getJobRoleId());
                     }
                 }
                 int l = optionList.size();
+                if(optionList.size() == 0){
+                    return null;
+                }
+                Long prevJobRoleId =  optionList.get(0).getJobRoleId();
 
                 List<AssessmentQuestion> assessmentQuestionList = AssessmentQuestion.find.where().in("assessmentQuestionId", assessmentQuestionIdList).findList();
-                for(int i =0; i<l; i++) {
+                for(int i =0; i<l; ++i) {
                     AssessmentSheetCol assessmentSheetCol = new AssessmentSheetCol();
                     assessmentSheetCol.question = assessmentQuestionList.get(i).getQuestionText();
                     assessmentSheetCol.correctAnswer = assessmentQuestionList.get(i).getAnswer();
                     assessmentSheetCol.answer =  optionList.get(i).getAssessmentResponse();
                     colList.add(assessmentSheetCol);
-                    if(prevJobRoleId == null || prevJobRoleId != optionList.get(i).getJobRoleId() || i == l-1) {
+                    if(prevJobRoleId != optionList.get(i).getJobRoleId() || i == l-1) {
                         try {
                             if(prevJobRoleId != null || i == l-1) {
-                                JobRole jobRole = JobRole.find.where().eq("jobRoleId", optionList.get(i).getJobRoleId()).findUnique();
+                                JobRole jobRole = JobRole.find.where().eq("jobRoleId", prevJobRoleId).findUnique();
 
                                 /* save response to db for each attempt */
                                 CandidateAssessmentResponse caResponse = new CandidateAssessmentResponse();
@@ -87,15 +90,45 @@ public class AssessmentService {
                         prevJobRoleId = optionList.get(i).getJobRoleId();
                     }
                 }
-                candidate.setCandidateIsAssessed(ServerConstants.CANDIDATE_ASSESSED);
-                candidate.candidateUpdate();
+
+                /* check if eligible to be marked as is assessed */
+                List<Long> jobPrefJobRoleIdList = new ArrayList<>();
+                assessmentJobRoleIdList = new ArrayList<>();
+
+                List<JobPreference> jobPreferenceList = candidate.getJobPreferencesList();
+                for(JobPreference jobPreference: jobPreferenceList){
+                    jobPrefJobRoleIdList.add(jobPreference.getJobRole().getJobRoleId());
+                }
+                List<CandidateAssessmentResponse> candidateAssessmentResponseList = CandidateAssessmentResponse.find.where().eq("candidateId", candidate.getCandidateId()).findList();
+                for(CandidateAssessmentResponse candidateAssessmentResponse: candidateAssessmentResponseList){
+                    assessmentJobRoleIdList.add(candidateAssessmentResponse.getJobRole().getJobRoleId());
+                }
+                if(shouldBeMarkedAsAssessed(assessmentJobRoleIdList, jobPrefJobRoleIdList)){
+                    candidate.setCandidateIsAssessed(ServerConstants.CANDIDATE_ASSESSED);
+                    candidate.candidateUpdate();
+                    return "assessed";
+                }
+
                 return "ok";
             }
         }
         return null;
     }
 
-    public static void writeAssessmentToGoogleSheet(Long candidateId, String candidateMobile, String candidateName, String jobName,
+    private static boolean shouldBeMarkedAsAssessed(List<Long> assessmentJobRoleIdList, List<Long> jobPrefJobRoleIdList){
+        if(assessmentJobRoleIdList.size() == 0 || jobPrefJobRoleIdList.size() == 0){
+            return false;
+        }
+        for(Long prefRoleId: jobPrefJobRoleIdList){
+            if(!assessmentJobRoleIdList.contains(prefRoleId)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    private static void writeAssessmentToGoogleSheet(Long candidateId, String candidateMobile, String candidateName, String jobName,
                                                    List<AssessmentSheetCol> colList) throws UnsupportedEncodingException {
         /*
         *

@@ -89,7 +89,7 @@ function processAssessmentQuestions(returnedData) {
 
 function processPostAssessmentResponse(status) {
     console.log(JSON.stringify(status));
-    if(status == "ok"){
+    if(status == "assessed"){
         localStorage.setItem("assessed", "1");
         $(".assessmentIncomplete").hide();
         $(".assessmentComplete").show();

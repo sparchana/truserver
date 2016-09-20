@@ -1251,7 +1251,6 @@ public class Application extends Controller {
                 }
                 jobRoleIdList.removeAll(assessedJobRoleIdList);
             }
-            Logger.info("final: "+String.valueOf(toJson(jobRoleIdList)));
 
             List<AssessmentQuestion> assessmentQuestionList = AssessmentService.getQuestions(jobRoleIdList);
 
