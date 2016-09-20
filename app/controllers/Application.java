@@ -1202,10 +1202,27 @@ public class Application extends Controller {
         }
     }
 
-    public static Result getAssessmentQuestion(String jobRoleId, Integer limit, String jobPostId) {
+    @Security.Authenticated(SecuredUser.class)
+    public static Result getAssessmentQuestion(String jobRoleId, String jobPostId, Integer limit) {
+        /*
+        *  Since the flow is such that assessment is triggered only if user is logged in
+        *  and if jobroleid is null then jobpostid is used to resolve jobroleid and then passed to getQuestion
+        *  Hence In this flow, passing jobpostid to getQuestions methods seems useless. Never the less, methods is capable
+        *  of handling req with only jobpostid provided as param hence this param is retained
+        *
+        */
         if(session().get("candidateId") != null){
-            Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")).findUnique();
-            if(candidate.getCandidateIsAssessed() == 1) {
+            if(jobPostId != null && jobRoleId == null) {
+                JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+                jobRoleId = String.valueOf(jobPost.getJobRole().getJobRoleId());
+            }
+
+            CandidateAssessmentResponse candidateAssessmentResponse = CandidateAssessmentResponse.find.where()
+                    .eq("candidateId", session().get("candidateId"))
+                    .eq("jobRoleId", jobRoleId)
+                    .findUnique();
+
+            if(candidateAssessmentResponse !=null && jobRoleId != null && candidateAssessmentResponse.getJobRole().getJobRoleId() == Long.parseLong(jobRoleId)) {
                 return ok("Already Done");
             }
         }

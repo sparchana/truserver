@@ -67,7 +67,7 @@ GET         /getCandidateJobApplication                                   contro
 GET         /logoutUser                                                   controllers.Application.logoutUser()
 GET         /privacy                                                      controllers.Application.privacy()
 GET         /updateIsAssessedToAssessed                                   controllers.Application.updateIsAssessedToAssessed()
-GET         /getAssessmentQuestions/                                      controllers.Application.getAssessmentQuestion(jobRoleId: String ?= null, limit: Integer ?= null, jobPostId: String ?= null)
+GET         /getAssessmentQuestions/                                      controllers.Application.getAssessmentQuestion(jobRoleId: String ?= null, jobPostId: String ?= null, limit: Integer ?= null)
 
 POST        /addLead                                                      controllers.Application.addLead()
 POST        /addPassword                                                  controllers.Application.addPassword()

@@ -9,10 +9,7 @@ import controllers.businessLogic.CandidateService;
 import controllers.businessLogic.InteractionService;
 import models.entity.Candidate;
 import models.entity.JobPost;
-import models.entity.OM.CandidateSkill;
-import models.entity.OM.JobPreference;
-import models.entity.OM.LanguageKnown;
-import models.entity.OM.LocalityPreference;
+import models.entity.OM.*;
 import models.entity.Static.AssessmentQuestion;
 import models.entity.Static.JobRole;
 import models.entity.Static.Locality;
@@ -46,16 +43,14 @@ public class AssessmentService {
         if(candidateId != null){
             Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
             if(!assessmentRequest.getResponseList().isEmpty()){
-                /* For each job role make query */
+
                 List<AssessmentSheetCol> colList = new ArrayList<>();
                 Long prevJobRoleId = null;
                 List<AssessmentRequest.AssessmentOption> optionList = assessmentRequest.getResponseList();
-
-                optionList.sort((o1, o2) -> o1.getJobRoleId() >= o2.getJobRoleId()? 1 : 0);
-
-                Logger.info(String.valueOf(toJson(optionList)));
                 List<Long> assessmentQuestionIdList = new ArrayList<>();
                 List<Long> jobRoleIdList = new ArrayList<>();
+
+                optionList.sort((o1, o2) -> o1.getJobRoleId() >= o2.getJobRoleId() ? 1 : 0);
 
                 for(AssessmentRequest.AssessmentOption option : optionList) {
                     assessmentQuestionIdList.add(option.getAssessmentQuestionId());
@@ -64,6 +59,7 @@ public class AssessmentService {
                     }
                 }
                 int l = optionList.size();
+
                 List<AssessmentQuestion> assessmentQuestionList = AssessmentQuestion.find.where().in("assessmentQuestionId", assessmentQuestionIdList).findList();
                 for(int i =0; i<l; i++) {
                     AssessmentSheetCol assessmentSheetCol = new AssessmentSheetCol();
@@ -73,10 +69,21 @@ public class AssessmentService {
                     colList.add(assessmentSheetCol);
                     if(prevJobRoleId == null || prevJobRoleId != optionList.get(i).getJobRoleId() || i == l-1) {
                         try {
-                            if(prevJobRoleId != null ) {
+                            if(prevJobRoleId != null || i == l-1) {
+                                JobRole jobRole = JobRole.find.where().eq("jobRoleId", optionList.get(i).getJobRoleId()).findUnique();
+
+                                /* save response to db for each attempt */
+                                CandidateAssessmentResponse caResponse = new CandidateAssessmentResponse();
+                                caResponse.setCandidate(candidate);
+                                caResponse.setJobRole(jobRole);
+                                caResponse.save();
+                                Logger.info("caResponse saved");
+
+                                /* write response to google sheet */
                                 writeAssessmentToGoogleSheet(candidateId,
                                         candidate.getCandidateMobile(), candidate.getCandidateFullName(),
-                                        optionList.get(i).getJobRoleId(), colList);
+                                        jobRole.getJobName(), colList);
+
                                 colList = new ArrayList<>();
                             }
                         } catch (UnsupportedEncodingException e) {
@@ -93,7 +100,7 @@ public class AssessmentService {
         return null;
     }
 
-    public static void writeAssessmentToGoogleSheet(Long candidateId, String candidateMobile, String candidateName, Long jobRoleId,
+    public static void writeAssessmentToGoogleSheet(Long candidateId, String candidateMobile, String candidateName, String jobName,
                                                    List<AssessmentSheetCol> colList) throws UnsupportedEncodingException {
         /*
         *
@@ -102,8 +109,7 @@ public class AssessmentService {
         String candidateIdVal = String.valueOf(candidateId);
         String candidateMobileVal = candidateMobile.substring(3, 13);
         String candidateNameVal = candidateName;
-        String jobRoleVal = null;
-        JobRole jobRole = JobRole.find.where().eq("jobRoleId", jobRoleId).findUnique();
+        String jobRoleVal = jobName;
         String question1Val = "";
         String candidateAnswer1Val = "";
         String correctAnswer1Val = "";
@@ -120,9 +126,6 @@ public class AssessmentService {
         String candidateAnswer5Val = "";
         String correctAnswer5Val = "";
 
-        if(jobRole!= null) {
-            jobRoleVal = jobRole.getJobName();
-        }
         if(colList.size() > 0) {
             question1Val = colList.get(0).question == null ? "" : colList.get(0).question ;
             candidateAnswer1Val = colList.get(0).answer == null ? "" : colList.get(0).answer;
