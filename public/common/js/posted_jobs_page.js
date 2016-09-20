@@ -322,9 +322,9 @@ function processDataForHotJobPost(returnedData) {
     }
 
     //Company Details
-    if(returnedData.source != null || returnedData.source != 0){
+    if(returnedData.source == null || returnedData.source == 0){
         $(".posted_jobs_company_details").show();
-        $("#aboutCompanyTitle").show();
+        $("div#aboutCompanyTitle").show();
 
         if (returnedData.company.companyLocality != null ) {
             $("#postedJobCompanyLocation").html(returnedData.company.companyLocality.localityName);
@@ -344,7 +344,7 @@ function processDataForHotJobPost(returnedData) {
         }
     } else {
         $(".posted_jobs_company_details").hide();
-        $("#aboutCompanyTitle").hide();
+        $("div#aboutCompanyTitle").hide();
 
         if(returnedData.company.companyLogo != null){
             document.getElementById("postedJobCompanyLogo").src = returnedData.company.companyLogo;
