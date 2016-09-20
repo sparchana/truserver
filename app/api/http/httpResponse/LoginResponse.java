@@ -22,6 +22,8 @@ public class LoginResponse {
     public String authSessionId;
     public Long sessionExpiryInMilliSecond;
 
+    public Integer isCandidateVerified;
+
     /*
     * To cater mobile needs
     */
@@ -31,6 +33,14 @@ public class LoginResponse {
     public Long candidatePrefJobRoleIdTwo;
     public Long candidatePrefJobRoleIdThree;
     public String candidateHomeLocalityName;
+
+    public Integer getIsCandidateVerified() {
+        return isCandidateVerified;
+    }
+
+    public void setIsCandidateVerified(Integer isCandidateVerified) {
+        this.isCandidateVerified = isCandidateVerified;
+    }
 
     public int getMinProfile() {
         return minProfile;

@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+  <head>
+    <meta charset="UTF-8">
+    <title>Recruiter and Company Details - Support | Trujobs.in</title>
+    <link rel="stylesheet" href="/assets/support/css/material.indigo-pink.min.css">
+
+    <link rel="stylesheet" href="/assets/support/css/bootstrap.min.css">
+
+    <script type="text/javascript" src="/assets/support/js/jquery-1.12.0.min.js"></script>
+    <link rel="stylesheet" href="/assets/common/css/token-input.css" type="text/css" />
+    <link rel="stylesheet" href="/assets/common/css/token-input-facebook.css" type="text/css" />
+
+    <link rel="stylesheet" href="/assets/support/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css">
+    <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/dashboard.css">
+
+    <link rel="stylesheet" href="/assets/support/css/bootstrap-datetimepicker.min.css">
+    <script type="text/javascript" src="/assets/support/js/Moment.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lato" />
+    <link rel="stylesheet" href="/assets/support/css/nprogress.css">
+    <link rel="stylesheet" href="/assets/support/css/animate.css">
+    <script type="text/javascript" src="/assets/support/js/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
+
+    <script type="text/javascript" src="/assets/support/js/company_details.js"></script>
+    <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
+    <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css">
+  </head>
+
+  <body style="font-size: 13px;">
+    <div class="container">
+      <h2>
+        Company Section
+        <a href="/support">
+          <button class="btn" style="align-items: flex-end">Support Home</button>
+        </a>
+        <a href="/logout">
+          <button class="btn btn-danger" style="align-items: flex-end">Logout</button>
+        </a>
+      </h2>
+      <hr>
+
+      <div id="companySection" style="width: 68%; padding: 2%; background: #f8f2f8 ; margin: 2%">
+        <form id="company_form">
+            <!-- hidden field -->
+          <input id="companyId" style="display: none">
+          <div class="row">
+            <div class="col-sm-3"><h5>Company Name:</h5></div>
+            <div class="col-sm-9">
+              <input id="companyName" name="companyName" placeholder="Company Name" type="text" class="form-control input-md" >
+            </div>
+          </div>
+
+          <div class="row" style="margin-top: 4px">
+            <div class="col-sm-3"><h5>Company Locality:</h5></div>
+            <div class="col-sm-9">
+              <input type="text" id="companyLocality">
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Company Address:</h5></div>
+            <div class="col-sm-9">
+              <textarea rows="4" cols="80" id="companyAddress" class="form-control input-md" maxlength="1000"></textarea>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Company Pincode:</h5></div>
+            <div class="col-sm-9">
+              <input id="companyPinCode" name="companyPinCode" placeholder="Company PinCode" type="number" max="999999" class="form-control input-md" >
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Company Website:</h5></div>
+            <div class="col-sm-9">
+              <input id="companyWebsite" name="companyWebsite" placeholder="Company Website" type="text" class="form-control input-md" >
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Company Logo:</h5></div>
+            <div class="col-sm-9">
+              <br>
+              <input style="display: none" id="companyOldLogo" type="text" class="form-control input-md" >
+              <img id="companyLogoOld" width="120px">
+              <input type="file" id="companyLogo" onchange="readURL(this)" accept='image/*'><br>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Company Description:</h5></div>
+            <div class="col-sm-9">
+              <textarea rows="4" cols="80" id="companyDescription" class="form-control input-md" maxlength="5000"></textarea>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-sm-3"><h5>Company Employee Count:</h5></div>
+            <div class="col-sm-9">
+              <input id="companyEmployeeCount" maxlength="14" placeholder="Company Employee Count" type="text" class="form-control input-md">
+            </div>
+          </div>
+
+          <div class="row" style="margin-top: 4px">
+            <div class="col-sm-3"><h5>Company Type:</h5></div>
+            <div class="col-sm-9">
+              <select id="companyType" class="selectDropdown" ></select>
+            </div>
+          </div>
+
+          <div class="row" style="margin-top: 4px">
+            <div class="col-sm-3"><h5>Company Status:</h5></div>
+            <div class="col-sm-9">
+              <select id="companyStatus" class="selectDropdown" ></select>
+            </div>
+          </div>
+        </form>
+      </div>
+      <button class="btn btn-default" onclick="updateForm()">Save</button>
+      <br>
+    </div>
+      <!-- Javascript import -->
+    <script>
+      function showCompanyForm(){
+        $("#companySection").toggle();
+      }
+    </script>
+    <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+    <script type="text/javascript" src="/assets/support/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/support/js/add_company.js"></script>
+    <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
+    <script type="text/javascript" src="/assets/support/js/bootstrap-datetimepicker.min.js"></script>
+  </body>
+</html>

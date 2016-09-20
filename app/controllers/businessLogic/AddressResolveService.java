@@ -26,6 +26,8 @@ import java.net.URLEncoder;
 import java.util.*;
 
 import static com.avaje.ebean.Expr.eq;
+import static com.avaje.ebean.Expr.like;
+import static com.avaje.ebean.Expr.or;
 import static models.util.Util.RoundTo6Decimals;
 import static play.libs.Json.toJson;
 
@@ -52,6 +54,7 @@ import static play.libs.Json.toJson;
  *
  * There is always a chance of error in resolution. Further optimization should reduce it
  *
+ * Tag: v2.0
  */
 
 public class AddressResolveService {
@@ -81,7 +84,13 @@ public class AddressResolveService {
     public static Locality getLocalityForLatLng(Double appxLatitude, Double appxLongitude) {
         List<String> nearByAddressList = new ArrayList<>();
         nearByAddressList.addAll(fetchNearByLocality(appxLatitude, appxLongitude, null));
-        Locality locality =  Locality.find.where().eq("localityName", determineLocality(nearByAddressList).trim().toLowerCase()).findUnique();
+        Locality locality;
+        try {
+            locality = Locality.find.where().eq("localityName", determineLocality(nearByAddressList).trim().toLowerCase()).findList().get(0);
+        } catch (IndexOutOfBoundsException e){
+            /* List is empty hence locality set to null */
+            locality = null;
+        }
         if(locality == null) {
             Logger.info("Locality is null!!");
         } else if((locality.getLat()==null || locality.getLat() == 0 || locality.getPlaceId() == null)) {
@@ -92,7 +101,13 @@ public class AddressResolveService {
 
     public static Locality getLocalityForPlaceId(String placeId){
         LatLng latLng = getLatLngForPlaceId(placeId);
-        Locality locality =  Locality.find.where().eq("placeId", placeId).findUnique();
+        Locality locality;
+        try {
+            locality =  Locality.find.where().eq("placeId", placeId).findList().get(0);
+        } catch (IndexOutOfBoundsException e){
+            /* List is empty hence locality set to null */
+            locality = null;
+        }
         if(locality== null){
             locality = getLocalityForLatLng(latLng.latitude, latLng.longitude);
         }
@@ -107,7 +122,13 @@ public class AddressResolveService {
 
     public static LatLng getLatLngForPlaceId(String placeId){
         LatLng latLng = null;
-        Locality locality = Locality.find.where().eq("placeId", placeId).findUnique();
+        Locality locality;
+        try {
+            locality =  Locality.find.where().eq("placeId", placeId).findList().get(0);
+        } catch (IndexOutOfBoundsException e){
+            /* List is empty hence locality set to null */
+            locality = null;
+        }
         if(locality!= null){
             return new LatLng(locality.getLat(), locality.getLng());
         } else {
@@ -232,9 +253,11 @@ public class AddressResolveService {
         Double latitude = 0D;
         Double longitude = 0D;
         String locationName = null;
+        String locationNameShort = null;
         String placeId = null;
         String cityName = null;
         String stateName = null;
+        String country = null;
         /* Parse JSON */
         try {
             jsonObj = new JSONObject(jsonResults.toString());
@@ -260,21 +283,38 @@ public class AddressResolveService {
                             *  since api's hierarchy is such that sublocality_2 is found before sublocality_1
                             *  and both have sublocality as type. hence in hierarchy whichever element with type sublocality
                             *  is found at last that value persists through out the process
+                            *
+                            *  administrative_area_level_2 gives city/district level info
                             * */
                             if(tempTypesArray.get(j).toString().equalsIgnoreCase("sublocality")
                                     || tempTypesArray.get(j).toString().equalsIgnoreCase("route")
                                     || tempTypesArray.get(j).toString().equalsIgnoreCase("neighborhood") ) {
                                 locationName = objectOfInterest.getString("long_name");
+                                locationNameShort = objectOfInterest.getString("short_name");
                                 Logger.info("Found locationName: "+locationName );
-
                                 isDesiredData = true;
                             } else if(tempTypesArray.get(j).toString().equalsIgnoreCase("locality")) {
+                                if(locationName != null){
+                                    cityName = objectOfInterest.getString("long_name");
+                                    Logger.info("cityName: "+cityName);
+                                } else {
+                                    locationName = objectOfInterest.getString("long_name");
+                                    locationNameShort = objectOfInterest.getString("short_name");
+                                    Logger.info("LocationName:: " + locationName);
+                                    isDesiredData = true;
+                                }
+                            }
+                            else if(cityName == null && tempTypesArray.get(j).toString().equalsIgnoreCase("administrative_area_level_2")) {
                                 cityName = objectOfInterest.getString("long_name");
                                 Logger.info("cityName: "+cityName);
                             }
                             else if(tempTypesArray.get(j).toString().equalsIgnoreCase("administrative_area_level_1")) {
                                 stateName = objectOfInterest.getString("long_name");
                                 Logger.info("stateName: "+stateName);
+                            }
+                            else if(tempTypesArray.get(j).toString().equalsIgnoreCase("country")) {
+                                country = objectOfInterest.getString("long_name");
+                                Logger.info("country: "+country);
                             }
                         }
                     }
@@ -289,9 +329,17 @@ public class AddressResolveService {
                         placeId = addressJsonObj.getString("place_id");
                         Logger.info("DesiredData Found - placeId: "+ placeId + " locationName:"+ locationName);
 
-                        freshLocality = Locality.find.where()
-                                .or(eq("placeId", placeId), eq("localityName", locationName.trim().toLowerCase()))
-                                .findUnique();
+                        List<Locality> localityList = Locality.find.where()
+                                .or(eq("placeId", placeId), or(
+                                        like("localityName", locationName.trim().toLowerCase() + "%"),
+                                        like("localityName", locationNameShort.trim().toLowerCase() + "%")
+                                    )
+                                )
+                                .findList();
+                        if(localityList.size() > 0){
+                            freshLocality = localityList.get(0);
+                        }
+
                         if(freshLocality==null) {
                             freshLocality = new Locality();
                             freshLocality.setLocalityName(WordUtils.capitalize(locationName));
@@ -299,13 +347,19 @@ public class AddressResolveService {
                             freshLocality.setLng(longitude);
                             freshLocality.setCity(WordUtils.capitalize(cityName));
                             freshLocality.setState(WordUtils.capitalize(stateName));
-                            freshLocality.setCountry("India");
+                            freshLocality.setCountry(country);
                             freshLocality.setPlaceId(placeId);
                             freshLocality.save();
 
 
                             /* Re-Check if it got saved */
-                            Locality newlocality = Locality.find.where().eq("placeId", freshLocality.getPlaceId()).findUnique();
+                            Locality newlocality;
+                            try {
+                                newlocality =  Locality.find.where().eq("placeId", freshLocality.getPlaceId()).findList().get(0);
+                            } catch (IndexOutOfBoundsException e){
+                                /* List is empty hence locality set to null */
+                                newlocality = null;
+                            }
                             if(newlocality!= null){
                                 Logger.info("Successfully saved new found locality i.e. "+freshLocality.getLocalityName()+" into db");
                                 return newlocality;
@@ -331,7 +385,7 @@ public class AddressResolveService {
                                 freshLocality.setState(stateName); isChanged=true;
                             }
                             if(freshLocality.getCountry() == null || freshLocality.getCountry().trim().isEmpty()) {
-                                freshLocality.setCountry("India"); isChanged=true;
+                                freshLocality.setCountry(country); isChanged=true;
                             }
                             if(isChanged){
                                 Logger.warn("Static Data "+freshLocality.getLocalityName() + " in Locality update");
@@ -341,7 +395,7 @@ public class AddressResolveService {
                         break;
                     } else {
                         Logger.warn("LatLng is of a Remote Area. Couldn't resolved "+locationName+" till locality level. Found Incomplete final obj of interest as : "+locationName+"-"+ cityName+"-"+stateName);
-                        SmsUtil.sendLocalityNotResolvedSmsToDevTeam(locationName, cityName, stateName, latitude, longitude);
+                        SmsUtil.sendLocalityNotResolvedSmsToDevTeam(locationName, cityName, stateName);
                     }
                 }
             }
@@ -566,5 +620,37 @@ public class AddressResolveService {
         List<String> nearyByAddressList = new ArrayList<>();
         nearyByAddressList.addAll(fetchNearByLocality(latitude, longitude, radius));
         return determineLocality(nearyByAddressList);
+    }
+
+
+    /**
+     * Important !!
+     * Both methods belows are used to prepopulate the db. Its doesnot resolves all locality correctly
+     * and is unstable as of now.
+     *
+     */
+    private static StringBuilder getJSONForAddress(String addressToResolve, LatLng southwest, LatLng northeast) {
+        Logger.info("addressToResolve: "+addressToResolve);
+        StringBuilder sb = null;
+        try {
+            sb = new StringBuilder(GOOGLE_MAPS_API_BASE_URL + TYPE_GEOCODE + OUT_JSON);
+            sb.append("?key=" + API_KEY);
+            sb.append("&address="+ URLEncoder.encode(addressToResolve, "utf-8"));
+            sb.append("&bounds="+ URLEncoder.encode(boundsToString(new LatLngBounds(southwest, northeast)), "utf-8"));
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return executeUrl(sb.toString());
+    }
+
+    public static Locality insertOrUpdateLocality(String localityName, LatLng southwest, LatLng northeast){
+
+        // Log.d(TAG, jsonResults.toString());
+        StringBuilder jsonResults = getJSONForAddress(localityName, southwest, northeast);
+
+        Locality freshLocality = parseAndGetLocality(jsonResults);
+        Logger.info("locality:"+toJson(freshLocality));
+        return freshLocality;
     }
 }

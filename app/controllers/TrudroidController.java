@@ -234,7 +234,8 @@ public class TrudroidController {
 
     public static Result mGetAllJobRoles() {
         JobRoleResponse.Builder jobRoleResponseBuilder = JobRoleResponse.newBuilder();
-        List<models.entity.Static.JobRole> jobRoleList = models.entity.Static.JobRole.find.all();
+        List<models.entity.Static.JobRole> jobRoleList =
+                models.entity.Static.JobRole.find.where().orderBy().asc("jobName").findList();
 
         jobRoleResponseBuilder.addAllJobRole(getJobRoleObjectListFromJobRoleList(jobRoleList));
         return ok(Base64.encodeBase64String(jobRoleResponseBuilder.build().toByteArray()));
@@ -280,7 +281,7 @@ public class TrudroidController {
             jobPostBuilder.setJobPostCompanyName(jobPost.getCompany().getCompanyName());
             jobPostBuilder.setJobPostMinSalary(jobPost.getJobPostMinSalary());
             jobPostBuilder.setJobPostMaxSalary(jobPost.getJobPostMaxSalary());
-            jobPostBuilder.setVacancies(jobPost.getJobPostVacancies());
+            if(jobPost.getJobPostVacancies() != null) jobPostBuilder.setVacancies(jobPost.getJobPostVacancies());
 
             if (jobPost.getJobRole() != null) {
                 jobPostBuilder.setJobRole(jobPost.getJobRole().getJobName());
@@ -303,6 +304,9 @@ public class TrudroidController {
 
             List<JobPostToLocality> localityList = jobPost.getJobPostToLocalityList();
             jobPostBuilder.addAllJobPostLocality(getLocalityFromJobToLocalityObject(localityList));
+
+            jobPostBuilder.setJobPostSource(jobPost.getSource());
+
             jobPostListToReturn.add(jobPostBuilder.build());
         }
 
@@ -595,7 +599,7 @@ public class TrudroidController {
         }
 
         jobPostBuilder.setJobPostCreationMillis(jobPost.getJobPostCreateTimestamp().getTime());
-        jobPostBuilder.setVacancies(jobPost.getJobPostVacancies());
+        if(jobPost.getJobPostVacancies() != null)jobPostBuilder.setVacancies(jobPost.getJobPostVacancies());
         if (jobPost.getJobPostStartTime() == null) {
             jobPostBuilder.setJobPostStartTime(-1);
         } else {
@@ -613,11 +617,11 @@ public class TrudroidController {
         jobPostBuilder.setJobPostCompanyLogo(jobPost.getCompany().getCompanyLogo());
         jobPostBuilder.setJobPostTitle(jobPost.getJobPostTitle());
         jobPostBuilder.setJobPostMinSalary(jobPost.getJobPostMinSalary());
-        jobPostBuilder.setJobPostMaxSalary(jobPost.getJobPostMaxSalary());
-        jobPostBuilder.setJobPostDescription(jobPost.getJobPostDescription());
-        jobPostBuilder.setJobPostIncentives(jobPost.getJobPostIncentives());
-        jobPostBuilder.setJobPostMinRequirements(jobPost.getJobPostMinRequirement());
-        jobPostBuilder.setJobPostAddress(jobPost.getJobPostAddress());
+        if(jobPost.getJobPostMaxSalary() != null)jobPostBuilder.setJobPostMaxSalary(jobPost.getJobPostMaxSalary());
+        if(jobPost.getJobPostDescription() != null)jobPostBuilder.setJobPostDescription(jobPost.getJobPostDescription());
+        if(jobPost.getJobPostIncentives() != null)jobPostBuilder.setJobPostIncentives(jobPost.getJobPostIncentives());
+        if(jobPost.getJobPostMinRequirement() != null)jobPostBuilder.setJobPostMinRequirements(jobPost.getJobPostMinRequirement());
+        if(jobPost.getJobPostAddress() != null)jobPostBuilder.setJobPostAddress(jobPost.getJobPostAddress());
         if (jobPost.getJobPostWorkingDays() != null) {
             jobPostBuilder.setJobPostWorkingDays(Integer.toString(jobPost.getJobPostWorkingDays(), 2));
         } else {
@@ -662,7 +666,7 @@ public class TrudroidController {
         //setting values of company model object to proto company object
         companyBuilder.setCompanyName(company.getCompanyName());
         companyBuilder.setCompanyId(company.getCompanyId());
-        companyBuilder.setCompanyAddress(company.getCompanyAddress());
+        if(company.getCompanyAddress() != null)companyBuilder.setCompanyAddress(company.getCompanyAddress());
 
         //adding company Locality
         LocalityObject.Builder companyLocality = LocalityObject.newBuilder();
@@ -848,13 +852,24 @@ public class TrudroidController {
         localityName = localityName.trim();
         Logger.info("setting home loality to "+localityName);
         Locality mLocality = null;
-        if(placeId != null || !placeId.trim().isEmpty()){
-            mLocality = Locality.find.where().eq("placeId", placeId).findUnique();
+        if(placeId != null || !placeId.trim().isEmpty()){Locality locality;
+            try {
+                mLocality =  Locality.find.where().eq("placeId", placeId).findList().get(0);
+
+            } catch (IndexOutOfBoundsException e){
+                /* List is empty hence locality set to null */
+                mLocality = null;
+            }
             if(mLocality != null) {
                 return mLocality;
             }
-        } else if (mLocality == null && localityName != null && isValidLocalityName(localityName)) {
-            mLocality = Locality.find.where().eq("localityName", localityName).findUnique();
+        } else if (localityName != null && isValidLocalityName(localityName)) {
+            try {
+                mLocality =  Locality.find.where().eq("localityName", localityName).findList().get(0);
+            } catch (IndexOutOfBoundsException e){
+                /* List is empty hence locality set to null */
+                mLocality = null;
+            }
             if (mLocality != null) {
                 if(mLocality.getLat() == null || mLocality.getLat() == 0.0
                         || mLocality.getLng() == null || mLocality.getLng() == 0.0) {
@@ -873,7 +888,12 @@ public class TrudroidController {
         locality.setLng(longitude);
         locality.setPlaceId(placeId);
         locality.save();
-        locality = Locality.find.where().eq("localityName", localityName).findUnique();
+        try {
+            locality =  Locality.find.where().eq("localityName", localityName).findList().get(0);
+        } catch (IndexOutOfBoundsException e){
+            /* List is empty hence locality set to null */
+            locality = null;
+        }
         return locality;
     }
 
