@@ -133,10 +133,10 @@ function getAssessmentQuestions(jobRoleId, jobPostId) {
     if(base_api_url != null || jobPostId != null) {
         base_api_url +="?";
         if(jobRoleId != null) {
-            base_api_url += "jobRoleId=" + jobRoleId;
+            base_api_url += "jobRoleIds=" + jobRoleId;
         }
         if(jobPostId != null){
-            base_api_url += "jobPostId=" + jobPostId;
+            base_api_url += "jobPostIds=" + jobPostId;
         }
     }
     try {

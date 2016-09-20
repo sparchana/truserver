@@ -26,15 +26,10 @@ import static play.libs.Json.toJson;
  * Created by zero on 15/9/16.
  */
 public class AssessmentService {
-    public static List<AssessmentQuestion> getQuestions(Long jobRoleId, Long jobPostId){
+    public static List<AssessmentQuestion> getQuestions(List<Long> jobRoleIdList){
         List<AssessmentQuestion> assessmentQuestionList = new ArrayList<>();
-        if(jobRoleId != null) {
-            assessmentQuestionList.addAll(AssessmentQuestion.find.where().eq("jobRoleId", jobRoleId).orderBy().asc("jobRoleId").findList());
-        } else if(jobPostId != null){
-            JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
-            if(jobPost != null) assessmentQuestionList.addAll(AssessmentQuestion.find.where().eq("jobRoleId", jobPost.getJobRole().getJobRoleId()).orderBy().asc("jobRoleId").findList());
-        } else{
-            assessmentQuestionList.addAll(AssessmentQuestion.find.orderBy().asc("jobRoleId").findList());
+        if(jobRoleIdList.size() > 0) {
+            assessmentQuestionList.addAll(AssessmentQuestion.find.where().in("jobRoleId", jobRoleIdList).orderBy().asc("jobRoleId").findList());
         }
         return assessmentQuestionList;
     }

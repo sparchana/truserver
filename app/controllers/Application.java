@@ -1203,34 +1203,63 @@ public class Application extends Controller {
     }
 
     @Security.Authenticated(SecuredUser.class)
-    public static Result getAssessmentQuestion(String jobRoleId, String jobPostId, Integer limit) {
+    public static Result getAssessmentQuestion(String jobRoleIds, String jobPostIds, Integer limit) {
+
         /*
         *  Since the flow is such that assessment is triggered only if user is logged in
         *  and if jobroleid is null then jobpostid is used to resolve jobroleid and then passed to getQuestion
-        *  Hence In this flow, passing jobpostid to getQuestions methods seems useless. Never the less, methods is capable
-        *  of handling req with only jobpostid provided as param hence this param is retained
         *
         */
         if(session().get("candidateId") != null){
-            if(jobPostId != null && jobRoleId == null) {
-                JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
-                jobRoleId = String.valueOf(jobPost.getJobRole().getJobRoleId());
+            Long candidateId = Long.parseLong(session().get("candidateId"));
+            List<Long> jobRoleIdList = new ArrayList<>();
+            if(jobRoleIds != null){
+                List<String> jobRoleIdStrList = Arrays.asList(jobRoleIds.split("\\s*,\\s*"));
+                if (jobRoleIdStrList.size() > 0){
+                    for (String roleId: jobRoleIdStrList) {
+                        jobRoleIdList.add(Long.parseLong(roleId));
+                    }
+                }
+            } else {
+                if(jobPostIds != null) {
+                    List<String> jobPostIdStrList = Arrays.asList(jobPostIds.split("\\s*,\\s*"));
+                    List<JobPost> jobPostList = JobPost.find.where().in("jobPostId", jobPostIdStrList).findList();
+                    for(JobPost jobPost : jobPostList) {
+                        jobRoleIdList.add(jobPost.getJobRole().getJobRoleId());
+                    }
+                } else {
+                    Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
+                    for(JobPreference jobPreference : candidate.getJobPreferencesList()){
+                        jobRoleIdList.add(jobPreference.getJobRole().getJobRoleId());
+                    }
+                }
             }
 
-            CandidateAssessmentResponse candidateAssessmentResponse = CandidateAssessmentResponse.find.where()
-                    .eq("candidateId", session().get("candidateId"))
-                    .eq("jobRoleId", jobRoleId)
-                    .findUnique();
-
-            if(candidateAssessmentResponse !=null && jobRoleId != null && candidateAssessmentResponse.getJobRole().getJobRoleId() == Long.parseLong(jobRoleId)) {
+            List<CandidateAssessmentResponse> candidateAssessmentResponseList = CandidateAssessmentResponse.find.where()
+                    .eq("candidate.candidateId", candidateId)
+                    .in("jobRole.jobRoleId", jobRoleIdList)
+                    .findList();
+            if (candidateAssessmentResponseList != null && jobRoleIdList.size() > 0 && candidateAssessmentResponseList.size() == jobRoleIdList.size()) {
                 return ok("Already Done");
+            } else {
+                // filter out all jobroles out of job prefs which are not attempted
+                List<Long> assessedJobRoleIdList = new ArrayList<>();
+                for (CandidateAssessmentResponse caRes : candidateAssessmentResponseList){
+                    if(jobRoleIdList.contains(caRes.getJobRole().getJobRoleId())){
+                        assessedJobRoleIdList.add(caRes.getJobRole().getJobRoleId());
+                    }
+                }
+                jobRoleIdList.removeAll(assessedJobRoleIdList);
+            }
+            Logger.info("final: "+String.valueOf(toJson(jobRoleIdList)));
+
+            List<AssessmentQuestion> assessmentQuestionList = AssessmentService.getQuestions(jobRoleIdList);
+
+            if(assessmentQuestionList.size() > 0){
+                return ok(toJson(assessmentQuestionList));
             }
         }
-        List<AssessmentQuestion> assessmentQuestionList = AssessmentService.getQuestions(jobRoleId == null ? null : Long.valueOf(jobRoleId), jobPostId == null ? null : Long.valueOf(jobPostId));
-        if(assessmentQuestionList.size() < 1){
-            return ok("NA");
-        }
-        return ok(toJson(assessmentQuestionList));
+        return ok("NA");
     }
 
     @Security.Authenticated(SecuredUser.class)
