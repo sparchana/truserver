@@ -13,7 +13,9 @@ import controllers.businessLogic.*;
 import controllers.security.SecuredUser;
 import models.entity.*;
 import models.entity.OM.PartnerToCandidate;
+import models.entity.Static.LeadSource;
 import models.entity.Static.PartnerType;
+import models.util.SmsUtil;
 import play.Logger;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static models.util.Util.generateOtp;
 import static play.libs.Json.toJson;
 
 import static play.mvc.Controller.request;
@@ -37,7 +40,7 @@ import static play.mvc.Results.redirect;
  */
 public class PartnerController {
     public static Result partnerIndex() {
-        String sessionId = session().get("sessionId");
+        String sessionId = session().get("partnerId");
         if(sessionId != null){
             return redirect("/partner/home");
         }
@@ -191,7 +194,10 @@ public class PartnerController {
         String partnerId = session().get("partnerId");
         Partner partner = Partner.find.where().eq("partner_id", partnerId).findUnique();
         if(partner != null){
-            addSupportCandidateRequest.setLeadSource(ServerConstants.LEAD_SOURCE_PARTNER);
+            LeadSource leadSource = LeadSource.find.where().eq("leadSourceId", addSupportCandidateRequest.getLeadSource()).findUnique();
+            if(leadSource != null){
+                addSupportCandidateRequest.setLeadSource(leadSource.getLeadSourceId());
+            }
             CandidateSignUpResponse candidateSignUpResponse = CandidateService.createCandidateProfile(addSupportCandidateRequest,
                     InteractionService.InteractionChannelType.PARTNER,
                     ServerConstants.UPDATE_ALL_BY_SUPPORT);
@@ -199,6 +205,17 @@ public class PartnerController {
                 if(isNewCandidate){ //save a record in partnerToCandidate
                     candidateSignUpResponse =
                             PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+                    int randomPIN = generateOtp();
+                    Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+                    Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
+                    if(existingAuth != null){
+                        existingAuth.setOtp(randomPIN);
+                        existingAuth.update();
+                    }
+                    SmsUtil.sendOtpToPartnerCreatedCandidate(randomPIN, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+                    candidateSignUpResponse.setOtp(randomPIN);
+                } else{
+                    candidateSignUpResponse.setOtp(0);
                 }
             }
             return ok(toJson(candidateSignUpResponse));
@@ -293,5 +310,18 @@ public class PartnerController {
         }else{
             return ok("0");
         }
+    }
+
+    public static Result verifyCandidateUsingOtp() {
+        JsonNode req = request().body().asJson();
+        VerifyCandidateRequest verifyCandidateRequest = new VerifyCandidateRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            verifyCandidateRequest = newMapper.readValue(req.toString(), VerifyCandidateRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Logger.info("Req JSON : " + req);
+        return ok(toJson(PartnerService.verifyCandidateByPartner(verifyCandidateRequest)));
     }
 }

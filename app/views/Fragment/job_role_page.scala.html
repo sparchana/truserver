@@ -71,6 +71,7 @@
                         $('#nav_bar_inc').load('/navBarLoggedIn');
                     } else if(returnedData == '2'){
                         $('#nav_bar_inc').load('/partnerNavBarLoggedIn');
+                        $(".leadBox").hide();
                     } else {
                         $('#nav_bar_inc').load('/navBar');
                     }
@@ -218,13 +219,14 @@
                 </div>
 
                 <div style="margin-top: 8px">
-                    <input type="text" id="candidateLocality" style="margin-top: 4px">
+                    <input type="text" id="candidateHomeLocality" style="margin-top: 4px">
                     <script type="text/javascript">
                             $(document).ready(function () {
-                                $("#candidateLocality").tokenInput(getLocality(), {
+                                $("#candidateHomeLocality").tokenInput(getLocality(), {
                                     theme: "facebook",
                                     placeholder: "Where do you want to Work?",
                                     minChars: 3,
+                                    tokenLimit: 1,
                                     hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
                                     preventDuplicates: true
                                 });

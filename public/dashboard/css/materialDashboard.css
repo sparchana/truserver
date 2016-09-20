@@ -315,6 +315,18 @@ hr{
     color: #ffffff;
 }
 
+.navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus {
+     background-color: transparent;
+}
+
+.navbar-default .navbar-toggle {
+     border-color: transparent;
+}
+
+.navbar-default .navbar-toggle .icon-bar {
+    background-color: #ffffff;
+}
+
 @media screen and (max-width: 800px) {
     .navbar-nav>li>a {
         background-color: #286ab6;
@@ -322,7 +334,7 @@ hr{
     }
 
     #activeLink{
-        color: #3a589a;
+        color: #ffffff;
         font-weight: bold;
     }
     #jobLogo{
@@ -357,7 +369,7 @@ hr{
     }
 
     .navbar-default .navbar-nav>li>a {
-        color: #286ab6;
+        color: #ffffff;
     }
 
     #jobBodyDetails {

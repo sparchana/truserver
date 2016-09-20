@@ -21,12 +21,6 @@ function processDataResetCheckUser(returnedData) {
 
 function processDataPostReset(returnedData) {
     if(returnedData.status == 1) {
-        localStorage.setItem("mobile", "+91" + candidateMobile);
-        localStorage.setItem("name", returnedData.candidateFirstName);
-        localStorage.setItem("lastName", returnedData.candidateLastName);
-        localStorage.setItem("assessed", returnedData.isAssessed);
-        localStorage.setItem("minProfile", returnedData.minProfile);
-
         if(applyJobFlag == 1){
             $("#myLoginModal").modal("hide");
             applyJob(applyJobId, prefLocation, false);
@@ -41,6 +35,11 @@ function processDataPostReset(returnedData) {
         } else{
             window.location = "/dashboard";
         }
+        localStorage.setItem("mobile", "+91" + candidateMobile);
+        localStorage.setItem("name", returnedData.candidateFirstName);
+        localStorage.setItem("lastName", returnedData.candidateLastName);
+        localStorage.setItem("assessed", returnedData.isAssessed);
+        localStorage.setItem("minProfile", returnedData.minProfile);
     }
 
     else if(returnedData.status == 2){

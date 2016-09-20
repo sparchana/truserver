@@ -1,3 +1,24 @@
+<script>
+    function logoutPartner() {
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/logoutPartner",
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataLogoutPartner
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+    function processDataLogoutPartner() {
+        window.location = "/partner";
+    }
+</script>
+
 <nav class="navbar navbar-fixed-top" style="background: #286ab6" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -24,3 +45,25 @@
     </div>
   </div>
 </nav>
+
+    <!-- custom message modal -->
+<div class="modal fade" id="messagePromptModal" tabindex="-1" role="dialog" aria-labelledby="messagePromptModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">TruJobs</h4>
+            </div>
+            <div class="modal-body">
+                <center>
+                    <img id="customMsgIcon" width="48px">
+                    <div id="customMsg" style="padding: 16px"></div>
+                    <input id="candidateOtp" style="width: 40%" name="candidateOtp" max="9999" placeholder="OTP" type="number" class="form-control input-md" required>
+                    <input id="verifyOtp" style="width: 40%; margin-top: 8px" name="verifyOtp" onclick="verifyCandidateOtp()" value="Verify" type="button" class="btn btn-primary registerPartnerBtnSubmit">
+                    <input id="homeBtn" style="width: 40%; margin-top: 8px; display: none" name="verifyOtp" onclick="myCandidates()" value="Done" type="button" class="btn btn-primary registerPartnerBtnSubmit">
+                </center>
+            </div>
+        </div>
+    </div>
+</div>
+

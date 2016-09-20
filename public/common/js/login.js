@@ -6,13 +6,6 @@ var applyJobFlag = 0;
 var applyJobId = 0;
 
 function postLogin(returnedData) {
-    // Store
-    localStorage.setItem("mobile", "+91" + candidateMobile);
-    localStorage.setItem("name", returnedData.candidateFirstName);
-    localStorage.setItem("lastName", returnedData.candidateLastName);
-    localStorage.setItem("assessed", returnedData.isAssessed);
-    localStorage.setItem("minProfile", returnedData.minProfile);
-
     if(applyJobFlag == 1){
         $("#myLoginModal").modal("hide");
         applyJob(applyJobId, prefLocation, false);
@@ -27,6 +20,12 @@ function postLogin(returnedData) {
     } else{
         window.location = "/dashboard";
     }
+    // Store
+    localStorage.setItem("mobile", "+91" + candidateMobile);
+    localStorage.setItem("name", returnedData.candidateFirstName);
+    localStorage.setItem("lastName", returnedData.candidateLastName);
+    localStorage.setItem("assessed", returnedData.isAssessed);
+    localStorage.setItem("minProfile", returnedData.minProfile);
 }
 function processDataLogin(returnedData) {
     if(returnedData.status == 1) {
@@ -38,7 +37,6 @@ function processDataLogin(returnedData) {
         } else{
             postLogin(returnedData);
         }
-
     }
 
     else if(returnedData.status == 3){
