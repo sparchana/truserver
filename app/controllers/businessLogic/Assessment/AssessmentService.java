@@ -23,6 +23,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
 
+import static play.libs.Json.toJson;
+
 /**
  * Created by zero on 15/9/16.
  */
@@ -51,6 +53,7 @@ public class AssessmentService {
 
                 optionList.sort((o1, o2) -> o1.getJobRoleId() >= o2.getJobRoleId()? 1 : 0);
 
+                Logger.info(String.valueOf(toJson(optionList)));
                 List<Long> assessmentQuestionIdList = new ArrayList<>();
                 List<Long> jobRoleIdList = new ArrayList<>();
 
@@ -68,18 +71,18 @@ public class AssessmentService {
                     assessmentSheetCol.correctAnswer = assessmentQuestionList.get(i).getAnswer();
                     assessmentSheetCol.answer =  optionList.get(i).getAssessmentResponse();
                     colList.add(assessmentSheetCol);
-                    if(prevJobRoleId == null || prevJobRoleId != optionList.get(i).getJobRoleId()) {
-                        prevJobRoleId =  optionList.get(i).getJobRoleId();
+                    if(prevJobRoleId == null || prevJobRoleId != optionList.get(i).getJobRoleId() || i == l-1) {
                         try {
                             if(prevJobRoleId != null ) {
                                 writeAssessmentToGoogleSheet(candidateId,
                                         candidate.getCandidateMobile(), candidate.getCandidateFullName(),
                                         optionList.get(i).getJobRoleId(), colList);
+                                colList = new ArrayList<>();
                             }
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
                         }
-                        colList = new ArrayList<>();
+                        prevJobRoleId = optionList.get(i).getJobRoleId();
                     }
                 }
                 candidate.setCandidateIsAssessed(ServerConstants.CANDIDATE_ASSESSED);
