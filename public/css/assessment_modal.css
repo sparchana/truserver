@@ -9,9 +9,9 @@
     overflow-y: auto;
 }
 .question_contianer {
-    margin: 8px;
+    margin: 16px 8px;
 }
-body.assessment-modal .modal-open {
+body.assessment-modal.modal-open {
     overflow: hidden;
     position:fixed;
     width: 100%;
@@ -31,4 +31,7 @@ body.assessment-modal .modal-open {
     border-left: 3px solid #ffaf00;
     background-color: #f8f8f8;
 
+}
+.assessment-modal.modal-content {
+    padding: 1%;
 }

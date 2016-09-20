@@ -38,6 +38,15 @@ function processDataSignUpSubmit(returnedData) {
 
 function processDataAddAuth(returnedData) {
     if(returnedData.status == 1) {
+        // Store
+        localStorage.setItem("mobile", "+91" + candidateMobile);
+        localStorage.setItem("name", returnedData.candidateFirstName);
+        localStorage.setItem("lastName", returnedData.candidateLastName);
+        localStorage.setItem("id", returnedData.candidateId);
+        localStorage.setItem("leadId", returnedData.leadId);
+        localStorage.setItem("assessed", returnedData.isAssessed);
+        localStorage.setItem("minProfile", returnedData.minProfile);
+
         if(applyJobFlag == 1){
             $("#myRegistrationModal").modal("hide");
             applyJob(applyJobId, prefLocation, false);
@@ -52,14 +61,6 @@ function processDataAddAuth(returnedData) {
         } else{
             window.location = "/dashboard";
         }
-        // Store
-        localStorage.setItem("mobile", "+91" + candidateMobile);
-        localStorage.setItem("name", returnedData.candidateFirstName);
-        localStorage.setItem("lastName", returnedData.candidateLastName);
-        localStorage.setItem("id", returnedData.candidateId);
-        localStorage.setItem("leadId", returnedData.leadId);
-        localStorage.setItem("assessed", returnedData.isAssessed);
-        localStorage.setItem("minProfile", returnedData.minProfile);
     }
 
     else {

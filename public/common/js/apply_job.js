@@ -59,7 +59,6 @@ function applyJob(id, localityId, triggerModal){
         if(triggerModal){
             getAssessmentQuestions(null, id);
         }
-
         try {
             var d = {
                 jobId: id,

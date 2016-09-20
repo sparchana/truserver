@@ -1,7 +1,9 @@
 function createRadioButton(name, value, text, id) {
     var label = document.createElement("label");
     label.style.margin = "8px 16px";
+    label.style.display= "block";
     label.class = "col-md-4";
+    label.style.fontWeight = "normal";
     var radio = document.createElement("input");
     radio.type = "radio";
     radio.style.margin = "3px 6px";
@@ -23,7 +25,8 @@ function createRadioButton(name, value, text, id) {
 
 function processAssessmentQuestions(returnedData) {
     if(returnedData != null){
-        if(returnedData == "Already Done" || returnedData == "NA"){
+        if(returnedData == "assessed" || returnedData == "NA"){
+            processPostAssessmentResponse(returnedData);
             return;
         }
         if($(".assessment-modal").size() > 0){
@@ -37,10 +40,12 @@ function processAssessmentQuestions(returnedData) {
             if(assessmentQ != null){
                 qCount++;
                 if(prevJobRole == null || prevJobRole != assessmentQ.jobRole.jobRoleId){
-                    jobRoleContainer = $('<div id="job_role_container_'+assessmentQ.jobRole.jobRoleId+'" class=""><h4 class="asssessmentTitle"> Assessment for '+assessmentQ.jobRole.jobName+'</h4></div>');
+                    jobRoleContainer = $('<div id="job_role_container_'+assessmentQ.jobRole.jobRoleId+'" class=""><h4 class="asssessmentTitle" >' +
+                        'Assessment for '+assessmentQ.jobRole.jobName+'</h4></div>');
                     qCount = 1;
                 }
-                var questionCard = $('<div id='+"QuestionID_" + assessmentQ.jobRole.jobRoleId +"_"+ assessmentQ.assessmentQuestionId+' class= "question_contianer"></div>').text("Q"+ qCount +". "+assessmentQ.questionText);
+                var questionCard = $('<div id='+"QuestionID_" + assessmentQ.jobRole.jobRoleId +"_"+ assessmentQ.assessmentQuestionId+' class= "question_contianer" style="font-weight: bold;">' +
+                    '</div>').text("Q"+ qCount +". "+assessmentQ.questionText);
                 var optionCardContainer = $('<div id='+"OptionContainerID_" + assessmentQ.jobRole.jobRoleId +"_"+ assessmentQ.assessmentQuestionId+' class= "row optionContainer"></div>');
 
                 if(assessmentQ.assessmentQuestionType != null &&  assessmentQ.assessmentQuestionType.assessmentQuestionTypeId == 1) {
@@ -68,7 +73,7 @@ function processAssessmentQuestions(returnedData) {
         });
         bootbox.dialog({
             className: "assessment-modal",
-            title: "<h2 class='assessment-modal-title' style='color: #286ab6'>Job Application Assessment</h2>",
+            title: "<h3 class='assessment-modal-title' style='color: #286ab6'>Job Application Assessment</h3>",
             message: assessmentBody,
             closeButton: true,
             animate: true,
@@ -160,6 +165,6 @@ function getAssessmentQuestions(jobRoleId, jobPostId) {
             success: processAssessmentQuestions
         });
     } catch (exception) {
-        console.log("exception occured!!" + exception);
+        console.log("exception occured!!" + exception.stack);
     }
 }

@@ -52,37 +52,31 @@ public class AssessmentService {
                         assessmentJobRoleIdList.add(option.getJobRoleId());
                     }
                 }
-                int l = optionList.size();
-                if(optionList.size() == 0){
+                int optionSize = optionList.size();
+                if(optionSize == 0){
                     return "NA";
                 }
+                Logger.info("--->"+toJson(optionList));
                 Long prevJobRoleId =  optionList.get(0).getJobRoleId();
 
                 List<AssessmentQuestion> assessmentQuestionList = AssessmentQuestion.find.where().in("assessmentQuestionId", assessmentQuestionIdList).findList();
-                for(int i =0; i<l; ++i) {
+                for(int i =0; i < optionSize; i++) {
                     AssessmentSheetCol assessmentSheetCol = new AssessmentSheetCol();
                     assessmentSheetCol.question = assessmentQuestionList.get(i).getQuestionText();
                     assessmentSheetCol.correctAnswer = assessmentQuestionList.get(i).getAnswer();
                     assessmentSheetCol.answer =  optionList.get(i).getAssessmentResponse();
                     colList.add(assessmentSheetCol);
-                    if(prevJobRoleId != optionList.get(i).getJobRoleId() || i == l-1) {
+                    if(prevJobRoleId != optionList.get(i).getJobRoleId() || (i == optionSize - 1)) {
                         try {
-                            if(prevJobRoleId != null || i == l-1) {
-                                JobRole jobRole = JobRole.find.where().eq("jobRoleId", prevJobRoleId).findUnique();
-
-                                /* save response to db for each attempt */
-                                CandidateAssessmentResponse caResponse = new CandidateAssessmentResponse();
-                                caResponse.setCandidate(candidate);
-                                caResponse.setJobRole(jobRole);
-                                caResponse.save();
-                                Logger.info("caResponse saved");
-
-                                /* write response to google sheet */
-                                writeAssessmentToGoogleSheet(candidateId,
-                                        candidate.getCandidateMobile(), candidate.getCandidateFullName(),
-                                        jobRole.getJobName(), colList);
-
+                            JobRole jobRole;
+                            if(prevJobRoleId != null || (i == optionSize - 1)) {
+                                jobRole = JobRole.find.where().eq("jobRoleId", prevJobRoleId).findUnique();
+                                saveResponseAndWriteToGS(candidate, jobRole, colList);
                                 colList = new ArrayList<>();
+                            }
+                            if(i == optionSize-1 && prevJobRoleId != optionList.get(i).getJobRoleId()) {
+                                jobRole = JobRole.find.where().eq("jobRoleId", optionList.get(i).getJobRoleId()).findUnique();
+                                saveResponseAndWriteToGS(candidate, jobRole, colList);
                             }
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
@@ -99,6 +93,16 @@ public class AssessmentService {
                 for(JobPreference jobPreference: jobPreferenceList){
                     jobPrefJobRoleIdList.add(jobPreference.getJobRole().getJobRoleId());
                 }
+                assessmentQuestionList = AssessmentQuestion.find.where().in("jobRoleId", jobPrefJobRoleIdList).findList();
+                if (assessmentQuestionList.size() > 0) {
+                    jobPrefJobRoleIdList = new ArrayList<>();
+                    for(AssessmentQuestion assessmentQuestion: assessmentQuestionList) {
+                        if(!jobPrefJobRoleIdList.contains(assessmentQuestion.getJobRole().getJobRoleId())){
+                            jobPrefJobRoleIdList.add(assessmentQuestion.getJobRole().getJobRoleId());
+                        }
+                    }
+                }
+
                 List<CandidateAssessmentResponse> candidateAssessmentResponseList = CandidateAssessmentResponse.find.where().eq("candidateId", candidate.getCandidateId()).findList();
                 for(CandidateAssessmentResponse candidateAssessmentResponse: candidateAssessmentResponseList){
                     assessmentJobRoleIdList.add(candidateAssessmentResponse.getJobRole().getJobRoleId());
@@ -108,11 +112,24 @@ public class AssessmentService {
                     candidate.candidateUpdate();
                     return "assessed";
                 }
-
                 return "ok";
             }
         }
         return "NA";
+    }
+
+    private static void saveResponseAndWriteToGS(Candidate candidate, JobRole jobRole, List<AssessmentSheetCol> colList) throws UnsupportedEncodingException {
+        /* save response to db for each attempt */
+        CandidateAssessmentResponse caResponse = new CandidateAssessmentResponse();
+        caResponse.setCandidate(candidate);
+        caResponse.setJobRole(jobRole);
+        caResponse.save();
+
+        Logger.info("colList: "+toJson(colList));
+        /* write response to google sheet */
+        writeAssessmentToGoogleSheet(candidate.getCandidateId(),
+                candidate.getCandidateMobile(), candidate.getCandidateFullName(),
+                jobRole.getJobName(), colList);
     }
 
     private static boolean shouldBeMarkedAsAssessed(List<Long> assessmentJobRoleIdList, List<Long> jobPrefJobRoleIdList){

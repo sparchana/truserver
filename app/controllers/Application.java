@@ -1232,6 +1232,18 @@ public class Application extends Controller {
                     for(JobPreference jobPreference : candidate.getJobPreferencesList()){
                         jobRoleIdList.add(jobPreference.getJobRole().getJobRoleId());
                     }
+                    List<AssessmentQuestion> assessmentQuestionList = AssessmentQuestion.find.where().in("jobRoleId", jobRoleIdList).findList();
+                    if (assessmentQuestionList.size() > 0) {
+                        jobRoleIdList = new ArrayList<>();
+                        for(AssessmentQuestion assessmentQuestion: assessmentQuestionList) {
+                            if(!jobRoleIdList.contains(assessmentQuestion.getJobRole().getJobRoleId())){
+                                jobRoleIdList.add(assessmentQuestion.getJobRole().getJobRoleId());
+                            }
+                        }
+                    } else {
+                        return ok("assessed");
+                    }
+
                 }
             }
 
@@ -1240,7 +1252,8 @@ public class Application extends Controller {
                     .in("jobRole.jobRoleId", jobRoleIdList)
                     .findList();
             if (candidateAssessmentResponseList != null && jobRoleIdList.size() > 0 && candidateAssessmentResponseList.size() == jobRoleIdList.size()) {
-                return ok("Already Done");
+                Logger.info("already assessed");
+                return ok("assessed");
             } else {
                 // filter out all jobroles out of job prefs which are not attempted
                 List<Long> assessedJobRoleIdList = new ArrayList<>();
