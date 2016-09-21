@@ -77,16 +77,21 @@ function processAssessmentQuestions(returnedData) {
             message: assessmentBody,
             closeButton: true,
             animate: true,
+            onEscape: function() {
+                $('body').removeClass('open-modal');
+            },
             buttons: {
                 "Cancel": {
                     className: "btn-default",
                     callback: function() {
+                        $('body').removeClass('open-modal');
                         console.log(false);
                     }
                 },
                 "Submit": {
                     className: "btn-success btn-modal-submit",
                     callback: function() {
+                        $('body').removeClass('open-modal');
                         if($("#assessment_body input[type='radio']:checked").size() > 0){
                             triggerFinalSubmission();
                         }
@@ -98,13 +103,13 @@ function processAssessmentQuestions(returnedData) {
             }
         });
         $('.btn-success.btn-modal-submit').prop('disabled', true);
-
+        $('body').removeClass('modal-open').removeClass('open-modal').addClass('open-modal');
     }
 }
 
 function processPostAssessmentResponse(status) {
     console.log(JSON.stringify(status));
-    if(status == "assessed"){
+    if(status == "assessed") {
         localStorage.setItem("assessed", "1");
         $(".assessmentIncomplete").hide();
         $(".assessmentComplete").show();
