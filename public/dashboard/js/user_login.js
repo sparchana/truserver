@@ -50,7 +50,6 @@ function checkUserLogin(){
 
 function logoutUser() {
     localStorage.clear();
-    window.location = "/";
     try {
         $.ajax({
             type: "GET",
@@ -58,9 +57,13 @@ function logoutUser() {
             data: false,
             contentType: false,
             processData: false,
+            success: processDataCandidateLogout
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
 }
 
+function processDataCandidateLogout() {
+    window.location = "/";
+}

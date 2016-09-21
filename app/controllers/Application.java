@@ -120,6 +120,8 @@ public class Application extends Controller {
                     case 17: response.setUserInteractionType("Candidate Profile Created by Partner"); break;
                     case 18: response.setUserInteractionType("New lead"); break;
                     case 19: response.setUserInteractionType("candidate Profile created by Candidate"); break;
+                    case 20: response.setUserInteractionType("Candidate verified"); break;
+                    case 21: response.setUserInteractionType("Tried to verify Candidate"); break;
                     default: response.setUserInteractionType("Interaction Undefined in getCandidateInteraction()"); break;
                 }
                 switch (interaction.getInteractionChannel()) {

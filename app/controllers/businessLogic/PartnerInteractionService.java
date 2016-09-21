@@ -4,6 +4,8 @@ import api.InteractionConstants;
 import api.ServerConstants;
 import models.entity.Interaction;
 
+import static api.InteractionConstants.*;
+
 /**
  * Created by adarsh on 12/9/16.
  */
@@ -58,7 +60,36 @@ public class PartnerInteractionService {
                 createdBy + "(Partner)",
                 InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE
         );
+        InteractionService.createInteraction(interaction);
+    }
 
+    public static void createInteractionForPartnerVerifyingCandidate(String objAUUID, String objBUUID) {
+        Interaction interaction = new Interaction(
+                objAUUID,
+                ServerConstants.OBJECT_TYPE_PARTNER,
+                objBUUID,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                INTERACTION_TYPE_CANDIDATE_VERIFIED,
+                INTERACTION_NOTE_BLANK,
+                INTERACTION_RESULT_CANDIDATE_VERIFICATION_SUCCESS,
+                INTERACTION_CREATED_PARTNER,
+                INTERACTION_CHANNEL_PARTNER_WEBSITE
+        );
+        InteractionService.createInteraction(interaction);
+    }
+
+    public static void createInteractionForPartnerTryingToVerifyCandidate(String objAUUID, String objBUUID) {
+        Interaction interaction = new Interaction(
+                objAUUID,
+                ServerConstants.OBJECT_TYPE_PARTNER,
+                objBUUID,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                INTERACTION_TYPE_CANDIDATE_TRIED_TO_VERIFY,
+                INTERACTION_NOTE_BLANK,
+                INTERACTION_RESULT_CANDIDATE_TRIED_TO_VERIFY,
+                INTERACTION_CREATED_PARTNER,
+                INTERACTION_CHANNEL_PARTNER_WEBSITE
+        );
         InteractionService.createInteraction(interaction);
     }
 }

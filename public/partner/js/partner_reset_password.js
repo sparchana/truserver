@@ -71,13 +71,18 @@ $(function() {
     $("#form_password_reset_otp").submit(function(eventObj) {
         eventObj.preventDefault();
         var userOtp = $('#partnerForgotOtp').val();
-        if(userOtp == returnedOtp){
-            $('#form_password_reset_otp').hide();
-            $('#form_password_reset_new').show();
-            $('#wrongOtp').hide();
-        }
-        else {
-            $('#wrongOtp').show();
+
+        if(validateOtp(userOtp) == 0){
+            alert("Please enter a valid 4 digit otp!");
+        } else{
+            if(userOtp == returnedOtp){
+                $('#form_password_reset_otp').hide();
+                $('#form_password_reset_new').show();
+                $('#wrongOtp').hide();
+            }
+            else {
+                $('#wrongOtp').show();
+            }
         }
     }); // end of submit
 

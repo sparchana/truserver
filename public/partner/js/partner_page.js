@@ -228,7 +228,6 @@ function renderCandidateTable() {
                     var returned_data = new Array();
                     returnedData.forEach(function (candidate) {
                         returned_data.push({
-                            'candidateId': '<div class="mLabel" style="width:100%" >'+ candidate.candidateId + '</div>',
                             'candidateName' : '<div class="mLabel" style="width:100%" >'+ candidate.candidateName + '</div>',
                             'candidateMobile' : '<div class="mLabel" style="width:100%" >'+ candidate.candidateMobile + '</div>',
                             'candidateCreationTimestamp' : '<div class="mLabel" style="width:100%" >'+ candidate.creationTimestamp + '</div>',
@@ -244,13 +243,13 @@ function renderCandidateTable() {
                                             return '<div class="mLabel" style="width:100%" >'+ '<img src=\"/assets/partner/img/not_verified.svg\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font size=\"2\">&nbsp;&nbsp;' + statusVal +'</font></div>' +'</div>';
                                         }
                                     } else{
-                                        return '<button type="button" class="mBtn orange" style="width:100%" onclick=\"verifyCandidate('+ candidate.candidateMobile+')\" >'+ '<img src=\"/assets/partner/img/warning.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; cursor: hand\" >&nbsp;&nbsp;Verify</div>' +'</button>';
+                                        return '<button type="button" id="viewCandidateBtn" class="mBtn orange" onclick=\"verifyCandidate('+ candidate.candidateMobile+')\" >'+ '<img src=\"/assets/partner/img/warning.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; cursor: hand\" >&nbsp;&nbsp;Verify</div>' +'</button>';
                                     }
                                 } else {
                                     return "-";
                                 }
                             },
-                            'btnView' : '<button type="button" class="mBtn blue" style="width:100%" onclick="viewCandidate('+candidate.leadId+')" id="viewCandidateBtn" >'+ 'View/Edit' +'</button>'
+                            'btnView' : '<button type="button" class="mBtn blue" onclick="viewCandidate('+candidate.leadId+')" id="viewCandidateBtn" >'+ 'View/Edit' +'</button>'
                         })
                     });
                     return returned_data;
@@ -259,15 +258,14 @@ function renderCandidateTable() {
 
             "deferRender": true,
             "columns": [
-                { "data": "candidateId" },
                 { "data": "candidateName" },
                 { "data": "candidateMobile" },
                 { "data": "candidateCreationTimestamp" },
                 { "data": "candidateStatus" },
                 { "data": "btnView" }
             ],
-            rowReorder: {
-                selector: 'td:nth-child(2)'
+            "language": {
+                "emptyTable": "Looks like you have not added any candidates yet! " + '<a href="/partner/candidate/0" style="color: #286ab6"> '+"Add Now!" +'</a>'
             },
             "order": [[3, "desc"]],
             responsive: true,
@@ -281,18 +279,24 @@ function renderCandidateTable() {
 function verifyCandidateOtp(){
     var candidateOtp = $("#candidateOtp").val();
     var candidateMobile = candidateUnVerifiedMobile;
-    var d = {
-        candidateMobile: candidateMobile,
-        userOtp: candidateOtp
-    };
-    $("#verifyOtp").prop('disabled',true);
-    $.ajax({
-        type: "POST",
-        url: "/verifyCandidateUsingOtp",
-        contentType: "application/json; charset=utf-8",
-        data: JSON.stringify(d),
-        success: processDataVerifyCandidate
-    });
+
+    if(validateOtp(candidateOtp) == 0){
+        notifyError("Please enter a valid 4 digit otp!");
+    } else{
+        var d = {
+            candidateMobile: candidateMobile,
+            userOtp: candidateOtp
+        };
+        $("#verifyOtp").prop('disabled',true);
+        $.ajax({
+            type: "POST",
+            url: "/verifyCandidateUsingOtp",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(d),
+            success: processDataVerifyCandidate
+        });
+
+    }
 }
 
 function processDataVerifyCandidate(returnedData) {

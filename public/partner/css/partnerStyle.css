@@ -301,7 +301,6 @@ option:checked {
 
 #viewCandidateBtn{
     border: none;
-    background-color: #0064a8;
     color: white;
     -webkit-transition: background-color 0.2s;
     -moz-transition:    background-color 0.2s;
@@ -480,7 +479,7 @@ a:hover{
 @media screen and (max-width: 768px) {
     #viewCandidateBtn{
         padding: 8px;
-        width: auto;
+        width: 90%;
         margin: 8px;
     }
     #eduConfirm{

@@ -213,6 +213,13 @@ public class PartnerController {
                         existingAuth.update();
                     }
                     SmsUtil.sendOtpToPartnerCreatedCandidate(randomPIN, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+
+                    String objAUUID = existingCandidate.getCandidateUUId();
+                    String objBUUID = partner.getPartnerUUId();
+
+                    //creating interaction
+                    PartnerInteractionService.createInteractionForPartnerTryingToVerifyCandidate(objAUUID, objBUUID);
+
                     candidateSignUpResponse.setOtp(randomPIN);
                 } else{
                     candidateSignUpResponse.setOtp(0);

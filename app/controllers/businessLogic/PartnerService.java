@@ -365,38 +365,59 @@ public class PartnerService {
     }
 
     public static void sendCandidateVerificationSms(Candidate existingCandidate) {
-        Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
-        if(existingAuth != null){
-            Integer dummyOtp = Util.generateOtp();
-            AuthService.setNewPassword(existingAuth, String.valueOf(dummyOtp));
-            existingAuth.setOtp(dummyOtp);
-            existingAuth.update();
-            SmsUtil.sendOtpToPartnerCreatedCandidate(dummyOtp, existingCandidate.getCandidateMobile());
-        } else{
-            Logger.info("Auth doesnot exists");
+        Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+        if(partner != null){
+            Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
+            if(existingAuth != null){
+                Integer dummyOtp = Util.generateOtp();
+                AuthService.setNewPassword(existingAuth, String.valueOf(dummyOtp));
+                existingAuth.setOtp(dummyOtp);
+                existingAuth.update();
+                SmsUtil.sendOtpToPartnerCreatedCandidate(dummyOtp, existingCandidate.getCandidateMobile());
+
+                String objAUUID = existingCandidate.getCandidateUUId();
+                String objBUUID = partner.getPartnerUUId();
+
+                //creating interaction
+                PartnerInteractionService.createInteractionForPartnerTryingToVerifyCandidate(objAUUID, objBUUID);
+            } else{
+                Logger.info("Auth doesnot exists");
+            }
         }
     }
 
     public static VerifyCandidateResponse verifyCandidateByPartner(VerifyCandidateRequest verifyCandidateRequest) {
         VerifyCandidateResponse verifyCandidateResponse = new VerifyCandidateResponse();
-        Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(verifyCandidateRequest.getCandidateMobile()));
-        if(existingCandidate != null){
-            Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
-            if(existingAuth != null){
-                // auth for the user is present
-                if(verifyCandidateRequest.getUserOtp() == existingAuth.getOtp()){
-                    verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_SUCCESS);
-                    existingAuth.setAuthStatus(ServerConstants.CANDIDATE_STATUS_VERIFIED);
-                    existingAuth.update();
-                    CandidateService.sendDummyAuthForCandidateByPartner(existingCandidate);
+        Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+        if(partner != null){
+            Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(verifyCandidateRequest.getCandidateMobile()));
+            if(existingCandidate != null){
+                Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
+                if(existingAuth != null){
+                    // auth for the user is present
+                    if(verifyCandidateRequest.getUserOtp() == existingAuth.getOtp()){
+                        verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_SUCCESS);
+                        existingAuth.setAuthStatus(ServerConstants.CANDIDATE_STATUS_VERIFIED);
+                        existingAuth.update();
+                        CandidateService.sendDummyAuthForCandidateByPartner(existingCandidate);
+                        String objAUUID = existingCandidate.getCandidateUUId();
+                        String objBUUID = partner.getPartnerUUId();
+
+                        //creating interaction
+                        PartnerInteractionService.createInteractionForPartnerVerifyingCandidate(objAUUID, objBUUID);
+                    } else{
+                        verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_WRONG_OTP);
+                    }
                 } else{
-                    verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_WRONG_OTP);
+                    // no auth found for the user
+                    verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_FAILURE);
                 }
             } else{
-                // no auth found for the user
+                // no candidate found
                 verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_FAILURE);
             }
         } else{
+            // no partner session found
             verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_FAILURE);
         }
         return verifyCandidateResponse;

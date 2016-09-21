@@ -32,6 +32,8 @@ public class InteractionConstants {
     public static final String INTERACTION_RESULT_PARTNER_SIGNEDIN = "Partner Self Signed In";
     public static final String INTERACTION_RESULT_CANDIDATE_DEACTIVATED= "Candidate Deactivated";
     public static final String INTERACTION_RESULT_CANDIDATE_ACTIVATED= "Candidate Activated";
+    public static final String INTERACTION_RESULT_CANDIDATE_VERIFICATION_SUCCESS = "Candidate Successfully Verified";
+    public static final String INTERACTION_RESULT_CANDIDATE_TRIED_TO_VERIFY = "Partner tried to verify a Candidate";
 
     public static final String INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB = "Candidate applied to a job: ";
     public static final String INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB = "Candidate tried to apply to a job: ";
@@ -71,6 +73,8 @@ public class InteractionConstants {
     public static final int INTERACTION_TYPE_CANDIDATE_PROFILE_CREATED_BY_PARTNER = 17;
     public static final int INTERACTION_TYPE_NEW_LEAD = 18;
     public static final int INTERACTION_TYPE_CANDIDATE_PROFILE_CREATED_BY_CANDIDATE = 19;
+    public static final int INTERACTION_TYPE_CANDIDATE_VERIFIED = 20;
+    public static final int INTERACTION_TYPE_CANDIDATE_TRIED_TO_VERIFY = 21;
 
     public static final int INTERACTION_CHANNEL_CANDIDATE_WEBSITE = 1;
     public static final int INTERACTION_CHANNEL_CANDIDATE_ANDROID = 2;

@@ -11,6 +11,7 @@
 }
 
 .mBtn {
+    width: 100%;
     position: relative;
     display: block;
     margin: 4px auto;
@@ -91,4 +92,10 @@
 
 .mBtn.blue:hover, .mBtn.blue:focus {
     background-color: #344e9b;
+}
+
+@media screen and (max-width: 768px) {
+    .mBtn {
+        width: 90%;
+    }
 }
