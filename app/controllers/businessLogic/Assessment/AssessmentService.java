@@ -2,19 +2,12 @@ package controllers.businessLogic.Assessment;
 
 import api.GoogleSheetHttpRequest;
 import api.ServerConstants;
-import api.http.FormValidator;
 import api.http.httpRequest.AssessmentRequest;
-import com.amazonaws.services.importexport.model.Job;
-import controllers.businessLogic.CandidateService;
-import controllers.businessLogic.InteractionService;
 import models.entity.Candidate;
-import models.entity.JobPost;
 import models.entity.OM.*;
 import models.entity.Static.AssessmentQuestion;
 import models.entity.Static.JobRole;
-import models.entity.Static.Locality;
 import play.Logger;
-import play.api.Play;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -56,7 +49,6 @@ public class AssessmentService {
                 if(optionSize == 0){
                     return "NA";
                 }
-                Logger.info("--->"+toJson(optionList));
                 Long prevJobRoleId =  optionList.get(0).getJobRoleId();
 
                 List<AssessmentQuestion> assessmentQuestionList = AssessmentQuestion.find.where().in("assessmentQuestionId", assessmentQuestionIdList).findList();
@@ -71,12 +63,12 @@ public class AssessmentService {
                             JobRole jobRole;
                             if(prevJobRoleId != null || (i == optionSize - 1)) {
                                 jobRole = JobRole.find.where().eq("jobRoleId", prevJobRoleId).findUnique();
-                                saveResponseAndWriteToGS(candidate, jobRole, colList);
+                                saveAttemptAndWriteToGS(candidate, jobRole, colList);
                                 colList = new ArrayList<>();
                             }
                             if(i == optionSize-1 && prevJobRoleId != optionList.get(i).getJobRoleId()) {
                                 jobRole = JobRole.find.where().eq("jobRoleId", optionList.get(i).getJobRoleId()).findUnique();
-                                saveResponseAndWriteToGS(candidate, jobRole, colList);
+                                saveAttemptAndWriteToGS(candidate, jobRole, colList);
                             }
                         } catch (UnsupportedEncodingException e) {
                             e.printStackTrace();
@@ -103,9 +95,9 @@ public class AssessmentService {
                     }
                 }
 
-                List<CandidateAssessmentResponse> candidateAssessmentResponseList = CandidateAssessmentResponse.find.where().eq("candidateId", candidate.getCandidateId()).findList();
-                for(CandidateAssessmentResponse candidateAssessmentResponse: candidateAssessmentResponseList){
-                    assessmentJobRoleIdList.add(candidateAssessmentResponse.getJobRole().getJobRoleId());
+                List<CandidateAssessmentAttempt> candidateAssessmentAttemptList = CandidateAssessmentAttempt.find.where().eq("candidateId", candidate.getCandidateId()).findList();
+                for(CandidateAssessmentAttempt candidateAssessmentAttempt : candidateAssessmentAttemptList){
+                    assessmentJobRoleIdList.add(candidateAssessmentAttempt.getJobRole().getJobRoleId());
                 }
                 if(shouldBeMarkedAsAssessed(assessmentJobRoleIdList, jobPrefJobRoleIdList)){
                     candidate.setCandidateIsAssessed(ServerConstants.CANDIDATE_ASSESSED);
@@ -118,12 +110,12 @@ public class AssessmentService {
         return "NA";
     }
 
-    private static void saveResponseAndWriteToGS(Candidate candidate, JobRole jobRole, List<AssessmentSheetCol> colList) throws UnsupportedEncodingException {
+    private static void saveAttemptAndWriteToGS(Candidate candidate, JobRole jobRole, List<AssessmentSheetCol> colList) throws UnsupportedEncodingException {
         /* save response to db for each attempt */
-        CandidateAssessmentResponse caResponse = new CandidateAssessmentResponse();
-        caResponse.setCandidate(candidate);
-        caResponse.setJobRole(jobRole);
-        caResponse.save();
+        CandidateAssessmentAttempt caAttempt = new CandidateAssessmentAttempt();
+        caAttempt.setCandidate(candidate);
+        caAttempt.setJobRole(jobRole);
+        caAttempt.save();
 
         Logger.info("colList: "+toJson(colList));
         /* write response to google sheet */
