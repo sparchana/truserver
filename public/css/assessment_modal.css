@@ -4,6 +4,11 @@
     overflow-y: initial !important;
     width:70% !important;
 }
+@media screen and (max-width: 768px) {
+    .assessment-modal .modal-dialog{
+        width:88% !important;
+    }
+}
 .assessment-modal .modal-body{
     height: 400px;
     overflow-y: auto;
