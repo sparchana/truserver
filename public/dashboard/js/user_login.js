@@ -20,6 +20,17 @@ function checkUserLogin(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+    var userMobile = localStorage.getItem("mobile");
+    var userName = localStorage.getItem("name");
+    var userLastName = localStorage.getItem("lastName");
+
+    if(userLastName == "null" || userLastName == null){
+        document.getElementById("userName").innerHTML = userName;
+    } else{
+        document.getElementById("userName").innerHTML = userName + " " + userLastName;
+    }
+    document.getElementById("userMobile").innerHTML = userMobile;
+
     if(localStorage.getItem("assessed") == 0){
         $(".assessmentComplete").hide();
         $(".assessmentIncomplete").show();
@@ -39,7 +50,6 @@ function checkUserLogin(){
 
 function logoutUser() {
     localStorage.clear();
-    window.location = "/";
     try {
         $.ajax({
             type: "GET",
@@ -47,9 +57,13 @@ function logoutUser() {
             data: false,
             contentType: false,
             processData: false,
+            success: processDataCandidateLogout
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
 }
 
+function processDataCandidateLogout() {
+    window.location = "/";
+}

@@ -115,7 +115,7 @@ $(function() {
             notifyError("Enter a valid email");
             statusCheck = 0;
         } else if(organizationLocality == ""){
-            notifyError("Enter organization Locality");
+            notifyError("Enter Organization Locality");
             statusCheck = 0;
         }
         if(statusCheck == 1){

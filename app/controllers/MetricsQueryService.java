@@ -1,5 +1,6 @@
 package controllers;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
@@ -238,7 +239,7 @@ public class MetricsQueryService
 
         while (signupResultsItr.hasNext()) {
             SqlRow signupRow = signupResultsItr.next();
-            if (signupRow.get("createdby").equals(ServerConstants.INTERACTION_CREATED_SELF)) {
+            if (signupRow.get("createdby").equals(InteractionConstants.INTERACTION_CREATED_SELF)) {
                 websiteSignupsCount = signupRow.getInteger("count(distinct(interaction.objectauuid))");
             }
             else if (signupRow.get("createdby").equals(InteractionService.InteractionChannelType.SELF_ANDROID.toString())) {
@@ -657,7 +658,7 @@ public class MetricsQueryService
                         " on interaction.objectauuid = candidate.candidateuuid " +
                         " left join locality " +
                         " on locality.localityid = candidate.candidatehomelocality " +
-                        " where createdby in ('" + ServerConstants.INTERACTION_CREATED_SELF + "','" +
+                        " where createdby in ('" + InteractionConstants.INTERACTION_CREATED_SELF + "','" +
                         InteractionService.InteractionChannelType.SELF_ANDROID.toString() +"') ");
 
         if (metricDate != null) {

@@ -225,12 +225,12 @@
                                     font-size: 12px">(optional)</div></h5>
                                 </div>
                                 <div class="col-sm-5">
-                                    <input type="text" id="candidateCurrentJobRole">
+                                    <input type="text" id="candidateCurrentJobRole" style="width: 230px;">
                                     <script type="text/javascript">
                                         $(document).ready(function () {
                                             $("#candidateCurrentJobRole").tokenInput(getJob(), {
                                                 theme: "facebook",
-                                                placeholder: "What is candidate's current job role?",
+                                                placeholder: "current job role?",
                                                 hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
                                                 minChars: 0,
                                                 prePopulate: currentJobRole,
@@ -260,7 +260,7 @@
                     <div id="editProfileBody">
                         <div class="profileBodyEditProfile">
                             <table id="languageTable" class="table table-striped" cellspacing="0" width="100%">
-                                <h5 id="languageField">Candidate known languages</h5>
+                                <h5 id="languageField">Candidate known languages<font color="red">*</font></h5>
                                 <thead></thead>
                                 <tbody></tbody>
                             </table>
@@ -307,15 +307,15 @@
                             <div class="row" style="margin-top: 4px">
                                 <div class="col-sm-3"><h5>Highest Education Degree?<font color="red">*</font></h5></div>
                                 <div class="col-sm-5">
-                                    <select class="selectDropdown" id="candidateHighestDegree" style="width: 326px"></select>
+                                    <select class="selectDropdown" id="candidateHighestDegree" style="width: 342px"></select>
                                 </div>
                             </div>
                             <div class="row" style="margin-top: 4px">
                                 <div class="col-sm-3"><h5>Last Attended Education Institute?<div style="color: #9f9f9f;
                                     font-size: 12px">(optional)</div></h5>
                                 </div>
-                                <div class="col-sm-5">
-                                    <input id="candidateEducationInstitute" style="width: 326px" placeholder="Which was the last college your candidate attended?" type="text" class="form-control input-md">
+                                <div class="col-sm-6">
+                                    <input id="candidateEducationInstitute" style="width: 342px" placeholder="Which was the last college your candidate attended?" type="text" class="form-control input-md">
                                 </div>
                             </div>
                         </div>

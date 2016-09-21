@@ -3,7 +3,6 @@
  */
 
 function processDataForSupportInteraction(returnedData) {
-
     var t = $('table#interactionHistory').DataTable({
         "order": [[ 0, "desc" ]]
     });
@@ -17,6 +16,7 @@ function processDataForSupportInteraction(returnedData) {
                 interaction.userNote,
                 interaction.userResults,
                 interaction.userCreatedBy,
+                interaction.channel
             ] ).draw( false );
         } else {
             console.log("Null obj encountered");

@@ -62,8 +62,8 @@ public class PartnerController {
         }
         Logger.info("JSON req: " + req);
 
-        InteractionService.InteractionChannelType channelType = InteractionService.InteractionChannelType.SELF;
-        return ok(toJson(PartnerService.signUpPartner(partnerSignUpRequest, channelType, ServerConstants.LEAD_SOURCE_WEBSITE)));
+        InteractionService.InteractionChannelType channelType = InteractionService.InteractionChannelType.PARTNER;
+        return ok(toJson(PartnerService.signUpPartner(partnerSignUpRequest, channelType, ServerConstants.LEAD_SOURCE_PARTNER)));
 
     }
 
@@ -213,6 +213,13 @@ public class PartnerController {
                         existingAuth.update();
                     }
                     SmsUtil.sendOtpToPartnerCreatedCandidate(randomPIN, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
+
+                    String objAUUID = existingCandidate.getCandidateUUId();
+                    String objBUUID = partner.getPartnerUUId();
+
+                    //creating interaction
+                    PartnerInteractionService.createInteractionForPartnerTryingToVerifyCandidate(objAUUID, objBUUID);
+
                     candidateSignUpResponse.setOtp(randomPIN);
                 } else{
                     candidateSignUpResponse.setOtp(0);

@@ -1,5 +1,6 @@
 package controllers.businessLogic;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.httpResponse.CandidateSignUpResponse;
 import models.entity.Auth;
@@ -44,13 +45,18 @@ public class AuthService {
                 existingAuth.setAuthStatus(ServerConstants.CANDIDATE_STATUS_VERIFIED);
                 setNewPassword(existingAuth, password);
                 Auth.savePassword(existingAuth);
-                String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_RESET_PASSWORD_SUCCESS;
+                String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_RESET_PASSWORD_SUCCESS;
                 String objAUUID = "";
                 Candidate candidate = Candidate.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
                 if(candidate != null){
                     objAUUID = candidate.getCandidateUUId();
                 }
-                InteractionService.createInteractionForResetPassword(objAUUID, interactionResult, channelType);
+                if(channelType == InteractionService.InteractionChannelType.SELF){
+                    InteractionService.createInteractionForCandidateResetPasswordViaWebsite(objAUUID, interactionResult, channelType);
+                } else{
+                    InteractionService.createInteractionForCandidateResetPasswordViaAndroid(objAUUID, interactionResult, channelType);
+                }
+
                 existingAuth.setAuthSessionId(UUID.randomUUID().toString());
                 existingAuth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
                 /* adding session details */
@@ -105,15 +111,12 @@ public class AuthService {
 
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
-                Interaction interaction = new Interaction(
-                        existingCandidate.getCandidateUUId(),
-                        ServerConstants.OBJECT_TYPE_CANDIDATE,
-                        channelType == InteractionService.InteractionChannelType.SELF_ANDROID ? ServerConstants.INTERACTION_TYPE_ANDROID : ServerConstants.INTERACTION_TYPE_WEBSITE,
-                        ServerConstants.INTERACTION_NOTE_BLANK,
-                        ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE + " & " + ServerConstants.INTERACTION_NOTE_SELF_PASSWORD_CHANGED,
-                        channelType.toString()
-                );
-                InteractionService.createInteraction(interaction);
+                String objAUUID = existingCandidate.getCandidateUUId();
+                if (channelType == InteractionService.InteractionChannelType.SELF) {
+                    InteractionService.createInteractionForCandidateAddPasswordViaWebsite(objAUUID, channelType.toString());
+                } else{
+                    InteractionService.createInteractionForCandidateAddPasswordViaAndroid(objAUUID, channelType.toString());
+                }
                 try {
                     existingCandidate.setCandidateprofilestatus(CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE).findUnique());
                     candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);

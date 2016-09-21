@@ -72,3 +72,19 @@ function validateEmail(email) {
     var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
 }
+
+function validateOtp(otp) {
+    if(otp == undefined){
+        return 0;
+    }
+    var validOtp = /^[0-9]{4}$/i;
+    if(otp.length == 4){
+        if (validOtp.test(otp) === false) {
+            return 0; // format is wrong
+        } else{
+            return 1; // success
+        }
+    } else{
+        return 0; // otp is not 4 digits
+    }
+}

@@ -1,5 +1,6 @@
 package controllers;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
@@ -104,14 +105,35 @@ public class Application extends Controller {
                     case 2: response.setUserInteractionType("Out Going Call"); break;
                     case 3: response.setUserInteractionType("Incoming SMS"); break;
                     case 4: response.setUserInteractionType("Out Going SMS"); break;
-                    case 5: response.setUserInteractionType("Website Interaction"); break;
-                    case 6: response.setUserInteractionType("Follow Up Call"); break;
-                    case 7: response.setUserInteractionType("New Job Application"); break;
-                    case 8: response.setUserInteractionType("Tried to Apply to a job"); break;
-                    case 9: response.setUserInteractionType("Tried to reset password"); break;
-                    case 10: response.setUserInteractionType("Reset password successful"); break;
+                    case 5: response.setUserInteractionType("Follow Up Call"); break;
+                    case 6: response.setUserInteractionType("New Job Application"); break;
+                    case 7: response.setUserInteractionType("Tried to Apply to a job"); break;
+                    case 8: response.setUserInteractionType("Tried to reset password"); break;
+                    case 9: response.setUserInteractionType("Reset password successful"); break;
+                    case 10: response.setUserInteractionType("Alert Button Clicked"); break;
+                    case 11: response.setUserInteractionType("Searched Jobs"); break;
+                    case 12: response.setUserInteractionType("Viewed a job"); break;
+                    case 13: response.setUserInteractionType("Logged in"); break;
+                    case 14: response.setUserInteractionType("Sign up"); break;
+                    case 15: response.setUserInteractionType("Profile Updated"); break;
+                    case 16: response.setUserInteractionType("Candidate Profile Updated by Partner"); break;
+                    case 17: response.setUserInteractionType("Candidate Profile Created by Partner"); break;
+                    case 18: response.setUserInteractionType("New lead"); break;
+                    case 19: response.setUserInteractionType("candidate Profile created by Candidate"); break;
+                    case 20: response.setUserInteractionType("Candidate verified"); break;
+                    case 21: response.setUserInteractionType("Tried to verify Candidate"); break;
                     default: response.setUserInteractionType("Interaction Undefined in getCandidateInteraction()"); break;
                 }
+                switch (interaction.getInteractionChannel()) {
+                    case 0: response.setChannel("Unknown"); break;
+
+                    case 1: response.setChannel("Candidate via Website"); break;
+                    case 2: response.setChannel("Candidate via Android"); break;
+                    case 3: response.setChannel("Partner via website"); break;
+                    case 4: response.setChannel("System via website"); break;
+                    default: response.setChannel("cahnnel Undefined in getCandidateInteraction()"); break;
+                }
+
                 responses.add(response);
             }
             return ok(toJson(responses));
@@ -523,7 +545,7 @@ public class Application extends Controller {
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
         if(jobPost!=null){
             if(isSupport == 0){
-                String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB;
+                String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB;
                 String objAUUID = "";
                 if(session().get("candidateId") != null){
                     Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")). findUnique();
@@ -679,10 +701,11 @@ public class Application extends Controller {
                     Interaction interaction = new Interaction(
                             lead.getLeadUUId(),
                             lead.getLeadType(),
-                            ServerConstants.INTERACTION_TYPE_CALL_OUT,
-                            ServerConstants.INTERACTION_NOTE_BLANK,
-                            ServerConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
-                            session().get("sessionUsername")
+                            InteractionConstants.INTERACTION_TYPE_CALL_OUT,
+                            InteractionConstants.INTERACTION_NOTE_BLANK,
+                            InteractionConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
+                            session().get("sessionUsername"),
+                            InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE
                     );
                     interaction.save();
                 } else {
@@ -690,10 +713,11 @@ public class Application extends Controller {
                     Interaction interaction = new Interaction(
                             lead.getLeadUUId(),
                             lead.getLeadType(),
-                            ServerConstants.INTERACTION_TYPE_CALL_OUT,
-                            ServerConstants.INTERACTION_NOTE_BLANK,
-                            ServerConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
-                            session().get("sessionUsername")
+                            InteractionConstants.INTERACTION_TYPE_CALL_OUT,
+                            InteractionConstants.INTERACTION_NOTE_BLANK,
+                            InteractionConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
+                            session().get("sessionUsername"),
+                            InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE
                     );
                     interaction.save();
                 }
@@ -736,10 +760,10 @@ public class Application extends Controller {
                     }
                     Logger.info("updateLeadStatus invoked leadId:"+leadId+" status:" + leadStatus);
                     lead.update();
-                    interactionNote = ServerConstants.INTERACTION_NOTE_BLANK;
+                    interactionNote = InteractionConstants.INTERACTION_NOTE_BLANK;
 
                 } else {
-                    interactionNote = ServerConstants.INTERACTION_NOTE_BLANK;
+                    interactionNote = InteractionConstants.INTERACTION_NOTE_BLANK;
                 }
 
                 // If call was connected just set the right interaction result
@@ -765,10 +789,11 @@ public class Application extends Controller {
                 Interaction interaction = new Interaction(
                         lead.getLeadUUId(),
                         lead.getLeadType(),
-                        ServerConstants.INTERACTION_TYPE_CALL_OUT,
+                        InteractionConstants.INTERACTION_TYPE_CALL_OUT,
                         interactionNote,
                         interactionResult,
-                        session().get("sessionUsername")
+                        session().get("sessionUsername"),
+                        InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE
                 );
                 interaction.save();
 
