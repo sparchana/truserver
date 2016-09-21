@@ -12,8 +12,9 @@ var education;
 var homeLocality;
 
 function processDataApplyJob(returnedData) {
-    $("#messagePromptModal").modal("show");
     $("#jobApplyConfirm").modal("hide");
+    $("#messagePromptModal").modal("show");
+    $('body').addClass('open-modal');
     if(returnedData.status == 1){
         $('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
         $("#customMsg").html("Your Job Application is Successful");
