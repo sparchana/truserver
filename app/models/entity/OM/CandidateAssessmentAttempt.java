@@ -12,13 +12,13 @@ import javax.persistence.*;
  * Created by zero on 19/9/16.
  */
 
-@Entity(name = "candidate_assessment_response")
-@Table(name = "candidate_assessment_response")
-public class CandidateAssessmentResponse extends Model {
+@Entity(name = "candidate_assessment_attempt")
+@Table(name = "candidate_assessment_attempt")
+public class CandidateAssessmentAttempt extends Model {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name = "ca_response_id", columnDefinition = "bigint signed", unique = true)
-    private int responseId;
+    @Column(name = "ca_attempt_id", columnDefinition = "bigint signed", unique = true)
+    private int attemptId;
 
     @ManyToOne
     @JsonBackReference
@@ -38,10 +38,10 @@ public class CandidateAssessmentResponse extends Model {
     @Column(name = "result", columnDefinition = "text null")
     private String result;
 
-    public static Model.Finder<String, CandidateAssessmentResponse> find = new Model.Finder(CandidateAssessmentResponse.class);
+    public static Model.Finder<String, CandidateAssessmentAttempt> find = new Model.Finder(CandidateAssessmentAttempt.class);
 
-    public int getResponseId() {
-        return responseId;
+    public int getAttemptId() {
+        return attemptId;
     }
 
     public Candidate getCandidate() {
