@@ -1,12 +1,12 @@
 function createRadioButton(name, value, text, id) {
     var label = document.createElement("label");
-    label.style.margin = "8px 16px";
+    label.style.margin = "8px 8px 8px 44px";
     label.style.display= "block";
     label.class = "col-md-4";
     label.style.fontWeight = "normal";
     var radio = document.createElement("input");
     radio.type = "radio";
-    radio.style.margin = "3px 6px";
+    radio.style = "margin-left: -20px; margin-right: 7px;";
     radio.name = name;
     radio.value = value;
     radio.id = id;
