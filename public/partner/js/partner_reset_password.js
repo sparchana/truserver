@@ -94,15 +94,15 @@ $(function() {
             document.getElementById("resetNewPasswordBtn").disabled = true;
             try {
                 var phone = candidateMobile;
-                var password = $('#candidateNewPassword').val();
+                var password = userPwd;
                 console.log("phone: " + phone);
                 var s = {
-                    candidatePassword : password,
-                    candidateAuthMobile : phone,
+                    partnerPassword : password,
+                    partnerAuthMobile : phone,
                 };
                 $.ajax({
                     type: "POST",
-                    url: "/addPassword",
+                    url: "/addPartnerPassword",
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(s),
                     success: processDataPostReset
