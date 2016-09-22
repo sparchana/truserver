@@ -31,23 +31,23 @@ alter table assessment_question add constraint fk_assessment_question_assessment
 create index ix_assessment_question_assessment_question_type_id on assessment_question (assessment_question_type_id);
 
 
-create table candidate_assessment_response (
-  ca_response_id                bigint signed auto_increment not null,
+create table candidate_assessment_attempt (
+  ca_attempt_id                 bigint signed auto_increment not null,
   candidateid                   bigint signed,
   jobpostid                     bigint signed,
   jobroleid                     bigint signed,
   result                        text null,
-  constraint pk_candidate_assessment_response primary key (ca_response_id)
+  constraint pk_candidate_assessment_attempt primary key (ca_attempt_id)
 );
 
-alter table candidate_assessment_response add constraint fk_candidate_assessment_response_candidateid foreign key (candidateid) references candidate (candidateid) on delete restrict on update restrict;
-create index ix_candidate_assessment_response_candidateid on candidate_assessment_response (candidateid);
+alter table candidate_assessment_attempt add constraint fk_candidate_assessment_attempt_candidateid foreign key (candidateid) references candidate (candidateid) on delete restrict on update restrict;
+create index ix_candidate_assessment_attempt_candidateid on candidate_assessment_attempt (candidateid);
 
-alter table candidate_assessment_response add constraint fk_candidate_assessment_response_jobpostid foreign key (jobpostid) references jobpost (jobpostid) on delete restrict on update restrict;
-create index ix_candidate_assessment_response_jobpostid on candidate_assessment_response (jobpostid);
+alter table candidate_assessment_attempt add constraint fk_candidate_assessment_attempt_jobpostid foreign key (jobpostid) references jobpost (jobpostid) on delete restrict on update restrict;
+create index ix_candidate_assessment_attempt_jobpostid on candidate_assessment_attempt (jobpostid);
 
-alter table candidate_assessment_response add constraint fk_candidate_assessment_response_jobroleid foreign key (jobroleid) references jobrole (jobroleid) on delete restrict on update restrict;
-create index ix_candidate_assessment_response_jobroleid on candidate_assessment_response (jobroleid);
+alter table candidate_assessment_attempt add constraint fk_candidate_assessment_attempt_jobroleid foreign key (jobroleid) references jobrole (jobroleid) on delete restrict on update restrict;
+create index ix_candidate_assessment_attempt_jobroleid on candidate_assessment_attempt (jobroleid);
 
 # --- !Downs
 
@@ -60,18 +60,18 @@ drop index ix_assessment_question_skillid on assessment_question;
 alter table assessment_question drop foreign key fk_assessment_question_assessment_question_type_id;
 drop index ix_assessment_question_assessment_question_type_id on assessment_question;
 
-alter table candidate_assessment_response drop foreign key fk_candidate_assessment_response_candidateid;
-drop index ix_candidate_assessment_response_candidateid on candidate_assessment_response;
+alter table candidate_assessment_attempt drop foreign key fk_candidate_assessment_attempt_candidateid;
+drop index ix_candidate_assessment_attempt_candidateid on candidate_assessment_attempt;
 
-alter table candidate_assessment_response drop foreign key fk_candidate_assessment_response_jobpostid;
-drop index ix_candidate_assessment_response_jobpostid on candidate_assessment_response;
+alter table candidate_assessment_attempt drop foreign key fk_candidate_assessment_attempt_jobpostid;
+drop index ix_candidate_assessment_attempt_jobpostid on candidate_assessment_attempt;
 
-alter table candidate_assessment_response drop foreign key fk_candidate_assessment_response_jobroleid;
-drop index ix_candidate_assessment_response_jobroleid on candidate_assessment_response;
+alter table candidate_assessment_attempt drop foreign key fk_candidate_assessment_attempt_jobroleid;
+drop index ix_candidate_assessment_attempt_jobroleid on candidate_assessment_attempt;
 
 
 drop table if exists assessment_question;
 
 drop table if exists assessment_question_type;
 
-drop table if exists candidate_assessment_response;
+drop table if exists candidate_assessment_attempt;

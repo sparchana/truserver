@@ -1272,17 +1272,17 @@ public class Application extends Controller {
                 }
             }
 
-            List<CandidateAssessmentResponse> candidateAssessmentResponseList = CandidateAssessmentResponse.find.where()
+            List<CandidateAssessmentAttempt> candidateAssessmentAttemptList = CandidateAssessmentAttempt.find.where()
                     .eq("candidate.candidateId", candidateId)
                     .in("jobRole.jobRoleId", jobRoleIdList)
                     .findList();
-            if (candidateAssessmentResponseList != null && jobRoleIdList.size() > 0 && candidateAssessmentResponseList.size() == jobRoleIdList.size()) {
+            if (candidateAssessmentAttemptList != null && jobRoleIdList.size() > 0 && candidateAssessmentAttemptList.size() == jobRoleIdList.size()) {
                 Logger.info("already assessed");
                 return ok("assessed");
             } else {
                 // filter out all jobroles out of job prefs which are not attempted
                 List<Long> assessedJobRoleIdList = new ArrayList<>();
-                for (CandidateAssessmentResponse caRes : candidateAssessmentResponseList){
+                for (CandidateAssessmentAttempt caRes : candidateAssessmentAttemptList){
                     if(jobRoleIdList.contains(caRes.getJobRole().getJobRoleId())){
                         assessedJobRoleIdList.add(caRes.getJobRole().getJobRoleId());
                     }

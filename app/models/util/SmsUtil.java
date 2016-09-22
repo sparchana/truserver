@@ -80,7 +80,8 @@ public class SmsUtil {
     }
 
     public static void sendJobApplicationSms(String candidateName, String jobTitle, String company, String mobile, String prescreenLocation) {
-        String msg = "Hi " + candidateName + ", you have successfully applied to " + jobTitle + " job at " + company + " @" + prescreenLocation + ". Call us at +91 8048039089 to know about the status of your job application. All the best! www.trujobs.in";
+        String msg = "Hi " + candidateName + ", you have applied to " + jobTitle + " job at " + company + " @" + prescreenLocation + ".  Please complete the assessment to maximize your chances of getting an interview call." +
+                "Call us at +91 8048039089 to know about the status of your job application. All the best! www.trujobs.in";
         sendSms(mobile, msg);
     }
 

@@ -155,7 +155,7 @@ body{
     margin-left: -60%;
 }
 
-#sectionOne {
+#sectionOne, #sectionOneShowAll {
     background: linear-gradient(
             rgba(24, 26, 45, 0.3),
             rgba(24, 26, 45, 0.3)
@@ -654,7 +654,15 @@ hr{
     border-bottom: 1px solid #f4eef2;
     background: #ffffff;
 }
+
+.showPageAllJobs{
+    margin-top: 24px;
+}
 @media screen and (max-width: 768px) {
+    .showPageAllJobs{
+        margin-top: 4px;
+    }
+
     #hotJobs{
         margin-top: 24px;
         height: 66%;
@@ -870,10 +878,13 @@ hr{
         background-size: 320%;
         padding-top: 24%;
         padding-bottom: 18%;
-/*        background-size: 320%;
-        padding-top: 24%;
-        padding-bottom: 48%;*/
     }
+    #sectionOneShowAll {
+        background-size: 320%;
+        padding-top: 24%;
+        padding-bottom: 9%;
+    }
+
 
     .sectionStats {
         background-size: 220%;
