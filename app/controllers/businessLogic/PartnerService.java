@@ -182,7 +182,6 @@ public class PartnerService {
                     /* adding session details */
                     PartnerAuthService.addSession(existingAuth,existingPartner);
                     String sessionId = session().get("sessionId");
-                    Logger.info(sessionId + " === ");
                     existingAuth.update();
                     createInteractionForPartnerLogin(existingPartner.getPartnerUUId(), channelType);
                     Logger.info("Login Successful");
@@ -379,7 +378,7 @@ public class PartnerService {
                 String objBUUID = partner.getPartnerUUId();
 
                 //creating interaction
-                PartnerInteractionService.createInteractionForPartnerTryingToVerifyCandidate(objAUUID, objBUUID);
+                PartnerInteractionService.createInteractionForPartnerTryingToVerifyCandidate(objAUUID, objBUUID, partner.getPartnerFirstName());
             } else{
                 Logger.info("Auth doesnot exists");
             }
@@ -404,7 +403,7 @@ public class PartnerService {
                         String objBUUID = partner.getPartnerUUId();
 
                         //creating interaction
-                        PartnerInteractionService.createInteractionForPartnerVerifyingCandidate(objAUUID, objBUUID);
+                        PartnerInteractionService.createInteractionForPartnerVerifyingCandidate(objAUUID, objBUUID, partner.getPartnerFirstName());
                     } else{
                         verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_WRONG_OTP);
                     }

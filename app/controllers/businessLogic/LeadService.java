@@ -121,12 +121,15 @@ public class LeadService {
             createdBy = session().get("sessionUsername");
             channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
         } else if(channelType == InteractionService.InteractionChannelType.PARTNER) {
-            createdBy = InteractionConstants.INTERACTION_CREATED_SELF;
+            createdBy = InteractionConstants.INTERACTION_CREATED_PARTNER;
             channel = InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE;
         } else if(channelType == InteractionService.InteractionChannelType.SELF_ANDROID){
             createdBy = channelType.toString();
             channel = InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID;
-        } else{
+        } else if(channelType == InteractionService.InteractionChannelType.KNOWLARITY) {
+            createdBy = channelType.toString();
+            channel = InteractionConstants.INTERACTION_CHANNEL_KNOWLARITY;
+        } else {
             createdBy = channelType.toString();
             channel = InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
         }

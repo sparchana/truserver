@@ -309,17 +309,6 @@ option:checked {
     transition:         background-color 0.2s;
 }
 
-#viewCandidateBtn:hover{
-    border: none;
-    background-color: #004d81;
-    color: white;
-    -webkit-transition: background-color 0.2s;
-    -moz-transition:    background-color 0.2s;
-    -ms-transition:     background-color 0.2s;
-    -o-transition:      background-color 0.2s;
-    transition:         background-color 0.2s;
-}
-
 
 .sectionFiveMain{
     background: #002144;

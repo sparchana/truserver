@@ -205,22 +205,8 @@ public class PartnerController {
                 if(isNewCandidate){ //save a record in partnerToCandidate
                     candidateSignUpResponse =
                             PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
-                    int randomPIN = generateOtp();
                     Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
-                    Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
-                    if(existingAuth != null){
-                        existingAuth.setOtp(randomPIN);
-                        existingAuth.update();
-                    }
-                    SmsUtil.sendOtpToPartnerCreatedCandidate(randomPIN, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
-
-                    String objAUUID = existingCandidate.getCandidateUUId();
-                    String objBUUID = partner.getPartnerUUId();
-
-                    //creating interaction
-                    PartnerInteractionService.createInteractionForPartnerTryingToVerifyCandidate(objAUUID, objBUUID);
-
-                    candidateSignUpResponse.setOtp(randomPIN);
+                    PartnerService.sendCandidateVerificationSms(existingCandidate);
                 } else{
                     candidateSignUpResponse.setOtp(0);
                 }

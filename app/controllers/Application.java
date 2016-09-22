@@ -122,9 +122,9 @@ public class Application extends Controller {
                     case 19: response.setUserInteractionType("Lead Status Updated"); break;
                     default: response.setUserInteractionType("Interaction Undefined in getCandidateInteraction()"); break;
                 }
+                Logger.info(interaction.getInteractionChannel() + " ------<<<<");
                 switch (interaction.getInteractionChannel()) {
                     case 0: response.setChannel("Unknown"); break;
-
                     case 1: response.setChannel("Candidate via Website"); break;
                     case 2: response.setChannel("Candidate via Android"); break;
                     case 3: response.setChannel("Partner via website"); break;

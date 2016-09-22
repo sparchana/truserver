@@ -63,7 +63,7 @@ public class PartnerInteractionService {
         InteractionService.createInteraction(interaction);
     }
 
-    public static void createInteractionForPartnerVerifyingCandidate(String objAUUID, String objBUUID) {
+    public static void createInteractionForPartnerVerifyingCandidate(String objAUUID, String objBUUID, String partnerName) {
         Interaction interaction = new Interaction(
                 objAUUID,
                 ServerConstants.OBJECT_TYPE_PARTNER,
@@ -72,13 +72,13 @@ public class PartnerInteractionService {
                 INTERACTION_TYPE_CANDIDATE_VERIFIED,
                 INTERACTION_NOTE_BLANK,
                 INTERACTION_RESULT_CANDIDATE_VERIFICATION_SUCCESS,
-                INTERACTION_CREATED_PARTNER,
+                partnerName + "(Partner)",
                 INTERACTION_CHANNEL_PARTNER_WEBSITE
         );
         InteractionService.createInteraction(interaction);
     }
 
-    public static void createInteractionForPartnerTryingToVerifyCandidate(String objAUUID, String objBUUID) {
+    public static void createInteractionForPartnerTryingToVerifyCandidate(String objAUUID, String objBUUID, String partnerName) {
         Interaction interaction = new Interaction(
                 objAUUID,
                 ServerConstants.OBJECT_TYPE_PARTNER,
@@ -87,7 +87,7 @@ public class PartnerInteractionService {
                 INTERACTION_TYPE_CANDIDATE_TRIED_TO_VERIFY,
                 INTERACTION_NOTE_BLANK,
                 INTERACTION_RESULT_CANDIDATE_TRIED_TO_VERIFY,
-                INTERACTION_CREATED_PARTNER,
+                partnerName + "(Partner)",
                 INTERACTION_CHANNEL_PARTNER_WEBSITE
         );
         InteractionService.createInteraction(interaction);

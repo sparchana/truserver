@@ -237,10 +237,10 @@ function renderCandidateTable() {
                                         var statusVal;
                                         if(candidate.candidateActiveDeactive == '1'){
                                             statusVal = "Active";
-                                            return '<div class="mLabel" style="width:100%" >'+ '<img src=\"/assets/partner/img/verified.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font color="#00b334" size=\"2\">&nbsp;&nbsp;' + statusVal +'</font></div>' +'</div>';
+                                            return '<div class="mLabel" style="width:100%" >'+ '<img src=\"/assets/partner/img/correct.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font color="#00b334" size=\"4\">&nbsp;&nbsp;' + statusVal +'</font></div>' +'</div>';
                                         } else{
                                             statusVal = "Deactivated";
-                                            return '<div class="mLabel" style="width:100%" >'+ '<img src=\"/assets/partner/img/not_verified.svg\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font size=\"2\">&nbsp;&nbsp;' + statusVal +'</font></div>' +'</div>';
+                                            return '<div class="mLabel" style="width:100%" >'+ '<img src=\"/assets/partner/img/wrong.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font color="#dc143c" size=\"4\">&nbsp;&nbsp;' + statusVal +'</font></div>' +'</div>';
                                         }
                                     } else{
                                         return '<button type="button" id="viewCandidateBtn" class="mBtn orange" onclick=\"verifyCandidate('+ candidate.candidateMobile+')\" >'+ '<img src=\"/assets/partner/img/warning.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; cursor: hand\" >&nbsp;&nbsp;Verify</div>' +'</button>';
@@ -267,7 +267,7 @@ function renderCandidateTable() {
             "language": {
                 "emptyTable": "Looks like you have not added any candidates yet! " + '<a href="/partner/candidate/0" style="color: #286ab6"> '+"Add Now!" +'</a>'
             },
-            "order": [[3, "desc"]],
+            "order": [[2, "desc"]],
             responsive: true,
             "destroy": true
         });

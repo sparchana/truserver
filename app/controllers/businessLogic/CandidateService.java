@@ -174,18 +174,10 @@ public class CandidateService
             if(channelType == InteractionChannelType.SELF){
                 // candidate sign up via website
                 createInteractionForSignUpCandidateViaWebsite(objectAUUId, result);
-            } else if(channelType == InteractionChannelType.PARTNER){
+            } else if(channelType == InteractionChannelType.SELF_ANDROID) {
                 // candidate sign up via partner
-                createInteractionForSignUpCandidateByPartnerViaWebsite(objectAUUId, result);
-            } else if(channelType == InteractionChannelType.SUPPORT){
-                // candidate sign up via support
-                String createdBy = session().get("sessionUsername");
-                createInteractionForSignUpCandidateBySupportViaWebsite(objectAUUId, result, createdBy);
-            } else{
-                // candidate sign up via android
                 createInteractionForSignUpCandidateViaAndroid(objectAUUId, result);
             }
-
         } catch (NullPointerException n){
             n.printStackTrace();
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
@@ -434,7 +426,6 @@ public class CandidateService
                 interactionType = InteractionConstants.INTERACTION_TYPE_PROFILE_UPDATE;
             }
 
-            createdBy = channelType.toString();
             if(channelType == InteractionChannelType.SELF_ANDROID){
                 InteractionService.createInteractionForCreateCandidateProfileViaAndroidByCandidate(objAUUId, objBUUId, objBType,
                         interactionType, interactionNote, interactionResult);
