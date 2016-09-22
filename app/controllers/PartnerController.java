@@ -317,4 +317,6 @@ public class PartnerController {
         Logger.info("Req JSON : " + req);
         return ok(toJson(PartnerService.verifyCandidateByPartner(verifyCandidateRequest)));
     }
+
+    public static Result getCandidateJobs(long candidateId) { return ok(views.html.Partner.candidate_jobs.render()); }
 }

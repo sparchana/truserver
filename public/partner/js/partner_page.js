@@ -186,6 +186,11 @@ function viewCandidate(leadId) {
     );
 }
 
+function applyJobForCandidate(candidateId) {
+    localStorage.setItem("candidateId", candidateId);
+    window.location = "/partner/"+ candidateId + "/jobs";
+}
+
 function verifyCandidate(mobile) {
     candidateUnVerifiedMobile = ("+" + mobile);
     notifyWarning("Sending verification SMS to candidate with mobile: " + ("+" + mobile));
@@ -249,7 +254,8 @@ function renderCandidateTable() {
                                     return "-";
                                 }
                             },
-                            'btnView' : '<button type="button" class="mBtn blue" onclick="viewCandidate('+candidate.leadId+')" id="viewCandidateBtn" >'+ 'View/Edit' +'</button>'
+                            'btnView' : '<button type="button" class="mBtn blue" onclick="viewCandidate('+candidate.leadId+')" id="viewCandidateBtn" >'+ 'View/Edit' +'</button>',
+                            'apply' : '<button type="button" class="mBtn" onclick="applyJobForCandidate('+candidate.candidateId+')" id="viewCandidateBtn" >'+ 'Apply Job' +'</button>'
                         })
                     });
                     return returned_data;
@@ -262,7 +268,8 @@ function renderCandidateTable() {
                 { "data": "candidateMobile" },
                 { "data": "candidateCreationTimestamp" },
                 { "data": "candidateStatus" },
-                { "data": "btnView" }
+                { "data": "btnView" },
+                { "data": "apply" }
             ],
             "language": {
                 "emptyTable": "Looks like you have not added any candidates yet! " + '<a href="/partner/candidate/0" style="color: #286ab6"> '+"Add Now!" +'</a>'

@@ -94,6 +94,7 @@ GET         /partnerNavBar                                                contro
 GET         /getPartnerProfileInfo                                        controllers.PartnerController.getPartnerProfileInfo()
 GET         /partnerNavBarLoggedIn                                        controllers.PartnerController.renderPagePartnerLoggedInNavbar()
 GET         /partner/ifExists/:mobile                                     controllers.Application.ifCandidateExists(mobile: String)
+GET         /partner/:candidateId/jobs                                    controllers.PartnerController.getCandidateJobs(candidateId: Long)
 
 POST        /verifyCandidateUsingOtp                                      controllers.PartnerController.verifyCandidateUsingOtp()
 POST        /getPartnerCandidate/:id                                      controllers.PartnerController.getPartnerCandidate(id : Long)
