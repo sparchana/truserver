@@ -1,12 +1,15 @@
 package models.entity.OM;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.PrivateOwned;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.Static.JobRole;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created by zero on 19/9/16.
@@ -35,8 +38,13 @@ public class CandidateAssessmentAttempt extends Model {
     @JoinColumn(name = "JobRoleId", referencedColumnName = "JobRoleId")
     private JobRole jobRole;
 
-    @Column(name = "result", columnDefinition = "text null")
-    private String result;
+    @Column(name = "result", columnDefinition = "double(1, 1) null")
+    private Double result;
+
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "candidateAssessmentAttempt", cascade = CascadeType.ALL)
+    private List<CandidateAssessmentResponse> candidateAssessmentResponseList;
 
     public static Model.Finder<String, CandidateAssessmentAttempt> find = new Model.Finder(CandidateAssessmentAttempt.class);
 
@@ -68,11 +76,19 @@ public class CandidateAssessmentAttempt extends Model {
         this.jobRole = jobRole;
     }
 
-    public String getResult() {
+    public Double getResult() {
         return result;
     }
 
-    public void setResult(String result) {
+    public void setResult(Double result) {
         this.result = result;
+    }
+
+    public List<CandidateAssessmentResponse> getCandidateAssessmentResponseList() {
+        return candidateAssessmentResponseList;
+    }
+
+    public void setCandidateAssessmentResponseList(List<CandidateAssessmentResponse> candidateAssessmentResponseList) {
+        this.candidateAssessmentResponseList = candidateAssessmentResponseList;
     }
 }

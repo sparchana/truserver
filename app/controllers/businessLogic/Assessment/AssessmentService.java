@@ -8,6 +8,7 @@ import models.entity.OM.*;
 import models.entity.Static.AssessmentQuestion;
 import models.entity.Static.JobRole;
 import play.Logger;
+import play.api.Play;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -19,6 +20,9 @@ import static play.libs.Json.toJson;
  * Created by zero on 15/9/16.
  */
 public class AssessmentService {
+
+    private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());
+
     public static List<AssessmentQuestion> getQuestions(List<Long> jobRoleIdList){
         List<AssessmentQuestion> assessmentQuestionList = new ArrayList<>();
         if(jobRoleIdList.size() > 0) {
@@ -54,9 +58,8 @@ public class AssessmentService {
                 List<AssessmentQuestion> assessmentQuestionList = AssessmentQuestion.find.where().in("assessmentQuestionId", assessmentQuestionIdList).findList();
                 for(int i =0; i < optionSize; i++) {
                     AssessmentSheetCol assessmentSheetCol = new AssessmentSheetCol();
-                    assessmentSheetCol.question = assessmentQuestionList.get(i).getQuestionText();
-                    assessmentSheetCol.correctAnswer = assessmentQuestionList.get(i).getAnswer();
-                    assessmentSheetCol.answer =  optionList.get(i).getAssessmentResponse();
+                    assessmentSheetCol.question = assessmentQuestionList.get(i);
+                    assessmentSheetCol.answer = optionList.get(i).getAssessmentResponse();
                     colList.add(assessmentSheetCol);
                     if(prevJobRoleId != optionList.get(i).getJobRoleId() || (i == optionSize - 1)) {
                         try {
@@ -85,6 +88,7 @@ public class AssessmentService {
                 for(JobPreference jobPreference: jobPreferenceList){
                     jobPrefJobRoleIdList.add(jobPreference.getJobRole().getJobRoleId());
                 }
+
                 assessmentQuestionList = AssessmentQuestion.find.where().in("jobRoleId", jobPrefJobRoleIdList).findList();
                 if (assessmentQuestionList.size() > 0) {
                     jobPrefJobRoleIdList = new ArrayList<>();
@@ -115,13 +119,29 @@ public class AssessmentService {
         CandidateAssessmentAttempt caAttempt = new CandidateAssessmentAttempt();
         caAttempt.setCandidate(candidate);
         caAttempt.setJobRole(jobRole);
+        caAttempt.setCandidateAssessmentResponseList(getAssessmentResponses(colList));
+        caAttempt.setResult(calculateAttemptScore(caAttempt.getCandidateAssessmentResponseList()));
         caAttempt.save();
 
         Logger.info("colList: "+toJson(colList));
         /* write response to google sheet */
-        writeAssessmentToGoogleSheet(candidate.getCandidateId(),
-                candidate.getCandidateMobile(), candidate.getCandidateFullName(),
-                jobRole.getJobName(), colList);
+        if(!isDevMode){
+            writeAssessmentToGoogleSheet(candidate.getCandidateId(),
+                    candidate.getCandidateMobile(), candidate.getCandidateFullName(),
+                    jobRole.getJobName(), colList);
+        }
+    }
+
+    private static List<CandidateAssessmentResponse> getAssessmentResponses(List<AssessmentSheetCol> colList) {
+        List<CandidateAssessmentResponse> candidateAssessmentResponseList = new ArrayList<>();
+        for(AssessmentSheetCol response: colList) {
+            CandidateAssessmentResponse candidateAssessmentResponse = new CandidateAssessmentResponse();
+            candidateAssessmentResponse.setAssessmentQuestion(response.question);
+            candidateAssessmentResponse.setCandidateAnswer(response.answer);
+            candidateAssessmentResponse.setScore(response.question.getAnswer().equalsIgnoreCase(response.answer) ? 1 : 0);
+            candidateAssessmentResponseList.add(candidateAssessmentResponse);
+        }
+        return candidateAssessmentResponseList;
     }
 
     private static boolean shouldBeMarkedAsAssessed(List<Long> assessmentJobRoleIdList, List<Long> jobPrefJobRoleIdList){
@@ -135,7 +155,6 @@ public class AssessmentService {
         }
         return true;
     }
-
 
     private static void writeAssessmentToGoogleSheet(Long candidateId, String candidateMobile, String candidateName, String jobName,
                                                    List<AssessmentSheetCol> colList) throws UnsupportedEncodingException {
@@ -164,29 +183,29 @@ public class AssessmentService {
         String correctAnswer5Val = "";
 
         if(colList.size() > 0) {
-            question1Val = colList.get(0).question == null ? "" : colList.get(0).question ;
+            question1Val = colList.get(0).question == null ? "" : colList.get(0).question.getQuestionText();
             candidateAnswer1Val = colList.get(0).answer == null ? "" : colList.get(0).answer;
-            correctAnswer1Val = colList.get(0).correctAnswer == null ? "" : colList.get(0).correctAnswer ;
+            correctAnswer1Val = colList.get(0).question.getAnswer() == null ? "" : colList.get(0).question.getAnswer();
         }
         if(colList.size() > 1) {
-            question2Val = colList.get(1).question == null ? "" : colList.get(1).question ;
-            correctAnswer2Val = colList.get(1).correctAnswer == null ? "" : colList.get(1).correctAnswer ;
-            candidateAnswer2Val = colList.get(1).answer == null ? "" : colList.get(1).answer ;
+            question2Val = colList.get(1).question == null ? "" : colList.get(1).question.getQuestionText();
+            correctAnswer2Val = colList.get(1).answer == null ? "" : colList.get(1).answer;
+            candidateAnswer2Val = colList.get(1).question.getAnswer() == null ? "" : colList.get(1).question.getAnswer();
         }
         if(colList.size() > 2) {
-            question3Val = colList.get(2).question == null ? "" : colList.get(2).question ;
+            question3Val = colList.get(2).question == null ? "" : colList.get(2).question.getQuestionText();
             candidateAnswer3Val = colList.get(2).answer == null ? "" : colList.get(2).answer ;
-            correctAnswer3Val = colList.get(2).correctAnswer == null ? "" : colList.get(2).correctAnswer ;
+            correctAnswer3Val = colList.get(2).question.getAnswer() == null ? "" : colList.get(2).question.getAnswer();
         }
         if(colList.size() > 3) {
-            question4Val = colList.get(3).question == null ? "" : colList.get(3).question ;
+            question4Val = colList.get(3).question == null ? "" : colList.get(3).question.getQuestionText();
             candidateAnswer4Val = colList.get(3).answer == null ? "" : colList.get(3).answer ;
-            correctAnswer4Val = colList.get(3).correctAnswer == null ? "" : colList.get(3).correctAnswer ;
+            correctAnswer4Val = colList.get(3).question.getAnswer() == null ? "" : colList.get(3).question.getAnswer();
         }
         if(colList.size() > 4){
-            question5Val = colList.get(4).question == null ? "" : colList.get(4).question ;
+            question5Val = colList.get(4).question == null ? "" : colList.get(4).question.getQuestionText();
             candidateAnswer5Val = colList.get(4).answer == null ? "" : colList.get(4).answer ;
-            correctAnswer5Val = colList.get(4).correctAnswer == null ? "" : colList.get(4).correctAnswer ;
+            correctAnswer5Val = colList.get(4).question.getAnswer() == null ? "" : colList.get(4).question.getAnswer();
         }
 
         // field key values
@@ -244,8 +263,23 @@ public class AssessmentService {
     }
 
     private static class AssessmentSheetCol {
-        String question;
+        AssessmentQuestion question;
         String answer;
-        String correctAnswer;
+    }
+
+    /**
+     *
+     * Calculate Attempt Score based on responseList
+     * @param candidateAssessmentResponseList
+     *
+     */
+    private static double calculateAttemptScore(List<CandidateAssessmentResponse> candidateAssessmentResponseList) {
+        double finalScore = 0D;
+        for(CandidateAssessmentResponse candidateAssessmentResponse: candidateAssessmentResponseList){
+         if(candidateAssessmentResponse.getScore() > 0 ){
+             ++finalScore;
+         }
+        }
+        return finalScore/candidateAssessmentResponseList.size();
     }
 }
