@@ -103,7 +103,7 @@ $(function() {
                 console.log("phone: " + phone);
                 var s = {
                     partnerPassword : password,
-                    partnerAuthMobile : phone
+                    partnerAuthMobile : phone,
                 };
                 $.ajax({
                     type: "POST",
