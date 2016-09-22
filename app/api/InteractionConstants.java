@@ -42,7 +42,6 @@ public class InteractionConstants {
     public static final String INTERACTION_RESULT_CANDIDATE_RESET_PASSWORD_SUCCESS = "Candidate reset password done";
     public static final String INTERACTION_RESULT_PARTNER_RESET_PASSWORD_SUCCESS = "Partner reset password done";
     public static final String INTERACTION_CREATED_SELF = "Self";
-    public static final String INTERACTION_CREATED_SELF_ANDROID = "Self";
     public static final String INTERACTION_CREATED_SYSTEM = "System";
     public static final String INTERACTION_CREATED_SYSTEM_KNOWLARITY = "System - Knowlarity";
     public static final String INTERACTION_CREATED_PARTNER = "Partner";
@@ -54,32 +53,31 @@ public class InteractionConstants {
     public static final String INTERACTION_NOTE_CREATED_BY_ERROR = "Session Username is null";
     public static final String INTERACTION_NOTE_BLANK = "";
 
-    public static final int INTERACTION_TYPE_CALL_IN= 1;
-    public static final int INTERACTION_TYPE_CALL_OUT= 2;
-    public static final int INTERACTION_TYPE_SMS_IN= 3;
-    public static final int INTERACTION_TYPE_SMS_OUT= 4;
-    public static final int INTERACTION_TYPE_FOLLOWUP_CALL= 5;
-    public static final int INTERACTION_TYPE_APPLIED_JOB= 6;
-    public static final int INTERACTION_TYPE_TRIED_JOB_APPLY= 7;
-    public static final int INTERACTION_TYPE_TRIED_PASSWORD_RESET= 8;
-    public static final int INTERACTION_TYPE_PASSWORD_RESET_SUCCESS= 9;
-    public static final int INTERACTION_TYPE_CANDIDATE_ALERT = 10;
-    public static final int INTERACTION_TYPE_ANDROID_SEARCH = 11;
-    public static final int INTERACTION_TYPE_ANDROID_JOP_POST_VIEW = 12;
-    public static final int INTERACTION_TYPE_LOG_IN = 13;
-    public static final int INTERACTION_TYPE_SIGN_UP = 14;
-    public static final int INTERACTION_TYPE_PROFILE_UPDATE = 15;
-    public static final int INTERACTION_TYPE_CANDIDATE_PROFILE_UPDATE_BY_PARTNER = 16;
-    public static final int INTERACTION_TYPE_CANDIDATE_PROFILE_CREATED_BY_PARTNER = 17;
-    public static final int INTERACTION_TYPE_NEW_LEAD = 18;
-    public static final int INTERACTION_TYPE_CANDIDATE_PROFILE_CREATED_BY_CANDIDATE = 19;
-    public static final int INTERACTION_TYPE_CANDIDATE_VERIFIED = 20;
-    public static final int INTERACTION_TYPE_CANDIDATE_TRIED_TO_VERIFY = 21;
+    public static final int INTERACTION_TYPE_FOLLOWUP_CALL = 1;
+    public static final int INTERACTION_TYPE_APPLIED_JOB = 2;
+    public static final int INTERACTION_TYPE_TRIED_JOB_APPLY = 3;
+    public static final int INTERACTION_TYPE_TRIED_PASSWORD_RESET = 4;
+    public static final int INTERACTION_TYPE_PASSWORD_RESET_SUCCESS = 5;
+    public static final int INTERACTION_TYPE_CANDIDATE_ALERT = 6;
+    public static final int INTERACTION_TYPE_SEARCH = 7;
+    public static final int INTERACTION_TYPE_JOP_POST_VIEW = 8;
+    public static final int INTERACTION_TYPE_LOG_IN = 9;
+    public static final int INTERACTION_TYPE_SIGN_UP = 10;
+    public static final int INTERACTION_TYPE_PROFILE_UPDATE = 11;
+    public static final int INTERACTION_TYPE_PROFILE_CREATED = 12;
+    public static final int INTERACTION_TYPE_NEW_LEAD = 13;
+    public static final int INTERACTION_TYPE_CANDIDATE_VERIFIED = 14;
+    public static final int INTERACTION_TYPE_CANDIDATE_TRIED_TO_VERIFY = 15;
+    public static final int INTERACTION_TYPE_PASSWORD_ADDED = 16;
+    public static final int INTERACTION_TYPE_CANDIDATE_ACTIVATED = 17;
+    public static final int INTERACTION_TYPE_CANDIDATE_DEACTIVATED = 18;
+    public static final int INTERACTION_TYPE_LEAD_STATUS_UPDATE = 19;
 
     public static final int INTERACTION_CHANNEL_CANDIDATE_WEBSITE = 1;
     public static final int INTERACTION_CHANNEL_CANDIDATE_ANDROID = 2;
     public static final int INTERACTION_CHANNEL_PARTNER_WEBSITE = 3;
     public static final int INTERACTION_CHANNEL_SUPPORT_WEBSITE = 4;
+    public static final int INTERACTION_CHANNEL_KNOWLARITY = 5;
 
 
 }

@@ -137,15 +137,13 @@ public class JobService {
                         InteractionService.createInteractionForJobApplicationViaWebsite(
                                 existingCandidate.getCandidateUUId(),
                                 existingJobPost.getJobPostUUId(),
-                                interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName() + "@" + locality.getLocalityName(),
-                                channelType
+                                interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName() + "@" + locality.getLocalityName()
                         );
                     } else{
                         InteractionService.createInteractionForJobApplicationViaAndroid(
                                 existingCandidate.getCandidateUUId(),
                                 existingJobPost.getJobPostUUId(),
-                                interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName() + "@" + locality.getLocalityName(),
-                                channelType
+                                interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName() + "@" + locality.getLocalityName()
                         );
                     }
 

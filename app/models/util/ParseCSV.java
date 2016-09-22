@@ -98,7 +98,8 @@ public class ParseCSV {
                         // save all inbound calls to interaction
                         interaction.setCreatedBy(InteractionConstants.INTERACTION_CREATED_SYSTEM_KNOWLARITY);
                         interaction.setCreationTimestamp(knowlarityInBoundTimestamp);
-                        interaction.setInteractionType(InteractionConstants.INTERACTION_TYPE_CALL_IN);
+                        interaction.setInteractionType(InteractionConstants.INTERACTION_TYPE_NEW_LEAD);
+                        interaction.setInteractionChannel(InteractionConstants.INTERACTION_CHANNEL_KNOWLARITY);
                         interaction.save();
                     }
                 }

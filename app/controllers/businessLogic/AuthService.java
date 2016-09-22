@@ -52,9 +52,9 @@ public class AuthService {
                     objAUUID = candidate.getCandidateUUId();
                 }
                 if(channelType == InteractionService.InteractionChannelType.SELF){
-                    InteractionService.createInteractionForCandidateResetPasswordViaWebsite(objAUUID, interactionResult, channelType);
+                    InteractionService.createInteractionForCandidateResetPasswordViaWebsite(objAUUID, interactionResult);
                 } else{
-                    InteractionService.createInteractionForCandidateResetPasswordViaAndroid(objAUUID, interactionResult, channelType);
+                    InteractionService.createInteractionForCandidateResetPasswordViaAndroid(objAUUID, interactionResult);
                 }
 
                 existingAuth.setAuthSessionId(UUID.randomUUID().toString());
@@ -113,9 +113,9 @@ public class AuthService {
 
                 String objAUUID = existingCandidate.getCandidateUUId();
                 if (channelType == InteractionService.InteractionChannelType.SELF) {
-                    InteractionService.createInteractionForCandidateAddPasswordViaWebsite(objAUUID, channelType.toString());
+                    InteractionService.createInteractionForCandidateAddPasswordViaWebsite(objAUUID);
                 } else{
-                    InteractionService.createInteractionForCandidateAddPasswordViaAndroid(objAUUID, channelType.toString());
+                    InteractionService.createInteractionForCandidateAddPasswordViaAndroid(objAUUID);
                 }
                 try {
                     existingCandidate.setCandidateprofilestatus(CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE).findUnique());

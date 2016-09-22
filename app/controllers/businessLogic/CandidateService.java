@@ -370,6 +370,12 @@ public class CandidateService
         candidate.setIsMinProfileComplete(isMinProfileComplete(candidate));
         objAUUId = candidate.getCandidateUUId();
 
+        /**
+         *  This sttep we are checking various channel for candidate profile create/update (Support, candidate_web, candidate_android, partner)
+         *  in each case, we are checking if "isNewCandiate" status to determine weather the candidate is being created or updated
+         *  Finally creating respective interaction according to the case
+         */
+
         if(channelType == InteractionChannelType.SUPPORT || channelType == InteractionChannelType.PARTNER){
             // update additional fields that are part of the support request
             updateOthersBySupport(candidate, request);
@@ -378,10 +384,11 @@ public class CandidateService
             if(channelType == InteractionChannelType.SUPPORT){
                 createdBy = session().get("sessionUsername");
                 interactionNote = supportCandidateRequest.getSupportNote();
-                interactionType = InteractionConstants.INTERACTION_TYPE_CALL_OUT;
                 if(isNewCandidate) {
+                    interactionType = InteractionConstants.INTERACTION_TYPE_PROFILE_CREATED;
                     interactionResult = InteractionConstants.INTERACTION_RESULT_NEW_CANDIDATE_SUPPORT;
                 } else{
+                    interactionType = InteractionConstants.INTERACTION_TYPE_PROFILE_UPDATE;
                     interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM;
                 }
 
@@ -392,7 +399,7 @@ public class CandidateService
                 // candidate being created by partner
                 createdBy = session().get("partnerName");
                 if(isNewCandidate) {
-                    interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_PROFILE_CREATED_BY_PARTNER;
+                    interactionType = InteractionConstants.INTERACTION_TYPE_PROFILE_CREATED;
                     interactionResult = InteractionConstants.INTERACTION_RESULT_NEW_CANDIDATE_PARTNER;
                     Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
                     if(partner != null){
@@ -400,7 +407,7 @@ public class CandidateService
                         objBUUId = partner.getPartnerUUId();
                     }
                 } else{
-                    interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_PROFILE_UPDATE_BY_PARTNER;
+                    interactionType = InteractionConstants.INTERACTION_TYPE_PROFILE_UPDATE;
                     interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_PARTNER;
                     Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
                     if(partner != null){
@@ -415,7 +422,7 @@ public class CandidateService
         } else{
             //getting updated by the candidate
             if(isNewCandidate) {
-                interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_PROFILE_CREATED_BY_CANDIDATE;
+                interactionType = InteractionConstants.INTERACTION_TYPE_PROFILE_CREATED;
             } else{
                 interactionType = InteractionConstants.INTERACTION_TYPE_PROFILE_UPDATE;
             }
@@ -423,14 +430,14 @@ public class CandidateService
             createdBy = channelType.toString();
             if(channelType == InteractionChannelType.SELF_ANDROID){
                 InteractionService.createInteractionForCreateCandidateProfileViaAndroidByCandidate(objAUUId, objBUUId, objBType,
-                        interactionType, interactionNote, interactionResult, createdBy);
+                        interactionType, interactionNote, interactionResult);
             } else{
                 InteractionService.createInteractionForCreateCandidateProfileViaWebsiteByCandidate(objAUUId, objBUUId, objBType,
-                        interactionType, interactionNote, interactionResult, createdBy);
+                        interactionType, interactionNote, interactionResult);
             }
         }
-        candidate.update();
 
+        candidate.update();
         Logger.info("Candidate with mobile " +  candidate.getCandidateMobile() + " created/updated successfully");
         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
         candidateSignUpResponse.setMinProfile(candidate.getIsMinProfileComplete());
@@ -1045,9 +1052,9 @@ public class CandidateService
                     AuthService.addSession(existingAuth,existingCandidate);
                     existingAuth.update();
                     if(channelType == InteractionChannelType.SELF){
-                        InteractionService.createInteractionForLoginCandidateViaWebsite(existingCandidate.getCandidateUUId(), channelType);
+                        InteractionService.createInteractionForLoginCandidateViaWebsite(existingCandidate.getCandidateUUId());
                     } else{
-                        InteractionService.createInteractionForLoginCandidateViaAndroid(existingCandidate.getCandidateUUId(), channelType);
+                        InteractionService.createInteractionForLoginCandidateViaAndroid(existingCandidate.getCandidateUUId());
                     }
                     Logger.info("Login Successful");
                 }
@@ -1082,9 +1089,9 @@ public class CandidateService
                 String objAUUID = "";
                 objAUUID = existingCandidate.getCandidateUUId();
                 if (channelType == InteractionChannelType.SELF) {
-                    InteractionService.createInteractionForResetPasswordAttemptViaWebsite(objAUUID, interactionResult, channelType);
+                    InteractionService.createInteractionForResetPasswordAttemptViaWebsite(objAUUID, interactionResult);
                 } else{
-                    InteractionService.createInteractionForResetPasswordAttemptViaAndroid(objAUUID, interactionResult, channelType);
+                    InteractionService.createInteractionForResetPasswordAttemptViaAndroid(objAUUID, interactionResult);
                 }
                 resetPasswordResponse.setOtp(randomPIN);
                 resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);

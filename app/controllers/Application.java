@@ -101,27 +101,25 @@ public class Application extends Controller {
                 response.setUserCreatedBy(interaction.getCreatedBy());
                 switch (interaction.getInteractionType()) {
                     case 0: response.setUserInteractionType("Unknown"); break;
-                    case 1: response.setUserInteractionType("Incoming Call"); break;
-                    case 2: response.setUserInteractionType("Out Going Call"); break;
-                    case 3: response.setUserInteractionType("Incoming SMS"); break;
-                    case 4: response.setUserInteractionType("Out Going SMS"); break;
-                    case 5: response.setUserInteractionType("Follow Up Call"); break;
-                    case 6: response.setUserInteractionType("New Job Application"); break;
-                    case 7: response.setUserInteractionType("Tried to Apply to a job"); break;
-                    case 8: response.setUserInteractionType("Tried to reset password"); break;
-                    case 9: response.setUserInteractionType("Reset password successful"); break;
-                    case 10: response.setUserInteractionType("Alert Button Clicked"); break;
-                    case 11: response.setUserInteractionType("Searched Jobs"); break;
-                    case 12: response.setUserInteractionType("Viewed a job"); break;
-                    case 13: response.setUserInteractionType("Logged in"); break;
-                    case 14: response.setUserInteractionType("Sign up"); break;
-                    case 15: response.setUserInteractionType("Profile Updated"); break;
-                    case 16: response.setUserInteractionType("Candidate Profile Updated by Partner"); break;
-                    case 17: response.setUserInteractionType("Candidate Profile Created by Partner"); break;
-                    case 18: response.setUserInteractionType("New lead"); break;
-                    case 19: response.setUserInteractionType("candidate Profile created by Candidate"); break;
-                    case 20: response.setUserInteractionType("Candidate verified"); break;
-                    case 21: response.setUserInteractionType("Tried to verify Candidate"); break;
+                    case 1: response.setUserInteractionType("Follow Up Call"); break;
+                    case 2: response.setUserInteractionType("Job Apply Successful"); break;
+                    case 3: response.setUserInteractionType("Tried to Apply a Job"); break;
+                    case 4: response.setUserInteractionType("Tried to Reset Password"); break;
+                    case 5: response.setUserInteractionType("Reset Password Successful"); break;
+                    case 6: response.setUserInteractionType("Clicked Candidate Alert"); break;
+                    case 7: response.setUserInteractionType("Job Search"); break;
+                    case 8: response.setUserInteractionType("Job Post View"); break;
+                    case 9: response.setUserInteractionType("Login"); break;
+                    case 10: response.setUserInteractionType("Sign Up"); break;
+                    case 11: response.setUserInteractionType("Profile Updated"); break;
+                    case 12: response.setUserInteractionType("Profile Created"); break;
+                    case 13: response.setUserInteractionType("New Lead"); break;
+                    case 14: response.setUserInteractionType("Candidate Verified"); break;
+                    case 15: response.setUserInteractionType("Tried to Verify candidate"); break;
+                    case 16: response.setUserInteractionType("Password Created"); break;
+                    case 17: response.setUserInteractionType("Candidate Activated"); break;
+                    case 18: response.setUserInteractionType("Candidate Deactivated"); break;
+                    case 19: response.setUserInteractionType("Lead Status Updated"); break;
                     default: response.setUserInteractionType("Interaction Undefined in getCandidateInteraction()"); break;
                 }
                 switch (interaction.getInteractionChannel()) {
@@ -131,7 +129,7 @@ public class Application extends Controller {
                     case 2: response.setChannel("Candidate via Android"); break;
                     case 3: response.setChannel("Partner via website"); break;
                     case 4: response.setChannel("System via website"); break;
-                    default: response.setChannel("cahnnel Undefined in getCandidateInteraction()"); break;
+                    default: response.setChannel("channel Undefined in getCandidateInteraction()"); break;
                 }
 
                 responses.add(response);
@@ -551,11 +549,10 @@ public class Application extends Controller {
                     Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")). findUnique();
                     objAUUID = candidate.getCandidateUUId();
                 }
-                InteractionService.createInteractionForJobApplicationAttempt(
+                InteractionService.createInteractionForJobApplicationAttemptViaWebsite(
                         objAUUID,
                         jobPost.getJobPostUUId(),
-                        interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName(),
-                        InteractionService.InteractionChannelType.SELF
+                        interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName()
                 );
             }
 
@@ -701,7 +698,7 @@ public class Application extends Controller {
                     Interaction interaction = new Interaction(
                             lead.getLeadUUId(),
                             lead.getLeadType(),
-                            InteractionConstants.INTERACTION_TYPE_CALL_OUT,
+                            InteractionConstants.INTERACTION_TYPE_LEAD_STATUS_UPDATE,
                             InteractionConstants.INTERACTION_NOTE_BLANK,
                             InteractionConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
                             session().get("sessionUsername"),
@@ -713,7 +710,7 @@ public class Application extends Controller {
                     Interaction interaction = new Interaction(
                             lead.getLeadUUId(),
                             lead.getLeadType(),
-                            InteractionConstants.INTERACTION_TYPE_CALL_OUT,
+                            InteractionConstants.INTERACTION_TYPE_LEAD_STATUS_UPDATE,
                             InteractionConstants.INTERACTION_NOTE_BLANK,
                             InteractionConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
                             session().get("sessionUsername"),
@@ -789,7 +786,7 @@ public class Application extends Controller {
                 Interaction interaction = new Interaction(
                         lead.getLeadUUId(),
                         lead.getLeadType(),
-                        InteractionConstants.INTERACTION_TYPE_CALL_OUT,
+                        InteractionConstants.INTERACTION_TYPE_LEAD_STATUS_UPDATE,
                         interactionNote,
                         interactionResult,
                         session().get("sessionUsername"),

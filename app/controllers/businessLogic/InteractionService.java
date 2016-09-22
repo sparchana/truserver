@@ -71,7 +71,7 @@ public class InteractionService {
         }
     }
 
-    public static void createInteractionForJobApplicationViaWebsite(String objectAUUId, String objectBUUId, String result, InteractionChannelType channelType) {
+    public static void createInteractionForJobApplicationViaWebsite(String objectAUUId, String objectBUUId, String result) {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
@@ -79,13 +79,13 @@ public class InteractionService {
                 ServerConstants.OBJECT_TYPE_JOB_POST,
                 InteractionConstants.INTERACTION_TYPE_APPLIED_JOB,
                 result,
-                channelType.toString(),
+                INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_CANDIDATE_WEBSITE
         );
         InteractionService.createInteraction(interaction);
     }
 
-    public static void createInteractionForJobApplicationViaAndroid(String objectAUUId, String objectBUUId, String result, InteractionChannelType channelType) {
+    public static void createInteractionForJobApplicationViaAndroid(String objectAUUId, String objectBUUId, String result) {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
@@ -93,7 +93,7 @@ public class InteractionService {
                 ServerConstants.OBJECT_TYPE_JOB_POST,
                 InteractionConstants.INTERACTION_TYPE_APPLIED_JOB,
                 result,
-                channelType.toString(),
+                INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_CANDIDATE_ANDROID
         );
         InteractionService.createInteraction(interaction);
@@ -104,33 +104,33 @@ public class InteractionService {
         Logger.info("Interaction saved");
     }
 
-    public static void createInteractionForLoginCandidateViaWebsite(String objectAUUId, InteractionChannelType channelType) {
+    public static void createInteractionForLoginCandidateViaWebsite(String objectAUUId) {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
                 INTERACTION_TYPE_LOG_IN,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 InteractionConstants.INTERACTION_RESULT_SELF_SIGNEDIN,
-                channelType.toString(),
+                INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_CANDIDATE_WEBSITE
         );
         InteractionService.createInteraction(interaction);
     }
 
-    public static void createInteractionForLoginCandidateViaAndroid(String objectAUUId, InteractionChannelType channelType) {
+    public static void createInteractionForLoginCandidateViaAndroid(String objectAUUId) {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
                 INTERACTION_TYPE_LOG_IN,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 InteractionConstants.INTERACTION_RESULT_SELF_SIGNEDIN,
-                channelType.toString(),
+                INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_CANDIDATE_ANDROID
         );
         InteractionService.createInteraction(interaction);
     }
 
-    public static void createInteractionForJobApplicationAttempt(String objectAUUId, String objectBUUId, String result, InteractionChannelType channelType) {
+    public static void createInteractionForJobApplicationAttemptViaWebsite(String objectAUUId, String objectBUUId, String result) {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_JOB_POST,
@@ -138,7 +138,7 @@ public class InteractionService {
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
                 InteractionConstants.INTERACTION_TYPE_TRIED_JOB_APPLY,
                 result,
-                channelType.toString(),
+                INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_CANDIDATE_WEBSITE
         );
         InteractionService.createInteraction(interaction);
@@ -149,7 +149,7 @@ public class InteractionService {
             Interaction interaction = new Interaction(
                     objectAUUId,
                     ServerConstants.OBJECT_TYPE_CANDIDATE,
-                    InteractionConstants.INTERACTION_TYPE_CALL_OUT,
+                    InteractionConstants.INTERACTION_TYPE_CANDIDATE_DEACTIVATED,
                     InteractionConstants.INTERACTION_NOTE_BLANK,
                     InteractionConstants.INTERACTION_RESULT_CANDIDATE_DEACTIVATED,
                     session().get("sessionUsername"),
@@ -164,7 +164,7 @@ public class InteractionService {
             Interaction interaction = new Interaction(
                     objectAUUId,
                     ServerConstants.OBJECT_TYPE_CANDIDATE,
-                    InteractionConstants.INTERACTION_TYPE_CALL_OUT,
+                    InteractionConstants.INTERACTION_TYPE_CANDIDATE_ACTIVATED,
                     InteractionConstants.INTERACTION_NOTE_BLANK,
                     InteractionConstants.INTERACTION_RESULT_CANDIDATE_ACTIVATED,
                     session().get("sessionUsername"),
@@ -174,145 +174,145 @@ public class InteractionService {
         }
     }
 
-    public static void createInteractionForResetPasswordAttemptViaWebsite(String objectAUUId, String result, InteractionChannelType channelType){
+    public static void createInteractionForResetPasswordAttemptViaWebsite(String objectAUUId, String result){
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
                 InteractionConstants.INTERACTION_TYPE_TRIED_PASSWORD_RESET,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
-                channelType.toString(),
+                INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_CANDIDATE_WEBSITE
         );
         InteractionService.createInteraction(interaction);
     }
 
-    public static void createInteractionForResetPasswordAttemptViaAndroid(String objectAUUId, String result, InteractionChannelType channelType){
+    public static void createInteractionForResetPasswordAttemptViaAndroid(String objectAUUId, String result){
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
                 InteractionConstants.INTERACTION_TYPE_TRIED_PASSWORD_RESET,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
-                channelType.toString(),
+                INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_CANDIDATE_ANDROID
         );
         InteractionService.createInteraction(interaction);
     }
 
-    public static void createInteractionForCandidateResetPasswordViaWebsite(String objectAUUId, String result, InteractionChannelType channelType){
+    public static void createInteractionForCandidateResetPasswordViaWebsite(String objectAUUId, String result){
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
                 InteractionConstants.INTERACTION_TYPE_PASSWORD_RESET_SUCCESS,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
-                channelType.toString(),
+                INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_CANDIDATE_WEBSITE
         );
         InteractionService.createInteraction(interaction);
     }
 
-    public static void createInteractionForCandidateResetPasswordViaAndroid(String objectAUUId, String result, InteractionChannelType channelType){
+    public static void createInteractionForCandidateResetPasswordViaAndroid(String objectAUUId, String result){
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
                 InteractionConstants.INTERACTION_TYPE_PASSWORD_RESET_SUCCESS,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
-                channelType.toString(),
+                INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_CANDIDATE_ANDROID
         );
         InteractionService.createInteraction(interaction);
     }
 
-    public static void createInteractionForPartnerResetPasswordViaWebsite(String objectAUUId, String result, InteractionChannelType channelType){
+    public static void createInteractionForPartnerResetPasswordViaWebsite(String objectAUUId, String result){
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
                 InteractionConstants.INTERACTION_TYPE_PASSWORD_RESET_SUCCESS,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
-                channelType.toString(),
+                INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_PARTNER_WEBSITE
         );
         InteractionService.createInteraction(interaction);
     }
 
-    public static void createInteractionForCandidateAddPasswordViaWebsite(String objectAUUId, String createdBy){
+    public static void createInteractionForCandidateAddPasswordViaWebsite(String objectAUUId){
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
-                InteractionConstants.INTERACTION_TYPE_PASSWORD_RESET_SUCCESS,
+                InteractionConstants.INTERACTION_TYPE_PASSWORD_ADDED,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 InteractionConstants.INTERACTION_RESULT_NEW_CANDIDATE + " & " + InteractionConstants.INTERACTION_NOTE_SELF_PASSWORD_CHANGED,
-                createdBy,
+                INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_CANDIDATE_WEBSITE
         );
         InteractionService.createInteraction(interaction);
     }
 
-    public static void createInteractionForCandidateAddPasswordViaAndroid(String objectAUUId, String createdBy){
+    public static void createInteractionForCandidateAddPasswordViaAndroid(String objectAUUId){
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
-                InteractionConstants.INTERACTION_TYPE_PASSWORD_RESET_SUCCESS,
+                InteractionConstants.INTERACTION_TYPE_PASSWORD_ADDED,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 InteractionConstants.INTERACTION_RESULT_NEW_CANDIDATE + " & " + InteractionConstants.INTERACTION_NOTE_SELF_PASSWORD_CHANGED,
-                createdBy,
+                INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_CANDIDATE_ANDROID
         );
         InteractionService.createInteraction(interaction);
     }
 
-    public static void createInteractionForPartnerAddPasswordViaWebsite(String objectAUUId, String createdBy){
+    public static void createInteractionForPartnerAddPasswordViaWebsite(String objectAUUId){
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
                 InteractionConstants.INTERACTION_TYPE_PASSWORD_RESET_SUCCESS,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 InteractionConstants.INTERACTION_RESULT_NEW_PARTNER + " & " + InteractionConstants.INTERACTION_NOTE_PARTNER_PASSWORD_CHANGED,
-                createdBy,
+                INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_PARTNER_WEBSITE
         );
         InteractionService.createInteraction(interaction);
     }
 
-    public static void createInteractionForCandidateAlertService(String objectAUUId, String result, InteractionChannelType channelType){
+    public static void createInteractionForCandidateAlertService(String objectAUUId, String result){
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
                 InteractionConstants.INTERACTION_TYPE_CANDIDATE_ALERT,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
-                channelType.toString(),
+                INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_CANDIDATE_ANDROID
         );
         InteractionService.createInteraction(interaction);
     }
-    public static void createInteractionForSearch(String objectAUUId, String result, InteractionChannelType  channelType){
+    public static void createInteractionForSearch(String objectAUUId, String result){
         Logger.info("Search Interaction Saved for UUID: " + objectAUUId);
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
-                InteractionConstants.INTERACTION_TYPE_ANDROID_SEARCH,
+                InteractionConstants.INTERACTION_TYPE_SEARCH,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
-                channelType.toString(),
+                INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_CANDIDATE_ANDROID
         );
         InteractionService.createInteraction(interaction);
     }
-    public static void createInteractionForViewJobPostInfo(String objectAUUId, String objectBUUId, String result, InteractionChannelType  channelType){
+    public static void createInteractionForViewJobPostInfo(String objectAUUId, String objectBUUId, String result){
         Logger.info("View JobPost Info Interaction Saved for UUID: " + objectAUUId == null ? ServerConstants.TRU_DROID_NOT_LOGGED_UUID : objectAUUId);
         Interaction interaction = new Interaction(
                 objectAUUId == null ? ServerConstants.TRU_DROID_NOT_LOGGED_UUID : objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
                 objectBUUId,
                 ServerConstants.OBJECT_TYPE_JOB_POST_VIEW,
-                InteractionConstants.INTERACTION_TYPE_ANDROID_JOP_POST_VIEW,
+                InteractionConstants.INTERACTION_TYPE_JOP_POST_VIEW,
                 result,
-                channelType.toString(),
+                INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_CANDIDATE_ANDROID
         );
         InteractionService.createInteraction(interaction);
@@ -367,7 +367,7 @@ public class InteractionService {
                 InteractionConstants.INTERACTION_TYPE_SIGN_UP,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
-                INTERACTION_CREATED_SELF_ANDROID,
+                INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_CANDIDATE_ANDROID
         );
         InteractionService.createInteraction(interaction);
@@ -403,7 +403,7 @@ public class InteractionService {
         InteractionService.createInteraction(interaction);
     }
 
-    public static void createInteractionForCreateCandidateProfileViaAndroidByCandidate(String objAuuId, String objBuuId, Integer objBType, Integer interactionType, String interactionNote, String interactionResult, String createdBy){
+    public static void createInteractionForCreateCandidateProfileViaAndroidByCandidate(String objAuuId, String objBuuId, Integer objBType, Integer interactionType, String interactionNote, String interactionResult){
         Interaction interaction = new Interaction(
                 objAuuId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
@@ -412,13 +412,13 @@ public class InteractionService {
                 interactionType,
                 interactionNote,
                 interactionResult,
-                createdBy,
+                INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_CANDIDATE_ANDROID
         );
         InteractionService.createInteraction(interaction);
     }
 
-    public static void createInteractionForCreateCandidateProfileViaWebsiteByCandidate(String objAuuId, String objBuuId, Integer objBType, Integer interactionType, String interactionNote, String interactionResult, String createdBy){
+    public static void createInteractionForCreateCandidateProfileViaWebsiteByCandidate(String objAuuId, String objBuuId, Integer objBType, Integer interactionType, String interactionNote, String interactionResult){
         Interaction interaction = new Interaction(
                 objAuuId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
@@ -427,7 +427,7 @@ public class InteractionService {
                 interactionType,
                 interactionNote,
                 interactionResult,
-                createdBy,
+                INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_CANDIDATE_WEBSITE
         );
         InteractionService.createInteraction(interaction);

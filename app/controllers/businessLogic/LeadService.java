@@ -117,7 +117,7 @@ public class LeadService {
         int objectAType;
         String createdBy;
         if(channelType == InteractionService.InteractionChannelType.SUPPORT) {
-            interactionType = InteractionConstants.INTERACTION_TYPE_CALL_OUT; //TODO: Call Out/In need to be distinguished
+            interactionType = InteractionConstants.INTERACTION_TYPE_NEW_LEAD;
             createdBy = session().get("sessionUsername");
             channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
         } else if(channelType == InteractionService.InteractionChannelType.PARTNER) {
