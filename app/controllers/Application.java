@@ -1218,6 +1218,14 @@ public class Application extends Controller {
     public static Result checkCandidateSession() {
         String sessionCandidateId = session().get("candidateId");
         if(sessionCandidateId != null) {
+            Auth existingAuth = Auth.find.where().eq("candidateId", sessionCandidateId).findUnique();
+            if(existingAuth != null){
+                if(existingAuth.getAuthStatus() == 1){
+                    return ok("1");
+                } else{
+                    return ok("0"); //auth is not verified
+                }
+            }
             return ok("1");
         } else{
             return ok("0");

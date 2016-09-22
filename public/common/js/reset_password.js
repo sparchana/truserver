@@ -57,22 +57,22 @@ function processDataPostReset(returnedData) {
 }
 
 function requestOtp(phone) {
-        candidateMobile = phone;
-        document.getElementById("resetCheckUserBtn").disabled = true;
-        try {
-            var s = {
-                resetPasswordMobile : phone
-            };
-            $.ajax({
-                type: "POST",
-                url: "/findUserAndSendOtp",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(s),
-                success: processDataResetCheckUser
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
-        }
+    candidateMobile = phone;
+    document.getElementById("resetCheckUserBtn").disabled = true;
+    try {
+        var s = {
+            resetPasswordMobile : phone
+        };
+        $.ajax({
+            type: "POST",
+            url: "/findUserAndSendOtp",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(s),
+            success: processDataResetCheckUser
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
 }
 
 // form_forgot_password ajax script
