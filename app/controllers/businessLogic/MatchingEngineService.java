@@ -56,11 +56,11 @@ public class MatchingEngineService {
                 .eq("jobPostIsHot", IS_HOT)
                 .query();
 
-
         query = query
                 .where()
                 .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
-                .query();*/
+                .query();
+*/
 
         Logger.info("JobPostIdList Size: "+ jobRoleIds.size());
         if(jobRoleIds != null && !jobRoleIds.isEmpty() ) {

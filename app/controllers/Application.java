@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
+import controllers.businessLogic.Assessment.AssessmentService;
 import controllers.security.*;
 import models.entity.*;
 import models.entity.OM.*;
@@ -35,7 +36,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.avaje.ebean.Expr.eq;
-import static models.util.ParseCSV.parseBabaJobsCSV;
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {
@@ -1195,21 +1195,109 @@ public class Application extends Controller {
 
     public static Result checkCandidateSession() {
         String sessionCandidateId = session().get("candidateId");
-        if(sessionCandidateId != null){
+        if(sessionCandidateId != null) {
             return ok("1");
         } else{
             return ok("0");
         }
     }
 
+    @Security.Authenticated(SecuredUser.class)
+    public static Result getAssessmentQuestion(String jobRoleIds, String jobPostIds, Integer limit) {
+
+        /*
+        *  Since the flow is such that assessment is triggered only if user is logged in
+        *  and if jobroleid is null then jobpostid is used to resolve jobroleid and then passed to getQuestion
+        *
+        */
+        if(session().get("candidateId") != null){
+            Long candidateId = Long.parseLong(session().get("candidateId"));
+            List<Long> jobRoleIdList = new ArrayList<>();
+            if(jobRoleIds != null){
+                List<String> jobRoleIdStrList = Arrays.asList(jobRoleIds.split("\\s*,\\s*"));
+                if (jobRoleIdStrList.size() > 0){
+                    for (String roleId: jobRoleIdStrList) {
+                        jobRoleIdList.add(Long.parseLong(roleId));
+                    }
+                }
+            } else {
+                if(jobPostIds != null) {
+                    List<String> jobPostIdStrList = Arrays.asList(jobPostIds.split("\\s*,\\s*"));
+                    List<JobPost> jobPostList = JobPost.find.where().in("jobPostId", jobPostIdStrList).findList();
+                    for(JobPost jobPost : jobPostList) {
+                        jobRoleIdList.add(jobPost.getJobRole().getJobRoleId());
+                    }
+                } else {
+                    Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
+                    for(JobPreference jobPreference : candidate.getJobPreferencesList()){
+                        jobRoleIdList.add(jobPreference.getJobRole().getJobRoleId());
+                    }
+                    List<AssessmentQuestion> assessmentQuestionList = AssessmentQuestion.find.where().in("jobRoleId", jobRoleIdList).findList();
+                    if (assessmentQuestionList.size() > 0) {
+                        jobRoleIdList = new ArrayList<>();
+                        for(AssessmentQuestion assessmentQuestion: assessmentQuestionList) {
+                            if(!jobRoleIdList.contains(assessmentQuestion.getJobRole().getJobRoleId())){
+                                jobRoleIdList.add(assessmentQuestion.getJobRole().getJobRoleId());
+                            }
+                        }
+                    } else {
+                        return ok("assessed");
+                    }
+
+                }
+            }
+
+            List<CandidateAssessmentAttempt> candidateAssessmentAttemptList = CandidateAssessmentAttempt.find.where()
+                    .eq("candidate.candidateId", candidateId)
+                    .in("jobRole.jobRoleId", jobRoleIdList)
+                    .findList();
+            if (candidateAssessmentAttemptList != null && jobRoleIdList.size() > 0 && candidateAssessmentAttemptList.size() == jobRoleIdList.size()) {
+                Logger.info("already assessed");
+                return ok("assessed");
+            } else {
+                // filter out all jobroles out of job prefs which are not attempted
+                List<Long> assessedJobRoleIdList = new ArrayList<>();
+                for (CandidateAssessmentAttempt caRes : candidateAssessmentAttemptList){
+                    if(jobRoleIdList.contains(caRes.getJobRole().getJobRoleId())){
+                        assessedJobRoleIdList.add(caRes.getJobRole().getJobRoleId());
+                    }
+                }
+                jobRoleIdList.removeAll(assessedJobRoleIdList);
+            }
+
+            List<AssessmentQuestion> assessmentQuestionList = AssessmentService.getQuestions(jobRoleIdList);
+
+            if(assessmentQuestionList.size() > 0){
+                return ok(toJson(assessmentQuestionList));
+            }
+        }
+        return ok("NA");
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result submitAssessment() {
+        JsonNode assessmentRequestJson = request().body().asJson();
+        if(assessmentRequestJson == null){
+            return badRequest();
+        }
+        AssessmentRequest assessmentRequest= new AssessmentRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            assessmentRequest = newMapper.readValue(assessmentRequestJson.toString(), AssessmentRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ok(toJson(AssessmentService.addAssessedInfoToGS(assessmentRequest, Long.parseLong(session().get("candidateId")))));
+    }
+
     public static Result checkNavBar() {
-        if(session().get("partnerId") != null){
+        if (session().get("partnerId") != null) {
             // partner logged in
             return ok("2");
-        } else if(session().get("sessionId") != null){
+        } else if (session().get("sessionId") != null) {
             // candidate logged in
             return ok("1");
-        } else{
+        } else {
             return ok("0");
         }
     }

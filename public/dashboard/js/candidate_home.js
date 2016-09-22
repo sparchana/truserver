@@ -270,7 +270,7 @@ function processDataAllJobPosts(returnedData) {
 }
 
 function confirmApply() {
-    applyJob(jobPostId, prefLocation);
+    applyJob(jobPostId, prefLocation, true);
 }
 
 $(function() {
@@ -304,48 +304,13 @@ function processDataAndFillMinProfile(returnedData) {
         localStorage.setItem("minProfile", 1);
     }
     if(returnedData.candidateIsAssessed == 1){
+        localStorage.setItem("assessed", "1");
         $(".assessmentIncomplete").hide();
         $(".assessmentComplete").show();
     } else {
-        var options = {'showRowNumber': true};
-        var data;
-        var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1HwEWPzZD4BFCyeRf5HO_KqNXyaMporxYQfg5lhOoA2g/edit#gid=496359801');
-
-        function sendAndDraw() {
-            var val = localStorage.getItem("mobile");
-            query.setQuery('select C where C=' + val.substring(3, 13));
-            query.send(handleQueryResponse);
-        }
-
-        function handleQueryResponse(response) {
-            if (response.isError()) {
-                return;
-            }
-            data = response.getDataTable();
-            new google.visualization.Table(document.getElementById('table')).draw(data, options);
-            var data2 = document.getElementsByClassName('google-visualization-table-td google-visualization-table-td-number').length;
-            if(data2 == 0){
-                $(".assessmentIncomplete").show();
-                $(".assessmentComplete").hide();
-            }
-            else{
-                $.ajax({
-                    type: "GET",
-                    url: "/updateIsAssessedToAssessed",
-                    processData: false,
-                    success: processAssessedStatus
-                });
-                $(".assessmentIncomplete").hide();
-                $(".assessmentComplete").show();
-                $.ajax({
-                    type: "GET",
-                    url: "/updateIsAssessedToAssessed",
-                    processData: false,
-                    success: processAssessedStatus
-                });
-            }
-        }
-        google.setOnLoadCallback(sendAndDraw);
+        localStorage.setItem("assessed", "0");
+        $(".assessmentIncomplete").show();
+        $(".assessmentComplete").hide();
     }
 
     if (returnedData.candidateGender != null) {
@@ -475,12 +440,6 @@ function processDataAndFillMinProfile(returnedData) {
 
 }
 
-function sendAndDraw() {
-    var val = localStorage.getItem("mobile");
-    query.setQuery('select C where C=' + val.substring(3, 13));
-    query.send(handleQueryResponse);
-}
-
 function processAssessedStatus(returnedData) {
     if(returnedData.leadType != '0' && returnedData.leadType != '1') {
         // existing data hence pre fill form
@@ -488,44 +447,6 @@ function processAssessedStatus(returnedData) {
         clearModal();
         alert('Unable to show data');
     }
-}
-
-function handleQueryResponse(response) {
-    if (response.isError()) {
-        return;
-    }
-    data = response.getDataTable();
-    new google.visualization.Table(document.getElementById('table')).draw(data, options);
-    var data2 = document.getElementsByClassName('google-visualization-table-td google-visualization-table-td-number').length;
-    if(data2>0) {
-        document.getElementById("assessedStatusResult").innerHTML = '<font color="#46AB49">Complete</font>';
-        document.getElementById("assessedStatusAction").innerHTML = '-';
-        $("#assessedIcon").attr('src', '/assets/dashboard/img/right.png');
-        // update isAssessed status to '1'
-        $.ajax({
-            type: "GET",
-            url: "/updateIsAssessedToAssessed",
-            processData: false,
-            success: processAssessedStatus
-        });
-    }
-    else{
-        try{
-            document.getElementById("assessedStatusResult").innerHTML = '<font color="#F26522">Incomplete</font>';
-            document.getElementById("assessedStatusAction").innerHTML = '<font size="2" color="#F26522">(Take assessment)</font></a>';
-            var assessedStatusParent = document.getElementById("assessedStatusParent");
-            assessedStatusParent.addEventListener("click", completeAssessment);
-            assessedStatusParent.style = "cursor: pointer";
-            $("#assessedIcon").attr('src', '/assets/dashboard/img/wrong.png');
-
-        }
-        catch(err){
-        }
-    }
-}
-
-function completeAssessment() {
-    window.open("http://bit.ly/trujobstest");
 }
 
 function completeProfile() {

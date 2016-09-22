@@ -29,7 +29,7 @@
           'height': '100%'
       });
       function showAppliedJobs() {
-          window.location = "/dashboard/appliedJobs";
+          window.location = "/dashboard/appliedJobs/";
       }
       function showEditProfile() {
           window.location = "/dashboard/editProfile";
@@ -72,7 +72,7 @@
                             </a>
                         </li>
                         <li><a href="/dashboard">Dashboard</a></li>
-                        <li><a href="/dashboard/appliedJobs">My Jobs</a></li>
+                        <li><a href="/dashboard/appliedJobs/">My Jobs</a></li>
                         <li><a href="/dashboard/editProfile" id="activeLink">Profile</a></li>
                         <li><a href="/showJobs">Apply to Jobs</a></li>
                         <li><a href="#" onclick="logoutUser()">Log Out</a></li>
@@ -99,18 +99,18 @@
             <h5><div id="userMobile" style="display: inline-block"></div>, Bangalore</h5>
 
             <div id="darkPanel">
-                <div id="inblockDiv">
+                <div class="inblockDiv">
                   Jobs Applied<br> <b id="jobCount">6</b>
                 </div>
 
-                <div id="inblockDiv" style="margin-left: 16px">Profile<br>
+                <div class="inblockDiv" style="margin-left: 16px">Profile<br>
                     <a href="/dashboard/editProfile"><div id="indicatorBtnRed" class="profileIncomplete" style="display: none"><b><font color="#fff">Incomplete</font></b></div></a>
                     <div class="profileComplete" style="display: none"><b>Complete</b></div>
                 </div>
 
-                <div id="inblockDiv" style="margin-left: 16px">Assessment<br>
-                    <a href="http://bit.ly/trujobstest" target="_blank"><div class="assessmentIncomplete" id="indicatorBtnRed" style="display: none"><b><font color="#fff">Incomplete</font></b></div></a>
-                    <div class="assessmentComplete" style="display: none"><b>Complete</b></div>
+                <div id="assessmentDiv" class="inblockDiv" style="margin-left: 16px">Assessment<br>
+                  <a href="#"><div class="assessmentIncomplete" id="indicatorBtnRed" style="display: none"><b><font color="#fff">Incomplete</font></b></div></a>
+                  <div class="assessmentComplete" style="display: none"><b>Complete</b></div>
                 </div>
 
             </div>
@@ -360,7 +360,6 @@
                                             </div>
                                             <div class="col-sm-2" style="margin-top: 8px">₹/month</div>
                                         </div>
-
                                     </div>
                                 </div>
                                 <br>
@@ -483,6 +482,11 @@
         <script type="text/javascript" src="/assets/common/js/validation.js"></script>
         <script type="text/javascript" src="/assets/dashboard/js/dashboard_prefill.js"></script>
         <script type="text/javascript" src="/assets/common/js/all_job_role_footer.js"></script>
+
+
+        <link rel="stylesheet" type="text/css" href="/assets/css/assessment_modal.css">
+        <script type="text/javascript" src="/assets/js/bootbox.min.js"></script>
+        <script type="text/javascript" src="/assets/js/assessment_modal.js"></script>
             <!-- Menu Toggle Script -->
         <script>
             $(document).ready(function () {

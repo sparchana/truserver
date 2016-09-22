@@ -12,6 +12,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mockito.cglib.core.Local;
 import play.Application;
 import play.Logger;
 import play.test.TestServer;
@@ -19,6 +20,7 @@ import play.test.TestServer;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static play.libs.Json.toJson;
@@ -40,7 +42,8 @@ public class AddressResolverServiceTest {
         resolveLocalityFor,
         getLatLngForPlaceId,
         getLocalityForPlaceId,
-        insertOrUpdateLocality
+        insertOrUpdateLocality,
+        insertOrUpdateAllEmptyLocality,
     }
     private AddressResolverServiceTest.MethodType type;
     private Double latitude;
@@ -90,6 +93,9 @@ public class AddressResolverServiceTest {
                 {MethodType.insertOrUpdateLocality , 12.8780608, 77.4443807, null, null, "Kumbalgodu", null},
                 {MethodType.insertOrUpdateLocality , 12.9527508, 76.57483089999999, null, null, "Hirisave", null},
                 {MethodType.insertOrUpdateLocality , 23.4839689, 85.47907029999999, null, null, "Ormanjhi", null},
+                {MethodType.insertOrUpdateLocality , 12.800494, 77.713612, null, null, "Chandapura", null},
+                {MethodType.insertOrUpdateLocality , 12.9746376,77.607561, null, null, "MG Road", null},
+                {MethodType.insertOrUpdateAllEmptyLocality, null, null, null, null, null, null},
         });
     }
 
@@ -142,8 +148,10 @@ public class AddressResolverServiceTest {
     }
     @Test
     public void testToBounds() {
-        LatLng latLng = new LatLng(latitude, longitude);
-        System.out.println("--testing ToBounds for LatLng"+latitude+","+longitude+" : " + toJson(addressResolveService.toBounds(latLng, 2)));
+        if(latitude != null && longitude != null){
+            LatLng latLng = new LatLng(latitude, longitude);
+            System.out.println("--testing ToBounds for LatLng"+latitude+","+longitude+" : " + toJson(addressResolveService.toBounds(latLng, 2)));
+        }
     }
     @Test
     public void testGetLatLngForPlaceId() {
@@ -181,4 +189,27 @@ public class AddressResolverServiceTest {
             }
         });
     }
+
+/*  @Ignore
+    public void testPopulateLocality() {
+        Application fakeApp = fakeApplication();
+        TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
+        running(server, () -> {
+            if(type == MethodType.insertOrUpdateAllEmptyLocality) {
+                List<Locality> localityList = Locality.find.where().eq("placeId", null).findList();
+                // bangalore
+                LatLng northeast = new LatLng(13.173706, 77.88268080000002);
+                LatLng southwest = new LatLng(12.7342888, 77.379198);
+
+                // karnataka
+                northeast = new LatLng(18.4411689, 78.58601);
+                southwest = new LatLng(11.593352, 74.0928801);
+
+                for(Locality loc: localityList){
+                    addressResolveService.insertOrUpdateLocality(loc.getLocalityName() + ", Bangalore", southwest, northeast);
+                }
+            }
+        });
+    }
+*/
 }

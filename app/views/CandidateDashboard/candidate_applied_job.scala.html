@@ -31,7 +31,7 @@
         'height': '100%'
       });
       function showAppliedJobs(){
-        window.location = "/dashboard/appliedJobs";
+        window.location = "/dashboard/appliedJobs/";
       }
       function showEditProfile(){
           window.location = "/dashboard/editProfile";
@@ -115,17 +115,17 @@
       <h5><div id="userMobile" style="display : inline-block"></div>, Bangalore</h5>
 
       <div id="darkPanel">
-        <div id="inblockDiv">
+        <div class="inblockDiv">
           Jobs Applied<br><b id="jobCount">6</b>
         </div>
 
-        <div id="inblockDiv" style="margin-left: 16px">Profile<br>
+        <div class="inblockDiv" style="margin-left: 16px">Profile<br>
           <a href="/dashboard/editProfile"><div id="indicatorBtnRed" class="profileIncomplete" style="display:none"><b><font color="#fff">Incomplete</font></b></div></a>
           <div class="profileComplete" style="display:none"><b>Complete</b></div>
         </div>
 
-        <div id="inblockDiv" style="margin-left: 16px">Assessment<br>
-          <a href="http://bit.ly/trujobstest" target="_blank"><div class="assessmentIncomplete" id="indicatorBtnRed" style="display: none"><b><font color="#fff">Incomplete</font></b></div></a>
+        <div id="assessmentDiv" class="inblockDiv" style="margin-left: 16px">Assessment<br>
+          <a href="#"><div class="assessmentIncomplete" id="indicatorBtnRed" style="display: none"><b><font color="#fff">Incomplete</font></b></div></a>
           <div class="assessmentComplete" style="display: none"><b>Complete</b></div>
         </div>
 
@@ -161,10 +161,25 @@
     <script src="/assets/dashboard/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/assets/dashboard/js/applied_jobs.js"></script>
     <script type="text/javascript" src="/assets/common/js/all_job_role_footer.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="/assets/css/assessment_modal.css">
+    <script type="text/javascript" src="/assets/js/bootbox.min.js"></script>
+    <script type="text/javascript" src="/assets/js/assessment_modal.js"></script>
       <!-- Menu Toggle Script -->
     <script>
             $(document).ready(function(){
               $('[data-toggle="tooltip"]').tooltip();
+                var pathElement = window.location.search.split('&');
+                var assessmentElement = pathElement[(pathElement.length) - 2];
+
+                if(assessmentElement != null && assessmentElement.split("=")[(pathElement.length) - 2] == "?assessment" && assessmentElement.split("=")[(pathElement.length) - 1] == "true"){
+                    var jpElement= pathElement[(pathElement.length) - 1];
+                    if(jpElement.split("=")[(pathElement.length) - 2] == "jp_id"){
+                        var jp_id = jpElement.split("=")[(pathElement.length) - 1];
+                        getAssessmentQuestions(null, jp_id);
+                    }
+                }
+
             });
     </script>
 

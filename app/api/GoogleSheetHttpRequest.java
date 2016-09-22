@@ -24,6 +24,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
+import play.Logger;
 
 
 public class GoogleSheetHttpRequest {
@@ -58,7 +59,6 @@ public class GoogleSheetHttpRequest {
 
     public String sendPost(String url, String data, String contentType) {
         String ret = null;
-
         httpClient.getParams().setParameter(ClientPNames.COOKIE_POLICY, CookiePolicy.RFC_2109);
 
         httpPost = new HttpPost(url);

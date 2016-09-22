@@ -42,6 +42,10 @@ public class JobRole extends Model {
     @OneToMany(mappedBy = "jobRole", cascade = CascadeType.REMOVE)
     private List<JobToSkill> jobToSkillList;
 
+    @JsonBackReference
+    @OneToMany(mappedBy = "jobRole", cascade = CascadeType.REMOVE)
+    private List<AssessmentQuestion> assessmentQuestionList;
+
     @Column(name = "JobRoleIcon", columnDefinition = "varchar(255) null")
     private String jobRoleIcon;
 
@@ -101,5 +105,13 @@ public class JobRole extends Model {
 
     public void setJobRoleIcon(String jobRoleIcon) {
         this.jobRoleIcon = jobRoleIcon;
+    }
+
+    public List<AssessmentQuestion> getAssessmentQuestionList() {
+        return assessmentQuestionList;
+    }
+
+    public void setAssessmentQuestionList(List<AssessmentQuestion> assessmentQuestionList) {
+        this.assessmentQuestionList = assessmentQuestionList;
     }
 }
