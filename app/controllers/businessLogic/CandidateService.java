@@ -133,7 +133,10 @@ public class CandidateService
                 candidateSignUpResponse = createNewCandidate(candidate, lead);
 
                 // triggers when candidate is self created
-                triggerOtp(candidate, candidateSignUpResponse);
+                if(channelType == InteractionChannelType.SELF_ANDROID || channelType == InteractionChannelType.SELF){
+                    triggerOtp(candidate, candidateSignUpResponse);
+                }
+
                 result = InteractionConstants.INTERACTION_RESULT_NEW_CANDIDATE;
                 objectAUUId = candidate.getCandidateUUId();
 
@@ -152,7 +155,11 @@ public class CandidateService
                         }
                     }
 
-                    triggerOtp(candidate, candidateSignUpResponse);
+                    // triggers when candidate is self created
+                    if(channelType == InteractionChannelType.SELF_ANDROID || channelType == InteractionChannelType.SELF){
+                        triggerOtp(candidate, candidateSignUpResponse);
+                    }
+
                     result = InteractionConstants.INTERACTION_RESULT_EXISTING_CANDIDATE_VERIFICATION;
                     objectAUUId = candidate.getCandidateUUId();
                     candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
@@ -371,7 +378,7 @@ public class CandidateService
         objAUUId = candidate.getCandidateUUId();
 
         /**
-         *  This sttep we are checking various channel for candidate profile create/update (Support, candidate_web, candidate_android, partner)
+         *  In this step, we are checking various channel for candidate profile create/update (Support, candidate_web, candidate_android, partner)
          *  in each case, we are checking if "isNewCandiate" status to determine weather the candidate is being created or updated
          *  Finally creating respective interaction according to the case
          */
