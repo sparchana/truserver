@@ -73,7 +73,7 @@ function processAssessmentQuestions(returnedData) {
         });
         bootbox.dialog({
             className: "assessment-modal",
-            title: "<h3 class='assessment-modal-title' style='color: #286ab6'>Job Application Assessment</h3>",
+            title: "<h3 class='assessment-modal-title' style='color: #286ab6'>Job Application Assessment</h3><h5>Complete Assessment to Improve Chance of getting an Interview Call</h5>",
             message: assessmentBody,
             closeButton: true,
             animate: true,
@@ -81,13 +81,6 @@ function processAssessmentQuestions(returnedData) {
                 $('body').removeClass('open-modal');
             },
             buttons: {
-                "Cancel": {
-                    className: "btn-default",
-                    callback: function() {
-                        $('body').removeClass('open-modal');
-                        console.log(false);
-                    }
-                },
                 "Submit": {
                     className: "btn-success btn-modal-submit",
                     callback: function() {
