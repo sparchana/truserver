@@ -118,7 +118,7 @@
                             </a>
                         </li>
                         <li><a href="#" id="activeLink">Dashboard</a></li>
-                        <li><a href="/dashboard/appliedJobs">My Jobs</a></li>
+                        <li><a href="/dashboard/appliedJobs/">My Jobs</a></li>
                         <li><a href="/dashboard/editProfile">Profile</a></li>
                         <li><a href="/showJobs">Apply to Jobs</a></li>
                         <li><a href="#" onclick="logoutUser()">Log Out</a></li>
@@ -146,17 +146,17 @@
             <h5><div id="userMobile" style="display : inline-block"></div>, Bangalore</h5>
 
             <div id="darkPanel">
-                <div id="inblockDiv">
+                <div class="inblockDiv">
                     Jobs Applied<br><b id="jobCount">6</b>
                 </div>
 
-                <div id="inblockDiv" style="margin-left: 16px">Profile<br>
+                <div class="inblockDiv" style="margin-left: 16px">Profile<br>
                     <a href="/dashboard/editProfile"><div id="indicatorBtnRed" class="profileIncomplete"><b><font color="#fff">Incomplete</font></b></div></a>
                     <div class="profileComplete" style="display:none"><b>Complete</b></div>
                 </div>
 
-                <div id="inblockDiv" style="margin-left: 16px">Assessment<br>
-                        <a href="http://bit.ly/trujobstest" target="_blank"><div class="assessmentIncomplete" id="indicatorBtnRed"><b><font color="#fff">Incomplete</font></b></div></a>
+                <div id="assessmentDiv" class="inblockDiv" style="margin-left: 16px">Assessment<br>
+                        <a href="#"><div class="assessmentIncomplete" id="indicatorBtnRed"><b><font color="#fff">Incomplete</font></b></div></a>
                     <div class="assessmentComplete" style="display: none"><b>Complete</b></div>
                 </div>
             </div>
@@ -167,7 +167,7 @@
                 <a href="/dashboard/editProfile"><div id="editBtn">&nbsp;</div></a>
                 <hr>
                 <div class="profileSectionOne" id="dashboardProfileBody">
-                    <div id="profileTitle"><font size="2"><b>PREFERENCES</b></font></div>
+                    <div id="profileTitle"><font size="2"><img src="/assets/dashboard/img/pref.svg" style="margin-top: -8px" width="28px"><b style="margin-left: 8px">PREFERENCES</b></font></div>
                     <div class="row" style="padding: 3%">
                         <div class="col-sm-12">
                             <div style="display : inline-block; margin: 4px;top:0">
@@ -205,7 +205,7 @@
                 </div>
 
                 <div class="profileSectionOne" id="dashboardProfileBody">
-                    <div id="profileTitle"><font size="2"><b>EXPERIENCE & EDUCATION</b></font></div>
+                    <div id="profileTitle"><font size="2"><img src="/assets/dashboard/img/exp.svg" style="margin-top: -8px" width="28px"><b style="margin-left: 8px">EXPERIENCE & EDUCATION</b></font></div>
                     <div class="row" style="padding: 3%;">
                         <div class="col-sm-6">
                             <div style="display : inline-block; margin: 4px;">
@@ -266,6 +266,13 @@
 
         <script type="text/javascript" src="/assets/common/js/apply_job.js"></script>
         <script type="text/javascript" src="/assets/common/js/all_job_role_footer.js"></script>
+
+            <!-- Assessment Import -->
+
+        <link rel="stylesheet" type="text/css" href="/assets/css/assessment_modal.css">
+        <script type="text/javascript" src="/assets/js/bootbox.min.js"></script>
+        <script type="text/javascript" src="/assets/js/assessment_modal.js"></script>
+        <script type="text/javascript" src="/assets/js/assessment_controller.js"></script>
         <script>
             $(document).ready(function(){
                 $(document).ready(function () {

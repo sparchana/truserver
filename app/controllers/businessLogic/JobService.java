@@ -54,7 +54,7 @@ public class JobService {
         return addJobPostResponse;
     }
 
-    public static JobPost getAndSetJobPostValues(AddJobPostRequest addJobPostRequest, JobPost newJobPost, List<Integer> jobPostLocalityList){
+    public static JobPost getAndSetJobPostValues(AddJobPostRequest addJobPostRequest, JobPost newJobPost, List<Integer> jobPostLocalityList) {
         newJobPost.setJobPostMinSalary(addJobPostRequest.getJobPostMinSalary());
         newJobPost.setJobPostMaxSalary(addJobPostRequest.getJobPostMaxSalary());
         newJobPost.setJobPostStartTime(addJobPostRequest.getJobPostStartTime());

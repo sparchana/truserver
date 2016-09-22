@@ -403,21 +403,17 @@ function prefillLanguageTable(languageKnownList) {
     });
 }
 
-
-$("#candidateUpdateBasicProfile").submit(function(eventObj) {
-    eventObj.preventDefault();
+$("#saveBasicProfileBtn").click(function(){
     saveCandidateBasicProfile();
-}); // end of submit
+});
 
-$("#candidateUpdateLanguageAndSkills").submit(function(eventObj) {
-    eventObj.preventDefault();
+$("#saveExperienceProfileBtn").click(function(){
     saveCandidateExperienceDetails();
-}); // end of submit
+});
 
-$("#candidateUpdateEducationDetails").submit(function(eventObj) {
-    eventObj.preventDefault();
+$("#saveEducationProfileBtn").click(function(){
     saveCandidateEducationDetails();
-}); // end of submit
+});
 
 function saveCandidateBasicProfile(){
     var statusCheck = 1;

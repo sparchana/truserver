@@ -29,7 +29,7 @@
           'height': '100%'
       });
       function showAppliedJobs() {
-          window.location = "/dashboard/appliedJobs";
+          window.location = "/dashboard/appliedJobs/";
       }
       function showEditProfile() {
           window.location = "/dashboard/editProfile";
@@ -72,7 +72,7 @@
                             </a>
                         </li>
                         <li><a href="/dashboard">Dashboard</a></li>
-                        <li><a href="/dashboard/appliedJobs">My Jobs</a></li>
+                        <li><a href="/dashboard/appliedJobs/">My Jobs</a></li>
                         <li><a href="/dashboard/editProfile" id="activeLink">Profile</a></li>
                         <li><a href="/showJobs">Apply to Jobs</a></li>
                         <li><a href="#" onclick="logoutUser()">Log Out</a></li>
@@ -99,18 +99,18 @@
             <h5><div id="userMobile" style="display: inline-block"></div>, Bangalore</h5>
 
             <div id="darkPanel">
-                <div id="inblockDiv">
+                <div class="inblockDiv">
                   Jobs Applied<br> <b id="jobCount">6</b>
                 </div>
 
-                <div id="inblockDiv" style="margin-left: 16px">Profile<br>
+                <div class="inblockDiv" style="margin-left: 16px">Profile<br>
                     <a href="/dashboard/editProfile"><div id="indicatorBtnRed" class="profileIncomplete" style="display: none"><b><font color="#fff">Incomplete</font></b></div></a>
                     <div class="profileComplete" style="display: none"><b>Complete</b></div>
                 </div>
 
-                <div id="inblockDiv" style="margin-left: 16px">Assessment<br>
-                    <a href="http://bit.ly/trujobstest" target="_blank"><div class="assessmentIncomplete" id="indicatorBtnRed" style="display: none"><b><font color="#fff">Incomplete</font></b></div></a>
-                    <div class="assessmentComplete" style="display: none"><b>Complete</b></div>
+                <div id="assessmentDiv" class="inblockDiv" style="margin-left: 16px">Assessment<br>
+                  <a href="#"><div class="assessmentIncomplete" id="indicatorBtnRed" style="display: none"><b><font color="#fff">Incomplete</font></b></div></a>
+                  <div class="assessmentComplete" style="display: none"><b>Complete</b></div>
                 </div>
 
             </div>
@@ -129,7 +129,7 @@
                             margin-left: 16%">
                             <center class="visible-lg">
                                 <div>
-                                    <div id="editBasic" style="display: inline-block;
+                                    <div id="editBasic" class="editSection" style="display: inline-block;
                                         cursor: pointer" >
                                         <img id="basicImg" src="/assets/dashboard/img/basic_enable.png" height="42px">
                                     </div>
@@ -140,7 +140,7 @@
                                         <img src="/assets/common/img/arrow_right_hot.png">
                                     </div>
 
-                                    <div id="editSkills" style="display: inline-block;
+                                    <div id="editSkills" class="editSection" style="display: inline-block;
                                         cursor: pointer">
                                         <img id="skillImg" src="/assets/dashboard/img/skills_disable.png" height="42px">
                                     </div>
@@ -151,7 +151,7 @@
                                         <img src="/assets/common/img/arrow_right_hot.png">
                                     </div>
 
-                                    <div id="editEducation" style="display: inline-block;
+                                    <div id="editEducation" class="editSection" style="display: inline-block;
                                         cursor: pointer">
                                         <img id="educationImg" src="/assets/dashboard/img/education_disable.png" height="42px">
                                     </div>
@@ -277,13 +277,9 @@
                                 </div>
                                 <br>
                                     <!-- next/save btn -->
-                                <button type="submit" id="saveBtn" class="btn btn-primary" style="float: right">
-                                    <div style="display: inline-block">Next</div>
-                                    <div style="margin-left: 8px;
-                                        display: inline-block">
-                                        <img src="/assets/dashboard/img/next_arrow.png" height="28px">
-                                    </div>
-                                </button>
+                                <div id="saveBtn" style="float: right">
+                                    <img id="saveBasicProfileBtn" class="editProfileSaveBtn" src="/assets/dashboard/img/next.svg" height="48px">
+                                </div>
                             </form>
                         </div>
 
@@ -346,8 +342,8 @@
                                                 <div class="col-sm-3"><h5>What Job Role are you in ?<div style="color: #9f9f9f;
                                                     font-size: 12px">(optional)</div></h5>
                                                 </div>
-                                                <div class="col-sm-5">
-                                                    <input type="text" id="candidateCurrentJobRole">
+                                                <div class="col-sm-6" style="width: 306px">
+                                                    <input type="text" id="candidateCurrentJobRole" >
                                                 </div>
                                             </div>
                                         </div>
@@ -360,7 +356,6 @@
                                             </div>
                                             <div class="col-sm-2" style="margin-top: 8px">₹/month</div>
                                         </div>
-
                                     </div>
                                 </div>
                                 <br>
@@ -391,21 +386,9 @@
                                 <hr>
 
                                     <!-- next/save btn -->
-                                <button type="submit" id="saveBtn" class="btn btn-primary" style="float: right;
-                                    margin: 2px">
-                                    <div style="display: inline-block">Next</div>
-                                    <div style="margin-left: 8px;
-                                        display: inline-block">
-                                        <img src="/assets/dashboard/img/next_arrow.png" height="28px">
-                                    </div>
-                                </button>
-                                <div id="skillBack" class="btn btn-primary" style="margin: 2px;
-                                    float: right">
-                                    <div style="display: inline-block">
-                                        <img src="/assets/dashboard/img/back_arrow.png" height="28px">
-                                    </div>
-                                    <div style="margin-left: 8px;
-                                        display: inline-block">Back</div>
+                                <div id="saveBtn" style="float: right">
+                                    <img id="skillBack" class="editProfileSaveBtn" src="/assets/dashboard/img/back.svg" height="48px">
+                                    <img id="saveExperienceProfileBtn" class="editProfileSaveBtn" src="/assets/dashboard/img/next.svg" height="48px">
                                 </div>
                             </form>
                         </div>
@@ -452,22 +435,9 @@
                                 <hr id="educationHr">
 
                                     <!-- next/save btn -->
-                                <button type="submit" id="saveBtn" class="btn btn-primary" style="float: right;
-                                    margin: 2px">
-                                    <div style="display: inline-block">Save</div>
-                                    <div style="margin-left: 8px;
-                                        display: inline-block">
-                                        <img src="/assets/dashboard/img/save.png" height="28px">
-                                    </div>
-                                </button>
-
-                                <div id="educationBack" class="btn btn-primary" style="margin: 2px;
-                                    float: right">
-                                    <div style="display: inline-block">
-                                        <img src="/assets/dashboard/img/back_arrow.png" height="28px">
-                                    </div>
-                                    <div style="margin-left: 8px;
-                                        display: inline-block">Back</div>
+                                <div id="saveBtn" style="float: right">
+                                    <img id="educationBack" class="editProfileSaveBtn" src="/assets/dashboard/img/back.svg" height="48px">
+                                    <img id="saveEducationProfileBtn" class="editProfileSaveBtn" src="/assets/dashboard/img/save.svg" height="48px">
                                 </div>
                             </form>
                         </div>
@@ -483,6 +453,11 @@
         <script type="text/javascript" src="/assets/common/js/validation.js"></script>
         <script type="text/javascript" src="/assets/dashboard/js/dashboard_prefill.js"></script>
         <script type="text/javascript" src="/assets/common/js/all_job_role_footer.js"></script>
+
+
+        <link rel="stylesheet" type="text/css" href="/assets/css/assessment_modal.css">
+        <script type="text/javascript" src="/assets/js/bootbox.min.js"></script>
+        <script type="text/javascript" src="/assets/js/assessment_modal.js"></script>
             <!-- Menu Toggle Script -->
         <script>
             $(document).ready(function () {

@@ -58,7 +58,7 @@ input::-webkit-inner-spin-button {
 }
 
 body{
-    background: #fcfcfc;
+    background: #f0f0f0;
     font-family: Lato;
 }
 .nav > li > a:hover, .nav > li > a:focus{

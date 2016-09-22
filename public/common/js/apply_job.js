@@ -19,8 +19,7 @@ function processDataApplyJob(returnedData) {
         $('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
         $("#customMsg").html("Your Job Application is Successful");
         try{
-            $("#apply_btn_" + applyJobId).addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Already Applied");
-            $("#applyBtnDiv_" + applyJobId).prop('disabled',true);
+            $(".jobApplyBtnV2").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
         } catch(err){
             console.log(err);
         }
@@ -30,6 +29,11 @@ function processDataApplyJob(returnedData) {
     } else if(returnedData.status == 3){
         $('#customMsgIcon').attr('src', "/assets/common/img/alreadyApplied.png");
         $("#customMsg").html("Looks like you already applied for this Job. Click My Jobs to view your applied Jobs");
+        try{
+            $(".jobApplyBtnV2").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
+        } catch(err){
+            console.log(err);
+        }
     } else if(returnedData.status == 4){
         $('#customMsgIcon').attr('src', "/assets/common/img/logo.gif");
         $("#customMsg").html("Oops! Candidate does't Exists");
@@ -40,7 +44,7 @@ function processDataApplyJob(returnedData) {
 }
 
 // apply_job ajax script
-function applyJob(id, localityId){
+function applyJob(id, localityId, triggerModal){
     $("#applyButton").addClass("appliedBtn").removeClass("jobApplyBtnModal").prop('disabled',true).html("Applying");
     applyJobFlag = 1;
     applyJobId = id;
@@ -52,6 +56,10 @@ function applyJob(id, localityId){
         $("#myLoginModal").modal("show");
         $("#signInPopup").html("Sign In to Apply");
     } else{
+        console.log("shouldTriggerModal: "+triggerModal);
+        if(triggerModal){
+            getAssessmentQuestions(null, id);
+        }
         try {
             var d = {
                 jobId: id,

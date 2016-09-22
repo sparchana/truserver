@@ -27,7 +27,7 @@ public class PartnerToCandidate extends Model {
     private Timestamp partnerToCandidateCreateTimeStamp;
 
     @UpdatedTimestamp
-    @Column(name = "partner_to_candidate_update_timestamp", columnDefinition = "timestamp")
+    @Column(name = "partner_to_candidate_update_timestamp", columnDefinition = "timestamp null")
     private Timestamp partnerToCandidateUpdateTimestamp;
 
     @ManyToOne

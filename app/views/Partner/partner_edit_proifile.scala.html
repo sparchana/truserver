@@ -62,7 +62,7 @@
                     <h4>Let’s create your profile!</h4>
                     <form id="partnerBasicProfile" method="post">
                         <div id="profileTitleEditProfile"><font size="2"><b>Partner Profile</b></font></div>
-                        <div style="padding: 2%">
+                        <div class="profileBodyEditProfile" style="padding: 2%">
                             <div class="row">
                                 <div class="col-sm-3" ><h5>Partner Name<font color="red">*</font></h5></div>
                                 <div class="col-sm-5">
@@ -114,14 +114,11 @@
                             </div>
                         </div>
                         <br>
+
                             <!-- next/save btn -->
-                        <button type="submit" class="btn btn-primary" id="registerBtnSubmit" style="float: right">
-                            <div style="display: inline-block">Save</div>
-                            <div style="margin-left: 8px;
-                                display: inline-block">
-                                <img src="/assets/dashboard/img/save.png" height="28px">
-                            </div>
-                        </button>
+                        <div id="saveBtn" style="float: right">
+                            <img id="savePartnerProfileBtn" class="editProfileSaveBtn" src="/assets/dashboard/img/save.svg" height="48px">
+                        </div>
                     </form>
                 </div>
 
