@@ -192,15 +192,14 @@ body{
 }
 .leadBox {
     text-align: center;
-    position: relative;
     width: 300px;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.15);
     border-radius: 2px;
     color: #0B4063;
     background: #ffffff;
     padding: 4px;
-    margin-left: 75%;
-    margin-top: -19%;
+    float:right;
+    margin-top: -20%;
 }
 
 .sectionStats {
@@ -506,7 +505,10 @@ hr{
     text-align:center;
     margin-top:5%;
 }
-
+#navLogo{
+    height: 65%;
+    margin-top:4%;
+}
 @media screen and (max-width: 280px) {
     .panel{
         padding: 0px;
@@ -520,6 +522,7 @@ hr{
     }
     #navLogo{
         height: 24px;
+        margin-top:4%;
     }
     #leadFormBox{
         margin-top: 20px;
@@ -741,11 +744,8 @@ hr{
         display: none;
     }
     #playStoreLogoNavBar{
-        display: block;
-        padding: 0;
+        display: inline-block;
         margin-top: 12px;
-        margin-right: 2px;
-        float: right;
     }
     .navbar-right{
         margin-right:-15px;
@@ -834,7 +834,7 @@ hr{
         text-align: center;
     }
     #candidateFirstName {
-        width: 96%;
+        width: 98%;
     }
 
     #candidateFirstNameModal {
@@ -842,7 +842,7 @@ hr{
     }
 
     .candidateSecondNameMain {
-        width: 96%;
+        width: 98%;
         margin-top: 8px;
         margin-left: 12px;
     }
@@ -893,6 +893,7 @@ hr{
     }
 
     .leadBox {
+        position: relative;
         width: 84%;
         margin-right: 8%;
         margin-left: 8%;
@@ -1101,6 +1102,10 @@ padding: 0px;
 
 .navbar-default .navbar-nav>li>a{
     color: #ffffff;
+}
+
+.navbar-brand{
+    padding: 0px 0px;
 }
 
 .fade-background {

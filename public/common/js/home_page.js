@@ -87,7 +87,7 @@ $(document).ready(function(){
             $("#fixed-menu").fadeOut();
         }
     });
-    
+
     try {
         $.ajax({
             type: "POST",

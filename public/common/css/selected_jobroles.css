@@ -185,15 +185,14 @@ body{
 
 .leadBox {
     text-align: center;
-    position: relative;
     width: 300px;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.15);
     border-radius: 2px;
     color: #0B4063;
     background: #ffffff;
     padding: 4px;
-    margin-left: 75%;
-    margin-top: -11%;
+    float: right;
+    margin-top: -13%;
 }
 
 .sectionStats {
@@ -608,6 +607,7 @@ hr{
     }
 
     .leadBox {
+        position: relative;
         width: 84%;
         margin-top: -48%;
         margin-right: 8%;
