@@ -7,6 +7,7 @@ $(document).ready(function(){
             type: "POST",
             url: "/getAllHotJobPosts",
             data: false,
+            async: true,
             contentType: false,
             processData: false,
             success: processDataAllJobPosts
