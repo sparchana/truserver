@@ -1,3 +1,5 @@
+var jobPostId;
+
 function createAndAppendDivider(title) {
     var parent = $("#hotJobs");
 
@@ -216,20 +218,50 @@ function processDataAllJobPosts(returnedData) {
 
                 var applyBtn = document.createElement("div");
                 applyBtn.className = "jobApplyBtn";
-                applyBtn.textContent = "View & Apply";
+                applyBtn.textContent = "Apply";
                 applyBtnDiv.appendChild(applyBtn);
-                applyBtn.onclick=function(){
-                    var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
-                    jobPostBreak = jobPostBreak.toLowerCase();
-                    var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
-                    jobCompany = jobCompany.toLowerCase();
-                    try {
-                        window.location.href = "/jobs/" + jobPostBreak + "/bengaluru/" + jobCompany + "/" + jobPost.jobPostId;
-                    } catch (exception) {
-                        console.log("exception occured!!" + exception);
-                    }
-                }
+                applyBtnDiv.onclick = function () {
+                    $('#jobApplyConfirm').modal();
+                    jobPostId = jobPost.jobPostId;
+                    jobLocalityArray = [];
+                    addLocalitiesToModal();
+                };
             }
         });
     }
+}
+
+function addLocalitiesToModal() {
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getJobPostInfo/" + jobPostId,
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataForJobPostLocation
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function processDataForJobPostLocation(returnedData) {
+    var i;
+    $('#jobLocality').html('');
+    var defaultOption=$('<option value="-1"></option>').text("Select Preferred Location");
+    $('#jobLocality').append(defaultOption);
+    var jobLocality = returnedData.jobPostToLocalityList;
+    jobLocality.forEach(function (locality) {
+        var item = {};
+        item ["id"] = locality.locality.localityId;
+        item ["name"] = " " + locality.locality.localityName;
+        jobLocalityArray.push(item);
+        var option=$('<option value=' + locality.locality.localityId + '></option>').text(locality.locality.localityName);
+        $('#jobLocality').append(option);
+    });
+}
+
+function confirmApply() {
+    applyJob(jobPostId, prefLocation);
 }
