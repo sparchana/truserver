@@ -25,7 +25,7 @@ function createRadioButton(name, value, text, id) {
 
 function processAssessmentQuestions(returnedData) {
     if(returnedData != null){
-        if(returnedData == "assessed" || returnedData == "NA"){
+        if(returnedData.status == "SUCCESS" || returnedData == "ALL_" || returnedData == "NA"){
             processPostAssessmentResponse(returnedData);
             return;
         }

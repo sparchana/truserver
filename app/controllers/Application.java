@@ -44,6 +44,9 @@ public class Application extends Controller {
 
     public static Result index() {
         String sessionId = session().get("sessionId");
+        /**
+        * TODO need to change this, modify old partnerSecured to take new partnertFlow into consideration and properly annonate rest of the api end-points
+        * */
         if(sessionId != null){
             String partnerId = session().get("partnerId");
             if(partnerId != null){
@@ -1225,44 +1228,29 @@ public class Application extends Controller {
                     List<String> jobPostIdStrList = Arrays.asList(jobPostIds.split("\\s*,\\s*"));
                     List<JobPost> jobPostList = JobPost.find.where().in("jobPostId", jobPostIdStrList).findList();
                     for(JobPost jobPost : jobPostList) {
-                        jobRoleIdList.add(jobPost.getJobRole().getJobRoleId());
+                        if(!jobRoleIdList.contains(jobPost.getJobRole().getJobRoleId())){
+                            jobRoleIdList.add(jobPost.getJobRole().getJobRoleId());
+                        }
                     }
                 } else {
                     Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
-                    for(JobPreference jobPreference : candidate.getJobPreferencesList()){
+                    for(JobPreference jobPreference : candidate.getJobPreferencesList()) {
                         jobRoleIdList.add(jobPreference.getJobRole().getJobRoleId());
                     }
-                    List<AssessmentQuestion> assessmentQuestionList = AssessmentQuestion.find.where().in("jobRoleId", jobRoleIdList).findList();
-                    if (assessmentQuestionList.size() > 0) {
-                        jobRoleIdList = new ArrayList<>();
-                        for(AssessmentQuestion assessmentQuestion: assessmentQuestionList) {
-                            if(!jobRoleIdList.contains(assessmentQuestion.getJobRole().getJobRoleId())){
-                                jobRoleIdList.add(assessmentQuestion.getJobRole().getJobRoleId());
-                            }
-                        }
-                    } else {
-                        return ok("assessed");
-                    }
-
                 }
             }
+            List<AssessmentService.JobRoleWithAssessmentBundle> assessmentBundleList = AssessmentService.getJobRoleIdsVsIsAssessedList(candidateId, jobRoleIdList);
 
-            List<CandidateAssessmentAttempt> candidateAssessmentAttemptList = CandidateAssessmentAttempt.find.where()
-                    .eq("candidate.candidateId", candidateId)
-                    .in("jobRole.jobRoleId", jobRoleIdList)
-                    .findList();
-            if (candidateAssessmentAttemptList != null && jobRoleIdList.size() > 0 && candidateAssessmentAttemptList.size() == jobRoleIdList.size()) {
-                Logger.info("already assessed");
-                return ok("assessed");
-            } else {
-                // filter out all jobroles out of job prefs which are not attempted
-                List<Long> assessedJobRoleIdList = new ArrayList<>();
-                for (CandidateAssessmentAttempt caRes : candidateAssessmentAttemptList){
-                    if(jobRoleIdList.contains(caRes.getJobRole().getJobRoleId())){
-                        assessedJobRoleIdList.add(caRes.getJobRole().getJobRoleId());
+            if (assessmentBundleList != null && assessmentBundleList.size() > 0) {
+                jobRoleIdList = new ArrayList<>();
+                for(AssessmentService.JobRoleWithAssessmentBundle bundle : assessmentBundleList){
+                    if(!bundle.isAssessed()){
+                        jobRoleIdList.add(bundle.getJobRoleId());
                     }
                 }
-                jobRoleIdList.removeAll(assessedJobRoleIdList);
+            }
+            if(jobRoleIdList.size() == 0){
+                return ok("ok");
             }
 
             List<AssessmentQuestion> assessmentQuestionList = AssessmentService.getQuestions(jobRoleIdList);
@@ -1287,6 +1275,7 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Logger.info("Req--> "+String.valueOf(assessmentRequestJson));
         return ok(toJson(AssessmentService.addAssessedInfoToGS(assessmentRequest, Long.parseLong(session().get("candidateId")))));
     }
 
@@ -1301,4 +1290,23 @@ public class Application extends Controller {
             return ok("0");
         }
     }
+
+    public static Result getCandidateJobPrefs(Integer limit) {
+        String candidateId = session().get("candidateId");
+        if(candidateId != null) {
+            List<JobPreference> jobPreferenceList;
+            if (limit!=null){
+                jobPreferenceList = JobPreference.find.where().eq("candidateId", candidateId).setMaxRows(limit).findList();
+            } else {
+                jobPreferenceList = JobPreference.find.where().eq("candidateId", candidateId).findList();
+            }
+            List<CandidateJobPrefs.JobPrefWithAssessmentBundle> jobPrefWithAssessmentBundleList = AssessmentService.getJobPrefVsIsAssessedList(Long.parseLong(candidateId), jobPreferenceList);
+
+            if (jobPrefWithAssessmentBundleList != null) {
+                return ok(toJson(jobPrefWithAssessmentBundleList));
+            }
+        }
+        return ok("0");
+    }
+
 }

@@ -3,6 +3,8 @@ package controllers.businessLogic.Assessment;
 import api.GoogleSheetHttpRequest;
 import api.ServerConstants;
 import api.http.httpRequest.AssessmentRequest;
+import api.http.httpResponse.AssessmentSubmissionResponse;
+import api.http.httpResponse.CandidateJobPrefs;
 import models.entity.Candidate;
 import models.entity.OM.*;
 import models.entity.Static.AssessmentQuestion;
@@ -31,7 +33,8 @@ public class AssessmentService {
         return assessmentQuestionList;
     }
 
-    public static String addAssessedInfoToGS(AssessmentRequest assessmentRequest, Long candidateId){
+    public static AssessmentSubmissionResponse addAssessedInfoToGS(AssessmentRequest assessmentRequest, Long candidateId){
+        AssessmentSubmissionResponse response = new AssessmentSubmissionResponse();
         if(candidateId != null){
             Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
             if(!assessmentRequest.getResponseList().isEmpty()){
@@ -51,7 +54,9 @@ public class AssessmentService {
                 }
                 int optionSize = optionList.size();
                 if(optionSize == 0){
-                    return "NA";
+                    response.setStatus(AssessmentSubmissionResponse.Status.UNKNOW);
+                    Logger.info(String.valueOf(toJson(response)));
+                    return response;
                 }
                 Long prevJobRoleId =  optionList.get(0).getJobRoleId();
 
@@ -79,39 +84,23 @@ public class AssessmentService {
                         prevJobRoleId = optionList.get(i).getJobRoleId();
                     }
                 }
-
-                /* check if eligible to be marked as is assessed */
-                List<Long> jobPrefJobRoleIdList = new ArrayList<>();
-                assessmentJobRoleIdList = new ArrayList<>();
-
-                List<JobPreference> jobPreferenceList = candidate.getJobPreferencesList();
-                for(JobPreference jobPreference: jobPreferenceList){
-                    jobPrefJobRoleIdList.add(jobPreference.getJobRole().getJobRoleId());
-                }
-
-                assessmentQuestionList = AssessmentQuestion.find.where().in("jobRoleId", jobPrefJobRoleIdList).findList();
-                if (assessmentQuestionList.size() > 0) {
-                    jobPrefJobRoleIdList = new ArrayList<>();
-                    for(AssessmentQuestion assessmentQuestion: assessmentQuestionList) {
-                        if(!jobPrefJobRoleIdList.contains(assessmentQuestion.getJobRole().getJobRoleId())){
-                            jobPrefJobRoleIdList.add(assessmentQuestion.getJobRole().getJobRoleId());
-                        }
-                    }
-                }
-
-                List<CandidateAssessmentAttempt> candidateAssessmentAttemptList = CandidateAssessmentAttempt.find.where().eq("candidateId", candidate.getCandidateId()).findList();
-                for(CandidateAssessmentAttempt candidateAssessmentAttempt : candidateAssessmentAttemptList){
-                    assessmentJobRoleIdList.add(candidateAssessmentAttempt.getJobRole().getJobRoleId());
-                }
-                if(shouldBeMarkedAsAssessed(assessmentJobRoleIdList, jobPrefJobRoleIdList)){
+                if(shouldBeMarkedAsAssessed(getJobPrefVsIsAssessedList(candidate.getCandidateId(), candidate.getJobPreferencesList()))){
                     candidate.setCandidateIsAssessed(ServerConstants.CANDIDATE_ASSESSED);
                     candidate.candidateUpdate();
-                    return "assessed";
+                    response.setStatus(AssessmentSubmissionResponse.Status.ALL_ASSESSED);
+                    Logger.info(String.valueOf(toJson(response)));
+                    return response;
                 }
-                return "ok";
+                response.setStatus(AssessmentSubmissionResponse.Status.SUCCESS);
+                response.setJobRoleId(prevJobRoleId);
+                Logger.info(String.valueOf(toJson(response)));
+                return response;
             }
         }
-        return "NA";
+
+        response.setStatus(AssessmentSubmissionResponse.Status.FAILED);
+        Logger.info(String.valueOf(toJson(response)));
+        return response;
     }
 
     private static void saveAttemptAndWriteToGS(Candidate candidate, JobRole jobRole, List<AssessmentSheetCol> colList) throws UnsupportedEncodingException {
@@ -144,12 +133,9 @@ public class AssessmentService {
         return candidateAssessmentResponseList;
     }
 
-    private static boolean shouldBeMarkedAsAssessed(List<Long> assessmentJobRoleIdList, List<Long> jobPrefJobRoleIdList){
-        if(assessmentJobRoleIdList.size() == 0 || jobPrefJobRoleIdList.size() == 0){
-            return false;
-        }
-        for(Long prefRoleId: jobPrefJobRoleIdList){
-            if(!assessmentJobRoleIdList.contains(prefRoleId)){
+    private static boolean shouldBeMarkedAsAssessed(List<CandidateJobPrefs.JobPrefWithAssessmentBundle> jobPrefWithAssessmentBundleList){
+        for(CandidateJobPrefs.JobPrefWithAssessmentBundle jobPrefWithAssessmentBundle : jobPrefWithAssessmentBundleList){
+            if(!jobPrefWithAssessmentBundle.isAssessed()){
                 return false;
             }
         }
@@ -281,5 +267,79 @@ public class AssessmentService {
          }
         }
         return finalScore/candidateAssessmentResponseList.size();
+    }
+
+    public static List<CandidateJobPrefs.JobPrefWithAssessmentBundle> getJobPrefVsIsAssessedList(Long candidateId, List<JobPreference> jobPreferenceList) {
+        List<CandidateJobPrefs.JobPrefWithAssessmentBundle> jobPrefWithAssessmentBundleList = new ArrayList<>();
+        for(JobPreference jobPreference: jobPreferenceList) {
+            CandidateJobPrefs.JobPrefWithAssessmentBundle jobPrefWithAssessmentBundle = new CandidateJobPrefs.JobPrefWithAssessmentBundle();
+            // check if there is atleast one question for this jobRole
+            if(AssessmentQuestion.find.where().in("jobRoleId", jobPreference.getJobRole().getJobRoleId()).setMaxRows(1).findUnique() != null){
+                // check if this jobRole is attempted or not
+                CandidateAssessmentAttempt  candidateAssessmentAttempt = CandidateAssessmentAttempt.find.where()
+                        .eq("candidateId", candidateId)
+                        .eq("jobRoleId", jobPreference.getJobRole().getJobRoleId())
+                        .setMaxRows(1)
+                        .findUnique();
+                // if attempted already then mark it as complete
+                if(candidateAssessmentAttempt != null){
+                    jobPrefWithAssessmentBundle.setAssessed(true);
+                }
+            } else {
+                // if there is no questions for this jobRole, mark it as complete in Front End
+                jobPrefWithAssessmentBundle.setAssessed(true);
+            }
+
+            jobPrefWithAssessmentBundle.setJobPreference(jobPreference);
+            jobPrefWithAssessmentBundleList.add(jobPrefWithAssessmentBundle);
+        }
+        return jobPrefWithAssessmentBundleList;
+    }
+    public static List<JobRoleWithAssessmentBundle> getJobRoleIdsVsIsAssessedList(Long candidateId, List<Long> jobRoleIdList) {
+        List<JobRoleWithAssessmentBundle> jobRoleBundleList = new ArrayList<>();
+        for(Long jobRoleId: jobRoleIdList){
+            JobRoleWithAssessmentBundle jobRoleBundle = new JobRoleWithAssessmentBundle();
+            jobRoleBundle.setJobRoleId(jobRoleId);
+            // check if there is atleast one question for this jobRole
+            if(AssessmentQuestion.find.where().in("jobRoleId", jobRoleId).setMaxRows(1).findUnique() != null){
+                // check if this jobRole is attempted or not
+                CandidateAssessmentAttempt  candidateAssessmentAttempt = CandidateAssessmentAttempt.find.where()
+                        .eq("candidateId", candidateId)
+                        .eq("jobRoleId", jobRoleId)
+                        .setMaxRows(1)
+                        .findUnique();
+                // if attempted already then mark it as complete
+                if(candidateAssessmentAttempt != null){
+                    jobRoleBundle.setAssessed(true);
+                }
+            } else {
+                // if there is no questions for this jobRole, mark it as complete in Front End
+                jobRoleBundle.setAssessed(true);
+            }
+
+            jobRoleBundleList.add(jobRoleBundle);
+        }
+        return jobRoleBundleList;
+    }
+
+    public static class JobRoleWithAssessmentBundle {
+        Long jobRoleId;
+        boolean isAssessed;
+
+        public Long getJobRoleId() {
+            return jobRoleId;
+        }
+
+        public void setJobRoleId(Long jobRoleId) {
+            this.jobRoleId = jobRoleId;
+        }
+
+        public boolean isAssessed() {
+            return isAssessed;
+        }
+
+        public void setAssessed(boolean assessed) {
+            isAssessed = assessed;
+        }
     }
 }
