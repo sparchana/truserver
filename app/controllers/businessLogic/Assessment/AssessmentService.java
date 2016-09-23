@@ -16,6 +16,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
 
+import static models.util.Util.RoundTo1Decimals;
 import static play.libs.Json.toJson;
 
 /**
@@ -54,7 +55,7 @@ public class AssessmentService {
                 }
                 int optionSize = optionList.size();
                 if(optionSize == 0){
-                    response.setStatus(AssessmentSubmissionResponse.Status.UNKNOW);
+                    response.setStatus(AssessmentSubmissionResponse.Status.UNKNOWN);
                     Logger.info(String.valueOf(toJson(response)));
                     return response;
                 }
@@ -109,10 +110,9 @@ public class AssessmentService {
         caAttempt.setCandidate(candidate);
         caAttempt.setJobRole(jobRole);
         caAttempt.setCandidateAssessmentResponseList(getAssessmentResponses(colList));
-        caAttempt.setResult(calculateAttemptScore(caAttempt.getCandidateAssessmentResponseList()));
+        caAttempt.setResult(RoundTo1Decimals(calculateAttemptScore(caAttempt.getCandidateAssessmentResponseList())));
         caAttempt.save();
 
-        Logger.info("colList: "+toJson(colList));
         /* write response to google sheet */
         if(!isDevMode){
             writeAssessmentToGoogleSheet(candidate.getCandidateId(),
@@ -266,6 +266,7 @@ public class AssessmentService {
              ++finalScore;
          }
         }
+        Logger.info("finalScore:"+finalScore/candidateAssessmentResponseList.size());
         return finalScore/candidateAssessmentResponseList.size();
     }
 

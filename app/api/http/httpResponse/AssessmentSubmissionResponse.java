@@ -5,7 +5,7 @@ package api.http.httpResponse;
  */
 public class AssessmentSubmissionResponse {
     public enum Status {
-        UNKNOW,
+        UNKNOWN,
         FAILED,
         SUCCESS,
         ALREADY_ASSESSED,

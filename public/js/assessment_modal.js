@@ -25,7 +25,7 @@ function createRadioButton(name, value, text, id) {
 
 function processAssessmentQuestions(returnedData) {
     if(returnedData != null){
-        if(returnedData.status == "SUCCESS" || returnedData == "ALL_" || returnedData == "NA"){
+        if(returnedData == "OK" || returnedData == "NA" ) {
             processPostAssessmentResponse(returnedData);
             return;
         }
@@ -100,12 +100,12 @@ function processAssessmentQuestions(returnedData) {
     }
 }
 
-function processPostAssessmentResponse(status) {
-    console.log(JSON.stringify(status));
-    if(status == "assessed") {
+function processPostAssessmentResponse(response) {
+    if (response.status == "ALL_ASSESSED"){
         localStorage.setItem("assessed", "1");
-        $(".assessmentIncomplete").hide();
-        $(".assessmentComplete").show();
+        $('#assessmentDivRow span').removeClass("glyphicon-exclamation-sign red").addClass(" glyphicon-star yellow");
+    } else if (response.status == "SUCCESS" || response.status == "ALREADY_ASSESSED") {
+        $('#jr_id_'+response.jobRoleId+' span').removeClass("glyphicon-exclamation-sign red").addClass(" glyphicon-star yellow");
     }
 }
 

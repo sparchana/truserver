@@ -18,7 +18,7 @@ alter table candidate_assessment_response add constraint fk_candidate_assessment
 create index ix_candidate_assessment_response_assessment_question_id on candidate_assessment_response (assessment_question_id);
 
 alter table candidate_assessment_attempt drop column result;
-alter table candidate_assessment_attempt add result double(1, 1) null;
+alter table candidate_assessment_attempt add result float null;
 
 # --- !Downs
 

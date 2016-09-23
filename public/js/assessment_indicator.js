@@ -45,7 +45,7 @@
             var assessmentDivRow = $('<div id="assessmentDivRow" class="row"></div>');
             app.userJobPrefs.forEach(function (bundle) {
                 var isAssessed = bundle.assessed;
-                var card = $('<div class="col-xs-'+noc+'" style="padding: 0px;"></div>');
+                var card = $('<div class="col-xs-'+noc+'" id="jr_id_'+bundle.jobPreference.jobRole.jobRoleId+'" style="padding: 0px;"></div>');
                 var a;
                 if(isAssessed){
                     a= $('<a href="#"><span class="glyphicon glyphicon-star yellow" aria-hidden="true"></a>');
@@ -61,7 +61,7 @@
 
                  }
                  */
-                var titleDiv = $('<div id="'+bundle.jobPreference.jobRole.jobRoleId+'" class="assessmentTitle" onclick="getAssessmentQuestions(this.id, null)"></span></div>');
+                var titleDiv = $('<div id="jr_'+bundle.jobPreference.jobRole.jobRoleId+'" class="assessmentTitle" onclick="getAssessmentQuestions('+bundle.jobPreference.jobRole.jobRoleId+', null)"></span></div>');
                 var text = $('<b><font color="#fff">'+bundle.jobPreference.jobRole.jobName+'</font></b>');
 
                 titleDiv.append(text);

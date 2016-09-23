@@ -1250,7 +1250,7 @@ public class Application extends Controller {
                 }
             }
             if(jobRoleIdList.size() == 0){
-                return ok("ok");
+                return ok("OK");
             }
 
             List<AssessmentQuestion> assessmentQuestionList = AssessmentService.getQuestions(jobRoleIdList);
@@ -1275,7 +1275,6 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Logger.info("Req--> "+String.valueOf(assessmentRequestJson));
         return ok(toJson(AssessmentService.addAssessedInfoToGS(assessmentRequest, Long.parseLong(session().get("candidateId")))));
     }
 
