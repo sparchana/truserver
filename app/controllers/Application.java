@@ -80,7 +80,6 @@ public class Application extends Controller {
         Lead lead = Lead.find.where().eq("leadId",id).findUnique();
         if(lead !=null){
             List<Interaction> fullInteractionList = Interaction.find.where().eq("objectAUUId", lead.getLeadUUId()).findList();
-
             // fetch candidate interaction as well
             Candidate candidate = Candidate.find.where().eq("lead_leadId", id).findUnique();
             if(candidate != null){
@@ -99,37 +98,8 @@ public class Application extends Controller {
                 response.setUserNote(interaction.getNote());
                 response.setUserResults(interaction.getResult());
                 response.setUserCreatedBy(interaction.getCreatedBy());
-                switch (interaction.getInteractionType()) {
-                    case 0: response.setUserInteractionType("Unknown"); break;
-                    case 1: response.setUserInteractionType("Follow Up Call"); break;
-                    case 2: response.setUserInteractionType("Job Application Successful"); break;
-                    case 3: response.setUserInteractionType("Tried to Apply a Job"); break;
-                    case 4: response.setUserInteractionType("Tried to Reset Password"); break;
-                    case 5: response.setUserInteractionType("Reset Password Successful"); break;
-                    case 6: response.setUserInteractionType("Clicked Candidate Alert"); break;
-                    case 7: response.setUserInteractionType("Job Search"); break;
-                    case 8: response.setUserInteractionType("Job Post View"); break;
-                    case 9: response.setUserInteractionType("Login"); break;
-                    case 10: response.setUserInteractionType("Sign Up"); break;
-                    case 11: response.setUserInteractionType("Profile Updated"); break;
-                    case 12: response.setUserInteractionType("Profile Created"); break;
-                    case 13: response.setUserInteractionType("New Lead"); break;
-                    case 14: response.setUserInteractionType("Candidate Verified"); break;
-                    case 15: response.setUserInteractionType("Tried to Verify candidate"); break;
-                    case 16: response.setUserInteractionType("Password Created"); break;
-                    case 17: response.setUserInteractionType("Candidate Activated"); break;
-                    case 18: response.setUserInteractionType("Candidate Deactivated"); break;
-                    case 19: response.setUserInteractionType("Lead Status Updated"); break;
-                    default: response.setUserInteractionType("Interaction Undefined in getCandidateInteraction()"); break;
-                }
-                switch (interaction.getInteractionChannel()) {
-                    case 0: response.setChannel("Unknown"); break;
-                    case 1: response.setChannel("Candidate via Website"); break;
-                    case 2: response.setChannel("Candidate via Android"); break;
-                    case 3: response.setChannel("Partner via website"); break;
-                    case 4: response.setChannel("System via website"); break;
-                    default: response.setChannel("channel Undefined in getCandidateInteraction()"); break;
-                }
+                response.setUserInteractionType(InteractionConstants.INTERACTION_TYPE_MAP.get(interaction.getInteractionType()));
+                response.setChannel(InteractionConstants.INTERACTION_CHANNEL.get(interaction.getInteractionChannel()));
 
                 responses.add(response);
             }

@@ -1,5 +1,8 @@
 package api;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by adarsh on 20/9/16.
  */
@@ -53,6 +56,8 @@ public class InteractionConstants {
     public static final String INTERACTION_NOTE_CREATED_BY_ERROR = "Session Username is null";
     public static final String INTERACTION_NOTE_BLANK = "";
 
+    public static final Map<Integer, String> INTERACTION_TYPE_MAP = new HashMap<>();
+
     public static final int INTERACTION_TYPE_FOLLOWUP_CALL = 1;
     public static final int INTERACTION_TYPE_APPLIED_JOB = 2;
     public static final int INTERACTION_TYPE_TRIED_JOB_APPLY = 3;
@@ -82,6 +87,7 @@ public class InteractionConstants {
     public static final int INTERACTION_TYPE_PARTNER_NEW_LEAD = 25;
     public static final int INTERACTION_TYPE_PARTNER_PASSWORD_ADDED = 26;
 
+    public static final Map<Integer, String> INTERACTION_CHANNEL = new HashMap<>();
 
     public static final int INTERACTION_CHANNEL_CANDIDATE_WEBSITE = 1;
     public static final int INTERACTION_CHANNEL_CANDIDATE_ANDROID = 2;
@@ -89,5 +95,40 @@ public class InteractionConstants {
     public static final int INTERACTION_CHANNEL_SUPPORT_WEBSITE = 4;
     public static final int INTERACTION_CHANNEL_KNOWLARITY = 5;
 
+    static {
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_FOLLOWUP_CALL, "Follow Up Call");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_APPLIED_JOB, "Job Application Successful");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_TRIED_JOB_APPLY, "Tried to Apply");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_TRIED_PASSWORD_RESET, "Tried to Reset Password");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_PASSWORD_RESET_SUCCESS, "Reset Password Successful");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_ALERT, "Clicked Candidate Alert");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_SEARCH, "Job Search");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_JOP_POST_VIEW, "Job Post View");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_LOG_IN, "Login");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_SIGN_UP, "Sign Up");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_PROFILE_UPDATE, "Profile Updated");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_PROFILE_CREATED, "Profile Created");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_NEW_LEAD, "New Lead");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_VERIFIED, "Candidate Verified");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_TRIED_TO_VERIFY, "Tried to Verify");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_PASSWORD_ADDED, "Password Created");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_ACTIVATED, "Candidate Activated");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_DEACTIVATED, "Candidate Deactivated");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_LEAD_STATUS_UPDATE, "Lead Status Update");
 
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_PARTNER_TRIED_PASSWORD_RESET, "Tried to reset Password");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_PARTNER_PASSWORD_RESET_SUCCESS, "Reset Password Successful");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_PARTNER_LOG_IN, "Log In");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_PARTNER_SIGN_UP, "Sign Up");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_PARTNER_PROFILE_UPDATE, "Profile Updated");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_PARTNER_NEW_LEAD, "New Lead");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_PARTNER_PASSWORD_ADDED, "Password Created");
+
+        //channel map
+        INTERACTION_CHANNEL.put(INTERACTION_CHANNEL_CANDIDATE_WEBSITE, "Candidate via Website");
+        INTERACTION_CHANNEL.put(INTERACTION_CHANNEL_CANDIDATE_ANDROID, "Candidate via Android");
+        INTERACTION_CHANNEL.put(INTERACTION_CHANNEL_PARTNER_WEBSITE, "Partner via Website");
+        INTERACTION_CHANNEL.put(INTERACTION_CHANNEL_SUPPORT_WEBSITE, "Support via Website");
+        INTERACTION_CHANNEL.put(INTERACTION_CHANNEL_KNOWLARITY, "Knowlarity");
+    }
 }

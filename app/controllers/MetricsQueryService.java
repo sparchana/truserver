@@ -6,14 +6,11 @@ import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
 import com.avaje.ebean.SqlQuery;
 import com.avaje.ebean.SqlRow;
-import controllers.businessLogic.InteractionService;
 import models.entity.Developer;
 import models.entity.Static.LeadSource;
 import org.apache.commons.lang3.time.DateUtils;
-import org.h2.tools.Server;
 import play.Logger;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -710,7 +707,7 @@ public class MetricsQueryService
 
                 SqlRow activeCandidateRow = activeCandidatessResultsItr.next();
                 // TODO: change key to 'type, channel'
-                headerToValueMap.put("Type", (Integer) activeCandidateRow.get("interactiontype"));
+                headerToValueMap.put("Type", InteractionConstants.INTERACTION_TYPE_MAP.get((Integer) activeCandidateRow.get("interactiontype")));
                 headerToValueMap.put("Activity", (String) activeCandidateRow.get("result"));
                 if(Objects.equals(activeCandidateRow.get("interactionchannel").toString(), "1")){
                     headerToValueMap.put("Channel", "Web");
