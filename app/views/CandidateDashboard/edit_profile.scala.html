@@ -99,20 +99,20 @@
             <h5><div id="userMobile" style="display: inline-block"></div>, Bangalore</h5>
 
             <div id="darkPanel">
-                <div class="inblockDiv">
-                  Jobs Applied<br> <b id="jobCount">6</b>
+                <div class="inblockDiv">Jobs Applied<br>
+                    <div class="row col-xs-12">
+                        <b id="jobCount">6</b>
+                    </div>
                 </div>
 
                 <div class="inblockDiv" style="margin-left: 16px">Profile<br>
-                    <a href="/dashboard/editProfile"><div id="indicatorBtnRed" class="profileIncomplete" style="display: none"><b><font color="#fff">Incomplete</font></b></div></a>
-                    <div class="profileComplete" style="display: none"><b>Complete</b></div>
+                    <div class="row col-xs-12">
+                        <a href="/dashboard/editProfile"><div class="indicatorBtnRed" class="profileIncomplete"><b><font color="#fff">Incomplete</font></b></div></a>
+                        <div class="profileComplete" style="display: none"><b>Complete</b></div>
+                    </div>
                 </div>
 
-                <div id="assessmentDiv" class="inblockDiv" style="margin-left: 16px">Assessment<br>
-                  <a href="#"><div class="assessmentIncomplete" id="indicatorBtnRed" style="display: none"><b><font color="#fff">Incomplete</font></b></div></a>
-                  <div class="assessmentComplete" style="display: none"><b>Complete</b></div>
-                </div>
-
+                <div id="assessmentDiv" class="inblockDiv" style="margin-left: 16px">Assessment<br></div>
             </div>
         </div>
         <div id="sectionBody" class="startBody" style="padding-left: 6%;
@@ -487,6 +487,7 @@
         <link rel="stylesheet" type="text/css" href="/assets/css/assessment_modal.css">
         <script type="text/javascript" src="/assets/js/bootbox.min.js"></script>
         <script type="text/javascript" src="/assets/js/assessment_modal.js"></script>
+        <script type="text/javascript" src="/assets/js/assessment_indicator.js"></script>
             <!-- Menu Toggle Script -->
         <script>
             $(document).ready(function () {

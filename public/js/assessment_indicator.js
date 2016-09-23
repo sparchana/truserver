@@ -45,12 +45,16 @@
             var assessmentDivRow = $('<div id="assessmentDivRow" class="row"></div>');
             app.userJobPrefs.forEach(function (bundle) {
                 var isAssessed = bundle.assessed;
-                var card = $('<div class="col-xs-'+noc+'" id="jr_id_'+bundle.jobPreference.jobRole.jobRoleId+'" style="padding: 0px;"></div>');
+                var card = $('<div class="col-xs-'+noc+'" id="jr_id_'+bundle.jobPreference.jobRole.jobRoleId+'" ' +
+                    'style="padding: 0px;"></div>');
                 var a;
                 if(isAssessed){
-                    a= $('<a href="#"><span class="glyphicon glyphicon-star yellow" aria-hidden="true"></a>');
+                    a= $('<a href="#" data-toggle="tooltip" data-placement="bottom" title="Completed !">' +
+                        '<span class="glyphicon glyphicon-star yellow" aria-hidden="true"></a>');
                 } else {
-                    a= $('<a href="#"><span class="glyphicon glyphicon-exclamation-sign red" aria-hidden="true"></a>');
+                    a= $('<a href="#" data-toggle="tooltip" data-placement="bottom" title="Click Now !! ' +
+                        ' to increase chances of getting Interview Calls' +
+                        ' !"><span class="glyphicon glyphicon-exclamation-sign red" aria-hidden="true"></a>');
 
                 }
                 /* red label
