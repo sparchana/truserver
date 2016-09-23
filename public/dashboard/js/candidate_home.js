@@ -65,6 +65,7 @@ function processDataAllJobPosts(returnedData) {
         var count = 0;
         var parent = $("#hotJobs");
         returnedData.reverse();
+        $("#jobLoaderDiv").hide();
         returnedData.forEach(function (jobPost){
             count++;
             if(count){

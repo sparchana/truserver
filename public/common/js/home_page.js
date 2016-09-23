@@ -227,6 +227,7 @@ function processDataAllJobPosts(returnedData) {
         var count = 0;
         var parent = $("#hotJobs");
         //returnedData.reverse();
+        $("#jobLoaderDiv").hide();
         createAndAppendDivider("Popular Jobs");
         var isDividerPresent = false;
         returnedData.forEach(function (jobPost){
@@ -241,7 +242,7 @@ function processDataAllJobPosts(returnedData) {
                 if(jobPost.source != null && jobPost.source > 0 && !isDividerPresent){
                     createAndAppendDivider("Other Jobs");
                     isDividerPresent = true;
-                };
+                }
 
                 jobLocality.forEach(function (locality) {
                     loopCount ++;

@@ -233,7 +233,15 @@
     <!-- start hot job -->
 
     <div class="container showPageAllJobs">
-        <div id="job_cards_inc"></div>
+        <center id="jobLoaderDiv" style="position: relative; text-align: center; width: 100%">
+            <h4>Loading Jobs</h4>
+            <svg viewBox="0 0 32 32" width="32" height="32">
+                <circle id="loadingSpinner" cx="16" cy="16" r="14" fill="none"></circle>
+            </svg>
+        </center>
+
+        <div id="job_cards_inc">
+        </div>
     </div>
 
     <font color="#000"></font>

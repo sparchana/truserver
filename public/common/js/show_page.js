@@ -266,6 +266,7 @@ function processDataForSelectedJobPost(returnedData) {
                 var parent = $("#hotJobs");
                 var isDividerPresent = false;
                 //returnedData.reverse();
+                $("#jobLoaderDiv").hide();
                 try {
                     returnedData.forEach(function (jobPost) {
                         count++;
