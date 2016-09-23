@@ -212,7 +212,7 @@ public class CandidateService
         // Initialize some basic interaction details
         String createdBy = InteractionConstants.INTERACTION_CREATED_SELF;
         String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SELF;
-        Integer interactionType = InteractionConstants.INTERACTION_TYPE_PROFILE_UPDATE;
+        Integer interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_PROFILE_UPDATE;
 
         String interactionNote;
         boolean isNewCandidate = false;
@@ -384,10 +384,10 @@ public class CandidateService
                 createdBy = session().get("sessionUsername");
                 interactionNote = supportCandidateRequest.getSupportNote();
                 if(isNewCandidate) {
-                    interactionType = InteractionConstants.INTERACTION_TYPE_PROFILE_CREATED;
+                    interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_PROFILE_CREATED;
                     interactionResult = InteractionConstants.INTERACTION_RESULT_NEW_CANDIDATE_SUPPORT;
                 } else{
-                    interactionType = InteractionConstants.INTERACTION_TYPE_PROFILE_UPDATE;
+                    interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_PROFILE_UPDATE;
                     interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM;
                 }
 
@@ -398,7 +398,7 @@ public class CandidateService
                 // candidate being created by partner
                 createdBy = session().get("partnerName");
                 if(isNewCandidate) {
-                    interactionType = InteractionConstants.INTERACTION_TYPE_PROFILE_CREATED;
+                    interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_PROFILE_CREATED;
                     interactionResult = InteractionConstants.INTERACTION_RESULT_NEW_CANDIDATE_PARTNER;
                     Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
                     if(partner != null){
@@ -406,7 +406,7 @@ public class CandidateService
                         objBUUId = partner.getPartnerUUId();
                     }
                 } else{
-                    interactionType = InteractionConstants.INTERACTION_TYPE_PROFILE_UPDATE;
+                    interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_PROFILE_UPDATE;
                     interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_PARTNER;
                     Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
                     if(partner != null){
@@ -421,9 +421,9 @@ public class CandidateService
         } else{
             //getting updated by the candidate
             if(isNewCandidate) {
-                interactionType = InteractionConstants.INTERACTION_TYPE_PROFILE_CREATED;
+                interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_PROFILE_CREATED;
             } else{
-                interactionType = InteractionConstants.INTERACTION_TYPE_PROFILE_UPDATE;
+                interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_PROFILE_UPDATE;
             }
 
             if(channelType == InteractionChannelType.SELF_ANDROID){

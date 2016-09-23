@@ -102,7 +102,7 @@ public class Application extends Controller {
                 switch (interaction.getInteractionType()) {
                     case 0: response.setUserInteractionType("Unknown"); break;
                     case 1: response.setUserInteractionType("Follow Up Call"); break;
-                    case 2: response.setUserInteractionType("Job Apply Successful"); break;
+                    case 2: response.setUserInteractionType("Job Application Successful"); break;
                     case 3: response.setUserInteractionType("Tried to Apply a Job"); break;
                     case 4: response.setUserInteractionType("Tried to Reset Password"); break;
                     case 5: response.setUserInteractionType("Reset Password Successful"); break;
@@ -122,7 +122,6 @@ public class Application extends Controller {
                     case 19: response.setUserInteractionType("Lead Status Updated"); break;
                     default: response.setUserInteractionType("Interaction Undefined in getCandidateInteraction()"); break;
                 }
-                Logger.info(interaction.getInteractionChannel() + " ------<<<<");
                 switch (interaction.getInteractionChannel()) {
                     case 0: response.setChannel("Unknown"); break;
                     case 1: response.setChannel("Candidate via Website"); break;

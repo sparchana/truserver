@@ -13,6 +13,8 @@ import play.Logger;
 
 import java.util.UUID;
 
+import static controllers.businessLogic.PartnerInteractionService.createInteractionForPartnerAddPasswordViaWebsite;
+import static controllers.businessLogic.PartnerInteractionService.createInteractionForPartnerResetPasswordViaWebsite;
 import static play.mvc.Controller.session;
 
 /**
@@ -50,8 +52,7 @@ public class PartnerAuthService {
                 if(partner != null){
                     objAUUID = partner.getPartnerUUId();
                 }
-
-                InteractionService.createInteractionForPartnerResetPasswordViaWebsite(objAUUID, interactionResult);
+                createInteractionForPartnerResetPasswordViaWebsite(objAUUID, interactionResult);
                 existingAuth.setAuthSessionId(UUID.randomUUID().toString());
                 existingAuth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
                 /* adding session details */
@@ -73,7 +74,7 @@ public class PartnerAuthService {
                 partnerSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
                 String objAUUID = existingPartner.getPartnerUUId();
-                InteractionService.createInteractionForPartnerAddPasswordViaWebsite(objAUUID);
+                createInteractionForPartnerAddPasswordViaWebsite(objAUUID);
 
                 try {
                     existingPartner.setPartnerprofilestatus(PartnerProfileStatus.find.where().eq("profile_status_id", ServerConstants.PARTNER_STATE_ACTIVE).findUnique());

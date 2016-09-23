@@ -11,7 +11,6 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
 import static api.InteractionConstants.*;
-import static api.ServerConstants.*;
 import static play.mvc.Controller.session;
 
 /**
@@ -108,7 +107,7 @@ public class InteractionService {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
-                INTERACTION_TYPE_LOG_IN,
+                INTERACTION_TYPE_CANDIDATE_LOG_IN,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 InteractionConstants.INTERACTION_RESULT_SELF_SIGNEDIN,
                 INTERACTION_CREATED_SELF,
@@ -121,7 +120,7 @@ public class InteractionService {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
-                INTERACTION_TYPE_LOG_IN,
+                INTERACTION_TYPE_CANDIDATE_LOG_IN,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 InteractionConstants.INTERACTION_RESULT_SELF_SIGNEDIN,
                 INTERACTION_CREATED_SELF,
@@ -133,9 +132,9 @@ public class InteractionService {
     public static void createInteractionForJobApplicationAttemptViaWebsite(String objectAUUId, String objectBUUId, String result) {
         Interaction interaction = new Interaction(
                 objectAUUId,
-                ServerConstants.OBJECT_TYPE_JOB_POST,
-                objectBUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
+                objectBUUId,
+                ServerConstants.OBJECT_TYPE_JOB_POST,
                 InteractionConstants.INTERACTION_TYPE_TRIED_JOB_APPLY,
                 result,
                 INTERACTION_CREATED_SELF,
@@ -178,7 +177,7 @@ public class InteractionService {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
-                InteractionConstants.INTERACTION_TYPE_TRIED_PASSWORD_RESET,
+                InteractionConstants.INTERACTION_TYPE_CANDIDATE_TRIED_PASSWORD_RESET,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
                 INTERACTION_CREATED_SELF,
@@ -191,7 +190,7 @@ public class InteractionService {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
-                InteractionConstants.INTERACTION_TYPE_TRIED_PASSWORD_RESET,
+                InteractionConstants.INTERACTION_TYPE_CANDIDATE_TRIED_PASSWORD_RESET,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
                 INTERACTION_CREATED_SELF,
@@ -204,7 +203,7 @@ public class InteractionService {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
-                InteractionConstants.INTERACTION_TYPE_PASSWORD_RESET_SUCCESS,
+                InteractionConstants.INTERACTION_TYPE_CANDIDATE_PASSWORD_RESET_SUCCESS,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
                 INTERACTION_CREATED_SELF,
@@ -217,7 +216,7 @@ public class InteractionService {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
-                InteractionConstants.INTERACTION_TYPE_PASSWORD_RESET_SUCCESS,
+                InteractionConstants.INTERACTION_TYPE_CANDIDATE_PASSWORD_RESET_SUCCESS,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
                 INTERACTION_CREATED_SELF,
@@ -226,24 +225,11 @@ public class InteractionService {
         InteractionService.createInteraction(interaction);
     }
 
-    public static void createInteractionForPartnerResetPasswordViaWebsite(String objectAUUId, String result){
-        Interaction interaction = new Interaction(
-                objectAUUId,
-                ServerConstants.OBJECT_TYPE_CANDIDATE,
-                InteractionConstants.INTERACTION_TYPE_PASSWORD_RESET_SUCCESS,
-                InteractionConstants.INTERACTION_NOTE_BLANK,
-                result,
-                INTERACTION_CREATED_SELF,
-                INTERACTION_CHANNEL_PARTNER_WEBSITE
-        );
-        InteractionService.createInteraction(interaction);
-    }
-
     public static void createInteractionForCandidateAddPasswordViaWebsite(String objectAUUId){
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
-                InteractionConstants.INTERACTION_TYPE_PASSWORD_ADDED,
+                InteractionConstants.INTERACTION_TYPE_CANDIDATE_PASSWORD_ADDED,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 InteractionConstants.INTERACTION_RESULT_NEW_CANDIDATE + " & " + InteractionConstants.INTERACTION_NOTE_SELF_PASSWORD_CHANGED,
                 INTERACTION_CREATED_SELF,
@@ -256,24 +242,11 @@ public class InteractionService {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
-                InteractionConstants.INTERACTION_TYPE_PASSWORD_ADDED,
+                InteractionConstants.INTERACTION_TYPE_CANDIDATE_PASSWORD_ADDED,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 InteractionConstants.INTERACTION_RESULT_NEW_CANDIDATE + " & " + InteractionConstants.INTERACTION_NOTE_SELF_PASSWORD_CHANGED,
                 INTERACTION_CREATED_SELF,
                 INTERACTION_CHANNEL_CANDIDATE_ANDROID
-        );
-        InteractionService.createInteraction(interaction);
-    }
-
-    public static void createInteractionForPartnerAddPasswordViaWebsite(String objectAUUId){
-        Interaction interaction = new Interaction(
-                objectAUUId,
-                ServerConstants.OBJECT_TYPE_CANDIDATE,
-                InteractionConstants.INTERACTION_TYPE_PASSWORD_RESET_SUCCESS,
-                InteractionConstants.INTERACTION_NOTE_BLANK,
-                InteractionConstants.INTERACTION_RESULT_NEW_PARTNER + " & " + InteractionConstants.INTERACTION_NOTE_PARTNER_PASSWORD_CHANGED,
-                INTERACTION_CREATED_SELF,
-                INTERACTION_CHANNEL_PARTNER_WEBSITE
         );
         InteractionService.createInteraction(interaction);
     }
@@ -323,7 +296,7 @@ public class InteractionService {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
-                InteractionConstants.INTERACTION_TYPE_SIGN_UP,
+                InteractionConstants.INTERACTION_TYPE_CANDIDATE_SIGN_UP,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
                 INTERACTION_CREATED_SELF,
@@ -333,38 +306,11 @@ public class InteractionService {
 
     }
 
-    public static void createInteractionForSignUpCandidateByPartnerViaWebsite(String objectAUUId, String result) {
-        Interaction interaction = new Interaction(
-                objectAUUId,
-                ServerConstants.OBJECT_TYPE_CANDIDATE,
-                InteractionConstants.INTERACTION_TYPE_SIGN_UP,
-                InteractionConstants.INTERACTION_NOTE_BLANK,
-                result,
-                INTERACTION_CREATED_PARTNER,
-                INTERACTION_CHANNEL_PARTNER_WEBSITE
-        );
-        InteractionService.createInteraction(interaction);
-
-    }
-
-    public static void createInteractionForSignUpCandidateBySupportViaWebsite(String objectAUUId, String result, String createdBy) {
-        Interaction interaction = new Interaction(
-                objectAUUId,
-                ServerConstants.OBJECT_TYPE_CANDIDATE,
-                InteractionConstants.INTERACTION_TYPE_SIGN_UP,
-                InteractionConstants.INTERACTION_NOTE_BLANK,
-                result,
-                createdBy,
-                INTERACTION_CHANNEL_SUPPORT_WEBSITE
-        );
-        InteractionService.createInteraction(interaction);
-    }
-
     public static void createInteractionForSignUpCandidateViaAndroid(String objectAUUId, String result) {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
-                InteractionConstants.INTERACTION_TYPE_SIGN_UP,
+                InteractionConstants.INTERACTION_TYPE_CANDIDATE_SIGN_UP,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
                 INTERACTION_CREATED_SELF,

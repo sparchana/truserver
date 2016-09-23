@@ -113,14 +113,15 @@ public class LeadService {
         String result;
         int channel;
         String note = InteractionConstants.INTERACTION_NOTE_BLANK;
-        int interactionType = InteractionConstants.INTERACTION_TYPE_NEW_LEAD;
+        int interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_NEW_LEAD;
         int objectAType;
         String createdBy;
         if(channelType == InteractionService.InteractionChannelType.SUPPORT) {
-            interactionType = InteractionConstants.INTERACTION_TYPE_NEW_LEAD;
+            interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_NEW_LEAD;
             createdBy = session().get("sessionUsername");
             channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
         } else if(channelType == InteractionService.InteractionChannelType.PARTNER) {
+            interactionType = InteractionConstants.INTERACTION_TYPE_PARTNER_NEW_LEAD;
             createdBy = InteractionConstants.INTERACTION_CREATED_PARTNER;
             channel = InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE;
         } else if(channelType == InteractionService.InteractionChannelType.SELF_ANDROID){

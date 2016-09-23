@@ -26,8 +26,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static play.libs.Json.toJson;
-
 /**
  * Created by zero on 3/5/16.
  */
@@ -98,7 +96,7 @@ public class ParseCSV {
                         // save all inbound calls to interaction
                         interaction.setCreatedBy(InteractionConstants.INTERACTION_CREATED_SYSTEM_KNOWLARITY);
                         interaction.setCreationTimestamp(knowlarityInBoundTimestamp);
-                        interaction.setInteractionType(InteractionConstants.INTERACTION_TYPE_NEW_LEAD);
+                        interaction.setInteractionType(InteractionConstants.INTERACTION_TYPE_CANDIDATE_NEW_LEAD);
                         interaction.setInteractionChannel(InteractionConstants.INTERACTION_CHANNEL_KNOWLARITY);
                         interaction.save();
                     }

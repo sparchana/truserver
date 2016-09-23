@@ -56,22 +56,32 @@ public class InteractionConstants {
     public static final int INTERACTION_TYPE_FOLLOWUP_CALL = 1;
     public static final int INTERACTION_TYPE_APPLIED_JOB = 2;
     public static final int INTERACTION_TYPE_TRIED_JOB_APPLY = 3;
-    public static final int INTERACTION_TYPE_TRIED_PASSWORD_RESET = 4;
-    public static final int INTERACTION_TYPE_PASSWORD_RESET_SUCCESS = 5;
+    public static final int INTERACTION_TYPE_CANDIDATE_TRIED_PASSWORD_RESET = 4;
+    public static final int INTERACTION_TYPE_CANDIDATE_PASSWORD_RESET_SUCCESS = 5;
     public static final int INTERACTION_TYPE_CANDIDATE_ALERT = 6;
     public static final int INTERACTION_TYPE_SEARCH = 7;
     public static final int INTERACTION_TYPE_JOP_POST_VIEW = 8;
-    public static final int INTERACTION_TYPE_LOG_IN = 9;
-    public static final int INTERACTION_TYPE_SIGN_UP = 10;
-    public static final int INTERACTION_TYPE_PROFILE_UPDATE = 11;
-    public static final int INTERACTION_TYPE_PROFILE_CREATED = 12;
-    public static final int INTERACTION_TYPE_NEW_LEAD = 13;
+    public static final int INTERACTION_TYPE_CANDIDATE_LOG_IN = 9;
+    public static final int INTERACTION_TYPE_CANDIDATE_SIGN_UP = 10;
+    public static final int INTERACTION_TYPE_CANDIDATE_PROFILE_UPDATE = 11;
+    public static final int INTERACTION_TYPE_CANDIDATE_PROFILE_CREATED = 12;
+    public static final int INTERACTION_TYPE_CANDIDATE_NEW_LEAD = 13;
     public static final int INTERACTION_TYPE_CANDIDATE_VERIFIED = 14;
     public static final int INTERACTION_TYPE_CANDIDATE_TRIED_TO_VERIFY = 15;
-    public static final int INTERACTION_TYPE_PASSWORD_ADDED = 16;
+    public static final int INTERACTION_TYPE_CANDIDATE_PASSWORD_ADDED = 16;
     public static final int INTERACTION_TYPE_CANDIDATE_ACTIVATED = 17;
     public static final int INTERACTION_TYPE_CANDIDATE_DEACTIVATED = 18;
     public static final int INTERACTION_TYPE_LEAD_STATUS_UPDATE = 19;
+
+    //partner interaction type
+    public static final int INTERACTION_TYPE_PARTNER_TRIED_PASSWORD_RESET = 20;
+    public static final int INTERACTION_TYPE_PARTNER_PASSWORD_RESET_SUCCESS = 21;
+    public static final int INTERACTION_TYPE_PARTNER_LOG_IN = 22;
+    public static final int INTERACTION_TYPE_PARTNER_SIGN_UP = 23;
+    public static final int INTERACTION_TYPE_PARTNER_PROFILE_UPDATE = 24;
+    public static final int INTERACTION_TYPE_PARTNER_NEW_LEAD = 25;
+    public static final int INTERACTION_TYPE_PARTNER_PASSWORD_ADDED = 26;
+
 
     public static final int INTERACTION_CHANNEL_CANDIDATE_WEBSITE = 1;
     public static final int INTERACTION_CHANNEL_CANDIDATE_ANDROID = 2;

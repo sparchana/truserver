@@ -18,9 +18,7 @@ import javax.persistence.NonUniqueResultException;
 import java.util.List;
 import java.util.UUID;
 
-import static controllers.businessLogic.PartnerInteractionService.createInteractionForPartnerLogin;
-import static controllers.businessLogic.PartnerInteractionService.createInteractionForPartnerResetPassword;
-import static controllers.businessLogic.PartnerInteractionService.createInteractionForPartnerSignUp;
+import static controllers.businessLogic.PartnerInteractionService.*;
 import static models.util.Util.generateOtp;
 import static play.mvc.Controller.session;
 import static play.mvc.Results.ok;
@@ -36,6 +34,7 @@ public class PartnerService {
             partner.setPartnerprofilestatus(partnerProfileStatus);
             partner.setLead(lead);
             partner.registerPartner();
+
             partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_SUCCESS);
             Logger.info("Partner successfully registered " + partner);
         } else {
@@ -214,7 +213,8 @@ public class PartnerService {
                 String interactionResult = InteractionConstants.INTERACTION_RESULT_PARTNER_TRIED_TO_RESET_PASSWORD;
                 String objAUUID = "";
                 objAUUID = existingPartner.getPartnerUUId();
-                createInteractionForPartnerResetPassword(objAUUID, interactionResult, channelType);
+                createInteractionForPartnerTriedToResetPassword(objAUUID, interactionResult, channelType);
+
                 resetPasswordResponse.setOtp(randomPIN);
                 resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);
             }

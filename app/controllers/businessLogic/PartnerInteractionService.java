@@ -14,7 +14,7 @@ public class PartnerInteractionService {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_PARTNER,
-                InteractionConstants.INTERACTION_TYPE_SIGN_UP,
+                InteractionConstants.INTERACTION_TYPE_PARTNER_SIGN_UP,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
                 InteractionConstants.INTERACTION_CREATED_SELF,
@@ -27,7 +27,7 @@ public class PartnerInteractionService {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_PARTNER,
-                InteractionConstants.INTERACTION_TYPE_LOG_IN,
+                InteractionConstants.INTERACTION_TYPE_PARTNER_LOG_IN,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 InteractionConstants.INTERACTION_RESULT_PARTNER_SIGNEDIN,
                 channelType.toString(),
@@ -36,16 +36,41 @@ public class PartnerInteractionService {
         InteractionService.createInteraction(interaction);
     }
 
-
-    public static void createInteractionForPartnerResetPassword(String objectAUUId, String result, InteractionService.InteractionChannelType channelType){
+    public static void createInteractionForPartnerAddPasswordViaWebsite(String objectAUUId){
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_PARTNER,
-                InteractionConstants.INTERACTION_TYPE_PASSWORD_RESET_SUCCESS,
+                InteractionConstants.INTERACTION_TYPE_PARTNER_PASSWORD_ADDED,
+                InteractionConstants.INTERACTION_NOTE_BLANK,
+                InteractionConstants.INTERACTION_RESULT_NEW_PARTNER + " & " + InteractionConstants.INTERACTION_NOTE_PARTNER_PASSWORD_CHANGED,
+                INTERACTION_CREATED_SELF,
+                INTERACTION_CHANNEL_PARTNER_WEBSITE
+        );
+        InteractionService.createInteraction(interaction);
+    }
+
+    public static void createInteractionForPartnerTriedToResetPassword(String objectAUUId, String result, InteractionService.InteractionChannelType channelType){
+        Interaction interaction = new Interaction(
+                objectAUUId,
+                ServerConstants.OBJECT_TYPE_PARTNER,
+                InteractionConstants.INTERACTION_TYPE_PARTNER_TRIED_PASSWORD_RESET,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
-                channelType.toString(),
+                channelType.toString() + "(Partner)",
                 InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE
+        );
+        InteractionService.createInteraction(interaction);
+    }
+
+    public static void createInteractionForPartnerResetPasswordViaWebsite(String objectAUUId, String result){
+        Interaction interaction = new Interaction(
+                objectAUUId,
+                ServerConstants.OBJECT_TYPE_PARTNER,
+                InteractionConstants.INTERACTION_TYPE_PARTNER_PASSWORD_RESET_SUCCESS,
+                InteractionConstants.INTERACTION_NOTE_BLANK,
+                result,
+                INTERACTION_CREATED_SELF,
+                INTERACTION_CHANNEL_PARTNER_WEBSITE
         );
         InteractionService.createInteraction(interaction);
     }
@@ -54,7 +79,7 @@ public class PartnerInteractionService {
         Interaction interaction = new Interaction(
                 uuId,
                 ServerConstants.OBJECT_TYPE_PARTNER,
-                InteractionConstants.INTERACTION_TYPE_PROFILE_UPDATE,
+                InteractionConstants.INTERACTION_TYPE_PARTNER_PROFILE_UPDATE,
                 interactionNote,
                 interactionResult,
                 createdBy + "(Partner)",

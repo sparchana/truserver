@@ -133,10 +133,10 @@ public class MetricsQueryService
                                           String metricDate, String nextDate, Integer index)
     {
         // Build the query string
-        StringBuilder leadQueryBuilder = new StringBuilder("select leadchannel, count(*) from lead ");
+        StringBuilder leadQueryBuilder = new StringBuilder("select leadchannel, count(*) from lead where leadtype = 4");
 
         if (metricDate != null) {
-            leadQueryBuilder.append("where leadcreationtimestamp >= '" + metricDate + "' ");
+            leadQueryBuilder.append(" and leadcreationtimestamp >= '" + metricDate + "' ");
         }
 
         if (nextDate != null) {
@@ -164,6 +164,7 @@ public class MetricsQueryService
         Integer knowlarityLeadsCount = 0;
         Integer supportLeadsCount = 0;
         Integer androidLeadsCount = 0;
+        Integer partnerLeadsCount = 0;
 
         while (leadResultsItr.hasNext()) {
             SqlRow leadRow = leadResultsItr.next();
@@ -179,9 +180,12 @@ public class MetricsQueryService
             else if (leadRow.get("leadchannel").equals(ServerConstants.LEAD_CHANNEL_ANDROID)) {
                 androidLeadsCount = leadRow.getInteger("count(*)");
             }
+            else if (leadRow.get("leadchannel").equals(ServerConstants.LEAD_CHANNEL_PARTNER)) {
+                partnerLeadsCount = leadRow.getInteger("count(*)");
+            }
         }
 
-        Integer totalLeads = websiteLeadsCount + knowlarityLeadsCount + supportLeadsCount + androidLeadsCount;
+        Integer totalLeads = websiteLeadsCount + knowlarityLeadsCount + supportLeadsCount + androidLeadsCount + partnerLeadsCount;
 
         Map<String, Object> headerToValueMap = indexToHeaderToValueMap.get(index);
 
@@ -189,6 +193,7 @@ public class MetricsQueryService
         headerToValueMap.put(MetricsConstants.METRIC_HEADER_WEBSITE_LEADS, websiteLeadsCount);
         headerToValueMap.put(MetricsConstants.METRIC_HEADER_KNOWLARITY_LEADS, knowlarityLeadsCount);
         headerToValueMap.put(MetricsConstants.METRIC_HEADER_ANDROID_LEADS, androidLeadsCount);
+        headerToValueMap.put(MetricsConstants.METRIC_HEADER_PARTNER_LEADS, partnerLeadsCount);
 
         indexToHeaderToValueMap.put(index, headerToValueMap);
 
@@ -200,10 +205,10 @@ public class MetricsQueryService
     {
         // Build the query string
         StringBuilder interactionQueryBuilder =
-                new StringBuilder("select interaction.createdby, count(distinct(interaction.objectauuid)) from candidate " +
+                new StringBuilder("select interaction.interactionchannel, count(distinct(interaction.objectauuid)) from candidate " +
                                   "join interaction " +
                                   "on interaction.objectauuid=candidate.candidateuuid where " +
-                                  "interaction.result like '%New Candidate Added%' ");
+                                  "interaction.interactiontype IN(12,10) ");
 
         if (metricDate != null) {
             interactionQueryBuilder.append("and candidate.candidatecreatetimestamp >= '" + metricDate + "' ");
@@ -213,9 +218,8 @@ public class MetricsQueryService
             interactionQueryBuilder.append(" and  candidate.candidatecreatetimestamp <= '" + nextDate + "' ");
         }
 
-        interactionQueryBuilder.append("group by interaction.createdby");
-
-        Logger.debug(" Signup Query: " + interactionQueryBuilder.toString());
+        interactionQueryBuilder.append("group by interaction.interactionchannel");
+        Logger.info(" Signup Query: " + interactionQueryBuilder.toString());
 
         // Execute Query
         SqlQuery interactionSignUpSqlQuery = Ebean.createSqlQuery(interactionQueryBuilder.toString());
@@ -234,23 +238,27 @@ public class MetricsQueryService
         Integer websiteSignupsCount = 0;
         Integer supportSignupsCount = 0;
         Integer androidSignupsCount = 0;
+        Integer partnerSignupsCount = 0;
 
         Integer totalSignUpsCount;
 
         while (signupResultsItr.hasNext()) {
             SqlRow signupRow = signupResultsItr.next();
-            if (signupRow.get("createdby").equals(InteractionConstants.INTERACTION_CREATED_SELF)) {
+            if (signupRow.get("interactionchannel").equals(InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE)) {
                 websiteSignupsCount = signupRow.getInteger("count(distinct(interaction.objectauuid))");
             }
-            else if (signupRow.get("createdby").equals(InteractionService.InteractionChannelType.SELF_ANDROID.toString())) {
-                androidSignupsCount += signupRow.getInteger("count(distinct(interaction.objectauuid))");
+            else if (signupRow.get("interactionchannel").equals(InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID)) {
+                androidSignupsCount = signupRow.getInteger("count(distinct(interaction.objectauuid))");
+            }
+            else if (signupRow.get("interactionchannel").equals(InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE)) {
+                partnerSignupsCount = signupRow.getInteger("count(distinct(interaction.objectauuid))");
             }
             else {
-                supportSignupsCount += signupRow.getInteger("count(distinct(interaction.objectauuid))");
+                supportSignupsCount = signupRow.getInteger("count(distinct(interaction.objectauuid))");
             }
         }
 
-        totalSignUpsCount = websiteSignupsCount + supportSignupsCount + androidSignupsCount;
+        totalSignUpsCount = websiteSignupsCount + supportSignupsCount + androidSignupsCount + partnerSignupsCount;
 
         Map<String, Object> headerToValueMap = indexToHeaderToValueMap.get(index);
 
@@ -258,16 +266,16 @@ public class MetricsQueryService
         headerToValueMap.put(MetricsConstants.METRIC_HEADER_WEBSITE_CANDIDATES, websiteSignupsCount);
         headerToValueMap.put(MetricsConstants.METRIC_HEADER_SUPPORT_CANDIDATES, supportSignupsCount);
         headerToValueMap.put(MetricsConstants.METRIC_HEADER_ANDROID_CANDIDATES, androidSignupsCount);
+        headerToValueMap.put(MetricsConstants.METRIC_HEADER_PARTNER_CANDIDATES, partnerSignupsCount);
 
         indexToHeaderToValueMap.put(index, headerToValueMap);
 
-        Logger.debug("Results map after getSignupsByChannel: " + indexToHeaderToValueMap.toString());
+        Logger.info("Results map after getSignupsByChannel: " + indexToHeaderToValueMap.toString());
     }
 
     private static void getCandidatesByActivityCount(Map<Integer, Map<String, Object>> indexToHeaderToValueMap,
                                                      String metricDate, String nextDate, Integer index)
     {
-
         // Total OTP Verifications
         getOTPVerifications(indexToHeaderToValueMap, metricDate, nextDate, index);
 
@@ -296,7 +304,7 @@ public class MetricsQueryService
         // Build the query string
         StringBuilder otpVerificationQueryBuilder =
                 new StringBuilder("select count(*) from interaction " +
-                        "where result ='New Candidate Added & Candidate Self Updated Password' ");
+                        "where interactiontype = '16' ");
 
         if (metricDate != null) {
             otpVerificationQueryBuilder.append("and creationtimestamp  >= '" + metricDate + "' ");
@@ -335,7 +343,7 @@ public class MetricsQueryService
         StringBuilder loginQueryBuilder =
                 new StringBuilder("select count(*) from interaction join candidate " +
                         "on interaction.objectauuid = candidate.candidateuuid " +
-                        "where result like '%Candidate Self Signed In%' ");
+                        "where interactiontype = '9' ");
 
         if (metricDate != null) {
             loginQueryBuilder.append("and creationtimestamp  >= '" + metricDate + "' ");
@@ -488,7 +496,7 @@ public class MetricsQueryService
         // Build the query string
         StringBuilder jobAppQueryBuilder =
                 new StringBuilder("select count(*) from interaction " +
-                        "where result like 'Candidate applied to a job%' ");
+                        "where interactiontype = '2' ");
 
         if (metricDate != null) {
             jobAppQueryBuilder.append("and creationtimestamp  >= '" + metricDate + "' ");
@@ -522,11 +530,12 @@ public class MetricsQueryService
     private static void getCandidatesBySupportAgents (Map<Integer, Map<String, Object>> indexToHeaderToValueMap,
                                                       String metricDate, String nextDate, Integer index)
     {
+        //TODO result needs to be replaced by type
         // Build the query string
         StringBuilder supportActivityQueryBuilder =
                 new StringBuilder("select interaction.createdby, count(distinct(interaction.objectauuid)) from candidate " +
-                        "join interaction on interaction.objectauuid=candidate.candidateuuid where interaction.result " +
-                        " like '%New Candidate Added%' ");
+                        "join interaction on interaction.objectauuid=candidate.candidateuuid where interaction.interactiontype = 12 " +
+                        " and interaction.interactionchannel = '4' ");
 
         if (metricDate != null) {
             supportActivityQueryBuilder.append("and candidate.candidatecreatetimestamp  >= '" + metricDate + "' ");
@@ -562,6 +571,7 @@ public class MetricsQueryService
 
         while (supportResultsItr.hasNext()) {
             SqlRow supportRow = supportResultsItr.next();
+            // TODO: change key to 'channel'
             agentNameToCandidateCount.put((String) supportRow.get("createdby"),
                      supportRow.get("count(distinct(interaction.objectauuid))"));
         }
@@ -591,7 +601,7 @@ public class MetricsQueryService
                 new StringBuilder("select ls.leadsourcename, count(*) as c from lead l " +
                         " join leadsource ls " +
                         " on l.leadsourceid = ls.leadsourceid " +
-                        " where l.leadchannel in (0,1,2) ");
+                        " where l.leadchannel in (0,1,2,3,5) and leadtype = '4' ");
 
         if (metricDate != null) {
             leadSourcesQueryBuilder.append("and l.leadcreationtimestamp  >= '" + metricDate + "' ");
@@ -651,15 +661,16 @@ public class MetricsQueryService
     private static void getActiveCandidates(Map<Integer, Map<String, Object>> indexToHeaderToValueMap, String metricDate,
                                             String nextDate, Integer index)
     {
+        //TODO change result to type. Include only candidate interaction to types, created by to channel(web, android)
         // Build the query string
+
         StringBuilder activeCandidatesQueryBuilder =
-                new StringBuilder("select result, createdby, creationtimestamp, candidatename, candidatemobile, candidateid, localityname, candidate.candidatecreatetimestamp " +
+                new StringBuilder("select result, interactionchannel, interactiontype, creationtimestamp, candidatename, candidatemobile, candidateid, localityname, candidate.candidatecreatetimestamp " +
                         " from interaction join candidate " +
                         " on interaction.objectauuid = candidate.candidateuuid " +
                         " left join locality " +
                         " on locality.localityid = candidate.candidatehomelocality " +
-                        " where createdby in ('" + InteractionConstants.INTERACTION_CREATED_SELF + "','" +
-                        InteractionService.InteractionChannelType.SELF_ANDROID.toString() +"') ");
+                        " where interactionchannel in (1,2) ");
 
         if (metricDate != null) {
             activeCandidatesQueryBuilder.append("and creationtimestamp >= '" + metricDate + "' ");
@@ -698,8 +709,14 @@ public class MetricsQueryService
                 headerToValueMap = new LinkedHashMap<String, Object>();
 
                 SqlRow activeCandidateRow = activeCandidatessResultsItr.next();
+                // TODO: change key to 'type, channel'
+                headerToValueMap.put("Type", (Integer) activeCandidateRow.get("interactiontype"));
                 headerToValueMap.put("Activity", (String) activeCandidateRow.get("result"));
-                headerToValueMap.put("Channel", (String) activeCandidateRow.get("createdby"));
+                if(Objects.equals(activeCandidateRow.get("interactionchannel").toString(), "1")){
+                    headerToValueMap.put("Channel", "Web");
+                } else{
+                    headerToValueMap.put("Channel", "Android");
+                }
                 headerToValueMap.put("Candidate Name", (String) activeCandidateRow.get("candidatename"));
                 headerToValueMap.put("Candidate Mobile", (String) activeCandidateRow.get("candidatemobile"));
                 headerToValueMap.put("Candidate ID", (Long) activeCandidateRow.get("candidateid"));
