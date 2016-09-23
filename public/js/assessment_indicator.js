@@ -49,10 +49,12 @@
                     'style="padding: 0px;"></div>');
                 var a;
                 if(isAssessed){
-                    a= $('<a href="#" data-toggle="tooltip" data-placement="bottom" title="Completed !">' +
+                    a= $('<a href="#" id="tt_'+bundle.jobPreference.jobRole.jobRoleId+'_c" ' +
+                        'data-toggle="tooltip" data-placement="bottom" title="Completed !">' +
                         '<span class="glyphicon glyphicon-star yellow" aria-hidden="true"></a>');
                 } else {
-                    a= $('<a href="#" data-toggle="tooltip" data-placement="bottom" title="Click Now !! ' +
+                    a= $('<a href="#" id="tt_'+bundle.jobPreference.jobRole.jobRoleId+'_ic" ' +
+                        'data-toggle="tooltip" data-placement="bottom" title="Click Now !! ' +
                         ' to increase chances of getting Interview Calls' +
                         ' !"><span class="glyphicon glyphicon-exclamation-sign red" aria-hidden="true"></a>');
 

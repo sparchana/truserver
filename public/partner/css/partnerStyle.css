@@ -58,7 +58,7 @@ input::-webkit-inner-spin-button {
 }
 
 body{
-    background: #fcfcfc;
+    background: #f0f0f0;
     font-family: Lato;
 }
 .nav > li > a:hover, .nav > li > a:focus{
@@ -301,18 +301,6 @@ option:checked {
 
 #viewCandidateBtn{
     border: none;
-    background-color: #0064a8;
-    color: white;
-    -webkit-transition: background-color 0.2s;
-    -moz-transition:    background-color 0.2s;
-    -ms-transition:     background-color 0.2s;
-    -o-transition:      background-color 0.2s;
-    transition:         background-color 0.2s;
-}
-
-#viewCandidateBtn:hover{
-    border: none;
-    background-color: #004d81;
     color: white;
     -webkit-transition: background-color 0.2s;
     -moz-transition:    background-color 0.2s;
@@ -480,7 +468,7 @@ a:hover{
 @media screen and (max-width: 768px) {
     #viewCandidateBtn{
         padding: 8px;
-        width: auto;
+        width: 90%;
         margin: 8px;
     }
     #eduConfirm{

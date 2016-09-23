@@ -806,7 +806,7 @@ public class TrudroidController {
         }
 
         /* save interaction */
-        InteractionService.createInteractionForViewJobPostInfo(objectAUUId, jobPostUUId, result, InteractionService.InteractionChannelType.SELF_ANDROID);
+        InteractionService.createInteractionForViewJobPostInfo(objectAUUId, jobPostUUId, result);
         return ok(Base64.encodeBase64String(getJobPostDetailsResponse.build().toByteArray()));
     }
 
@@ -1395,7 +1395,7 @@ public class TrudroidController {
         }
         interactionResult += interactionParamJobRole + " @ " + interactionParamLocality + " with filter - "+interactionParamFilter+" returned ("+jobPostList.size()+") Jobs";
         Logger.info("interactionResult : "+ interactionResult );
-        InteractionService.createInteractionForSearch(objectAUUID, interactionResult, InteractionService.InteractionChannelType.SELF_ANDROID);
+        InteractionService.createInteractionForSearch(objectAUUID, interactionResult);
 
         return ok(Base64.encodeBase64String(jobPostResponseBuilder.build().toByteArray()));
     }

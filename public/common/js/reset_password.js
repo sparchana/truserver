@@ -57,22 +57,22 @@ function processDataPostReset(returnedData) {
 }
 
 function requestOtp(phone) {
-        candidateMobile = phone;
-        document.getElementById("resetCheckUserBtn").disabled = true;
-        try {
-            var s = {
-                resetPasswordMobile : phone
-            };
-            $.ajax({
-                type: "POST",
-                url: "/findUserAndSendOtp",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(s),
-                success: processDataResetCheckUser
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
-        }
+    candidateMobile = phone;
+    document.getElementById("resetCheckUserBtn").disabled = true;
+    try {
+        var s = {
+            resetPasswordMobile : phone
+        };
+        $.ajax({
+            type: "POST",
+            url: "/findUserAndSendOtp",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(s),
+            success: processDataResetCheckUser
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
 }
 
 // form_forgot_password ajax script
@@ -95,14 +95,20 @@ $(function() {
     $("#form_password_reset_otp").submit(function(eventObj) {
         eventObj.preventDefault();
         var userOtp = $('#candidateForgotOtp').val();
-        if(userOtp == returnedOtp){
-            $('#form_password_reset_otp').hide();
-            $('#form_password_reset_new').show();
-            $('#wrongOtp').hide();
+
+        if(validateOtp(userOtp) == 0){
+            alert("Please enter a valid 4 digit otp!");
+        } else{
+            if(userOtp == returnedOtp){
+                $('#form_password_reset_otp').hide();
+                $('#form_password_reset_new').show();
+                $('#wrongOtp').hide();
+            }
+            else {
+                $('#wrongOtp').show();
+            }
         }
-        else {
-            $('#wrongOtp').show();
-        }
+
     }); // end of submit
 
     $("#form_password_reset_new").submit(function(eventObj) {

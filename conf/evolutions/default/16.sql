@@ -20,6 +20,8 @@ create index ix_candidate_assessment_response_assessment_question_id on candidat
 alter table candidate_assessment_attempt drop column result;
 alter table candidate_assessment_attempt add result float null;
 
+alter table interaction add column interactionchannel int not null default 0;
+
 # --- !Downs
 
 alter table candidate_assessment_response drop foreign key fk_candidate_assessment_response_ca_attempt_id;
@@ -32,3 +34,5 @@ drop table if exists candidate_assessment_response;
 
 alter table candidate_assessment_attempt drop column result;
 alter table candidate_assessment_attempt add result text null;
+
+alter table interaction drop column interactionchannel;

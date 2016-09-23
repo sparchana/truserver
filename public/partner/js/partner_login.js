@@ -38,7 +38,6 @@ $(function() {
         }
         else{
             try {
-
                 candidateMobile = phone;
                 var s = {
                     candidateLoginMobile: phone,

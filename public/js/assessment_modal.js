@@ -104,8 +104,10 @@ function processPostAssessmentResponse(response) {
     if (response.status == "ALL_ASSESSED"){
         localStorage.setItem("assessed", "1");
         $('#assessmentDivRow span').removeClass("glyphicon-exclamation-sign red").addClass(" glyphicon-star yellow");
+        $('#assessmentDivRow a').attr("title", "Completed !");
     } else if (response.status == "SUCCESS" || response.status == "ALREADY_ASSESSED") {
         $('#jr_id_'+response.jobRoleId+' span').removeClass("glyphicon-exclamation-sign red").addClass(" glyphicon-star yellow");
+        $('#tt_'+response.jobRoleId+'_ic').attr("title", "Completed !");
     }
 }
 

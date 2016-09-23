@@ -1,5 +1,6 @@
 package controllers.businessLogic;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.PartnerSignUpResponse;
@@ -12,6 +13,8 @@ import play.Logger;
 
 import java.util.UUID;
 
+import static controllers.businessLogic.PartnerInteractionService.createInteractionForPartnerAddPasswordViaWebsite;
+import static controllers.businessLogic.PartnerInteractionService.createInteractionForPartnerResetPasswordViaWebsite;
 import static play.mvc.Controller.session;
 
 /**
@@ -43,24 +46,24 @@ public class PartnerAuthService {
                 Logger.info("Resetting password");
                 setNewPassword(existingAuth, password);
                 PartnerAuth.savePassword(existingAuth);
-                String interactionResult = ServerConstants.INTERACTION_RESULT_PARTNER_RESET_PASSWORD_SUCCESS;
+                String interactionResult = InteractionConstants.INTERACTION_RESULT_PARTNER_RESET_PASSWORD_SUCCESS;
                 String objAUUID = "";
                 Partner partner = Partner.find.where().eq("partner_id", existingPartner.getPartnerId()).findUnique();
                 if(partner != null){
                     objAUUID = partner.getPartnerUUId();
                 }
-                InteractionService.createInteractionForResetPassword(objAUUID, interactionResult, channelType);
+                createInteractionForPartnerResetPasswordViaWebsite(objAUUID, interactionResult);
                 existingAuth.setAuthSessionId(UUID.randomUUID().toString());
                 existingAuth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
                 /* adding session details */
                 addSession(existingAuth, existingPartner);
-
                 partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_SUCCESS);
                 partnerSignUpResponse.setPartnerMobile(existingPartner.getPartnerMobile());
             } else {
+                Logger.info("8");
                 PartnerAuth auth = new PartnerAuth();
                 auth.setPartnerId(existingPartner.getPartnerId());
-                setNewPassword(auth,password);
+                setNewPassword(auth, password);
                 auth.setPartnerAuthStatus(ServerConstants.PARTNER_STATUS_VERIFIED);
                 PartnerAuth.savePassword(auth);
                 auth.setAuthSessionId(UUID.randomUUID().toString());
@@ -70,23 +73,18 @@ public class PartnerAuthService {
 
                 partnerSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
-                Interaction interaction = new Interaction(
-                        existingPartner.getPartnerUUId(),
-                        ServerConstants.OBJECT_TYPE_PARTNER,
-                        channelType == InteractionService.InteractionChannelType.SELF_ANDROID ? ServerConstants.INTERACTION_TYPE_ANDROID : ServerConstants.INTERACTION_TYPE_WEBSITE,
-                        ServerConstants.INTERACTION_NOTE_BLANK,
-                        ServerConstants.INTERACTION_RESULT_NEW_PARTNER + " & " + ServerConstants.INTERACTION_NOTE_PARTNER_PASSWORD_CHANGED,
-                        channelType.toString()
-                );
-                InteractionService.createInteraction(interaction);
+                String objAUUID = existingPartner.getPartnerUUId();
+                createInteractionForPartnerAddPasswordViaWebsite(objAUUID);
+
                 try {
                     existingPartner.setPartnerprofilestatus(PartnerProfileStatus.find.where().eq("profile_status_id", ServerConstants.PARTNER_STATE_ACTIVE).findUnique());
                     partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_SUCCESS);
-                }catch (NullPointerException n) {
+                } catch (NullPointerException n) {
                     Logger.info("Oops ProfileStatusId"+ " doesnot exists");
                     partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_FAILURE);
-
                 }
+                Logger.info("9");
+
                 existingPartner.update();
                 Logger.info("partner status confirmed");
 
@@ -102,6 +100,7 @@ public class PartnerAuthService {
             Logger.info("Auth Save Successful");
         }
         else {
+            Logger.info("10");
             Logger.info("Partner Does not Exist!");
             partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_FAILURE);
         }

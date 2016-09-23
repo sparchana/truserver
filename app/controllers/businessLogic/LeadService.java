@@ -1,5 +1,6 @@
 package controllers.businessLogic;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import models.entity.Interaction;
 import models.entity.Lead;
@@ -72,11 +73,14 @@ public class LeadService {
             case SELF_ANDROID:
                 response = ServerConstants.LEAD_CHANNEL_ANDROID;
                 break;
-            case  SUPPORT:
+            case SUPPORT:
                 response = ServerConstants.LEAD_CHANNEL_SUPPORT;
                 break;
             case KNOWLARITY:
                 response = ServerConstants.LEAD_CHANNEL_KNOWLARITY;
+                break;
+            case PARTNER:
+                response = ServerConstants.LEAD_CHANNEL_PARTNER;
                 break;
             default:
                 break;
@@ -107,35 +111,48 @@ public class LeadService {
         Lead existingLead = isLeadExists(lead.getLeadMobile());
         String objectAUUId;
         String result;
-        String note = ServerConstants.INTERACTION_NOTE_BLANK;
-        int interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+        int channel;
+        String note = InteractionConstants.INTERACTION_NOTE_BLANK;
+        int interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_NEW_LEAD;
         int objectAType;
         String createdBy;
         if(channelType == InteractionService.InteractionChannelType.SUPPORT) {
-            interactionType = ServerConstants.INTERACTION_TYPE_CALL_OUT; //TODO: Call Out/In need to be distinguished
+            interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_NEW_LEAD;
             createdBy = session().get("sessionUsername");
+            channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
+        } else if(channelType == InteractionService.InteractionChannelType.PARTNER) {
+            interactionType = InteractionConstants.INTERACTION_TYPE_PARTNER_NEW_LEAD;
+            createdBy = InteractionConstants.INTERACTION_CREATED_PARTNER;
+            channel = InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE;
+        } else if(channelType == InteractionService.InteractionChannelType.SELF_ANDROID){
+            createdBy = channelType.toString();
+            channel = InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_ANDROID;
+        } else if(channelType == InteractionService.InteractionChannelType.KNOWLARITY) {
+            createdBy = channelType.toString();
+            channel = InteractionConstants.INTERACTION_CHANNEL_KNOWLARITY;
         } else {
             createdBy = channelType.toString();
-            interactionType = channelType == InteractionService.InteractionChannelType.SELF_ANDROID
-                    ? ServerConstants.INTERACTION_TYPE_ANDROID : ServerConstants.INTERACTION_TYPE_WEBSITE;
+            channel = InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
         }
         if(existingLead == null) {
             Lead.addLead(lead);
-            result = ServerConstants.INTERACTION_RESULT_NEW_LEAD;
+            result = InteractionConstants.INTERACTION_RESULT_NEW_LEAD;
             Logger.info("Lead added");
             objectAUUId = lead.getLeadUUId();
         } else {
-            result = ServerConstants.INTERACTION_RESULT_EXISTING_LEAD;
+            result = InteractionConstants.INTERACTION_RESULT_EXISTING_LEAD;
             objectAUUId = existingLead.getLeadUUId();
         }
         objectAType = ServerConstants.OBJECT_TYPE_LEAD;
+
         Interaction interaction = new Interaction(
                 objectAUUId,
                 objectAType,
                 interactionType,
                 note,
                 result,
-                createdBy
+                createdBy,
+                channel
         );
         Logger.info("Interaction CreatedBy : " + createdBy);
         InteractionService.createInteraction(interaction);

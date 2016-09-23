@@ -155,7 +155,7 @@ body{
     margin-left: -60%;
 }
 
-#sectionOne {
+#sectionOne, #sectionOneShowAll {
     background: linear-gradient(
             rgba(24, 26, 45, 0.3),
             rgba(24, 26, 45, 0.3)
@@ -388,18 +388,20 @@ a:hover{
     width: 0 !important;
 }
 
-#hotJobItem{
-    border-left: 2px rgba(46, 131, 213, 0.6) solid;
-    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.09);
-    padding: 18px;
-    margin: 8px 4px 0 4px;
-    background: #ffffff;
-}
-
 #hotJobItemDivider{
     padding: 1% 2% 1% 0;
     display: table;
     font-size: 24px;
+}
+
+#hotJobItem{
+    border-left: 2px rgba(46, 131, 213, 0.6) solid;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.1);
+    padding: 18px;
+    margin: 8px 8px 0 8px;
+    background: #ffffff;
+
+    transition: all 0.7s cubic-bezier(.25,.8,.25,1);
 }
 
 #jobBody {
@@ -472,7 +474,9 @@ hr{
 }
 
 #hotJobItem:hover{
-    background: #fbfbfb;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.12), 0 4px 4px rgba(0,0,0,0.12);
+    transition: opacity 0.5s ease-in-out;
+    /*    background: #fbfbfb;*/
 }
 
 #jobSalary, #jobExp, #jobLocation {
@@ -650,7 +654,15 @@ hr{
     border-bottom: 1px solid #f4eef2;
     background: #ffffff;
 }
+
+.showPageAllJobs{
+    margin-top: 24px;
+}
 @media screen and (max-width: 768px) {
+    .showPageAllJobs{
+        margin-top: 4px;
+    }
+
     #hotJobs{
         margin-top: 24px;
         height: 66%;
@@ -866,10 +878,13 @@ hr{
         background-size: 320%;
         padding-top: 24%;
         padding-bottom: 18%;
-/*        background-size: 320%;
-        padding-top: 24%;
-        padding-bottom: 48%;*/
     }
+    #sectionOneShowAll {
+        background-size: 320%;
+        padding-top: 24%;
+        padding-bottom: 9%;
+    }
+
 
     .sectionStats {
         background-size: 220%;
@@ -1447,4 +1462,73 @@ padding: 0px;
 #job_box_inc a{
     text-decoration: none;
     color: #000000;
+}
+
+/* job loading spinner */
+
+#loadingSpinner {
+    box-sizing: border-box;
+    stroke: #344fb7;
+    stroke-width: 3px;
+    -webkit-transform-origin: 50%;
+    transform-origin: 50%;
+    -webkit-animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
+    animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite; }
+
+@-webkit-keyframes rotate {
+    from {
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+    to {
+        -webkit-transform: rotate(450deg);
+        transform: rotate(450deg);
+    }
+}
+
+@keyframes rotate {
+    from {
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+    to {
+        -webkit-transform: rotate(450deg);
+        transform: rotate(450deg);
+    }
+}
+
+@-webkit-keyframes line {
+    0% {
+        stroke-dasharray: 2, 85.964;
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+    50% {
+        stroke-dasharray: 65.973, 21.9911;
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dasharray: 2, 85.964;
+        stroke-dashoffset: -65.973;
+        -webkit-transform: rotate(90deg);
+        transform: rotate(90deg);
+    }
+}
+
+@keyframes line {
+    0% {
+        stroke-dasharray: 2, 85.964;
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+    50% {
+        stroke-dasharray: 65.973, 21.9911;
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dasharray: 2, 85.964;
+        stroke-dashoffset: -65.973;
+        -webkit-transform: rotate(90deg);
+        transform: rotate(90deg);
+    }
 }

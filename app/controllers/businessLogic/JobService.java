@@ -1,5 +1,6 @@
 package controllers.businessLogic;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.AddJobPostRequest;
@@ -130,13 +131,21 @@ public class JobService {
                         Logger.info("Location with locality ID: " + applyJobRequest.getLocalityId() + " does not exists");
                     }
 
-                    String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB;
-                    InteractionService.createInteractionForJobApplication(
-                            existingCandidate.getCandidateUUId(),
-                            existingJobPost.getJobPostUUId(),
-                            interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName() + "@" + locality.getLocalityName(),
-                            channelType
-                    );
+                    String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB;
+                    if (channelType == InteractionService.InteractionChannelType.SELF) {
+                        // job application coming from website
+                        InteractionService.createInteractionForJobApplicationViaWebsite(
+                                existingCandidate.getCandidateUUId(),
+                                existingJobPost.getJobPostUUId(),
+                                interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName() + "@" + locality.getLocalityName()
+                        );
+                    } else{
+                        InteractionService.createInteractionForJobApplicationViaAndroid(
+                                existingCandidate.getCandidateUUId(),
+                                existingJobPost.getJobPostUUId(),
+                                interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName() + "@" + locality.getLocalityName()
+                        );
+                    }
 
                     jobApplication.save();
                     writeJobApplicationToGoogleSheet(existingJobPost.getJobPostId(), applyJobRequest.getCandidateMobile(), channelType, applyJobRequest.getLocalityId());
