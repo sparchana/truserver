@@ -218,12 +218,16 @@ function setCompanyLogos(returnedData, start){
     });
 }
 
-function createAndAppendDivider(title) {
+function createAndAppendDivider(title, ifPrepend) {
     var parent = $("#hotJobs");
 
     var mainDiv = document.createElement("div");
     mainDiv.id = "hotJobItemDivider";
-    parent.append(mainDiv);
+    if(ifPrepend){
+        parent.prepend(mainDiv);
+    } else{
+        parent.append(mainDiv);
+    }
 
     var otherJobIcon = document.createElement("img");
     otherJobIcon.src = "/assets/common/img/suitcase.png";
@@ -235,33 +239,35 @@ function createAndAppendDivider(title) {
     hotJobItem.setAttribute("display", "inline-block");
     hotJobItem.textContent = title;
 
+
     mainDiv.appendChild(hotJobItem);
 }
 
 function processDataForSelectedJobPost(returnedData) {
-        var allJobDetailPageUrl = $(location).attr('href');
-        var allJobDetailPageUrlBreak = allJobDetailPageUrl.split("/");
-        allJobDetailPageUrlBreak.reverse();
-        var conTitle = allJobDetailPageUrlBreak[1].split("_");
-        var showTitle = [""];
-        var temp;
-        for(var i=0;i<conTitle.length;i++){
-            temp = conTitle[i].charAt(0).toUpperCase() + conTitle[i].substring(1);
-            showTitle +=temp + " ";
-        }
-        var decodedJobRoleName = showTitle.replace(/%20/g, " ");
-            $('#jobTitleLine').html("Register for "+ decodedJobRoleName);
-            $('#jobRoleTitle').html("Register for "+ decodedJobRoleName);
-            $('#applyToJobsTitle').html("Apply to "+ decodedJobRoleName);
-            if(returnedData != ""){
-            var jobPostCount = Object.keys(returnedData).length;
-                if (jobPostCount > 0) {
+    var allJobDetailPageUrl = $(location).attr('href');
+    var allJobDetailPageUrlBreak = allJobDetailPageUrl.split("/");
+    allJobDetailPageUrlBreak.reverse();
+    var conTitle = allJobDetailPageUrlBreak[1].split("_");
+    var showTitle = [""];
+    var temp;
+    for(var i=0;i<conTitle.length;i++){
+        temp = conTitle[i].charAt(0).toUpperCase() + conTitle[i].substring(1);
+        showTitle +=temp + " ";
+    }
+    var decodedJobRoleName = showTitle.replace(/%20/g, " ");
+        $('#jobTitleLine').html("Register for "+ decodedJobRoleName);
+        $('#jobRoleTitle').html("Register for "+ decodedJobRoleName);
+        $('#applyToJobsTitle').html("Apply to "+ decodedJobRoleName);
+        if(returnedData != ""){
+        var jobPostCount = Object.keys(returnedData).length;
+            if (jobPostCount > 0) {
                 var count = 0;
+                var popularJobCount = 0;
                 var parent = $("#hotJobs");
                 var isDividerPresent = false;
                 //returnedData.reverse();
+                $("#jobLoaderDiv").hide();
                 try {
-                    createAndAppendDivider("Popular Jobs");
                     returnedData.forEach(function (jobPost) {
                         count++;
                         if (count) {
@@ -272,9 +278,9 @@ function processDataForSelectedJobPost(returnedData) {
                             var loopCount = 0;
 
                             if(jobPost.source != null && jobPost.source > 0 && !isDividerPresent){
-                                createAndAppendDivider("Other Jobs");
+                                createAndAppendDivider("Other Jobs", false);
                                 isDividerPresent = true;
-                            };
+                            }
 
                             jobLocality.forEach(function (locality) {
                                 loopCount++;
@@ -468,47 +474,53 @@ function processDataForSelectedJobPost(returnedData) {
                                     console.log("exception occured!!" + exception.stack);
                                 }
                             }
+                            if(jobPost.source == 0){
+                                popularJobCount++;
+                            }
                         }
                     });
                 } catch (exception) {
                     console.log("exception occured!!" + exception.stack);
                 }
-             }
-        } else{
-                var parent = $("#hotJobs");
-                var hotJobItem = document.createElement("div");
-                hotJobItem.id = "hotJobItem";
-                parent.append(hotJobItem);
+                if(popularJobCount > 0){
+                    createAndAppendDivider("Popular Jobs", true);
+                }
+            }
+    } else{
+            var parent = $("#hotJobs");
+            var hotJobItem = document.createElement("div");
+            hotJobItem.id = "hotJobItem";
+            parent.append(hotJobItem);
 
-                var centreTag = document.createElement("center");
-                hotJobItem.appendChild(centreTag);
+            var centreTag = document.createElement("center");
+            hotJobItem.appendChild(centreTag);
 
-                var rowDiv = document.createElement("div");
-                rowDiv.className = "row";
-                centreTag.appendChild(rowDiv);
+            var rowDiv = document.createElement("div");
+            rowDiv.className = "row";
+            centreTag.appendChild(rowDiv);
 
-                var col = document.createElement("div");
-                col.className = "col-sm-12";
-                rowDiv.appendChild(col);
+            var col = document.createElement("div");
+            col.className = "col-sm-12";
+            rowDiv.appendChild(col);
 
-                var jobImage = document.createElement("div");
-                jobImage.id = "jobImage";
-                col.appendChild(jobImage);
+            var jobImage = document.createElement("div");
+            jobImage.id = "jobImage";
+            col.appendChild(jobImage);
 
-                var jobImageSrc = document.createElement("img");
-                jobImageSrc.id = "jobImageSrc";
-                jobImage.appendChild(jobImageSrc);
-                $("#jobImageSrc").attr('src', '/assets/common/img/empty-search.svg');
+            var jobImageSrc = document.createElement("img");
+            jobImageSrc.id = "jobImageSrc";
+            jobImage.appendChild(jobImageSrc);
+            $("#jobImageSrc").attr('src', '/assets/common/img/empty-search.svg');
 
-                var jobMsgLine1 = document.createElement("div");
-                jobMsgLine1.id = "jobMsgLine1";
-                col.appendChild(jobMsgLine1);
-                $("#jobMsgLine1").html("Oops!! No relevant jobs found at this movement");
+            var jobMsgLine1 = document.createElement("div");
+            jobMsgLine1.id = "jobMsgLine1";
+            col.appendChild(jobMsgLine1);
+            $("#jobMsgLine1").html("Oops!! No relevant jobs found at this movement");
 
-                var jobMsgLine2 = document.createElement("div");
-                jobMsgLine2.id = "jobMsgLine2";
-                col.appendChild(jobMsgLine2);
-                $("#jobMsgLine2").html("Register yourself to get updates when new jobs are posted");
+            var jobMsgLine2 = document.createElement("div");
+            jobMsgLine2.id = "jobMsgLine2";
+            col.appendChild(jobMsgLine2);
+            $("#jobMsgLine2").html("Register yourself to get updates when new jobs are posted");
     }
 }
 

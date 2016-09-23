@@ -75,4 +75,3 @@ drop table if exists assessment_question;
 drop table if exists assessment_question_type;
 
 drop table if exists candidate_assessment_attempt;
-

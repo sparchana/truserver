@@ -70,10 +70,6 @@ input::-webkit-inner-spin-button {
     background: #2980b9;
 }
 
-.profileBodyEditProfile{
-    background: #fafafa;
-    padding: 2%;
-}
 .profileSectionOne{
     width: 47.8%;
     display: inline-block;

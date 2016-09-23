@@ -129,7 +129,7 @@
                             margin-left: 16%">
                             <center class="visible-lg">
                                 <div>
-                                    <div id="editBasic" style="display: inline-block;
+                                    <div id="editBasic" class="editSection" style="display: inline-block;
                                         cursor: pointer" >
                                         <img id="basicImg" src="/assets/dashboard/img/basic_enable.png" height="42px">
                                     </div>
@@ -140,7 +140,7 @@
                                         <img src="/assets/common/img/arrow_right_hot.png">
                                     </div>
 
-                                    <div id="editSkills" style="display: inline-block;
+                                    <div id="editSkills" class="editSection" style="display: inline-block;
                                         cursor: pointer">
                                         <img id="skillImg" src="/assets/dashboard/img/skills_disable.png" height="42px">
                                     </div>
@@ -151,7 +151,7 @@
                                         <img src="/assets/common/img/arrow_right_hot.png">
                                     </div>
 
-                                    <div id="editEducation" style="display: inline-block;
+                                    <div id="editEducation" class="editSection" style="display: inline-block;
                                         cursor: pointer">
                                         <img id="educationImg" src="/assets/dashboard/img/education_disable.png" height="42px">
                                     </div>
@@ -277,13 +277,9 @@
                                 </div>
                                 <br>
                                     <!-- next/save btn -->
-                                <button type="submit" id="saveBtn" class="btn btn-primary" style="float: right">
-                                    <div style="display: inline-block">Next</div>
-                                    <div style="margin-left: 8px;
-                                        display: inline-block">
-                                        <img src="/assets/dashboard/img/next_arrow.png" height="28px">
-                                    </div>
-                                </button>
+                                <div id="saveBtn" style="float: right">
+                                    <img id="saveBasicProfileBtn" class="editProfileSaveBtn" src="/assets/dashboard/img/next.svg" height="48px">
+                                </div>
                             </form>
                         </div>
 
@@ -346,8 +342,8 @@
                                                 <div class="col-sm-3"><h5>What Job Role are you in ?<div style="color: #9f9f9f;
                                                     font-size: 12px">(optional)</div></h5>
                                                 </div>
-                                                <div class="col-sm-5">
-                                                    <input type="text" id="candidateCurrentJobRole">
+                                                <div class="col-sm-6" style="width: 306px">
+                                                    <input type="text" id="candidateCurrentJobRole" >
                                                 </div>
                                             </div>
                                         </div>
@@ -390,21 +386,9 @@
                                 <hr>
 
                                     <!-- next/save btn -->
-                                <button type="submit" id="saveBtn" class="btn btn-primary" style="float: right;
-                                    margin: 2px">
-                                    <div style="display: inline-block">Next</div>
-                                    <div style="margin-left: 8px;
-                                        display: inline-block">
-                                        <img src="/assets/dashboard/img/next_arrow.png" height="28px">
-                                    </div>
-                                </button>
-                                <div id="skillBack" class="btn btn-primary" style="margin: 2px;
-                                    float: right">
-                                    <div style="display: inline-block">
-                                        <img src="/assets/dashboard/img/back_arrow.png" height="28px">
-                                    </div>
-                                    <div style="margin-left: 8px;
-                                        display: inline-block">Back</div>
+                                <div id="saveBtn" style="float: right">
+                                    <img id="skillBack" class="editProfileSaveBtn" src="/assets/dashboard/img/back.svg" height="48px">
+                                    <img id="saveExperienceProfileBtn" class="editProfileSaveBtn" src="/assets/dashboard/img/next.svg" height="48px">
                                 </div>
                             </form>
                         </div>
@@ -451,22 +435,9 @@
                                 <hr id="educationHr">
 
                                     <!-- next/save btn -->
-                                <button type="submit" id="saveBtn" class="btn btn-primary" style="float: right;
-                                    margin: 2px">
-                                    <div style="display: inline-block">Save</div>
-                                    <div style="margin-left: 8px;
-                                        display: inline-block">
-                                        <img src="/assets/dashboard/img/save.png" height="28px">
-                                    </div>
-                                </button>
-
-                                <div id="educationBack" class="btn btn-primary" style="margin: 2px;
-                                    float: right">
-                                    <div style="display: inline-block">
-                                        <img src="/assets/dashboard/img/back_arrow.png" height="28px">
-                                    </div>
-                                    <div style="margin-left: 8px;
-                                        display: inline-block">Back</div>
+                                <div id="saveBtn" style="float: right">
+                                    <img id="educationBack" class="editProfileSaveBtn" src="/assets/dashboard/img/back.svg" height="48px">
+                                    <img id="saveEducationProfileBtn" class="editProfileSaveBtn" src="/assets/dashboard/img/save.svg" height="48px">
                                 </div>
                             </form>
                         </div>

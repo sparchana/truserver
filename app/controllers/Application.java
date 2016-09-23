@@ -1,5 +1,6 @@
 package controllers;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
@@ -79,7 +80,6 @@ public class Application extends Controller {
         Lead lead = Lead.find.where().eq("leadId",id).findUnique();
         if(lead !=null){
             List<Interaction> fullInteractionList = Interaction.find.where().eq("objectAUUId", lead.getLeadUUId()).findList();
-
             // fetch candidate interaction as well
             Candidate candidate = Candidate.find.where().eq("lead_leadId", id).findUnique();
             if(candidate != null){
@@ -98,20 +98,9 @@ public class Application extends Controller {
                 response.setUserNote(interaction.getNote());
                 response.setUserResults(interaction.getResult());
                 response.setUserCreatedBy(interaction.getCreatedBy());
-                switch (interaction.getInteractionType()) {
-                    case 0: response.setUserInteractionType("Unknown"); break;
-                    case 1: response.setUserInteractionType("Incoming Call"); break;
-                    case 2: response.setUserInteractionType("Out Going Call"); break;
-                    case 3: response.setUserInteractionType("Incoming SMS"); break;
-                    case 4: response.setUserInteractionType("Out Going SMS"); break;
-                    case 5: response.setUserInteractionType("Website Interaction"); break;
-                    case 6: response.setUserInteractionType("Follow Up Call"); break;
-                    case 7: response.setUserInteractionType("New Job Application"); break;
-                    case 8: response.setUserInteractionType("Tried to Apply to a job"); break;
-                    case 9: response.setUserInteractionType("Tried to reset password"); break;
-                    case 10: response.setUserInteractionType("Reset password successful"); break;
-                    default: response.setUserInteractionType("Interaction Undefined in getCandidateInteraction()"); break;
-                }
+                response.setUserInteractionType(InteractionConstants.INTERACTION_TYPE_MAP.get(interaction.getInteractionType()));
+                response.setChannel(InteractionConstants.INTERACTION_CHANNEL.get(interaction.getInteractionChannel()));
+
                 responses.add(response);
             }
             return ok(toJson(responses));
@@ -523,17 +512,16 @@ public class Application extends Controller {
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
         if(jobPost!=null){
             if(isSupport == 0){
-                String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB;
+                String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB;
                 String objAUUID = "";
                 if(session().get("candidateId") != null){
                     Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")). findUnique();
                     objAUUID = candidate.getCandidateUUId();
                 }
-                InteractionService.createInteractionForJobApplicationAttempt(
+                InteractionService.createInteractionForJobApplicationAttemptViaWebsite(
                         objAUUID,
                         jobPost.getJobPostUUId(),
-                        interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName(),
-                        InteractionService.InteractionChannelType.SELF
+                        interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName()
                 );
             }
 
@@ -679,10 +667,11 @@ public class Application extends Controller {
                     Interaction interaction = new Interaction(
                             lead.getLeadUUId(),
                             lead.getLeadType(),
-                            ServerConstants.INTERACTION_TYPE_CALL_OUT,
-                            ServerConstants.INTERACTION_NOTE_BLANK,
-                            ServerConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
-                            session().get("sessionUsername")
+                            InteractionConstants.INTERACTION_TYPE_LEAD_STATUS_UPDATE,
+                            InteractionConstants.INTERACTION_NOTE_BLANK,
+                            InteractionConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
+                            session().get("sessionUsername"),
+                            InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE
                     );
                     interaction.save();
                 } else {
@@ -690,10 +679,11 @@ public class Application extends Controller {
                     Interaction interaction = new Interaction(
                             lead.getLeadUUId(),
                             lead.getLeadType(),
-                            ServerConstants.INTERACTION_TYPE_CALL_OUT,
-                            ServerConstants.INTERACTION_NOTE_BLANK,
-                            ServerConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
-                            session().get("sessionUsername")
+                            InteractionConstants.INTERACTION_TYPE_LEAD_STATUS_UPDATE,
+                            InteractionConstants.INTERACTION_NOTE_BLANK,
+                            InteractionConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
+                            session().get("sessionUsername"),
+                            InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE
                     );
                     interaction.save();
                 }
@@ -736,10 +726,10 @@ public class Application extends Controller {
                     }
                     Logger.info("updateLeadStatus invoked leadId:"+leadId+" status:" + leadStatus);
                     lead.update();
-                    interactionNote = ServerConstants.INTERACTION_NOTE_BLANK;
+                    interactionNote = InteractionConstants.INTERACTION_NOTE_BLANK;
 
                 } else {
-                    interactionNote = ServerConstants.INTERACTION_NOTE_BLANK;
+                    interactionNote = InteractionConstants.INTERACTION_NOTE_BLANK;
                 }
 
                 // If call was connected just set the right interaction result
@@ -765,10 +755,11 @@ public class Application extends Controller {
                 Interaction interaction = new Interaction(
                         lead.getLeadUUId(),
                         lead.getLeadType(),
-                        ServerConstants.INTERACTION_TYPE_CALL_OUT,
+                        InteractionConstants.INTERACTION_TYPE_LEAD_STATUS_UPDATE,
                         interactionNote,
                         interactionResult,
-                        session().get("sessionUsername")
+                        session().get("sessionUsername"),
+                        InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE
                 );
                 interaction.save();
 
@@ -1196,6 +1187,14 @@ public class Application extends Controller {
     public static Result checkCandidateSession() {
         String sessionCandidateId = session().get("candidateId");
         if(sessionCandidateId != null) {
+            Auth existingAuth = Auth.find.where().eq("candidateId", sessionCandidateId).findUnique();
+            if(existingAuth != null){
+                if(existingAuth.getAuthStatus() == 1){
+                    return ok("1");
+                } else{
+                    return ok("0"); //auth is not verified
+                }
+            }
             return ok("1");
         } else{
             return ok("0");

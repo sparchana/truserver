@@ -1,5 +1,6 @@
 package models.util;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import au.com.bytecode.opencsv.CSVReader;
 import models.entity.Company;
@@ -24,8 +25,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-
-import static play.libs.Json.toJson;
 
 /**
  * Created by zero on 3/5/16.
@@ -70,7 +69,7 @@ public class ParseCSV {
 
                         interaction.setObjectAType(lead.getLeadType());
                         interaction.setObjectAUUId(lead.getLeadUUId());
-                        interaction.setResult(ServerConstants.INTERACTION_RESULT_FIRST_INBOUND_CALL);
+                        interaction.setResult(InteractionConstants.INTERACTION_RESULT_FIRST_INBOUND_CALL);
 
                     } else {
                         if(existingLead.getLeadCreationTimestamp().getTime() > knowlarityInBoundTimestamp.getTime()) {
@@ -82,9 +81,9 @@ public class ParseCSV {
                         interaction.setObjectAType(existingLead.getLeadType());
                         interaction.setObjectAUUId(existingLead.getLeadUUId());
                         if(existingLead.getLeadStatus() == ServerConstants.LEAD_STATUS_WON){
-                            interaction.setResult(ServerConstants.INTERACTION_RESULT_EXISTING_CANDIDATE_CALLED_BACK);
+                            interaction.setResult(InteractionConstants.INTERACTION_RESULT_EXISTING_CANDIDATE_CALLED_BACK);
                         } else {
-                            interaction.setResult(ServerConstants.INTERACTION_RESULT_EXISTING_LEAD_CALLED_BACK);
+                            interaction.setResult(InteractionConstants.INTERACTION_RESULT_EXISTING_LEAD_CALLED_BACK);
                         }
                     }
 
@@ -95,9 +94,10 @@ public class ParseCSV {
                             .findList();
                     if(existingInteraction == null || existingInteraction.isEmpty()){
                         // save all inbound calls to interaction
-                        interaction.setCreatedBy(ServerConstants.INTERACTION_CREATED_SYSTEM_KNOWLARITY);
+                        interaction.setCreatedBy(InteractionConstants.INTERACTION_CREATED_SYSTEM_KNOWLARITY);
                         interaction.setCreationTimestamp(knowlarityInBoundTimestamp);
-                        interaction.setInteractionType(ServerConstants.INTERACTION_TYPE_CALL_IN);
+                        interaction.setInteractionType(InteractionConstants.INTERACTION_TYPE_CANDIDATE_NEW_LEAD);
+                        interaction.setInteractionChannel(InteractionConstants.INTERACTION_CHANNEL_KNOWLARITY);
                         interaction.save();
                     }
                 }

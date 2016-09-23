@@ -242,16 +242,20 @@ $(function() {
 //verify otp
 function verifyOtp(){
     var userOtp = $('#candidateOtp').val();
-    if (userOtp == returnedOtp) {
-        $('#incorrectOtpMsg').hide();
-        $('#form_otp').hide();
-        $('#form_auth').show();
-        $('#errorMsg').hide();
-        $('#incorrectMsg').hide();
-    } else {
-        $('#incorrectOtpMsg').show();
-        $('#errorMsg').hide();
-        $('#candidateOtp').val('');
+    if(validateOtp(userOtp) == 0){
+        alert("Please enter a valid 4 digit otp!");
+    } else{
+        if (userOtp == returnedOtp) {
+            $('#incorrectOtpMsg').hide();
+            $('#form_otp').hide();
+            $('#form_auth').show();
+            $('#errorMsg').hide();
+            $('#incorrectMsg').hide();
+        } else {
+            $('#incorrectOtpMsg').show();
+            $('#errorMsg').hide();
+            $('#candidateOtp').val('');
+        }
     }
 }
 

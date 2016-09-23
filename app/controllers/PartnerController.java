@@ -62,8 +62,8 @@ public class PartnerController {
         }
         Logger.info("JSON req: " + req);
 
-        InteractionService.InteractionChannelType channelType = InteractionService.InteractionChannelType.SELF;
-        return ok(toJson(PartnerService.signUpPartner(partnerSignUpRequest, channelType, ServerConstants.LEAD_SOURCE_WEBSITE)));
+        InteractionService.InteractionChannelType channelType = InteractionService.InteractionChannelType.PARTNER;
+        return ok(toJson(PartnerService.signUpPartner(partnerSignUpRequest, channelType, ServerConstants.LEAD_SOURCE_UNKNOWN)));
 
     }
 
@@ -205,15 +205,8 @@ public class PartnerController {
                 if(isNewCandidate){ //save a record in partnerToCandidate
                     candidateSignUpResponse =
                             PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
-                    int randomPIN = generateOtp();
                     Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
-                    Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
-                    if(existingAuth != null){
-                        existingAuth.setOtp(randomPIN);
-                        existingAuth.update();
-                    }
-                    SmsUtil.sendOtpToPartnerCreatedCandidate(randomPIN, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
-                    candidateSignUpResponse.setOtp(randomPIN);
+                    PartnerService.sendCandidateVerificationSms(existingCandidate);
                 } else{
                     candidateSignUpResponse.setOtp(0);
                 }
