@@ -1,5 +1,6 @@
 package Controller;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.httpRequest.AddCandidateRequest;
 import api.http.httpRequest.AddSupportCandidateRequest;
@@ -356,7 +357,7 @@ public class CandidateServiceTest {
         if(isSupport){
             //assertEquals(interactionList.get(0).createdBy, ServerConstants.INTERACTION_CREATED_SYSTEM);
         } else {
-            assertEquals(interactionList.get(0).getCreatedBy(), ServerConstants.INTERACTION_CREATED_SELF);
+            assertEquals(interactionList.get(0).getCreatedBy(), InteractionConstants.INTERACTION_CREATED_SELF);
         }
     }
 }

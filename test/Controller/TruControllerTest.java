@@ -1,9 +1,11 @@
 package Controller;
 
+import api.ServerConstants;
 import common.TestConstants;
 import controllers.businessLogic.JobSearchService;
 import in.trujobs.proto.JobFilterRequest;
 import models.entity.JobPost;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -78,7 +80,9 @@ public class TruControllerTest {
         Application fakeApp = fakeApplication();
         TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
         running(server, () -> {
-            List<JobPost> jobPostList = JobSearchService.filterJobs(jobFilterRequest.build(), null);
+            List<JobPost> jobPostList =
+                    JobSearchService.getExactJobPostsWithinDistance(null, null, null,
+                            jobFilterRequest.build(), ServerConstants.SORT_DEFAULT, false, true);
             if (jobPostList == null) return;
             assertEquals(expectedSize, jobPostList.size());
             System.out.println("[test case] testFilterJobs: resultSize:-----------------------------------------------" + jobPostList.size());

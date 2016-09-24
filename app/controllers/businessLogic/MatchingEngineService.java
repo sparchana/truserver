@@ -42,27 +42,13 @@ public class MatchingEngineService {
                                                               List<Long> jobRoleIds, Integer sortOrder)
     {
         Logger.info("[Matching Engine] for lat/lng "+lat+"/"+lng);
-        if (r != null && r > 0) {
-            radius = r;
-        }
+
         if (sortOrder == null) {
             sortOrder = SORT_DEFAULT;
         }
+
         Query<JobPost> query = JobPost.find.query();
 
-/*
-        query = query
-                .where()
-                .eq("jobPostIsHot", IS_HOT)
-                .query();
-
-        query = query
-                .where()
-                .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
-                .query();
-*/
-
-        Logger.info("JobPostIdList Size: "+ jobRoleIds.size());
         if(jobRoleIds != null && !jobRoleIds.isEmpty() ) {
             Logger.info("Matching JobPosts for: "+ jobRoleIds.toString()+" JobRoleIds");
             query = query.select("*").fetch("jobRole")
@@ -72,42 +58,52 @@ public class MatchingEngineService {
         }
         List<JobPost> jobPostList = query.findList();
         Logger.info("[ME] init jobpost size:"+jobPostList.size() +" within : " + radius);
+
+        List<JobPost> jobPostsResponseList = filterByDistance(jobPostList, lat, lng, r);
+
+        sortJobPostList(jobPostsResponseList, sortOrder, true);
+
+        return jobPostsResponseList;
+
+    }
+
+    public static List<JobPost> filterByDistance(List<JobPost> jobPostList, Double lat, Double lng, Double r) {
+        if (r != null && r > 0) {
+            radius = r;
+        }
+
         if (lat != null && lng != null) {
             List<JobPost> jobPostsResponseList = new ArrayList<>();
             for (JobPost jobPost : jobPostList) {
                 boolean shouldAdd = false;
                 List<JobPostToLocality> jobPostToLocalityList = new ArrayList<>();
-               /* TODO: entity manager should ignore it for other transactions */
                 JobPost tempJobPost = new JobPost(jobPost);
                 if (jobPost.getJobPostToLocalityList() != null) {
                     for (JobPostToLocality jobPostToLocality : jobPost.getJobPostToLocalityList()) {
-                                /* finds distance of this jobPost location from candidate's home location */
+
+                        //finds distance of this jobPost location from candidate's home location
                         Double distance = getDistanceFromCenter(lat, lng,
                                 jobPostToLocality.getLatitude(), jobPostToLocality.getLongitude());
                         if (distance != null && distance <= radius) {
                             shouldAdd = true;
-                                    /* creates distance wise ordered list for
-                                    *  this jobPost
-                                    */
+                            // creates distance wise ordered list for this jobPost
                             jobPostToLocality.setDistance(distance);
                             jobPostToLocalityList.add(jobPostToLocality);
                         }
                     }
                     Collections.sort(jobPostToLocalityList, (a, b) -> a.getDistance().compareTo(b.getDistance()));
-                            /* add ordered jobPostToLocalityList to temp jobPost */
+                    //add ordered jobPostToLocalityList to temp jobPost
                     tempJobPost.setJobPostToLocalityList(jobPostToLocalityList);
                 }
 
-               /* add jobPost to response list if it satisfies the match/sort criteria */
+                //add jobPost to response list if it satisfies the match/sort criteria
                 if (shouldAdd) {
                     jobPostsResponseList.add(new JobPost(tempJobPost));
                 }
             }
-            sortJobPostList(jobPostsResponseList, sortOrder, true);
-            Logger.info("jobPostResponseList:" + jobPostsResponseList);
             return jobPostsResponseList;
         } else {
-            /* Don't handle the exception just throw it to the calling method */
+            // Don't handle the exception just throw it to the calling method
             throw new IllegalArgumentException();
         }
     }
@@ -132,7 +128,7 @@ public class MatchingEngineService {
         return c * earthRadius;
     }
 
-    public static void sortJobPostList(List<JobPost> jobPostsResponseList, Integer sortOrder, boolean doDefaultSort) {
+    private static void sortJobPostList(List<JobPost> jobPostsResponseList, Integer sortOrder, boolean doDefaultSort) {
         switch (sortOrder) {
             case SORT_BY_SALARY:
                 Logger.info("In mGetAllJobPostsRaw : sorting on Salary");
