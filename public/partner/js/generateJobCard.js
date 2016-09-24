@@ -1,21 +1,24 @@
 var jobPostId;
 
 $(document).ready(function() {
-    //getting all applied jobs
     try {
         $.ajax({
             type: "POST",
-            url: "/getAllPartnerType",
+            url: "/getAppliedJobsByPartnerForCandidate/" + localStorage.getItem("candidateId"),
             data: false,
-            async: false,
+            async: true,
             contentType: false,
             processData: false,
-            success: processDataCheckPartnerType
+            success: processDataAppliedJobs
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
 });
+
+function processDataAppliedJobs(returnedData) {
+    console.log(returnedData);
+}
 
 function createAndAppendDivider(title) {
     var parent = $("#hotJobs");
@@ -264,6 +267,7 @@ function addLocalitiesToModal() {
 }
 
 function processDataForJobPostLocation(returnedData) {
+    $("#applyButton").hide();
     $("#jobNameConfirmation").html(returnedData.jobPostTitle);
     $("#companyNameConfirmation").html(returnedData.company.companyName);
     var i;
@@ -300,7 +304,7 @@ function confirmApply() {
 
 function processDataCheckCandidate(returnedData) {
     if(returnedData != '0'){
-        applyJobAjax(jobPostId, returnedData.candidateMobile, prefLocation, true);
+        applyJobSubmit(jobPostId, returnedData.candidateMobile, prefLocation, true);
     } else{
         console.log("Partner doesn't own the candidate");
     }

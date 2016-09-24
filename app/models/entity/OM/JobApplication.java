@@ -61,8 +61,8 @@ public class JobApplication extends Model {
     private Locality locality;
 
     @ManyToOne
-    @JsonManagedReference
-    @JoinColumn(name = "PartnerId", referencedColumnName = "partner_id")
+    @JsonBackReference
+    @JoinColumn(name = "partner_id", referencedColumnName = "partner_id")
     private Partner partner;
 
     public JobApplication() {

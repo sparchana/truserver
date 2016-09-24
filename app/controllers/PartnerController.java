@@ -12,6 +12,7 @@ import com.sun.org.apache.xpath.internal.operations.Bool;
 import controllers.businessLogic.*;
 import controllers.security.SecuredUser;
 import models.entity.*;
+import models.entity.OM.JobApplication;
 import models.entity.OM.PartnerToCandidate;
 import models.entity.Static.LeadSource;
 import models.entity.Static.PartnerType;
@@ -337,7 +338,21 @@ public class PartnerController {
                     }
                 }
             }
+        }
+        return ok("0");
+    }
 
+    public static Result getAppliedJobsByPartnerForCandidate(long id) {
+        Candidate candidate = Candidate.find.where().eq("candidateId", id).findUnique();
+        if(candidate != null){
+            Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+            if(partner != null){
+                List<JobApplication> jobApplicationList = JobApplication.find.where()
+                        .eq("candidateId", candidate.getCandidateId())
+                        .eq("partner_id", partner.getPartnerId())
+                        .findList();
+                return ok(toJson(jobApplicationList));
+            }
         }
         return ok("0");
     }

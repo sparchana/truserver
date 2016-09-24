@@ -85,7 +85,7 @@ function applyJobSubmit(jobPostId, phone, localityId, isPartner) {
         };
         $.ajax({
             type: "POST",
-            url: "/applyJobViaPartner",
+            url: "/applyJob",
             async: false,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(d),
