@@ -102,7 +102,11 @@ function processAssessmentQuestions(returnedData) {
 
 function processPostAssessmentResponse(response) {
     $('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
-    $("#customMsg").html("You have completed assessment for job.");
+    if($('#messagePromptModal').hasClass('in')){
+        $("#customMsg").append(" & You have successfully completed assessment for this job.");
+    } else{
+        $("#customMsg").html(" You have completed assessment for this job.");
+    }
     if (response.status == "ALL_ASSESSED"){
         localStorage.setItem("assessed", "1");
         $('#assessmentDivRow span').removeClass("glyphicon-exclamation-sign red").addClass(" glyphicon-star yellow");
