@@ -112,6 +112,7 @@ GET         /scriptContainer                                              contro
 GET         /footer                                                       controllers.Application.renderPageFooter()
 GET         /jobPostCardView                                              controllers.Application.renderJobPostCards()
 GET         /showJobs                                                     controllers.Application.renderShowAllJobs()
+GET         /pageNotFound                                                 controllers.Application.pageNotFound()
 GET         /jobs/:jobTitle/:jobLocation/:jobCompany/:jobId               controllers.Application.renderJobPostDetails( jobTitle: String , jobLocation : String , jobCompany :String , jobId : Long )
 GET         /job/:jobTitle/:jobLocation/:jobCompany/:jobId                controllers.Application.getJobPostDetails( jobTitle: String , jobLocation : String , jobCompany :String , jobId : Long )
 GET         /job/:rolePara/:idPara                                        controllers.Application.renderJobRoleJobPage( rolePara: String, idPara:Long)

@@ -1161,6 +1161,7 @@ public class Application extends Controller {
 
     public static Result renderJobPostCards() { return ok(views.html.Fragment.hot_jobs_card_view.render());}
     public static Result renderShowAllJobs() { return ok(views.html.Fragment.show_all_jobs_page.render());}
+    public static Result pageNotFound() { return ok(views.html.page_not_found.render());}
     public static Result renderJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
         return ok(views.html.Fragment.posted_job_details.render(jobCompany,jobTitle));
     }

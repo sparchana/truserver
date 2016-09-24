@@ -722,7 +722,7 @@ li .dropdown-menu{
     margin: 20px 0px 0px 30px;
 }
 .company_class{
-    margin: 5px 0px 10px 0px;
+    margin: 20px 0px 10px 0px;
     color: black;
     text-align: center;
     font-size:24px;
@@ -734,7 +734,7 @@ li .dropdown-menu{
     padding-left: 0px;
 }
 #company_box{
-    margin: 12px 0px 16px 0px;
+    margin: 1% 0;
 }
 #logo_box{
     margin-left: 18px;

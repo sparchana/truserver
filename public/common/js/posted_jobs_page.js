@@ -347,4 +347,9 @@ function processDataForHotJobPost(returnedData) {
             $("div#aboutCompanyTitle").hide();
         }
     }
+    else
+        {
+            console.log("#404 No Page Found");
+            window.location.href = "/pageNotFound";
+        }
 }

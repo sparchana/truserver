@@ -321,7 +321,6 @@ hr{
 .navbar-default .navbar-toggle .icon-bar {
     background-color: #ffffff;
 }
-
 @media screen and (max-width: 800px) {
     .navbar-nav>li>a {
         background-color: #286ab6;
@@ -376,10 +375,6 @@ hr{
 
     #jobSalary, #jobExp, #jobLocation {
         padding: 8px;
-    }
-
-    #navLogo{
-        content:url("/assets/common/img/logo-main.gif");
     }
 
     .navbar-default {
