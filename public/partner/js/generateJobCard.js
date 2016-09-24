@@ -235,7 +235,7 @@ function addLocalitiesToModal() {
     try {
         $.ajax({
             type: "POST",
-            url: "/getJobPostInfo/" + jobPostId,
+            url: "/getJobPostInfo/" + jobPostId + "/0",
             data: false,
             contentType: false,
             processData: false,
@@ -247,6 +247,8 @@ function addLocalitiesToModal() {
 }
 
 function processDataForJobPostLocation(returnedData) {
+    $("#jobNameConfirmation").html(returnedData.jobPostTitle);
+    $("#companyNameConfirmation").html(returnedData.company.companyName);
     var i;
     $('#jobLocality').html('');
     var defaultOption=$('<option value="-1"></option>').text("Select Preferred Location");
@@ -265,3 +267,15 @@ function processDataForJobPostLocation(returnedData) {
 function confirmApply() {
     applyJob(jobPostId, prefLocation);
 }
+
+$(function() {
+    $("#jobLocality").change(function (){
+        if($(this).val() != -1){
+            prefLocation = $(this).val();
+            prefLocationName = $("#jobLocality option:selected").text();
+            $("#applyButton").show();
+        } else{
+            $("#applyButton").hide();
+        }
+    });
+});
