@@ -87,6 +87,14 @@ public class InteractionConstants {
     public static final int INTERACTION_TYPE_PARTNER_NEW_LEAD = 25;
     public static final int INTERACTION_TYPE_PARTNER_PASSWORD_ADDED = 26;
 
+    // existing lead/candidate
+    public static final int INTERACTION_TYPE_EXISTING_CANDIDATE_CONTACT = 27;
+    public static final int INTERACTION_TYPE_EXISTING_LEAD_CONTACT = 28;
+    public static final int INTERACTION_TYPE_EXISTING_CANDIDATE_TRIED_SIGNUP = 29;
+    public static final int INTERACTION_TYPE_EXISTING_CANDIDATE_TRIED_SIGNUP_AND_SIGNUP_NOT_ALLOWED = 30;
+    public static final int INTERACTION_TYPE_EXISTING_PARTNER_TRIED_SIGNUP = 31;
+    public static final int INTERACTION_TYPE_EXISTING_PARTNER_TRIED_SIGNUP_AND_SIGNUP_NOT_ALLOWED = 32;
+
     public static final Map<Integer, String> INTERACTION_CHANNEL = new HashMap<>();
 
     public static final int INTERACTION_CHANNEL_CANDIDATE_WEBSITE = 1;
@@ -123,6 +131,13 @@ public class InteractionConstants {
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_PARTNER_PROFILE_UPDATE, "Profile Updated");
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_PARTNER_NEW_LEAD, "New Lead");
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_PARTNER_PASSWORD_ADDED, "Password Created");
+
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_EXISTING_CANDIDATE_CONTACT, "Existing Candidate made contact");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_EXISTING_LEAD_CONTACT, "Existing Lead made contact");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_EXISTING_CANDIDATE_TRIED_SIGNUP, "Existing Candidate tried Sign Up");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_EXISTING_CANDIDATE_TRIED_SIGNUP_AND_SIGNUP_NOT_ALLOWED, "Existing candidate tried Sign Up. Already a Candidate");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_EXISTING_PARTNER_TRIED_SIGNUP, "Existing Partner tried Sign Up");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_EXISTING_PARTNER_TRIED_SIGNUP_AND_SIGNUP_NOT_ALLOWED, "Existing Partner tried Sign Up. Already a Partner");
 
         //channel map
         INTERACTION_CHANNEL.put(INTERACTION_CHANNEL_CANDIDATE_WEBSITE, "Candidate via Website");

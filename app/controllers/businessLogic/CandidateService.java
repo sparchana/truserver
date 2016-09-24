@@ -99,6 +99,7 @@ public class CandidateService
         Candidate candidate = isCandidateExists(candidateSignUpRequest.getCandidateMobile());
         String leadName = candidateSignUpRequest.getCandidateFirstName()+ " " + candidateSignUpRequest.getCandidateSecondName();
         Lead lead = LeadService.createOrUpdateConvertedLead(leadName, candidateSignUpRequest.getCandidateMobile(), leadSourceId, channelType, LeadService.LeadType.CANDIDATE);
+        Integer interactionTypeVal;
         try {
             if(candidate == null) {
                 candidate = new Candidate();
@@ -139,6 +140,7 @@ public class CandidateService
 
                 result = InteractionConstants.INTERACTION_RESULT_NEW_CANDIDATE;
                 objectAUUId = candidate.getCandidateUUId();
+                interactionTypeVal = InteractionConstants.INTERACTION_TYPE_CANDIDATE_SIGN_UP;
 
             } else {
                 Auth auth = AuthService.isAuthExists(candidate.getCandidateId());
@@ -159,12 +161,14 @@ public class CandidateService
                     if(channelType == InteractionChannelType.SELF_ANDROID || channelType == InteractionChannelType.SELF){
                         triggerOtp(candidate, candidateSignUpResponse);
                     }
-
+                    interactionTypeVal = InteractionConstants.INTERACTION_TYPE_EXISTING_CANDIDATE_TRIED_SIGNUP;
                     result = InteractionConstants.INTERACTION_RESULT_EXISTING_CANDIDATE_VERIFICATION;
                     objectAUUId = candidate.getCandidateUUId();
                     candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
                 } else{
                     result = InteractionConstants.INTERACTION_RESULT_EXISTING_CANDIDATE_SIGNUP;
+                    interactionTypeVal = InteractionConstants.INTERACTION_TYPE_EXISTING_CANDIDATE_TRIED_SIGNUP_AND_SIGNUP_NOT_ALLOWED;
+                    objectAUUId = candidate.getCandidateUUId();
                     candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_EXISTS);
                 }
                 candidate.candidateUpdate();
@@ -173,10 +177,10 @@ public class CandidateService
             // Insert Interaction only for self sign up as interaction for sign up support will be handled in createCandidateProfile
             if(channelType == InteractionChannelType.SELF){
                 // candidate sign up via website
-                createInteractionForSignUpCandidateViaWebsite(objectAUUId, result);
+                createInteractionForSignUpCandidateViaWebsite(objectAUUId, result, interactionTypeVal);
             } else if(channelType == InteractionChannelType.SELF_ANDROID) {
                 // candidate sign up via partner
-                createInteractionForSignUpCandidateViaAndroid(objectAUUId, result);
+                createInteractionForSignUpCandidateViaAndroid(objectAUUId, result, interactionTypeVal);
             }
         } catch (NullPointerException n){
             n.printStackTrace();

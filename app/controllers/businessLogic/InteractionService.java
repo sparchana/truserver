@@ -292,11 +292,11 @@ public class InteractionService {
     }
 
     /* NEW INTERACTIONS */
-    public static void createInteractionForSignUpCandidateViaWebsite(String objectAUUId, String result) {
+    public static void createInteractionForSignUpCandidateViaWebsite(String objectAUUId, String result, Integer interactionType) {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
-                InteractionConstants.INTERACTION_TYPE_CANDIDATE_SIGN_UP,
+                interactionType,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
                 INTERACTION_CREATED_SELF,
@@ -306,11 +306,11 @@ public class InteractionService {
 
     }
 
-    public static void createInteractionForSignUpCandidateViaAndroid(String objectAUUId, String result) {
+    public static void createInteractionForSignUpCandidateViaAndroid(String objectAUUId, String result, Integer interactionType) {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
-                InteractionConstants.INTERACTION_TYPE_CANDIDATE_SIGN_UP,
+                interactionType,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
                 INTERACTION_CREATED_SELF,

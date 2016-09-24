@@ -82,8 +82,10 @@ public class ParseCSV {
                         interaction.setObjectAUUId(existingLead.getLeadUUId());
                         if(existingLead.getLeadStatus() == ServerConstants.LEAD_STATUS_WON){
                             interaction.setResult(InteractionConstants.INTERACTION_RESULT_EXISTING_CANDIDATE_CALLED_BACK);
+                            interaction.setInteractionType(InteractionConstants.INTERACTION_TYPE_EXISTING_CANDIDATE_CONTACT);
                         } else {
                             interaction.setResult(InteractionConstants.INTERACTION_RESULT_EXISTING_LEAD_CALLED_BACK);
+                            interaction.setInteractionType(InteractionConstants.INTERACTION_TYPE_EXISTING_LEAD_CONTACT);
                         }
                     }
 

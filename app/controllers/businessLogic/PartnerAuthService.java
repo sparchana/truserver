@@ -60,7 +60,6 @@ public class PartnerAuthService {
                 partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_SUCCESS);
                 partnerSignUpResponse.setPartnerMobile(existingPartner.getPartnerMobile());
             } else {
-                Logger.info("8");
                 PartnerAuth auth = new PartnerAuth();
                 auth.setPartnerId(existingPartner.getPartnerId());
                 setNewPassword(auth, password);
@@ -83,7 +82,6 @@ public class PartnerAuthService {
                     Logger.info("Oops ProfileStatusId"+ " doesnot exists");
                     partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_FAILURE);
                 }
-                Logger.info("9");
 
                 existingPartner.update();
                 Logger.info("partner status confirmed");
@@ -100,7 +98,6 @@ public class PartnerAuthService {
             Logger.info("Auth Save Successful");
         }
         else {
-            Logger.info("10");
             Logger.info("Partner Does not Exist!");
             partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_FAILURE);
         }
