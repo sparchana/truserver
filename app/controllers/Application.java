@@ -1223,7 +1223,7 @@ public class Application extends Controller {
                 List<String> jobRoleIdStrList = Arrays.asList(jobRoleIds.split("\\s*,\\s*"));
                 if (jobRoleIdStrList.size() > 0) {
                     for (String roleId: jobRoleIdStrList) {
-                        if(roleId.length() > 3) continue;
+                        if(roleId.isEmpty() || roleId.length() > 3) continue;
                         jobRoleIdList.add(Long.parseLong(roleId));
                     }
                 }
@@ -1238,7 +1238,7 @@ public class Application extends Controller {
                     List<Long> jobPostIdList = new ArrayList<>();
                     if (jobPostIdStrList.size() > 0) {
                         for (String jobPostId: jobPostIdStrList) {
-                            if(jobPostId.length() > 3) continue;
+                            if(jobPostId.isEmpty() || jobPostId.length() > 3) continue;
                             jobPostIdList.add(Long.parseLong(jobPostId));
                         }
                     }
@@ -1256,6 +1256,9 @@ public class Application extends Controller {
                 }
             }
             Logger.debug(""+jobRoleIdList);
+            if (jobRoleIdList.size() == 0) {
+                return ok("NA");
+            }
             List<AssessmentService.JobRoleWithAssessmentBundle> assessmentBundleList = AssessmentService.getJobRoleIdsVsIsAssessedList(candidateId, jobRoleIdList);
 
             if (assessmentBundleList != null && assessmentBundleList.size() > 0) {
@@ -1266,11 +1269,9 @@ public class Application extends Controller {
                     }
                 }
             }
-            Logger.debug(""+jobRoleIdList);
             if (jobRoleIdList.size() == 0) {
                 return ok("OK");
             }
-
             List<AssessmentQuestion> assessmentQuestionList = AssessmentService.getQuestions(jobRoleIdList);
 
             if (assessmentQuestionList.size() > 0) {
