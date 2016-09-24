@@ -18,16 +18,18 @@
 
         <meta http-equiv="Cache-control" content="public">
         <!-- Bootstrap Core CSS -->
-        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="/assets/common/css/show_jobs.css">
         <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css">
 
-        <script type="text/javascript" src="/assets/common/js/jquery.min_1_12_0.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        @*<script type="text/javascript" src="/assets/common/js/jquery.min_1_12_0.js"></script>*@
         <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
-        <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
 
+        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+        <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
         <link rel="stylesheet" href="/assets/common/css/token-input-facebook.css" type="text/css" />
+
         <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
 
         <script>
@@ -145,15 +147,29 @@
             </div>
         </div>
     </div>
-        <div id="sectionOne">
+        <div id="sectionOneShowAll">
+            <div class="container hidden-sm hidden-lg visible-xs">
+                <div style="display: inline-block; width: auto;">
+                    <center>
+                        <h1 style="letter-spacing: 2px; text-align: left; margin: 10px;"><b><font size="5">Find Entry Level and Experienced Jobs </font></b></h1>
+                        <h2 style="letter-spacing: 2px; margin: 10px; text-align: left"><font size="5">Call 8880007799 to find jobs in top companies!</font></h2>
+                        <h4 style="letter-spacing: 2px; margin: 10px; text-align: left; display: inline-block; float: left">Download app from</h4>
+                        <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" target="_blank" style="padding-top: 2px; float: left">
+                            <img src="/assets/common/img/download_btn.png" alt="PlayStore Logo" height="40px"></a>
+                    </center>
+                </div>
+            </div>
+
             <div class="container hidden-xs">
                 <font color="white">
                     <div class="row">
-                        <div class="col-sm-12" style="margin: 0; padding: 0">
+                        <div class="col-sm-6" style="margin: 0; padding: 0">
                             <img src="/assets/common/img/image6.png" style="display: inline-block; margin-left: -60px;" width="150px">
                             <img src="/assets/common/img/image5.png" style="display: inline-block; margin-left: -60px" width="150px">
                             <img src="/assets/common/img/image4.png" style="display: inline-block; margin-left: -60px" width="150px">
-                            <div style="display: inline-block; width: auto;">
+                        </div>
+                        <div class="col-sm-6" style="margin:0; padding: 0">
+                            <div style="display: inline-block; margin-left:-10%; margin-top:6%; ">
                                 <h1 style="letter-spacing: 2px; text-align: left; margin: 10px;"><b><font size="5">Find Entry Level and Experienced Jobs </font></b></h1>
                                 <h2 style="letter-spacing: 2px; margin: 10px; text-align: left"><font size="5">Call 8880007799 to find jobs in top companies!</font></h2>
                                 <h4 style="letter-spacing: 2px; margin: 10px; text-align: left; display: inline-block; float: left">Download app from</h4>
@@ -220,8 +236,16 @@
 
     <!-- start hot job -->
 
-    <div class="container" style="margin-top: 24px">
-        <div id="job_cards_inc"></div>
+    <div class="container showPageAllJobs">
+        <center id="jobLoaderDiv" style="position: relative; text-align: center; width: 100%">
+            <h4>Loading Jobs</h4>
+            <svg viewBox="0 0 32 32" width="32" height="32">
+                <circle id="loadingSpinner" cx="16" cy="16" r="14" fill="none"></circle>
+            </svg>
+        </center>
+
+        <div id="job_cards_inc">
+        </div>
     </div>
 
     <font color="#000"></font>

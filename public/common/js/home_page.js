@@ -87,7 +87,7 @@ $(document).ready(function(){
             $("#fixed-menu").fadeOut();
         }
     });
-    
+
     try {
         $.ajax({
             type: "POST",
@@ -227,6 +227,7 @@ function processDataAllJobPosts(returnedData) {
         var count = 0;
         var parent = $("#hotJobs");
         //returnedData.reverse();
+        $("#jobLoaderDiv").hide();
         createAndAppendDivider("Popular Jobs");
         var isDividerPresent = false;
         returnedData.forEach(function (jobPost){
@@ -241,7 +242,7 @@ function processDataAllJobPosts(returnedData) {
                 if(jobPost.source != null && jobPost.source > 0 && !isDividerPresent){
                     createAndAppendDivider("Other Jobs");
                     isDividerPresent = true;
-                };
+                }
 
                 jobLocality.forEach(function (locality) {
                     loopCount ++;
@@ -434,6 +435,12 @@ function processDataAllJobPosts(returnedData) {
                 }
             }
         });
+        if(count<4){;
+            document.getElementById("hotJobs").style.height = "54%";
+        }
+        else{
+            document.getElementById("hotJobs").style.height = "72%";
+        }
     }
 }
 
@@ -507,4 +514,9 @@ function resetPassword() {
     $('#incorrectMsgLogin').hide();
     $('#form_login_candidate').hide();
     $('#form_forgot_password').show();
+}
+
+function homeLinkPNF() {
+    window.location.href = "/";
+
 }

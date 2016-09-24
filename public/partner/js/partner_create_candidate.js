@@ -249,9 +249,7 @@ function processDataCheckLocality(returnedData) {
 
 
 function processDataAndFillAllFields(returnedData) {
-    if (returnedData == "0") {
-        notifyError("Something went wrong. Please try again!");
-    } else if(returnedData == "-1"){
+    if (returnedData == "0" || returnedData == "-1") {
         notifyError("You are not authorized to view other candidate's details!!");
     } else {
         $("#candidateFirstName").val(returnedData.candidateFirstName);
@@ -564,7 +562,6 @@ function ifMobileExists(returnedId) {
         notifyError("Candidate already exists in the database. Create a different candidate");
     } else{
         $("#registerBtnSubmit").addClass("btn-primary").removeClass("appliedBtn").prop('disabled', false).html("Save");
-        notifySuccess("Candidate with the specified mobile doesn't exists! Please continue");
     }
 }
 
@@ -848,7 +845,7 @@ $(function() {
             notifyErrorWithPrompt($("#candidateLastWithdrawnSalary"), "Enter enter Last Withdrawn Salary");
             statusCheck=0;
         } else if(languageMap.length == 0 || languageMap.length == null){
-            notifyErrorWithPrompt($("#languageField"), "Select specify candidate's known language");
+            notifyErrorWithPrompt($("#languageField"), "Select candidate's known language");
             statusCheck=0;
         } else if(highestEducation == undefined){
             notifyErrorWithPrompt($("#educationField"), "Select Highest Education");
@@ -948,18 +945,24 @@ function processDataSignUpSupportSubmit(returnedData) {
 function verifyCandidateOtp(){
     var candidateOtp = $("#candidateOtp").val();
     var candidateMobile = candidateUnVerifiedMobile;
-    var d = {
-        candidateMobile: candidateMobile,
-        userOtp: candidateOtp
-    };
-    $("#verifyOtp").prop('disabled',true);
-    $.ajax({
-        type: "POST",
-        url: "/verifyCandidateUsingOtp",
-        contentType: "application/json; charset=utf-8",
-        data: JSON.stringify(d),
-        success: processDataVerifyCandidate
-    });
+
+    if(validateOtp(candidateOtp) == 0){
+        notifyError("Please enter a valid 4 digit otp!");
+    } else{
+        var d = {
+            candidateMobile: candidateMobile,
+            userOtp: candidateOtp
+        };
+        $("#verifyOtp").prop('disabled',true);
+        $.ajax({
+            type: "POST",
+            url: "/verifyCandidateUsingOtp",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(d),
+            success: processDataVerifyCandidate
+        });
+
+    }
 }
 
 function processDataVerifyCandidate(returnedData) {

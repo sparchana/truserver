@@ -58,37 +58,37 @@ public class SmsUtil {
     public static void sendTryingToCallSms(String mobile) {
 
         String msg = "Hello! We tried calling you from www.TruJobs.in to help you with job search. "
-        + "We will try again in sometime or you can call us on 8880007799";
+        + "We will try again in sometime or you can call us on 8880007799. Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
 
         sendSms(mobile, msg);
 
     }
 
     public static void sendOTPSms(int otp, String mobile) {
-        String msg = "Use OTP " + otp + " to register and start your job search. Welcome to www.Trujobs.in!";
+        String msg = "Use OTP " + otp + " to register and start your job search. Welcome to www.Trujobs.in! Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
         sendSms(mobile, msg);
     }
 
     public static void sendPartnerOTPSms(int otp, String mobile) {
-        String msg = "Use OTP " + otp + " to register as a partner with TruJobs. Welcome to www.Trujobs.in!";
+        String msg = "Use OTP " + otp + " to register as a partner with TruJobs. Welcome to www.Trujobs.in! Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
         sendSms(mobile, msg);
     }
 
     public static void sendResetPasswordOTPSms(int otp, String mobile) {
-        String msg = "Use OTP " + otp + " to reset your password. Welcome to www.Trujobs.in!";
+        String msg = "Use OTP " + otp + " to reset your password. Welcome to www.Trujobs.in! Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
         sendSms(mobile, msg);
     }
 
     public static void sendJobApplicationSms(String candidateName, String jobTitle, String company, String mobile, String prescreenLocation) {
         String msg = "Hi " + candidateName + ", you have applied to " + jobTitle + " job at " + company + " @" + prescreenLocation + ".  Please complete the assessment to maximize your chances of getting an interview call." +
-                "Call us at +91 8048039089 to know about the status of your job application. All the best! www.trujobs.in";
+                "Call us at +91 8048039089 to know about the status of your job application. All the best! www.trujobs.in. Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
         sendSms(mobile, msg);
     }
 
     public static void sendWelcomeSmsFromSupport(String name, String mobile, String password)
     {
         String msg = "Hi " + name + ", Welcome to www.Trujobs.in! Your login details are Username: "
-                + mobile.substring(3, 13) + " and password: " + password + ". Log on to trujobs.in or download app at http://bit.ly/2d7zDqR to login and apply to jobs!!";
+                + mobile.substring(3, 13) + " and password: " + password + ". Log on to trujobs.in or download Trujobs app at http://bit.ly/2d7zDqR to login and apply to jobs!!";
 
         sendSms(mobile, msg);
     }
@@ -96,7 +96,7 @@ public class SmsUtil {
     public static void sendWelcomeSmsFromWebsite(String name, String mobile)
     {
         String msg = "Hi " + name + ", Welcome to Trujobs.in! "
-                + "Complete your profile and skill assessment today to begin your job search";
+                + "Complete your profile and skill assessment today to begin your job search or download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
 
         sendSms(mobile, msg);
     }
@@ -187,7 +187,7 @@ public class SmsUtil {
     }
 
     public static void sendOtpToPartnerCreatedCandidate(int otp, String mobile) {
-        String msg = "Hi. You have been registered by on TruJobs for job search. Provide OTP: " + otp + " to complete registration.";
+        String msg = "Hi. You have been registered by on TruJobs for job search. Provide OTP: " + otp + " to complete registration.  Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
         sendSms(mobile, msg);
     }
 

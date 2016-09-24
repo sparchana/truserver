@@ -11,6 +11,7 @@ public class SupportInteractionResponse {
     public String userNote;
     public String userResults;
     public String userCreatedBy;
+    public String channel;
 
     public void setUserInteractionType(String userInteractionType) {
         this.userInteractionType = userInteractionType;
@@ -61,6 +62,11 @@ public class SupportInteractionResponse {
         this.userCreatedBy = userCreatedBy;
     }
 
+    public String getChannel() {
+        return channel;
+    }
 
-
+    public void setChannel(String channel) {
+        this.channel = channel;
+    }
 }

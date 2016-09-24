@@ -1,5 +1,6 @@
 package controllers.businessLogic;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
@@ -17,9 +18,7 @@ import javax.persistence.NonUniqueResultException;
 import java.util.List;
 import java.util.UUID;
 
-import static controllers.businessLogic.PartnerInterationService.createInteractionForPartnerLogin;
-import static controllers.businessLogic.PartnerInterationService.createInteractionForPartnerResetPassword;
-import static controllers.businessLogic.PartnerInterationService.createInteractionForPartnerSignUp;
+import static controllers.businessLogic.PartnerInteractionService.*;
 import static models.util.Util.generateOtp;
 import static play.mvc.Controller.session;
 import static play.mvc.Results.ok;
@@ -35,6 +34,7 @@ public class PartnerService {
             partner.setPartnerprofilestatus(partnerProfileStatus);
             partner.setLead(lead);
             partner.registerPartner();
+
             partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_SUCCESS);
             Logger.info("Partner successfully registered " + partner);
         } else {
@@ -77,6 +77,7 @@ public class PartnerService {
         Logger.info("Checking for mobile number: " + partnerSignUpRequest.getPartnerMobile());
         Partner partner = isPartnerExists(partnerSignUpRequest.getPartnerMobile());
         String leadName = partnerSignUpRequest.getPartnerName();
+        Integer interactionType;
         Lead lead = LeadService.createOrUpdateConvertedLead(leadName, partnerSignUpRequest.getPartnerMobile(), leadSourceId, channelType, LeadService.LeadType.PARTNER);
         try {
             if(partner == null) {
@@ -93,10 +94,11 @@ public class PartnerService {
                 }
                 resetPartnerTypeAndLocality(partner, partnerSignUpRequest);
                 partnerSignUpResponse = createNewPartner(partner, lead);
+                interactionType = InteractionConstants.INTERACTION_TYPE_PARTNER_SIGN_UP;
                 if(!(channelType == InteractionService.InteractionChannelType.SUPPORT)){
                     // triggers when partner is self created
                     triggerOtp(partner, partnerSignUpResponse);
-                    result = ServerConstants.INTERACTION_RESULT_NEW_PARTNER;
+                    result = InteractionConstants.INTERACTION_RESULT_NEW_PARTNER;
                     objectAUUId = partner.getPartnerUUId();
                 }
             } else {
@@ -105,21 +107,23 @@ public class PartnerService {
                     Logger.info("auth doesn't exists for this partner");
                     partner.setPartnerFirstName(partnerSignUpRequest.getPartnerName());
                     resetPartnerTypeAndLocality(partner, partnerSignUpRequest);
+                    interactionType = InteractionConstants.INTERACTION_TYPE_EXISTING_PARTNER_TRIED_SIGNUP;
                     if(!(channelType == InteractionService.InteractionChannelType.SUPPORT)){
                         triggerOtp(partner, partnerSignUpResponse);
-                        result = ServerConstants.INTERACTION_RESULT_EXISTING_PARTNER_VERIFICATION;
+                        result = InteractionConstants.INTERACTION_RESULT_EXISTING_PARTNER_VERIFICATION;
                         objectAUUId = partner.getPartnerUUId();
                         partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_SUCCESS);
 
                     }
                 } else{
-                    result = ServerConstants.INTERACTION_RESULT_EXISTING_PARTNER_SIGNUP;
+                    interactionType = InteractionConstants.INTERACTION_TYPE_EXISTING_PARTNER_TRIED_SIGNUP_AND_SIGNUP_NOT_ALLOWED;
+                    result = InteractionConstants.INTERACTION_RESULT_EXISTING_PARTNER_SIGNUP;
                     partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_EXISTS);
                 }
                 partner.partnerUpdate();
             }
             //creating interaction
-            createInteractionForPartnerSignUp(objectAUUId, result, channelType);
+            createInteractionForPartnerSignUp(objectAUUId, result, interactionType);
 
         } catch (NullPointerException n){
             n.printStackTrace();
@@ -181,7 +185,6 @@ public class PartnerService {
                     /* adding session details */
                     PartnerAuthService.addSession(existingAuth,existingPartner);
                     String sessionId = session().get("sessionId");
-                    Logger.info(sessionId + " === ");
                     existingAuth.update();
                     createInteractionForPartnerLogin(existingPartner.getPartnerUUId(), channelType);
                     Logger.info("Login Successful");
@@ -211,10 +214,11 @@ public class PartnerService {
                 existingPartner.update();
                 SmsUtil.sendResetPasswordOTPSms(randomPIN, existingPartner.getPartnerMobile());
 
-                String interactionResult = ServerConstants.INTERACTION_RESULT_PARTNER_TRIED_TO_RESET_PASSWORD;
+                String interactionResult = InteractionConstants.INTERACTION_RESULT_PARTNER_TRIED_TO_RESET_PASSWORD;
                 String objAUUID = "";
                 objAUUID = existingPartner.getPartnerUUId();
-                createInteractionForPartnerResetPassword(objAUUID, interactionResult, channelType);
+                createInteractionForPartnerTriedToResetPassword(objAUUID, interactionResult, channelType);
+
                 resetPasswordResponse.setOtp(randomPIN);
                 resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);
             }
@@ -237,9 +241,8 @@ public class PartnerService {
         if(partner != null){
 
             // Initialize some basic interaction details
-            String createdBy = ServerConstants.INTERACTION_CREATED_SELF;
-            String interactionResult = ServerConstants.INTERACTION_RESULT_PARTNER_INFO_UPDATED_SELF;
-            Integer interactionType = ServerConstants.INTERACTION_TYPE_WEBSITE;
+            String createdBy = InteractionConstants.INTERACTION_CREATED_SELF;
+            String interactionResult = InteractionConstants.INTERACTION_RESULT_PARTNER_INFO_UPDATED_SELF;
 
             String interactionNote;
 
@@ -257,15 +260,14 @@ public class PartnerService {
 
                 // Set the appropriate interaction result
                 if(profileUpdateFlag == ServerConstants.UPDATE_BASIC_PROFILE) {
-                    interactionResult = ServerConstants.INTERACTION_RESULT_PARTNER_BASIC_PROFILE_INFO_UPDATED_SELF;
+                    interactionResult = InteractionConstants.INTERACTION_RESULT_PARTNER_BASIC_PROFILE_INFO_UPDATED_SELF;
                 }
             }
 
             // set the default interaction note string
-            interactionNote = ServerConstants.INTERACTION_NOTE_BLANK;
+            interactionNote = InteractionConstants.INTERACTION_NOTE_BLANK;
 
-            PartnerInterationService.createInteractionForPartnerProfileUpdate(partner.getPartnerUUId(),
-                    interactionType, interactionNote, interactionResult, createdBy);
+            PartnerInteractionService.createInteractionForPartnerProfileUpdate(partner.getPartnerUUId(), interactionNote, interactionResult, createdBy);
 
             partner.update();
 
@@ -366,38 +368,59 @@ public class PartnerService {
     }
 
     public static void sendCandidateVerificationSms(Candidate existingCandidate) {
-        Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
-        if(existingAuth != null){
-            Integer dummyOtp = Util.generateOtp();
-            AuthService.setNewPassword(existingAuth, String.valueOf(dummyOtp));
-            existingAuth.setOtp(dummyOtp);
-            existingAuth.update();
-            SmsUtil.sendOtpToPartnerCreatedCandidate(dummyOtp, existingCandidate.getCandidateMobile());
-        } else{
-            Logger.info("Auth doesnot exists");
+        Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+        if(partner != null){
+            Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
+            if(existingAuth != null){
+                Integer dummyOtp = Util.generateOtp();
+                AuthService.setNewPassword(existingAuth, String.valueOf(dummyOtp));
+                existingAuth.setOtp(dummyOtp);
+                existingAuth.update();
+                SmsUtil.sendOtpToPartnerCreatedCandidate(dummyOtp, existingCandidate.getCandidateMobile());
+
+                String objAUUID = existingCandidate.getCandidateUUId();
+                String objBUUID = partner.getPartnerUUId();
+
+                //creating interaction
+                PartnerInteractionService.createInteractionForPartnerTryingToVerifyCandidate(objAUUID, objBUUID, partner.getPartnerFirstName());
+            } else{
+                Logger.info("Auth doesnot exists");
+            }
         }
     }
 
     public static VerifyCandidateResponse verifyCandidateByPartner(VerifyCandidateRequest verifyCandidateRequest) {
         VerifyCandidateResponse verifyCandidateResponse = new VerifyCandidateResponse();
-        Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(verifyCandidateRequest.getCandidateMobile()));
-        if(existingCandidate != null){
-            Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
-            if(existingAuth != null){
-                // auth for the user is present
-                if(verifyCandidateRequest.getUserOtp() == existingAuth.getOtp()){
-                    verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_SUCCESS);
-                    existingAuth.setAuthStatus(ServerConstants.CANDIDATE_STATUS_VERIFIED);
-                    existingAuth.update();
-                    CandidateService.sendDummyAuthForCandidateByPartner(existingCandidate);
+        Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+        if(partner != null){
+            Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(verifyCandidateRequest.getCandidateMobile()));
+            if(existingCandidate != null){
+                Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
+                if(existingAuth != null){
+                    // auth for the user is present
+                    if(verifyCandidateRequest.getUserOtp() == existingAuth.getOtp()){
+                        verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_SUCCESS);
+                        existingAuth.setAuthStatus(ServerConstants.CANDIDATE_STATUS_VERIFIED);
+                        existingAuth.update();
+                        CandidateService.sendDummyAuthForCandidateByPartner(existingCandidate);
+                        String objAUUID = existingCandidate.getCandidateUUId();
+                        String objBUUID = partner.getPartnerUUId();
+
+                        //creating interaction
+                        PartnerInteractionService.createInteractionForPartnerVerifyingCandidate(objAUUID, objBUUID, partner.getPartnerFirstName());
+                    } else{
+                        verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_WRONG_OTP);
+                    }
                 } else{
-                    verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_WRONG_OTP);
+                    // no auth found for the user
+                    verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_FAILURE);
                 }
             } else{
-                // no auth found for the user
+                // no candidate found
                 verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_FAILURE);
             }
         } else{
+            // no partner session found
             verifyCandidateResponse.setStatus(VerifyCandidateResponse.STATUS_FAILURE);
         }
         return verifyCandidateResponse;

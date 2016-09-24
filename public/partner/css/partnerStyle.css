@@ -58,7 +58,7 @@ input::-webkit-inner-spin-button {
 }
 
 body{
-    background: #fcfcfc;
+    background: #f0f0f0;
     font-family: Lato;
 }
 .nav > li > a:hover, .nav > li > a:focus{
@@ -140,9 +140,9 @@ option:checked {
 #sectionPartnerEligibility{
     font-weight: bold;
     color: #402005;
-    padding: 0 4% 8% 4%;
     text-align: center;
-    margin-top: -9%;
+    margin-bottom: 8%;
+    margin-top: -8%;
 }
 
 #partnerStats{
@@ -151,10 +151,11 @@ option:checked {
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.15);
     border-radius: 2px;
     text-align: center;
-    width: 320px;
+    width: 84%;
     color: #0B4063;
     padding: 8%;
-    margin-top: 9%;
+    float: right;
+    margin-top: 12%;
 }
 
 #sectionBody{
@@ -176,17 +177,15 @@ option:checked {
 
 .leadBox {
     text-align: center;
-    position: relative;
     width: 320px;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.15);
     border-radius: 2px;
     color: #0B4063;
     background: #ffffff;
     padding: 4px;
-    margin-left: 75%;
-    margin-top: -13%;
+    float: right;
+    margin-top: -11%;
 }
-
 #registerBtnSubmit{
     border: none;
     background-color: #0065a4;
@@ -301,18 +300,6 @@ option:checked {
 
 #viewCandidateBtn{
     border: none;
-    background-color: #0064a8;
-    color: white;
-    -webkit-transition: background-color 0.2s;
-    -moz-transition:    background-color 0.2s;
-    -ms-transition:     background-color 0.2s;
-    -o-transition:      background-color 0.2s;
-    transition:         background-color 0.2s;
-}
-
-#viewCandidateBtn:hover{
-    border: none;
-    background-color: #004d81;
     color: white;
     -webkit-transition: background-color 0.2s;
     -moz-transition:    background-color 0.2s;
@@ -476,11 +463,18 @@ a:hover{
     border: 1px solid #2870a3;
     color: #ffffff;
 }
-
+.navbar-brand{
+    padding: 0px 0px;
+}
+#navLogo {
+    height: 65%;
+    margin-top: 4%;
+}
 @media screen and (max-width: 768px) {
+
     #viewCandidateBtn{
         padding: 8px;
-        width: auto;
+        width: 90%;
         margin: 8px;
     }
     #eduConfirm{
@@ -494,6 +488,7 @@ a:hover{
         font-size: 11px;
     }
     .leadBox {
+        position:relative;
         width: 84%;
         margin-right: 8%;
         margin-left: 8%;
@@ -581,6 +576,13 @@ a:hover{
     #jobRoleNameFooter{
         font-size: 12px;
         color: #ffffff;
+    }
+}
+@media screen and (max-width: 1000px){
+    #navLogo{
+        height:46%;
+        margin-top: 11%;
+        content:url("/assets/common/img/logo-main.gif");
     }
 }
 

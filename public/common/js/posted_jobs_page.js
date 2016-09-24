@@ -56,7 +56,7 @@ $(document).ready(function(){
         console.log("exception occured!!" + exception);
     }
 
-    try {
+    /*try {
         $.ajax({
             type: "POST",
             url: "/getAllHotJobPosts",
@@ -67,7 +67,7 @@ $(document).ready(function(){
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
-    }
+    }*/
 });
 
 $(window).load(function() {
@@ -206,148 +206,150 @@ function applyJobBtnAction() {
 }
 
 function processDataForHotJobPost(returnedData) {
-    jobId = returnedData.jobPostId;
-
-    if (returnedData.jobPostTitle != null) {
-        $("#postedJobTitle").html(returnedData.jobPostTitle+" | "+returnedData.company.companyName);
-    }
-    if (returnedData.company != null) {
-        $("#postedJobCompanyTitle").html(returnedData.company.companyName);
-        $("#postedCompanyTitle").html(returnedData.company.companyName);
-    }
-    if (returnedData.jobPostAddress != null) {
-        $("#postedJobLocationAddress").html(returnedData.jobPostAddress);
-    }
-    if (returnedData.jobPostMinSalary != null && returnedData.jobPostMaxSalary != null) {
-        if (returnedData.jobPostMaxSalary == null || returnedData.jobPostMaxSalary == "0") {
-            $("#postedJobSalary").html(rupeeFormatSalary(returnedData.jobPostMinSalary)+ " monthly");
+    console.log(" Returned " + returnedData);
+    if (returnedData != "Error" && returnedData != "") {
+        jobId = returnedData.jobPostId;
+        if (returnedData.jobPostTitle != null && returnedData.jobPostTitle != "") {
+            $("#postedJobTitle").html(returnedData.jobPostTitle + " | " + returnedData.company.companyName);
         }
-        else {
-            $("#postedJobSalary").html(rupeeFormatSalary(returnedData.jobPostMinSalary) + " - " + rupeeFormatSalary(returnedData.jobPostMaxSalary)+ " monthly");
-            $("#salaryCondition").html("Salary (Min - Max)");
+        if (returnedData.company != null && returnedData.company != "") {
+            $("#postedJobCompanyTitle").html(returnedData.company.companyName);
+            $("#postedCompanyTitle").html(returnedData.company.companyName);
         }
-    }
-    if (returnedData.jobPostIncentives  != null && returnedData.jobPostIncentives != "") {
-        $("#postedJobIncentives").html(returnedData.jobPostIncentives);
-    }
-    //locality
-    if (returnedData.jobPostToLocalityList != null) {
-        var localityList = returnedData.jobPostToLocalityList;
-        var allLocalities = "";
-        localityList.forEach(function (locality) {
-            if(allLocalities !="") {
-                allLocalities += ", ";
+        if (returnedData.jobPostAddress != null && returnedData.jobPostAddress != "") {
+            $("#postedJobLocationAddress").html(returnedData.jobPostAddress);
+        }
+        if (returnedData.jobPostMinSalary != null && returnedData.jobPostMaxSalary != null) {
+            if (returnedData.jobPostMaxSalary == null || returnedData.jobPostMaxSalary == "0") {
+                $("#postedJobSalary").html(rupeeFormatSalary(returnedData.jobPostMinSalary) + " monthly");
             }
-            allLocalities += locality.locality.localityName;
-
-        });
-        $("#postedJobLocality").html(allLocalities);
-    }
-    if (returnedData.jobPostShift != null){
-        $("#postedJobShift").html(returnedData.jobPostShift.timeShiftName);
-    }
-
-    if (returnedData.jobPostWorkingDays != "" && returnedData.jobPostWorkingDays != null) {
-        var workingDays = returnedData.jobPostWorkingDays.toString(2);
-        var i;
-        /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
-        if (workingDays.length != 7) {
-            var x = 7 - workingDays.length;
-            var modifiedWorkingDays = "";
-
-            for (i = 0; i < x; i++) {
-                modifiedWorkingDays += "0";
+            else {
+                $("#postedJobSalary").html(rupeeFormatSalary(returnedData.jobPostMinSalary) + " - " + rupeeFormatSalary(returnedData.jobPostMaxSalary) + " monthly");
+                $("#salaryCondition").html("Salary (Min - Max)");
             }
-            modifiedWorkingDays += workingDays;
-            workingDays = modifiedWorkingDays;
         }
-        var holiday = "";
-        var arryDay = workingDays.split("");
-        if (arryDay[0] != 1) {
-            holiday += "Mon, ";
+        if (returnedData.jobPostIncentives != null && returnedData.jobPostIncentives != "") {
+            $("#postedJobIncentives").html(returnedData.jobPostIncentives);
         }
-        if (arryDay[1] != 1) {
-            holiday += "Tue, ";
-        }
-        if (arryDay[2] != 1) {
-            holiday += "Wed, ";
-        }
-        if (arryDay[3] != 1) {
-            holiday += "Thu, ";
-        }
-        if (arryDay[4] != 1) {
-            holiday += "Fri, ";
-        }
-        if (arryDay[5] != 1) {
+        //locality
+        if (returnedData.jobPostToLocalityList != null && returnedData.jobPostToLocalityList != "") {
+            var localityList = returnedData.jobPostToLocalityList;
+            var allLocalities = "";
+            localityList.forEach(function (locality) {
+                if (allLocalities != "") {
+                    allLocalities += ", ";
+                }
+                allLocalities += locality.locality.localityName;
 
-            holiday += "Sat, ";
+            });
+            $("#postedJobLocality").html(allLocalities);
         }
-        if (arryDay[6] != 1) {
-            holiday += "Sun ";
+        if (returnedData.jobPostShift != null && returnedData.jobPostShift != "") {
+            $("#postedJobShift").html(returnedData.jobPostShift.timeShiftName);
         }
-            $("#postedJobWorkingDays").html(holiday +" - Holiday");
-    }
-    if (returnedData.jobPostStartTime != null && returnedData.jobPostEndTime!= null) {
-        var valStart;
-        var valEnd;
-        if(returnedData.jobPostStartTime > 12){
-            returnedData.jobPostStartTime = returnedData.jobPostStartTime - 12;
-            valStart ="PM";
-        }
-        else{
-             valStart = "AM";
-        }
-        if(returnedData.jobPostEndTime > 12){
-            returnedData.jobPostEndTime = returnedData.jobPostEndTime - 12;
-            valEnd ="PM";
-        }
-        else{
-            valEnd = "AM";
-        }
-        $("#postedJobTiming").html(returnedData.jobPostStartTime + " "+valStart+ " - "+ returnedData.jobPostEndTime +" "+valEnd);
 
-    }
-    if (returnedData.jobPostMinRequirement != null && returnedData.jobPostMinRequirement != "") {
-        $("#postedJobMinRequirement").html(returnedData.jobPostMinRequirement);
-    }
+        if (returnedData.jobPostWorkingDays != "" && returnedData.jobPostWorkingDays != null) {
+            var workingDays = returnedData.jobPostWorkingDays.toString(2);
+            var i;
+            /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
+            if (workingDays.length != 7) {
+                var x = 7 - workingDays.length;
+                var modifiedWorkingDays = "";
 
-    if (returnedData.jobPostExperience  != null) {
-        $("#postedJobExperience").html(returnedData.jobPostExperience.experienceType);
-    }
-    if (returnedData.jobPostEducation != null ) {
-        $("#postedJobEducation").html(returnedData.jobPostEducation.educationName);
-    }
-    if (returnedData.jobPostDescription != "") {
-        $("#postedJobDescription").html(returnedData.jobPostDescription);
-    }
+                for (i = 0; i < x; i++) {
+                    modifiedWorkingDays += "0";
+                }
+                modifiedWorkingDays += workingDays;
+                workingDays = modifiedWorkingDays;
+            }
+            var holiday = "";
+            var arryDay = workingDays.split("");
+            if (arryDay[0] != 1) {
+                holiday += "Mon, ";
+            }
+            if (arryDay[1] != 1) {
+                holiday += "Tue, ";
+            }
+            if (arryDay[2] != 1) {
+                holiday += "Wed, ";
+            }
+            if (arryDay[3] != 1) {
+                holiday += "Thu, ";
+            }
+            if (arryDay[4] != 1) {
+                holiday += "Fri, ";
+            }
+            if (arryDay[5] != 1) {
 
-    //Company Details
-    if(returnedData.source == null || returnedData.source == 0){
-        $(".posted_jobs_company_details").show();
-        $("div#aboutCompanyTitle").show();
+                holiday += "Sat, ";
+            }
+            if (arryDay[6] != 1) {
+                holiday += "Sun ";
+            }
+            $("#postedJobWorkingDays").html(holiday + " - Holiday");
+        }
+        if (returnedData.jobPostStartTime != null && returnedData.jobPostEndTime != null) {
+            var valStart;
+            var valEnd;
+            if (returnedData.jobPostStartTime > 12) {
+                returnedData.jobPostStartTime = returnedData.jobPostStartTime - 12;
+                valStart = "PM";
+            }
+            else {
+                valStart = "AM";
+            }
+            if (returnedData.jobPostEndTime > 12) {
+                returnedData.jobPostEndTime = returnedData.jobPostEndTime - 12;
+                valEnd = "PM";
+            }
+            else {
+                valEnd = "AM";
+            }
+            $("#postedJobTiming").html(returnedData.jobPostStartTime + " " + valStart + " - " + returnedData.jobPostEndTime + " " + valEnd);
 
-        if (returnedData.company.companyLocality != null ) {
-            $("#postedJobCompanyLocation").html(returnedData.company.companyLocality.localityName);
         }
-        if(returnedData.company.companyLogo != null){
-            document.getElementById("postedJobCompanyLogo").src = returnedData.company.companyLogo;
-            document.getElementById("postedCompanyLogo").src = returnedData.company.companyLogo;
+        if (returnedData.jobPostMinRequirement != null && returnedData.jobPostMinRequirement != "") {
+            $("#postedJobMinRequirement").html(returnedData.jobPostMinRequirement);
         }
-        if (returnedData.company.companyWebsite != null && returnedData.company.companyWebsite != "") {
-            $("#postedJobCompanyWebsite").html(returnedData.company.companyWebsite);
-        }
-        if (returnedData.company.companyDescription != null && returnedData.company.companyDescription != "") {
-            $("#postedJobCompanyDescriotion").html(returnedData.company.companyDescription);
-        }
-        if (returnedData.company.compType != null ) {
-            $("#postedJobCompanyType").html(returnedData.company.compType.companyTypeName);
-        }
-    } else {
-        $(".posted_jobs_company_details").hide();
-        $("div#aboutCompanyTitle").hide();
 
-        if(returnedData.company.companyLogo != null){
-            document.getElementById("postedJobCompanyLogo").src = returnedData.company.companyLogo;
+        if (returnedData.jobPostExperience != null && returnedData.jobPostExperience != "") {
+            $("#postedJobExperience").html(returnedData.jobPostExperience.experienceType);
+        }
+        if (returnedData.jobPostEducation != null && returnedData.jobPostEducation != "") {
+            $("#postedJobEducation").html(returnedData.jobPostEducation.educationName);
+        }
+        if (returnedData.jobPostDescription != null && returnedData.jobPostDescription != "") {
+            $("#postedJobDescription").html(returnedData.jobPostDescription);
+        }
+        //Company Details
+        if (returnedData.source == null || returnedData.source == 0) {
+            $(".posted_jobs_company_details").show();
+            $("div#aboutCompanyTitle").show();
+
+            if (returnedData.company.companyLocality != null) {
+                $("#postedJobCompanyLocation").html(returnedData.company.companyLocality.localityName);
+            }
+            if (returnedData.company.companyLogo != null) {
+                document.getElementById("postedJobCompanyLogo").src = returnedData.company.companyLogo;
+                document.getElementById("postedCompanyLogo").src = returnedData.company.companyLogo;
+            }
+            if (returnedData.company.companyWebsite != null && returnedData.company.companyWebsite != "") {
+                $("#postedJobCompanyWebsite").html(returnedData.company.companyWebsite);
+            }
+            if (returnedData.company.companyDescription != null && returnedData.company.companyDescription != "") {
+                $("#postedJobCompanyDescriotion").html(returnedData.company.companyDescription);
+            }
+            if (returnedData.company.compType != null) {
+                $("#postedJobCompanyType").html(returnedData.company.compType.companyTypeName);
+            }
+        } else {
+            $(".posted_jobs_company_details").hide();
+            $("div#aboutCompanyTitle").hide();
         }
     }
+    else
+        {
+            console.log("#404 No Page Found");
+            window.location.href = "/pageNotFound";
+        }
 }

@@ -155,7 +155,7 @@ body{
     margin-left: -60%;
 }
 
-#sectionOne {
+#sectionOne, #sectionOneShowAll {
     background: linear-gradient(
             rgba(24, 26, 45, 0.3),
             rgba(24, 26, 45, 0.3)
@@ -192,18 +192,17 @@ body{
 }
 .leadBox {
     text-align: center;
-    position: relative;
     width: 300px;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.15);
     border-radius: 2px;
     color: #0B4063;
     background: #ffffff;
     padding: 4px;
-    margin-left: 75%;
-    margin-top: -19%;
+    float:right;
+    margin-top: -20%;
 }
 
-.sectionStats {
+#sectionStats {
     background: linear-gradient(
             rgba(24, 26, 45, 0.7),
             rgba(24, 26, 45, 0.7)
@@ -380,26 +379,28 @@ a:hover{
 }
 
 #hotJobs{
-    height: 72%;
     overflow: scroll;
 }
 
 #hotJobs::-webkit-scrollbar {
     width: 0 !important;
-}
-
-#hotJobItem{
-    border-left: 2px rgba(46, 131, 213, 0.6) solid;
-    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.09);
-    padding: 18px;
-    margin: 8px 4px 0 4px;
-    background: #ffffff;
+    height:0 !important;
 }
 
 #hotJobItemDivider{
     padding: 1% 2% 1% 0;
     display: table;
     font-size: 24px;
+}
+
+#hotJobItem{
+    border-left: 2px rgba(46, 131, 213, 0.6) solid;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.1);
+    padding: 18px;
+    margin: 8px 8px 0 8px;
+    background: #ffffff;
+
+    transition: all 0.7s cubic-bezier(.25,.8,.25,1);
 }
 
 #jobBody {
@@ -472,7 +473,9 @@ hr{
 }
 
 #hotJobItem:hover{
-    background: #fbfbfb;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.12), 0 4px 4px rgba(0,0,0,0.12);
+    transition: opacity 0.5s ease-in-out;
+    /*    background: #fbfbfb;*/
 }
 
 #jobSalary, #jobExp, #jobLocation {
@@ -485,13 +488,10 @@ hr{
     padding-bottom: 24px;
     margin-top: -70px;
 }
-#navLogo{
-    margin-top: -4px;
-}
-.appStoreContainer{
+#appStoreContainer{
     background: url(/assets/common/img/backimage_appstore.png) no-repeat;
     background-size:100% ;
-    padding: 0% 0%;
+    padding: 2% 2%;
 }
 #step_image{
     margin-bottom:4%;
@@ -506,7 +506,10 @@ hr{
     text-align:center;
     margin-top:5%;
 }
-
+#navLogo{
+    height: 65%;
+    margin-top:4%;
+}
 @media screen and (max-width: 280px) {
     .panel{
         padding: 0px;
@@ -520,6 +523,7 @@ hr{
     }
     #navLogo{
         height: 24px;
+        margin-top:4%;
     }
     #leadFormBox{
         margin-top: 20px;
@@ -650,13 +654,20 @@ hr{
     border-bottom: 1px solid #f4eef2;
     background: #ffffff;
 }
+
+.showPageAllJobs{
+    margin-top: 24px;
+}
 @media screen and (max-width: 768px) {
+    .showPageAllJobs{
+        margin-top: 4px;
+    }
+
     #hotJobs{
         margin-top: 24px;
         height: 66%;
         overflow: scroll;
     }
-
     .custom_container{
         margin: 0;
     }
@@ -728,24 +739,18 @@ hr{
         width: 60%;
         padding: 4%;
     }
-    #hiringCompanyContent{
-        height: 62%;
-    }
     #stepContainer{
         display: none;
     }
-    .appStoreContainer{
-        background-size: 600%;
+    #appStoreContainer{
+        background-size: 350%;
     }
     #playStoreLogo{
         display: none;
     }
     #playStoreLogoNavBar{
-        display: block;
-        padding: 0;
+        display: inline-block;
         margin-top: 12px;
-        margin-right: 2px;
-        float: right;
     }
     .navbar-right{
         margin-right:-15px;
@@ -834,7 +839,7 @@ hr{
         text-align: center;
     }
     #candidateFirstName {
-        width: 96%;
+        width: 98%;
     }
 
     #candidateFirstNameModal {
@@ -842,7 +847,7 @@ hr{
     }
 
     .candidateSecondNameMain {
-        width: 96%;
+        width: 98%;
         margin-top: 8px;
         margin-left: 12px;
     }
@@ -866,10 +871,13 @@ hr{
         background-size: 320%;
         padding-top: 24%;
         padding-bottom: 18%;
-/*        background-size: 320%;
-        padding-top: 24%;
-        padding-bottom: 48%;*/
     }
+    #sectionOneShowAll {
+        background-size: 320%;
+        padding-top: 24%;
+        padding-bottom: 9%;
+    }
+
 
     .sectionStats {
         background-size: 220%;
@@ -882,17 +890,13 @@ hr{
     #navItem1, #navItem2, #navItem3, #navItem4, #navItem5{
         color: #747474;
     }
-
-    #navLogo{
-        margin-top: 12px;
-        content:url("/assets/common/img/logo-color.gif");
-    }
     .modal .modal-dialog {
         width: 80%;
         margin: 8%;
     }
 
     .leadBox {
+        position: relative;
         width: 84%;
         margin-right: 8%;
         margin-left: 8%;
@@ -902,7 +906,12 @@ hr{
         display: none;
     }
 }
-
+@media screen and (max-width: 1000px) {
+    #navLogo {
+        margin-top: 10px;
+        content: url("/assets/common/img/logo-color.gif");
+    }
+}
 #headingMain {
     margin-top: 20px;
 }
@@ -1015,7 +1024,7 @@ li .dropdown-menu{
 	padding-left: 0px;
 }
 #company_box{
-	margin: 12px 0px 16px 0px;
+	margin: 2% 0;
 }
 #logo_box{
 	margin-left: 18px;
@@ -1101,6 +1110,10 @@ padding: 0px;
 
 .navbar-default .navbar-nav>li>a{
     color: #ffffff;
+}
+
+.navbar-brand{
+    padding: 0px 0px;
 }
 
 .fade-background {
@@ -1447,4 +1460,73 @@ padding: 0px;
 #job_box_inc a{
     text-decoration: none;
     color: #000000;
+}
+
+/* job loading spinner */
+
+#loadingSpinner {
+    box-sizing: border-box;
+    stroke: #344fb7;
+    stroke-width: 3px;
+    -webkit-transform-origin: 50%;
+    transform-origin: 50%;
+    -webkit-animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
+    animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite; }
+
+@-webkit-keyframes rotate {
+    from {
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+    to {
+        -webkit-transform: rotate(450deg);
+        transform: rotate(450deg);
+    }
+}
+
+@keyframes rotate {
+    from {
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+    to {
+        -webkit-transform: rotate(450deg);
+        transform: rotate(450deg);
+    }
+}
+
+@-webkit-keyframes line {
+    0% {
+        stroke-dasharray: 2, 85.964;
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+    50% {
+        stroke-dasharray: 65.973, 21.9911;
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dasharray: 2, 85.964;
+        stroke-dashoffset: -65.973;
+        -webkit-transform: rotate(90deg);
+        transform: rotate(90deg);
+    }
+}
+
+@keyframes line {
+    0% {
+        stroke-dasharray: 2, 85.964;
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+    50% {
+        stroke-dasharray: 65.973, 21.9911;
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dasharray: 2, 85.964;
+        stroke-dashoffset: -65.973;
+        -webkit-transform: rotate(90deg);
+        transform: rotate(90deg);
+    }
 }

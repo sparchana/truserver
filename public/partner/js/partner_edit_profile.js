@@ -72,76 +72,76 @@ function processDataPartnerProfile(returnedData) {
         }
     }
 }
+$(document).ready(function(){
+    $("#savePartnerProfileBtn").click(function(){
+        savePartnerProfile();
+    });
+});
 
-// edit partner profile ajax script
-$(function() {
-    $("#partnerBasicProfile").submit(function(eventObj) {
-        eventObj.preventDefault();
-        //entered values
-        var statusCheck = 1;
-        var firstName = $("#partnerFirstName").val();
-        var lastName = $("#partnerLastName").val();
-        var email = $("#partnerEmail").val();
-        var organizationType = $("#partnerType").val();
-        var organizationName = $("#organizationName").val();
-        var organizationLocality = $("#organizationLocation").val();
+function savePartnerProfile() {
+    var statusCheck = 1;
+    var firstName = $("#partnerFirstName").val();
+    var lastName = $("#partnerLastName").val();
+    var email = $("#partnerEmail").val();
+    var organizationType = $("#partnerType").val();
+    var organizationName = $("#organizationName").val();
+    var organizationLocality = $("#organizationLocation").val();
 
-        var checkPartnerFirstName = validateName(firstName);
-        var checkPartnerLastName = validateName(lastName);
+    var checkPartnerFirstName = validateName(firstName);
+    var checkPartnerLastName = validateName(lastName);
 
-        //checking first name
-        switch(checkPartnerFirstName){
-            case 0: notifyError("Your first name contains number. Please Enter a valid first name"); statusCheck=0; break;
-            case 2: notifyError("Your first name cannot be blank spaces. Enter a valid first name"); statusCheck=0; break;
-            case 3: notifyError("Your first name contains special symbols. Enter a valid first name"); statusCheck=0; break;
-            case 4: notifyError("Please enter your first name"); statusCheck=0; break;
+    //checking first name
+    switch(checkPartnerFirstName){
+        case 0: notifyError("Your first name contains number. Please Enter a valid first name"); statusCheck=0; break;
+        case 2: notifyError("Your first name cannot be blank spaces. Enter a valid first name"); statusCheck=0; break;
+        case 3: notifyError("Your first name contains special symbols. Enter a valid first name"); statusCheck=0; break;
+        case 4: notifyError("Please enter your first name"); statusCheck=0; break;
+    }
+    //checking last name
+    if(lastName != ""){
+        switch(checkPartnerLastName){
+            case 0: notifyError("Your last name contains number. Please Enter a valid last name"); statusCheck=0; break;
+            case 2: notifyError("Your last name cannot be blank spaces. Enter a valid last name"); statusCheck=0; break;
+            case 3: notifyError("Your last name contains special symbols. Enter a valid last name"); statusCheck=0; break;
+            case 4: notifyError("Please enter your last name"); statusCheck=0; break;
         }
-        //checking last name
-        if(lastName != ""){
-            switch(checkPartnerLastName){
-                case 0: notifyError("Your last name contains number. Please Enter a valid last name"); statusCheck=0; break;
-                case 2: notifyError("Your last name cannot be blank spaces. Enter a valid last name"); statusCheck=0; break;
-                case 3: notifyError("Your last name contains special symbols. Enter a valid last name"); statusCheck=0; break;
-                case 4: notifyError("Please enter your last name"); statusCheck=0; break;
-            }
-        } else{
-            lastName = null;
-        }
+    } else{
+        lastName = null;
+    }
 
-        if(organizationType == null || organizationType == -1){
-            notifyError("Please select organization type");
-            statusCheck = 0;
-        } else if(!validateEmail(email)){
-            notifyError("Enter a valid email");
-            statusCheck = 0;
-        } else if(organizationLocality == ""){
-            notifyError("Enter organization Locality");
-            statusCheck = 0;
+    if(organizationType == null || organizationType == -1){
+        notifyError("Please select organization type");
+        statusCheck = 0;
+    } else if(!validateEmail(email)){
+        notifyError("Enter a valid email");
+        statusCheck = 0;
+    } else if(organizationLocality == ""){
+        notifyError("Enter Organization Locality");
+        statusCheck = 0;
+    }
+    if(statusCheck == 1){
+        $("#registerBtnSubmit").addClass("btn-primary").removeClass("appliedBtn").prop('disabled', true).html("Save");
+        try {
+            var s = {
+                partnerName: firstName,
+                partnerLastName: lastName,
+                partnerLocality: organizationLocality,
+                partnerType: organizationType,
+                partnerEmail: email,
+                partnerOrganizationName : organizationName
+            };
+            $.ajax({
+                type: "POST",
+                url: "/partnerUpdateBasicProfile",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(s),
+                success: processDataUpdateProfile
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
         }
-        if(statusCheck == 1){
-            $("#registerBtnSubmit").addClass("btn-primary").removeClass("appliedBtn").prop('disabled', true).html("Save");
-            try {
-                var s = {
-                    partnerName: firstName,
-                    partnerLastName: lastName,
-                    partnerLocality: organizationLocality,
-                    partnerType: organizationType,
-                    partnerEmail: email,
-                    partnerOrganizationName : organizationName
-                };
-                $.ajax({
-                    type: "POST",
-                    url: "/partnerUpdateBasicProfile",
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify(s),
-                    success: processDataUpdateProfile
-                });
-            } catch (exception) {
-                console.log("exception occured!!" + exception);
-            }
-        }
-    }); // end of submit
-}); // end of function
+    }
+}
 
 function notifyError(msg){
     $.notify({

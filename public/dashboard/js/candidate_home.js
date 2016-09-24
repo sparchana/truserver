@@ -65,6 +65,7 @@ function processDataAllJobPosts(returnedData) {
         var count = 0;
         var parent = $("#hotJobs");
         returnedData.reverse();
+        $("#jobLoaderDiv").hide();
         returnedData.forEach(function (jobPost){
             count++;
             if(count){
@@ -266,6 +267,12 @@ function processDataAllJobPosts(returnedData) {
                 }
             }
         });
+        if(count<4){
+            document.getElementById("hotJobs").style.height = "51%";
+        }
+        else{
+            document.getElementById("hotJobs").style.height = "72%";
+        }
     }
 }
 
