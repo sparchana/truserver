@@ -185,15 +185,14 @@ body{
 
 .leadBox {
     text-align: center;
-    position: relative;
     width: 300px;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.15);
     border-radius: 2px;
     color: #0B4063;
     background: #ffffff;
     padding: 4px;
-    margin-left: 75%;
-    margin-top: -11%;
+    float: right;
+    margin-top: -13%;
 }
 
 .sectionStats {
@@ -608,6 +607,7 @@ hr{
     }
 
     .leadBox {
+        position: relative;
         width: 84%;
         margin-top: -48%;
         margin-right: 8%;
@@ -722,7 +722,7 @@ li .dropdown-menu{
     margin: 20px 0px 0px 30px;
 }
 .company_class{
-    margin: 5px 0px 10px 0px;
+    margin: 20px 0px 10px 0px;
     color: black;
     text-align: center;
     font-size:24px;
@@ -734,7 +734,7 @@ li .dropdown-menu{
     padding-left: 0px;
 }
 #company_box{
-    margin: 12px 0px 16px 0px;
+    margin: 1% 0;
 }
 #logo_box{
     margin-left: 18px;

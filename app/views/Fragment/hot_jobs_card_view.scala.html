@@ -24,8 +24,10 @@
             var w = window.innerWidth;
             if(w < 440){
                 document.documentElement.scrollTop = document.body.scrollTop = 280;
+
             } else{
                 document.documentElement.scrollTop = document.body.scrollTop = 248;
+                $("#hotJobs").css({marginTop : "2%"});
             }
         });
     });

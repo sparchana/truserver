@@ -479,6 +479,12 @@ function processDataForSelectedJobPost(returnedData) {
                             }
                         }
                     });
+                    if(count<4){
+                        document.getElementById("hotJobs").style.height = "54%";
+                    }
+                    else{
+                        document.getElementById("hotJobs").style.height = "72%";
+                    }
                 } catch (exception) {
                     console.log("exception occured!!" + exception.stack);
                 }
