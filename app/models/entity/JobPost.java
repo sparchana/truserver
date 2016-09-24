@@ -470,4 +470,25 @@ public class JobPost extends Model {
     public void setSource(Integer source) {
         this.source = source;
     }
+
+    @Override
+    public String toString() {
+
+        String exp = getJobPostExperience() == null ? "N/A" : getJobPostExperience().getExperienceType();
+        String edu = getJobPostEducation() == null ? "N/A" : getJobPostEducation().getEducationName();
+        String gen = getGender() == null? "N/A" : getGender() == 0 ? "M" : "F";
+        StringBuilder locs = new StringBuilder();
+
+        for (JobPostToLocality loc :jobPostToLocalityList) {
+            locs.append(loc.toString());
+            locs.append(",");
+        }
+
+        String toS = "JOBPOST: " + getJobPostId() + "|" + getJobPostTitle() + "|" + getCompany().getCompanyName()
+                + "|" + locs.toString()
+                + "|" + getJobRole().getJobName() + "|" + getJobPostMinSalary() + "-" + getJobPostMaxSalary()
+                + "|" + exp + "|" + edu + "|" + getGender()
+                + "|" + getJobPostCreateTimestamp() + "|" + getSource();
+        return toS;
+    }
 }

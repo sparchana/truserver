@@ -2,76 +2,178 @@ package controllers.businessLogic;
 
 import api.ServerConstants;
 import api.http.FormValidator;
+import com.avaje.ebean.Expr;
 import com.avaje.ebean.Query;
+import controllers.AnalyticsLogic.JobRelevancyEngine;
 import in.trujobs.proto.*;
 import models.entity.Candidate;
 import models.entity.JobPost;
-import models.entity.Static.JobRole;
 import play.Logger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import static api.ServerConstants.IS_HOT;
-import static com.avaje.ebean.Expr.eq;
-import static controllers.businessLogic.MatchingEngineService.sortJobPostList;
-import static play.libs.Json.toJson;
+import static api.ServerConstants.SORT_BY_DATE_POSTED;
+import static api.ServerConstants.SORT_BY_SALARY;
+import static api.ServerConstants.SORT_DEFAULT;
 
 /**
  * Created by zero on 15/8/16.
  */
 public class JobSearchService {
 
-    public static List<JobPost> getAllJobPosts() {
+    public static List<JobPost> getAllHotJobPosts() {
         return JobPost.find.where()
                 .eq("jobPostIsHot", ServerConstants.IS_HOT)
                 .findList();
     }
 
-    public static List<JobPost> getMatchingJobPosts(List<Long> jobRoleIds, Integer sortOrder) {
-        if(sortOrder == null){
-            sortOrder = ServerConstants.SORT_DEFAULT;
-        }
-
-        Query<JobPost> query = JobPost.find.query();
-
-/*
-
-        query = query
-                .where()
-                .eq("jobPostIsHot", IS_HOT)
-                .query();
-
-
-        query = query
-                .where()
-                .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
-                .query();
-*/
-
-        if(jobRoleIds != null && !jobRoleIds.isEmpty() ) {
-            query = query.select("*").fetch("jobRole")
-                    .where()
-                    .in("jobRole.jobRoleId", jobRoleIds)
-                    .query();
-        }
-
-        List<JobPost> jobPostsResponseList = query.findList();
-
-        boolean doDefaultSort = false;
-
-        sortJobPostList(jobPostsResponseList, sortOrder, doDefaultSort);
-
-        return jobPostsResponseList;
+    public static List<JobPost> getAllJobPosts() {
+        return JobPost.find.all();
     }
 
-    public static List<JobPost> getMatchingJobPosts(Double latitude, Double longitude,
-                                                    List<Long> jobRoleIds, Integer sortOrder)
-    {
-        sortOrder = sortOrder == null ? ServerConstants.SORT_DEFAULT:sortOrder;
 
-        return MatchingEngineService.fetchMatchingJobPostForLatLng(
-                latitude, longitude, null, jobRoleIds, sortOrder);
+    /**
+     * This method fetches all the 'relevant' job post within the given distance.
+     * 'relevant' means that we search not only for the given jobrole ids, but also expand the search to include all
+     * 'related job role ids'
+     *
+     * @param latitude Latitude for anchoring the search
+     * @param longitude Logitude for anchoring the search
+     * @param jobRoleIds All job role ids to be searched
+     * @param filterParams Filter params such as 'salary'/'Education'/'Experience'/'Gender'
+     * @param sortBy Sort parameter like 'salary','date posted','nearby'
+     * @param isHot Whether the search should consider only hot jobs
+     * @param isAllSources Whether the search should consider both internal and external job post sources
+     *
+     * @return A list of JobPosts that match the given query criteria and arranged in the given sort order
+     */
+    public static List<JobPost> getRelevantJobPostsWithinDistance(Double latitude, Double longitude,
+                                                                  List<Long> jobRoleIds,
+                                                                  JobFilterRequest filterParams,
+                                                                  Integer sortBy,
+                                                                  boolean isHot,
+                                                                  boolean isAllSources)
+    {
+        List<JobPost> resultJobPosts = new ArrayList<JobPost>();
+        List<Integer> jobPostSources = new ArrayList<Integer>();
+
+        // form job post sources
+        if (isAllSources) {
+            // This order of inserting is very important to maintain sort order in the returned result
+            jobPostSources.add(ServerConstants.SOURCE_INTERNAL);
+            jobPostSources.add(ServerConstants.SOURCE_BABAJOBS);
+        }
+        else {
+            // For now, assumption we are only supporting the use case where clients can fetch either 'All' job posts
+            // or only 'internal' job posts
+            jobPostSources.add(ServerConstants.SOURCE_INTERNAL);
+        }
+
+        for (Integer source : jobPostSources) {
+
+            // We are collecting results for job posts mathcing the exact jobrole ids and other relevant job role ids
+            // in different lists so that we can maintain sort order within these groups
+            // Eg. For a telecaller job search, we want to first show all telecaller jobs sorted in the given order
+            // followed by by all BPO jobs
+
+            List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, filterParams, sortBy, isHot, source);
+
+            // TODO: This should be changed to a fetch from DB. Sbould not be computed upon every run.
+            List<Long> relatedJobRoleIds = JobRelevancyEngine.getRelatedJobRoleIds(jobRoleIds);
+            List<JobPost> relatedJobRoleJobs = queryAndReturnJobPosts(relatedJobRoleIds, filterParams, sortBy, isHot, source);
+
+            // if we have lat-long info, then lets go ahead and filter the job post lists based on distance criteria
+            if (latitude != null && longitude != null && latitude != 0.0 && longitude != 0.0) {
+
+                List<JobPost> exactJobsWithinDistance = MatchingEngineService.filterByDistance(exactJobRoleJobs,
+                        latitude, longitude,
+                        ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS);
+
+                List<JobPost> relatedJobsWithinDistance = MatchingEngineService.filterByDistance(relatedJobRoleJobs,
+                        latitude, longitude,
+                        ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS);
+
+                if (sortBy == ServerConstants.SORT_DEFAULT) {
+                    resultJobPosts.addAll(sortByDistance(exactJobsWithinDistance));
+                    resultJobPosts.addAll(sortByDistance(relatedJobsWithinDistance));
+                }
+                else {
+                    resultJobPosts.addAll(exactJobsWithinDistance);
+                    resultJobPosts.addAll(relatedJobsWithinDistance);
+                }
+            }
+            else {
+                resultJobPosts.addAll(exactJobRoleJobs);
+                resultJobPosts.addAll(relatedJobRoleJobs);
+            }
+        }
+
+        return resultJobPosts;
+    }
+
+
+    /**
+     * This method fetches only the job posts matching the given job roles ids within the given distance.
+     * 'Job-role-relevancy' based search is not supported here.
+     *
+     * @param latitude Latitude for anchoring the search
+     * @param longitude Logitude for anchoring the search
+     * @param jobRoleIds All job role ids to be searched
+     * @param filterParams Filter params such as 'salary'/'Education'/'Experience'/'Gender'
+     * @param sortBy Sort parameter like 'salary','date posted','nearby'
+     * @param isHot Whether the search should consider only hot jobs
+     * @param isAllSources Whether the search should consider both internal and external job post sources
+     *
+     * @return A list of JobPosts that match the given query criteria and arranged in the given sort order
+     */
+    public static List<JobPost> getExactJobPostsWithinDistance(Double latitude, Double longitude,
+                                                               List<Long> jobRoleIds,
+                                                               JobFilterRequest filterParams,
+                                                               Integer sortBy,
+                                                               boolean isHot,
+                                                               boolean isAllSources)
+    {
+        List<JobPost> resultJobPosts = new ArrayList<JobPost>();
+        List<Integer> jobPostSources = new ArrayList<Integer>();
+
+        // form job post sources
+        if (isAllSources) {
+            // This order of inserting is very important to maintain sort order in the returned result
+            jobPostSources.add(ServerConstants.SOURCE_INTERNAL);
+            jobPostSources.add(ServerConstants.SOURCE_BABAJOBS);
+        }
+        else {
+            // For now, assumption we are only supporting the use case where clients can fetch either 'All; job posts
+            // or only 'internal' job posts
+            jobPostSources.add(ServerConstants.SOURCE_INTERNAL);
+        }
+
+        for (Integer source : jobPostSources) {
+
+            List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, filterParams, sortBy, isHot, source);
+
+            if (latitude != null && longitude != null && latitude != 0.0 && longitude != 0.0) {
+
+                List<JobPost> exactJobsWithinDistance = MatchingEngineService.filterByDistance(exactJobRoleJobs,
+                        latitude, longitude,
+                        ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS);
+
+                if (sortBy == ServerConstants.SORT_DEFAULT) {
+                    resultJobPosts.addAll(sortByDistance(exactJobsWithinDistance));
+                }
+                else {
+                    resultJobPosts.addAll(exactJobsWithinDistance);
+                }
+
+            }
+            else {
+                resultJobPosts.addAll(exactJobRoleJobs);
+            }
+        }
+
+        return resultJobPosts;
     }
 
     public static List<JobPost> getRelevantJobsPostsForCandidate(String mobile) {
@@ -109,120 +211,97 @@ public class JobSearchService {
                 }
             }
 
-            if (lat == 0.0 || lng == 0.0) {
-                return getMatchingJobPosts(jobRoleIds, ServerConstants.SORT_DEFAULT);
-            }
-            else {
-                return getMatchingJobPosts(lat, lng, jobRoleIds, ServerConstants.SORT_DEFAULT);
-            }
+            return getRelevantJobPostsWithinDistance(lat, lng, jobRoleIds, null, ServerConstants.SORT_DEFAULT, false, false);
         }
 
         return getAllJobPosts();
     }
 
-    public static List<JobPost> filterJobs(JobFilterRequest jobFilterRequest, List<Long> jobRoleIds) {
-        List<JobPost> filteredJobPostList = new ArrayList<>();
-        Integer sortOrder = ServerConstants.SORT_DEFAULT;
-        if (jobFilterRequest != null) {
-            if(jobFilterRequest.getSortByDatePosted()){
-                sortOrder = ServerConstants.SORT_BY_DATE_POSTED;
-            } else if (jobFilterRequest.getSortBySalary()){
-                sortOrder = ServerConstants.SORT_BY_SALARY;
-            }
-            List<JobPost> jobPostList;
+    private static List<JobPost> queryAndReturnJobPosts(List<Long> jobRoleIds,
+                                                        JobFilterRequest filterParams,
+                                                        Integer sortBy,
+                                                        boolean isHot,
+                                                        Integer source)
+    {
 
-            /* filter on searched lat/lng */
-            if(jobFilterRequest.getJobSearchLongitude() != 0.0
-                    && jobFilterRequest.getJobSearchLatitude() != 0.0) {
-                jobPostList = getMatchingJobPosts(jobFilterRequest.getJobSearchLatitude(),
-                        jobFilterRequest.getJobSearchLongitude(), jobRoleIds, sortOrder);
-            } else {
-                // if no lat long is available return all jobs matching given jobrole ids in given sort order
-                jobPostList = getMatchingJobPosts(jobRoleIds, sortOrder);
+        if (source == null) {
+            source = ServerConstants.SOURCE_INTERNAL;
+        }
+
+        Query<JobPost> query = JobPost.find.query();
+
+        if (jobRoleIds != null && !jobRoleIds.isEmpty() ) {
+            query = query.select("*").fetch("jobRole")
+                    .where()
+                    .in("jobRole.jobRoleId", jobRoleIds)
+                    .query();
+        }
+
+        if (isHot) {
+            query = query.where().eq("jobPostIsHot", "1").query();
+        }
+
+        query = query.where().eq("source", source).query();
+
+        // filter params
+        if (filterParams != null) {
+            if (filterParams.getSalary() != null && filterParams.getSalary() != JobFilterRequest.Salary.ANY_SALARY) {
+                Long salValue = getSalaryValue(filterParams.getSalaryValue());
+                query = query.where().or(Expr.ge("jobPostMinSalary", salValue), Expr.ge("jobPostMaxSalary", salValue)).query();
             }
 
-            if (jobPostList != null) {
-                Logger.info("jobFilterRequest sal: " + toJson(jobFilterRequest.getSalary()));
-                Logger.info("jobFilterRequest exp: " + toJson(jobFilterRequest.getExp()));
-                Logger.info("jobFilterRequest edu: " + toJson(jobFilterRequest.getEdu()));
-                Logger.info("jobFilterRequest gender: " + toJson(jobFilterRequest.getGender()));
-                Logger.info("jobFilterRequest sort_by_datePosted: " + toJson(jobFilterRequest.getSortByDatePosted()));
-                Logger.info("jobFilterRequest sort_by_sortBySalary: " + toJson(jobFilterRequest.getSortBySalary()));
-                for (JobPost jobPost : jobPostList) {
-                    boolean shouldContinue = false;
-                    if (jobFilterRequest.getSalary() != null && jobFilterRequest.getSalary() != JobFilterRequest.Salary.ANY_SALARY) {
-                        if ((jobPost.getJobPostMaxSalary() != null
-                                && (getSalaryValue(jobFilterRequest.getSalaryValue()) <= jobPost.getJobPostMaxSalary()))
-                                || (jobPost.getJobPostMinSalary() != null
-                                && getSalaryValue(jobFilterRequest.getSalaryValue()) <= jobPost.getJobPostMinSalary())) {
-                            shouldContinue = true;
-                        } else {
-                            shouldContinue = false;
-                        }
-                    } else {
-                        shouldContinue = true;
-                    }
-                    /* filter result take Exp_Type:Any* into-account */
-                    if (shouldContinue && jobPost.getJobPostExperience() != null
-                            && jobFilterRequest.getExp() != null) {
-                        if (jobFilterRequest.getExpValue() == JobFilterRequest.Experience.FRESHER_VALUE
-                                && (jobPost.getJobPostExperience().getExperienceId() == ServerConstants.EXPERIENCE_TYPE_FRESHER_ID
-                                || jobPost.getJobPostExperience().getExperienceId() == ServerConstants.EXPERIENCE_TYPE_ANY_ID)) {
-                            shouldContinue = true;
-                        } else if (jobFilterRequest.getExpValue() == JobFilterRequest.Experience.EXPERIENCED_VALUE
-                                && jobPost.getJobPostExperience().getExperienceId() > ServerConstants.EXPERIENCE_TYPE_FRESHER_ID) {
-                            shouldContinue = true;
-                        } else if (jobFilterRequest.getExp() == JobFilterRequest.Experience.ANY_EXPERIENCE) {
-                            shouldContinue = true;
-                        } else {
-                            shouldContinue = false;
-                        }
-                    }
-                    /* filter education */
-                    if (shouldContinue && jobPost.getJobPostEducation() != null
-                            && jobFilterRequest.getEdu() != null) {
-                        if (jobFilterRequest.getEduValue() == JobFilterRequest.Education.LT_TEN_VALUE
-                                && jobPost.getJobPostEducation().getEducationId() == ServerConstants.EDUCATION_TYPE_LT_10TH_ID) {
-                            shouldContinue = true;
-                        } else if (jobFilterRequest.getEduValue() == JobFilterRequest.Education.TEN_PASS_VALUE
-                                && jobPost.getJobPostEducation().getEducationId() == ServerConstants.EDUCATION_TYPE_10TH_PASS_ID) {
-                            shouldContinue = true;
-                        } else if (jobFilterRequest.getEduValue() == JobFilterRequest.Education.TWELVE_PASS_VALUE
-                                && jobPost.getJobPostEducation().getEducationId() == ServerConstants.EDUCATION_TYPE_12TH_PASS_ID) {
-                            shouldContinue = true;
-                        } else if (jobFilterRequest.getEduValue() == JobFilterRequest.Education.UG_VALUE
-                                && jobPost.getJobPostEducation().getEducationId() == ServerConstants.EDUCATION_TYPE_UG) {
-                            shouldContinue = true;
-                        } else if (jobFilterRequest.getEduValue() == JobFilterRequest.Education.PG_VALUE
-                                && jobPost.getJobPostEducation().getEducationId() == ServerConstants.EDUCATION_TYPE_PG) {
-                            shouldContinue = true;
-                        } else if (jobFilterRequest.getEdu() == JobFilterRequest.Education.ANY_EDUCATION) {
-                            shouldContinue = true;
-                        } else {
-                            shouldContinue = false;
-                        }
-                    }
-                    /* filter gender */
-                    if (shouldContinue && jobFilterRequest.getGender() != null && jobFilterRequest.getGender() != JobFilterRequest.Gender.ANY_GENDER) {
-                        if ((jobPost.getGender() == null
-                                || jobPost.getGender() == ServerConstants.GENDER_MALE
-                                || jobPost.getGender() == ServerConstants.GENDER_ANY) && jobFilterRequest.getGender() == JobFilterRequest.Gender.MALE) {
-                            shouldContinue = true;
-                        } else if ((jobPost.getGender() == null
-                                || jobPost.getGender() == ServerConstants.GENDER_FEMALE
-                                || jobPost.getGender() == ServerConstants.GENDER_ANY) && jobFilterRequest.getGender() == JobFilterRequest.Gender.FEMALE) {
-                            shouldContinue = true;
-                        } else {
-                            shouldContinue = false;
-                        }
-                    }
-                    if (shouldContinue) {
-                        filteredJobPostList.add(jobPost);
-                    }
+            if (filterParams.getExp() != null && filterParams.getExpValue() != JobFilterRequest.Experience.ANY_EXPERIENCE_VALUE) {
+                if (filterParams.getExpValue() == JobFilterRequest.Experience.FRESHER_VALUE) {
+                    query = query.select("*").fetch("jobPostExperience")
+                            .where()
+                            .or(Expr.eq("jobPostExperience.experienceId", ServerConstants.EXPERIENCE_TYPE_FRESHER_ID),
+                                    Expr.eq("jobPostExperience.experienceId", ServerConstants.EXPERIENCE_TYPE_ANY_ID))
+                            .query();
+                } else if (filterParams.getExpValue() == JobFilterRequest.Experience.EXPERIENCED_VALUE) {
+                    query = query.select("*").fetch("jobPostExperience")
+                            .where()
+                            .or(Expr.ne("jobPostExperience.experienceId", ServerConstants.EXPERIENCE_TYPE_FRESHER_ID),
+                                    Expr.eq("jobPostExperience.experienceId", ServerConstants.EXPERIENCE_TYPE_ANY_ID))
+                            .query();
+                }
+            }
+
+            if (filterParams.getEdu() != null && filterParams.getEdu() != JobFilterRequest.Education.ANY_EDUCATION) {
+                query = query.select("*").fetch("jobPostEducation")
+                        .where()
+                        .eq("jobPostEducation.educationId", filterParams.getEduValue())
+                        .query();
+            }
+
+            if (filterParams.getGender() != null && filterParams.getGender() != JobFilterRequest.Gender.ANY_GENDER) {
+
+                if (filterParams.getGender() == JobFilterRequest.Gender.MALE) {
+                    query = query
+                            .where()
+                            .or(Expr.isNull("gender"), Expr.or(
+                                    Expr.eq("gender", ServerConstants.GENDER_MALE),
+                                    Expr.eq("gender", ServerConstants.GENDER_ANY)))
+                            .query();
+
+                } else if (filterParams.getGender() == JobFilterRequest.Gender.FEMALE) {
+                    query = query
+                            .where()
+                            .or(Expr.isNull("gender"), Expr.or(
+                                    Expr.eq("gender", ServerConstants.GENDER_FEMALE),
+                                    Expr.eq("gender", ServerConstants.GENDER_ANY)))
+                            .query();
                 }
             }
         }
-        return filteredJobPostList;
+
+        if (sortBy == SORT_BY_DATE_POSTED) {
+            query = query.orderBy().desc("jobPostCreateTimestamp");
+
+        } else if (sortBy == SORT_BY_SALARY) {
+            query = query.orderBy().desc("jobPostMinSalary");
+        }
+
+        return query.findList();
     }
 
     private static Long getSalaryValue(Integer id) {
@@ -242,5 +321,12 @@ public class JobSearchService {
             default:
                 return 0L;
         }
+    }
+
+    private static List<JobPost> sortByDistance(List<JobPost> jobPostsResponseList) {
+        Collections.sort(jobPostsResponseList, (a, b) -> a.getJobPostToLocalityList().get(0).getDistance()
+                .compareTo(b.getJobPostToLocalityList().get(0).getDistance()));
+
+        return jobPostsResponseList;
     }
 }

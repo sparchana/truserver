@@ -1319,22 +1319,34 @@ public class TrudroidController {
             Logger.info("Filter by other filter options  triggered ") ;
             jobFilterRequestBuilder = jobSearchRequest.getJobFilterRequest().toBuilder();
 
-            interactionParamFilter = "Sal: "+jobFilterRequestBuilder.getSalary()+", Edu: " + jobFilterRequestBuilder.getEdu()+", Exp: "+jobFilterRequestBuilder.getExp()+", Gen: "+jobFilterRequestBuilder.getGender();
+            int sortby = ServerConstants.SORT_DEFAULT;
+            if (jobFilterRequestBuilder.getSortBySalary()) {
+                sortby = ServerConstants.SORT_BY_SALARY;
+            }
+            else if (jobFilterRequestBuilder.getSortByDatePosted()) {
+                sortby = ServerConstants.SORT_BY_DATE_POSTED;
+            }
+
+            interactionParamFilter = "Sal: "+jobFilterRequestBuilder.getSalary() +
+                    ", Edu: " + jobFilterRequestBuilder.getEdu() + ", Exp: " + jobFilterRequestBuilder.getExp()
+                    + ", Gen: " + jobFilterRequestBuilder.getGender();
+
             // override the filter candidateMobile with search candidateMobile
             if (jobFilterRequestBuilder.getCandidateMobile().trim().isEmpty()){
                 jobFilterRequestBuilder.setCandidateMobile(jobSearchRequest.getCandidateMobile());
             }
-            // override the filter lat/lng with search lat/lng
-            jobFilterRequestBuilder.setJobSearchLatitude(jobSearchRequest.getLatitude());
-            jobFilterRequestBuilder.setJobSearchLongitude(jobSearchRequest.getLongitude());
-            jobPostList.addAll(filterJobs(jobFilterRequestBuilder.build(), jobRoleIdList));
+            jobPostList.addAll(JobSearchService.getRelevantJobPostsWithinDistance(jobSearchRequest.getLatitude(),
+                    jobSearchRequest.getLongitude(), jobRoleIdList, jobFilterRequestBuilder.build(),
+                    sortby, false, true));
+
         } else {
             if(jobSearchRequest.getLatitude() != 0.0 && jobSearchRequest.getLongitude() != 0.0) {
                 jobPostList.addAll(
-                        getMatchingJobPosts(jobSearchRequest.getLatitude(), jobSearchRequest.getLongitude(),
-                                            jobRoleIdList, ServerConstants.SORT_DEFAULT));
+                        JobSearchService.getRelevantJobPostsWithinDistance(jobSearchRequest.getLatitude(),
+                                jobSearchRequest.getLongitude(), jobRoleIdList, null, ServerConstants.SORT_DEFAULT, false, true));
             } else {
-                jobPostList.addAll((getMatchingJobPosts(jobRoleIdList, null)));
+                jobPostList.addAll(JobSearchService.getRelevantJobPostsWithinDistance(null,
+                        null, jobRoleIdList, null,ServerConstants.SORT_DEFAULT, false, true));
             }
         }
 

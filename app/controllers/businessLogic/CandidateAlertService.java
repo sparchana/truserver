@@ -68,9 +68,14 @@ public class CandidateAlertService {
                     jobPrefIds.add(jobPreference.getJobRole().getJobRoleId());
                 }
 
-                jobsCount = MatchingEngineService.fetchMatchingJobPostForLatLng(candidate.getCandidateLocalityLat(),
+                jobsCount = JobSearchService.getRelevantJobPostsWithinDistance(
+                        candidate.getCandidateLocalityLat(),
                         candidate.getCandidateLocalityLng(),
-                        ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, jobPrefIds, ServerConstants.SORT_DEFAULT).size();
+                        jobPrefIds,
+                        null,
+                        ServerConstants.SORT_DEFAULT,
+                        false,
+                        true).size();
             }
 
             if (jobsCount > 0) {
