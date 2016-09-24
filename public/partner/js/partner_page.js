@@ -226,6 +226,7 @@ function processDataVerificationMsgCheck(returnedData) {
 
 function renderCandidateTable() {
     try {
+        var statusVal;
         var table = $('table#leadTable').DataTable({
             "ajax": {
                 "url": "/getMyCandidates",
@@ -239,23 +240,31 @@ function renderCandidateTable() {
                             'candidateStatus' : function() {
                                 if (candidate.candidateStatus != null){
                                     if(candidate.candidateStatus == "1"){
-                                        var statusVal;
                                         if(candidate.candidateActiveDeactive == '1'){
                                             statusVal = "Active";
-                                            return '<div class="mLabel" style="width:100%" >'+ '<img src=\"/assets/partner/img/correct.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font color="#00b334" size=\"4\">&nbsp;&nbsp;' + statusVal +'</font></div>' +'</div>';
+                                            return '<div class="mLabel" style="width:100%" >'+ '<img src=\"/assets/partner/img/correct.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font color="#00b334" size=\"2\">&nbsp;&nbsp;' + statusVal +'</font></div>' +'</div>';
                                         } else{
                                             statusVal = "Deactivated";
-                                            return '<div class="mLabel" style="width:100%" >'+ '<img src=\"/assets/partner/img/wrong.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font color="#dc143c" size=\"4\">&nbsp;&nbsp;' + statusVal +'</font></div>' +'</div>';
+                                            return '<div class="mLabel" style="width:100%" >'+ '<img src=\"/assets/partner/img/wrong.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font color="#dc143c" size=\"2\">&nbsp;&nbsp;' + statusVal +'</font></div>' +'</div>';
                                         }
                                     } else{
-                                        return '<button type="button" id="viewCandidateBtn" class="mBtn orange" onclick=\"verifyCandidate('+ candidate.candidateMobile+')\" >'+ '<img src=\"/assets/partner/img/warning.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; cursor: hand\" >&nbsp;&nbsp;Verify</div>' +'</button>';
+                                        statusVal = "Not Active";
+                                        return '<button type="button" id="viewCandidateBtn" class="mBtn orange" onclick=\"verifyCandidate('+ candidate.candidateMobile+')\" >'+ '<img src=\"/assets/partner/img/warning.png\" width=\"16px\" style=\"display: inline-block\" /><div style=\"display: inline-block; cursor: hand\" >' +
+                                            '<font color="#fff" size=\"2\">&nbsp;&nbsp;Verify</font></div>' +'</button>';
                                     }
                                 } else {
+                                    statusVal = "Not Active";
                                     return "-";
                                 }
                             },
                             'btnView' : '<button type="button" class="mBtn blue" onclick="viewCandidate('+candidate.leadId+')" id="viewCandidateBtn" >'+ 'View/Edit' +'</button>',
-                            'apply' : '<button type="button" class="mBtn" onclick="applyJobForCandidate('+candidate.candidateId+')" id="viewCandidateBtn" >'+ 'Apply Job' +'</button>'
+                            'apply' :  function() {
+                                if (statusVal.localeCompare("Active") == 0){
+                                    return '<button type="button" class="mBtn" onclick="applyJobForCandidate('+candidate.candidateId+')" id="viewCandidateBtn" >'+ 'Apply Job' +'</button>';
+                                } else {
+                                    return '<div class="mLabel" style="width:100%" >'+ '<div style=\"display: inline-block; \" ><font color="#777773" size=\"2\">&nbsp;&nbsp;' + 'Not Allowed' +'</font></div>' +'</div>';
+                                }
+                            }
                         })
                     });
                     return returned_data;

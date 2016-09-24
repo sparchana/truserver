@@ -146,6 +146,9 @@ public class JobService {
                                 interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName() + "@" + locality.getLocalityName()
                         );
                     }
+                    if(applyJobRequest.getPartner()){
+                        // this job is being applied by a parter for a candidate, hence we need to det partner Id in the job APplication table
+                    }
 
                     jobApplication.save();
                     writeJobApplicationToGoogleSheet(existingJobPost.getJobPostId(), applyJobRequest.getCandidateMobile(), channelType, applyJobRequest.getLocalityId());

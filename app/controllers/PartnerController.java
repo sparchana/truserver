@@ -206,7 +206,7 @@ public class PartnerController {
                     candidateSignUpResponse =
                             PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
                     Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
-                    PartnerService.sendCandidateVerificationSms(existingCandidate);
+                    candidateSignUpResponse.setOtp(PartnerService.sendCandidateVerificationSms(existingCandidate));
                 } else{
                     candidateSignUpResponse.setOtp(0);
                 }
@@ -319,4 +319,26 @@ public class PartnerController {
     }
 
     public static Result getCandidateJobs(long candidateId) { return ok(views.html.Partner.candidate_jobs.render()); }
+
+    public static Result checkPartnerCandidate(long id) {
+        Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+        if(partner != null){ //checking if partner is logged in or not
+            Candidate candidate = Candidate.find.where().eq("candidateId", id).findUnique(); //getting candidate profile from db
+            if(candidate != null){ //checking if the candidate was created by the requested partner
+                PartnerToCandidate partnerToCandidate = PartnerToCandidate.find
+                        .where()
+                        .eq("candidate_candidateid", candidate.getCandidateId())
+                        .findUnique();
+                if(partnerToCandidate != null){
+                    if(partnerToCandidate.getPartner().getPartnerId() == partner.getPartnerId()){
+                        return ok(toJson(candidate));
+                    } else{
+                        return ok("-1");
+                    }
+                }
+            }
+
+        }
+        return ok("0");
+    }
 }

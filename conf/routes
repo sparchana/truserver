@@ -106,6 +106,7 @@ POST        /partnerLoginSubmit                                           contro
 POST        /addPartnerPassword                                           controllers.PartnerController.addPassword()
 POST        /partnerSignUp                                                controllers.PartnerController.partnerSignUp()
 POST        /partnerUpdateBasicProfile                                    controllers.PartnerController.partnerUpdateBasicProfile()
+POST        /checkPartnerCandidate/:id                                    controllers.PartnerController.checkPartnerCandidate(id : Long)
 
 #new routes
 #~~~~~~~~~~~~~~~~~~~~

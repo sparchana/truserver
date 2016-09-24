@@ -1,5 +1,22 @@
 var jobPostId;
 
+$(document).ready(function() {
+    //getting all applied jobs
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllPartnerType",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckPartnerType
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+});
+
 function createAndAppendDivider(title) {
     var parent = $("#hotJobs");
 
@@ -265,7 +282,28 @@ function processDataForJobPostLocation(returnedData) {
 }
 
 function confirmApply() {
-    applyJob(jobPostId, prefLocation);
+    // checking if the candidate exists + if the partner has created this particular candidate or not
+    var candidateId = localStorage.getItem("candidateId");
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/checkPartnerCandidate/" + candidateId,
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckCandidate
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function processDataCheckCandidate(returnedData) {
+    if(returnedData != '0'){
+        applyJobAjax(jobPostId, returnedData.candidateMobile, prefLocation, true);
+    } else{
+        console.log("Partner doesn't own the candidate");
+    }
 }
 
 $(function() {

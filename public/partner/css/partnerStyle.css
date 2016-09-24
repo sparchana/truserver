@@ -309,6 +309,14 @@ option:checked {
     transition:         background-color 0.2s;
 }
 
+#hotJobs{
+    height: 72%;
+    overflow: scroll;
+}
+
+#hotJobs::-webkit-scrollbar {
+    width: 0 !important;
+}
 
 .sectionFiveMain{
     background: #002144;
@@ -466,6 +474,12 @@ a:hover{
 }
 
 @media screen and (max-width: 768px) {
+    #hotJobs{
+        margin-top: 24px;
+        height: 66%;
+        overflow: scroll;
+    }
+
     #viewCandidateBtn{
         padding: 8px;
         width: 90%;
