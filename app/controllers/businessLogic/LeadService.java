@@ -140,6 +140,7 @@ public class LeadService {
             Logger.info("Lead added");
             objectAUUId = lead.getLeadUUId();
         } else {
+            interactionType = InteractionConstants.INTERACTION_TYPE_EXISTING_LEAD_CONTACT;
             result = InteractionConstants.INTERACTION_RESULT_EXISTING_LEAD;
             objectAUUId = existingLead.getLeadUUId();
         }

@@ -10,11 +10,11 @@ import static api.InteractionConstants.*;
  * Created by adarsh on 12/9/16.
  */
 public class PartnerInteractionService {
-    public static void createInteractionForPartnerSignUp(String objectAUUId, String result) {
+    public static void createInteractionForPartnerSignUp(String objectAUUId, String result, Integer interactionType) {
         Interaction interaction = new Interaction(
                 objectAUUId,
                 ServerConstants.OBJECT_TYPE_PARTNER,
-                InteractionConstants.INTERACTION_TYPE_PARTNER_SIGN_UP,
+                interactionType,
                 InteractionConstants.INTERACTION_NOTE_BLANK,
                 result,
                 InteractionConstants.INTERACTION_CREATED_SELF,

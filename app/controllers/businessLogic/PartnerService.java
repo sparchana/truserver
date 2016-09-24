@@ -77,6 +77,7 @@ public class PartnerService {
         Logger.info("Checking for mobile number: " + partnerSignUpRequest.getPartnerMobile());
         Partner partner = isPartnerExists(partnerSignUpRequest.getPartnerMobile());
         String leadName = partnerSignUpRequest.getPartnerName();
+        Integer interactionType;
         Lead lead = LeadService.createOrUpdateConvertedLead(leadName, partnerSignUpRequest.getPartnerMobile(), leadSourceId, channelType, LeadService.LeadType.PARTNER);
         try {
             if(partner == null) {
@@ -93,6 +94,7 @@ public class PartnerService {
                 }
                 resetPartnerTypeAndLocality(partner, partnerSignUpRequest);
                 partnerSignUpResponse = createNewPartner(partner, lead);
+                interactionType = InteractionConstants.INTERACTION_TYPE_PARTNER_SIGN_UP;
                 if(!(channelType == InteractionService.InteractionChannelType.SUPPORT)){
                     // triggers when partner is self created
                     triggerOtp(partner, partnerSignUpResponse);
@@ -105,6 +107,7 @@ public class PartnerService {
                     Logger.info("auth doesn't exists for this partner");
                     partner.setPartnerFirstName(partnerSignUpRequest.getPartnerName());
                     resetPartnerTypeAndLocality(partner, partnerSignUpRequest);
+                    interactionType = InteractionConstants.INTERACTION_TYPE_EXISTING_PARTNER_TRIED_SIGNUP;
                     if(!(channelType == InteractionService.InteractionChannelType.SUPPORT)){
                         triggerOtp(partner, partnerSignUpResponse);
                         result = InteractionConstants.INTERACTION_RESULT_EXISTING_PARTNER_VERIFICATION;
@@ -113,13 +116,14 @@ public class PartnerService {
 
                     }
                 } else{
+                    interactionType = InteractionConstants.INTERACTION_TYPE_EXISTING_PARTNER_TRIED_SIGNUP_AND_SIGNUP_NOT_ALLOWED;
                     result = InteractionConstants.INTERACTION_RESULT_EXISTING_PARTNER_SIGNUP;
                     partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_EXISTS);
                 }
                 partner.partnerUpdate();
             }
             //creating interaction
-            createInteractionForPartnerSignUp(objectAUUId, result);
+            createInteractionForPartnerSignUp(objectAUUId, result, interactionType);
 
         } catch (NullPointerException n){
             n.printStackTrace();
