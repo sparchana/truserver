@@ -532,7 +532,39 @@ hr{
     padding-left:5px;
     font-size: 32px;
 }
+.pageNotFound{
+    margin-top: 2%;
+    text-align: center;
+}
+.pageNotFoundImg{
+    margin-top:4%;
+}
+#pageNotFoundImage{
+    margin-bottom: 1%;
+}
+#pageNotFoundHeaderOne{
+    margin-top: 0%;
+    margin-bottom: 1%;
+}
+#pageNotFoundHeaderTwo{
+    margin-bottom: 1%;
+}
+#pageNFBtn{
+    width:15%;
+    border: none;
+    background-color: #286AB6;
+    color: white;
+}
 @media screen and (max-width: 768px) {
+    #pageNFBtn{
+        width:25%;
+        border: none;
+        background-color: #286AB6;
+        color: white;
+    }
+    .pageNotFoundImg{
+        margin-top:8%;
+    }
     #companyLogoCompanyDetails{
         text-align: center;
     }

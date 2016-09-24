@@ -192,18 +192,17 @@ body{
 }
 .leadBox {
     text-align: center;
-    position: relative;
     width: 300px;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.15);
     border-radius: 2px;
     color: #0B4063;
     background: #ffffff;
     padding: 4px;
-    margin-left: 75%;
-    margin-top: -19%;
+    float:right;
+    margin-top: -20%;
 }
 
-.sectionStats {
+#sectionStats {
     background: linear-gradient(
             rgba(24, 26, 45, 0.7),
             rgba(24, 26, 45, 0.7)
@@ -380,12 +379,12 @@ a:hover{
 }
 
 #hotJobs{
-    height: 72%;
     overflow: scroll;
 }
 
 #hotJobs::-webkit-scrollbar {
     width: 0 !important;
+    height:0 !important;
 }
 
 #hotJobItemDivider{
@@ -489,13 +488,10 @@ hr{
     padding-bottom: 24px;
     margin-top: -70px;
 }
-#navLogo{
-    margin-top: -4px;
-}
-.appStoreContainer{
+#appStoreContainer{
     background: url(/assets/common/img/backimage_appstore.png) no-repeat;
     background-size:100% ;
-    padding: 0% 0%;
+    padding: 2% 2%;
 }
 #step_image{
     margin-bottom:4%;
@@ -510,7 +506,10 @@ hr{
     text-align:center;
     margin-top:5%;
 }
-
+#navLogo{
+    height: 65%;
+    margin-top:4%;
+}
 @media screen and (max-width: 280px) {
     .panel{
         padding: 0px;
@@ -524,6 +523,7 @@ hr{
     }
     #navLogo{
         height: 24px;
+        margin-top:4%;
     }
     #leadFormBox{
         margin-top: 20px;
@@ -668,7 +668,6 @@ hr{
         height: 66%;
         overflow: scroll;
     }
-
     .custom_container{
         margin: 0;
     }
@@ -740,24 +739,18 @@ hr{
         width: 60%;
         padding: 4%;
     }
-    #hiringCompanyContent{
-        height: 62%;
-    }
     #stepContainer{
         display: none;
     }
-    .appStoreContainer{
-        background-size: 600%;
+    #appStoreContainer{
+        background-size: 350%;
     }
     #playStoreLogo{
         display: none;
     }
     #playStoreLogoNavBar{
-        display: block;
-        padding: 0;
+        display: inline-block;
         margin-top: 12px;
-        margin-right: 2px;
-        float: right;
     }
     .navbar-right{
         margin-right:-15px;
@@ -846,7 +839,7 @@ hr{
         text-align: center;
     }
     #candidateFirstName {
-        width: 96%;
+        width: 98%;
     }
 
     #candidateFirstNameModal {
@@ -854,7 +847,7 @@ hr{
     }
 
     .candidateSecondNameMain {
-        width: 96%;
+        width: 98%;
         margin-top: 8px;
         margin-left: 12px;
     }
@@ -897,17 +890,13 @@ hr{
     #navItem1, #navItem2, #navItem3, #navItem4, #navItem5{
         color: #747474;
     }
-
-    #navLogo{
-        margin-top: 12px;
-        content:url("/assets/common/img/logo-color.gif");
-    }
     .modal .modal-dialog {
         width: 80%;
         margin: 8%;
     }
 
     .leadBox {
+        position: relative;
         width: 84%;
         margin-right: 8%;
         margin-left: 8%;
@@ -917,7 +906,12 @@ hr{
         display: none;
     }
 }
-
+@media screen and (max-width: 1000px) {
+    #navLogo {
+        margin-top: 10px;
+        content: url("/assets/common/img/logo-color.gif");
+    }
+}
 #headingMain {
     margin-top: 20px;
 }
@@ -1030,7 +1024,7 @@ li .dropdown-menu{
 	padding-left: 0px;
 }
 #company_box{
-	margin: 12px 0px 16px 0px;
+	margin: 2% 0;
 }
 #logo_box{
 	margin-left: 18px;
@@ -1116,6 +1110,10 @@ padding: 0px;
 
 .navbar-default .navbar-nav>li>a{
     color: #ffffff;
+}
+
+.navbar-brand{
+    padding: 0px 0px;
 }
 
 .fade-background {
