@@ -385,6 +385,7 @@ a:hover{
 
 #hotJobs::-webkit-scrollbar {
     width: 0 !important;
+    height:0 !important;
 }
 
 #hotJobItem{
@@ -653,6 +654,7 @@ hr{
     border-bottom: 1px solid #f4eef2;
     background: #ffffff;
 }
+
 @media screen and (max-width: 768px) {
     #hotJobs{
         margin-top: 24px;
