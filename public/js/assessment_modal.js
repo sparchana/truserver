@@ -142,18 +142,19 @@ function triggerFinalSubmission() {
     }
 }
 
-function getAssessmentQuestions(jobRoleId, jobPostId) {
-
+function getAssessmentQuestions(jobRoleIds, jobPostIds) {
     var base_api_url ="/getAssessmentQuestions/";
     if(base_api_url != null || jobPostId != null) {
         base_api_url +="?";
-        if(jobRoleId != null) {
-            base_api_url += "jobRoleIds=" + jobRoleId;
+        if(jobRoleIds != null) {
+            base_api_url += "jobRoleIds=" + jobRoleIds + "&";
         }
-        if(jobPostId != null){
-            base_api_url += "jobPostIds=" + jobPostId;
+        if(jobPostIds != null){
+            base_api_url += "jobPostIds=" + jobPostIds;
         }
     }
+    console.log(base_api_url);
+
     try {
         $.ajax({
             type: "GET",

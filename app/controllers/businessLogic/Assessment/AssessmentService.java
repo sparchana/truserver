@@ -266,8 +266,7 @@ public class AssessmentService {
              ++finalScore;
          }
         }
-        Logger.info("finalScore:"+finalScore/candidateAssessmentResponseList.size());
-        return finalScore/candidateAssessmentResponseList.size();
+        return finalScore/5;
     }
 
     public static List<CandidateJobPrefs.JobPrefWithAssessmentBundle> getJobPrefVsIsAssessedList(Long candidateId, List<JobPreference> jobPreferenceList) {
@@ -312,9 +311,11 @@ public class AssessmentService {
                 // if attempted already then mark it as complete
                 if(candidateAssessmentAttempt != null){
                     jobRoleBundle.setAssessed(true);
+                    Logger.info(" jobRoleId:"+jobRoleId +" is already attempted by candidate: " + candidateId);
                 }
             } else {
                 // if there is no questions for this jobRole, mark it as complete in Front End
+                Logger.info("No Questions Available in db for JobRoleId: " + jobRoleId);
                 jobRoleBundle.setAssessed(true);
             }
 
