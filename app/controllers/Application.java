@@ -1216,25 +1216,33 @@ public class Application extends Controller {
             Long candidateId = Long.parseLong(session().get("candidateId"));
             List<Long> jobRoleIdList = new ArrayList<>();
             if (jobRoleIds != null && !jobRoleIds.equalsIgnoreCase("null")) {
-                jobRoleIds = jobRoleIds.replaceAll("[^0-9]", "");
-                if (jobRoleIds.isEmpty() || jobRoleIds.length() > 3) {
+                jobRoleIds = jobRoleIds.replaceAll("[^0-9,]", "");
+                if (jobRoleIds.isEmpty()) {
                     return ok("Error ! wrong param value");
                 }
                 List<String> jobRoleIdStrList = Arrays.asList(jobRoleIds.split("\\s*,\\s*"));
                 if (jobRoleIdStrList.size() > 0) {
                     for (String roleId: jobRoleIdStrList) {
+                        if(roleId.length() > 3) continue;
                         jobRoleIdList.add(Long.parseLong(roleId));
                     }
                 }
             } else {
                 Logger.debug(""+jobPostIds);
                 if (jobPostIds != null && !jobPostIds.equalsIgnoreCase("null")) {
-                    jobPostIds = jobPostIds.replaceAll("[^0-9]", "");
-                    if (jobPostIds.isEmpty() || jobPostIds.length() > 3) {
+                    jobPostIds = jobPostIds.replaceAll("[^0-9,]", "");
+                    if (jobPostIds.isEmpty()) {
                         return ok("Error ! wrong param value");
                     }
                     List<String> jobPostIdStrList = Arrays.asList(jobPostIds.split("\\s*,\\s*"));
-                    List<JobPost> jobPostList = JobPost.find.where().in("jobPostId", jobPostIdStrList).findList();
+                    List<Long> jobPostIdList = new ArrayList<>();
+                    if (jobPostIdStrList.size() > 0) {
+                        for (String jobPostId: jobPostIdStrList) {
+                            if(jobPostId.length() > 3) continue;
+                            jobPostIdList.add(Long.parseLong(jobPostId));
+                        }
+                    }
+                    List<JobPost> jobPostList = JobPost.find.where().in("jobPostId", jobPostIdList).findList();
                     for (JobPost jobPost : jobPostList) {
                         if (!jobRoleIdList.contains(jobPost.getJobRole().getJobRoleId())){
                             jobRoleIdList.add(jobPost.getJobRole().getJobRoleId());

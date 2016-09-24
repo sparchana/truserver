@@ -1,7 +1,7 @@
 /**
  * Created by batcoder1 on 20/6/16.
  */
-$(window).load(function() {
+$(window).load(function () {
     $('html, body').css({
         'overflow': 'auto',
         'height': 'auto'
@@ -11,7 +11,7 @@ $(window).load(function() {
     $("#preloader").delay(1000).fadeOut("slow");
 });
 
-$(document).ready(function(){
+$(document).ready(function () {
     checkUserLogin();
     try {
         $.ajax({
@@ -31,10 +31,10 @@ $(document).ready(function(){
 function processDataAndFetchAppliedJobs(returnedData) {
     var candidateJobApplication = returnedData;
     $("#jobCount").html(Object.keys(candidateJobApplication).length);
-    if(Object.keys(candidateJobApplication).length > 0){
+    if (Object.keys(candidateJobApplication).length > 0) {
         candidateJobApplication.reverse();
         prePopulateJobSection(candidateJobApplication);
-    } else{
+    } else {
         var parent = $('#myAppliedJobs');
         var centerDiv = document.createElement("center");
         parent.append(centerDiv);
@@ -53,22 +53,22 @@ function processDataAndFetchAppliedJobs(returnedData) {
 function prePopulateJobSection(jobApplication) {
     var parent = $('#myAppliedJobs');
     var count = 0;
-    jobApplication.forEach(function (jobPost){
+    jobApplication.forEach(function (jobPost) {
         count++;
-        if(count){
+        if (count) {
             /* get all localities of the jobApplication */
             var jobLocality = jobPost.jobPost.jobPostToLocalityList;
             var localities = "";
             var allLocalities = "";
             var loopCount = 0;
             jobLocality.forEach(function (locality) {
-                loopCount ++;
-                if(loopCount > 2){
+                loopCount++;
+                if (loopCount > 2) {
                     return false;
-                } else{
+                } else {
                     var name = locality.locality.localityName;
                     localities += name;
-                    if(loopCount < Object.keys(jobLocality).length){
+                    if (loopCount < Object.keys(jobLocality).length) {
                         localities += ", ";
                     }
                 }
@@ -79,7 +79,7 @@ function prePopulateJobSection(jobApplication) {
                 loopCount++;
                 var name = locality.locality.localityName;
                 allLocalities += name;
-                if(loopCount < Object.keys(jobLocality).length){
+                if (loopCount < Object.keys(jobLocality).length) {
                     allLocalities += ", ";
                 }
             });
@@ -131,7 +131,7 @@ function prePopulateJobSection(jobApplication) {
 
             var divAppliedDate = document.createElement("div");
             divAppliedDate.id = "appliedDate";
-            divAppliedDate.textContent = "Applied on: " + new Date(fetchedAppliedDate).getDate() + "/" + (new Date(fetchedAppliedDate).getMonth()+1) + "/" + new Date(fetchedAppliedDate).getFullYear();
+            divAppliedDate.textContent = "Applied on: " + new Date(fetchedAppliedDate).getDate() + "/" + (new Date(fetchedAppliedDate).getMonth() + 1) + "/" + new Date(fetchedAppliedDate).getFullYear();
             titleRowTwo.appendChild(divAppliedDate);
 
             var hr = document.createElement("hr");
@@ -170,9 +170,9 @@ function prePopulateJobSection(jobApplication) {
 
             var salaryDiv = document.createElement("div");
             salaryDiv.style = "display: inline-block; font-size: 14px";
-            if(jobPost.jobPost.jobPostMaxSalary == "0"){
+            if (jobPost.jobPost.jobPostMaxSalary == "0") {
                 salaryDiv.textContent = jobPost.jobPost.jobPostMinSalary + " monthly";
-            } else{
+            } else {
                 salaryDiv.textContent = jobPost.jobPost.jobPostMinSalary + " - " + jobPost.jobPost.jobPostMaxSalary + " monthly";
             }
 
@@ -238,7 +238,7 @@ function prePopulateJobSection(jobApplication) {
             locDiv.textContent = localities;
             jobBodySubRowColLoc.appendChild(locDiv);
 
-            if(((jobLocality.length) - 2) > 0 ){
+            if (((jobLocality.length) - 2) > 0) {
                 var tooltip = document.createElement("a");
                 tooltip.id = "locationMsg_" + jobPost.jobPost.jobPostId;
                 tooltip.title = allLocalities;

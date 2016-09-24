@@ -6,7 +6,9 @@ import api.http.httpRequest.AssessmentRequest;
 import api.http.httpResponse.AssessmentSubmissionResponse;
 import api.http.httpResponse.CandidateJobPrefs;
 import models.entity.Candidate;
-import models.entity.OM.*;
+import models.entity.OM.CandidateAssessmentAttempt;
+import models.entity.OM.CandidateAssessmentResponse;
+import models.entity.OM.JobPreference;
 import models.entity.Static.AssessmentQuestion;
 import models.entity.Static.JobRole;
 import play.Logger;
@@ -14,7 +16,8 @@ import play.api.Play;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static models.util.Util.RoundTo1Decimals;
 import static play.libs.Json.toJson;
@@ -26,19 +29,19 @@ public class AssessmentService {
 
     private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());
 
-    public static List<AssessmentQuestion> getQuestions(List<Long> jobRoleIdList){
+    public static List<AssessmentQuestion> getQuestions(List<Long> jobRoleIdList) {
         List<AssessmentQuestion> assessmentQuestionList = new ArrayList<>();
-        if(jobRoleIdList.size() > 0) {
+        if (jobRoleIdList.size() > 0) {
             assessmentQuestionList.addAll(AssessmentQuestion.find.where().in("jobRoleId", jobRoleIdList).orderBy().asc("jobRoleId").findList());
         }
         return assessmentQuestionList;
     }
 
-    public static AssessmentSubmissionResponse addAssessedInfoToGS(AssessmentRequest assessmentRequest, Long candidateId){
+    public static AssessmentSubmissionResponse addAssessedInfoToGS(AssessmentRequest assessmentRequest, Long candidateId) {
         AssessmentSubmissionResponse response = new AssessmentSubmissionResponse();
-        if(candidateId != null){
+        if (candidateId != null) {
             Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
-            if(!assessmentRequest.getResponseList().isEmpty()){
+            if (!assessmentRequest.getResponseList().isEmpty()) {
 
                 List<AssessmentSheetCol> colList = new ArrayList<>();
                 List<AssessmentRequest.AssessmentOption> optionList = assessmentRequest.getResponseList();
@@ -47,35 +50,35 @@ public class AssessmentService {
 
                 optionList.sort((o1, o2) -> o1.getJobRoleId() >= o2.getJobRoleId() ? 1 : 0);
 
-                for(AssessmentRequest.AssessmentOption option : optionList) {
+                for (AssessmentRequest.AssessmentOption option : optionList) {
                     assessmentQuestionIdList.add(option.getAssessmentQuestionId());
-                    if(!assessmentJobRoleIdList.contains(option.getJobRoleId())) {
+                    if (!assessmentJobRoleIdList.contains(option.getJobRoleId())) {
                         assessmentJobRoleIdList.add(option.getJobRoleId());
                     }
                 }
                 int optionSize = optionList.size();
-                if(optionSize == 0){
+                if (optionSize == 0) {
                     response.setStatus(AssessmentSubmissionResponse.Status.UNKNOWN);
                     Logger.info(String.valueOf(toJson(response)));
                     return response;
                 }
-                Long prevJobRoleId =  optionList.get(0).getJobRoleId();
+                Long prevJobRoleId = optionList.get(0).getJobRoleId();
 
                 List<AssessmentQuestion> assessmentQuestionList = AssessmentQuestion.find.where().in("assessmentQuestionId", assessmentQuestionIdList).findList();
-                for(int i =0; i < optionSize; i++) {
+                for (int i = 0; i < optionSize; i++) {
                     AssessmentSheetCol assessmentSheetCol = new AssessmentSheetCol();
                     assessmentSheetCol.question = assessmentQuestionList.get(i);
                     assessmentSheetCol.answer = optionList.get(i).getAssessmentResponse();
                     colList.add(assessmentSheetCol);
-                    if(prevJobRoleId != optionList.get(i).getJobRoleId() || (i == optionSize - 1)) {
+                    if (prevJobRoleId != optionList.get(i).getJobRoleId() || (i == optionSize - 1)) {
                         try {
                             JobRole jobRole;
-                            if(prevJobRoleId != null || (i == optionSize - 1)) {
+                            if (prevJobRoleId != null || (i == optionSize - 1)) {
                                 jobRole = JobRole.find.where().eq("jobRoleId", prevJobRoleId).findUnique();
                                 saveAttemptAndWriteToGS(candidate, jobRole, colList);
                                 colList = new ArrayList<>();
                             }
-                            if(i == optionSize-1 && prevJobRoleId != optionList.get(i).getJobRoleId()) {
+                            if (i == optionSize - 1 && prevJobRoleId != optionList.get(i).getJobRoleId()) {
                                 jobRole = JobRole.find.where().eq("jobRoleId", optionList.get(i).getJobRoleId()).findUnique();
                                 saveAttemptAndWriteToGS(candidate, jobRole, colList);
                             }
@@ -85,7 +88,7 @@ public class AssessmentService {
                         prevJobRoleId = optionList.get(i).getJobRoleId();
                     }
                 }
-                if(shouldBeMarkedAsAssessed(getJobPrefVsIsAssessedList(candidate.getCandidateId(), candidate.getJobPreferencesList()))){
+                if (shouldBeMarkedAsAssessed(getJobPrefVsIsAssessedList(candidate.getCandidateId(), candidate.getJobPreferencesList()))) {
                     candidate.setCandidateIsAssessed(ServerConstants.CANDIDATE_ASSESSED);
                     candidate.candidateUpdate();
                     response.setStatus(AssessmentSubmissionResponse.Status.ALL_ASSESSED);
@@ -114,7 +117,7 @@ public class AssessmentService {
         caAttempt.save();
 
         /* write response to google sheet */
-        if(!isDevMode){
+        if (!isDevMode) {
             writeAssessmentToGoogleSheet(candidate.getCandidateId(),
                     candidate.getCandidateMobile(), candidate.getCandidateFullName(),
                     jobRole.getJobName(), colList);
@@ -123,7 +126,7 @@ public class AssessmentService {
 
     private static List<CandidateAssessmentResponse> getAssessmentResponses(List<AssessmentSheetCol> colList) {
         List<CandidateAssessmentResponse> candidateAssessmentResponseList = new ArrayList<>();
-        for(AssessmentSheetCol response: colList) {
+        for (AssessmentSheetCol response : colList) {
             CandidateAssessmentResponse candidateAssessmentResponse = new CandidateAssessmentResponse();
             candidateAssessmentResponse.setAssessmentQuestion(response.question);
             candidateAssessmentResponse.setCandidateAnswer(response.answer);
@@ -133,9 +136,9 @@ public class AssessmentService {
         return candidateAssessmentResponseList;
     }
 
-    private static boolean shouldBeMarkedAsAssessed(List<CandidateJobPrefs.JobPrefWithAssessmentBundle> jobPrefWithAssessmentBundleList){
-        for(CandidateJobPrefs.JobPrefWithAssessmentBundle jobPrefWithAssessmentBundle : jobPrefWithAssessmentBundleList){
-            if(!jobPrefWithAssessmentBundle.isAssessed()){
+    private static boolean shouldBeMarkedAsAssessed(List<CandidateJobPrefs.JobPrefWithAssessmentBundle> jobPrefWithAssessmentBundleList) {
+        for (CandidateJobPrefs.JobPrefWithAssessmentBundle jobPrefWithAssessmentBundle : jobPrefWithAssessmentBundleList) {
+            if (!jobPrefWithAssessmentBundle.isAssessed()) {
                 return false;
             }
         }
@@ -143,7 +146,7 @@ public class AssessmentService {
     }
 
     private static void writeAssessmentToGoogleSheet(Long candidateId, String candidateMobile, String candidateName, String jobName,
-                                                   List<AssessmentSheetCol> colList) throws UnsupportedEncodingException {
+                                                     List<AssessmentSheetCol> colList) throws UnsupportedEncodingException {
         /*
         *
         * writing to job application sheet excel sheet
@@ -168,29 +171,29 @@ public class AssessmentService {
         String candidateAnswer5Val = "";
         String correctAnswer5Val = "";
 
-        if(colList.size() > 0) {
+        if (colList.size() > 0) {
             question1Val = colList.get(0).question == null ? "" : colList.get(0).question.getQuestionText();
             candidateAnswer1Val = colList.get(0).answer == null ? "" : colList.get(0).answer;
             correctAnswer1Val = colList.get(0).question.getAnswer() == null ? "" : colList.get(0).question.getAnswer();
         }
-        if(colList.size() > 1) {
+        if (colList.size() > 1) {
             question2Val = colList.get(1).question == null ? "" : colList.get(1).question.getQuestionText();
             correctAnswer2Val = colList.get(1).answer == null ? "" : colList.get(1).answer;
             candidateAnswer2Val = colList.get(1).question.getAnswer() == null ? "" : colList.get(1).question.getAnswer();
         }
-        if(colList.size() > 2) {
+        if (colList.size() > 2) {
             question3Val = colList.get(2).question == null ? "" : colList.get(2).question.getQuestionText();
-            candidateAnswer3Val = colList.get(2).answer == null ? "" : colList.get(2).answer ;
+            candidateAnswer3Val = colList.get(2).answer == null ? "" : colList.get(2).answer;
             correctAnswer3Val = colList.get(2).question.getAnswer() == null ? "" : colList.get(2).question.getAnswer();
         }
-        if(colList.size() > 3) {
+        if (colList.size() > 3) {
             question4Val = colList.get(3).question == null ? "" : colList.get(3).question.getQuestionText();
-            candidateAnswer4Val = colList.get(3).answer == null ? "" : colList.get(3).answer ;
+            candidateAnswer4Val = colList.get(3).answer == null ? "" : colList.get(3).answer;
             correctAnswer4Val = colList.get(3).question.getAnswer() == null ? "" : colList.get(3).question.getAnswer();
         }
-        if(colList.size() > 4){
+        if (colList.size() > 4) {
             question5Val = colList.get(4).question == null ? "" : colList.get(4).question.getQuestionText();
-            candidateAnswer5Val = colList.get(4).answer == null ? "" : colList.get(4).answer ;
+            candidateAnswer5Val = colList.get(4).answer == null ? "" : colList.get(4).answer;
             correctAnswer5Val = colList.get(4).question.getAnswer() == null ? "" : colList.get(4).question.getAnswer();
         }
 
@@ -220,69 +223,63 @@ public class AssessmentService {
         String postBody;
 
         postBody =
-                  candidateIdKey  +"=" + URLEncoder.encode(candidateIdVal,"UTF-8") + "&"
-                + candidateMobileKey  + "=" + URLEncoder.encode(candidateMobileVal,"UTF-8") + "&"
-                + candidateNameKey  + "=" + URLEncoder.encode(candidateNameVal,"UTF-8") + "&"
-                + jobRoleKey  + "=" + URLEncoder.encode(jobRoleVal,"UTF-8") + "&"
-                + question1Key + "=" + URLEncoder.encode(question1Val,"UTF-8") + "&"
-                + candidateAnswer1Key + "=" + URLEncoder.encode(candidateAnswer1Val,"UTF-8") + "&"
-                + correctAnswer1Key + "=" + URLEncoder.encode(correctAnswer1Val,"UTF-8") + "&"
-                + question2Key + "=" + URLEncoder.encode(question2Val,"UTF-8") + "&"
-                + candidateAnswer2Key + "=" + URLEncoder.encode(candidateAnswer2Val,"UTF-8") + "&"
-                + correctAnswer2Key + "=" + URLEncoder.encode(correctAnswer2Val,"UTF-8")+ "&"
-                + question3Key + "=" + URLEncoder.encode(question3Val,"UTF-8") + "&"
-                + candidateAnswer3Key + "=" + URLEncoder.encode(candidateAnswer3Val,"UTF-8") + "&"
-                + correctAnswer3Key + "=" + URLEncoder.encode(correctAnswer3Val,"UTF-8")+ "&"
-                + question4Key + "=" + URLEncoder.encode(question4Val,"UTF-8") + "&"
-                + candidateAnswer4Key + "=" + URLEncoder.encode(candidateAnswer4Val,"UTF-8") + "&"
-                + correctAnswer4Key + "=" + URLEncoder.encode(correctAnswer4Val,"UTF-8")+ "&"
-                + question5Key + "=" + URLEncoder.encode(question5Val,"UTF-8") + "&"
-                + candidateAnswer5Key + "=" + URLEncoder.encode(candidateAnswer5Val,"UTF-8") + "&"
-                + correctAnswer5Key + "=" + URLEncoder.encode(correctAnswer5Val,"UTF-8");
+                candidateIdKey + "=" + URLEncoder.encode(candidateIdVal, "UTF-8") + "&"
+                        + candidateMobileKey + "=" + URLEncoder.encode(candidateMobileVal, "UTF-8") + "&"
+                        + candidateNameKey + "=" + URLEncoder.encode(candidateNameVal, "UTF-8") + "&"
+                        + jobRoleKey + "=" + URLEncoder.encode(jobRoleVal, "UTF-8") + "&"
+                        + question1Key + "=" + URLEncoder.encode(question1Val, "UTF-8") + "&"
+                        + candidateAnswer1Key + "=" + URLEncoder.encode(candidateAnswer1Val, "UTF-8") + "&"
+                        + correctAnswer1Key + "=" + URLEncoder.encode(correctAnswer1Val, "UTF-8") + "&"
+                        + question2Key + "=" + URLEncoder.encode(question2Val, "UTF-8") + "&"
+                        + candidateAnswer2Key + "=" + URLEncoder.encode(candidateAnswer2Val, "UTF-8") + "&"
+                        + correctAnswer2Key + "=" + URLEncoder.encode(correctAnswer2Val, "UTF-8") + "&"
+                        + question3Key + "=" + URLEncoder.encode(question3Val, "UTF-8") + "&"
+                        + candidateAnswer3Key + "=" + URLEncoder.encode(candidateAnswer3Val, "UTF-8") + "&"
+                        + correctAnswer3Key + "=" + URLEncoder.encode(correctAnswer3Val, "UTF-8") + "&"
+                        + question4Key + "=" + URLEncoder.encode(question4Val, "UTF-8") + "&"
+                        + candidateAnswer4Key + "=" + URLEncoder.encode(candidateAnswer4Val, "UTF-8") + "&"
+                        + correctAnswer4Key + "=" + URLEncoder.encode(correctAnswer4Val, "UTF-8") + "&"
+                        + question5Key + "=" + URLEncoder.encode(question5Val, "UTF-8") + "&"
+                        + candidateAnswer5Key + "=" + URLEncoder.encode(candidateAnswer5Val, "UTF-8") + "&"
+                        + correctAnswer5Key + "=" + URLEncoder.encode(correctAnswer5Val, "UTF-8");
 
         try {
             GoogleSheetHttpRequest googleSheetHttpRequest = new GoogleSheetHttpRequest();
             googleSheetHttpRequest.sendPost(url, postBody);
-        }catch (Exception exception){
+        } catch (Exception exception) {
             Logger.info("Exception in writing to google sheet");
         }
     }
 
-    private static class AssessmentSheetCol {
-        AssessmentQuestion question;
-        String answer;
-    }
-
     /**
-     *
      * Calculate Attempt Score based on responseList
-     * @param candidateAssessmentResponseList
      *
+     * @param candidateAssessmentResponseList
      */
     private static double calculateAttemptScore(List<CandidateAssessmentResponse> candidateAssessmentResponseList) {
         double finalScore = 0D;
-        for(CandidateAssessmentResponse candidateAssessmentResponse: candidateAssessmentResponseList){
-         if(candidateAssessmentResponse.getScore() > 0 ){
-             ++finalScore;
-         }
+        for (CandidateAssessmentResponse candidateAssessmentResponse : candidateAssessmentResponseList) {
+            if (candidateAssessmentResponse.getScore() > 0) {
+                ++finalScore;
+            }
         }
-        return finalScore/5;
+        return finalScore / 5;
     }
 
     public static List<CandidateJobPrefs.JobPrefWithAssessmentBundle> getJobPrefVsIsAssessedList(Long candidateId, List<JobPreference> jobPreferenceList) {
         List<CandidateJobPrefs.JobPrefWithAssessmentBundle> jobPrefWithAssessmentBundleList = new ArrayList<>();
-        for(JobPreference jobPreference: jobPreferenceList) {
+        for (JobPreference jobPreference : jobPreferenceList) {
             CandidateJobPrefs.JobPrefWithAssessmentBundle jobPrefWithAssessmentBundle = new CandidateJobPrefs.JobPrefWithAssessmentBundle();
             // check if there is atleast one question for this jobRole
-            if(AssessmentQuestion.find.where().in("jobRoleId", jobPreference.getJobRole().getJobRoleId()).setMaxRows(1).findUnique() != null){
+            if (AssessmentQuestion.find.where().in("jobRoleId", jobPreference.getJobRole().getJobRoleId()).setMaxRows(1).findUnique() != null) {
                 // check if this jobRole is attempted or not
-                CandidateAssessmentAttempt  candidateAssessmentAttempt = CandidateAssessmentAttempt.find.where()
+                CandidateAssessmentAttempt candidateAssessmentAttempt = CandidateAssessmentAttempt.find.where()
                         .eq("candidateId", candidateId)
                         .eq("jobRoleId", jobPreference.getJobRole().getJobRoleId())
                         .setMaxRows(1)
                         .findUnique();
                 // if attempted already then mark it as complete
-                if(candidateAssessmentAttempt != null){
+                if (candidateAssessmentAttempt != null) {
                     jobPrefWithAssessmentBundle.setAssessed(true);
                 }
             } else {
@@ -295,23 +292,24 @@ public class AssessmentService {
         }
         return jobPrefWithAssessmentBundleList;
     }
+
     public static List<JobRoleWithAssessmentBundle> getJobRoleIdsVsIsAssessedList(Long candidateId, List<Long> jobRoleIdList) {
         List<JobRoleWithAssessmentBundle> jobRoleBundleList = new ArrayList<>();
-        for(Long jobRoleId: jobRoleIdList){
+        for (Long jobRoleId : jobRoleIdList) {
             JobRoleWithAssessmentBundle jobRoleBundle = new JobRoleWithAssessmentBundle();
             jobRoleBundle.setJobRoleId(jobRoleId);
             // check if there is atleast one question for this jobRole
-            if(AssessmentQuestion.find.where().in("jobRoleId", jobRoleId).setMaxRows(1).findUnique() != null){
+            if (AssessmentQuestion.find.where().in("jobRoleId", jobRoleId).setMaxRows(1).findUnique() != null) {
                 // check if this jobRole is attempted or not
-                CandidateAssessmentAttempt  candidateAssessmentAttempt = CandidateAssessmentAttempt.find.where()
+                CandidateAssessmentAttempt candidateAssessmentAttempt = CandidateAssessmentAttempt.find.where()
                         .eq("candidateId", candidateId)
                         .eq("jobRoleId", jobRoleId)
                         .setMaxRows(1)
                         .findUnique();
                 // if attempted already then mark it as complete
-                if(candidateAssessmentAttempt != null){
+                if (candidateAssessmentAttempt != null) {
                     jobRoleBundle.setAssessed(true);
-                    Logger.info(" jobRoleId:"+jobRoleId +" is already attempted by candidate: " + candidateId);
+                    Logger.info(" jobRoleId:" + jobRoleId + " is already attempted by candidate: " + candidateId);
                 }
             } else {
                 // if there is no questions for this jobRole, mark it as complete in Front End
@@ -322,6 +320,11 @@ public class AssessmentService {
             jobRoleBundleList.add(jobRoleBundle);
         }
         return jobRoleBundleList;
+    }
+
+    private static class AssessmentSheetCol {
+        AssessmentQuestion question;
+        String answer;
     }
 
     public static class JobRoleWithAssessmentBundle {

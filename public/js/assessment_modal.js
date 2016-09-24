@@ -101,13 +101,17 @@ function processAssessmentQuestions(returnedData) {
 }
 
 function processPostAssessmentResponse(response) {
+    $('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
+    $("#customMsg").html("You have completed assessment for job.");
     if (response.status == "ALL_ASSESSED"){
         localStorage.setItem("assessed", "1");
         $('#assessmentDivRow span').removeClass("glyphicon-exclamation-sign red").addClass(" glyphicon-star yellow");
         $('#assessmentDivRow a').attr("title", "Completed !");
+        $("#messagePromptModal").modal("show");
     } else if (response.status == "SUCCESS" || response.status == "ALREADY_ASSESSED") {
         $('#jr_id_'+response.jobRoleId+' span').removeClass("glyphicon-exclamation-sign red").addClass(" glyphicon-star yellow");
         $('#tt_'+response.jobRoleId+'_ic').attr("title", "Completed !");
+        $("#messagePromptModal").modal("show");
     }
 }
 
@@ -147,10 +151,10 @@ function getAssessmentQuestions(jobRoleIds, jobPostIds) {
     if(base_api_url != null || jobPostId != null) {
         base_api_url +="?";
         if(jobRoleIds != null) {
-            base_api_url += "jobRoleIds=" + jobRoleIds + "&";
+            base_api_url += "jobRoleIds=" + jobRoleIds;
         }
         if(jobPostIds != null){
-            base_api_url += "jobPostIds=" + jobPostIds;
+            base_api_url += "&jobPostIds=" + jobPostIds;
         }
     }
     console.log(base_api_url);
