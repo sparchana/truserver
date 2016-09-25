@@ -212,7 +212,7 @@ public class PartnerService {
             } else {
                 int randomPIN = generateOtp();
                 existingPartner.update();
-                SmsUtil.sendResetPasswordOTPSms(randomPIN, existingPartner.getPartnerMobile());
+                SmsUtil.sendResetPasswordOTPSms(randomPIN, existingPartner.getPartnerMobile(), channelType);
 
                 String interactionResult = InteractionConstants.INTERACTION_RESULT_PARTNER_TRIED_TO_RESET_PASSWORD;
                 String objAUUID = "";

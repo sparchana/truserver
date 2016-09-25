@@ -152,7 +152,7 @@ public class JobService {
 
                     Logger.info("candidate: " + existingCandidate.getCandidateFirstName() + " with mobile: " + existingCandidate.getCandidateMobile() + " applied to the jobPost of JobPostId:" + existingJobPost.getJobPostId());
 
-                    SmsUtil.sendJobApplicationSms(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), existingCandidate.getCandidateMobile(), jobApplication.getLocality().getLocalityName());
+                    SmsUtil.sendJobApplicationSms(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), existingCandidate.getCandidateMobile(), jobApplication.getLocality().getLocalityName(), channelType);
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_SUCCESS);
                 } else{
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_EXISTS);
