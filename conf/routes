@@ -64,7 +64,7 @@ GET         /dashboard/appliedJobs/                                       contro
 GET         /dashboard/editProfile                                        controllers.Application.editProfile()
 GET         /getCandidateInfoDashboard                                    controllers.Application.getCandidateInfoDashboard()
 GET         /getCandidateJobApplication                                   controllers.Application.getCandidateJobApplication()
-GET         /getCandidateJobPrefs/                                        controllers.Application.getCandidateJobPrefs(limit: Integer ?= null)
+GET         /getCandidateJobPrefWithAssessmentStatus/                     controllers.Application.getCandidateJobPrefWithAssessmentStatus(limit: Integer ?= null)
 GET         /logoutUser                                                   controllers.Application.logoutUser()
 GET         /privacy                                                      controllers.Application.privacy()
 GET         /updateIsAssessedToAssessed                                   controllers.Application.updateIsAssessedToAssessed()

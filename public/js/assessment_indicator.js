@@ -10,7 +10,7 @@
         userAssessedJobPrefs: [],
         container: $('#assessmentDiv'),
         limit: 3,
-        url: "/getCandidateJobPrefs/?limit=3",
+        url: "/getCandidateJobPrefWithAssessmentStatus/?limit=3",
         isIndicatorAvailable: false
     };
 

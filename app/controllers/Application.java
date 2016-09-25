@@ -1228,7 +1228,6 @@ public class Application extends Controller {
                     }
                 }
             } else {
-                Logger.debug(""+jobPostIds);
                 if (jobPostIds != null && !jobPostIds.equalsIgnoreCase("null")) {
                     jobPostIds = jobPostIds.replaceAll("[^0-9,]", "");
                     if (jobPostIds.isEmpty()) {
@@ -1255,7 +1254,6 @@ public class Application extends Controller {
                     }
                 }
             }
-            Logger.debug(""+jobRoleIdList);
             if (jobRoleIdList.size() == 0) {
                 return ok("NA");
             }
@@ -1309,7 +1307,7 @@ public class Application extends Controller {
         }
     }
 
-    public static Result getCandidateJobPrefs(Integer limit) {
+    public static Result getCandidateJobPrefWithAssessmentStatus(Integer limit) {
         String candidateId = session().get("candidateId");
         if(candidateId != null) {
             List<JobPreference> jobPreferenceList;
