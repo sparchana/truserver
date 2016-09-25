@@ -117,11 +117,9 @@ public class AssessmentService {
         caAttempt.save();
 
         /* write response to google sheet */
-        if (!isDevMode) {
-            writeAssessmentToGoogleSheet(candidate.getCandidateId(),
-                    candidate.getCandidateMobile(), candidate.getCandidateFullName(),
-                    jobRole.getJobName(), colList);
-        }
+        writeAssessmentToGoogleSheet(candidate.getCandidateId(), candidate.getCandidateMobile(),
+                candidate.getCandidateFullName(), jobRole.getJobName(), colList, caAttempt.getResult());
+
     }
 
     private static List<CandidateAssessmentResponse> getAssessmentResponses(List<AssessmentSheetCol> colList) {
@@ -146,7 +144,7 @@ public class AssessmentService {
     }
 
     private static void writeAssessmentToGoogleSheet(Long candidateId, String candidateMobile, String candidateName, String jobName,
-                                                     List<AssessmentSheetCol> colList) throws UnsupportedEncodingException {
+                                                     List<AssessmentSheetCol> colList, double score) throws UnsupportedEncodingException {
         /*
         *
         * writing to job application sheet excel sheet
@@ -170,6 +168,7 @@ public class AssessmentService {
         String question5Val = "";
         String candidateAnswer5Val = "";
         String correctAnswer5Val = "";
+        String finalScoreVal = String.valueOf(score);
 
         if (colList.size() > 0) {
             question1Val = colList.get(0).question == null ? "" : colList.get(0).question.getQuestionText();
@@ -217,8 +216,13 @@ public class AssessmentService {
         String question5Key = "entry.1529670097";
         String candidateAnswer5Key = "entry.1461389399";
         String correctAnswer5Key = "entry.1748947125";
-
-        String url = ServerConstants.PROD_GOOGLE_FORM_FOR_ASSESSMENT;
+        String scoreKey = "entry.1797418359";
+        String url;
+        if(isDevMode){
+            url = ServerConstants.DEV_GOOGLE_FORM_FOR_ASSESSMENT;
+        } else {
+            url = ServerConstants.PROD_GOOGLE_FORM_FOR_ASSESSMENT;
+        }
 
         String postBody;
 
@@ -241,7 +245,8 @@ public class AssessmentService {
                         + correctAnswer4Key + "=" + URLEncoder.encode(correctAnswer4Val, "UTF-8") + "&"
                         + question5Key + "=" + URLEncoder.encode(question5Val, "UTF-8") + "&"
                         + candidateAnswer5Key + "=" + URLEncoder.encode(candidateAnswer5Val, "UTF-8") + "&"
-                        + correctAnswer5Key + "=" + URLEncoder.encode(correctAnswer5Val, "UTF-8");
+                        + correctAnswer5Key + "=" + URLEncoder.encode(correctAnswer5Val, "UTF-8") + "&"
+                        + scoreKey + "=" + URLEncoder.encode(finalScoreVal, "UTF-8");
 
         try {
             GoogleSheetHttpRequest googleSheetHttpRequest = new GoogleSheetHttpRequest();

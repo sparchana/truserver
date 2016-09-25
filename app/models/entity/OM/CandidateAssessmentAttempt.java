@@ -9,6 +9,7 @@ import models.entity.JobPost;
 import models.entity.Static.JobRole;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -45,6 +46,13 @@ public class CandidateAssessmentAttempt extends Model {
     @PrivateOwned
     @OneToMany(mappedBy = "candidateAssessmentAttempt", cascade = CascadeType.ALL)
     private List<CandidateAssessmentResponse> candidateAssessmentResponseList;
+
+    @Column(name = "create_timeStamp", columnDefinition = "timestamp not null default current_timestamp")
+    private Timestamp createTimeStamp;
+
+    public CandidateAssessmentAttempt(){
+        this.createTimeStamp = new Timestamp(System.currentTimeMillis());
+    }
 
     public static Model.Finder<String, CandidateAssessmentAttempt> find = new Model.Finder(CandidateAssessmentAttempt.class);
 
@@ -90,5 +98,13 @@ public class CandidateAssessmentAttempt extends Model {
 
     public void setCandidateAssessmentResponseList(List<CandidateAssessmentResponse> candidateAssessmentResponseList) {
         this.candidateAssessmentResponseList = candidateAssessmentResponseList;
+    }
+
+    public Timestamp getCreateTimeStamp() {
+        return createTimeStamp;
+    }
+
+    public void setCreateTimeStamp(Timestamp createTimeStamp) {
+        this.createTimeStamp = createTimeStamp;
     }
 }

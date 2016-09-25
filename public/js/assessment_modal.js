@@ -1,3 +1,6 @@
+var totalLeftAttempts = 0;
+var prevId = 0;
+
 function createRadioButton(name, value, text, id) {
     var label = document.createElement("label");
     label.style.margin = "8px 8px 8px 44px";
@@ -11,7 +14,13 @@ function createRadioButton(name, value, text, id) {
     radio.value = value;
     radio.id = id;
     radio.onclick = function () {
-        $('.btn-success.btn-modal-submit').prop('disabled', false);
+        var qId = this.id.split("_")[2];
+        if(totalLeftAttempts > 0 && prevId != qId){
+            --totalLeftAttempts;
+            prevId = qId;
+        } if(totalLeftAttempts == 0){
+            $('.btn-success.btn-modal-submit').prop('disabled', false);
+        }
     };
 
     label.appendChild(radio);
@@ -27,10 +36,10 @@ function processAssessmentQuestions(returnedData) {
     if(returnedData != null){
         if(returnedData == "OK" || returnedData == "NA" ) {
             processPostAssessmentResponse(returnedData);
-            return;
+            return returnedData;
         }
         if($(".assessment-modal").size() > 0){
-            return;
+            return returnedData;
         }
         var assessmentBody = $('<div id="assessment_body"></div>');
         var prevJobRole = null;
@@ -71,6 +80,7 @@ function processAssessmentQuestions(returnedData) {
                 }
             }
         });
+        totalLeftAttempts = qCount;
         bootbox.dialog({
             className: "assessment-modal",
             title: "<h3 class='assessment-modal-title' style='color: #286ab6'>Job Application Assessment</h3><h5>Complete Assessment to Improve Chance of getting an Interview Call</h5>",
@@ -117,6 +127,7 @@ function processPostAssessmentResponse(response) {
         $('#tt_'+response.jobRoleId+'_ic').attr("title", "Completed !");
         $("#messagePromptModal").modal("show");
     }
+    return response;
 }
 
 function triggerFinalSubmission() {

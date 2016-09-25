@@ -45,8 +45,7 @@
             var assessmentDivRow = $('<div id="assessmentDivRow" class="row"></div>');
             app.userJobPrefs.forEach(function (bundle) {
                 var isAssessed = bundle.assessed;
-                var card = $('<div class="col-xs-'+noc+'" id="jr_id_'+bundle.jobPreference.jobRole.jobRoleId+'" ' +
-                    'style="padding: 0px;"></div>');
+                var card = $('<div class="col-xs-'+noc+'" id="jr_id_'+bundle.jobPreference.jobRole.jobRoleId+'"></div>');
                 var a;
                 if(isAssessed){
                     a= $('<a href="#" id="tt_'+bundle.jobPreference.jobRole.jobRoleId+'_c" ' +

@@ -22,6 +22,8 @@ alter table candidate_assessment_attempt add result float null;
 
 alter table interaction add column interactionchannel int not null default 0;
 
+alter table candidate_assessment_attempt add create_timestamp timestamp not null default current_timestamp;
+
 # --- !Downs
 
 alter table candidate_assessment_response drop foreign key fk_candidate_assessment_response_ca_attempt_id;
@@ -36,3 +38,5 @@ alter table candidate_assessment_attempt drop column result;
 alter table candidate_assessment_attempt add result text null;
 
 alter table interaction drop column interactionchannel;
+
+alter table candidate_assessment_attempt  drop column  create_timestamp;
