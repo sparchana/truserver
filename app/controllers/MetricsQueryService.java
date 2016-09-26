@@ -130,7 +130,7 @@ public class MetricsQueryService
                                           String metricDate, String nextDate, Integer index)
     {
         // Build the query string
-        StringBuilder leadQueryBuilder = new StringBuilder("select leadchannel, count(*) from lead where leadtype = 4");
+        StringBuilder leadQueryBuilder = new StringBuilder("select leadchannel, count(*) from lead where leadtype in (1, 4) ");
 
         if (metricDate != null) {
             leadQueryBuilder.append(" and leadcreationtimestamp >= '" + metricDate + "' ");
