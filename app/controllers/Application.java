@@ -111,6 +111,7 @@ public class Application extends Controller {
 
     public static Result addLead() {
         JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
         AddLeadRequest addLeadRequest = new AddLeadRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -118,7 +119,6 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Logger.info(addLeadRequest.getLeadMobile() + " JSON req: " + req);
 
         AddLeadResponse addLeadResponse = new AddLeadResponse();
         Lead lead = new Lead(addLeadRequest.getLeadName(),
@@ -135,6 +135,7 @@ public class Application extends Controller {
 
     public static Result signUp() {
         JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
         CandidateSignUpRequest candidateSignUpRequest = new CandidateSignUpRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -142,7 +143,7 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Logger.info("JSON req: " + req);
+
 
         InteractionService.InteractionChannelType channelType = InteractionService.InteractionChannelType.SELF;
         return ok(toJson(CandidateService.signUpCandidate(candidateSignUpRequest, channelType, ServerConstants.LEAD_SOURCE_UNKNOWN)));
@@ -150,13 +151,14 @@ public class Application extends Controller {
     @Security.Authenticated(PartnerSecured.class)
     public static Result signUpSupport() {
         JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
         AddSupportCandidateRequest addSupportCandidateRequest = new AddSupportCandidateRequest();
         ObjectMapper newMapper = new ObjectMapper();
+
         // since jsonReq has single/multiple values in array
         newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
         try {
             addSupportCandidateRequest = newMapper.readValue(req.toString(), AddSupportCandidateRequest.class);
-            Logger.info("json" + req.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -167,6 +169,8 @@ public class Application extends Controller {
 
     public static Result candidateUpdateBasicProfile() {
         JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
+
         AddCandidateRequest addCandidateRequest = new AddCandidateRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -174,13 +178,13 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Logger.info("Req JSON : " + req);
+
         return ok(toJson(CandidateService.createCandidateProfile(addCandidateRequest, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_BASIC_PROFILE)));
     }
 
     public static Result candidateUpdateExperienceDetails() {
         JsonNode req = request().body().asJson();
-        Logger.info(" == " + req);
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
         AddCandidateExperienceRequest addCandidateExperienceRequest = new AddCandidateExperienceRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -193,6 +197,7 @@ public class Application extends Controller {
 
     public static Result candidateUpdateEducationDetails() {
         JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
         AddCandidateEducationRequest addCandidateEducationRequest = new AddCandidateEducationRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -205,6 +210,7 @@ public class Application extends Controller {
 
     public static Result addPassword() {
         JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
         CandidateSignUpRequest candidateSignUpRequest = new CandidateSignUpRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -221,6 +227,7 @@ public class Application extends Controller {
 
     public static Result applyJob() throws IOException, JSONException {
         JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
         ApplyJobRequest applyJobRequest = new ApplyJobRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -238,7 +245,7 @@ public class Application extends Controller {
     @Security.Authenticated(RecSecured.class)
     public static Result addJobPost() {
         JsonNode req = request().body().asJson();
-        Logger.info(req + " == ");
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
         AddJobPostRequest addJobPostRequest = new AddJobPostRequest();
         ObjectMapper newMapper = new ObjectMapper();
         newMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
@@ -269,7 +276,7 @@ public class Application extends Controller {
     @Security.Authenticated(RecSecured.class)
     public static Result addRecruiter() {
         JsonNode req = request().body().asJson();
-        Logger.info(req + " == ");
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
         AddRecruiterRequest addRecruiterRequest = new AddRecruiterRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -283,7 +290,7 @@ public class Application extends Controller {
     @Security.Authenticated(RecSecured.class)
     public static Result addCompany() {
         JsonNode req = request().body().asJson();
-        Logger.info(req + " == ");
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
         AddCompanyRequest addCompanyRequest = new AddCompanyRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -296,6 +303,7 @@ public class Application extends Controller {
 
     public static Result loginSubmit() {
         JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
         LoginRequest loginRequest = new LoginRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -303,7 +311,6 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Logger.info("req JSON: " + req );
         String loginMobile = loginRequest.getCandidateLoginMobile();
         String loginPassword = loginRequest.getCandidateLoginPassword();
         return ok(toJson(CandidateService.login(loginMobile, loginPassword, InteractionService.InteractionChannelType.SELF)));
@@ -326,6 +333,7 @@ public class Application extends Controller {
 
     public static Result findUserAndSendOtp() {
         JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
         ResetPasswordResquest resetPasswordResquest = new ResetPasswordResquest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -334,7 +342,6 @@ public class Application extends Controller {
             e.printStackTrace();
         }
         String candidateMobile = resetPasswordResquest.getResetPasswordMobile();
-        Logger.info("==> " + candidateMobile);
 
         return ok(toJson(CandidateService.findUserAndSendOtp(candidateMobile, InteractionService.InteractionChannelType.SELF)));
     }
@@ -912,6 +919,7 @@ public class Application extends Controller {
     @Security.Authenticated(Secured.class)
     public static Result getSearchCandidateResult() {
         JsonNode searchReq = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + searchReq );
         if(searchReq == null) {
             return badRequest();
         }
@@ -961,6 +969,7 @@ public class Application extends Controller {
     @Security.Authenticated(Secured.class)
     public static Result addOrUpdateFollowUp() {
         JsonNode followUp = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + followUp );
         if(followUp == null){
             return badRequest();
         }
@@ -1104,6 +1113,7 @@ public class Application extends Controller {
     @Security.Authenticated(SuperSecured.class)
     public static Result getDeactivatedCandidateList() {
         JsonNode deactivatedCandidateJsonNode = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + deactivatedCandidateJsonNode );
         if(deactivatedCandidateJsonNode == null){
             return badRequest();
         }
@@ -1122,6 +1132,7 @@ public class Application extends Controller {
 
     public static Result deactiveToActive() {
         JsonNode deactiveToActiveJson = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + deactiveToActiveJson );
         if(deactiveToActiveJson == null){
             return badRequest();
         }
@@ -1277,6 +1288,7 @@ public class Application extends Controller {
     @Security.Authenticated(SecuredUser.class)
     public static Result submitAssessment() {
         JsonNode assessmentRequestJson = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + assessmentRequestJson );
         if(assessmentRequestJson == null){
             return badRequest();
         }
