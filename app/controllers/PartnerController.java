@@ -352,7 +352,6 @@ public class PartnerController {
                         .eq("candidateId", candidate.getCandidateId())
                         .eq("partner_id", partner.getPartnerId())
                         .findList();
-                Logger.info(jobApplicationList.toString());
                 return ok(toJson(jobApplicationList));
             }
         }
