@@ -372,7 +372,7 @@ public class PartnerService {
         return candidateSignUpResponse;
     }
 
-    public static void sendCandidateVerificationSms(Candidate existingCandidate) {
+    public static Integer sendCandidateVerificationSms(Candidate existingCandidate) {
         Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
         if(partner != null){
             Auth existingAuth = Auth.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
@@ -388,10 +388,13 @@ public class PartnerService {
 
                 //creating interaction
                 PartnerInteractionService.createInteractionForPartnerTryingToVerifyCandidate(objAUUID, objBUUID, partner.getPartnerFirstName());
+                return dummyOtp;
             } else{
                 Logger.info("Auth doesnot exists");
+                return 0;
             }
         }
+        return 0;
     }
 
     public static VerifyCandidateResponse verifyCandidateByPartner(VerifyCandidateRequest verifyCandidateRequest) {

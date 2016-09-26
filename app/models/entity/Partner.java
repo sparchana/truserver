@@ -5,6 +5,7 @@ import com.avaje.ebean.annotation.PrivateOwned;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.OM.IDProofReference;
+import models.entity.OM.JobApplication;
 import models.entity.OM.PartnerToCandidate;
 import models.entity.Static.CandidateProfileStatus;
 import models.entity.Static.Locality;
@@ -78,6 +79,10 @@ public class Partner extends Model {
     @OneToMany(mappedBy = "partner", cascade = CascadeType.ALL)
     private List<PartnerToCandidate> partnerToCandidateList;
 
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "partner", cascade = CascadeType.ALL)
+    private List<JobApplication> jobApplicationList;
 
     public static Finder<String, Partner> find = new Finder(Partner.class);
 
@@ -182,5 +187,13 @@ public class Partner extends Model {
 
     public void setPartnerCompany(String partnerCompany) {
         this.partnerCompany = partnerCompany;
+    }
+
+    public List<JobApplication> getJobApplicationList() {
+        return jobApplicationList;
+    }
+
+    public void setJobApplicationList(List<JobApplication> jobApplicationList) {
+        this.jobApplicationList = jobApplicationList;
     }
 }

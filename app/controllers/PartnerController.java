@@ -12,6 +12,7 @@ import com.sun.org.apache.xpath.internal.operations.Bool;
 import controllers.businessLogic.*;
 import controllers.security.SecuredUser;
 import models.entity.*;
+import models.entity.OM.JobApplication;
 import models.entity.OM.PartnerToCandidate;
 import models.entity.Static.LeadSource;
 import models.entity.Static.PartnerType;
@@ -206,7 +207,7 @@ public class PartnerController {
                     candidateSignUpResponse =
                             PartnerService.createPartnerToCandidateMapping(partner, FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
                     Candidate existingCandidate = CandidateService.isCandidateExists(FormValidator.convertToIndianMobileFormat(addSupportCandidateRequest.getCandidateMobile()));
-                    PartnerService.sendCandidateVerificationSms(existingCandidate);
+                    candidateSignUpResponse.setOtp(PartnerService.sendCandidateVerificationSms(existingCandidate));
                 } else{
                     candidateSignUpResponse.setOtp(0);
                 }
@@ -316,5 +317,44 @@ public class PartnerController {
         }
         Logger.info("Req JSON : " + req);
         return ok(toJson(PartnerService.verifyCandidateByPartner(verifyCandidateRequest)));
+    }
+
+    public static Result getCandidateJobs(long candidateId) { return ok(views.html.Partner.candidate_jobs.render()); }
+
+    public static Result checkPartnerCandidate(long id) {
+        Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+        if(partner != null){ //checking if partner is logged in or not
+            Candidate candidate = Candidate.find.where().eq("candidateId", id).findUnique(); //getting candidate profile from db
+            if(candidate != null){ //checking if the candidate was created by the requested partner
+                PartnerToCandidate partnerToCandidate = PartnerToCandidate.find
+                        .where()
+                        .eq("candidate_candidateid", candidate.getCandidateId())
+                        .findUnique();
+                if(partnerToCandidate != null){
+                    if(partnerToCandidate.getPartner().getPartnerId() == partner.getPartnerId()){
+                        return ok(toJson(candidate));
+                    } else{
+                        return ok("-1");
+                    }
+                }
+            }
+        }
+        return ok("0");
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result getAppliedJobsByPartnerForCandidate(long id) {
+        Candidate candidate = Candidate.find.where().eq("candidateId", id).findUnique();
+        if(candidate != null){
+            Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+            if(partner != null){
+                List<JobApplication> jobApplicationList = JobApplication.find.where()
+                        .eq("candidateId", candidate.getCandidateId())
+                        .eq("partner_id", partner.getPartnerId())
+                        .findList();
+                return ok(toJson(jobApplicationList));
+            }
+        }
+        return ok("0");
     }
 }

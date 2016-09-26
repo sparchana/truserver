@@ -21,6 +21,8 @@ import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.*;
 
+import static play.mvc.Controller.session;
+
 /**
  * Created by batcoder1 on 17/6/16.
  */
@@ -145,6 +147,13 @@ public class JobService {
                                 existingJobPost.getJobPostUUId(),
                                 interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName() + "@" + locality.getLocalityName()
                         );
+                    }
+                    if(applyJobRequest.getPartner()){
+                        // this job is being applied by a partner for a candidate, hence we need to det partner Id in the job Application table
+                        Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+                        if(partner != null){
+                            jobApplication.setPartner(partner);
+                        }
                     }
 
                     jobApplication.save();

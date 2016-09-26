@@ -1,0 +1,225 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Partner - Apply for Candidate | Trujobs - Best Jobs for Freshers and Experienced Candidates </title>
+
+        <meta name="keywords" content="driving jobs, fresher jobs, jobs for freshers, job search sites, job posting, sales jobs, beautician jobs,
+            medical transcription jobs, online job search, find jobs, receptionist jobs, admin jobs, office assistant jobs,
+            plumbing work, teacher job, online teaching jobs, jobs in schools, teacher vacancy, teacher recruitment, entry level jobs,
+            delivery boy jobs,call center jobs, BPO jobs, kpo jobs, job job job, data entry jobs, back office jobs,
+            receptionist jobs, beautician jobs, experienced jobs, jobs in Bangalore, cashier jobs, entry level jobs,
+            plumber jobs, electrician jobs, job search, accountant jobs, job vacancy, bangalore vacancy">
+
+        <meta name="description" content="Search and apply for jobs online. Register for FREE and find best
+            fresher and experienced jobs.Give a missed call at 8880007799 for best jobs." />
+
+        <meta http-equiv="Cache-control" content="public">
+            <!-- Bootstrap Core CSS -->
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="/assets/partner/css/partnerStyle.css">
+        <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/materialDashboard.css">
+
+        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+
+        <script type="text/javascript" src="/assets/common/js/jquery.min_1_12_0.js"></script>
+        <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+
+        <script type="text/javascript" src="/assets/support/js/datatables.min.js"></script>
+        <script type="text/javascript" src="/assets/partner/js/dataTables.rowReorder.min.js"></script>
+        <script type="text/javascript" src="/assets/partner/js/dataTables.responsive.min.js"></script>
+
+        <link rel="stylesheet" href="/assets/support/css/dataTables.bootstrap.min.css">
+        <link rel="stylesheet" href="/assets/partner/css/responsive.dataTables.min.css">
+        <link rel="stylesheet" href="/assets/partner/css/rowReorder.dataTables.min.css">
+
+        <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
+    </head>
+    <body>
+        <div id="preloader">
+            <div id="loaderLogo">
+                <img id="leaderLogo" src="/assets/common/img/logo-color.gif" alt="TruJobs Logo" height="40px">
+            </div>
+            <div id="status">&nbsp;</div>
+        </div>
+
+            <!-- Nav start -->
+        <div id="nav_bar_inc"></div>
+
+            <!-- confirm job modal -->
+        <div class="modal fade" id="jobApplyConfirm" tabindex="-1" role="dialog" aria-labelledby="jobApplyConfirm">
+            <div class="modal-dialog" role="document" id="customModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Job Application Confirmation</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="confirmationMsg">
+                            <center>
+                                <img src="/assets/common/img/jobApply.png" width="48px">
+                            </center>
+                            <center>
+                                <h5>You are applying to <b><div style="display: inline-block" id="jobNameConfirmation"></div></b>
+                                    job at <b><div style="display: inline-block" id="companyNameConfirmation"></div></b>
+                                    for <b><div style="display: inline-block" id="applyJobCandidateName"></div></b>.</h5>
+                                <h5>Please select the location where <div style="display: inline-block" id="applyJobCandidateNameSecond"></div> can work:</h5>
+                                <select id="jobLocality" class="selectDropdown"></select>
+                                <button type="submit" onclick="confirmApply()" id="applyButton" class="jobApplyBtnModal" style="display : none; margin: 6px">Apply</button>
+                            </center>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                $('#nav_bar_inc').load('/partnerNavBarLoggedIn');
+            });
+        </script>
+
+        <div id="sectionHeader">
+            <h1 style="letter-spacing: 2px;
+                margin: 10px;"><b><font size="5">Apply to Jobs for your Candidates</font></b></h1>
+        </div>
+
+        <br>
+        <!-- candidate information -->
+        <div class="container">
+            <div id="hotJobItemDivider" style="margin-bottom: 6px">
+                <img src="/assets/dashboard/img/profileInfo.png" display="inline-block" style="width: 42px; margin: 8px;">
+                <span display="inline-block">Candidate Information</span>
+            </div>
+            <div class="row candidatePartner row-eq-height">
+                <div class="col-sm-3 col-xs-12 candidateCard">
+                    <div class="row">
+                        <div class="col-sm-3">
+                            <img src="/assets/dashboard/img/userMale.svg" id="userImgPartner">
+                        </div>
+                        <div class="col-sm-9">
+                            <h4>
+                                <b style="color: #fff">
+                                    <div id="userName" style="display : inline-block; font-size: 16px"></div>
+                                    <div id="userAge" style="display : inline-block; font-size: 14px"></div>
+                                    <div id="userGender" style="display : inline-block; font-size: 14px"></div>
+                                    <div id="userMobile" style="font-size: 12px; margin-top: 6px"></div>
+                                </b>
+                            </h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-9 col-xs-12 candidateInformation">
+                    <div id="triangle-left" class="hidden-xs"></div>
+                    <div class="row">
+                        <div class="col-sm-6" style="margin-top: 6px">
+                            <div style="display : inline-block; margin: 4px;top:0">
+                                <img src="/assets/common/img/job.svg" height="24px;" style="margin-top: -4px">
+                            </div>
+                            <div style="display: inline-block;">
+                                <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Preferred Job Role(s)</div>
+                                <div id="userJobs" style="margin-left: 4px; display: inline-block">Not Specified</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6" style="margin-top: 6px">
+                            <div style="display : inline-block; margin: 4px;">
+                                <img src="/assets/common/img/location.svg" height="24px;" style="margin-top: -4px">
+                            </div>
+                            <div style="display: inline-block; margin-top: 4px">
+                                <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Home Location</div>
+                                <div id="userLocality" style="margin-left: 4px; display: inline-block">Not Specified</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6" style="margin-top: 6px">
+                            <div style="display : inline-block; margin: 4px;">
+                                <img src="/assets/common/img/workExp.svg" height="24px;" style="margin-top: -4px">
+                            </div>
+                            <div style="display: inline-block; margin-top: 4px">
+                                <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Preferred Work Shift</div>
+                                <div id="userShift" style="margin-left: 4px; display: inline-block">Not Specified</div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6" style="margin-top: 9px">
+                            <div style="display : inline-block; margin: 4px;">
+                                <img src="/assets/common/img/office.svg" height="24px;" style="margin-top: -4px">
+                            </div>
+                            <div style="display: inline-block;">
+                                <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Current Company</div>
+                                <div id="userCurrentCompany" style="margin-left: 4px; display: inline-block">Not Specified</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6" style="margin-top: 6px">
+                            <div style="display : inline-block; margin: 4px;">
+                                <img src="/assets/common/img/education.svg" height="24px;" style="margin-top: -4px">
+                            </div>
+                            <div style="display: inline-block; margin-top: 4px" style="margin-top: 6px">
+                                <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Highest Education</div>
+                                <div id="userEducationLevel" style="margin: 4px; display: inline-block">Not Specified</div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6" style="margin-top: 9px">
+                            <div style="display : inline-block; margin: 4px;">
+                                <img src="/assets/common/img/workExp.svg" height="24px;" style="margin-top: -4px">
+                            </div>
+                            <div style="display: inline-block; margin-top: 4px">
+                                <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Total Work Experience</div>
+                                <div id="userTotalExperience" style="margin: 4px; display: inline-block">Not Specified</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br>
+        <div class="container" id="applyJobs">
+            <div id="hotJobs"></div>
+            <br>
+        </div>
+
+        <div class="container" style="padding-bottom: 24px">
+            <div style="margin-top: 16px; min-height: 560px">
+                <div id="hotJobItemDivider" style="margin-bottom: 24px">
+                    <img src="/assets/dashboard/img/save.svg" display="inline-block" style="width: 42px; margin: 8px;">
+                    <span display="inline-block">Applied Jobs</span>
+                </div>
+                <table id="appliedJobs" class="table table-striped table-bordered" style="margin-top: 16px" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>Salary</th>
+                            <th>Experience</th>
+                            <th>Job Location</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <!-- Start Footer-->
+        <div id="footer_inc"></div>
+        <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+        <script type="text/javascript" src="/assets/partner/js/partner_page.js"></script>
+        <script type="text/javascript" src="/assets/partner/js/generateJobCard.js"></script>
+        <script type="text/javascript" src="/assets/common/js/all_hot_jobs.js"></script>
+        <script type="text/javascript" src="/assets/common/js/apply_job.js"></script>
+        <script type="text/javascript" src="/assets/common/js/all_job_role_footer.js"></script>
+
+        <script>
+            $(document).ready(function () {
+                $('#footer_inc').load('/footer');
+            });
+        </script>
+    </body>
+</html>
