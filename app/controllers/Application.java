@@ -801,7 +801,13 @@ public class Application extends Controller {
     }
 
     public static Result getAllLocality() {
-        List<Locality> localities = Locality.find.setUseQueryCache(!isDevMode).orderBy("localityName").findList();
+
+        List<String> cityNames = Arrays.asList("Bangalore", "Bengaluru", "Bangalore Rural", "Bangalore Urban", "Bommasandra");
+
+        List<Locality> localities = Locality.find.setUseQueryCache(!isDevMode)
+                .where().in("city", cityNames)
+                .orderBy("localityName").findList();
+
         return ok(toJson(localities));
     }
 
