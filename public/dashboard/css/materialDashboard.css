@@ -479,3 +479,9 @@ hr{
         border: 1px solid #e5e7db;
     }
 }
+@media screen and (max-width: 1000px) {
+    #navLogo {
+        margin-top: 10px;
+        content: url("/assets/common/img/logo-main.gif");
+    }
+}
