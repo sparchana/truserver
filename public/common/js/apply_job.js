@@ -20,6 +20,7 @@ function processDataApplyJob(returnedData) {
         $("#customMsg").html("Your Job Application is Successful");
         try{
             $(".jobApplyBtnV2").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
+            $('.jobApplyBtnV2').attr('onclick','').unbind('click');
         } catch(err){
             console.log(err);
         }

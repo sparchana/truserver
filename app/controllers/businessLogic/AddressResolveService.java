@@ -598,7 +598,7 @@ public class AddressResolveService {
 
     /**
      * Important !!
-     * Both methods belows are used to prepopulate the db. Its doesnot resolves all locality correctly
+     * Both methods belows are used to prepopulate the db. It doesn't resolves all locality correctly
      * and is unstable as of now.
      *
      */

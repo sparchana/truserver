@@ -81,6 +81,24 @@
             </div>
         </nav>
 
+            <!-- custom message modal -->
+        <div class="modal fade" id="messagePromptModal" tabindex="-1" role="dialog" aria-labelledby="messagePromptModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">TruJobs</h4>
+                    </div>
+                    <div class="modal-body">
+                        <center>
+                            <img id="customMsgIcon" width="48px">
+                            <div id="customMsg" style="padding: 16px"></div>
+                        </center>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <div id="blurred-image-container">
             <div class="img-src"></div>
             <div class="img-src blurred-image"></div>
@@ -99,20 +117,20 @@
             <h5><div id="userMobile" style="display: inline-block"></div>, Bangalore</h5>
 
             <div id="darkPanel">
-                <div class="inblockDiv">
-                  Jobs Applied<br> <b id="jobCount">6</b>
+                <div class="inblockDiv">Jobs Applied<br>
+                    <div class="row col-xs-12">
+                        <b id="jobCount">6</b>
+                    </div>
                 </div>
 
                 <div class="inblockDiv" style="margin-left: 16px">Profile<br>
-                    <a href="/dashboard/editProfile"><div id="indicatorBtnRed" class="profileIncomplete" style="display: none"><b><font color="#fff">Incomplete</font></b></div></a>
-                    <div class="profileComplete" style="display: none"><b>Complete</b></div>
+                    <div class="row col-xs-12">
+                        <a href="/dashboard/editProfile"><div class="profileIncomplete indicatorBtnRed"><b><font color="#fff">Incomplete</font></b></div></a>
+                        <div class="profileComplete" style="display: none"><b>Complete</b></div>
+                    </div>
                 </div>
 
-                <div id="assessmentDiv" class="inblockDiv" style="margin-left: 16px">Assessment<br>
-                  <a href="#"><div class="assessmentIncomplete" id="indicatorBtnRed" style="display: none"><b><font color="#fff">Incomplete</font></b></div></a>
-                  <div class="assessmentComplete" style="display: none"><b>Complete</b></div>
-                </div>
-
+                <div id="assessmentDiv" class="inblockDiv" style="margin-left: 16px">Assessment<br></div>
             </div>
         </div>
         <div id="sectionBody" class="startBody" style="padding-left: 6%;
@@ -458,6 +476,7 @@
         <link rel="stylesheet" type="text/css" href="/assets/css/assessment_modal.css">
         <script type="text/javascript" src="/assets/js/bootbox.min.js"></script>
         <script type="text/javascript" src="/assets/js/assessment_modal.js"></script>
+        <script type="text/javascript" src="/assets/js/assessment_indicator.js"></script>
             <!-- Menu Toggle Script -->
         <script>
             $(document).ready(function () {

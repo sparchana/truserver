@@ -3,34 +3,45 @@ package controllers.businessLogic.Assessment;
 import api.GoogleSheetHttpRequest;
 import api.ServerConstants;
 import api.http.httpRequest.AssessmentRequest;
+import api.http.httpResponse.AssessmentSubmissionResponse;
+import api.http.httpResponse.CandidateJobPrefs;
 import models.entity.Candidate;
-import models.entity.OM.*;
+import models.entity.OM.CandidateAssessmentAttempt;
+import models.entity.OM.CandidateAssessmentResponse;
+import models.entity.OM.JobPreference;
 import models.entity.Static.AssessmentQuestion;
 import models.entity.Static.JobRole;
 import play.Logger;
+import play.api.Play;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
+import static models.util.Util.RoundTo1Decimals;
 import static play.libs.Json.toJson;
 
 /**
  * Created by zero on 15/9/16.
  */
 public class AssessmentService {
-    public static List<AssessmentQuestion> getQuestions(List<Long> jobRoleIdList){
+
+    private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());
+
+    public static List<AssessmentQuestion> getQuestions(List<Long> jobRoleIdList) {
         List<AssessmentQuestion> assessmentQuestionList = new ArrayList<>();
-        if(jobRoleIdList.size() > 0) {
+        if (jobRoleIdList.size() > 0) {
             assessmentQuestionList.addAll(AssessmentQuestion.find.where().in("jobRoleId", jobRoleIdList).orderBy().asc("jobRoleId").findList());
         }
         return assessmentQuestionList;
     }
 
-    public static String addAssessedInfoToGS(AssessmentRequest assessmentRequest, Long candidateId){
-        if(candidateId != null){
+    public static AssessmentSubmissionResponse addAssessedInfoToGS(AssessmentRequest assessmentRequest, Long candidateId) {
+        AssessmentSubmissionResponse response = new AssessmentSubmissionResponse();
+        if (candidateId != null) {
             Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
-            if(!assessmentRequest.getResponseList().isEmpty()){
+            if (!assessmentRequest.getResponseList().isEmpty()) {
 
                 List<AssessmentSheetCol> colList = new ArrayList<>();
                 List<AssessmentRequest.AssessmentOption> optionList = assessmentRequest.getResponseList();
@@ -39,34 +50,35 @@ public class AssessmentService {
 
                 optionList.sort((o1, o2) -> o1.getJobRoleId() >= o2.getJobRoleId() ? 1 : 0);
 
-                for(AssessmentRequest.AssessmentOption option : optionList) {
+                for (AssessmentRequest.AssessmentOption option : optionList) {
                     assessmentQuestionIdList.add(option.getAssessmentQuestionId());
-                    if(!assessmentJobRoleIdList.contains(option.getJobRoleId())) {
+                    if (!assessmentJobRoleIdList.contains(option.getJobRoleId())) {
                         assessmentJobRoleIdList.add(option.getJobRoleId());
                     }
                 }
                 int optionSize = optionList.size();
-                if(optionSize == 0){
-                    return "NA";
+                if (optionSize == 0) {
+                    response.setStatus(AssessmentSubmissionResponse.Status.UNKNOWN);
+                    Logger.info(String.valueOf(toJson(response)));
+                    return response;
                 }
-                Long prevJobRoleId =  optionList.get(0).getJobRoleId();
+                Long prevJobRoleId = optionList.get(0).getJobRoleId();
 
                 List<AssessmentQuestion> assessmentQuestionList = AssessmentQuestion.find.where().in("assessmentQuestionId", assessmentQuestionIdList).findList();
-                for(int i =0; i < optionSize; i++) {
+                for (int i = 0; i < optionSize; i++) {
                     AssessmentSheetCol assessmentSheetCol = new AssessmentSheetCol();
-                    assessmentSheetCol.question = assessmentQuestionList.get(i).getQuestionText();
-                    assessmentSheetCol.correctAnswer = assessmentQuestionList.get(i).getAnswer();
-                    assessmentSheetCol.answer =  optionList.get(i).getAssessmentResponse();
+                    assessmentSheetCol.question = assessmentQuestionList.get(i);
+                    assessmentSheetCol.answer = optionList.get(i).getAssessmentResponse();
                     colList.add(assessmentSheetCol);
-                    if(prevJobRoleId != optionList.get(i).getJobRoleId() || (i == optionSize - 1)) {
+                    if (prevJobRoleId != optionList.get(i).getJobRoleId() || (i == optionSize - 1)) {
                         try {
                             JobRole jobRole;
-                            if(prevJobRoleId != null || (i == optionSize - 1)) {
+                            if (prevJobRoleId != null || (i == optionSize - 1)) {
                                 jobRole = JobRole.find.where().eq("jobRoleId", prevJobRoleId).findUnique();
                                 saveAttemptAndWriteToGS(candidate, jobRole, colList);
                                 colList = new ArrayList<>();
                             }
-                            if(i == optionSize-1 && prevJobRoleId != optionList.get(i).getJobRoleId()) {
+                            if (i == optionSize - 1 && prevJobRoleId != optionList.get(i).getJobRoleId()) {
                                 jobRole = JobRole.find.where().eq("jobRoleId", optionList.get(i).getJobRoleId()).findUnique();
                                 saveAttemptAndWriteToGS(candidate, jobRole, colList);
                             }
@@ -76,38 +88,23 @@ public class AssessmentService {
                         prevJobRoleId = optionList.get(i).getJobRoleId();
                     }
                 }
-
-                /* check if eligible to be marked as is assessed */
-                List<Long> jobPrefJobRoleIdList = new ArrayList<>();
-                assessmentJobRoleIdList = new ArrayList<>();
-
-                List<JobPreference> jobPreferenceList = candidate.getJobPreferencesList();
-                for(JobPreference jobPreference: jobPreferenceList){
-                    jobPrefJobRoleIdList.add(jobPreference.getJobRole().getJobRoleId());
-                }
-                assessmentQuestionList = AssessmentQuestion.find.where().in("jobRoleId", jobPrefJobRoleIdList).findList();
-                if (assessmentQuestionList.size() > 0) {
-                    jobPrefJobRoleIdList = new ArrayList<>();
-                    for(AssessmentQuestion assessmentQuestion: assessmentQuestionList) {
-                        if(!jobPrefJobRoleIdList.contains(assessmentQuestion.getJobRole().getJobRoleId())){
-                            jobPrefJobRoleIdList.add(assessmentQuestion.getJobRole().getJobRoleId());
-                        }
-                    }
-                }
-
-                List<CandidateAssessmentAttempt> candidateAssessmentAttemptList = CandidateAssessmentAttempt.find.where().eq("candidateId", candidate.getCandidateId()).findList();
-                for(CandidateAssessmentAttempt candidateAssessmentAttempt : candidateAssessmentAttemptList){
-                    assessmentJobRoleIdList.add(candidateAssessmentAttempt.getJobRole().getJobRoleId());
-                }
-                if(shouldBeMarkedAsAssessed(assessmentJobRoleIdList, jobPrefJobRoleIdList)){
+                if (shouldBeMarkedAsAssessed(getJobPrefVsIsAssessedList(candidate.getCandidateId(), candidate.getJobPreferencesList()))) {
                     candidate.setCandidateIsAssessed(ServerConstants.CANDIDATE_ASSESSED);
                     candidate.candidateUpdate();
-                    return "assessed";
+                    response.setStatus(AssessmentSubmissionResponse.Status.ALL_ASSESSED);
+                    Logger.info(String.valueOf(toJson(response)));
+                    return response;
                 }
-                return "ok";
+                response.setStatus(AssessmentSubmissionResponse.Status.SUCCESS);
+                response.setJobRoleId(prevJobRoleId);
+                Logger.info(String.valueOf(toJson(response)));
+                return response;
             }
         }
-        return "NA";
+
+        response.setStatus(AssessmentSubmissionResponse.Status.FAILED);
+        Logger.info(String.valueOf(toJson(response)));
+        return response;
     }
 
     private static void saveAttemptAndWriteToGS(Candidate candidate, JobRole jobRole, List<AssessmentSheetCol> colList) throws UnsupportedEncodingException {
@@ -115,30 +112,39 @@ public class AssessmentService {
         CandidateAssessmentAttempt caAttempt = new CandidateAssessmentAttempt();
         caAttempt.setCandidate(candidate);
         caAttempt.setJobRole(jobRole);
+        caAttempt.setCandidateAssessmentResponseList(getAssessmentResponses(colList));
+        caAttempt.setResult(RoundTo1Decimals(calculateAttemptScore(caAttempt.getCandidateAssessmentResponseList())));
         caAttempt.save();
 
-        Logger.info("colList: "+toJson(colList));
         /* write response to google sheet */
-        writeAssessmentToGoogleSheet(candidate.getCandidateId(),
-                candidate.getCandidateMobile(), candidate.getCandidateFullName(),
-                jobRole.getJobName(), colList);
+        writeAssessmentToGoogleSheet(candidate.getCandidateId(), candidate.getCandidateMobile(),
+                candidate.getCandidateFullName(), jobRole.getJobName(), colList, caAttempt.getResult());
+
     }
 
-    private static boolean shouldBeMarkedAsAssessed(List<Long> assessmentJobRoleIdList, List<Long> jobPrefJobRoleIdList){
-        if(assessmentJobRoleIdList.size() == 0 || jobPrefJobRoleIdList.size() == 0){
-            return false;
+    private static List<CandidateAssessmentResponse> getAssessmentResponses(List<AssessmentSheetCol> colList) {
+        List<CandidateAssessmentResponse> candidateAssessmentResponseList = new ArrayList<>();
+        for (AssessmentSheetCol response : colList) {
+            CandidateAssessmentResponse candidateAssessmentResponse = new CandidateAssessmentResponse();
+            candidateAssessmentResponse.setAssessmentQuestion(response.question);
+            candidateAssessmentResponse.setCandidateAnswer(response.answer);
+            candidateAssessmentResponse.setScore(response.question.getAnswer().equalsIgnoreCase(response.answer) ? 1 : 0);
+            candidateAssessmentResponseList.add(candidateAssessmentResponse);
         }
-        for(Long prefRoleId: jobPrefJobRoleIdList){
-            if(!assessmentJobRoleIdList.contains(prefRoleId)){
+        return candidateAssessmentResponseList;
+    }
+
+    private static boolean shouldBeMarkedAsAssessed(List<CandidateJobPrefs.JobPrefWithAssessmentBundle> jobPrefWithAssessmentBundleList) {
+        for (CandidateJobPrefs.JobPrefWithAssessmentBundle jobPrefWithAssessmentBundle : jobPrefWithAssessmentBundleList) {
+            if (!jobPrefWithAssessmentBundle.isAssessed()) {
                 return false;
             }
         }
         return true;
     }
 
-
     private static void writeAssessmentToGoogleSheet(Long candidateId, String candidateMobile, String candidateName, String jobName,
-                                                   List<AssessmentSheetCol> colList) throws UnsupportedEncodingException {
+                                                     List<AssessmentSheetCol> colList, double score) throws UnsupportedEncodingException {
         /*
         *
         * writing to job application sheet excel sheet
@@ -162,31 +168,32 @@ public class AssessmentService {
         String question5Val = "";
         String candidateAnswer5Val = "";
         String correctAnswer5Val = "";
+        String finalScoreVal = String.valueOf(score);
 
-        if(colList.size() > 0) {
-            question1Val = colList.get(0).question == null ? "" : colList.get(0).question ;
+        if (colList.size() > 0) {
+            question1Val = colList.get(0).question == null ? "" : colList.get(0).question.getQuestionText();
             candidateAnswer1Val = colList.get(0).answer == null ? "" : colList.get(0).answer;
-            correctAnswer1Val = colList.get(0).correctAnswer == null ? "" : colList.get(0).correctAnswer ;
+            correctAnswer1Val = colList.get(0).question.getAnswer() == null ? "" : colList.get(0).question.getAnswer();
         }
-        if(colList.size() > 1) {
-            question2Val = colList.get(1).question == null ? "" : colList.get(1).question ;
-            correctAnswer2Val = colList.get(1).correctAnswer == null ? "" : colList.get(1).correctAnswer ;
-            candidateAnswer2Val = colList.get(1).answer == null ? "" : colList.get(1).answer ;
+        if (colList.size() > 1) {
+            question2Val = colList.get(1).question == null ? "" : colList.get(1).question.getQuestionText();
+            correctAnswer2Val = colList.get(1).answer == null ? "" : colList.get(1).answer;
+            candidateAnswer2Val = colList.get(1).question.getAnswer() == null ? "" : colList.get(1).question.getAnswer();
         }
-        if(colList.size() > 2) {
-            question3Val = colList.get(2).question == null ? "" : colList.get(2).question ;
-            candidateAnswer3Val = colList.get(2).answer == null ? "" : colList.get(2).answer ;
-            correctAnswer3Val = colList.get(2).correctAnswer == null ? "" : colList.get(2).correctAnswer ;
+        if (colList.size() > 2) {
+            question3Val = colList.get(2).question == null ? "" : colList.get(2).question.getQuestionText();
+            candidateAnswer3Val = colList.get(2).answer == null ? "" : colList.get(2).answer;
+            correctAnswer3Val = colList.get(2).question.getAnswer() == null ? "" : colList.get(2).question.getAnswer();
         }
-        if(colList.size() > 3) {
-            question4Val = colList.get(3).question == null ? "" : colList.get(3).question ;
-            candidateAnswer4Val = colList.get(3).answer == null ? "" : colList.get(3).answer ;
-            correctAnswer4Val = colList.get(3).correctAnswer == null ? "" : colList.get(3).correctAnswer ;
+        if (colList.size() > 3) {
+            question4Val = colList.get(3).question == null ? "" : colList.get(3).question.getQuestionText();
+            candidateAnswer4Val = colList.get(3).answer == null ? "" : colList.get(3).answer;
+            correctAnswer4Val = colList.get(3).question.getAnswer() == null ? "" : colList.get(3).question.getAnswer();
         }
-        if(colList.size() > 4){
-            question5Val = colList.get(4).question == null ? "" : colList.get(4).question ;
-            candidateAnswer5Val = colList.get(4).answer == null ? "" : colList.get(4).answer ;
-            correctAnswer5Val = colList.get(4).correctAnswer == null ? "" : colList.get(4).correctAnswer ;
+        if (colList.size() > 4) {
+            question5Val = colList.get(4).question == null ? "" : colList.get(4).question.getQuestionText();
+            candidateAnswer5Val = colList.get(4).answer == null ? "" : colList.get(4).answer;
+            correctAnswer5Val = colList.get(4).question.getAnswer() == null ? "" : colList.get(4).question.getAnswer();
         }
 
         // field key values
@@ -209,43 +216,140 @@ public class AssessmentService {
         String question5Key = "entry.1529670097";
         String candidateAnswer5Key = "entry.1461389399";
         String correctAnswer5Key = "entry.1748947125";
-
-        String url = ServerConstants.PROD_GOOGLE_FORM_FOR_ASSESSMENT;
+        String scoreKey = "entry.1797418359";
+        String url;
+        if(isDevMode){
+            url = ServerConstants.DEV_GOOGLE_FORM_FOR_ASSESSMENT;
+        } else {
+            url = ServerConstants.PROD_GOOGLE_FORM_FOR_ASSESSMENT;
+        }
 
         String postBody;
 
         postBody =
-                  candidateIdKey  +"=" + URLEncoder.encode(candidateIdVal,"UTF-8") + "&"
-                + candidateMobileKey  + "=" + URLEncoder.encode(candidateMobileVal,"UTF-8") + "&"
-                + candidateNameKey  + "=" + URLEncoder.encode(candidateNameVal,"UTF-8") + "&"
-                + jobRoleKey  + "=" + URLEncoder.encode(jobRoleVal,"UTF-8") + "&"
-                + question1Key + "=" + URLEncoder.encode(question1Val,"UTF-8") + "&"
-                + candidateAnswer1Key + "=" + URLEncoder.encode(candidateAnswer1Val,"UTF-8") + "&"
-                + correctAnswer1Key + "=" + URLEncoder.encode(correctAnswer1Val,"UTF-8") + "&"
-                + question2Key + "=" + URLEncoder.encode(question2Val,"UTF-8") + "&"
-                + candidateAnswer2Key + "=" + URLEncoder.encode(candidateAnswer2Val,"UTF-8") + "&"
-                + correctAnswer2Key + "=" + URLEncoder.encode(correctAnswer2Val,"UTF-8")+ "&"
-                + question3Key + "=" + URLEncoder.encode(question3Val,"UTF-8") + "&"
-                + candidateAnswer3Key + "=" + URLEncoder.encode(candidateAnswer3Val,"UTF-8") + "&"
-                + correctAnswer3Key + "=" + URLEncoder.encode(correctAnswer3Val,"UTF-8")+ "&"
-                + question4Key + "=" + URLEncoder.encode(question4Val,"UTF-8") + "&"
-                + candidateAnswer4Key + "=" + URLEncoder.encode(candidateAnswer4Val,"UTF-8") + "&"
-                + correctAnswer4Key + "=" + URLEncoder.encode(correctAnswer4Val,"UTF-8")+ "&"
-                + question5Key + "=" + URLEncoder.encode(question5Val,"UTF-8") + "&"
-                + candidateAnswer5Key + "=" + URLEncoder.encode(candidateAnswer5Val,"UTF-8") + "&"
-                + correctAnswer5Key + "=" + URLEncoder.encode(correctAnswer5Val,"UTF-8");
+                candidateIdKey + "=" + URLEncoder.encode(candidateIdVal, "UTF-8") + "&"
+                        + candidateMobileKey + "=" + URLEncoder.encode(candidateMobileVal, "UTF-8") + "&"
+                        + candidateNameKey + "=" + URLEncoder.encode(candidateNameVal, "UTF-8") + "&"
+                        + jobRoleKey + "=" + URLEncoder.encode(jobRoleVal, "UTF-8") + "&"
+                        + question1Key + "=" + URLEncoder.encode(question1Val, "UTF-8") + "&"
+                        + candidateAnswer1Key + "=" + URLEncoder.encode(candidateAnswer1Val, "UTF-8") + "&"
+                        + correctAnswer1Key + "=" + URLEncoder.encode(correctAnswer1Val, "UTF-8") + "&"
+                        + question2Key + "=" + URLEncoder.encode(question2Val, "UTF-8") + "&"
+                        + candidateAnswer2Key + "=" + URLEncoder.encode(candidateAnswer2Val, "UTF-8") + "&"
+                        + correctAnswer2Key + "=" + URLEncoder.encode(correctAnswer2Val, "UTF-8") + "&"
+                        + question3Key + "=" + URLEncoder.encode(question3Val, "UTF-8") + "&"
+                        + candidateAnswer3Key + "=" + URLEncoder.encode(candidateAnswer3Val, "UTF-8") + "&"
+                        + correctAnswer3Key + "=" + URLEncoder.encode(correctAnswer3Val, "UTF-8") + "&"
+                        + question4Key + "=" + URLEncoder.encode(question4Val, "UTF-8") + "&"
+                        + candidateAnswer4Key + "=" + URLEncoder.encode(candidateAnswer4Val, "UTF-8") + "&"
+                        + correctAnswer4Key + "=" + URLEncoder.encode(correctAnswer4Val, "UTF-8") + "&"
+                        + question5Key + "=" + URLEncoder.encode(question5Val, "UTF-8") + "&"
+                        + candidateAnswer5Key + "=" + URLEncoder.encode(candidateAnswer5Val, "UTF-8") + "&"
+                        + correctAnswer5Key + "=" + URLEncoder.encode(correctAnswer5Val, "UTF-8") + "&"
+                        + scoreKey + "=" + URLEncoder.encode(finalScoreVal, "UTF-8");
 
         try {
             GoogleSheetHttpRequest googleSheetHttpRequest = new GoogleSheetHttpRequest();
             googleSheetHttpRequest.sendPost(url, postBody);
-        }catch (Exception exception){
+        } catch (Exception exception) {
             Logger.info("Exception in writing to google sheet");
         }
     }
 
+    /**
+     * Calculate Attempt Score based on responseList
+     *
+     * @param candidateAssessmentResponseList
+     */
+    private static double calculateAttemptScore(List<CandidateAssessmentResponse> candidateAssessmentResponseList) {
+        double finalScore = 0D;
+        for (CandidateAssessmentResponse candidateAssessmentResponse : candidateAssessmentResponseList) {
+            if (candidateAssessmentResponse.getScore() > 0) {
+                ++finalScore;
+            }
+        }
+        return finalScore / 5;
+    }
+
+    public static List<CandidateJobPrefs.JobPrefWithAssessmentBundle> getJobPrefVsIsAssessedList(Long candidateId, List<JobPreference> jobPreferenceList) {
+        List<CandidateJobPrefs.JobPrefWithAssessmentBundle> jobPrefWithAssessmentBundleList = new ArrayList<>();
+        for (JobPreference jobPreference : jobPreferenceList) {
+            CandidateJobPrefs.JobPrefWithAssessmentBundle jobPrefWithAssessmentBundle = new CandidateJobPrefs.JobPrefWithAssessmentBundle();
+            // check if there is atleast one question for this jobRole
+            if (AssessmentQuestion.find.where().in("jobRoleId", jobPreference.getJobRole().getJobRoleId()).setMaxRows(1).findUnique() != null) {
+                // check if this jobRole is attempted or not
+                CandidateAssessmentAttempt candidateAssessmentAttempt = CandidateAssessmentAttempt.find.where()
+                        .eq("candidateId", candidateId)
+                        .eq("jobRoleId", jobPreference.getJobRole().getJobRoleId())
+                        .setMaxRows(1)
+                        .findUnique();
+                // if attempted already then mark it as complete
+                if (candidateAssessmentAttempt != null) {
+                    jobPrefWithAssessmentBundle.setAssessed(true);
+                }
+            } else {
+                // if there is no questions for this jobRole, mark it as complete in Front End
+                jobPrefWithAssessmentBundle.setAssessed(true);
+            }
+
+            jobPrefWithAssessmentBundle.setJobPreference(jobPreference);
+            jobPrefWithAssessmentBundleList.add(jobPrefWithAssessmentBundle);
+        }
+        return jobPrefWithAssessmentBundleList;
+    }
+
+    public static List<JobRoleWithAssessmentBundle> getJobRoleIdsVsIsAssessedList(Long candidateId, List<Long> jobRoleIdList) {
+        List<JobRoleWithAssessmentBundle> jobRoleBundleList = new ArrayList<>();
+        for (Long jobRoleId : jobRoleIdList) {
+            JobRoleWithAssessmentBundle jobRoleBundle = new JobRoleWithAssessmentBundle();
+            jobRoleBundle.setJobRoleId(jobRoleId);
+            // check if there is atleast one question for this jobRole
+            if (AssessmentQuestion.find.where().in("jobRoleId", jobRoleId).setMaxRows(1).findUnique() != null) {
+                // check if this jobRole is attempted or not
+                CandidateAssessmentAttempt candidateAssessmentAttempt = CandidateAssessmentAttempt.find.where()
+                        .eq("candidateId", candidateId)
+                        .eq("jobRoleId", jobRoleId)
+                        .setMaxRows(1)
+                        .findUnique();
+                // if attempted already then mark it as complete
+                if (candidateAssessmentAttempt != null) {
+                    jobRoleBundle.setAssessed(true);
+                    Logger.info(" jobRoleId:" + jobRoleId + " is already attempted by candidate: " + candidateId);
+                }
+            } else {
+                // if there is no questions for this jobRole, mark it as complete in Front End
+                Logger.info("No Questions Available in db for JobRoleId: " + jobRoleId);
+                jobRoleBundle.setAssessed(true);
+            }
+
+            jobRoleBundleList.add(jobRoleBundle);
+        }
+        return jobRoleBundleList;
+    }
+
     private static class AssessmentSheetCol {
-        String question;
+        AssessmentQuestion question;
         String answer;
-        String correctAnswer;
+    }
+
+    public static class JobRoleWithAssessmentBundle {
+        Long jobRoleId;
+        boolean isAssessed;
+
+        public Long getJobRoleId() {
+            return jobRoleId;
+        }
+
+        public void setJobRoleId(Long jobRoleId) {
+            this.jobRoleId = jobRoleId;
+        }
+
+        public boolean isAssessed() {
+            return isAssessed;
+        }
+
+        public void setAssessed(boolean assessed) {
+            isAssessed = assessed;
+        }
     }
 }

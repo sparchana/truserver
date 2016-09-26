@@ -204,6 +204,12 @@ function applyJobBtnAction() {
     $('#applyButton').hide();
     addLocalitiesToModal();
 }
+function processJobPostAppliedStatus(status) {
+    if(status == "true"){
+        $(".jobApplyBtnV2").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
+        $('.jobApplyBtnV2').attr('onclick','').unbind('click');
+    }
+}
 
 function processDataForHotJobPost(returnedData) {
     console.log(" Returned " + returnedData);
@@ -352,4 +358,17 @@ function processDataForHotJobPost(returnedData) {
             console.log("#404 No Page Found");
             window.location.href = "/pageNotFound";
         }
+
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/getJobPostAppliedStatus/" + returnedData.jobPostId,
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processJobPostAppliedStatus
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
 }
