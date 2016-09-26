@@ -119,11 +119,13 @@ function processPostAssessmentResponse(response) {
     }
     if (response.status == "ALL_ASSESSED"){
         localStorage.setItem("assessed", "1");
-        $('#assessmentDivRow span').removeClass("glyphicon-exclamation-sign red").addClass(" glyphicon-star yellow");
+        $('.assessmentStatus').removeClass("indicatorBtnRed").addClass("indicatorBtnGreen");
+        $('.assessmentStatus b font').text("Complete");
         $('#assessmentDivRow a').attr("title", "Completed !");
         $("#messagePromptModal").modal("show");
     } else if (response == "OK"  || response.status == "SUCCESS" || response.status == "ALREADY_ASSESSED") {
-        $('#jr_id_'+response.jobRoleId+' span').removeClass("glyphicon-exclamation-sign red").addClass(" glyphicon-star yellow");
+        $('#jr_'+response.jobRoleId+' .assessmentStatus').removeClass("indicatorBtnRed").addClass("indicatorBtnGreen");
+        $('#jr_'+response.jobRoleId+' .assessmentStatus b font').text("Complete");
         $('#tt_'+response.jobRoleId+'_ic').attr("title", "Completed !");
         $("#messagePromptModal").modal("show");
     }

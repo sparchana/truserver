@@ -105,32 +105,35 @@
             <div id="overlay"></div>
         </div>
 
-        <div id="sectionHead">
-            <img src="/assets/dashboard/img/userMale.svg" id="userImg">
-            <h4>
-                <b>
-                    <div id="userName" style="display: inline-block"></div>
-                    <div id="userAge" style="display: inline-block"></div>
-                    <div id="userGender" style="display: inline-block"></div>
-                </b>
-            </h4>
-            <h5><div id="userMobile" style="display: inline-block"></div>, Bangalore</h5>
 
-            <div id="darkPanel">
-                <div class="inblockDiv">Jobs Applied<br>
-                    <div class="row col-xs-12">
-                        <b id="jobCount">6</b>
-                    </div>
-                </div>
-
-                <div class="inblockDiv" style="margin-left: 16px">Profile<br>
-                    <div class="row col-xs-12">
-                        <a href="/dashboard/editProfile"><div class="profileIncomplete indicatorBtnRed"><b><font color="#fff">Incomplete</font></b></div></a>
+        <div id="sectionHead" class="container profileBody">
+            <div class="col-sm-6">
+                <img src="/assets/dashboard/img/userMale.svg" id="userImg">
+                <h4>
+                    <b>
+                        <div id="userName" style="display: inline-block"></div>
+                        <div id="userAge" style="display: inline-block"></div>
+                        <div id="userGender" style="display: inline-block"></div>
+                    </b>
+                </h4>
+                <h5><div id="userMobile" style="display: inline-block"></div>, Bangalore</h5>
+                <div style="margin-top: 0;">
+                    <div class="inblockDiv" style="margin-left: 16px">
+                        <a href="/dashboard/editProfile">
+                            <div class="profileIncomplete indicatorBtnRed"><b><font color="#fff">Incomplete</font></b></div>
+                        </a>
                         <div class="profileComplete" style="display: none"><b>Complete</b></div>
-                    </div>
+                    </div>Profile Status
+                </div>
+            </div>
+            <div class="col-sm-6" style="display: flex;
+                justify-content: center;
+                align-items: flex-end;
+                padding-top: 30px;">
+                <div >
+                    <div id="assessmentDiv" class="inblockDiv" style="margin-left: 16px;"><div class="assessmentHeader">Assessment Status</div></div>
                 </div>
 
-                <div id="assessmentDiv" class="inblockDiv" style="margin-left: 16px">Assessment<br></div>
             </div>
         </div>
         <div id="sectionBody" class="startBody" style="padding-left: 6%;

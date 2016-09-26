@@ -52,13 +52,13 @@
                     a= $('<a href="#" id="tt_'+bundle.jobPreference.jobRole.jobRoleId+'_c" ' +
                         'data-toggle="tooltip" data-placement="bottom" title="Completed !">' +
                         '</a>');
-                    statusDiv = $('<div class="indicatorBtnGreen" ><b><font color="#fff">Complete</font></b></div>');
+                    statusDiv = $('<div class="indicatorBtnGreen assessmentStatus" ><b><font color="#fff">Complete</font></b></div>');
                 } else {
                     a= $('<a href="#" id="tt_'+bundle.jobPreference.jobRole.jobRoleId+'_ic" ' +
                         'data-toggle="tooltip" data-placement="bottom" title="Click Now !! ' +
                         ' to increase chances of getting Interview Calls' +
                         ' !"></a>');
-                    statusDiv = $('<div class="indicatorBtnRed"><b><font color="#fff">Incomplete</font></b></div>');
+                    statusDiv = $('<div class="indicatorBtnRed assessmentStatus"><b><font color="#fff">Incomplete</font></b></div>');
 
                 }
                 /* red label
