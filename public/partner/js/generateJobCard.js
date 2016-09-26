@@ -52,7 +52,7 @@ function getAllAppliedJobs() {
                 { "data": "jobPreScreenLocation" }
             ],
             "language": {
-                "emptyTable": "Looks like you have not applied to any of the jobs for your candidate! " + '<a href="/partner/candidate/0" style="color: #286ab6"> '+"Add Now!" +'</a>'
+                "emptyTable": "Looks like you have not added any candidates yet! ",
             },
             responsive: true,
             "destroy": true

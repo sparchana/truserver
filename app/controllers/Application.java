@@ -206,7 +206,6 @@ public class Application extends Controller {
             e.printStackTrace();
         }
         Logger.info("Req JSON : " + req);
-        Logger.info(addCandidateRequest.getCandidateMobile() + " ----------------");
         return ok(toJson(CandidateService.createCandidateProfile(addCandidateRequest, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_BASIC_PROFILE)));
     }
 
