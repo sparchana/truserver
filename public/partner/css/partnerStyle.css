@@ -184,7 +184,7 @@ option:checked {
     background: #ffffff;
     padding: 4px;
     float: right;
-    margin-top: -11%;
+    margin-top: -13%;
 }
 #registerBtnSubmit{
     border: none;
@@ -306,11 +306,6 @@ option:checked {
     -ms-transition:     background-color 0.2s;
     -o-transition:      background-color 0.2s;
     transition:         background-color 0.2s;
-}
-
-#hotJobs{
-    height: 72%;
-    overflow: scroll;
 }
 
 #hotJobs::-webkit-scrollbar {
