@@ -227,7 +227,7 @@ function processDataVerificationMsgCheck(returnedData) {
 function renderCandidateTable() {
     try {
         var statusVal;
-        var table = $('table#leadTable').DataTable({
+        var table = $('table#myCandidates').DataTable({
             "ajax": {
                 "url": "/getMyCandidates",
                 "dataSrc": function (returnedData) {

@@ -95,6 +95,7 @@ GET         /getPartnerProfileInfo                                        contro
 GET         /partnerNavBarLoggedIn                                        controllers.PartnerController.renderPagePartnerLoggedInNavbar()
 GET         /partner/ifExists/:mobile                                     controllers.Application.ifCandidateExists(mobile: String)
 GET         /partner/:candidateId/jobs                                    controllers.PartnerController.getCandidateJobs(candidateId: Long)
+GET         /getAppliedJobsByPartnerForCandidate/:id                      controllers.PartnerController.getAppliedJobsByPartnerForCandidate(id : Long)
 
 POST        /verifyCandidateUsingOtp                                      controllers.PartnerController.verifyCandidateUsingOtp()
 POST        /getPartnerCandidate/:id                                      controllers.PartnerController.getPartnerCandidate(id : Long)
@@ -107,7 +108,6 @@ POST        /addPartnerPassword                                           contro
 POST        /partnerSignUp                                                controllers.PartnerController.partnerSignUp()
 POST        /partnerUpdateBasicProfile                                    controllers.PartnerController.partnerUpdateBasicProfile()
 POST        /checkPartnerCandidate/:id                                    controllers.PartnerController.checkPartnerCandidate(id : Long)
-POST        /getAppliedJobsByPartnerForCandidate/:id                      controllers.PartnerController.getAppliedJobsByPartnerForCandidate(id : Long)
 
 #new routes
 #~~~~~~~~~~~~~~~~~~~~

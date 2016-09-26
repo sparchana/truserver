@@ -342,6 +342,7 @@ public class PartnerController {
         return ok("0");
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result getAppliedJobsByPartnerForCandidate(long id) {
         Candidate candidate = Candidate.find.where().eq("candidateId", id).findUnique();
         if(candidate != null){
@@ -351,6 +352,7 @@ public class PartnerController {
                         .eq("candidateId", candidate.getCandidateId())
                         .eq("partner_id", partner.getPartnerId())
                         .findList();
+                Logger.info(jobApplicationList.toString());
                 return ok(toJson(jobApplicationList));
             }
         }
