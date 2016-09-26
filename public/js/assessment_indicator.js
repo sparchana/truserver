@@ -45,17 +45,20 @@
             var assessmentDivRow = $('<div id="assessmentDivRow" class="row"></div>');
             app.userJobPrefs.forEach(function (bundle) {
                 var isAssessed = bundle.assessed;
-                var card = $('<div class="col-xs-'+noc+'" id="jr_id_'+bundle.jobPreference.jobRole.jobRoleId+'"></div>');
+                var card = $('<div></div>');
                 var a;
+                var statusDiv;
                 if(isAssessed){
                     a= $('<a href="#" id="tt_'+bundle.jobPreference.jobRole.jobRoleId+'_c" ' +
                         'data-toggle="tooltip" data-placement="bottom" title="Completed !">' +
-                        '<span class="glyphicon glyphicon-star yellow" aria-hidden="true"></a>');
+                        '</a>');
+                    statusDiv = $('<div class="indicatorBtnDefault" ><b><font color="#fff">Complete</font></b></div>');
                 } else {
                     a= $('<a href="#" id="tt_'+bundle.jobPreference.jobRole.jobRoleId+'_ic" ' +
                         'data-toggle="tooltip" data-placement="bottom" title="Click Now !! ' +
                         ' to increase chances of getting Interview Calls' +
-                        ' !"><span class="glyphicon glyphicon-exclamation-sign red" aria-hidden="true"></a>');
+                        ' !"></a>');
+                    statusDiv = $('<div class="indicatorBtnRed"><b><font color="#fff">Incomplete</font></b></div>');
 
                 }
                 /* red label
@@ -69,6 +72,7 @@
                 var titleDiv = $('<div id="jr_'+bundle.jobPreference.jobRole.jobRoleId+'" class="assessmentTitle" onclick="getAssessmentQuestions('+bundle.jobPreference.jobRole.jobRoleId+', null)"></span></div>');
                 var text = $('<b><font color="#fff">'+bundle.jobPreference.jobRole.jobName+'</font></b>');
 
+                titleDiv.append(statusDiv);
                 titleDiv.append(text);
                 a.append(titleDiv);
                 card.append(a);

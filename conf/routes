@@ -69,6 +69,7 @@ GET         /logoutUser                                                   contro
 GET         /privacy                                                      controllers.Application.privacy()
 GET         /updateIsAssessedToAssessed                                   controllers.Application.updateIsAssessedToAssessed()
 GET         /getAssessmentQuestions/                                      controllers.Application.getAssessmentQuestion(jobRoleIds: String ?= null, jobPostIds: String ?= null, limit: Integer ?= null)
+GET         /getJobPostAppliedStatus/:jobPostId                           controllers.Application.getJobPostAppliedStatus(jobPostId: Long)
 
 POST        /addLead                                                      controllers.Application.addLead()
 POST        /addPassword                                                  controllers.Application.addPassword()

@@ -1325,4 +1325,18 @@ public class Application extends Controller {
         return ok("0");
     }
 
+    public static Result getJobPostAppliedStatus(Long jobPostId) {
+        String candidateId = session().get("candidateId");
+        if(jobPostId != null && candidateId != null){
+            JobApplication jobApplication = JobApplication.find.where()
+                    .eq("candidateId", candidateId)
+                    .eq("jobPostId", jobPostId).findUnique();
+            if(jobApplication != null){
+                return ok("true");
+            } else {
+                return ok("false");
+            }
+        }
+        return ok("NA");
+    }
 }
