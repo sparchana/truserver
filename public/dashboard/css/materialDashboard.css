@@ -181,6 +181,12 @@ div.inblockDiv{
     height: 76px;
     border-radius: 50%;
 }
+#userImgPartner{
+    border: 2px solid #c7c7c7;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+}
 
 #sectionBody{
     color: #525252;
@@ -224,7 +230,7 @@ div.inblockDiv{
 }
 
 #editProfileBody{
-    background: #fafafa;
+    background: #ffffff;
     padding: 2%;
 }
 
@@ -353,7 +359,61 @@ hr{
 .navbar-default .navbar-toggle .icon-bar {
     background-color: #ffffff;
 }
+
+.candidateCard{
+    padding: 2%;
+    background: #286ab6;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.12), 0 4px 4px rgba(0,0,0,0.12);
+}
+
+.arrow-left {
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right:10px solid white;
+}
+.candidateInformation{
+    padding: 2%;
+    background: #fff;
+    box-shadow: -2px 0 12px rgba(0,0,0,0.12), -2px 0px 0px rgba(0,0,0,0.12);
+}
+
+#triangle-left {
+    width: 0;
+    height: 0;
+    margin-left: -4.5%;
+    float: left;
+    border-top: 16px solid transparent;
+    border-right: 21px solid #fff;
+    border-bottom: 16px solid transparent;
+}
+
+.row-eq-height{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display:         flex;
+}
+
+.candidatePartner{
+    margin: 6px;
+}
+
 @media screen and (max-width: 800px) {
+    .candidateCard{
+        padding: 4%;
+        background: #286ab6;
+        text-align: center;
+        box-shadow: 0 1px 8px rgba(0,0,0,0.12), 0 4px 4px rgba(0,0,0,0.12);
+    }
+
+    .candidateInformation{
+        padding: 4%;
+        background: #fff;
+        box-shadow: 0 1px 8px rgba(0,0,0,0.12), 0 4px 4px rgba(0,0,0,0.12);
+    }
+
     .navbar-nav>li>a {
         background-color: #286ab6;
         color: #fff;
