@@ -44,6 +44,7 @@ public class AssessmentQuestion extends Model {
     @Column(name = "OptionE", columnDefinition = "text null")
     private String optionE;
 
+    @JsonBackReference
     @Column(name = "Answer", columnDefinition = "text null")
     private String answer;
 
