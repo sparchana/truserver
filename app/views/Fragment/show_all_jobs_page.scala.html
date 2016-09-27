@@ -89,64 +89,6 @@
 
             </div>
         </div>
-    <div id="mySignUpModal" class="modal fade" role="dialog">
-        <div class="modal-dialog">
-            <!-- Modal content-->
-            <div class="modal-content">
-                <div class="modal-body" id="model_size">
-                    <form id="form_signup_candidate_modal"  style="margin-top: 0%; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
-                        <h4 style="font-weight: bold"><center><font color="#0B4063">Sign Up to Apply Jobs</font></center></h4>
-                        <div class="row" id="firstNameLastName">
-                            <div class="col-sm-6" style="padding: 0 4px 0 16px">
-                                <input id="candidateFirstNameModal" placeholder="First name" type="text" maxLength="49" class="form-control input-md">
-                            </div>
-                            <div class="col-sm-6" style="padding: 0 16px 0 4px">
-                                <input id="candidateSecondNameModal" placeholder="Last name" type="text" maxLength="49" class="form-control input-md candidateSecondNameMain" >
-                            </div>
-                        </div>
-
-                        <input id="candidateMobileModal" style="margin-top: 8px" placeholder="Mobile No." name="candidateMobile" type="text" maxlength="10" class="form-control input-md" >
-
-                        <div style="margin-top: 8px">
-                            <input type="text" id="candidateJobPrefModal" placeholder="What jobs you are Interested in?">
-                            <script type="text/javascript">
-                                $(document).ready(function() {
-                                    $("#candidateJobPrefModal").tokenInput(getJob(), {
-                                        theme: "facebook",
-                                        placeholder: "Jobs Interested? (Max: 3)",
-                                        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-                                        minChars: 0,
-                                        tokenLimit: 3,
-                                        zindex: 9999999,
-                                        preventDuplicates: true
-                                    });
-                                });
-                            </script>
-                        </div>
-
-                        <div style="margin-top: 8px">
-                            <input type="text" id="candidateLocalityModal" placeholder="What jobs you are Interested in?" style="margin-top: 4px">
-                            <script type="text/javascript">
-                                $(document).ready(function() {
-                                    $("#candidateLocalityModal").tokenInput(getLocality(), {
-                                        theme: "facebook",
-                                        placeholder: "Locality Interested?",
-                                        minChars: 3,
-                                        zindex: 9999999,
-                                        hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
-                                        preventDuplicates: true
-                                    });
-                                });
-                            </script>
-                        </div>
-
-                        <button type="submit" id="registerBtnSubmitModal" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
-                        <!-- Text input-->
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
         <div id="sectionOneShowAll">
             <div class="container hidden-sm hidden-lg visible-xs">
                 <div style="display: inline-block; width: auto;">
