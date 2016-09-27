@@ -66,4 +66,8 @@ public class Util {
         DecimalFormat df2 = new DecimalFormat("#####.######");
         return Double.valueOf(df2.format(val));
     }
+    public static Double RoundTo1Decimals(Double val) {
+        DecimalFormat df2 = new DecimalFormat("#.#");
+        return Double.valueOf(df2.format(val));
+    }
 }

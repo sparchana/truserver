@@ -9,6 +9,7 @@ public class ApplyJobRequest {
     public String candidateMobile ;
     public Integer jobId;
     public Integer localityId;
+    public Boolean isPartner;
 
     public String getCandidateMobile() {
         return candidateMobile;
@@ -32,5 +33,13 @@ public class ApplyJobRequest {
 
     public void setJobId(Integer jobId) {
         this.jobId = jobId;
+    }
+
+    public Boolean getPartner() {
+        return isPartner;
+    }
+
+    public void setPartner(Boolean partner) {
+        isPartner = partner;
     }
 }

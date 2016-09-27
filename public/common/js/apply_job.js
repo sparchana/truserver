@@ -15,11 +15,19 @@ function processDataApplyJob(returnedData) {
     $("#jobApplyConfirm").modal("hide");
     $("#messagePromptModal").modal("show");
     $('body').addClass('open-modal');
+
+    // hiding below divs in partner page
+    try{
+        $("#candidateOtp").hide();
+        $("#verifyOtp").hide();
+    } catch (e){}
+
     if(returnedData.status == 1){
         $('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
         $("#customMsg").html("Your Job Application is Successful");
         try{
             $(".jobApplyBtnV2").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
+            $('.jobApplyBtnV2').attr('onclick','').unbind('click');
         } catch(err){
             console.log(err);
         }
@@ -60,22 +68,31 @@ function applyJob(id, localityId, triggerModal){
         if(triggerModal){
             getAssessmentQuestions(null, id);
         }
-        try {
-            var d = {
-                jobId: id,
-                candidateMobile: phone,
-                localityId: localityId
-            };
-            $.ajax({
-                type: "POST",
-                url: "/applyJob",
-                async: false,
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(d),
-                success: processDataApplyJob
-            });
-        } catch (exception) {
-            console.log("exception occured!!" + exception);
-        }
+        applyJobSubmit(id, phone, localityId, false);
     }
 } // end of submit
+
+function applyJobSubmit(jobPostId, phone, localityId, isPartner) {
+    try {
+        var partner = false;
+        if(isPartner){
+            partner = true;
+        }
+        var d = {
+            jobId: jobPostId,
+            candidateMobile: phone,
+            localityId: localityId,
+            isPartner: partner
+        };
+        $.ajax({
+            type: "POST",
+            url: "/applyJob",
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(d),
+            success: processDataApplyJob
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}

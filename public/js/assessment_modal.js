@@ -1,17 +1,26 @@
+var totalLeftAttempts = 0;
+var prevId = 0;
+
 function createRadioButton(name, value, text, id) {
     var label = document.createElement("label");
-    label.style.margin = "8px 16px";
+    label.style.margin = "8px 8px 8px 44px";
     label.style.display= "block";
     label.class = "col-md-4";
     label.style.fontWeight = "normal";
     var radio = document.createElement("input");
     radio.type = "radio";
-    radio.style.margin = "3px 6px";
+    radio.style = "margin-left: -20px; margin-right: 7px;";
     radio.name = name;
     radio.value = value;
     radio.id = id;
     radio.onclick = function () {
-        $('.btn-success.btn-modal-submit').prop('disabled', false);
+        var qId = this.id.split("_")[2];
+        if(totalLeftAttempts > 0 && prevId != qId){
+            --totalLeftAttempts;
+            prevId = qId;
+        } if(totalLeftAttempts == 0){
+            $('.btn-success.btn-modal-submit').prop('disabled', false);
+        }
     };
 
     label.appendChild(radio);
@@ -25,12 +34,12 @@ function createRadioButton(name, value, text, id) {
 
 function processAssessmentQuestions(returnedData) {
     if(returnedData != null){
-        if(returnedData == "assessed" || returnedData == "NA"){
+        if(returnedData == "OK" || returnedData == "NA" ) {
             processPostAssessmentResponse(returnedData);
-            return;
+            return returnedData;
         }
         if($(".assessment-modal").size() > 0){
-            return;
+            return returnedData;
         }
         var assessmentBody = $('<div id="assessment_body"></div>');
         var prevJobRole = null;
@@ -71,6 +80,7 @@ function processAssessmentQuestions(returnedData) {
                 }
             }
         });
+        totalLeftAttempts = qCount;
         bootbox.dialog({
             className: "assessment-modal",
             title: "<h3 class='assessment-modal-title' style='color: #286ab6'>Job Application Assessment</h3><h5>Complete Assessment to Improve Chance of getting an Interview Call</h5>",
@@ -100,13 +110,26 @@ function processAssessmentQuestions(returnedData) {
     }
 }
 
-function processPostAssessmentResponse(status) {
-    console.log(JSON.stringify(status));
-    if(status == "assessed") {
-        localStorage.setItem("assessed", "1");
-        $(".assessmentIncomplete").hide();
-        $(".assessmentComplete").show();
+function processPostAssessmentResponse(response) {
+    $('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
+    if($('#messagePromptModal').hasClass('in')){
+        $("#customMsg").append(" & You have successfully completed assessment for this job.");
+    } else{
+        $("#customMsg").html(" You have completed assessment for this job.");
     }
+    if (response.status == "ALL_ASSESSED"){
+        localStorage.setItem("assessed", "1");
+        $('.assessmentStatus').removeClass("indicatorBtnRed").addClass("indicatorBtnGreen");
+        $('.assessmentStatus b font').text("Complete");
+        $('#assessmentDivRow a').attr("title", "Completed !");
+        $("#messagePromptModal").modal("show");
+    } else if (response == "OK"  || response.status == "SUCCESS" || response.status == "ALREADY_ASSESSED") {
+        $('#jr_'+response.jobRoleId+' .assessmentStatus').removeClass("indicatorBtnRed").addClass("indicatorBtnGreen");
+        $('#jr_'+response.jobRoleId+' .assessmentStatus b font').text("Complete");
+        $('#tt_'+response.jobRoleId+'_ic').attr("title", "Completed !");
+        $("#messagePromptModal").modal("show");
+    }
+    return response;
 }
 
 function triggerFinalSubmission() {
@@ -140,18 +163,18 @@ function triggerFinalSubmission() {
     }
 }
 
-function getAssessmentQuestions(jobRoleId, jobPostId) {
-
+function getAssessmentQuestions(jobRoleIds, jobPostIds) {
     var base_api_url ="/getAssessmentQuestions/";
     if(base_api_url != null || jobPostId != null) {
         base_api_url +="?";
-        if(jobRoleId != null) {
-            base_api_url += "jobRoleIds=" + jobRoleId;
+        if(jobRoleIds != null) {
+            base_api_url += "jobRoleIds=" + jobRoleIds;
         }
-        if(jobPostId != null){
-            base_api_url += "jobPostIds=" + jobPostId;
+        if(jobPostIds != null){
+            base_api_url += "&jobPostIds=" + jobPostIds;
         }
     }
+
     try {
         $.ajax({
             type: "GET",
