@@ -37,10 +37,6 @@ $(window).load(function() {
 });
 
 $(document).ready(function(){
-    $("#assessmentDiv a").click(function() {
-        getAssessmentQuestions(null, null);
-    });
-
     /* Section Disable */
     $("#basicProfileSection").show();
     $("#skillProfileSection").hide();

@@ -103,12 +103,32 @@ body{
     background-color: rgba(200, 36, 7, 1);
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
 }
+.indicatorBtnRed{
+    width: 80px;
+    text-align: center;
+    margin: 4px 8px 4px 0;
+    border-radius: 2px;
+    padding: 4px 0px 4px 0;
+    background-color: rgba(200, 36, 7, 1);
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
+    display: inline-block;
+}
+.row-eq-height{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display:         flex;
+}
 
-#indicatorBtnGreen{
-    width: 90px;
-    padding: 4px 8px;
+
+.indicatorBtnGreen{
+    text-align: center;
+    margin: 4px 8px 4px 0;
+    width: 80px;
+    padding: 4px 0px;
     background-color: rgba(11, 126, 22, 1);
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
+    display: inline-block;
 }
 
 #blurred-image-container {
@@ -145,7 +165,26 @@ body{
 #sectionHead{
     color: #ffffff;
     padding-top: 60px;
+    padding-bottom: 24px;
     text-align: center;
+}
+
+.assessmentHeader {
+    margin-bottom: 16px;
+    font-size: 18px;
+    color: #ffffff;
+    text-align: center;
+    font-weight: bold;
+    display: block;
+}
+.profileComplete{
+    text-align: center;
+    margin: 4px 8px 4px 0;
+    width: 80px;
+    padding: 4px 0px;
+    background-color: rgba(11, 126, 22, 1);
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
+    display: inline-block;
 }
 
 .div-fixed {
@@ -171,10 +210,17 @@ body{
 }
 div.inblockDiv{
     font-size: 11px;
-    text-align: center;
+    text-align: left;
     display: inline-block;
 }
-
+#assessmentDiv span.red{
+    margin-right: 2px;
+    color: rgba(200, 36, 7, 1);
+}
+#assessmentDiv span.yellow{
+    margin-right: 2px;
+    color: #FFEB3B;
+}
 #userImg{
     border: 2px solid #c7c7c7;
     width: 76px;

@@ -45,6 +45,9 @@ public class Application extends Controller {
 
     public static Result index() {
         String sessionId = session().get("sessionId");
+        /**
+        * TODO need to change this, modify old partnerSecured to take new partnertFlow into consideration and properly annonate rest of the api end-points
+        * */
         if(sessionId != null){
             String partnerId = session().get("partnerId");
             if(partnerId != null){
@@ -1227,61 +1230,64 @@ public class Application extends Controller {
         if(session().get("candidateId") != null){
             Long candidateId = Long.parseLong(session().get("candidateId"));
             List<Long> jobRoleIdList = new ArrayList<>();
-            if(jobRoleIds != null){
+            if (jobRoleIds != null && !jobRoleIds.equalsIgnoreCase("null")) {
+                jobRoleIds = jobRoleIds.replaceAll("[^0-9,]", "");
+                if (jobRoleIds.isEmpty()) {
+                    return ok("Error ! wrong param value");
+                }
                 List<String> jobRoleIdStrList = Arrays.asList(jobRoleIds.split("\\s*,\\s*"));
-                if (jobRoleIdStrList.size() > 0){
+                if (jobRoleIdStrList.size() > 0) {
                     for (String roleId: jobRoleIdStrList) {
+                        if(roleId.isEmpty() || roleId.length() > 3) continue;
                         jobRoleIdList.add(Long.parseLong(roleId));
                     }
                 }
             } else {
-                if(jobPostIds != null) {
+                if (jobPostIds != null && !jobPostIds.equalsIgnoreCase("null")) {
+                    jobPostIds = jobPostIds.replaceAll("[^0-9,]", "");
+                    if (jobPostIds.isEmpty()) {
+                        return ok("Error ! wrong param value");
+                    }
                     List<String> jobPostIdStrList = Arrays.asList(jobPostIds.split("\\s*,\\s*"));
-                    List<JobPost> jobPostList = JobPost.find.where().in("jobPostId", jobPostIdStrList).findList();
-                    for(JobPost jobPost : jobPostList) {
-                        jobRoleIdList.add(jobPost.getJobRole().getJobRoleId());
+                    List<Long> jobPostIdList = new ArrayList<>();
+                    if (jobPostIdStrList.size() > 0) {
+                        for (String jobPostId: jobPostIdStrList) {
+                            if(jobPostId.isEmpty() || jobPostId.length() > 3) continue;
+                            jobPostIdList.add(Long.parseLong(jobPostId));
+                        }
+                    }
+                    List<JobPost> jobPostList = JobPost.find.where().in("jobPostId", jobPostIdList).findList();
+                    for (JobPost jobPost : jobPostList) {
+                        if (!jobRoleIdList.contains(jobPost.getJobRole().getJobRoleId())){
+                            jobRoleIdList.add(jobPost.getJobRole().getJobRoleId());
+                        }
                     }
                 } else {
                     Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
-                    for(JobPreference jobPreference : candidate.getJobPreferencesList()){
+                    for (JobPreference jobPreference : candidate.getJobPreferencesList()) {
                         jobRoleIdList.add(jobPreference.getJobRole().getJobRoleId());
                     }
-                    List<AssessmentQuestion> assessmentQuestionList = AssessmentQuestion.find.where().in("jobRoleId", jobRoleIdList).findList();
-                    if (assessmentQuestionList.size() > 0) {
-                        jobRoleIdList = new ArrayList<>();
-                        for(AssessmentQuestion assessmentQuestion: assessmentQuestionList) {
-                            if(!jobRoleIdList.contains(assessmentQuestion.getJobRole().getJobRoleId())){
-                                jobRoleIdList.add(assessmentQuestion.getJobRole().getJobRoleId());
-                            }
-                        }
-                    } else {
-                        return ok("assessed");
-                    }
-
                 }
             }
+            if (jobRoleIdList.size() == 0) {
+                return ok("NA");
+            }
+            List<AssessmentService.JobRoleWithAssessmentBundle> assessmentBundleList = AssessmentService.getJobRoleIdsVsIsAssessedList(candidateId, jobRoleIdList);
 
-            List<CandidateAssessmentAttempt> candidateAssessmentAttemptList = CandidateAssessmentAttempt.find.where()
-                    .eq("candidate.candidateId", candidateId)
-                    .in("jobRole.jobRoleId", jobRoleIdList)
-                    .findList();
-            if (candidateAssessmentAttemptList != null && jobRoleIdList.size() > 0 && candidateAssessmentAttemptList.size() == jobRoleIdList.size()) {
-                Logger.info("already assessed");
-                return ok("assessed");
-            } else {
-                // filter out all jobroles out of job prefs which are not attempted
-                List<Long> assessedJobRoleIdList = new ArrayList<>();
-                for (CandidateAssessmentAttempt caRes : candidateAssessmentAttemptList){
-                    if(jobRoleIdList.contains(caRes.getJobRole().getJobRoleId())){
-                        assessedJobRoleIdList.add(caRes.getJobRole().getJobRoleId());
+            if (assessmentBundleList != null && assessmentBundleList.size() > 0) {
+                jobRoleIdList = new ArrayList<>();
+                for(AssessmentService.JobRoleWithAssessmentBundle bundle : assessmentBundleList){
+                    if (!bundle.isAssessed()) {
+                        jobRoleIdList.add(bundle.getJobRoleId());
                     }
                 }
-                jobRoleIdList.removeAll(assessedJobRoleIdList);
             }
-
+            if (jobRoleIdList.size() == 0) {
+                return ok("OK");
+            }
             List<AssessmentQuestion> assessmentQuestionList = AssessmentService.getQuestions(jobRoleIdList);
 
-            if(assessmentQuestionList.size() > 0){
+            if (assessmentQuestionList.size() > 0) {
                 return ok(toJson(assessmentQuestionList));
             }
         }
@@ -1315,5 +1321,38 @@ public class Application extends Controller {
         } else {
             return ok("0");
         }
+    }
+
+    public static Result getCandidateJobPrefWithAssessmentStatus(Integer limit) {
+        String candidateId = session().get("candidateId");
+        if(candidateId != null) {
+            List<JobPreference> jobPreferenceList;
+            if (limit!=null){
+                jobPreferenceList = JobPreference.find.where().eq("candidateId", candidateId).setMaxRows(limit).findList();
+            } else {
+                jobPreferenceList = JobPreference.find.where().eq("candidateId", candidateId).findList();
+            }
+            List<CandidateJobPrefs.JobPrefWithAssessmentBundle> jobPrefWithAssessmentBundleList = AssessmentService.getJobPrefVsIsAssessedList(Long.parseLong(candidateId), jobPreferenceList);
+
+            if (jobPrefWithAssessmentBundleList != null) {
+                return ok(toJson(jobPrefWithAssessmentBundleList));
+            }
+        }
+        return ok("0");
+    }
+
+    public static Result getJobPostAppliedStatus(Long jobPostId) {
+        String candidateId = session().get("candidateId");
+        if(jobPostId != null && candidateId != null){
+            JobApplication jobApplication = JobApplication.find.where()
+                    .eq("candidateId", candidateId)
+                    .eq("jobPostId", jobPostId).findUnique();
+            if(jobApplication != null){
+                return ok("true");
+            } else {
+                return ok("false");
+            }
+        }
+        return ok("NA");
     }
 }
