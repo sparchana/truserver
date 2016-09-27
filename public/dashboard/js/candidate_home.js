@@ -439,23 +439,9 @@ function processDataAndFillMinProfile(returnedData) {
     }
 
     var appliedJobs = returnedData.jobApplicationList;
-    $("#jobCount").html(Object.keys(appliedJobs).length);
     appliedJobs.forEach(function (jobApplication) {
         $("#apply_btn_" + jobApplication.jobPost.jobPostId).addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
         $("#applyBtnDiv_" + jobApplication.jobPost.jobPostId).prop('disabled',true);
     });
 
-}
-
-function processAssessedStatus(returnedData) {
-    if(returnedData.leadType != '0' && returnedData.leadType != '1') {
-        // existing data hence pre fill form
-    } else {
-        clearModal();
-        alert('Unable to show data');
-    }
-}
-
-function completeProfile() {
-    window.open("/dashboard/editProfile");
 }
