@@ -123,11 +123,17 @@ function processPostAssessmentResponse(response) {
         $('.assessmentStatus b font').text("Complete");
         $('#assessmentDivRow a').attr("title", "Completed !");
         $("#messagePromptModal").modal("show");
+        if($('#ajp_'+response.jobRoleId) != null){
+            $('#ajp_'+response.jobRoleId).hide('slow', function(){ $('#ajp_'+response.jobRoleId).remove(); });
+        }
     } else if (response == "OK"  || response.status == "SUCCESS" || response.status == "ALREADY_ASSESSED") {
         $('#jr_'+response.jobRoleId+' .assessmentStatus').removeClass("indicatorBtnRed").addClass("indicatorBtnGreen");
         $('#jr_'+response.jobRoleId+' .assessmentStatus b font').text("Complete");
         $('#tt_'+response.jobRoleId+'_ic').attr("title", "Completed !");
         $("#messagePromptModal").modal("show");
+        if($('#ajp_'+response.jobRoleId) != null){
+            $('#ajp_'+response.jobRoleId).hide('slow', function(){ $('#ajp_'+response.jobRoleId).remove(); });
+        }
     }
     return response;
 }

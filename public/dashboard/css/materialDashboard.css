@@ -120,6 +120,21 @@ body{
     display:         flex;
 }
 
+.jobBodyAssessmentAlert{
+    right: 0;
+}
+
+div.assessmentAlertDiv.red{
+    text-align: center;
+    margin-top: 4px;
+    color: #fff;
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    background-color: red;
+    font-weight: bold;
+}
 
 .indicatorBtnGreen{
     text-align: center;
@@ -263,16 +278,14 @@ div.inblockDiv{
 }
 
 #appliedOnId{
-    text-align: center;
+    text-align: left;
 }
 
-#appliedDate{
+.appliedDate{
     margin-top: 4px;
-    color: #fff;
     font-size: 12px;
     padding: 4px 12px;
     border-radius: 20px;
-    background: #3eba2d;
 }
 
 #editProfileBody{
@@ -537,6 +550,9 @@ hr{
         margin: 16px 2% 2%;
         background: white;
         border: 1px solid #e5e7db;
+    }
+    .appliedDate{
+        float: right;
     }
 }
 @media screen and (max-width: 1000px) {

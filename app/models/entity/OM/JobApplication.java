@@ -143,6 +143,10 @@ public class JobApplication extends Model {
         this.candidate = candidate;
     }
 
+    public Timestamp getJobApplicationUpdateTimestamp() {
+        return jobApplicationUpdateTimestamp;
+    }
+
     public Partner getPartner() {
         return partner;
     }
