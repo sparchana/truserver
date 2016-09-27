@@ -540,13 +540,29 @@ public class Application extends Controller {
     @Security.Authenticated(SecuredUser.class)
     public static Result getCandidateJobApplication() {
         if(session().get("candidateId") != null){
+            Long candidateId = Long.parseLong(session().get("candidateId"));
             List<JobApplication> jobApplicationList = JobApplication.find.where().eq("candidateId", session().get("candidateId")).findList();
-            if(jobApplicationList == null)
+            List<JobApplicationWithAssessmentStatusResponse> applicationWithAssessmentStatusResponseList = new ArrayList<>();
+            List<Long> jobRoleIds = new ArrayList<>();
+            if(jobApplicationList == null){
                 return ok("0");
-            return ok(toJson(jobApplicationList));
-        } else{
-            return ok("0");
+            }
+            for (JobApplication jobApplication: jobApplicationList) {
+                 applicationWithAssessmentStatusResponseList.add(new JobApplicationWithAssessmentStatusResponse(jobApplication));
+                if(!jobRoleIds.contains(jobApplication.getJobPost().getJobRole().getJobRoleId())) {
+                    jobRoleIds.add(jobApplication.getJobPost().getJobRole().getJobRoleId());
+                }
+            }
+            Map<Long, Boolean> jobRoleIdsWithAssessmentStatusMap = AssessmentService.getJobRoleIdsVsIsAssessedMap(candidateId, jobRoleIds);
+            for (JobApplicationWithAssessmentStatusResponse jobApplication: applicationWithAssessmentStatusResponseList) {
+                jobApplication.setAssessmentRequired(!jobRoleIdsWithAssessmentStatusMap.get(jobApplication.getJobPost().getJobRole().getJobRoleId()));
+            }
+            if(applicationWithAssessmentStatusResponseList == null) {
+                return ok("0");
+            }
+            return ok(toJson(applicationWithAssessmentStatusResponseList));
         }
+        return ok("0");
     }
 
     public static Result getAllSkills(String ids) {
@@ -1323,6 +1339,7 @@ public class Application extends Controller {
         }
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result getCandidateJobPrefWithAssessmentStatus(Integer limit) {
         String candidateId = session().get("candidateId");
         if(candidateId != null) {
@@ -1341,6 +1358,7 @@ public class Application extends Controller {
         return ok("0");
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result getJobPostAppliedStatus(Long jobPostId) {
         String candidateId = session().get("candidateId");
         if(jobPostId != null && candidateId != null){
