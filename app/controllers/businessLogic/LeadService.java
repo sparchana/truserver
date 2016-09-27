@@ -2,6 +2,7 @@ package controllers.businessLogic;
 
 import api.InteractionConstants;
 import api.ServerConstants;
+import api.http.FormValidator;
 import models.entity.Interaction;
 import models.entity.Lead;
 import models.entity.Static.LeadSource;
@@ -90,12 +91,12 @@ public class LeadService {
 
     public static Lead isLeadExists(String mobile){
         try {
-            Lead existingLead = Lead.find.where().eq("leadMobile", mobile).findUnique();
+            Lead existingLead = Lead.find.where().eq("leadMobile", FormValidator.convertToIndianMobileFormat(mobile)).findUnique();
             if(existingLead != null) {
                 return existingLead;
             }
         } catch (NonUniqueResultException nu){
-            List<Lead> existingLeadList = Lead.find.where().eq("leadMobile", mobile).findList();
+            List<Lead> existingLeadList = Lead.find.where().eq("leadMobile", FormValidator.convertToIndianMobileFormat(mobile)).findList();
             if(existingLeadList !=  null && existingLeadList.size() > 1) {
                 existingLeadList.sort((l1, l2) -> l1.getLeadId() >= l2.getLeadId() ? 1 : 0);
                 Logger.info("Duplicate Candidate Encountered with mobile no: "+ mobile + "- Returned CandidateId = "
@@ -108,7 +109,7 @@ public class LeadService {
     }
 
     public static void createLead(Lead lead, InteractionService.InteractionChannelType channelType){
-        Lead existingLead = isLeadExists(lead.getLeadMobile());
+        Lead existingLead = isLeadExists(FormValidator.convertToIndianMobileFormat(lead.getLeadMobile()));
         String objectAUUId;
         String result;
         int channel;
@@ -159,7 +160,6 @@ public class LeadService {
         InteractionService.createInteraction(interaction);
     }
 
-
     public static LeadSource getLeadSourceFromLeadSourceId(int leadSourceId) {
         LeadSource leadSource = LeadSource.find.where().eq("leadSourceId", leadSourceId).findUnique();
         if(leadSource == null){
@@ -167,5 +167,4 @@ public class LeadService {
         }
         return leadSource;
     }
-
 }
