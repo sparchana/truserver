@@ -212,7 +212,6 @@ function processJobPostAppliedStatus(status) {
 }
 
 function processDataForHotJobPost(returnedData) {
-    console.log(" Returned " + returnedData);
     if (returnedData != "Error" && returnedData != "") {
         jobId = returnedData.jobPostId;
         if (returnedData.jobPostTitle != null && returnedData.jobPostTitle != "") {

@@ -120,6 +120,18 @@ body{
     display:         flex;
 }
 
+.jobBodyAssessmentAlert{
+    text-align: left;
+}
+
+div.assessmentAlertDiv.red{
+    cursor: pointer;
+    text-align: left;
+    color: white;
+    background-color: red;
+    font-weight: bold;
+    padding: 2px 10px;
+}
 
 .indicatorBtnGreen{
     text-align: center;

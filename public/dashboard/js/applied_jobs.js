@@ -249,6 +249,23 @@ function prePopulateJobSection(jobApplication) {
             }
             $("#locationMsg_" + jobPost.jobPost.jobPostId).attr("data-toggle", "tooltip");
 
+            var jobBodyAssessmentAlert = document.createElement("a");
+            jobBodyAssessmentAlert.className = "row col-xs-12 jobBodyAssessmentAlert";
+            jobBodyCol.appendChild(jobBodyAssessmentAlert);
+
+            var assessmentAlertDiv = document.createElement("div");
+            assessmentAlertDiv.className = "assessmentAlertDiv";
+            assessmentAlertDiv.id = "ajp_"+jobPost.jobPost.jobRole.jobRoleId;
+            if(jobPost.assessmentRequired == true){
+                assessmentAlertDiv.className+=" red";
+                assessmentAlertDiv.textContent = "Assessment Incomplete !! Please click here to complete assessment";
+                jobBodyAssessmentAlert.onclick = function () {
+                    var jrId = jobPost.jobPost.jobRole.jobRoleId;
+                    getAssessmentQuestions(jrId, null);
+                };
+            }
+            jobBodyAssessmentAlert.appendChild(assessmentAlertDiv);
+
         }
     });
 }

@@ -41,7 +41,6 @@
 
     app.createAssessmentIndicator = function (size) {
         if (!document.querySelector('#assessmentDivRow') && size != null ){
-            var noc = 12/size;
             var assessmentDivRow = $('<div id="assessmentDivRow" class="row"></div>');
             app.userJobPrefs.forEach(function (bundle) {
                 var isAssessed = bundle.assessed;
@@ -61,14 +60,6 @@
                     statusDiv = $('<div class="indicatorBtnRed assessmentStatus"><b><font color="#fff">Incomplete</font></b></div>');
 
                 }
-                /* red label
-                if(isAssessed){
-                 a= $('<a href="#"><div><b><font color="#fff">Complete</font></b></div></a>');
-                 } else {
-                 a= $('<a href="#"><div class="indicatorBtnRed"><b><font color="#fff">Incomplete</font></b></div></a>');
-
-                 }
-                 */
                 var titleDiv = $('<div id="jr_'+bundle.jobPreference.jobRole.jobRoleId+'" class="assessmentTitle" onclick="getAssessmentQuestions('+bundle.jobPreference.jobRole.jobRoleId+', null)"></span></div>');
                 var text = $('<b><font color="#fff">'+bundle.jobPreference.jobRole.jobName+'</font></b>');
 

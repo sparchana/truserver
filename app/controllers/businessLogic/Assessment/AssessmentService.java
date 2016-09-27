@@ -17,7 +17,9 @@ import play.api.Play;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static models.util.Util.RoundTo1Decimals;
 import static play.libs.Json.toJson;
@@ -327,6 +329,14 @@ public class AssessmentService {
         return jobRoleBundleList;
     }
 
+    public static Map<Long, Boolean> getJobRoleIdsVsIsAssessedMap(Long candidateId, List<Long> jobRoleIdList) {
+        Map<Long, Boolean> map = new HashMap<>();
+        List<JobRoleWithAssessmentBundle> jobRoleBundleList = getJobRoleIdsVsIsAssessedList(candidateId, jobRoleIdList);
+        for (JobRoleWithAssessmentBundle bundle : jobRoleBundleList) {
+            map.put(bundle.getJobRoleId(), bundle.isAssessed());
+        }
+        return map;
+    }
     private static class AssessmentSheetCol {
         AssessmentQuestion question;
         String answer;

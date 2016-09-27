@@ -136,4 +136,8 @@ public class JobApplication extends Model {
     public void setCandidate(Candidate candidate) {
         this.candidate = candidate;
     }
+
+    public Timestamp getJobApplicationUpdateTimestamp() {
+        return jobApplicationUpdateTimestamp;
+    }
 }
