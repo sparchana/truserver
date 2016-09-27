@@ -944,13 +944,11 @@ function processDataSignUpSupportSubmit(returnedData) {
 
 function verifyCandidateOtp(){
     var candidateOtp = $("#candidateOtp").val();
-    var candidateMobile = candidateUnVerifiedMobile;
-
     if(validateOtp(candidateOtp) == 0){
         notifyError("Please enter a valid 4 digit otp!");
     } else{
         var d = {
-            candidateMobile: candidateMobile,
+            candidateMobile: candidateUnVerifiedMobile,
             userOtp: candidateOtp
         };
         $("#verifyOtp").prop('disabled',true);

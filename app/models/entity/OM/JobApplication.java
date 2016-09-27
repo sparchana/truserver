@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
 import models.entity.JobPost;
+import models.entity.Partner;
 import models.entity.Static.Locality;
 import models.entity.Static.ScreeningStatus;
 
@@ -58,6 +59,11 @@ public class JobApplication extends Model {
     @JsonManagedReference
     @JoinColumn(name = "PreScreenLocation")
     private Locality locality;
+
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "partner_id", referencedColumnName = "partner_id")
+    private Partner partner;
 
     public JobApplication() {
         this.jobApplicationCreateTimeStamp = new Timestamp(System.currentTimeMillis());
@@ -139,5 +145,13 @@ public class JobApplication extends Model {
 
     public Timestamp getJobApplicationUpdateTimestamp() {
         return jobApplicationUpdateTimestamp;
+    }
+
+    public Partner getPartner() {
+        return partner;
+    }
+
+    public void setPartner(Partner partner) {
+        this.partner = partner;
     }
 }

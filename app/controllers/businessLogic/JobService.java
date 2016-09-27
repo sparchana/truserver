@@ -21,6 +21,8 @@ import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.*;
 
+import static play.mvc.Controller.session;
+
 /**
  * Created by batcoder1 on 17/6/16.
  */
@@ -132,6 +134,23 @@ public class JobService {
                     }
 
                     String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB;
+                    Partner partner = null;
+                    if(applyJobRequest.getPartner()){
+                        // this job is being applied by a partner for a candidate, hence we need to det partner Id in the job Application table
+                        partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+                        if(partner != null){
+                            jobApplication.setPartner(partner);
+                            SmsUtil.sendJobApplicationSmsViaPartner(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), existingCandidate.getCandidateMobile(), jobApplication.getLocality().getLocalityName(), partner.getPartnerFirstName());
+                            SmsUtil.sendJobApplicationSmsToPartner(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), partner.getPartnerMobile(), jobApplication.getLocality().getLocalityName(), partner.getPartnerFirstName());
+                            interactionResult = InteractionConstants.INTERACTION_RESULT_PARTNER_APPLIED_TO_JOB;
+                        }
+                    } else{
+                        SmsUtil.sendJobApplicationSms(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), existingCandidate.getCandidateMobile(), jobApplication.getLocality().getLocalityName(), channelType);
+                    }
+
+                    jobApplication.save();
+                    writeJobApplicationToGoogleSheet(existingJobPost.getJobPostId(), applyJobRequest.getCandidateMobile(), channelType, applyJobRequest.getLocalityId(), partner);
+
                     if (channelType == InteractionService.InteractionChannelType.SELF) {
                         // job application coming from website
                         InteractionService.createInteractionForJobApplicationViaWebsite(
@@ -147,12 +166,8 @@ public class JobService {
                         );
                     }
 
-                    jobApplication.save();
-                    writeJobApplicationToGoogleSheet(existingJobPost.getJobPostId(), applyJobRequest.getCandidateMobile(), channelType, applyJobRequest.getLocalityId());
-
                     Logger.info("candidate: " + existingCandidate.getCandidateFirstName() + " with mobile: " + existingCandidate.getCandidateMobile() + " applied to the jobPost of JobPostId:" + existingJobPost.getJobPostId());
 
-                    SmsUtil.sendJobApplicationSms(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), existingCandidate.getCandidateMobile(), jobApplication.getLocality().getLocalityName());
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_SUCCESS);
                 } else{
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_EXISTS);
@@ -166,7 +181,7 @@ public class JobService {
         return applyJobResponse;
     }
 
-    public static void writeJobApplicationToGoogleSheet(Long jobPostId, String candidateMobile, InteractionService.InteractionChannelType channelType, Integer localityId) throws UnsupportedEncodingException {
+    public static void writeJobApplicationToGoogleSheet(Long jobPostId, String candidateMobile, InteractionService.InteractionChannelType channelType, Integer localityId, Partner partner) throws UnsupportedEncodingException {
         String jobIdVal = "-";
         String companyNameVal = "-";
         String jobPostNameVal = "-";
@@ -192,6 +207,9 @@ public class JobService {
         String candidateAgeVal = "-";
         String jobApplicationChannelVal = "-";
         String jobIsHotVal = "";
+        String partnerNameVal = "";
+        String partnerMobileVal = "";
+        String partnerIdVal = "";
         int sheetId = ServerConstants.SHEET_MAIN;
 
         if(channelType == InteractionService.InteractionChannelType.SELF_ANDROID){
@@ -349,6 +367,12 @@ public class JobService {
             }
         }
 
+        if(partner != null){
+            partnerNameVal = partner.getPartnerFirstName();
+            partnerMobileVal = partner.getPartnerMobile();
+            partnerIdVal = String.valueOf(partner.getPartnerId());
+        }
+
         /*
         * writing to job application sheet excel sheet
         * */
@@ -379,6 +403,9 @@ public class JobService {
         String candidateAgeKey = "entry.791725694";
         String jobApplicationChannelKey = "entry.528024717";
         String jobIsHotKey = "entry.1165618058";
+        String partnerNameKey = "entry.1066838351";
+        String partnerIdKey = "entry.34374237";
+        String partnerMobileKey = "entry.483855268";
 
 
         String url;
@@ -417,7 +444,10 @@ public class JobService {
                 + candidateAgeKey + "=" + URLEncoder.encode(candidateAgeVal,"UTF-8") + "&"
                 + candidateExpiryDateKey + "=" + URLEncoder.encode(candidateExpiryDateVal,"UTF-8") + "&"
                 + jobApplicationChannelKey + "=" + URLEncoder.encode(jobApplicationChannelVal,"UTF-8") + "&"
-                + jobIsHotKey + "=" + URLEncoder.encode(jobIsHotVal,"UTF-8");
+                + jobIsHotKey + "=" + URLEncoder.encode(jobIsHotVal,"UTF-8") + "&"
+                + partnerNameKey + "=" + URLEncoder.encode(partnerNameVal,"UTF-8") + "&"
+                + partnerIdKey + "=" + URLEncoder.encode(partnerIdVal,"UTF-8") + "&"
+                + partnerMobileKey + "=" + URLEncoder.encode(partnerMobileVal,"UTF-8");
 
                 try {
                     GoogleSheetHttpRequest googleSheetHttpRequest = new GoogleSheetHttpRequest();

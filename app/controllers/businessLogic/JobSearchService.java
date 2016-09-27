@@ -2,17 +2,21 @@ package controllers.businessLogic;
 
 import api.ServerConstants;
 import api.http.FormValidator;
+import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Expr;
 import com.avaje.ebean.Query;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
 import in.trujobs.proto.*;
 import models.entity.Candidate;
 import models.entity.JobPost;
+import models.entity.OM.JobPreference;
+import models.entity.Static.JobRole;
 import play.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static api.ServerConstants.SORT_BY_DATE_POSTED;
 import static api.ServerConstants.SORT_BY_SALARY;
@@ -82,7 +86,12 @@ public class JobSearchService {
 
             // TODO: This should be changed to a fetch from DB. Sbould not be computed upon every run.
             List<Long> relatedJobRoleIds = JobRelevancyEngine.getRelatedJobRoleIds(jobRoleIds);
+
+            Logger.info("Related job role: " + relatedJobRoleIds.toString());
             List<JobPost> relatedJobRoleJobs = queryAndReturnJobPosts(relatedJobRoleIds, filterParams, sortBy, isHot, source);
+
+            Logger.info("Exact size: " + exactJobRoleJobs.size());
+            Logger.info("Exact size: " + relatedJobRoleJobs.size());
 
             // if we have lat-long info, then lets go ahead and filter the job post lists based on distance criteria
             if (latitude != null && longitude != null && latitude != 0.0 && longitude != 0.0) {
@@ -180,7 +189,7 @@ public class JobSearchService {
 
         String candidateMobile = FormValidator.convertToIndianMobileFormat(mobile);
 
-        Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
+        Candidate existingCandidate = CandidateService.isCandidateExists(candidateMobile);
 
         double lat = 0.00;
         double lng = 0.00;
@@ -206,12 +215,50 @@ public class JobSearchService {
             }
 
             if (existingCandidate.getJobPreferencesList() != null && !existingCandidate.getJobPreferencesList().isEmpty()) {
-                for (int i = 0; i <= existingCandidate.getJobPreferencesList().size(); i++) {
-                    jobRoleIds.add(existingCandidate.getJobPreferencesList().get(i).getJobRole().getJobRoleId());
+
+                List<JobPreference> jobPrefsList = existingCandidate.getJobPreferencesList();
+                for (JobPreference jobPref : jobPrefsList) {
+                    jobRoleIds.add(jobPref.getJobRole().getJobRoleId());
                 }
             }
 
             return getRelevantJobPostsWithinDistance(lat, lng, jobRoleIds, null, ServerConstants.SORT_DEFAULT, false, false);
+        }
+
+        return getAllJobPosts();
+    }
+
+    public static List<JobPost> getAllJobsForCandidate(String mobile) {
+
+        String candidateMobile = FormValidator.convertToIndianMobileFormat(mobile);
+
+        Candidate existingCandidate = CandidateService.isCandidateExists(candidateMobile);
+
+        List<Long> jobRoleIds = new ArrayList<Long>();
+
+        if (existingCandidate != null) {
+            if (existingCandidate.getJobPreferencesList() != null && !existingCandidate.getJobPreferencesList().isEmpty()) {
+
+                List<JobPreference> jobPrefsList = existingCandidate.getJobPreferencesList();
+                for (JobPreference jobPref : jobPrefsList) {
+                    jobRoleIds.add(jobPref.getJobRole().getJobRoleId());
+                }
+            }
+
+            List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, null, null, false, ServerConstants.SOURCE_INTERNAL);
+
+            //getting all jobroles excluding candidate's job role preference
+            List<JobRole> jobRoleList = JobRole.find.where()
+                    .notIn("jobRoleId", jobRoleIds)
+                    .findList();
+
+            List<Long> otherJobRoleList = jobRoleList.stream().map(JobRole::getJobRoleId).collect(Collectors.toList());
+
+            //getting all the internal jobs apart form candidate's job role pref
+            List<JobPost> otherJobRoleJobs = queryAndReturnJobPosts(otherJobRoleList, null, null, false, ServerConstants.SOURCE_INTERNAL);
+            exactJobRoleJobs.addAll(otherJobRoleJobs);
+
+            return exactJobRoleJobs;
         }
 
         return getAllJobPosts();
@@ -294,11 +341,13 @@ public class JobSearchService {
             }
         }
 
-        if (sortBy == SORT_BY_DATE_POSTED) {
-            query = query.orderBy().desc("jobPostCreateTimestamp");
+        if(sortBy != null){
+            if (sortBy == SORT_BY_DATE_POSTED) {
+                query = query.orderBy().desc("jobPostCreateTimestamp");
 
-        } else if (sortBy == SORT_BY_SALARY) {
-            query = query.orderBy().desc("jobPostMinSalary");
+            } else if (sortBy == SORT_BY_SALARY) {
+                query = query.orderBy().desc("jobPostMinSalary");
+            }
         }
 
         return query.findList();

@@ -186,6 +186,11 @@ function viewCandidate(leadId) {
     );
 }
 
+function applyJobForCandidate(candidateId) {
+    localStorage.setItem("candidateId", candidateId);
+    window.location = "/partner/"+ candidateId + "/jobs";
+}
+
 function verifyCandidate(mobile) {
     candidateUnVerifiedMobile = ("+" + mobile);
     notifyWarning("Sending verification SMS to candidate with mobile: " + ("+" + mobile));
@@ -221,7 +226,8 @@ function processDataVerificationMsgCheck(returnedData) {
 
 function renderCandidateTable() {
     try {
-        var table = $('table#leadTable').DataTable({
+        var statusVal;
+        var table = $('table#myCandidates').DataTable({
             "ajax": {
                 "url": "/getMyCandidates",
                 "dataSrc": function (returnedData) {
@@ -234,22 +240,34 @@ function renderCandidateTable() {
                             'candidateStatus' : function() {
                                 if (candidate.candidateStatus != null){
                                     if(candidate.candidateStatus == "1"){
-                                        var statusVal;
                                         if(candidate.candidateActiveDeactive == '1'){
                                             statusVal = "Active";
-                                            return '<div class="mLabel" style="width:100%" >'+ '<img src=\"/assets/partner/img/correct.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font color="#00b334" size=\"4\">&nbsp;&nbsp;' + statusVal +'</font></div>' +'</div>';
+                                            return '<div class="mLabel" style="width:100%" >'+ '<img src=\"/assets/partner/img/correct.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font color="#00b334" size=\"2\">&nbsp;&nbsp;' + statusVal +'</font></div>' +'</div>';
                                         } else{
                                             statusVal = "Deactivated";
-                                            return '<div class="mLabel" style="width:100%" >'+ '<img src=\"/assets/partner/img/wrong.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font color="#dc143c" size=\"4\">&nbsp;&nbsp;' + statusVal +'</font></div>' +'</div>';
+                                            return '<div class="mLabel" style="width:100%" >'+ '<img src=\"/assets/partner/img/wrong.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; \" ><font color="#dc143c" size=\"2\">&nbsp;&nbsp;' + statusVal +'</font></div>' +'</div>';
                                         }
                                     } else{
-                                        return '<button type="button" id="viewCandidateBtn" class="mBtn orange" onclick=\"verifyCandidate('+ candidate.candidateMobile+')\" >'+ '<img src=\"/assets/partner/img/warning.png\" width=\"22px\" style=\"display: inline-block\" /><div style=\"display: inline-block; cursor: hand\" >&nbsp;&nbsp;Verify</div>' +'</button>';
+                                        statusVal = "Not Active";
+                                        return '<button type="button" id="viewCandidateBtn" class="mBtn orange" onclick=\"verifyCandidate('+ candidate.candidateMobile+')\" >'+ '<img src=\"/assets/partner/img/warning.png\" width=\"16px\" style=\"display: inline-block\" /><div style=\"display: inline-block; cursor: hand\" >' +
+                                            '<font color="#fff" size=\"2\">&nbsp;&nbsp;Verify</font></div>' +'</button>';
                                     }
                                 } else {
+                                    statusVal = "Not Active";
                                     return "-";
                                 }
                             },
-                            'btnView' : '<button type="button" class="mBtn blue" onclick="viewCandidate('+candidate.leadId+')" id="viewCandidateBtn" >'+ 'View/Edit' +'</button>'
+                            'btnView' : '<button type="button" class="mBtn blue" onclick="viewCandidate('+candidate.leadId+')" id="viewCandidateBtn" >'+ 'View/Edit' +'</button>',
+                            'apply' :  function() {
+                                if (statusVal.localeCompare("Active") == 0){
+                                    return '<button type="button" class="mBtn" onclick="applyJobForCandidate('+candidate.candidateId+')" id="viewCandidateBtn" >'+ 'View/Apply' +'</button>';
+                                } else {
+                                    return '<div class="mLabel" style="width:100%" >'+ '<div style=\"display: inline-block; \" ><font color="#777773" size=\"2\">&nbsp;&nbsp;' + 'Not Allowed' +'</font></div>' +'</div>';
+                                }
+                            },
+                            'appliedJobs' :  function() {
+                                return '<div class="mCircleLabel" onclick="applyJobForCandidate('+candidate.candidateId+')">'+ candidate.candidateAppliedJobs + '</div>';
+                            }
                         })
                     });
                     return returned_data;
@@ -262,7 +280,9 @@ function renderCandidateTable() {
                 { "data": "candidateMobile" },
                 { "data": "candidateCreationTimestamp" },
                 { "data": "candidateStatus" },
-                { "data": "btnView" }
+                { "data": "btnView" },
+                { "data": "apply" },
+                { "data": "appliedJobs" }
             ],
             "language": {
                 "emptyTable": "Looks like you have not added any candidates yet! " + '<a href="/partner/candidate/0" style="color: #286ab6"> '+"Add Now!" +'</a>'

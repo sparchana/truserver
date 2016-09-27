@@ -98,7 +98,7 @@ public class CandidateService
         Logger.info("Checking for mobile number: " + candidateSignUpRequest.getCandidateMobile());
         Candidate candidate = isCandidateExists(candidateSignUpRequest.getCandidateMobile());
         String leadName = candidateSignUpRequest.getCandidateFirstName()+ " " + candidateSignUpRequest.getCandidateSecondName();
-        Lead lead = LeadService.createOrUpdateConvertedLead(leadName, candidateSignUpRequest.getCandidateMobile(), leadSourceId, channelType, LeadService.LeadType.CANDIDATE);
+        Lead lead = LeadService.createOrUpdateConvertedLead(leadName, FormValidator.convertToIndianMobileFormat(candidateSignUpRequest.getCandidateMobile()), leadSourceId, channelType, LeadService.LeadType.CANDIDATE);
         Integer interactionTypeVal;
         try {
             if(candidate == null) {
@@ -135,7 +135,7 @@ public class CandidateService
 
                 // triggers when candidate is self created
                 if(channelType == InteractionChannelType.SELF_ANDROID || channelType == InteractionChannelType.SELF){
-                    triggerOtp(candidate, candidateSignUpResponse);
+                    triggerOtp(candidate, candidateSignUpResponse, channelType);
                 }
 
                 result = InteractionConstants.INTERACTION_RESULT_NEW_CANDIDATE;
@@ -159,7 +159,7 @@ public class CandidateService
 
                     // triggers when candidate is self created
                     if(channelType == InteractionChannelType.SELF_ANDROID || channelType == InteractionChannelType.SELF){
-                        triggerOtp(candidate, candidateSignUpResponse);
+                        triggerOtp(candidate, candidateSignUpResponse, channelType);
                     }
                     interactionTypeVal = InteractionConstants.INTERACTION_TYPE_EXISTING_CANDIDATE_TRIED_SIGNUP;
                     result = InteractionConstants.INTERACTION_RESULT_EXISTING_CANDIDATE_VERIFICATION;
@@ -211,7 +211,7 @@ public class CandidateService
         Logger.info("Creating candidate profile for mobile " + request.getCandidateMobile());
 
         // Check if this candidate already exists
-        Candidate candidate = isCandidateExists(request.getCandidateMobile());
+        Candidate candidate = isCandidateExists(FormValidator.convertToIndianMobileFormat(request.getCandidateMobile()));
 
         // Initialize some basic interaction details
         String createdBy = InteractionConstants.INTERACTION_CREATED_SELF;
@@ -825,9 +825,9 @@ public class CandidateService
         return languageKnownList;
     }
 
-    private static void triggerOtp(Candidate candidate, CandidateSignUpResponse candidateSignUpResponse) {
+    private static void triggerOtp(Candidate candidate, CandidateSignUpResponse candidateSignUpResponse, InteractionService.InteractionChannelType channelType) {
         int randomPIN = generateOtp();
-        SmsUtil.sendOTPSms(randomPIN, candidate.getCandidateMobile());
+        SmsUtil.sendOTPSms(randomPIN, candidate.getCandidateMobile(), channelType);
 
         candidateSignUpResponse.setCandidateId(candidate.getCandidateId());
         candidateSignUpResponse.setCandidateFirstName(candidate.getCandidateFirstName());
@@ -1085,7 +1085,7 @@ public class CandidateService
             } else {
                 int randomPIN = generateOtp();
                 existingCandidate.update();
-                SmsUtil.sendResetPasswordOTPSms(randomPIN, existingCandidate.getCandidateMobile());
+                SmsUtil.sendResetPasswordOTPSms(randomPIN, existingCandidate.getCandidateMobile(), channelType);
 
                 String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_RESET_PASSWORD;
                 String objAUUID = "";
