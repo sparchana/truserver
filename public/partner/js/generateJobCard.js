@@ -64,6 +64,8 @@ function getAllAppliedJobs() {
                 "dataSrc": function (returnedData) {
                     var returned_data = new Array();
                     returnedData.forEach(function (jobApplication) {
+                        var appliedDateInMillis = new Date(jobApplication.jobApplicationCreateTimeStamp);
+                        console.log();
                         var salary;
                         if(jobApplication.jobPost.jobPostMaxSalary != null){
                             salary = "₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMinSalary) + " - ₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMaxSalary);
@@ -75,7 +77,8 @@ function getAllAppliedJobs() {
                             'jobPostCompany' : '<div class="mLabel" style="width:100%" >'+ jobApplication.jobPost.company.companyName + '</div>',
                             'jobPostSalary' : '<div class="mLabel" style="width:100%" >'+ salary + '</div>',
                             'jobPostExperience' : '<div class="mLabel" style="width:100%" >'+ jobApplication.jobPost.jobPostExperience.experienceType + '</div>',
-                            'jobPreScreenLocation' : '<div class="mLabel" style="width:100%" >'+ jobApplication.locality.localityName + '</div>'
+                            'jobPreScreenLocation' : '<div class="mLabel" style="width:100%" >'+ jobApplication.locality.localityName + '</div>',
+                            'jobAppliedOn' : '<div class="mLabel" style="width:100%" >'+ appliedDateInMillis.getDate() + '/' + (appliedDateInMillis.getMonth()+1) + '/' + appliedDateInMillis.getFullYear() + '</div>'
                         });
                         returnedData.forEach(function (jobApplication) {
                             $("#apply_btn_" + jobApplication.jobPost.jobPostId).addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied").click(false);
@@ -92,7 +95,8 @@ function getAllAppliedJobs() {
                 { "data": "jobPostCompany" },
                 { "data": "jobPostSalary" },
                 { "data": "jobPostExperience" },
-                { "data": "jobPreScreenLocation" }
+                { "data": "jobPreScreenLocation" },
+                { "data": "jobAppliedOn" }
             ],
             "language": {
                 "emptyTable": "Looks like you have not added any candidates yet! ",

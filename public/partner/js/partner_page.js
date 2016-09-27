@@ -260,7 +260,7 @@ function renderCandidateTable() {
                             'btnView' : '<button type="button" class="mBtn blue" onclick="viewCandidate('+candidate.leadId+')" id="viewCandidateBtn" >'+ 'View/Edit' +'</button>',
                             'apply' :  function() {
                                 if (statusVal.localeCompare("Active") == 0){
-                                    return '<button type="button" class="mBtn" onclick="applyJobForCandidate('+candidate.candidateId+')" id="viewCandidateBtn" >'+ 'Apply Job' +'</button>';
+                                    return '<button type="button" class="mBtn" onclick="applyJobForCandidate('+candidate.candidateId+')" id="viewCandidateBtn" >'+ 'View/Apply' +'</button>';
                                 } else {
                                     return '<div class="mLabel" style="width:100%" >'+ '<div style=\"display: inline-block; \" ><font color="#777773" size=\"2\">&nbsp;&nbsp;' + 'Not Allowed' +'</font></div>' +'</div>';
                                 }
