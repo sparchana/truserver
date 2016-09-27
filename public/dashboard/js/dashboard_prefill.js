@@ -5,7 +5,6 @@
 var candidateSkill = [];
 var currentLocationArray = [];
 
-var candidateInfo;
 var candidateFirstName;
 var candidateLastName;
 var candidateMobile;
@@ -29,9 +28,9 @@ function processDataCandidateSaveBasicProfile(returnedData) {
     document.getElementById('skillImg').src = "/assets/dashboard/img/skills_enable.png";
     document.getElementById('educationImg').src = "/assets/dashboard/img/education_disable.png";
 
-    $("#basicProfileSection").hide();
-    $("#skillProfileSection").show();
-    $("#educationProfileSection").hide();
+    $("#basicProfileSection").hide(200);
+    $("#skillProfileSection").show(200);
+    $("#educationProfileSection").hide(200);
 
     fetchSkillAjaxApis();
     prefillSkillProfile();
@@ -50,9 +49,9 @@ function processDataCandidateExperienceUpdate(returnedData) {
     document.getElementById('skillImg').src = "/assets/dashboard/img/skills_disable.png";
     document.getElementById('educationImg').src = "/assets/dashboard/img/education_enable.png";
 
-    $("#basicProfileSection").hide();
-    $("#skillProfileSection").hide();
-    $("#educationProfileSection").show();
+    $("#basicProfileSection").hide(200);
+    $("#skillProfileSection").hide(200);
+    $("#educationProfileSection").show(200);
 
     fetchEducationAjaxApis();
     prefillEducationProfile();
@@ -501,7 +500,7 @@ function saveCandidateBasicProfile(){
                 //mandatory fields
                 candidateFirstName: $('#candidateFirstName').val(),
                 candidateSecondName: $('#candidateSecondName').val(),
-                candidateMobile: candidateInfo.candidateMobile,
+                candidateMobile: candidateInformation.candidateMobile,
                 candidateJobPref: candidatePreferredJob,
                 candidateHomeLocality: homeLocalitySelected,
 
@@ -607,7 +606,7 @@ function saveCandidateExperienceDetails(){
                 }
 
                 var d = {
-                    candidateMobile: candidateInfo.candidateMobile,
+                    candidateMobile: candidateInformation.candidateMobile,
                     candidateFirstName: candidateFirstName,
                     candidateSecondName: candidateLastName,
 
@@ -650,7 +649,7 @@ function saveCandidateEducationDetails(){
             document.getElementById("saveBtn").disabled = true;
             try {
                 var d = {
-                    candidateMobile: candidateInfo.candidateMobile,
+                    candidateMobile: candidateInformation.candidateMobile,
                     candidateFirstName: candidateFirstName,
                     candidateSecondName: candidateLastName,
 
