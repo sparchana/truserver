@@ -211,7 +211,7 @@ public class CandidateService
         Logger.info("Creating candidate profile for mobile " + request.getCandidateMobile());
 
         // Check if this candidate already exists
-        Candidate candidate = isCandidateExists(request.getCandidateMobile());
+        Candidate candidate = isCandidateExists(FormValidator.convertToIndianMobileFormat(request.getCandidateMobile()));
 
         // Initialize some basic interaction details
         String createdBy = InteractionConstants.INTERACTION_CREATED_SELF;
