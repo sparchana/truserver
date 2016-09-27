@@ -21,6 +21,8 @@ import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.*;
 
+import static play.mvc.Controller.session;
+
 /**
  * Created by batcoder1 on 17/6/16.
  */
@@ -146,13 +148,22 @@ public class JobService {
                                 interactionResult + existingJobPost.getJobPostTitle() + " at " + existingJobPost.getCompany().getCompanyName() + "@" + locality.getLocalityName()
                         );
                     }
+                    if(applyJobRequest.getPartner()){
+                        // this job is being applied by a partner for a candidate, hence we need to det partner Id in the job Application table
+                        Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+                        if(partner != null){
+                            jobApplication.setPartner(partner);
+                            SmsUtil.sendJobApplicationSmsViaPartner(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), existingCandidate.getCandidateMobile(), jobApplication.getLocality().getLocalityName(), partner.getPartnerFirstName());
+                            SmsUtil.sendJobApplicationSmsToPartner(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), partner.getPartnerMobile(), jobApplication.getLocality().getLocalityName(), partner.getPartnerFirstName());
+                        }
+                    } else{
+                        SmsUtil.sendJobApplicationSms(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), existingCandidate.getCandidateMobile(), jobApplication.getLocality().getLocalityName(), channelType);
+                    }
 
                     jobApplication.save();
-                    writeJobApplicationToGoogleSheet(existingJobPost.getJobPostId(), applyJobRequest.getCandidateMobile(), channelType, applyJobRequest.getLocalityId());
 
                     Logger.info("candidate: " + existingCandidate.getCandidateFirstName() + " with mobile: " + existingCandidate.getCandidateMobile() + " applied to the jobPost of JobPostId:" + existingJobPost.getJobPostId());
 
-                    SmsUtil.sendJobApplicationSms(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), existingCandidate.getCandidateMobile(), jobApplication.getLocality().getLocalityName());
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_SUCCESS);
                 } else{
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_EXISTS);

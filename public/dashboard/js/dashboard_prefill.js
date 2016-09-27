@@ -5,6 +5,11 @@
 var candidateSkill = [];
 var currentLocationArray = [];
 
+var candidateInfo;
+var candidateFirstName;
+var candidateLastName;
+var candidateMobile;
+
 /* start of javascript */
 $(document).ready(function(){
     $("#educationalInstitute").hide();
@@ -496,7 +501,7 @@ function saveCandidateBasicProfile(){
                 //mandatory fields
                 candidateFirstName: $('#candidateFirstName').val(),
                 candidateSecondName: $('#candidateSecondName').val(),
-                candidateMobile: $('#candidateMobile').val(),
+                candidateMobile: candidateInfo.candidateMobile,
                 candidateJobPref: candidatePreferredJob,
                 candidateHomeLocality: homeLocalitySelected,
 
@@ -505,6 +510,9 @@ function saveCandidateBasicProfile(){
                 candidateTimeShiftPref: $('#candidateTimeShiftPref').val(),
                 candidateGender: ($('input:radio[name="gender"]:checked').val())
             };
+
+            candidateFirstName = d.candidateFirstName;
+            candidateLastName = d.candidateSecondName;
 
             localStorage.setItem("name", d.candidateFirstName);
             localStorage.setItem("lastName", d.candidateSecondName);
@@ -599,9 +607,9 @@ function saveCandidateExperienceDetails(){
                 }
 
                 var d = {
-                    candidateMobile: localStorage.getItem("mobile"),
-                    candidateFirstName: localStorage.getItem("name"),
-                    candidateSecondName: localStorage.getItem("lastName"),
+                    candidateMobile: candidateInfo.candidateMobile,
+                    candidateFirstName: candidateFirstName,
+                    candidateSecondName: candidateLastName,
 
                     candidateTotalExperience: totalExp,
                     candidateIsEmployed: $('input:radio[name="isEmployed"]:checked').val(),
@@ -642,9 +650,9 @@ function saveCandidateEducationDetails(){
             document.getElementById("saveBtn").disabled = true;
             try {
                 var d = {
-                    candidateMobile: localStorage.getItem("mobile"),
-                    candidateFirstName: localStorage.getItem("name"),
-                    candidateSecondName: localStorage.getItem("lastName"),
+                    candidateMobile: candidateInfo.candidateMobile,
+                    candidateFirstName: candidateFirstName,
+                    candidateSecondName: candidateLastName,
 
                     candidateEducationLevel: $('input:radio[name="highestEducation"]:checked').val(),
                     candidateDegree: selectedDegree,

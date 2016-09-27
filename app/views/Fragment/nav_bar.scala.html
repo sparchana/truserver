@@ -51,7 +51,7 @@
             <!-- Modal content-->
         <div class="modal-content">
             <div class="modal-body" id="model_size">
-                <form id="form_signup_candidate_modal"  style="margin-top: 0%; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
+                <form id="form_signup_candidate_modal"  style="margin-top: 0; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
                     <h4 style="font-weight: bold"><center><font color="#0B4063">Sign Up to Apply Jobs</font></center></h4>
                     <div class="row" id="firstNameLastName">
                         <div class="col-sm-6" style="padding: 0 4px 0 16px">
@@ -87,9 +87,10 @@
                                     $(document).ready(function() {
                                         $("#candidateHomeLocalityModal").tokenInput(getLocality(), {
                                             theme: "facebook",
-                                            placeholder: "Locality Interested?",
+                                            placeholder: "Home Locality?",
                                             minChars: 1,
                                             zindex: 9999999,
+                                            tokenLimit: 1,
                                             hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
                                             preventDuplicates: true
                                         });

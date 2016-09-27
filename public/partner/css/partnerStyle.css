@@ -184,7 +184,7 @@ option:checked {
     background: #ffffff;
     padding: 4px;
     float: right;
-    margin-top: -11%;
+    margin-top: -13%;
 }
 #registerBtnSubmit{
     border: none;
@@ -308,6 +308,9 @@ option:checked {
     transition:         background-color 0.2s;
 }
 
+#hotJobs::-webkit-scrollbar {
+    width: 0 !important;
+}
 
 .sectionFiveMain{
     background: #002144;
@@ -470,7 +473,31 @@ a:hover{
     height: 65%;
     margin-top: 4%;
 }
+
+#partnerToggleBtn{
+    width: 150px;
+    display: inline-block;
+}
+
+#appliedJobsSection{
+    text-align: left;
+}
+
 @media screen and (max-width: 768px) {
+    #partnerToggleBtn{
+        width: 97%;
+        display: block;
+    }
+
+    .toggleButtonContainer{
+        text-align: center;
+    }
+
+    #hotJobs{
+        margin-top: 24px;
+        height: 66%;
+        overflow: scroll;
+    }
 
     #viewCandidateBtn{
         padding: 8px;

@@ -1,5 +1,6 @@
 package models.util;
 
+import controllers.businessLogic.InteractionService;
 import play.Logger;
 import play.Play;
 
@@ -64,24 +65,33 @@ public class SmsUtil {
 
     }
 
-    public static void sendOTPSms(int otp, String mobile) {
-        String msg = "Use OTP " + otp + " to register and start your job search. Welcome to www.Trujobs.in! Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
+    public static void sendOTPSms(int otp, String mobile, InteractionService.InteractionChannelType channelType) {
+        String msg = "Use OTP " + otp + " to register and start your job search. Welcome to www.Trujobs.in!";
+        if(channelType == InteractionService.InteractionChannelType.SELF){
+            msg += " Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
+        }
         sendSms(mobile, msg);
     }
 
     public static void sendPartnerOTPSms(int otp, String mobile) {
-        String msg = "Use OTP " + otp + " to register as a partner with TruJobs. Welcome to www.Trujobs.in! Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
+        String msg = "Use OTP " + otp + " to register as a partner with TruJobs. Welcome to www.Trujobs.in!";
         sendSms(mobile, msg);
     }
 
-    public static void sendResetPasswordOTPSms(int otp, String mobile) {
-        String msg = "Use OTP " + otp + " to reset your password. Welcome to www.Trujobs.in! Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
+    public static void sendResetPasswordOTPSms(int otp, String mobile, InteractionService.InteractionChannelType channelType) {
+        String msg = "Use OTP " + otp + " to reset your password. Welcome to www.Trujobs.in!";
+        if(channelType == InteractionService.InteractionChannelType.SELF){
+            msg += " Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
+        }
         sendSms(mobile, msg);
     }
 
-    public static void sendJobApplicationSms(String candidateName, String jobTitle, String company, String mobile, String prescreenLocation) {
+    public static void sendJobApplicationSms(String candidateName, String jobTitle, String company, String mobile, String prescreenLocation, InteractionService.InteractionChannelType channelType) {
         String msg = "Hi " + candidateName + ", you have applied to " + jobTitle + " job at " + company + " @" + prescreenLocation + ".  Please complete the assessment to maximize your chances of getting an interview call." +
-                "Call us at +91 8048039089 to know about the status of your job application. All the best! www.trujobs.in. Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
+                "Call us at +91 8048039089 to know about the status of your job application. All the best! www.trujobs.in.";
+        if(channelType == InteractionService.InteractionChannelType.SELF){
+            msg += " Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
+        }
         sendSms(mobile, msg);
     }
 
@@ -187,8 +197,18 @@ public class SmsUtil {
     }
 
     public static void sendOtpToPartnerCreatedCandidate(int otp, String mobile) {
-        String msg = "Hi. You have been registered by on TruJobs for job search. Provide OTP: " + otp + " to complete registration.  Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
+        String msg = "Hi. You have been registered by on TruJobs for job search. Provide OTP: " + otp + " to complete registration. Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
         sendSms(mobile, msg);
     }
 
+    public static void sendJobApplicationSmsViaPartner(String candidateFirstName, String jobPostTitle, String companyName, String candidateMobile, String localityName, String partnerName) {
+        String msg = "Hi " + candidateFirstName + ", we have received your job application for " + jobPostTitle + " job at " + companyName + " @" + localityName + " from our recruitment partner (" + partnerName + ").  " +
+                "Kindly login at www.trujobs.in to take assessment now! Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
+        sendSms(candidateMobile, msg);
+    }
+
+    public static void sendJobApplicationSmsToPartner(String candidateFirstName, String jobPostTitle, String companyName, String partnerMobile, String localityName, String partnerFirstName) {
+        String msg = "Hi " + partnerFirstName + ", you have applied to " + jobPostTitle + " job at " + companyName + " @" + localityName + " for your candidate - " + candidateFirstName +". To know more about status of Applications, call us at +91 8048039089. www.trujobs.in";
+        sendSms(partnerMobile, msg);
+    }
 }

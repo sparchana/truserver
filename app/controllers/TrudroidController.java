@@ -193,7 +193,7 @@ public class TrudroidController {
             String requestString = request().body().asText();
             pResetPasswordRequest = ResetPasswordRequest.parseFrom(Base64.decodeBase64(requestString));
             int randomPIN = generateOtp();
-            SmsUtil.sendResetPasswordOTPSms(randomPIN, FormValidator.convertToIndianMobileFormat(pResetPasswordRequest.getMobile()));
+            SmsUtil.sendResetPasswordOTPSms(randomPIN, FormValidator.convertToIndianMobileFormat(pResetPasswordRequest.getMobile()), InteractionService.InteractionChannelType.SELF_ANDROID);
             resetPasswordResponseBuilder.setOtp(randomPIN);
             resetPasswordResponseBuilder.setStatus(ResetPasswordResponse.Status.SUCCESS);
 

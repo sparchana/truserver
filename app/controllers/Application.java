@@ -239,9 +239,6 @@ public class Application extends Controller {
             e.printStackTrace();
         }
 
-        String userMobile = applyJobRequest.getCandidateMobile();
-        Integer jobId = applyJobRequest.getJobId();
-
         return ok(toJson(JobService.applyJob(applyJobRequest, InteractionService.InteractionChannelType.SELF)));
     }
 

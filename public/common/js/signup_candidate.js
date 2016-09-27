@@ -182,7 +182,7 @@ $(function() {
             alert("Enter 10 digit mobile number");
             statusCheck=0;
         } else if(homeLocalitySelected == "") {
-            alert("Please Enter your Job Localities");
+            alert("Please Enter your Home Locality");
             statusCheck=0;
         }
         else if(jobSelected == "") {

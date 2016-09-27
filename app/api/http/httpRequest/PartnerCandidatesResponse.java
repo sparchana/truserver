@@ -11,6 +11,7 @@ public class PartnerCandidatesResponse {
     public String creationTimestamp;
     public int candidateStatus;
     public int candidateActiveDeactive;
+    public int candidateAppliedJobs;
 
     public long getLeadId() {
         return leadId;
@@ -66,5 +67,13 @@ public class PartnerCandidatesResponse {
 
     public void setCandidateActiveDeactive(int candidateActiveDeactive) {
         this.candidateActiveDeactive = candidateActiveDeactive;
+    }
+
+    public int getCandidateAppliedJobs() {
+        return candidateAppliedJobs;
+    }
+
+    public void setCandidateAppliedJobs(int candidateAppliedJobs) {
+        this.candidateAppliedJobs = candidateAppliedJobs;
     }
 }
