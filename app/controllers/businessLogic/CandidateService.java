@@ -98,7 +98,7 @@ public class CandidateService
         Logger.info("Checking for mobile number: " + candidateSignUpRequest.getCandidateMobile());
         Candidate candidate = isCandidateExists(candidateSignUpRequest.getCandidateMobile());
         String leadName = candidateSignUpRequest.getCandidateFirstName()+ " " + candidateSignUpRequest.getCandidateSecondName();
-        Lead lead = LeadService.createOrUpdateConvertedLead(leadName, candidateSignUpRequest.getCandidateMobile(), leadSourceId, channelType, LeadService.LeadType.CANDIDATE);
+        Lead lead = LeadService.createOrUpdateConvertedLead(leadName, FormValidator.convertToIndianMobileFormat(candidateSignUpRequest.getCandidateMobile()), leadSourceId, channelType, LeadService.LeadType.CANDIDATE);
         Integer interactionTypeVal;
         try {
             if(candidate == null) {
@@ -211,7 +211,7 @@ public class CandidateService
         Logger.info("Creating candidate profile for mobile " + request.getCandidateMobile());
 
         // Check if this candidate already exists
-        Candidate candidate = isCandidateExists(request.getCandidateMobile());
+        Candidate candidate = isCandidateExists(FormValidator.convertToIndianMobileFormat(request.getCandidateMobile()));
 
         // Initialize some basic interaction details
         String createdBy = InteractionConstants.INTERACTION_CREATED_SELF;
