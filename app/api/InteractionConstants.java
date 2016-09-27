@@ -44,6 +44,7 @@ public class InteractionConstants {
     public static final String INTERACTION_RESULT_PARTNER_TRIED_TO_RESET_PASSWORD = "Partner tried to reset password";
     public static final String INTERACTION_RESULT_CANDIDATE_RESET_PASSWORD_SUCCESS = "Candidate reset password done";
     public static final String INTERACTION_RESULT_PARTNER_RESET_PASSWORD_SUCCESS = "Partner reset password done";
+    public static final String INTERACTION_RESULT_PARTNER_APPLIED_TO_JOB = "Partner on behalf of the candidate applied to a job: ";
     public static final String INTERACTION_CREATED_SELF = "Self";
     public static final String INTERACTION_CREATED_SYSTEM = "System";
     public static final String INTERACTION_CREATED_SYSTEM_KNOWLARITY = "System - Knowlarity";
