@@ -123,17 +123,24 @@ function prePopulateJobSection(jobApplication) {
             jobTitle.textContent = jobPost.jobPost.jobPostTitle + " | " + jobPost.jobPost.company.companyName;
             titleRowOne.appendChild(jobTitle);
 
-            var titleRowTwo = document.createElement("div");
-            titleRowTwo.className = "col-sm-3";
-            titleRowTwo.id = "appliedOnId";
-            titleRow.appendChild(titleRowTwo);
+            if(jobPost.assessmentRequired == true){
+                var jobBodyAssessmentAlert = document.createElement("div");
+                jobBodyAssessmentAlert.className = "col-sm-3 jobBodyAssessmentAlert";
+                jobBodyCol.appendChild(jobBodyAssessmentAlert);
 
-            var fetchedAppliedDate = jobPost.jobApplicationCreateTimeStamp;
+                var assessmentAlertDiv = document.createElement("div");
+                assessmentAlertDiv.className = "assessmentAlertDiv";
+                assessmentAlertDiv.id = "ajp_"+jobPost.jobPost.jobRole.jobRoleId;
 
-            var divAppliedDate = document.createElement("div");
-            divAppliedDate.id = "appliedDate";
-            divAppliedDate.textContent = "Applied on: " + new Date(fetchedAppliedDate).getDate() + "/" + (new Date(fetchedAppliedDate).getMonth() + 1) + "/" + new Date(fetchedAppliedDate).getFullYear();
-            titleRowTwo.appendChild(divAppliedDate);
+                assessmentAlertDiv.className+=" red";
+                assessmentAlertDiv.textContent = "Complete Assessment Now";
+                jobBodyAssessmentAlert.onclick = function () {
+                    var jrId = jobPost.jobPost.jobRole.jobRoleId;
+                    getAssessmentQuestions(jrId, null);
+                };
+                jobBodyAssessmentAlert.appendChild(assessmentAlertDiv);
+                titleRow.appendChild(jobBodyAssessmentAlert);
+            }
 
             var hr = document.createElement("hr");
             jobBodyCol.appendChild(hr);
@@ -248,7 +255,7 @@ function prePopulateJobSection(jobApplication) {
                 jobBodySubRowColLoc.appendChild(tooltip);
             }
             $("#locationMsg_" + jobPost.jobPost.jobPostId).attr("data-toggle", "tooltip");
-
+/*
             var jobBodyAssessmentAlert = document.createElement("a");
             jobBodyAssessmentAlert.className = "row col-xs-12 jobBodyAssessmentAlert";
             jobBodyCol.appendChild(jobBodyAssessmentAlert);
@@ -264,8 +271,19 @@ function prePopulateJobSection(jobApplication) {
                     getAssessmentQuestions(jrId, null);
                 };
             }
-            jobBodyAssessmentAlert.appendChild(assessmentAlertDiv);
+            jobBodyAssessmentAlert.appendChild(assessmentAlertDiv);*/
 
+             var titleRowTwo = document.createElement("div");
+             titleRowTwo.className = "row col-sm-3";
+             titleRowTwo.id = "appliedOnId";
+             jobBodyCol.appendChild(titleRowTwo);
+
+             var fetchedAppliedDate = jobPost.jobApplicationCreateTimeStamp;
+
+             var divAppliedDate = document.createElement("div");
+             divAppliedDate.className = "appliedDate";
+             divAppliedDate.textContent = "Applied on: " + new Date(fetchedAppliedDate).getDate() + "/" + (new Date(fetchedAppliedDate).getMonth() + 1) + "/" + new Date(fetchedAppliedDate).getFullYear();
+             titleRowTwo.appendChild(divAppliedDate);
         }
     });
 }
