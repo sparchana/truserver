@@ -21,6 +21,7 @@
         <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="/assets/partner/css/partnerStyle.css">
         <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/materialDashboard.css">
+        <link rel="stylesheet" type="text/css" href="/assets/partner/css/materialButton.css">
 
         <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
 
@@ -179,31 +180,33 @@
             </div>
         </div>
 
+        <div class="container toggleButtonContainer" >
+            <button type="button" id="partnerToggleBtn" onclick="toggleTabs(0)" class="mBtn viewPopularJobs" style="margin: 6px">View Popular Jobs</button>
+            <button type="button" id="partnerToggleBtn" class="mBtn white viewAppliedJobs" onclick="toggleTabs(1)" style="margin: 6px">View Applied Jobs</button>
+        </div>
         <br>
         <div class="container" id="applyJobs">
             <div id="hotJobs"></div>
             <br>
         </div>
 
-        <div class="container" style="padding-bottom: 24px">
-            <div style="margin-top: 16px; min-height: 560px">
-                <div id="hotJobItemDivider" style="margin-bottom: 24px">
-                    <img src="/assets/dashboard/img/save.svg" display="inline-block" style="width: 42px; margin: 8px;">
-                    <span display="inline-block">Applied Jobs</span>
-                </div>
-                <table id="appliedJobs" class="table table-striped table-bordered" style="margin-top: 16px" cellspacing="0" width="100%">
-                    <thead>
-                        <tr>
-                            <th>Job Title</th>
-                            <th>Company</th>
-                            <th>Salary</th>
-                            <th>Experience</th>
-                            <th>Job Location</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+        <div class="container" style="padding-bottom: 24px" id="appliedJobsSection">
+            <div id="hotJobItemDivider" style="margin-bottom: 24px">
+                <img src="/assets/partner/img/checked.png" display="inline-block" style="width: 42px; margin: 8px;">
+                <span display="inline-block">Applied Jobs</span>
             </div>
+            <table id="appliedJobs" class="table table-striped table-bordered" style="margin-top: 16px" cellspacing="0" width="100%">
+                <thead>
+                    <tr>
+                        <th>Job Title</th>
+                        <th>Company</th>
+                        <th>Salary</th>
+                        <th>Experience</th>
+                        <th>Job Location</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
 
 
@@ -212,7 +215,6 @@
         <script type="text/javascript" src="/assets/common/js/validation.js"></script>
         <script type="text/javascript" src="/assets/partner/js/partner_page.js"></script>
         <script type="text/javascript" src="/assets/partner/js/generateJobCard.js"></script>
-        <script type="text/javascript" src="/assets/common/js/all_hot_jobs.js"></script>
         <script type="text/javascript" src="/assets/common/js/apply_job.js"></script>
         <script type="text/javascript" src="/assets/common/js/all_job_role_footer.js"></script>
 

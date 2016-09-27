@@ -264,6 +264,9 @@ function renderCandidateTable() {
                                 } else {
                                     return '<div class="mLabel" style="width:100%" >'+ '<div style=\"display: inline-block; \" ><font color="#777773" size=\"2\">&nbsp;&nbsp;' + 'Not Allowed' +'</font></div>' +'</div>';
                                 }
+                            },
+                            'appliedJobs' :  function() {
+                                return '<div class="mCircleLabel" onclick="applyJobForCandidate('+candidate.candidateId+')">'+ candidate.candidateAppliedJobs + '</div>';
                             }
                         })
                     });
@@ -278,7 +281,8 @@ function renderCandidateTable() {
                 { "data": "candidateCreationTimestamp" },
                 { "data": "candidateStatus" },
                 { "data": "btnView" },
-                { "data": "apply" }
+                { "data": "apply" },
+                { "data": "appliedJobs" }
             ],
             "language": {
                 "emptyTable": "Looks like you have not added any candidates yet! " + '<a href="/partner/candidate/0" style="color: #286ab6"> '+"Add Now!" +'</a>'

@@ -1316,23 +1316,4 @@ public class Application extends Controller {
             return ok("0");
         }
     }
-
-    public static Result getJobPostInfoViaPartner(long jobPostId, long candidateId) {
-        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
-        if(jobPost !=null){
-            String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB;
-            String objAUUID = "";
-            Candidate candidate = Candidate.find.where().eq("candidateId", candidateId). findUnique();
-            if(candidate != null){
-                objAUUID = candidate.getCandidateUUId();
-                InteractionService.createInteractionForJobApplicationAttemptViaWebsite(
-                        objAUUID,
-                        jobPost.getJobPostUUId(),
-                        interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName()
-                );
-                return ok(toJson(jobPost));
-            }
-        }
-        return ok("0");
-    }
 }

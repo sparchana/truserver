@@ -1,6 +1,9 @@
 var jobPostId;
 var candidateInfo;
 
+var appliedJobSection;
+var popularJobsSection;
+
 $(window).resize(function(){
     var w = window.innerWidth;
     if(w < 640){
@@ -12,12 +15,46 @@ $(window).resize(function(){
 
 $(document).ready(function(){
     var w = window.innerWidth;
+    appliedJobSection = false;
+    popularJobsSection = true;
+    $("#appliedJobsSection").hide();
+
     if(w < 640){
         $(".candidatePartner").removeClass("row-eq-height");
     } else{
         $(".candidatePartner").removeClass("row-eq-height").addClass("row-eq-height");
     }
+    try {
+        $.ajax({
+            url: "/getCandidateMatchingJobs/" + localStorage.getItem("candidateId"),
+            type: "POST",
+            data: false,
+            dataType: "json",
+            contentType: false,
+            processData: false,
+            success: processDataAllJobPosts
+        });
+    } catch (exception) {}
 });
+
+function toggleTabs(index) {
+    if(index == 0){
+        popularJobsSection = true;
+        appliedJobSection = false;
+        $("#applyJobs").show(500);
+        $("#appliedJobsSection").hide(500);
+        $(".viewPopularJobs").removeClass("white");
+        $(".viewAppliedJobs").removeClass("white").addClass("white");
+    } else{
+        popularJobsSection = true;
+        appliedJobSection = false;
+        $("#applyJobs").hide(500);
+        $("#appliedJobsSection").show(500);
+        $(".viewPopularJobs").removeClass("white").addClass("white");
+        $(".viewAppliedJobs").removeClass("white");
+
+    }
+}
 
 function getAllAppliedJobs() {
     try {
@@ -27,10 +64,16 @@ function getAllAppliedJobs() {
                 "dataSrc": function (returnedData) {
                     var returned_data = new Array();
                     returnedData.forEach(function (jobApplication) {
+                        var salary;
+                        if(jobApplication.jobPost.jobPostMaxSalary != null){
+                            salary = "₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMinSalary) + " - ₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMaxSalary);
+                        } else{
+                            salary = "₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMinSalary);
+                        }
                         returned_data.push({
                             'jobPostName' : '<div class="mLabel" style="width:100%" >'+ jobApplication.jobPost.jobPostTitle + '</div>',
                             'jobPostCompany' : '<div class="mLabel" style="width:100%" >'+ jobApplication.jobPost.company.companyName + '</div>',
-                            'jobPostSalary' : '<div class="mLabel" style="width:100%" >'+ jobApplication.jobPost.jobPostMinSalary + '</div>',
+                            'jobPostSalary' : '<div class="mLabel" style="width:100%" >'+ salary + '</div>',
                             'jobPostExperience' : '<div class="mLabel" style="width:100%" >'+ jobApplication.jobPost.jobPostExperience.experienceType + '</div>',
                             'jobPreScreenLocation' : '<div class="mLabel" style="width:100%" >'+ jobApplication.locality.localityName + '</div>'
                         });
@@ -96,13 +139,13 @@ function processDataAllJobPosts(returnedData) {
                 //!* get all localities of the jobPost *!/
                 var jobLocality = jobPost.jobPostToLocalityList;
                 var localities = "";
-                var allLocalities = ""
+                var allLocalities = "";
                 var loopCount = 0;
 
                 if(jobPost.source != null && jobPost.source > 0 && !isDividerPresent){
                     createAndAppendDivider("Other Jobs");
                     isDividerPresent = true;
-                };
+                }
 
                 jobLocality.forEach(function (locality) {
                     loopCount ++;

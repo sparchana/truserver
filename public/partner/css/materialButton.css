@@ -10,10 +10,31 @@
     background-color: transparent;
 }
 
+.mCircleLabel {
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    border: 1px solid #1ca440;
+    margin: 4px auto;
+    padding: 8px 3px 3px 3px;
+    border-radius: 20px;
+    cursor: text;
+    color: #1ca440;
+    background-color: transparent;
+    transition: background-color .3s;
+}
+
+.mCircleLabel:hover {
+    background-color: #1ca440;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.5s ease-in-out;
+}
+
 .mBtn {
     width: 100%;
     position: relative;
-    display: block;
     margin: 4px auto;
     padding: 12px 3px 12px 3px;
     overflow: hidden;
@@ -27,7 +48,7 @@
     transition: background-color .3s;
 }
 
-.mBtn:hover, .mBtn:focus {
+.mBtn:hover{
     background-color: #13722d;
     box-shadow: 0 1px 8px rgba(0,0,0,0.12), 0 4px 4px rgba(0,0,0,0.12);
     transition: opacity 0.5s ease-in-out;
@@ -71,6 +92,10 @@
     transition: width .2s ease-out, padding-top .2s ease-out;
 }
 
+.mBtn.white {
+    background-color: #ffffff;
+    color: #286ab6;
+}
 .mBtn.orange {
     background-color: #e67e22;
 }

@@ -94,9 +94,11 @@ GET         /partnerNavBar                                                contro
 GET         /getPartnerProfileInfo                                        controllers.PartnerController.getPartnerProfileInfo()
 GET         /partnerNavBarLoggedIn                                        controllers.PartnerController.renderPagePartnerLoggedInNavbar()
 GET         /partner/ifExists/:mobile                                     controllers.Application.ifCandidateExists(mobile: String)
-GET         /partner/:candidateId/jobs                                    controllers.PartnerController.getCandidateJobs(candidateId: Long)
+GET         /partner/:candidateId/jobs                                    controllers.PartnerController.renderCandidateJobPage(candidateId: Long)
 GET         /getAppliedJobsByPartnerForCandidate/:id                      controllers.PartnerController.getAppliedJobsByPartnerForCandidate(id : Long)
 
+POST        /getJobPostInfoViaPartner/:id/:candidateId                    controllers.PartnerController.getJobPostInfoViaPartner(id : Long, candidateId : Long)
+POST        /getCandidateMatchingJobs/:id                                 controllers.PartnerController.getCandidateMatchingJobs(id : Long)
 POST        /verifyCandidateUsingOtp                                      controllers.PartnerController.verifyCandidateUsingOtp()
 POST        /getPartnerCandidate/:id                                      controllers.PartnerController.getPartnerCandidate(id : Long)
 POST        /sendCandidateVerificationSMS/:mobile                         controllers.PartnerController.sendCandidateVerificationSMS(mobile : String)
@@ -143,7 +145,6 @@ POST        /getAllLocality                                               contro
 POST        /getAllShift                                                  controllers.Application.getAllShift()
 POST        /getAllTransportation                                         controllers.Application.getAllTransportation()
 POST        /getAllCompanyLogos                                           controllers.Application.getAllCompanyLogos()
-POST        /getJobPostInfoViaPartner/:id/:candidateId                    controllers.Application.getJobPostInfoViaPartner(id : Long, candidateId : Long)
 POST        /getJobPostInfo/:id/:isSupport                                controllers.Application.getJobPostInfo(id : Long, isSupport : Integer)
 # 3rd Party API
 # ~~~~~~~~~~~~~

@@ -1,5 +1,6 @@
 package controllers;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
@@ -227,10 +228,13 @@ public class PartnerController {
     public static Result getMyCandidates(){
         Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
         if(partner != null){
-            List<PartnerToCandidate> partnerToCandidateList = PartnerToCandidate.find.where().eq("partner_id", partner.getPartnerId()).findList();
+            List<PartnerToCandidate> partnerToCandidateList = PartnerToCandidate.find.where()
+                    .eq("partner_id", partner.getPartnerId())
+                    .orderBy("partner_to_candidate_create_timestamp desc")
+                    .findList();
             ArrayList<PartnerCandidatesResponse> responses = new ArrayList<>();
 
-            SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT);
+            SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
 
             for(PartnerToCandidate partnerToCandidate : partnerToCandidateList) {
                 PartnerCandidatesResponse response = new PartnerCandidatesResponse();
@@ -251,6 +255,10 @@ public class PartnerController {
                         response.setCandidateActiveDeactive(partnerToCandidate.getCandidate().getCandidateprofilestatus().getProfileStatusId());
                     }
                 }
+                List<JobApplication> appliedJobs = JobApplication.find.where()
+                        .eq("candidateId", partnerToCandidate.getCandidate().getCandidateId())
+                        .eq("partner_id", partnerToCandidate.getPartner().getPartnerId()).findList();
+                response.setCandidateAppliedJobs(appliedJobs.size());
                 response.setCandidateMobile(partnerToCandidate.getCandidate().getCandidateMobile());
                 responses.add(response);
             }
@@ -319,7 +327,7 @@ public class PartnerController {
         return ok(toJson(PartnerService.verifyCandidateByPartner(verifyCandidateRequest)));
     }
 
-    public static Result getCandidateJobs(long candidateId) { return ok(views.html.Partner.candidate_jobs.render()); }
+    public static Result renderCandidateJobPage(long candidateId) { return ok(views.html.Partner.candidate_jobs.render()); }
 
     public static Result checkPartnerCandidate(long id) {
         Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
@@ -353,6 +361,34 @@ public class PartnerController {
                         .eq("partner_id", partner.getPartnerId())
                         .findList();
                 return ok(toJson(jobApplicationList));
+            }
+        }
+        return ok("0");
+    }
+
+    public static Result getCandidateMatchingJobs(long id) {
+        Candidate existingCandidate = Candidate.find.where().eq("candidateId", id).findUnique();
+        if(existingCandidate != null){
+            Logger.info(toJson(JobSearchService.getAllJobsForCandidate(FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()))) + " ----->");
+            return ok(toJson(JobSearchService.getAllJobsForCandidate(FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()))));
+        }
+        return ok("ok");
+    }
+
+    public static Result getJobPostInfoViaPartner(long jobPostId, long candidateId) {
+        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        if(jobPost !=null){
+            String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB;
+            String objAUUID = "";
+            Candidate candidate = Candidate.find.where().eq("candidateId", candidateId). findUnique();
+            if(candidate != null){
+                objAUUID = candidate.getCandidateUUId();
+                InteractionService.createInteractionForJobApplicationAttemptViaWebsite(
+                        objAUUID,
+                        jobPost.getJobPostUUId(),
+                        interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName()
+                );
+                return ok(toJson(jobPost));
             }
         }
         return ok("0");
