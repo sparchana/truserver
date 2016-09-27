@@ -128,7 +128,7 @@ public class DeleteService {
                 for(Lead lead: existingLeadList){
                     if(lead.getLeadId() != nonPerishedCandidate.getLead().getLeadId()){
                         // delete lead interaction forever
-                        DeleteInteractionService(nonPerishedCandidate.getCandidateUUId());
+                        DeleteInteractionService(lead.getLeadUUId());
                         // delete lead forever
                         lead.delete();
                     }
