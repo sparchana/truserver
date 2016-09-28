@@ -3,7 +3,6 @@
  */
 
 var candidateSkill = [];
-var currentLocationArray = [];
 
 var candidateFirstName;
 var candidateLastName;
@@ -78,29 +77,6 @@ function prefillBasicProfile() {
     /* Time Shift */
     if (candidateInformation.timeShiftPreference != null) {
         $("#candidateTimeShiftPref").val(candidateInformation.timeShiftPreference.timeShift.timeShiftId);
-    }
-
-    /* get Candidate's home location */
-    if (candidateInformation.locality != null) {
-        try {
-            var item = {};
-            item ["id"] = candidateInformation.locality.localityId;
-            item ["name"] = candidateInformation.locality.localityName;
-            currentLocationArray.push(item);
-        } catch (err) {
-        }
-    }
-
-    if($("#candidateHomeLocality").val() == ""){
-        $("#candidateHomeLocality").tokenInput(getLocality(), {
-            theme: "facebook",
-            placeholder: "Where do you Live?",
-            hintText: "Start typing jobs (eg. BTM Layout, Bellandur..)",
-            minChars: 0,
-            prePopulate: currentLocationArray,
-            tokenLimit: 1,
-            preventDuplicates: true
-        });
     }
 
     /* Candidate DOB */
@@ -270,9 +246,9 @@ $("#editBasic").click(function(){
     document.getElementById('skillImg').src = "/assets/dashboard/img/skills_disable.png";
     document.getElementById('educationImg').src = "/assets/dashboard/img/education_disable.png";
 
-    $("#skillProfileSection").hide();
-    $("#educationProfileSection").hide();
-    $("#basicProfileSection").show();
+    $("#skillProfileSection").hide(200);
+    $("#educationProfileSection").hide(200);
+    $("#basicProfileSection").show(200);
 });
 
 $("#editSkills").click(function(){
@@ -289,9 +265,9 @@ $("#editSkills").click(function(){
     document.getElementById('skillImg').src = "/assets/dashboard/img/skills_enable.png";
     document.getElementById('educationImg').src = "/assets/dashboard/img/education_disable.png";
 
-    $("#basicProfileSection").hide();
-    $("#educationProfileSection").hide();
-    $("#skillProfileSection").show();
+    $("#basicProfileSection").hide(200);
+    $("#educationProfileSection").hide(200);
+    $("#skillProfileSection").show(200);
     fetchSkillAjaxApis();
     prefillSkillProfile();
 });
@@ -310,9 +286,9 @@ $("#editEducation").click(function(){
     document.getElementById('skillImg').src = "/assets/dashboard/img/skills_disable.png";
     document.getElementById('educationImg').src = "/assets/dashboard/img/education_enable.png";
 
-    $("#skillProfileSection").hide();
-    $("#basicProfileSection").hide();
-    $("#educationProfileSection").show();
+    $("#skillProfileSection").hide(200);
+    $("#basicProfileSection").hide(200);
+    $("#educationProfileSection").show(200);
 
     fetchEducationAjaxApis();
     prefillEducationProfile();

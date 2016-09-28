@@ -10,18 +10,12 @@ var educationArray = [];
 var languageArray = [];
 var idProofArray = [];
 var check = 0;
-var selectedJobPref_array;
 
 /* candidate Preference array */
 var jobPrefArray = [];
 var localityPrefArray = [];
-var currentJobLocationArray = [];
-var currentJobRoleArray = [];
 var currentLocationArray = [];
-var pastJobRoleArray = [];
 var candidateIdProofArray = [];
-
-var endPoint;
 
 /* candidate Data returned JSON */
 var candidateInformation;
@@ -459,7 +453,16 @@ function checkInstitute() {
 function processDataAndFillAllFields(returnedData) {
     candidateInformation = returnedData;
     $("#jobCount").html(Object.keys(candidateInformation.jobApplicationList).length);
-    /* get Candidate's job preference */
+
+    try{
+        var id = returnedData.locality.localityId;
+        var name = returnedData.locality.localityName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        currentLocationArray.push(item);
+    } catch (err){}
+
     try {
         var jobPref = returnedData.jobPreferencesList;
         jobPref.forEach(function (job){
@@ -473,7 +476,6 @@ function processDataAndFillAllFields(returnedData) {
     } catch(err){
         console.log(err);
     }
-
     try {
         var localityPref = returnedData.localityPreferenceList;
         if(localityPref != null) {
