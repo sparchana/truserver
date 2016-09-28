@@ -37,6 +37,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.avaje.ebean.Expr.eq;
+import static com.avaje.ebean.Expr.le;
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {
@@ -394,9 +395,33 @@ public class Application extends Controller {
         //getting leadUUID from allLead
         List<String> leadUUIDList = allLead.stream().map(Lead::getLeadUUId).collect(Collectors.toList());
 
-        List<Interaction> interactionsOfLead = Interaction.find.where().in("objectAUUId", leadUUIDList).findList();
+        // query all interactions of all leads which are of type call (channel/createdby = knowlarity) and order
+        // the list by most recent interaction on top
+        List<Interaction> allInteractions = Interaction.find.where()
+                .in("objectAUUId", leadUUIDList)
+                .or(eq("createdBy", InteractionConstants.INTERACTION_CREATED_SYSTEM_KNOWLARITY),
+                        eq("interactionChannel", InteractionConstants.INTERACTION_CHANNEL_KNOWLARITY))
+                .orderBy().desc("creationTimestamp")
+                .findList();
+
+        Map<String, ArrayList<Interaction>> objAUUIDToInteractions = new HashMap<String, ArrayList<Interaction>>();
+
+        // iterate on the entire interactions list and create a mapping between objectauuid (leadid) and
+        // its corressponding interactions
+        for (Interaction i : allInteractions) {
+
+            String objectAUUID = i.getObjectAUUId();
+            ArrayList<Interaction> interactionsOfLead = objAUUIDToInteractions.get(objectAUUID);
+
+            if (interactionsOfLead == null) {
+                interactionsOfLead = new ArrayList<Interaction>();
+                objAUUIDToInteractions.put(objectAUUID, interactionsOfLead);
+            }
+            interactionsOfLead.add(i);
+        }
 
         Logger.info("Entering Loop at " + new Timestamp(System.currentTimeMillis()));
+
         for(Lead lead : allLead) {
             SupportDashboardElementResponse response = new SupportDashboardElementResponse();
 
@@ -422,18 +447,18 @@ public class Application extends Controller {
                 case 0: response.setLeadChannel("Website"); break;
                 case 1: response.setLeadChannel("Knowlarity"); break;
             }
-            int mTotalInteraction=0;
+
+            int mTotalInteraction = 0;
             Timestamp mostRecent = lead.getLeadCreationTimestamp();
-            for(Interaction i: interactionsOfLead) {
-                if(i.getObjectAUUId().equals(lead.getLeadUUId())){
-                    if(i.getInteractionType() == 1 || i.getInteractionType() == 5) {
-                        mTotalInteraction++;
-                        if(mostRecent.getTime() <= i.getCreationTimestamp().getTime()){
-                            mostRecent = i.getCreationTimestamp();
-                        }
-                    }
-                }
+
+            ArrayList<Interaction> iList = objAUUIDToInteractions.get(lead.getLeadUUId());
+            if (iList != null && !iList.isEmpty()) {
+                mTotalInteraction = iList.size();
+                // we have ordered the list by most recent on top. hence check only the top element
+                Timestamp recentInteraction = iList.get(0).getCreationTimestamp();
+                mostRecent =  recentInteraction.getTime() >= mostRecent.getTime() ? recentInteraction : mostRecent;
             }
+
             response.setLastIncomingCallTimestamp(sfd.format(mostRecent));
             response.setTotalInBounds(mTotalInteraction);
             if(lead.getFollowUp() != null && lead.getFollowUp().getFollowUpTimeStamp()!= null){
