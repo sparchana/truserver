@@ -235,6 +235,19 @@
                                         <div class="col-sm-3"><h5>Home Location:</h5></div>
                                         <div class="col-sm-5">
                                             <input type="text" id="candidateHomeLocality">
+                                            <script type="text/javascript">
+                                                $(document).ready(function () {
+                                                    $("#candidateHomeLocality").tokenInput(getLocality(), {
+                                                        theme: "facebook",
+                                                        placeholder: "Where do you Live?",
+                                                        hintText: "Start typing jobs (eg. BTM Layout, Bellandur..)",
+                                                        minChars: 0,
+                                                        prePopulate: currentLocationArray,
+                                                        tokenLimit: 1,
+                                                        preventDuplicates: true
+                                                    });
+                                                });
+                                            </script>
                                         </div>
                                     </div>
 
