@@ -16,7 +16,7 @@ $(document).ready(function () {
     try {
         $.ajax({
             type: "GET",
-            url: "/getCandidateInfoDashboard",
+            url: "/getCandidateJobApplication",
             data: false,
             async: false,
             contentType: false,
@@ -29,18 +29,8 @@ $(document).ready(function () {
 });
 
 function processDataAndFetchAppliedJobs(returnedData) {
-    if(returnedData.candidateGender != null){
-        if(returnedData.candidateGender == 1){
-            document.getElementById("userGender").innerHTML = ", Female";
-            $("#userImg").attr('src', '/assets/dashboard/img/userFemale.svg');
-        } else{
-            document.getElementById("userGender").innerHTML = ", Male";
-            $("#userImg").attr('src', '/assets/dashboard/img/userMale.svg');
-        }
-    }
-    var candidateJobApplication = returnedData.jobApplicationList;
+    var candidateJobApplication = returnedData;
 
-    $("#jobCount").html(Object.keys(candidateJobApplication).length);
     if (Object.keys(candidateJobApplication).length > 0) {
         candidateJobApplication.reverse();
         prePopulateJobSection(candidateJobApplication);
