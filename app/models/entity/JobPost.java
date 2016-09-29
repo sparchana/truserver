@@ -6,9 +6,7 @@ import com.avaje.ebean.annotation.PrivateOwned;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import models.entity.OM.JobApplication;
-import models.entity.OM.JobPostToBenefits;
-import models.entity.OM.JobPostToLocality;
+import models.entity.OM.*;
 import models.entity.Static.*;
 
 import javax.persistence.*;
@@ -149,6 +147,17 @@ public class JobPost extends Model {
     @Column(name = "Source", columnDefinition = "int null")
     private Integer source; // internal data
 
+    // partner side requirement
+    @Column(name = "JobPostPartnerInterviewIncentive", columnDefinition = "bigint signed null")
+    private Long jobPostPartnerInterviewIncentive;
+
+    @Column(name = "JobPostPartnerJoiningIncentive", columnDefinition = "bigint signed null")
+    private Long jobPostPartnerJoiningIncentive;
+
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
+    private List<InterviewDetails> interviewDetailsList;
 
     public static Finder<String, JobPost> find = new Finder(JobPost.class);
 
@@ -469,6 +478,30 @@ public class JobPost extends Model {
 
     public void setSource(Integer source) {
         this.source = source;
+    }
+
+    public Long getJobPostPartnerInterviewIncentive() {
+        return jobPostPartnerInterviewIncentive;
+    }
+
+    public void setJobPostPartnerInterviewIncentive(Long jobPostPartnerInterviewIncentive) {
+        this.jobPostPartnerInterviewIncentive = jobPostPartnerInterviewIncentive;
+    }
+
+    public Long getJobPostPartnerJoiningIncentive() {
+        return jobPostPartnerJoiningIncentive;
+    }
+
+    public void setJobPostPartnerJoiningIncentive(Long jobPostPartnerJoiningIncentive) {
+        this.jobPostPartnerJoiningIncentive = jobPostPartnerJoiningIncentive;
+    }
+
+    public List<InterviewDetails> getInterviewDetailsList() {
+        return interviewDetailsList;
+    }
+
+    public void setInterviewDetailsList(List<InterviewDetails> interviewDetailsList) {
+        this.interviewDetailsList = interviewDetailsList;
     }
 
     @Override
