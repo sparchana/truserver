@@ -191,6 +191,15 @@ $(function() {
                 }
             }
 
+            var interviewDays = "";
+            for(i=1;i<=7;i++){
+                if($("#interview_day_" + i).is(":checked")){
+                    interviewDays += "1";
+                } else{
+                    interviewDays += "0";
+                }
+            }
+
             try {
                 var d = {
                     jobPostId: $("#jobPostId").val(),
@@ -220,7 +229,8 @@ $(function() {
                     jobPostExperienceId: $("#jobPostExperience").val(),
                     jobPostRecruiterId: recId,
                     partnerInterviewIncentive: $("#partnerInterviewIncentive").val(),
-                    partnerJoiningIncentive: $("#partnerJoiningIncentive").val()
+                    partnerJoiningIncentive: $("#partnerJoiningIncentive").val(),
+                    jobPostInterviewDays: interviewDays
                 };
                 $.ajax({
                     type: "POST",

@@ -32,6 +32,7 @@ public class AddJobPostRequest {
     public Long jobPostRecruiterId;
     public Long partnerInterviewIncentive;
     public Long partnerJoiningIncentive;
+    public String jobPostInterviewDays;
 
     public List<Integer> jobPostLocalities;
 
@@ -249,5 +250,13 @@ public class AddJobPostRequest {
 
     public void setPartnerJoiningIncentive(Long partnerJoiningIncentive) {
         this.partnerJoiningIncentive = partnerJoiningIncentive;
+    }
+
+    public String getJobPostInterviewDays() {
+        return jobPostInterviewDays;
+    }
+
+    public void setJobPostInterviewDays(String jobPostInterviewDays) {
+        this.jobPostInterviewDays = jobPostInterviewDays;
     }
 }

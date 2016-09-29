@@ -310,6 +310,7 @@ $(document).ready(function () {
 
 
 function processDataForJobPost(returnedData) {
+    console.log(returnedData);
     $("#jobPostId").val(returnedData.jobPostId);
     if(returnedData.company != null ){
         $("#jobPostCompany").val(returnedData.company.companyId);
@@ -447,6 +448,30 @@ function processDataForJobPost(returnedData) {
         $("#jobPostStatus").val(returnedData.jobPostStatus.jobStatusId);
     }
 
+    if(Object.keys(returnedData.interviewDetailsList).length > 0){
+        var interviewDetailsList = returnedData.interviewDetailsList;
+        var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
+
+        /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
+        if(interviewDays.length != 7){
+            x = 7 - interviewDays.length;
+            var modifiedInterviewDays = "";
+
+            for(i=0;i<x;i++){
+                modifiedInterviewDays += "0";
+            }
+            modifiedInterviewDays += interviewDays;
+            interviewDays = modifiedInterviewDays;
+        }
+
+        for(i=1; i<=7; i++){
+            if(interviewDays[i-1] == 1){
+                $("#interview_day_" + i).prop('checked', true);
+            } else{
+                $("#interview_day_" + i).prop('checked', false);
+            }
+        }
+    }
     $("#partnerInterviewIncentive").val(returnedData.jobPostPartnerInterviewIncentive);
     $("#partnerJoiningIncentive").val(returnedData.jobPostPartnerJoiningIncentive);
 }

@@ -9,6 +9,7 @@ import api.GoogleSheetHttpRequest;
 import api.http.httpResponse.AddJobPostResponse;
 import api.http.httpResponse.ApplyJobResponse;
 import com.amazonaws.util.json.JSONException;
+import com.avaje.ebean.Model;
 import models.entity.*;
 import models.entity.OM.*;
 import models.entity.Static.*;
@@ -36,6 +37,24 @@ public class JobService {
             Logger.info("Job post does not exists. Creating a new job Post");
             JobPost newJobPost = new JobPost();
             newJobPost = getAndSetJobPostValues(addJobPostRequest, newJobPost, jobPostLocalityList);
+
+            Boolean flag = false;
+            String interviewDays = addJobPostRequest.getJobPostInterviewDays();
+            for(int i = 0; i<interviewDays.length(); i++){
+                if(interviewDays.charAt(i) == '1'){
+                    flag = true;
+                    break;
+                }
+            }
+            if(flag){
+                //create an entry in interview details table
+                InterviewDetails interviewDetails = new InterviewDetails();
+                Byte interviewDaysByte = Byte.parseByte(addJobPostRequest.getJobPostInterviewDays(), 2);
+                interviewDetails.setInterviewDays(interviewDaysByte);
+                interviewDetails.setJobPost(newJobPost);
+                interviewDetails.save();
+                Logger.info("Interview details saved");
+            }
             newJobPost.save();
             addJobPostResponse.setJobPost(newJobPost);
             addJobPostResponse.setStatus(AddJobPostResponse.STATUS_SUCCESS);
@@ -43,6 +62,7 @@ public class JobService {
         } else{
             Logger.info("Job post already exists. Updating existing job Post");
             existingJobPost = getAndSetJobPostValues(addJobPostRequest, existingJobPost, jobPostLocalityList);
+            resetInterviewDetails(addJobPostRequest, existingJobPost);
             existingJobPost.update();
             addJobPostResponse.setJobPost(existingJobPost);
             addJobPostResponse.setStatus(AddJobPostResponse.STATUS_UPDATE_SUCCESS);
@@ -54,6 +74,31 @@ public class JobService {
             addJobPostResponse.setFormUrl(ServerConstants.DEV_GOOGLE_FORM_FOR_JOB_POSTS);
         }
         return addJobPostResponse;
+    }
+
+    private static void resetInterviewDetails(AddJobPostRequest addJobPostRequest, JobPost existingJobPost) {
+        List<InterviewDetails> interviewDetailList = InterviewDetails.find.where().eq("jobPost.jobPostId", addJobPostRequest.getJobPostId()).findList();
+        if(interviewDetailList.size() > 0) {
+            interviewDetailList.forEach(Model::delete);
+        }
+
+        Boolean flag = false;
+        String interviewDays = addJobPostRequest.getJobPostInterviewDays();
+        for(int i = 0; i<interviewDays.length(); i++){
+            if(interviewDays.charAt(i) == '1'){
+                flag = true;
+                break;
+            }
+        }
+        if(flag){
+            //updating interview details
+            InterviewDetails interviewDetails = new InterviewDetails();
+            Byte interviewDaysByte = Byte.parseByte(addJobPostRequest.getJobPostInterviewDays(), 2);
+            interviewDetails.setInterviewDays(interviewDaysByte);
+            interviewDetails.setJobPost(existingJobPost);
+            interviewDetails.save();
+            Logger.info("Interview details updated");
+        }
     }
 
     public static JobPost getAndSetJobPostValues(AddJobPostRequest addJobPostRequest, JobPost newJobPost, List<Integer> jobPostLocalityList) {
