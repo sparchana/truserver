@@ -236,7 +236,6 @@ function processDataAllJobPosts(returnedData) {
                 salaryIcon.style = "margin-top: -4px";
                 salaryIconDiv.appendChild(salaryIcon);
 
-
                 var salaryDiv = document.createElement("div");
                 salaryDiv.style = "display: inline-block; font-size: 14px";
                 if(jobPost.jobPostMaxSalary == "0"){
@@ -337,6 +336,53 @@ function processDataAllJobPosts(returnedData) {
                     jobLocalityArray = [];
                     addLocalitiesToModal();
                 };
+
+                var incentiveDiv = document.createElement("div");
+                incentiveDiv.style = "display: block; text-align: left; margin-top: 4px";
+                applyBtnDiv.appendChild(incentiveDiv);
+
+                var interviewIncentiveIconDiv = document.createElement("div");
+                interviewIncentiveIconDiv.style = "display : inline-block; margin: 4px;top:0";
+                incentiveDiv.appendChild(interviewIncentiveIconDiv);
+
+                var interviewIncentiveIcon = document.createElement("img");
+                interviewIncentiveIcon.src = "/assets/partner/img/coin.png";
+                interviewIncentiveIcon.setAttribute('height', '15px');
+                interviewIncentiveIcon.setAttribute('margin', '4px');
+                interviewIncentiveIcon.style = "margin-top: -4px";
+                interviewIncentiveIconDiv.appendChild(interviewIncentiveIcon);
+
+                var interviewIncentiveDiv = document.createElement("div");
+                interviewIncentiveDiv.style = "display: inline-block; font-size: 12px; margin-left: 4px";
+                if(jobPost.jobPostPartnerInterviewIncentive == null || jobPost.jobPostPartnerInterviewIncentive == 0){
+                    interviewIncentiveDiv.textContent = " No interview incentive";
+                } else{
+                    interviewIncentiveDiv.textContent = "₹" + rupeeFormatSalary(jobPost.jobPostPartnerInterviewIncentive) + " interview incentive";
+                }
+                interviewIncentiveIconDiv.appendChild(interviewIncentiveDiv);
+
+                // partner joining incentives
+
+                var joiningIncentiveIconDiv = document.createElement("div");
+                joiningIncentiveIconDiv.style = "display : inline-block; margin: 4px;top:0";
+                incentiveDiv.appendChild(joiningIncentiveIconDiv);
+
+                var joiningIncentiveIcon = document.createElement("img");
+                joiningIncentiveIcon.src = "/assets/partner/img/coin.png";
+                joiningIncentiveIcon.setAttribute('height', '15px');
+                joiningIncentiveIcon.setAttribute('margin', '4px');
+                joiningIncentiveIcon.style = "margin-top: -4px";
+                joiningIncentiveIconDiv.appendChild(joiningIncentiveIcon);
+
+                var joiningIncentiveDiv = document.createElement("div");
+                joiningIncentiveDiv.style = "display: inline-block; font-size: 12px; margin-left: 4px";
+                if(jobPost.jobPostPartnerJoiningIncentive == null || jobPost.jobPostPartnerJoiningIncentive == 0){
+                    joiningIncentiveDiv.textContent = " No joining incentive";
+                } else{
+                    joiningIncentiveDiv.textContent =  "₹" + rupeeFormatSalary(jobPost.jobPostPartnerJoiningIncentive) + " joining incentive";
+                }
+                joiningIncentiveIconDiv.appendChild(joiningIncentiveDiv);
+
             }
         });
     }
