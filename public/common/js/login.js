@@ -7,6 +7,7 @@ var applyJobId = 0;
 
 function postLogin(returnedData) {
     // Store
+    localStorage.setItem("gender", returnedData.gender);
     localStorage.setItem("mobile", "+91" + candidateMobile);
     localStorage.setItem("name", returnedData.candidateFirstName);
     localStorage.setItem("lastName", returnedData.candidateLastName);

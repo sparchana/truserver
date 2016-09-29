@@ -13,6 +13,12 @@ $(window).load(function () {
 
 $(document).ready(function () {
     checkUserLogin();
+    if(localStorage.getItem("gender") == 1){
+        $("#userImg").attr('src', '/assets/dashboard/img/userFemale.svg');
+    } else if(localStorage.getItem("gender") == 0){
+        $("#userImg").attr('src', '/assets/dashboard/img/userMale.svg');
+    }
+
     try {
         $.ajax({
             type: "GET",
