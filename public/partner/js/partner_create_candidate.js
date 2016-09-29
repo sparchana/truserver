@@ -835,6 +835,9 @@ $(function() {
         } else if(candidateLastWithdrawnSalary > 99999){
             notifyErrorWithPrompt($("#candidateLastWithdrawnSalary"), "Please Enter a valid Salary");
             statusCheck=0;
+        } else if(!isValidSalary(candidateLastWithdrawnSalary)){
+            notifyErrorWithPrompt($("#candidateLastWithdrawnSalary"), "Salary can't have special characters");
+            statusCheck=0;
         } else if(experienceStatus == 1 && totalExp == 0){
             notifyErrorWithPrompt($("#candidateTotalWorkExpField"), "Select Total Years of Experience");
             statusCheck=0;
