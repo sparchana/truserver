@@ -88,3 +88,7 @@ function validateOtp(otp) {
         return 0; // otp is not 4 digits
     }
 }
+
+function isValidSalary(salary){
+    return !/[~`!#$%\^&*.+=\-\[\]\\';,/{}|\\":<>\?]/g.test(salary);
+}

@@ -507,10 +507,14 @@ function saveCandidateBasicProfile(){
 
 function saveCandidateExperienceDetails(){
     var experienceStatus = $('input:radio[name="workExperience"]:checked').val();
-    if(experienceStatus == null){
+    var selectedSalary = $('#candidateLastWithdrawnSalary').val();
+
+    if(!isValidSalary(selectedSalary)){
+        notifyError("Salary cant have special characters");
+    } else if(experienceStatus == null){
         notifyError("Please Select your work experience");
-    } else if($('#candidateCurrentJobSalary').val() > 99999){
-        notifyError("Please Enter a valid Salary")
+    } else if(selectedSalary > 99999 || selectedSalary < 300){
+        notifyError("Please Enter a valid Salary");
     }
     else{
         /* calculate total experience in months */
@@ -525,7 +529,7 @@ function saveCandidateExperienceDetails(){
             notifyError("Select Total Years of Experience");
         } else if(experienceStatus == 1 && $('input:radio[name="isEmployed"]:checked').val() == null){
             notifyError("Please answer \"Are you currently working?\"");
-        } else if((experienceStatus == 1)  && ($('#candidateLastWithdrawnSalary').val() == null || $('#candidateLastWithdrawnSalary').val() == "" || $('#candidateLastWithdrawnSalary').val() == "0")){
+        } else if((experienceStatus == 1)  && (selectedSalary == null || selectedSalary == "" || selectedSalary == "0")){
             notifyError("Enter your Last Withdrawn Salary");
         }
 
@@ -570,9 +574,6 @@ function saveCandidateExperienceDetails(){
                 }).get();
 
                 var candidateCurrentCompanyVal = "";
-                var candidateLastWithdrawnSalary = "";
-
-                candidateLastWithdrawnSalary = $('#candidateLastWithdrawnSalary').val();
 
                 if($('input:radio[name="isEmployed"]:checked').val() == 0){
                     candidateCurrentCompanyVal = null;
@@ -590,7 +591,7 @@ function saveCandidateExperienceDetails(){
                     candidateIsEmployed: $('input:radio[name="isEmployed"]:checked').val(),
                     candidateCurrentCompany: candidateCurrentCompanyVal,
                     candidateCurrentJobRoleId: parseInt($('#candidateCurrentJobRole').val()),
-                    candidateLastWithdrawnSalary: candidateLastWithdrawnSalary,
+                    candidateLastWithdrawnSalary: selectedSalary,
 
                     candidateLanguageKnown: languageMap,
 
