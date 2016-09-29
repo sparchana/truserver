@@ -337,6 +337,7 @@ public class TrudroidController {
             api.http.httpRequest.ApplyJobRequest applyJobRequest = new api.http.httpRequest.ApplyJobRequest();
             applyJobRequest.setJobId(Math.toIntExact(pApplyJobRequest.getJobPostId()));
             applyJobRequest.setLocalityId(Math.toIntExact(pApplyJobRequest.getLocalityId()));
+            applyJobRequest.setPartner(false);
             applyJobRequest.setCandidateMobile(FormValidator.convertToIndianMobileFormat(pApplyJobRequest.getCandidateMobile()));
 
             //applying job
