@@ -1204,7 +1204,6 @@ public class Application extends Controller {
     public static Result renderPageNavBarLoggedIn() {
         return ok(views.html.Fragment.nav_bar_logged_in.render());
     }
-    public static Result renderGAScript() { return ok(views.html.Fragment.script.render()); }
     public static Result renderPageFooter() {
         return ok(views.html.Fragment.footer.render());}
 
