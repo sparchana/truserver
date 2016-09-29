@@ -30,6 +30,8 @@ public class AddJobPostRequest {
     public Integer jobPostEducationId;
     public Integer jobPostPricingPlanId;
     public Long jobPostRecruiterId;
+    public Long partnerInterviewIncentive;
+    public Long partnerJoiningIncentive;
 
     public List<Integer> jobPostLocalities;
 
@@ -231,5 +233,21 @@ public class AddJobPostRequest {
 
     public void setJobPostLocalities(List<Integer> jobPostLocalities) {
         this.jobPostLocalities = jobPostLocalities;
+    }
+
+    public Long getPartnerInterviewIncentive() {
+        return partnerInterviewIncentive;
+    }
+
+    public void setPartnerInterviewIncentive(Long partnerInterviewIncentive) {
+        this.partnerInterviewIncentive = partnerInterviewIncentive;
+    }
+
+    public Long getPartnerJoiningIncentive() {
+        return partnerJoiningIncentive;
+    }
+
+    public void setPartnerJoiningIncentive(Long partnerJoiningIncentive) {
+        this.partnerJoiningIncentive = partnerJoiningIncentive;
     }
 }

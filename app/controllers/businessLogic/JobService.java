@@ -72,7 +72,8 @@ public class JobService {
         newJobPost.setJobPostVacancies(addJobPostRequest.getJobPostVacancies());
         newJobPost.setJobPostDescriptionAudio(addJobPostRequest.getJobPostDescriptionAudio());
         newJobPost.setJobPostWorkFromHome(addJobPostRequest.getJobPostWorkFromHome());
-
+        newJobPost.setJobPostPartnerInterviewIncentive(addJobPostRequest.getPartnerInterviewIncentive());
+        newJobPost.setJobPostPartnerJoiningIncentive(addJobPostRequest.getPartnerJoiningIncentive());
         if (addJobPostRequest.getJobPostWorkingDays() != null) {
             Byte workingDayByte = Byte.parseByte(addJobPostRequest.getJobPostWorkingDays(), 2);
             newJobPost.setJobPostWorkingDays(workingDayByte);

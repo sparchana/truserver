@@ -446,4 +446,7 @@ function processDataForJobPost(returnedData) {
     if(returnedData.jobPostStatus != null ){
         $("#jobPostStatus").val(returnedData.jobPostStatus.jobStatusId);
     }
+
+    $("#partnerInterviewIncentive").val(returnedData.jobPostPartnerInterviewIncentive);
+    $("#partnerJoiningIncentive").val(returnedData.jobPostPartnerJoiningIncentive);
 }

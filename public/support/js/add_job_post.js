@@ -157,6 +157,7 @@ $(function() {
             alert("Please enter Job Post Experience required");
             status = 0;
         }
+
         if(status == 1){
             if($("#jobPostRecruiter").val() != ""){
                 recId = $("#jobPostRecruiter").val();
@@ -217,7 +218,9 @@ $(function() {
                     jobPostStatusId: $("#jobPostStatus").val(),
                     pricingPlanTypeId: 1,
                     jobPostExperienceId: $("#jobPostExperience").val(),
-                    jobPostRecruiterId: recId
+                    jobPostRecruiterId: recId,
+                    partnerInterviewIncentive: $("#partnerInterviewIncentive").val(),
+                    partnerJoiningIncentive: $("#partnerJoiningIncentive").val()
                 };
                 $.ajax({
                     type: "POST",
