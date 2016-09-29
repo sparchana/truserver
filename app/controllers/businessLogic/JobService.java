@@ -38,23 +38,7 @@ public class JobService {
             JobPost newJobPost = new JobPost();
             newJobPost = getAndSetJobPostValues(addJobPostRequest, newJobPost, jobPostLocalityList);
 
-            Boolean flag = false;
-            String interviewDays = addJobPostRequest.getJobPostInterviewDays();
-            for(int i = 0; i<interviewDays.length(); i++){
-                if(interviewDays.charAt(i) == '1'){
-                    flag = true;
-                    break;
-                }
-            }
-            if(flag){
-                //create an entry in interview details table
-                InterviewDetails interviewDetails = new InterviewDetails();
-                Byte interviewDaysByte = Byte.parseByte(addJobPostRequest.getJobPostInterviewDays(), 2);
-                interviewDetails.setInterviewDays(interviewDaysByte);
-                interviewDetails.setJobPost(newJobPost);
-                interviewDetails.save();
-                Logger.info("Interview details saved");
-            }
+            createInterviewDetails(addJobPostRequest, newJobPost);
             newJobPost.save();
             addJobPostResponse.setJobPost(newJobPost);
             addJobPostResponse.setStatus(AddJobPostResponse.STATUS_SUCCESS);
@@ -63,6 +47,7 @@ public class JobService {
             Logger.info("Job post already exists. Updating existing job Post");
             existingJobPost = getAndSetJobPostValues(addJobPostRequest, existingJobPost, jobPostLocalityList);
             resetInterviewDetails(addJobPostRequest, existingJobPost);
+            createInterviewDetails(addJobPostRequest, existingJobPost);
             existingJobPost.update();
             addJobPostResponse.setJobPost(existingJobPost);
             addJobPostResponse.setStatus(AddJobPostResponse.STATUS_UPDATE_SUCCESS);
@@ -81,24 +66,36 @@ public class JobService {
         if(interviewDetailList.size() > 0) {
             interviewDetailList.forEach(Model::delete);
         }
+    }
 
-        Boolean flag = false;
-        String interviewDays = addJobPostRequest.getJobPostInterviewDays();
-        for(int i = 0; i<interviewDays.length(); i++){
-            if(interviewDays.charAt(i) == '1'){
-                flag = true;
-                break;
+    private static void createInterviewDetails(AddJobPostRequest addJobPostRequest, JobPost jobPost){
+        List<Integer> interviewSlots = addJobPostRequest.getInterviewTimeSlot();
+        if(interviewSlots != null){
+            Boolean flag = false;
+            String interviewDays = addJobPostRequest.getJobPostInterviewDays();
+            for(int i = 0; i<interviewDays.length(); i++){
+                if(interviewDays.charAt(i) == '1'){
+                    flag = true;
+                    break;
+                }
             }
+            //create multiple entries in interview details table
+            for(Integer slot: interviewSlots){
+                InterviewDetails interviewDetails = new InterviewDetails();
+                interviewDetails.setJobPost(jobPost);
+                InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", slot).findUnique();
+                if(interviewTimeSlot != null){
+                    interviewDetails.setInterviewTimeSlot(interviewTimeSlot);
+                }
+                if(flag){
+                    Byte interviewDaysByte = Byte.parseByte(addJobPostRequest.getJobPostInterviewDays(), 2);
+                    interviewDetails.setInterviewDays(interviewDaysByte);
+                }
+                interviewDetails.save();
+            }
+            Logger.info("Interview details saved");
         }
-        if(flag){
-            //updating interview details
-            InterviewDetails interviewDetails = new InterviewDetails();
-            Byte interviewDaysByte = Byte.parseByte(addJobPostRequest.getJobPostInterviewDays(), 2);
-            interviewDetails.setInterviewDays(interviewDaysByte);
-            interviewDetails.setJobPost(existingJobPost);
-            interviewDetails.save();
-            Logger.info("Interview details updated");
-        }
+
     }
 
     public static JobPost getAndSetJobPostValues(AddJobPostRequest addJobPostRequest, JobPost newJobPost, List<Integer> jobPostLocalityList) {

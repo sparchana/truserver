@@ -34,6 +34,8 @@ public class AddJobPostRequest {
     public Long partnerJoiningIncentive;
     public String jobPostInterviewDays;
 
+    public List<Integer> interviewTimeSlot;
+
     public List<Integer> jobPostLocalities;
 
     public Long getJobPostRecruiterId() {
@@ -258,5 +260,13 @@ public class AddJobPostRequest {
 
     public void setJobPostInterviewDays(String jobPostInterviewDays) {
         this.jobPostInterviewDays = jobPostInterviewDays;
+    }
+
+    public List<Integer> getInterviewTimeSlot() {
+        return interviewTimeSlot;
+    }
+
+    public void setInterviewTimeSlot(List<Integer> interviewTimeSlot) {
+        this.interviewTimeSlot = interviewTimeSlot;
     }
 }

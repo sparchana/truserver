@@ -200,6 +200,11 @@ $(function() {
                 }
             }
 
+            $('#interviewTimeSlot input:checked').map(function() {
+                var slotId = this.value;
+                slotArray.push(parseInt(slotId));
+            }).get();
+
             try {
                 var d = {
                     jobPostId: $("#jobPostId").val(),
@@ -230,7 +235,8 @@ $(function() {
                     jobPostRecruiterId: recId,
                     partnerInterviewIncentive: $("#partnerInterviewIncentive").val(),
                     partnerJoiningIncentive: $("#partnerJoiningIncentive").val(),
-                    jobPostInterviewDays: interviewDays
+                    jobPostInterviewDays: interviewDays,
+                    interviewTimeSlot: slotArray
                 };
                 $.ajax({
                     type: "POST",
