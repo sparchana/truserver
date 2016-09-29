@@ -214,7 +214,7 @@ public class Application extends Controller {
 
     public static Result addPassword() {
         JsonNode req = request().body().asJson();
-        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; save password api json");
         CandidateSignUpRequest candidateSignUpRequest = new CandidateSignUpRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -304,7 +304,7 @@ public class Application extends Controller {
 
     public static Result loginSubmit() {
         JsonNode req = request().body().asJson();
-        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Login api json ");
         LoginRequest loginRequest = new LoginRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
