@@ -23,7 +23,7 @@ public class LoginResponse {
     public Long sessionExpiryInMilliSecond;
 
     public Integer isCandidateVerified;
-
+    public int gender;
     /*
     * To cater mobile needs
     */
@@ -175,5 +175,13 @@ public class LoginResponse {
 
     public void setCandidateHomeLocalityName(String candidateHomeLocalityName) {
         this.candidateHomeLocalityName = candidateHomeLocalityName;
+    }
+
+    public int getGender() {
+        return gender;
+    }
+
+    public void setGender(int gender) {
+        this.gender = gender;
     }
 }

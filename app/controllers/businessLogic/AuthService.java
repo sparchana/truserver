@@ -72,8 +72,14 @@ public class AuthService {
                 candidateSignUpResponse.setLeadId(existingCandidate.getLead().getLeadId());
                 candidateSignUpResponse.setCandidateJobPrefStatus(0);
                 candidateSignUpResponse.setCandidateHomeLocalityStatus(0);
+                candidateSignUpResponse.setGender(0);
+                if(existingCandidate.getCandidateGender() != null){
+                    if(existingCandidate.getCandidateGender() == 1){
+                        candidateSignUpResponse.setGender(1);
+                    }
+                }
 
-                    /* START : to cater specifically the app need */
+                /* START : to cater specifically the app need */
                 if(existingCandidate.getCandidateLocalityLat() != null
                         || existingCandidate.getCandidateLocalityLng() != null ){
                     candidateSignUpResponse.setCandidateHomeLat(existingCandidate.getCandidateLocalityLat());
@@ -142,6 +148,12 @@ public class AuthService {
                 candidateSignUpResponse.setMinProfile(existingCandidate.getIsMinProfileComplete());
                 candidateSignUpResponse.setIsAssessed(existingCandidate.getCandidateIsAssessed());
                 candidateSignUpResponse.setLeadId(existingCandidate.getLead().getLeadId());
+                candidateSignUpResponse.setGender(0);
+                if(existingCandidate.getCandidateGender() != null){
+                    if(existingCandidate.getCandidateGender() == 1){
+                        candidateSignUpResponse.setGender(1);
+                    }
+                }
             }
             Logger.info("Auth Save Successful");
         }

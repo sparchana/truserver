@@ -21,6 +21,7 @@ function processDataResetCheckUser(returnedData) {
 
 function processDataPostReset(returnedData) {
     if(returnedData.status == 1) {
+        localStorage.setItem("gender", returnedData.gender);
         localStorage.setItem("mobile", "+91" + candidateMobile);
         localStorage.setItem("name", returnedData.candidateFirstName);
         localStorage.setItem("lastName", returnedData.candidateLastName);
