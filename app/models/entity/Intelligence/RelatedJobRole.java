@@ -14,20 +14,20 @@ import java.util.List;
 
 @Entity(name = "related_jobrole")
 @Table(name = "related_jobrole")
-public class RelatedJobRole {
+public class RelatedJobRole extends Model{
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name = "related_jobrole_id", columnDefinition = "bigint signed", unique = true)
-    private int relatedJobRoleId;
+    @Column(name = "id", columnDefinition = "bigint signed", unique = true)
+    private long id;
 
     @ManyToOne
     @JsonManagedReference
-    @JoinColumn(name = "JobRoleId", referencedColumnName = "JobRoleId")
+    @JoinColumn(name = "job_role_id", referencedColumnName = "JobRoleId")
     private JobRole jobRole;
 
     @ManyToOne
     @JsonManagedReference
-    @JoinColumn(name = "JobRoleId", referencedColumnName = "JobRoleId")
+    @JoinColumn(name = "related_job_role_id", referencedColumnName = "JobRoleId")
     private JobRole relatedJobRole;
 
     @Column(name = "weight", columnDefinition = "double(2, 2) null")
@@ -35,8 +35,8 @@ public class RelatedJobRole {
 
     public static Model.Finder<String, RelatedJobRole> find = new Model.Finder(RelatedJobRole.class);
 
-    public int getRelatedJobRoleId() {
-        return relatedJobRoleId;
+    public long getId() {
+        return id;
     }
 
     public JobRole getJobRole() {

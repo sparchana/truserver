@@ -12,6 +12,7 @@ import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import controllers.AnalyticsLogic.JobRelevancyEngine;
 import controllers.businessLogic.*;
 import controllers.businessLogic.Assessment.AssessmentService;
 import controllers.security.*;
@@ -1397,5 +1398,10 @@ public class Application extends Controller {
             }
         }
         return ok("NA");
+    }
+
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result computeRelatedJobRoles() {
+        return ok(toJson(JobRelevancyEngine.updateAllRelevantJobCategories()));
     }
 }
