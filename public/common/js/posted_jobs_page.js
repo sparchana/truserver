@@ -351,23 +351,20 @@ function processDataForHotJobPost(returnedData) {
             $(".posted_jobs_company_details").hide();
             $("div#aboutCompanyTitle").hide();
         }
-    }
-    else
-        {
-            console.log("#404 No Page Found");
-            window.location.href = "/pageNotFound";
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/getJobPostAppliedStatus/" + returnedData.jobPostId,
+                data: false,
+                contentType: false,
+                processData: false,
+                success: processJobPostAppliedStatus
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
         }
-
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/getJobPostAppliedStatus/" + returnedData.jobPostId,
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processJobPostAppliedStatus
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
+    } else {
+        console.log("#404 No Page Found");
+        window.location.href = "/pageNotFound";
     }
 }

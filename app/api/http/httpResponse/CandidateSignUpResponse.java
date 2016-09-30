@@ -21,6 +21,7 @@ public class CandidateSignUpResponse {
     public String candidateEmail;
     public int candidateJobPrefStatus;
     public int candidateHomeLocalityStatus;
+    public int gender;
 
     /*
      * To cater mobile needs
@@ -166,5 +167,13 @@ public class CandidateSignUpResponse {
 
     public void setCandidateHomeLocalityName(String candidateHomeLocalityName) {
         this.candidateHomeLocalityName = candidateHomeLocalityName;
+    }
+
+    public int getGender() {
+        return gender;
+    }
+
+    public void setGender(int gender) {
+        this.gender = gender;
     }
 }
