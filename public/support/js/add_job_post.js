@@ -157,6 +157,7 @@ $(function() {
             alert("Please enter Job Post Experience required");
             status = 0;
         }
+
         if(status == 1){
             if($("#jobPostRecruiter").val() != ""){
                 recId = $("#jobPostRecruiter").val();
@@ -190,6 +191,20 @@ $(function() {
                 }
             }
 
+            var interviewDays = "";
+            for(i=1;i<=7;i++){
+                if($("#interview_day_" + i).is(":checked")){
+                    interviewDays += "1";
+                } else{
+                    interviewDays += "0";
+                }
+            }
+
+            $('#interviewTimeSlot input:checked').map(function() {
+                var slotId = this.value;
+                slotArray.push(parseInt(slotId));
+            }).get();
+
             try {
                 var d = {
                     jobPostId: $("#jobPostId").val(),
@@ -217,7 +232,11 @@ $(function() {
                     jobPostStatusId: $("#jobPostStatus").val(),
                     pricingPlanTypeId: 1,
                     jobPostExperienceId: $("#jobPostExperience").val(),
-                    jobPostRecruiterId: recId
+                    jobPostRecruiterId: recId,
+                    partnerInterviewIncentive: $("#partnerInterviewIncentive").val(),
+                    partnerJoiningIncentive: $("#partnerJoiningIncentive").val(),
+                    jobPostInterviewDays: interviewDays,
+                    interviewTimeSlot: slotArray
                 };
                 $.ajax({
                     type: "POST",

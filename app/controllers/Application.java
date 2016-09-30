@@ -1397,4 +1397,10 @@ public class Application extends Controller {
         }
         return ok("NA");
     }
+
+    @Security.Authenticated(RecSecured.class)
+    public static Result getAllTimeSlots(){
+        List<InterviewTimeSlot> interviewTimeSlotList = InterviewTimeSlot.find.findList();
+        return ok(toJson(interviewTimeSlotList));
+    }
 }

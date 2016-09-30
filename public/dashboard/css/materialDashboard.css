@@ -50,7 +50,7 @@ body{
 }
 
 #jobLogo{
-    margin-top: 14%;
+    margin-top: 12%;
 }
 
 .fade-background {
@@ -315,7 +315,6 @@ div.inblockDiv{
 .jobApplyBtn{
     border: none;
     color: white;
-    margin-top: 16%;
     background: #09ac58;
     padding: 6%;
     width: 120px;
