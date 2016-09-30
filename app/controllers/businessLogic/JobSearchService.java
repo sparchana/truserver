@@ -87,11 +87,7 @@ public class JobSearchService {
             // TODO: This should be changed to a fetch from DB. Sbould not be computed upon every run.
             List<Long> relatedJobRoleIds = JobRelevancyEngine.getRelatedJobRoleIds(jobRoleIds);
 
-            Logger.info("Related job role: " + relatedJobRoleIds.toString());
             List<JobPost> relatedJobRoleJobs = queryAndReturnJobPosts(relatedJobRoleIds, filterParams, sortBy, isHot, source);
-
-            Logger.info("Exact size: " + exactJobRoleJobs.size());
-            Logger.info("Exact size: " + relatedJobRoleJobs.size());
 
             // if we have lat-long info, then lets go ahead and filter the job post lists based on distance criteria
             if (latitude != null && longitude != null && latitude != 0.0 && longitude != 0.0) {
@@ -228,6 +224,12 @@ public class JobSearchService {
         return getAllJobPosts();
     }
 
+    /**
+     * returns all available INTERNAL jobs sorted based on candidate's job role preferences
+     *
+     * @param mobile candidates mobile
+     * @return
+     */
     public static List<JobPost> getAllJobsForCandidate(String mobile) {
 
         String candidateMobile = FormValidator.convertToIndianMobileFormat(mobile);
@@ -237,6 +239,7 @@ public class JobSearchService {
         List<Long> jobRoleIds = new ArrayList<Long>();
 
         if (existingCandidate != null) {
+
             if (existingCandidate.getJobPreferencesList() != null && !existingCandidate.getJobPreferencesList().isEmpty()) {
 
                 List<JobPreference> jobPrefsList = existingCandidate.getJobPreferencesList();
@@ -256,6 +259,7 @@ public class JobSearchService {
 
             //getting all the internal jobs apart form candidate's job role pref
             List<JobPost> otherJobRoleJobs = queryAndReturnJobPosts(otherJobRoleList, null, null, false, ServerConstants.SOURCE_INTERNAL);
+
             exactJobRoleJobs.addAll(otherJobRoleJobs);
 
             return exactJobRoleJobs;
