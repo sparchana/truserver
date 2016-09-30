@@ -63,13 +63,29 @@
                                 <img src="/assets/common/img/jobApply.png" width="48px">
                             </center>
                             <center>
-                                <h5>You are applying to <b><div style="display: inline-block" id="jobNameConfirmation"></div></b>
+                                <h4>You are applying to <b><div style="display: inline-block" id="jobNameConfirmation"></div></b>
                                     job at <b><div style="display: inline-block" id="companyNameConfirmation"></div></b>
-                                    for <b><div style="display: inline-block" id="applyJobCandidateName"></div></b>.</h5>
-                                <h5>Please select the location where <div style="display: inline-block" id="applyJobCandidateNameSecond"></div> can work:</h5>
-                                <select id="jobLocality" class="selectDropdown"></select><br>
+                                    for <b><div style="display: inline-block" id="applyJobCandidateName"></div></b>.</h4>
+                                <h5 style="margin-top: 16px">Please fill the form below to complete the application process</h5>
+                                <div class="materialDot"></div>
+                                <div class="custom_container" style="margin-top: 16px">
+                                    <div class="row" style="margin-top: 4px">
+                                        <div class="col-sm-6">
+                                            <h5 style="text-align: right">Please select the location where <div style="display: inline-block" id="applyJobCandidateNameSecond"></div> can work:</h5></div>
+                                        <div class="col-sm-6">
+                                            <select id="jobLocality" class="selectDropdown" style="float: left"></select><br>
+                                        </div>
+                                    </div>
 
-                                <select id="interviewSlot" style="width: 184px" class="selectDropdown"></select>
+                                    <div class="row" style="margin-top: 4px" id="interviewSection">
+                                        <div class="col-sm-6">
+                                            <h5 style="text-align: right">Please select the interview date and time:</h5></div>
+                                        <div class="col-sm-6">
+                                            <select id="interviewSlot" class="selectDropdown" style="width: 184px; float: left"></select>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <h4 id="notAllowedMsg" style="display: none; color: red;">Job Application is not allowed for now</h4>
                                 <button type="submit" onclick="confirmApply()" id="applyButton" class="jobApplyBtnModal" style="display : none; margin: 6px">Apply</button>
                             </center>

@@ -627,9 +627,9 @@ function processDataForJobPostLocation(returnedData) {
                 });
             }
         }
-        $('#interviewSlot').show();
+        $('#interviewSection').show();
     } else{
-        $('#interviewSlot').hide();
+        $('#interviewSection').hide();
     }
 }
 

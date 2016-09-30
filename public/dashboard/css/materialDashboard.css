@@ -49,6 +49,14 @@ body{
     background:rgba(0,0,0,0.55);
 }
 
+.materialDot{
+    height: 6px;
+    width: 6px;
+    border-radius: 100%;
+    background: #2980b9;
+}
+
+
 #jobLogo{
     margin-top: 24%;
 }
