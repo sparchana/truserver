@@ -341,7 +341,6 @@ function processDataGetAllTimeSlots(returnedData) {
 
 
 function processDataForJobPost(returnedData) {
-    console.log(returnedData);
     $("#jobPostId").val(returnedData.jobPostId);
     if(returnedData.company != null ){
         $("#jobPostCompany").val(returnedData.company.companyId);

@@ -590,7 +590,7 @@ function processDataForJobPostLocation(returnedData) {
         }
         //slots
         var today = new Date();
-        for (i = 1; i < 8; i++) {
+        for (i = 2; i < 9; i++) {
             // 0 - > sun 1 -> mon ...
             var x = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
             if (checkSlotAvailability(x, interviewDays)) {
