@@ -10,6 +10,8 @@ var prefLocationName;
 var prefTimeSlot;
 var prefTimeSlotName;
 
+var scheduledInterviewDate;
+
 $(window).resize(function(){
     var w = window.innerWidth;
     if(w < 640){
@@ -546,7 +548,6 @@ function addLocalitiesToModal() {
 }
 
 function processDataForJobPostLocation(returnedData) {
-    console.log(returnedData);
     $("#applyButton").hide();
     document.getElementById("applyJobCandidateName").innerHTML = candidateInfo.candidateFirstName;
     document.getElementById("applyJobCandidateNameSecond").innerHTML = candidateInfo.candidateFirstName;
@@ -595,7 +596,7 @@ function processDataForJobPostLocation(returnedData) {
             if (checkSlotAvailability(x, interviewDays)) {
                 interviewDetailsList.forEach(function (timeSlot) {
                     var dateSlotSelectedId = x.getFullYear() + "-" + (x.getMonth() + 1) + "-" + x.getDate() + "_" + timeSlot.interviewTimeSlot.interviewTimeSlotId;
-                    var option = $('<option value="1" id="'+ dateSlotSelectedId +'"></option>').text(getDayVal(x.getDay()) + ", " + x.getDate() + " " + getMonthVal((x.getMonth() + 1)) + " (" + timeSlot.interviewTimeSlot.interviewTimeSlotName + ")");
+                    var option = $('<option value="' + dateSlotSelectedId + '"></option>').text(getDayVal(x.getDay()) + ", " + x.getDate() + " " + getMonthVal((x.getMonth() + 1)) + " (" + timeSlot.interviewTimeSlot.interviewTimeSlotName + ")");
                     $('#interviewSlot').append(option);
                 });
             }
@@ -720,7 +721,7 @@ function confirmApply() {
 
 function processDataCheckCandidate(returnedData) {
     if(returnedData != '0'){
-        applyJobSubmit(jobPostId, returnedData.candidateMobile, prefLocation, true);
+        applyJobSubmit(jobPostId, returnedData.candidateMobile, prefLocation, prefTimeSlot, scheduledInterviewDate, true);
     } else{
         console.log("Partner doesn't own the candidate");
     }
@@ -732,14 +733,10 @@ $(function() {
             prefLocation = $(this).val();
             prefLocationName = $("#jobLocality option:selected").text();
 
-            prefTimeSlot = $("#interviewSlot").val();
-            prefTimeSlotName = $("#interviewSlot option:selected").text();
+            var combinedValue = $(this).val().split("_");
+            scheduledInterviewDate = combinedValue[0];
+            prefTimeSlot = combinedValue[1];
             $("#applyButton").show();
-            console.log(prefLocation);
-            console.log(prefLocationName);
-            console.log(prefTimeSlot);
-            console.log(prefTimeSlotName);
-
         } else{
             $("#applyButton").hide();
         }
@@ -747,15 +744,12 @@ $(function() {
 
     $("#interviewSlot").change(function (){
         if($(this).val() != -1 && $("#jobLocality").val() != -1){
-            prefTimeSlot = $(this).val();
-            prefTimeSlotName = $("#interviewSlot option:selected").text();
+            var combinedValue = $(this).val().split("_");
+            scheduledInterviewDate = combinedValue[0];
+            prefTimeSlot = combinedValue[1];
 
             prefLocation = $("#jobLocality").val();
             prefLocationName = $("#jobLocality option:selected").text();
-            console.log(prefLocation);
-            console.log(prefLocationName);
-            console.log(prefTimeSlot);
-            console.log(prefTimeSlotName);
             $("#applyButton").show();
         } else{
             $("#applyButton").hide();
