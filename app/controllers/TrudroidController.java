@@ -338,6 +338,8 @@ public class TrudroidController {
             applyJobRequest.setJobId(Math.toIntExact(pApplyJobRequest.getJobPostId()));
             applyJobRequest.setLocalityId(Math.toIntExact(pApplyJobRequest.getLocalityId()));
             applyJobRequest.setPartner(false);
+            applyJobRequest.setScheduledInterviewDate(null);
+            applyJobRequest.setTimeSlot(null);
             applyJobRequest.setCandidateMobile(FormValidator.convertToIndianMobileFormat(pApplyJobRequest.getCandidateMobile()));
 
             //applying job

@@ -8,7 +8,6 @@ var prefLocation;
 var prefLocationName;
 
 var prefTimeSlot;
-var prefTimeSlotName;
 
 var scheduledInterviewDate;
 
@@ -54,6 +53,7 @@ function toggleTabs(index) {
         $(".viewPopularJobs").removeClass("white");
         $(".viewAppliedJobs").removeClass("white").addClass("white");
     } else{
+//        getAllAppliedJobs();
         popularJobsSection = true;
         appliedJobSection = false;
         $("#applyJobs").hide(500);
@@ -73,12 +73,17 @@ function getAllAppliedJobs() {
                     var returned_data = new Array();
                     returnedData.forEach(function (jobApplication) {
                         var appliedDateInMillis = new Date(jobApplication.jobApplicationCreateTimeStamp);
-                        console.log();
                         var salary;
                         if(jobApplication.jobPost.jobPostMaxSalary != null){
                             salary = "₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMinSalary) + " - ₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMaxSalary);
                         } else{
                             salary = "₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMinSalary);
+                        }
+                        //getting interview details
+                        var interviewDetails = "Not specified";
+                        if(jobApplication.interviewTimeSlot != null){
+                            var interviewDate = new Date(jobApplication.scheduledInterviewDate);
+                            interviewDetails = interviewDate.getDate() + '/' + (interviewDate.getMonth()+1) + '/' + interviewDate.getFullYear() + "@" + jobApplication.interviewTimeSlot.interviewTimeSlotName;
                         }
                         returned_data.push({
                             'jobPostName' : '<div class="mLabel" style="width:100%" >'+ jobApplication.jobPost.jobPostTitle + '</div>',
@@ -86,6 +91,7 @@ function getAllAppliedJobs() {
                             'jobPostSalary' : '<div class="mLabel" style="width:100%" >'+ salary + '</div>',
                             'jobPostExperience' : '<div class="mLabel" style="width:100%" >'+ jobApplication.jobPost.jobPostExperience.experienceType + '</div>',
                             'jobPreScreenLocation' : '<div class="mLabel" style="width:100%" >'+ jobApplication.locality.localityName + '</div>',
+                            'interviewDetails' : '<div class="mLabel" style="width:100%" >'+ interviewDetails + '</div>',
                             'jobAppliedOn' : '<div class="mLabel" style="width:100%" >'+ appliedDateInMillis.getDate() + '/' + (appliedDateInMillis.getMonth()+1) + '/' + appliedDateInMillis.getFullYear() + '</div>'
                         });
                         returnedData.forEach(function (jobApplication) {
@@ -104,6 +110,7 @@ function getAllAppliedJobs() {
                 { "data": "jobPostSalary" },
                 { "data": "jobPostExperience" },
                 { "data": "jobPreScreenLocation" },
+                { "data": "interviewDetails" },
                 { "data": "jobAppliedOn" }
             ],
             "language": {
@@ -327,6 +334,70 @@ function processDataAllJobPosts(returnedData) {
                     $('[data-toggle="tooltip"]').tooltip()
                 });
 
+                var interviewIncentiveDivMain = document.createElement("div");
+                interviewIncentiveDivMain.className = "row";
+                interviewIncentiveDivMain.style = "margin: 0; padding: 0";
+                interviewIncentiveDivMain.id = "interviewIncentive";
+                jobBodyCol.appendChild(interviewIncentiveDivMain);
+
+                var interviewIncentiveVal = document.createElement("div");
+                interviewIncentiveVal.className = "col-sm-12";
+                interviewIncentiveVal.style = "margin: 0; padding: 0";
+                interviewIncentiveDivMain.appendChild(interviewIncentiveVal);
+
+                var interviewIncentiveIconDiv = document.createElement("div");
+                interviewIncentiveIconDiv.style = "display : inline-block;";
+                interviewIncentiveVal.appendChild(interviewIncentiveIconDiv);
+
+                var interviewIncentiveIcon = document.createElement("img");
+                interviewIncentiveIcon.src = "/assets/partner/img/coin.png";
+                interviewIncentiveIcon.setAttribute('height', '15px');
+                interviewIncentiveIcon.setAttribute('margin', '4px');
+                interviewIncentiveIcon.style = "margin-top: -4px; margin-left: -3px";
+                interviewIncentiveIconDiv.appendChild(interviewIncentiveIcon);
+
+                var interviewIncentiveDiv = document.createElement("div");
+                interviewIncentiveDiv.style = "display: inline-block; font-size: 14px; margin-left: 4px";
+                if(jobPost.jobPostPartnerInterviewIncentive == null || jobPost.jobPostPartnerInterviewIncentive == 0){
+                    interviewIncentiveDiv.textContent = "Interview incentive not specified";
+                } else{
+                    interviewIncentiveDiv.textContent = "₹" + rupeeFormatSalary(jobPost.jobPostPartnerInterviewIncentive) + " interview incentive";
+                    interviewIncentiveIcon.src = "/assets/partner/img/money-bag.png";
+                }
+                interviewIncentiveIconDiv.appendChild(interviewIncentiveDiv);
+
+                var joiningIncentiveDivMain = document.createElement("div");
+                joiningIncentiveDivMain.className = "row";
+                joiningIncentiveDivMain.style = "margin: 0; padding: 0";
+                joiningIncentiveDivMain.id = "interviewIncentive";
+                jobBodyCol.appendChild(joiningIncentiveDivMain);
+
+                var joiningIncentiveVal = document.createElement("div");
+                joiningIncentiveVal.className = "col-sm-12";
+                joiningIncentiveVal.style = "margin: 0; padding: 0";
+                joiningIncentiveDivMain.appendChild(joiningIncentiveVal);
+
+                var joiningIncentiveIconDiv = document.createElement("div");
+                joiningIncentiveIconDiv.style = "display : inline-block;";
+                joiningIncentiveVal.appendChild(joiningIncentiveIconDiv);
+
+                var joiningIncentiveIcon = document.createElement("img");
+                joiningIncentiveIcon.src = "/assets/partner/img/coin.png";
+                joiningIncentiveIcon.setAttribute('height', '15px');
+                joiningIncentiveIcon.setAttribute('margin', '4px');
+                joiningIncentiveIcon.style = "margin-top: -4px; margin-left: -3px";
+                joiningIncentiveIconDiv.appendChild(joiningIncentiveIcon);
+
+                var joiningIncentiveDiv = document.createElement("div");
+                joiningIncentiveDiv.style = "display: inline-block; font-size: 14px; margin-left: 4px";
+                if(jobPost.jobPostPartnerJoiningIncentive == null || jobPost.jobPostPartnerJoiningIncentive == 0){
+                    joiningIncentiveDiv.textContent = "Joining Incentive not specified";
+                } else{
+                    joiningIncentiveDiv.textContent =  "₹" + rupeeFormatSalary(jobPost.jobPostPartnerJoiningIncentive) + " joining incentive";
+                    joiningIncentiveIcon.src = "/assets/partner/img/money-bag.png";
+                }
+                joiningIncentiveIconDiv.appendChild(joiningIncentiveDiv);
+
                 //!*  apply button *!/
                 var applyBtnDiv = document.createElement("div");
                 applyBtnDiv.className = "col-sm-2";
@@ -348,51 +419,6 @@ function processDataAllJobPosts(returnedData) {
                 var incentiveDiv = document.createElement("div");
                 incentiveDiv.style = "display: block; text-align: left; margin-top: 4px";
                 applyBtnDiv.appendChild(incentiveDiv);
-
-                var interviewIncentiveIconDiv = document.createElement("div");
-                interviewIncentiveIconDiv.style = "display : inline-block; margin: 4px;top:0";
-                incentiveDiv.appendChild(interviewIncentiveIconDiv);
-
-                var interviewIncentiveIcon = document.createElement("img");
-                interviewIncentiveIcon.src = "/assets/partner/img/coin.png";
-                interviewIncentiveIcon.setAttribute('height', '15px');
-                interviewIncentiveIcon.setAttribute('margin', '4px');
-                interviewIncentiveIcon.style = "margin-top: -4px";
-                interviewIncentiveIconDiv.appendChild(interviewIncentiveIcon);
-
-                var interviewIncentiveDiv = document.createElement("div");
-                interviewIncentiveDiv.style = "display: inline-block; font-size: 12px; margin-left: 4px";
-                if(jobPost.jobPostPartnerInterviewIncentive == null || jobPost.jobPostPartnerInterviewIncentive == 0){
-                    interviewIncentiveDiv.textContent = " No interview incentive";
-                } else{
-                    interviewIncentiveDiv.textContent = "₹" + rupeeFormatSalary(jobPost.jobPostPartnerInterviewIncentive) + " interview incentive";
-                    interviewIncentiveIcon.src = "/assets/partner/img/money-bag.png";
-                }
-                interviewIncentiveIconDiv.appendChild(interviewIncentiveDiv);
-
-                // partner joining incentives
-
-                var joiningIncentiveIconDiv = document.createElement("div");
-                joiningIncentiveIconDiv.style = "display : inline-block; margin: 4px;top:0";
-                incentiveDiv.appendChild(joiningIncentiveIconDiv);
-
-                var joiningIncentiveIcon = document.createElement("img");
-                joiningIncentiveIcon.src = "/assets/partner/img/coin.png";
-                joiningIncentiveIcon.setAttribute('height', '15px');
-                joiningIncentiveIcon.setAttribute('margin', '4px');
-                joiningIncentiveIcon.style = "margin-top: -4px";
-                joiningIncentiveIconDiv.appendChild(joiningIncentiveIcon);
-
-                var joiningIncentiveDiv = document.createElement("div");
-                joiningIncentiveDiv.style = "display: inline-block; font-size: 12px; margin-left: 4px";
-                if(jobPost.jobPostPartnerJoiningIncentive == null || jobPost.jobPostPartnerJoiningIncentive == 0){
-                    joiningIncentiveDiv.textContent = " No joining incentive";
-                } else{
-                    joiningIncentiveDiv.textContent =  "₹" + rupeeFormatSalary(jobPost.jobPostPartnerJoiningIncentive) + " joining incentive";
-                    joiningIncentiveIcon.src = "/assets/partner/img/money-bag.png";
-                }
-                joiningIncentiveIconDiv.appendChild(joiningIncentiveDiv);
-
             }
         });
     }
@@ -601,19 +627,9 @@ function processDataForJobPostLocation(returnedData) {
                 });
             }
         }
-        $("#notAllowedMsg").hide();
-        $("#applyButton").prop("disabled",false);
-        $("#jobLocality").prop("disabled",false);
-        $("#interviewSlot").prop("disabled", false);
-
+        $('#interviewSlot').show();
     } else{
-        $("#applyButton").prop("disabled",true);
-        $("#jobLocality").prop("disabled",true);
-        $("#interviewSlot").prop("disabled",true);
-        $("#notAllowedMsg").show();
-        $('#interviewSlot').html('');
-        var defaultOption = $('<option value="-1"></option>').text("No Slots available");
-        $('#interviewSlot').append(defaultOption);
+        $('#interviewSlot').hide();
     }
 }
 
@@ -733,9 +749,12 @@ $(function() {
             prefLocation = $(this).val();
             prefLocationName = $("#jobLocality option:selected").text();
 
-            var combinedValue = $(this).val().split("_");
-            scheduledInterviewDate = combinedValue[0];
-            prefTimeSlot = combinedValue[1];
+            if ($("#interviewSlot").css('display') != 'none'){
+                var combinedValue = $("#interviewSlot").val().split("_");
+                scheduledInterviewDate = combinedValue[0];
+                prefTimeSlot = combinedValue[1];
+            }
+
             $("#applyButton").show();
         } else{
             $("#applyButton").hide();
