@@ -23,6 +23,7 @@ import java.sql.Timestamp;
 import java.util.*;
 
 import static play.mvc.Controller.session;
+import static play.mvc.Http.Context.current;
 
 /**
  * Created by batcoder1 on 17/6/16.
@@ -204,7 +205,7 @@ public class JobService {
                     }
 
                     jobApplication.save();
-                    writeJobApplicationToGoogleSheet(existingJobPost.getJobPostId(), applyJobRequest.getCandidateMobile(), channelType, applyJobRequest.getLocalityId(), partner);
+                    writeJobApplicationToGoogleSheet(existingJobPost.getJobPostId(), applyJobRequest.getCandidateMobile(), channelType, applyJobRequest.getLocalityId(), partner, applyJobRequest);
 
                     if (channelType == InteractionService.InteractionChannelType.SELF) {
                         // job application coming from website
@@ -236,7 +237,7 @@ public class JobService {
         return applyJobResponse;
     }
 
-    public static void writeJobApplicationToGoogleSheet(Long jobPostId, String candidateMobile, InteractionService.InteractionChannelType channelType, Integer localityId, Partner partner) throws UnsupportedEncodingException {
+    public static void writeJobApplicationToGoogleSheet(Long jobPostId, String candidateMobile, InteractionService.InteractionChannelType channelType, Integer localityId, Partner partner, ApplyJobRequest applyJobRequest) throws UnsupportedEncodingException {
         String jobIdVal = "-";
         String companyNameVal = "-";
         String jobPostNameVal = "-";
@@ -265,6 +266,8 @@ public class JobService {
         String partnerNameVal = "";
         String partnerMobileVal = "";
         String partnerIdVal = "";
+        String interviewDateVal = "";
+        String interviewTimeVal = "";
         int sheetId = ServerConstants.SHEET_MAIN;
 
         if(channelType == InteractionService.InteractionChannelType.SELF_ANDROID){
@@ -426,6 +429,22 @@ public class JobService {
             partnerNameVal = partner.getPartnerFirstName();
             partnerMobileVal = partner.getPartnerMobile();
             partnerIdVal = String.valueOf(partner.getPartnerId());
+
+            if(applyJobRequest.getScheduledInterviewDate() != null){
+                Date scheduledInterviewDate = new Date(applyJobRequest.getScheduledInterviewDate().getTime());
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(scheduledInterviewDate);
+                int year = cal.get(Calendar.YEAR);
+                int month = cal.get(Calendar.MONTH);
+                int day = cal.get(Calendar.DAY_OF_MONTH);
+                interviewDateVal = day + "/" + month + "/" +year;
+            }
+            if(applyJobRequest.getTimeSlot() != null){
+                InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", applyJobRequest.getTimeSlot()).findUnique();
+                if(interviewTimeSlot != null){
+                    interviewTimeVal = interviewTimeSlot.getInterviewTimeSlotName();
+                }
+            }
         }
 
         /*
@@ -461,7 +480,8 @@ public class JobService {
         String partnerNameKey = "entry.1066838351";
         String partnerIdKey = "entry.34374237";
         String partnerMobileKey = "entry.483855268";
-
+        String interviewDateKey = "entry.1055797412";
+        String interviewTime = "entry.414736621";
 
         String url;
         if(!Play.isDev(Play.current())){
@@ -502,7 +522,9 @@ public class JobService {
                 + jobIsHotKey + "=" + URLEncoder.encode(jobIsHotVal,"UTF-8") + "&"
                 + partnerNameKey + "=" + URLEncoder.encode(partnerNameVal,"UTF-8") + "&"
                 + partnerIdKey + "=" + URLEncoder.encode(partnerIdVal,"UTF-8") + "&"
-                + partnerMobileKey + "=" + URLEncoder.encode(partnerMobileVal,"UTF-8");
+                + partnerMobileKey + "=" + URLEncoder.encode(partnerMobileVal,"UTF-8") + "&"
+                + interviewDateKey + "=" + URLEncoder.encode(interviewDateVal,"UTF-8") + "&"
+                + interviewTime + "=" + URLEncoder.encode(interviewTimeVal,"UTF-8");
 
                 try {
                     GoogleSheetHttpRequest googleSheetHttpRequest = new GoogleSheetHttpRequest();
