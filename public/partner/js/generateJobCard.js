@@ -45,6 +45,7 @@ $(document).ready(function(){
     if(localStorage.getItem("appliedJobs") == '1'){
         $("#appliedJobsSection").show();
         $("#applyJobs").hide();
+        localStorage.setItem("appliedJobs", "0");
     }
 });
 
@@ -52,16 +53,16 @@ function toggleTabs(index) {
     if(index == 0){
         popularJobsSection = true;
         appliedJobSection = false;
-        $("#applyJobs").show(500);
-        $("#appliedJobsSection").hide(500);
+        $("#applyJobs").show();
+        $("#appliedJobsSection").hide();
         $(".viewPopularJobs").removeClass("white");
         $(".viewAppliedJobs").removeClass("white").addClass("white");
     } else{
         getAllAppliedJobs();
         popularJobsSection = true;
         appliedJobSection = false;
-        $("#applyJobs").hide(500);
-        $("#appliedJobsSection").show(500);
+        $("#applyJobs").hide();
+        $("#appliedJobsSection").show();
         $(".viewPopularJobs").removeClass("white").addClass("white");
         $(".viewAppliedJobs").removeClass("white");
 
@@ -119,7 +120,7 @@ function getAllAppliedJobs() {
                 { "data": "jobAppliedOn" }
             ],
             "language": {
-                "emptyTable": "Looks like you have not added any candidates yet! ",
+                "emptyTable": "Looks like you have not added any candidates yet! " + '<a href="/partner/' + localStorage.getItem("candidateId") + '/jobs"><font color="'+ "#2980b9" +'">Apply now!</font></a>',
             },
             "scrollX": true,
             "destroy": true
