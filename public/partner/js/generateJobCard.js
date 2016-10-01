@@ -83,7 +83,7 @@ function getAllAppliedJobs() {
                         var interviewDetails = "Not specified";
                         if(jobApplication.interviewTimeSlot != null){
                             var interviewDate = new Date(jobApplication.scheduledInterviewDate);
-                            interviewDetails = interviewDate.getDate() + '/' + (interviewDate.getMonth()+1) + '/' + interviewDate.getFullYear() + "@" + jobApplication.interviewTimeSlot.interviewTimeSlotName;
+                            interviewDetails = ('0' + interviewDate.getDate()).slice(-2) + '-' + getMonthVal((interviewDate.getMonth()+1)) + " @" + jobApplication.interviewTimeSlot.interviewTimeSlotName;
                         }
                         returned_data.push({
                             'jobPostName' : '<div class="mLabel" style="width:100%" >'+ jobApplication.jobPost.jobPostTitle + '</div>',
@@ -92,7 +92,7 @@ function getAllAppliedJobs() {
                             'jobPostExperience' : '<div class="mLabel" style="width:100%" >'+ jobApplication.jobPost.jobPostExperience.experienceType + '</div>',
                             'jobPreScreenLocation' : '<div class="mLabel" style="width:100%" >'+ jobApplication.locality.localityName + '</div>',
                             'interviewDetails' : '<div class="mLabel" style="width:100%" >'+ interviewDetails + '</div>',
-                            'jobAppliedOn' : '<div class="mLabel" style="width:100%" >'+ appliedDateInMillis.getDate() + '/' + (appliedDateInMillis.getMonth()+1) + '/' + appliedDateInMillis.getFullYear() + '</div>'
+                            'jobAppliedOn' : '<div class="mLabel" style="width:100%" >'+ ('0' + appliedDateInMillis.getDate()).slice(-2) + '-' + getMonthVal((appliedDateInMillis.getMonth()+1)) + '-' + appliedDateInMillis.getFullYear() + '</div>'
                         });
                         returnedData.forEach(function (jobApplication) {
                             $("#apply_btn_" + jobApplication.jobPost.jobPostId).addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied").click(false);
@@ -436,7 +436,7 @@ function processDataAllJobPosts(returnedData) {
         });
     }
     //getting all the applied jobs
-    //getAllAppliedJobs();
+    getAllAppliedJobs();
     getCandidateInfo();
 }
 
