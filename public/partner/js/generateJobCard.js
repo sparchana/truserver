@@ -53,7 +53,7 @@ function toggleTabs(index) {
         $(".viewPopularJobs").removeClass("white");
         $(".viewAppliedJobs").removeClass("white").addClass("white");
     } else{
-//        getAllAppliedJobs();
+        getAllAppliedJobs();
         popularJobsSection = true;
         appliedJobSection = false;
         $("#applyJobs").hide(500);
@@ -78,10 +78,8 @@ function getAllAppliedJobs() {
                             salary = "₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMinSalary);
                         } else{
                             salary = "₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMinSalary) + " - ₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMaxSalary);
-
                         }
                         //getting interview details
-                        // 1(One) seat was available and i tried booking 2 seats. After providing passenger details, i paid the amount of Rs. 1159.34 via ICICI visa-debit card. The amount was deducted but website said "no seats available".
                         var interviewDetails = "Not specified";
                         if(jobApplication.interviewTimeSlot != null){
                             var interviewDate = new Date(jobApplication.scheduledInterviewDate);
@@ -106,6 +104,7 @@ function getAllAppliedJobs() {
             },
 
             "deferRender": true,
+            "order": [[6, "asc"]],
             "columns": [
                 { "data": "jobPostName" },
                 { "data": "jobPostCompany" },
@@ -118,7 +117,6 @@ function getAllAppliedJobs() {
             "language": {
                 "emptyTable": "Looks like you have not added any candidates yet! ",
             },
-            responsive: true,
             "destroy": true
         });
     } catch (exception) {
@@ -438,7 +436,7 @@ function processDataAllJobPosts(returnedData) {
         });
     }
     //getting all the applied jobs
-    getAllAppliedJobs();
+    //getAllAppliedJobs();
     getCandidateInfo();
 }
 
