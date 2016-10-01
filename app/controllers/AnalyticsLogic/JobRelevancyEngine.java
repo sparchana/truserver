@@ -1,8 +1,5 @@
 package controllers.AnalyticsLogic;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.ImmutableBiMap;
-import models.entity.Candidate;
 import models.entity.Intelligence.RelatedJobRole;
 import models.entity.OM.JobPreference;
 import models.entity.Static.JobRole;
@@ -29,8 +26,8 @@ public class JobRelevancyEngine {
         return relatedJobRoleIds;
     }
 
-    public static List<Long> computeRelatedJobRoleIds(List<Long> jobRoleIds) {
-        Map<Long, TreeMap<Long, Double>> jobRoleToRelatedJobRolesByCount = updateRelevantJobCategories(jobRoleIds);
+    public static List<Long> updateRelevantJobCategories(List<Long> jobRoleIds) {
+        Map<Long, TreeMap<Long, Double>> jobRoleToRelatedJobRolesByCount = computeRelatedJobRoleIds(jobRoleIds);
 
         // fetch all related job role ids
 
@@ -53,7 +50,6 @@ public class JobRelevancyEngine {
                 if (relatedJobRole == null) {
                     relatedJobRole = new RelatedJobRole();
                 }
-
                 relatedJobRole.setJobRole(JobRole.find.where().eq("jobRoleId", parentEntry.getKey()).findUnique());
                 relatedJobRole.setRelatedJobRole(JobRole.find.where().eq("jobRoleId", childEntry.getKey()).findUnique());
                 relatedJobRole.setWeight(childEntry.getValue());
@@ -82,10 +78,10 @@ public class JobRelevancyEngine {
             allJobRoleids.add(jobRole.getJobRoleId());
         }
 
-        return computeRelatedJobRoleIds(allJobRoleids);
+        return updateRelevantJobCategories(allJobRoleids);
     }
 
-    public static Map<Long, TreeMap<Long, Double>> updateRelevantJobCategories(List<Long> jobRoleIds) {
+    public static Map<Long, TreeMap<Long, Double>> computeRelatedJobRoleIds(List<Long> jobRoleIds) {
 
         List<JobPreference> allJobPrefs = JobPreference.find.all();
 

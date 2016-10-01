@@ -1401,7 +1401,7 @@ public class Application extends Controller {
     }
 
     @Security.Authenticated(SuperAdminSecured.class)
-    public static Result computeRelatedJobRoles() {
+    public static Result updateAllRelevantJobCategories() {
         return ok(toJson(JobRelevancyEngine.updateAllRelevantJobCategories()));
     }
 }

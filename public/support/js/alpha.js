@@ -308,7 +308,7 @@ function updateRelevantJobRoles() {
     try {
         $.ajax({
             type: "GET",
-            url: "/api/compute/computeRelatedJobRoles",
+            url: "/api/compute/updateAllRelevantJobCategories",
             data: false,
             success: renderUpdateRelevantJobRoles
         });
