@@ -48,7 +48,7 @@ function processDataAddJobPost(returnedData) {
                     "entry.599645579": pricingPlan
                 },
                 type: "POST",
-                dataType: "xml",
+                dataType: "xml"
             });
         } catch (exception) {
             console.log("exception occured!!" + exception);
@@ -199,7 +199,8 @@ $(function() {
             $("#jobPostExperience").addClass('selectDropdownInvalid').removeClass('selectDropdown');
             alert("Please enter Job Post Experience required");
             status = 0;
-        } else if(interviewDayCount > 0 && timeSlotCount == 0){
+        }
+        if(interviewDayCount > 0 && timeSlotCount == 0){
             $("#jobPostExperience").removeClass('invalid');
             alert("Please select interview time slot");
             status = 0;

@@ -42,7 +42,6 @@ $(document).ready(function(){
             success: processDataAllJobPosts
         });
     } catch (exception) {}
-    console.log(localStorage.getItem("appliedJobs") + " >>>>>>>>");
     if(localStorage.getItem("appliedJobs") == '1'){
         $("#appliedJobsSection").show();
         $("#applyJobs").hide();
