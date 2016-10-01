@@ -129,11 +129,11 @@ $(function() {
         var minSalary = $("#jobPostMinSalary").val();
         var maxSalary = $("#jobPostMaxSalary").val();
 
-        var partnerInterviewIncentiveVal = $("#partnerInterviewIncentive").val();
-        var partnerJoiningIncentiveVal = $("#partnerJoiningIncentive").val();
+        var partnerInterviewIncentiveVal = parseInt($("#partnerInterviewIncentive").val());
+        var partnerJoiningIncentiveVal = parseInt($("#partnerJoiningIncentive").val());
 
         var jobPostLocalities = [];
-        var status = 1;
+        status = 1;
         var locality = $('#jobPostLocalities').val().split(",");
         if($("#jobPostCompany").val() == ""){
             alert("Please enter Job Post Company");
@@ -206,11 +206,12 @@ $(function() {
         } else if(timeSlotCount > 0 && interviewDayCount == 0){
             alert("Please select interview days");
             status = 0;
-        } else if(partnerInterviewIncentiveVal != 0 && partnerJoiningIncentiveVal != 0 ){
-            if(parseInt(partnerInterviewIncentiveVal) > parseInt(partnerJoiningIncentiveVal)){
-                alert("partner interview salary cannot be greater than partner joining salary");
-                status = 0;
-            }
+        }
+        //checking partner incentives
+        if(partnerJoiningIncentiveVal < partnerInterviewIncentiveVal){
+            console.log("here");
+            alert("partner interview salary cannot be greater than partner joining salary");
+            status = 0;
         }
 
         if(status == 1){
