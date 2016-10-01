@@ -68,20 +68,29 @@ function applyJob(id, localityId, triggerModal){
         if(triggerModal){
             getAssessmentQuestions(null, id);
         }
-        applyJobSubmit(id, phone, localityId, false);
+        applyJobSubmit(id, phone, localityId, null, null, false);
     }
 } // end of submit
 
-function applyJobSubmit(jobPostId, phone, localityId, isPartner) {
+function applyJobSubmit(jobPostId, phone, localityId, prefTimeSlot, scheduledInterviewDate, isPartner) {
     try {
         var partner = false;
+        var prefTimeSlotVal;
+        var scheduledInterviewDateVal;
         if(isPartner){
             partner = true;
+            prefTimeSlotVal = prefTimeSlot;
+            scheduledInterviewDateVal = scheduledInterviewDate;
+        } else{
+            prefTimeSlotVal = null;
+            scheduledInterviewDateVal = null;
         }
         var d = {
             jobId: jobPostId,
             candidateMobile: phone,
             localityId: localityId,
+            timeSlot: prefTimeSlotVal,
+            scheduledInterviewDate: scheduledInterviewDateVal,
             isPartner: partner
         };
         $.ajax({

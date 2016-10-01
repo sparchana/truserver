@@ -305,10 +305,10 @@ $(document).ready(function () {
 
 
     var i;
-    var defaultOption = $('<option value=""></option>').text("Select Job start time");
+    var defaultOption = $('<option value="-1"></option>').text("Select Job start time");
     $('#jobPostStartTime').append(defaultOption);
 
-    defaultOption = $('<option value=""></option>').text("Select Job End time");
+    defaultOption = $('<option value="-1"></option>').text("Select Job End time");
     $('#jobPostEndTime').append(defaultOption);
     for(i=0;i<=24;i++){
         var option = document.createElement("option");
@@ -327,8 +327,7 @@ $(document).ready(function () {
 
 function processDataGetAllTimeSlots(returnedData) {
     $('#interviewTimeSlot').html('');
-    returnedData.forEach(function(timeSlot)
-    {
+    returnedData.forEach(function(timeSlot) {
         var id = timeSlot.interviewTimeSlotId;
         var name = timeSlot.interviewTimeSlotName;
         var item = {};
@@ -341,7 +340,6 @@ function processDataGetAllTimeSlots(returnedData) {
 
 
 function processDataForJobPost(returnedData) {
-    console.log(returnedData);
     $("#jobPostId").val(returnedData.jobPostId);
     if(returnedData.company != null ){
         $("#jobPostCompany").val(returnedData.company.companyId);

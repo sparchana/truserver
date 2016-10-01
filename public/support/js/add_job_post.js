@@ -113,6 +113,25 @@ $(function() {
                 });
             }
         }
+        var timeSlotCount = 0;
+        var interviewDayCount = 0;
+        $('#interviewTimeSlot input:checkbox').each(function () {
+            if ($(this).is(':checked')) {
+                timeSlotCount =+ 1;
+            }
+        });
+        for(i=1;i<=7;i++) {
+            if ($("#interview_day_" + i).is(":checked")) {
+                interviewDayCount =+ 1;
+            }
+        }
+
+        var minSalary = $("#jobPostMinSalary").val();
+        var maxSalary = $("#jobPostMaxSalary").val();
+
+        var partnerInterviewIncentiveVal = $("#partnerInterviewIncentive").val();
+        var partnerJoiningIncentiveVal = $("#partnerJoiningIncentive").val();
+
         var jobPostLocalities = [];
         var status = 1;
         var locality = $('#jobPostLocalities').val().split(",");
@@ -135,6 +154,21 @@ $(function() {
             $("#jobPostTitle").removeClass('invalid');
             $("#jobPostMinSalary").addClass('invalid');
             status = 0;
+        } else if(isValidSalary(minSalary) == false){
+            alert("Please enter valid min salary");
+            $("#jobPostMinSalary").removeClass('invalid');
+            $("#jobPostMinSalary").addClass('invalid');
+            status = 0;
+        } else if(maxSalary != 0 && (isValidSalary(maxSalary) == false)){
+            alert("Please enter valid max salary");
+            $("#jobPostMinSalary").removeClass('invalid');
+            $("#jobPostMaxSalary").addClass('invalid');
+            status = 0;
+        } else if(maxSalary != 0 && (maxSalary <= minSalary)){
+            alert("Max salary should be greated than min salary");
+            $("#jobPostMaxSalary").removeClass('invalid');
+            $("#jobPostMaxSalary").addClass('invalid');
+            status = 0;
         } else if($("#jobPostJobRole").val() == ""){
             $("#jobPostMinSalary").removeClass('invalid');
             alert("Please enter job roles");
@@ -145,8 +179,17 @@ $(function() {
             $("#jobPostJobRole").removeClass('invalid');
             $("#jobPostVacancies").addClass('invalid');
             status = 0;
-        }
-        else if(locality == ""){
+        } else if($("#jobPostStartTime").val() != -1){
+            if($("#jobPostEndTime").val() != -1){
+                if(parseInt($("#jobPostStartTime").val()) >= parseInt($("#jobPostEndTime").val())){
+                    alert("Start time cannot be more than end time");
+                    status = 0;
+                }
+            } else{
+                alert("Please select job end time");
+                status = 0;
+            }
+        } else if(locality == ""){
             $("#jobPostVacancies").removeClass('invalid');
             $("#jobPostLocalities").addClass('invalid');
             alert("Please enter localities");
@@ -156,6 +199,18 @@ $(function() {
             $("#jobPostExperience").addClass('selectDropdownInvalid').removeClass('selectDropdown');
             alert("Please enter Job Post Experience required");
             status = 0;
+        } else if(interviewDayCount > 0 && timeSlotCount == 0){
+            $("#jobPostExperience").removeClass('invalid');
+            alert("Please select interview time slot");
+            status = 0;
+        } else if(timeSlotCount > 0 && interviewDayCount == 0){
+            alert("Please select interview days");
+            status = 0;
+        } else if(partnerInterviewIncentiveVal != 0 && partnerJoiningIncentiveVal != 0 ){
+            if(parseInt(partnerInterviewIncentiveVal) > parseInt(partnerJoiningIncentiveVal)){
+                alert("partner interview salary cannot be greater than partner joining salary");
+                status = 0;
+            }
         }
 
         if(status == 1){

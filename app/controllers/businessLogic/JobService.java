@@ -182,6 +182,18 @@ public class JobService {
                         // this job is being applied by a partner for a candidate, hence we need to det partner Id in the job Application table
                         partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
                         if(partner != null){
+                            //setting time slot
+                            if(applyJobRequest.getTimeSlot() != null){
+                                InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", applyJobRequest.getTimeSlot()).findUnique();
+                                if(interviewTimeSlot != null){
+                                    jobApplication.setInterviewTimeSlot(interviewTimeSlot);
+                                }
+                            }
+                            //setting scheduled interview date
+                            if(applyJobRequest.getScheduledInterviewDate() != null){
+                                jobApplication.setScheduledInterviewDate(applyJobRequest.getScheduledInterviewDate());
+                            }
+                            //setting partner
                             jobApplication.setPartner(partner);
                             SmsUtil.sendJobApplicationSmsViaPartner(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), existingCandidate.getCandidateMobile(), jobApplication.getLocality().getLocalityName(), partner.getPartnerFirstName());
                             SmsUtil.sendJobApplicationSmsToPartner(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), partner.getPartnerMobile(), jobApplication.getLocality().getLocalityName(), partner.getPartnerFirstName());

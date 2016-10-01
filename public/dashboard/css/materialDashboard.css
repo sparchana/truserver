@@ -49,8 +49,16 @@ body{
     background:rgba(0,0,0,0.55);
 }
 
+.materialDot{
+    height: 6px;
+    width: 6px;
+    border-radius: 100%;
+    background: #2980b9;
+}
+
+
 #jobLogo{
-    margin-top: 12%;
+    margin-top: 24%;
 }
 
 .fade-background {
@@ -318,6 +326,7 @@ div.inblockDiv{
     background: #09ac58;
     padding: 6%;
     width: 120px;
+    margin-top: 24%;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.16);
 }
 
