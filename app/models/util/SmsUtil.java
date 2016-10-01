@@ -203,7 +203,7 @@ public class SmsUtil {
 
     public static void sendJobApplicationSmsViaPartner(String candidateFirstName, String jobPostTitle, String companyName, String candidateMobile, String localityName, String partnerName) {
         String msg = "Hi " + candidateFirstName + ", we have received your job application for " + jobPostTitle + " job at " + companyName + " @" + localityName + " from our recruitment partner (" + partnerName + ").  " +
-                "Kindly login at www.trujobs.in to take assessment now! Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
+                "Kindly login at www.trujobs.in and access 'View Applied Jobs' section to complete assessment! Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
         sendSms(candidateMobile, msg);
     }
 

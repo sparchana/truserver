@@ -56,6 +56,23 @@ body{
     background: #2980b9;
 }
 
+.incentiveEmptyBody{
+    font-size: 12px;
+    border-radius: 4px;
+    padding: 4px 8px 4px 8px;
+    background: transparent;
+    color: #000;
+}
+
+.incentiveBody{
+    margin-left: 4px;
+    font-size: 14px;
+    border-radius: 4px;
+    padding: 4px 8px 4px 8px;
+    background: rgb(82, 178, 31);
+    font-weight: 600;
+    color: #fff;
+}
 
 #jobLogo{
     margin-top: 24%;
