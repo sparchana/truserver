@@ -46,7 +46,52 @@ function executeAlphaRequest(mobile){
     }
 }
 
-function constructDataForTable(tableName, row) {
+function constructTableForRelevantJobs(tableName, rows) {
+
+    var data = new google.visualization.DataTable();
+
+    if(rows != null){
+        $.each( rows, function( rName, postData) {
+
+            $.each ( postData, function (rowIndex, innerData){
+                $.extend(rValue, innerData);
+                //rowArray.push(rValue);
+                var googleRowOneRow = [];
+                $.each( rValue  , function( cName, value ) {
+                    //console.log( "cValue:"+value );
+                    googleRowOneRow.push(""+value);
+                    /* Add the column name once */
+                    if(f){
+                        data.addColumn('string', cName);
+                    }
+                });
+                googleTableRows.push(googleRowOneRow);
+                f=false;
+            })
+        });
+        data.addRows(googleTableRows);
+
+        var csv = google.visualization.dataTableToCsv(data);
+        var csvString = csv;
+        var a         = document.createElement('a');
+        a.href        = 'data:attachment/csv,' +  encodeURIComponent(csvString);
+        a.target      = '_blank';
+        a.download    = 'truAnalytics_'+tableName+'.csv';
+        a.textContent = tableName;
+        $('div[id="csv_'+tableName+'"]').append(a);
+        /*        var components = [
+         {type: 'csv', datasource: 'https://spreadsheets.google.com/tq?key=pCQbetd-CptHnwJEfo8tALA'}
+         ];
+         var container = document.getElementById('toolbar_div_'+tableDivId);
+         google.visualization.drawToolbar(container, components);*/
+
+        var table = new google.visualization.Table(document.getElementById(tableDivId ));
+        table.draw(data, {showRowNumber: true, width: '100%', height: '100%'});
+
+    }
+}
+
+function constructTableForData(tableName, row) {
     // generates every thing only for one table
     var data = new google.visualization.DataTable();
 
@@ -108,7 +153,7 @@ function renderAnalyticsResult(analyticsResult) {
         $('#tabular-content').empty();
         $.each( analyticsResult, function( key, value ) {
             //console.log("ar: " + key);
-            constructDataForTable(key, value);
+            constructTableForData(key, value);
         });
     }
 }
@@ -295,10 +340,56 @@ function saveDeactivationChanges() {
     }
 }
 
+function getJSON(url, type) {
+    // Return a new promise.
+    if (type == null) {
+        return "Error! GET/POST not specified.";
+    }
+    if (url == null) {
+        return "Error! URL not specified.";
+    }
+    return new Promise(function(resolve, reject) {
+        // Do the usual XHR stuff
+        var req = new XMLHttpRequest();
+        req.open(type, url);
+
+        req.onload = function() {
+            // This is called even on 404 etc
+            // so check the status
+            if (req.status == 200) {
+                // Resolve the promise with the response text
+                resolve(req.response);
+            }
+            else {
+                // Otherwise reject with the status text
+                // which will hopefully be a meaningful error
+                reject(Error(req.statusText));
+            }
+        };
+
+        // Handle network errors
+        req.onerror = function() {
+            reject(Error("Network Error"));
+        };
+
+        // Make the request
+        req.send();
+    });
+}
+
 function renderUpdateRelevantJobRoles(data) {
     if(data != null) {
         var totalUpdates = data.length;
         pushToSnackbar("Relevant JobRoles Re-computed and Updated ("+totalUpdates+") Successfully !");
+
+        // Use it!
+        getJSON('/api/getRelatedJobRole', 'POST').then(function(response) {
+            console.log("Success!", response);
+        }, function(error) {
+            console.error("Failed!", error);
+        }).catch(function() {
+                pushToSnackbar('Could not update Relevant JobRoles Table !!');
+        });
     } else {
         pushToSnackbar("Unsuccessful operation. Check Logs !!");
     }

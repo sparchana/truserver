@@ -17,6 +17,7 @@ import controllers.businessLogic.*;
 import controllers.businessLogic.Assessment.AssessmentService;
 import controllers.security.*;
 import models.entity.*;
+import models.entity.Intelligence.RelatedJobRole;
 import models.entity.OM.*;
 import models.entity.Static.*;
 import models.util.ParseCSV;
@@ -81,7 +82,7 @@ public class Application extends Controller {
     }
 
     @Security.Authenticated(Secured.class)
-    public static Result getCandidateInteraction(long id){
+    public static Result getCandidateInteraction(long id) {
         Lead lead = Lead.find.where().eq("leadId",id).findUnique();
         if(lead !=null){
             List<Interaction> fullInteractionList = Interaction.find.where().eq("objectAUUId", lead.getLeadUUId()).findList();
@@ -1403,5 +1404,58 @@ public class Application extends Controller {
     @Security.Authenticated(SuperAdminSecured.class)
     public static Result updateAllRelevantJobCategories() {
         return ok(toJson(JobRelevancyEngine.updateAllRelevantJobCategories()));
+    }
+
+    public static Result getRelatedJobRole(String format, String jobRoleIds) {
+        List<RelatedJobRole> relatedJobRoleList;
+        if(jobRoleIds != null) {
+            relatedJobRoleList = RelatedJobRole.find.where().in("jobRoleId", jobRoleIds).findList();
+        } else {
+            relatedJobRoleList = RelatedJobRole.find.all();
+        }
+
+        Map<Object, List<Object>> relevantJobs = new LinkedHashMap<>();
+        if (format != null) {
+            int mode = format.equalsIgnoreCase("only_id") ? 1 : format.equalsIgnoreCase("only_name") ? 2 : format.equalsIgnoreCase("object") ? 3 : 4;
+            Long prevJobRoleId = null;
+            for (RelatedJobRole relatedJobRole : relatedJobRoleList) {
+                List relatedJobList;
+                if (mode == 1) {
+                    relatedJobList = relevantJobs.get(relatedJobRole.getJobRole().getJobRoleId());
+                } else if (mode == 2) {
+                    relatedJobList = relevantJobs.get(relatedJobRole.getJobRole().getJobName());
+                } else if (mode == 3) {
+                    relatedJobList = relevantJobs.get(relatedJobRole.getJobRole().getJobRoleId());
+                } else {
+                    return badRequest();
+                }
+                if (relatedJobList == null){
+                    relatedJobList = new ArrayList<>();
+                    if (mode == 1) {
+                        relevantJobs.put( relatedJobRole.getJobRole().getJobRoleId(), relatedJobList);
+                    } else if (mode == 2) {
+                        relevantJobs.put( relatedJobRole.getJobRole().getJobName(), relatedJobList);
+                    } else if (mode == 3) {
+                        relevantJobs.put( relatedJobRole.getJobRole().getJobRoleId(), relatedJobList);
+                    } else {
+                        return badRequest();
+                    }
+                }
+                if (prevJobRoleId == null || prevJobRoleId != relatedJobRole.getJobRole().getJobRoleId()) {
+                    prevJobRoleId = relatedJobRole.getJobRole().getJobRoleId();
+                } else {
+                    if (mode == 1) {
+                        relatedJobList.add(relatedJobRole.getRelatedJobRole().getJobRoleId());
+                    } else if (mode == 2) {
+                        relatedJobList.add(relatedJobRole.getRelatedJobRole().getJobName());
+                    } else if (mode == 3) {
+                        relatedJobList.add(relatedJobRole.getRelatedJobRole());
+                    } else {
+                        return badRequest();
+                    }
+                }
+            }
+        }
+        return ok(toJson(relevantJobs));
     }
 }
