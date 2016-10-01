@@ -74,7 +74,7 @@ function getAllAppliedJobs() {
                     returnedData.forEach(function (jobApplication) {
                         var appliedDateInMillis = new Date(jobApplication.jobApplicationCreateTimeStamp);
                         var salary;
-                        if(jobApplication.jobPost.jobPostMaxSalary != null){
+                        if(jobApplication.jobPost.jobPostMaxSalary != null || jobApplication.jobPost.jobPostMaxSalary != '0'){
                             salary = "₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMinSalary) + " - ₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMaxSalary);
                         } else{
                             salary = "₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMinSalary);
