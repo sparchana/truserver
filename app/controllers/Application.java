@@ -12,6 +12,7 @@ import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import controllers.AnalyticsLogic.JobRelevancyEngine;
 import controllers.businessLogic.*;
 import controllers.businessLogic.Assessment.AssessmentService;
 import controllers.security.*;
@@ -1396,5 +1397,16 @@ public class Application extends Controller {
             }
         }
         return ok("NA");
+    }
+
+    @Security.Authenticated(RecSecured.class)
+    public static Result getAllTimeSlots(){
+        List<InterviewTimeSlot> interviewTimeSlotList = InterviewTimeSlot.find.findList();
+        return ok(toJson(interviewTimeSlotList));
+    }
+
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result updateAllRelevantJobCategories() {
+        return ok(toJson(JobRelevancyEngine.updateAllRelevantJobCategories()));
     }
 }

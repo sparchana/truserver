@@ -359,6 +359,7 @@ public class PartnerController {
                 List<JobApplication> jobApplicationList = JobApplication.find.where()
                         .eq("candidateId", candidate.getCandidateId())
                         .eq("partner_id", partner.getPartnerId())
+                        .orderBy("jobApplicationCreateTimeStamp desc")
                         .findList();
                 return ok(toJson(jobApplicationList));
             }

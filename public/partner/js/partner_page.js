@@ -187,6 +187,13 @@ function viewCandidate(leadId) {
 }
 
 function applyJobForCandidate(candidateId) {
+    localStorage.setItem("appliedJobs", "0");
+    localStorage.setItem("candidateId", candidateId);
+    window.location = "/partner/"+ candidateId + "/jobs";
+}
+
+function viewAppliedJobs(candidateId) {
+    localStorage.setItem("appliedJobs", "1");
     localStorage.setItem("candidateId", candidateId);
     window.location = "/partner/"+ candidateId + "/jobs";
 }
@@ -266,7 +273,7 @@ function renderCandidateTable() {
                                 }
                             },
                             'appliedJobs' :  function() {
-                                return '<div class="mCircleLabel" onclick="applyJobForCandidate('+candidate.candidateId+')">'+ candidate.candidateAppliedJobs + '</div>';
+                                return '<div class="mCircleLabel" onclick="viewAppliedJobs('+candidate.candidateId+')">'+ candidate.candidateAppliedJobs + '</div>';
                             }
                         })
                     });
@@ -285,7 +292,7 @@ function renderCandidateTable() {
                 { "data": "appliedJobs" }
             ],
             "language": {
-                "emptyTable": "Looks like you have not added any candidates yet! " + '<a href="/partner/candidate/0" style="color: #286ab6"> '+"Add Now!" +'</a>'
+                "emptyTable": "Looks like you have not added any candidates yet! " + '<a href="/partner/candidate/0" style="color: #26A69A"> '+"Add Now!" +'</a>'
             },
             "order": [[2, "desc"]],
             responsive: true,
