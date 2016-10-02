@@ -58,11 +58,11 @@ input::-webkit-inner-spin-button {
 }
 
 body{
-    background: #f0f0f0;
+    background: #ffffff;
     font-family: Lato;
 }
 .nav > li > a:hover, .nav > li > a:focus{
-    background-color: #003c83;
+    background-color: #00897B;
     -webkit-transition: background-color 0.2s;
     -moz-transition:    background-color 0.2s;
     -ms-transition:     background-color 0.2s;
@@ -83,7 +83,7 @@ body{
     height: 6px;
     width: 6px;
     border-radius: 100%;
-    background: #2980b9;
+    background: #26A69A;
 }
 
 .form-control {
@@ -121,16 +121,24 @@ option:checked {
     background: linear-gradient(
             rgba(24, 26, 45, 0.6),
             rgba(24, 26, 45, 0.6)
-    ), url(../img/back_design.png) repeat;
+    ), url(../img/back_design_partner.svg) repeat;
     background-size: 100%;
     font-weight: bold;
     color: #fff;
     padding: 5% 4% 2% 4%;
     text-align: center;
 }
-
+#sectionHeaderPartner{
+    background: linear-gradient(rgba(24, 26, 45, 0.6), rgba(24, 26, 45, 0.6)), url(../img/back_design_partner_login.svg) repeat;
+    background-size: 100%;
+    background-position:0 -50px;
+    font-weight: bold;
+    color: #fff;
+    padding: 5% 4% 2% 4%;
+    text-align: right;
+}
 #sectionPartnerHowItWorks{
-    background: rgba(253, 248, 216, 0.76);
+    background-color: #e0f2f1;
     font-weight: bold;
     color: #402005;
     padding: 2% 0 2% 0;
@@ -142,7 +150,7 @@ option:checked {
     color: #402005;
     text-align: center;
     margin-bottom: 8%;
-    margin-top: -8%;
+    /*margin-top: -8%;*/
 }
 
 #partnerStats{
@@ -179,16 +187,15 @@ option:checked {
     text-align: center;
     width: 320px;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.15);
-    border-radius: 2px;
+    border-radius: 1px;
     color: #0B4063;
     background: #ffffff;
-    padding: 4px;
+    padding: 2px;
     float: right;
-    margin-top: -13%;
 }
 #registerBtnSubmit{
     border: none;
-    background-color: #0065a4;
+    background-color: #26A69A;
     color: white;
     -webkit-transition: background-color 0.2s;
     -moz-transition:    background-color 0.2s;
@@ -200,7 +207,7 @@ option:checked {
 
 .registerPartnerBtnSubmit{
     border: none;
-    background-color: #0065a4;
+    background-color: #26A69A;
     color: white;
     -webkit-transition: background-color 0.2s;
     -moz-transition:    background-color 0.2s;
@@ -238,7 +245,7 @@ option:checked {
 #forBtn:hover{
     cursor: hand;
     background: #fff;
-    color: #06436a;
+    color: #26A69A;
     font-weight: bold;
     border: 1px solid #fff;
     display: inline-block;
@@ -278,7 +285,7 @@ option:checked {
 
 #registerBtnSubmit:hover{
     border: none;
-    background-color: #004d81;
+    background-color: #00897B;
     color: white;
     -webkit-transition: background-color 0.2s;
     -moz-transition:    background-color 0.2s;
@@ -289,7 +296,7 @@ option:checked {
 
 .registerPartnerBtnSubmit:hover{
     border: none;
-    background-color: #004d81;
+    background-color: #00897B;
     color: white;
     -webkit-transition: background-color 0.2s;
     -moz-transition:    background-color 0.2s;
@@ -313,7 +320,7 @@ option:checked {
 }
 
 .sectionFiveMain{
-    background: #002144;
+    background: #26A69A;
 }
 .sectionFive {
     padding: 2% 0 2% 0;
@@ -462,8 +469,8 @@ a:hover{
 }
 
 .btn-custom-check.active {
-    background: #286ab6;
-    border: 1px solid #2870a3;
+    background: #00897b;
+    border: 1px solid #00897b;
     color: #ffffff;
 }
 .navbar-brand{
@@ -482,8 +489,40 @@ a:hover{
 #appliedJobsSection{
     text-align: left;
 }
-
+#whoAllPartnerBox{
+    margin: 0px;
+    padding: 2%;
+    box-shadow:0px 0px 2px #b0bec5;
+    background-color: #eeeeee;
+}
+#whoAllPartnerIconBox{
+    border-right: 1px solid #ffffff;
+    padding:1%;
+}
+#partnerHeaderText{
+    display: inline-block;
+    width: auto;
+    text-align: left;
+    border-left:1px solid;
+    align-content: center;
+    margin-top:18%;
+}
 @media screen and (max-width: 768px) {
+    #whoAllPartnerBox{
+        margin-bottom:4%;
+        padding: 2%;
+        box-shadow:0px 0px 2px #b0bec5;
+        background-color: #eeeeee;
+    }
+    h3
+    {
+        font-size: 26px;
+    }
+    #whoAllPartnerIconBox{
+        border-right: 0px;
+        border-bottom: 1px solid #ffffff;
+        padding:4%;
+    }
     #partnerToggleBtn{
         width: 97%;
         display: block;
@@ -517,9 +556,9 @@ a:hover{
     .leadBox {
         position:relative;
         width: 84%;
+        margin-top: 20%;
         margin-right: 8%;
         margin-left: 8%;
-        margin-top: -14%;
     }
     #headerMsg{
         margin-top: 0;
@@ -539,7 +578,13 @@ a:hover{
     }
 
     #partnerHeaderText{
-        margin-top: -48px;
+        display: inline-block;
+        border-left: 0;
+        width: auto;
+        text-align: center;
+        border-right:0px;
+        align-content: center;
+        margin-top:0%;
     }
 
     #login_modal{
@@ -567,8 +612,7 @@ a:hover{
 
     #sectionHeader {
         background-size: 320%;
-        padding-top: 24%;
-        padding-bottom: 18%;
+        text-align: center;
     }
 
     #sectionPartnerHowItWorks{
