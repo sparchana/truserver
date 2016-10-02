@@ -7,6 +7,8 @@ var jobArray = [];
 var jobPostLocality = [];
 var jobPostJobRole = [];
 
+var slotArray = [];
+
 function getLocality() {
     return localityArray;
 }
@@ -287,11 +289,26 @@ $(document).ready(function () {
         console.log("exception occured!!" + exception);
     }
 
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllTimeSlots",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetAllTimeSlots
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+
     var i;
-    var defaultOption = $('<option value=""></option>').text("Select Job start time");
+    var defaultOption = $('<option value="-1"></option>').text("Select Job start time");
     $('#jobPostStartTime').append(defaultOption);
 
-    defaultOption = $('<option value=""></option>').text("Select Job End time");
+    defaultOption = $('<option value="-1"></option>').text("Select Job End time");
     $('#jobPostEndTime').append(defaultOption);
     for(i=0;i<=24;i++){
         var option = document.createElement("option");
@@ -307,6 +324,19 @@ $(document).ready(function () {
     }
     
 });
+
+function processDataGetAllTimeSlots(returnedData) {
+    $('#interviewTimeSlot').html('');
+    returnedData.forEach(function(timeSlot) {
+        var id = timeSlot.interviewTimeSlotId;
+        var name = timeSlot.interviewTimeSlotName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        var option ='<label class="btn btn-custom-check educationBtn"><input type="checkbox" name="interviewTimeSlot" id=\"interviewSlot_' + id + '\" value=\"' + id + '\">' + name + '</label>';
+        $('#interviewTimeSlot').append(option);
+    });
+}
 
 
 function processDataForJobPost(returnedData) {
@@ -446,4 +476,40 @@ function processDataForJobPost(returnedData) {
     if(returnedData.jobPostStatus != null ){
         $("#jobPostStatus").val(returnedData.jobPostStatus.jobStatusId);
     }
+
+    if(Object.keys(returnedData.interviewDetailsList).length > 0){
+        var interviewDetailsList = returnedData.interviewDetailsList;
+        if(interviewDetailsList[0].interviewDays != null){
+            var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
+
+            /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
+            if(interviewDays.length != 7){
+                x = 7 - interviewDays.length;
+                var modifiedInterviewDays = "";
+
+                for(i=0;i<x;i++){
+                    modifiedInterviewDays += "0";
+                }
+                modifiedInterviewDays += interviewDays;
+                interviewDays = modifiedInterviewDays;
+            }
+
+            for(i=1; i<=7; i++){
+                if(interviewDays[i-1] == 1){
+                    $("#interview_day_" + i).prop('checked', true);
+                } else{
+                    $("#interview_day_" + i).prop('checked', false);
+                }
+            }
+        }
+
+        //prefilling time slots
+        interviewDetailsList.forEach(function (timeSlot){
+            var slotBtn = $("#interviewSlot_" + timeSlot.interviewTimeSlot.interviewTimeSlotId);
+            slotBtn.prop('checked', true);
+            slotBtn.parent().addClass('active');
+        });
+    }
+    $("#partnerInterviewIncentive").val(returnedData.jobPostPartnerInterviewIncentive);
+    $("#partnerJoiningIncentive").val(returnedData.jobPostPartnerJoiningIncentive);
 }

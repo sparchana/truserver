@@ -7,11 +7,13 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.Partner;
+import models.entity.Static.InterviewTimeSlot;
 import models.entity.Static.Locality;
 import models.entity.Static.ScreeningStatus;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * Created by batcoder1 on 16/6/16.
@@ -64,6 +66,14 @@ public class JobApplication extends Model {
     @JsonBackReference
     @JoinColumn(name = "partner_id", referencedColumnName = "partner_id")
     private Partner partner;
+
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "InterviewTimeSlot")
+    private InterviewTimeSlot interviewTimeSlot;
+
+    @Column(name = "scheduledInterviewDate", columnDefinition = "date null")
+    private Date scheduledInterviewDate;
 
     public JobApplication() {
         this.jobApplicationCreateTimeStamp = new Timestamp(System.currentTimeMillis());
@@ -153,5 +163,21 @@ public class JobApplication extends Model {
 
     public void setPartner(Partner partner) {
         this.partner = partner;
+    }
+
+    public Date getScheduledInterviewDate() {
+        return scheduledInterviewDate;
+    }
+
+    public void setScheduledInterviewDate(Date scheduledInterviewDate) {
+        this.scheduledInterviewDate = scheduledInterviewDate;
+    }
+
+    public InterviewTimeSlot getInterviewTimeSlot() {
+        return interviewTimeSlot;
+    }
+
+    public void setInterviewTimeSlot(InterviewTimeSlot interviewTimeSlot) {
+        this.interviewTimeSlot = interviewTimeSlot;
     }
 }

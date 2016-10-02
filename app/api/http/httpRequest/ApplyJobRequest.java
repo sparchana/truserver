@@ -2,6 +2,8 @@ package api.http.httpRequest;
 
 import api.http.FormValidator;
 
+import java.util.Date;
+
 /**
  * Created by batcoder1 on 17/6/16.
  */
@@ -10,6 +12,9 @@ public class ApplyJobRequest {
     public Integer jobId;
     public Integer localityId;
     public Boolean isPartner;
+
+    public Integer timeSlot;
+    public Date scheduledInterviewDate;
 
     public String getCandidateMobile() {
         return candidateMobile;
@@ -41,5 +46,21 @@ public class ApplyJobRequest {
 
     public void setPartner(Boolean partner) {
         isPartner = partner;
+    }
+
+    public Integer getTimeSlot() {
+        return timeSlot;
+    }
+
+    public void setTimeSlot(Integer timeSlot) {
+        this.timeSlot = timeSlot;
+    }
+
+    public Date getScheduledInterviewDate() {
+        return scheduledInterviewDate;
+    }
+
+    public void setScheduledInterviewDate(Date scheduledInterviewDate) {
+        this.scheduledInterviewDate = scheduledInterviewDate;
     }
 }
