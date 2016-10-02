@@ -1,10 +1,12 @@
 package controllers.businessLogic.Assessment;
 
 import api.GoogleSheetHttpRequest;
+import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.httpRequest.AssessmentRequest;
 import api.http.httpResponse.AssessmentSubmissionResponse;
 import api.http.httpResponse.CandidateJobPrefs;
+import controllers.businessLogic.InteractionService;
 import models.entity.Candidate;
 import models.entity.OM.CandidateAssessmentAttempt;
 import models.entity.OM.CandidateAssessmentResponse;
@@ -90,6 +92,7 @@ public class AssessmentService {
                         prevJobRoleId = optionList.get(i).getJobRoleId();
                     }
                 }
+
                 if (shouldBeMarkedAsAssessed(getJobPrefVsIsAssessedList(candidate.getCandidateId(), candidate.getJobPreferencesList()))) {
                     candidate.setCandidateIsAssessed(ServerConstants.CANDIDATE_ASSESSED);
                     candidate.candidateUpdate();
@@ -128,6 +131,10 @@ public class AssessmentService {
         /* write response to google sheet */
         writeAssessmentToGoogleSheet(candidate.getCandidateId(), candidate.getCandidateMobile(),
                 candidate.getCandidateFullName(), jobRole.getJobName(), colList, caAttempt.getResult());
+
+        // Save Interaction
+        String interactionResult = "Candidate Attempted Assessment @ "+caAttempt.getJobRole().getJobName();
+        InteractionService.createInteractionForCandidateAssessmentAttempts(candidate.getCandidateUUId(), caAttempt.getAttemptUUID(), InteractionConstants.INTERACTION_TYPE_CANDIDATE_ASSESSMENT_ATTEMPTED, interactionResult);
 
     }
 
