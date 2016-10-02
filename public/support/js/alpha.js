@@ -295,6 +295,27 @@ function saveDeactivationChanges() {
     }
 }
 
+function renderUpdateRelevantJobRoles(data) {
+    if(data != null) {
+        var totalUpdates = data.length;
+        pushToSnackbar("Relevant JobRoles Re-computed and Updated ("+totalUpdates+") Successfully !");
+    } else {
+        pushToSnackbar("Unsuccessful operation. Check Logs !!");
+    }
+}
+
+function updateRelevantJobRoles() {
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/api/compute/updateAllRelevantJobCategories",
+            data: false,
+            success: renderUpdateRelevantJobRoles
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
 
 $(function(){
     $("#btnDeActiveToActive").click(function(){
@@ -306,6 +327,9 @@ $(function(){
     });
     $( "#tabularTab" ).click(function() {
         showDrawerElements();
+    });
+    $( "#updateRelevantJobRoles" ).click(function() {
+        updateRelevantJobRoles();
     });
 
     var dialog = document.querySelector('dialog');

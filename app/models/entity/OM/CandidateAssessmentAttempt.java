@@ -11,6 +11,7 @@ import models.entity.Static.JobRole;
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by zero on 19/9/16.
@@ -50,7 +51,11 @@ public class CandidateAssessmentAttempt extends Model {
     @Column(name = "create_timeStamp", columnDefinition = "timestamp not null default current_timestamp")
     private Timestamp createTimeStamp;
 
+    @Column(name = "ca_attempt_uuid", columnDefinition = "varchar(255) not null default uuid()", nullable = false, unique = true)
+    private String attemptUUID;
+
     public CandidateAssessmentAttempt(){
+        this.attemptUUID = UUID.randomUUID().toString();
         this.createTimeStamp = new Timestamp(System.currentTimeMillis());
     }
 
@@ -106,5 +111,13 @@ public class CandidateAssessmentAttempt extends Model {
 
     public void setCreateTimeStamp(Timestamp createTimeStamp) {
         this.createTimeStamp = createTimeStamp;
+    }
+
+    public String getAttemptUUID() {
+        return attemptUUID;
+    }
+
+    public void setAttemptUUID(String attemptUUID) {
+        this.attemptUUID = attemptUUID;
     }
 }

@@ -2,19 +2,14 @@ package Service;
 
 import api.ServerConstants;
 import common.TestConstants;
-import controllers.businessLogic.AddressResolveService;
 import controllers.businessLogic.JobSearchService;
 import in.trujobs.proto.JobFilterRequest;
 import models.entity.JobPost;
-import models.entity.Static.Locality;
-import models.util.LatLng;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import play.Application;
-import play.Logger;
 import play.test.TestServer;
 
 import java.text.DecimalFormat;
@@ -22,14 +17,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static play.libs.Json.toJson;
 import static play.test.Helpers.*;
 
 /**
- * Created by zero on 25/8/16.
+ * Created by archana on 25/8/16.
  *
- * prod/activator-1.3.9-minimal/bin/activator "test-only Service.AddressResolverServiceTest"
+ * prod/activator-1.3.9-minimal/bin/activator "test-only Service.JobSearchServiceTest"
  */
 
 @RunWith(Parameterized.class)
@@ -164,10 +157,10 @@ public class JobSearchServiceTest {
 
     @Test
     public void testGetRelevantJobPostsWithinDistance() {
-        Application fakeApp = fakeApplication();
-        TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
-        running(server, () -> {
-            if(type == MethodType.getRelevantJobPostsWithinDistance){
+        if(type == MethodType.getRelevantJobPostsWithinDistance){
+            Application fakeApp = fakeApplication();
+            TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
+            running(server, () -> {
                 List<JobPost> results =
                         jobSearchService.getRelevantJobPostsWithinDistance(latitude, longitude,
                                 jobRoleIds, filterParams.build(), sortBy, isHot, isAllSources);
@@ -178,18 +171,18 @@ public class JobSearchServiceTest {
                 for (JobPost jp : results) {
                     System.out.println("Result Entry:" + jp.toString());
                 }
-            }
-        });
+            });
 
-        System.out.println("END OF TEST");
+            System.out.println("END OF TEST");
+        }
     }
 
     @Test
     public void testGetExactJobPostsWithinDistance() {
-        Application fakeApp = fakeApplication();
-        TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
-        running(server, () -> {
-            if(type == MethodType.getExactJobPostsWithinDistance){
+        if(type == MethodType.getExactJobPostsWithinDistance){
+            Application fakeApp = fakeApplication();
+            TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
+            running(server, () -> {
                 List<JobPost> results =
                         jobSearchService.getExactJobPostsWithinDistance(latitude, longitude,
                                 jobRoleIds, filterParams.build(), sortBy, isHot, isAllSources);
@@ -200,10 +193,10 @@ public class JobSearchServiceTest {
                 for (JobPost jp : results) {
                     System.out.println("Result Entry:" + jp.toString());
                 }
-            }
-        });
+            });
 
-        System.out.println("END OF TEST");
+            System.out.println("END OF TEST");
+        }
     }
 
 
