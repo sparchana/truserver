@@ -139,14 +139,12 @@ option:checked {
 }
 #sectionPartnerHowItWorks{
     background-color: #e0f2f1;
-    font-weight: bold;
     color: #402005;
     padding: 2% 0 2% 0;
     text-align: center;
     margin-top: -2%;
 }
 #sectionPartnerEligibility{
-    font-weight: bold;
     color: #402005;
     text-align: center;
     margin-bottom: 8%;
@@ -223,6 +221,12 @@ option:checked {
     background-color: #00897B;
     border-color: #00897B;
     cursor: default;
+}
+
+.materialDash{
+    height: 2px;
+    width: 72px;
+    background: #26A69A;
 }
 
 #forBtn{
@@ -630,7 +634,6 @@ a:hover{
     }
 
     #sectionPartnerHowItWorks{
-        font-weight: bold;
         color: #402005;
         padding: 2% 4% 2% 4%;
         text-align: center;
@@ -638,7 +641,6 @@ a:hover{
     }
 
     #sectionPartnerEligibility{
-        font-weight: bold;
         color: #402005;
         padding: 2% 4% 2% 4%;
         text-align: center;

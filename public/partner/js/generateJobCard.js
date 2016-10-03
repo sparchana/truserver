@@ -28,11 +28,6 @@ $(document).ready(function(){
     popularJobsSection = true;
     $("#appliedJobsSection").hide();
 
-    if(w < 640){
-        $(".candidatePartner").removeClass("row-eq-height");
-    } else{
-        $(".candidatePartner").removeClass("row-eq-height").addClass("row-eq-height");
-    }
     try {
         $.ajax({
             url: "/getCandidateMatchingJobs/" + localStorage.getItem("candidateId"),
@@ -47,6 +42,8 @@ $(document).ready(function(){
     if(localStorage.getItem("appliedJobs") == '1'){
         $("#appliedJobsSection").show();
         $("#applyJobs").hide();
+        $(".viewPopularJobs").removeClass("white").addClass("white");
+        $(".viewAppliedJobs").removeClass("white");
         localStorage.setItem("appliedJobs", "0");
     }
 });
@@ -454,22 +451,17 @@ function processDataAllJobPosts(returnedData) {
 
                 var infoBtn = document.createElement("div");
                 infoBtn.className = "jobInfoBtn";
+                infoBtn.textContent = "Job info";
                 infoBtn.id = "info_btn_" + jobPost.jobPostId;
                 applyBtnDiv.appendChild(infoBtn);
                 infoBtn.onclick = function () {
                     $("#job_detail_view_" + jobPost.jobPostId).slideToggle(300);
+                    if($(this).text() == 'Hide Info'){
+                        $(this).text('Job Info');
+                    } else {
+                        $(this).text('Hide Info');
+                    }
                 };
-
-                var infoIcon = document.createElement("img");
-                infoIcon.src = "/assets/common/img/info_icon.svg";
-                infoIcon.setAttribute('height', '16px');
-                infoIcon.style = "margin-top: -4px; display : inline-block";
-                infoBtn.appendChild(infoIcon);
-
-                var infoText = document.createElement("div");
-                infoText.textContent = "Job info";
-                infoText.style = "margin-top: -4px; margin-left: 4px; display : inline-block";
-                infoBtn.appendChild(infoText);
 
                 // job post info view
                 var jobDetailDiv = document.createElement("div");

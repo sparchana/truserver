@@ -49,6 +49,12 @@ body{
     background:rgba(0,0,0,0.55);
 }
 
+.materialDash{
+    height: 2px;
+    width: 72px;
+    background: #26A69A;
+}
+
 .materialDot{
     height: 6px;
     width: 6px;
@@ -358,6 +364,23 @@ div.inblockDiv{
     width: 120px;
     display: inline-block;
     margin-top: 2%;
+
+    -webkit-transition: background 0.4s;
+    -moz-transition:    background 0.4s;
+    -ms-transition:     background 0.4s;
+    -o-transition:      background 0.4s;
+    transition:         background 0.4s;
+}
+
+.jobInfoBtn:hover {
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.03);
+
+    -webkit-transition: background 0.4s;
+    -moz-transition:    background 0.4s;
+    -ms-transition:     background 0.4s;
+    -o-transition:      background 0.4s;
+    transition:         background 0.4s;
 }
 
 .jobDetailCardView{
@@ -367,13 +390,18 @@ div.inblockDiv{
     display: none;
     border-left: 2px rgba(46, 131, 213, 0.6) solid;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.1);
-    transition: opacity 0.5s ease-in-out;
 }
 
 .jobApplyBtn:hover{
     cursor: pointer;
     background: #028d38;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
+
+    -webkit-transition: background 0.8s;
+    -moz-transition:    background 0.8s;
+    -ms-transition:     background 0.8s;
+    -o-transition:      background 0.8s;
+    transition:         background 0.8s;
 }
 
 .jobApplyBtnModal{
@@ -484,7 +512,7 @@ hr{
 
 .candidateCard{
     padding: 2%;
-    background: #286ab6;
+    background: #26A69A;
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.1);
 }
 
