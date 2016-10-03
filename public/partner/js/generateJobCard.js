@@ -219,6 +219,7 @@ function processDataAllJobPosts(returnedData) {
 
                 var rowDiv = document.createElement("div");
                 rowDiv.className = "row";
+                rowDiv.style = "margin: 0; padding: 0";
                 centreTag.appendChild(rowDiv);
 
                 var col = document.createElement("div");
@@ -468,6 +469,7 @@ function processDataAllJobPosts(returnedData) {
 
                 var jobDetailHeading = document.createElement("h4");
                 jobDetailHeading.textContent = "Job Details";
+                jobDetailHeading.style = "font-weight: 600";
                 jobDetailDiv.appendChild(jobDetailHeading);
 
                 var jobDetailBody = document.createElement("div");
@@ -724,6 +726,7 @@ function processDataAllJobPosts(returnedData) {
                 //company details
                 var companyDetailHeading = document.createElement("h4");
                 companyDetailHeading.textContent = "Company Details";
+                companyDetailHeading.style = "font-weight: 600";
                 jobDetailDiv.appendChild(companyDetailHeading);
 
                 var companyDetailBody = document.createElement("div");
