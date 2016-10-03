@@ -1016,6 +1016,13 @@ public class CandidateService
                     loginResponse.setLeadId(existingCandidate.getLead().getLeadId());
                     loginResponse.setCandidateJobPrefStatus(0);
                     loginResponse.setCandidateHomeLocalityStatus(0);
+                    loginResponse.setGender(0);
+                    if(existingCandidate.getCandidateGender() != null){
+                        if(existingCandidate.getCandidateGender() == 1){
+                            loginResponse.setGender(1);
+                        }
+                    }
+
 
                     /* START : to cater specifically the app need */
                     if(existingCandidate.getCandidateLocalityLat() != null

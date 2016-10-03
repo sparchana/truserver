@@ -216,7 +216,7 @@ public class Application extends Controller {
 
     public static Result addPassword() {
         JsonNode req = request().body().asJson();
-        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; save password api json");
         CandidateSignUpRequest candidateSignUpRequest = new CandidateSignUpRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -306,7 +306,7 @@ public class Application extends Controller {
 
     public static Result loginSubmit() {
         JsonNode req = request().body().asJson();
-        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Login api json ");
         LoginRequest loginRequest = new LoginRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -1206,7 +1206,6 @@ public class Application extends Controller {
     public static Result renderPageNavBarLoggedIn() {
         return ok(views.html.Fragment.nav_bar_logged_in.render());
     }
-    public static Result renderGAScript() { return ok(views.html.Fragment.script.render()); }
     public static Result renderPageFooter() {
         return ok(views.html.Fragment.footer.render());}
 
@@ -1399,6 +1398,20 @@ public class Application extends Controller {
             }
         }
         return ok("NA");
+    }
+
+    public static Result getRelevantJobsPostsForCandidate(long id) {
+        Candidate existingCandidate = Candidate.find.where().eq("candidateId", id).findUnique();
+        if (existingCandidate != null) {
+            return ok(toJson(JobSearchService.getRelevantJobsPostsForCandidate(FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()))));
+        }
+        return ok("ok");
+    }
+
+    @Security.Authenticated(RecSecured.class)
+    public static Result getAllTimeSlots(){
+        List<InterviewTimeSlot> interviewTimeSlotList = InterviewTimeSlot.find.findList();
+        return ok(toJson(interviewTimeSlotList));
     }
 
     @Security.Authenticated(SuperAdminSecured.class)

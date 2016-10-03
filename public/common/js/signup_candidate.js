@@ -39,6 +39,7 @@ function processDataSignUpSubmit(returnedData) {
 function processDataAddAuth(returnedData) {
     if(returnedData.status == 1) {
         // Store
+        localStorage.setItem("gender", returnedData.gender);
         localStorage.setItem("mobile", "+91" + candidateMobile);
         localStorage.setItem("name", returnedData.candidateFirstName);
         localStorage.setItem("lastName", returnedData.candidateLastName);

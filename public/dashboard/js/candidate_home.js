@@ -7,6 +7,7 @@ var jobLocalityArray = [];
 var minProfileComplete = 0;
 var prefLocation;
 var prefLocationName;
+var candidateId = 0;
 
 $(window).load(function() {
     $('html, body').css({
@@ -20,20 +21,7 @@ $(window).load(function() {
 
 $(document).ready(function(){
     checkUserLogin();
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getAllHotJobPosts",
-            data: false,
-            async: true,
-            contentType: false,
-            processData: false,
-            success: processDataAllJobPosts
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
 
-    }
     if(localStorage.getItem("assessed") == '0'){
         $(".assessmentComplete").hide();
         $(".assessmentIncomplete").show();
@@ -59,12 +47,31 @@ $(document).ready(function(){
     }
 });
 
+function getJobsForCandidate() {
+
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getRelevantJobsPostsForCandidate/" + candidateId,
+            data: false,
+            async: true,
+            contentType: false,
+            processData: false,
+            success: processDataAllJobPosts
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+
+    }
+
+}
+
 function processDataAllJobPosts(returnedData) {
     var jobPostCount = Object.keys(returnedData).length;
     if(jobPostCount > 0){
         var count = 0;
         var parent = $("#hotJobs");
-        returnedData.reverse();
+
         $("#jobLoaderDiv").hide();
         returnedData.forEach(function (jobPost){
             count++;
@@ -293,6 +300,8 @@ $(function() {
 });
 
 function processDataAndFillMinProfile(returnedData) {
+
+    candidateId = returnedData.candidateId;
     if(returnedData.candidateLastName == "" || returnedData.candidateLastName == null){
         document.getElementById("userName").innerHTML = returnedData.candidateFirstName;
     } else{
@@ -443,5 +452,7 @@ function processDataAndFillMinProfile(returnedData) {
         $("#apply_btn_" + jobApplication.jobPost.jobPostId).addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
         $("#applyBtnDiv_" + jobApplication.jobPost.jobPostId).prop('disabled',true);
     });
+
+    getJobsForCandidate();
 
 }

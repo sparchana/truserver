@@ -150,7 +150,7 @@ public class PartnerController {
 
     @Security.Authenticated(SecuredUser.class)
     public static Result partnerEditProfile() {
-        return ok(views.html.Partner.partner_edit_proifile.render());
+        return ok(views.html.Partner.partner_edit_profile.render());
     }
 
     @Security.Authenticated(SecuredUser.class)
@@ -359,6 +359,7 @@ public class PartnerController {
                 List<JobApplication> jobApplicationList = JobApplication.find.where()
                         .eq("candidateId", candidate.getCandidateId())
                         .eq("partner_id", partner.getPartnerId())
+                        .orderBy("jobApplicationCreateTimeStamp desc")
                         .findList();
                 return ok(toJson(jobApplicationList));
             }

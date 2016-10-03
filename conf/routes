@@ -49,7 +49,9 @@ POST        /getAllExperience                                             contro
 POST        /getAllJobStatus                                              controllers.Application.getAllJobStatus()
 POST        /getAllJobExpQuestion                                         controllers.Application.getAllJobExpQuestion()
 POST        /getAllPricingPlans                                           controllers.Application.getAllPricingPlans()
+POST        /getAllTimeSlots                                              controllers.Application.getAllTimeSlots()
 POST        /getJobExpQuestion/:jobRoleIdList                             controllers.Application.getJobExpQuestion(jobRoleIdList : String)
+POST        /getRelevantJobsPostsForCandidate/:id                         controllers.Application.getRelevantJobsPostsForCandidate(id : Long)
 POST        /getSearchCandidateResult                                     controllers.Application.getSearchCandidateResult()
 POST        /processCsv                                                   controllers.Application.processcsv()
 POST        /signUpSupport                                                controllers.Application.signUpSupport()
@@ -117,7 +119,6 @@ POST        /checkPartnerCandidate/:id                                    contro
 #~~~~~~~~~~~~~~~~~~~~
 GET         /navBar                                                       controllers.Application.renderPageNavBar()
 GET         /navBarLoggedIn                                               controllers.Application.renderPageNavBarLoggedIn()
-GET         /scriptContainer                                              controllers.Application.renderGAScript()
 GET         /footer                                                       controllers.Application.renderPageFooter()
 GET         /jobPostCardView                                              controllers.Application.renderJobPostCards()
 GET         /showJobs                                                     controllers.Application.renderShowAllJobs()

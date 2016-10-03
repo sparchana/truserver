@@ -9,6 +9,7 @@ import api.GoogleSheetHttpRequest;
 import api.http.httpResponse.AddJobPostResponse;
 import api.http.httpResponse.ApplyJobResponse;
 import com.amazonaws.util.json.JSONException;
+import com.avaje.ebean.Model;
 import models.entity.*;
 import models.entity.OM.*;
 import models.entity.Static.*;
@@ -22,6 +23,7 @@ import java.sql.Timestamp;
 import java.util.*;
 
 import static play.mvc.Controller.session;
+import static play.mvc.Http.Context.current;
 
 /**
  * Created by batcoder1 on 17/6/16.
@@ -36,6 +38,8 @@ public class JobService {
             Logger.info("Job post does not exists. Creating a new job Post");
             JobPost newJobPost = new JobPost();
             newJobPost = getAndSetJobPostValues(addJobPostRequest, newJobPost, jobPostLocalityList);
+
+            createInterviewDetails(addJobPostRequest, newJobPost);
             newJobPost.save();
             addJobPostResponse.setJobPost(newJobPost);
             addJobPostResponse.setStatus(AddJobPostResponse.STATUS_SUCCESS);
@@ -43,6 +47,8 @@ public class JobService {
         } else{
             Logger.info("Job post already exists. Updating existing job Post");
             existingJobPost = getAndSetJobPostValues(addJobPostRequest, existingJobPost, jobPostLocalityList);
+            resetInterviewDetails(addJobPostRequest, existingJobPost);
+            createInterviewDetails(addJobPostRequest, existingJobPost);
             existingJobPost.update();
             addJobPostResponse.setJobPost(existingJobPost);
             addJobPostResponse.setStatus(AddJobPostResponse.STATUS_UPDATE_SUCCESS);
@@ -54,6 +60,43 @@ public class JobService {
             addJobPostResponse.setFormUrl(ServerConstants.DEV_GOOGLE_FORM_FOR_JOB_POSTS);
         }
         return addJobPostResponse;
+    }
+
+    private static void resetInterviewDetails(AddJobPostRequest addJobPostRequest, JobPost existingJobPost) {
+        List<InterviewDetails> interviewDetailList = InterviewDetails.find.where().eq("jobPost.jobPostId", addJobPostRequest.getJobPostId()).findList();
+        if(interviewDetailList.size() > 0) {
+            interviewDetailList.forEach(Model::delete);
+        }
+    }
+
+    private static void createInterviewDetails(AddJobPostRequest addJobPostRequest, JobPost jobPost){
+        List<Integer> interviewSlots = addJobPostRequest.getInterviewTimeSlot();
+        if(interviewSlots != null){
+            Boolean flag = false;
+            String interviewDays = addJobPostRequest.getJobPostInterviewDays();
+            for(int i = 0; i<interviewDays.length(); i++){
+                if(interviewDays.charAt(i) == '1'){
+                    flag = true;
+                    break;
+                }
+            }
+            //create multiple entries in interview details table
+            for(Integer slot: interviewSlots){
+                InterviewDetails interviewDetails = new InterviewDetails();
+                interviewDetails.setJobPost(jobPost);
+                InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", slot).findUnique();
+                if(interviewTimeSlot != null){
+                    interviewDetails.setInterviewTimeSlot(interviewTimeSlot);
+                }
+                if(flag){
+                    Byte interviewDaysByte = Byte.parseByte(addJobPostRequest.getJobPostInterviewDays(), 2);
+                    interviewDetails.setInterviewDays(interviewDaysByte);
+                }
+                interviewDetails.save();
+            }
+            Logger.info("Interview details saved");
+        }
+
     }
 
     public static JobPost getAndSetJobPostValues(AddJobPostRequest addJobPostRequest, JobPost newJobPost, List<Integer> jobPostLocalityList) {
@@ -72,7 +115,8 @@ public class JobService {
         newJobPost.setJobPostVacancies(addJobPostRequest.getJobPostVacancies());
         newJobPost.setJobPostDescriptionAudio(addJobPostRequest.getJobPostDescriptionAudio());
         newJobPost.setJobPostWorkFromHome(addJobPostRequest.getJobPostWorkFromHome());
-
+        newJobPost.setJobPostPartnerInterviewIncentive(addJobPostRequest.getPartnerInterviewIncentive());
+        newJobPost.setJobPostPartnerJoiningIncentive(addJobPostRequest.getPartnerJoiningIncentive());
         if (addJobPostRequest.getJobPostWorkingDays() != null) {
             Byte workingDayByte = Byte.parseByte(addJobPostRequest.getJobPostWorkingDays(), 2);
             newJobPost.setJobPostWorkingDays(workingDayByte);
@@ -139,6 +183,18 @@ public class JobService {
                         // this job is being applied by a partner for a candidate, hence we need to det partner Id in the job Application table
                         partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
                         if(partner != null){
+                            //setting time slot
+                            if(applyJobRequest.getTimeSlot() != null){
+                                InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", applyJobRequest.getTimeSlot()).findUnique();
+                                if(interviewTimeSlot != null){
+                                    jobApplication.setInterviewTimeSlot(interviewTimeSlot);
+                                }
+                            }
+                            //setting scheduled interview date
+                            if(applyJobRequest.getScheduledInterviewDate() != null){
+                                jobApplication.setScheduledInterviewDate(applyJobRequest.getScheduledInterviewDate());
+                            }
+                            //setting partner
                             jobApplication.setPartner(partner);
                             SmsUtil.sendJobApplicationSmsViaPartner(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), existingCandidate.getCandidateMobile(), jobApplication.getLocality().getLocalityName(), partner.getPartnerFirstName());
                             SmsUtil.sendJobApplicationSmsToPartner(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), partner.getPartnerMobile(), jobApplication.getLocality().getLocalityName(), partner.getPartnerFirstName());
@@ -149,7 +205,7 @@ public class JobService {
                     }
 
                     jobApplication.save();
-                    writeJobApplicationToGoogleSheet(existingJobPost.getJobPostId(), applyJobRequest.getCandidateMobile(), channelType, applyJobRequest.getLocalityId(), partner);
+                    writeJobApplicationToGoogleSheet(existingJobPost.getJobPostId(), applyJobRequest.getCandidateMobile(), channelType, applyJobRequest.getLocalityId(), partner, applyJobRequest);
 
                     if (channelType == InteractionService.InteractionChannelType.SELF) {
                         // job application coming from website
@@ -181,7 +237,7 @@ public class JobService {
         return applyJobResponse;
     }
 
-    public static void writeJobApplicationToGoogleSheet(Long jobPostId, String candidateMobile, InteractionService.InteractionChannelType channelType, Integer localityId, Partner partner) throws UnsupportedEncodingException {
+    public static void writeJobApplicationToGoogleSheet(Long jobPostId, String candidateMobile, InteractionService.InteractionChannelType channelType, Integer localityId, Partner partner, ApplyJobRequest applyJobRequest) throws UnsupportedEncodingException {
         String jobIdVal = "-";
         String companyNameVal = "-";
         String jobPostNameVal = "-";
@@ -210,6 +266,8 @@ public class JobService {
         String partnerNameVal = "";
         String partnerMobileVal = "";
         String partnerIdVal = "";
+        String interviewDateVal = "";
+        String interviewTimeVal = "";
         int sheetId = ServerConstants.SHEET_MAIN;
 
         if(channelType == InteractionService.InteractionChannelType.SELF_ANDROID){
@@ -371,6 +429,22 @@ public class JobService {
             partnerNameVal = partner.getPartnerFirstName();
             partnerMobileVal = partner.getPartnerMobile();
             partnerIdVal = String.valueOf(partner.getPartnerId());
+
+            if(applyJobRequest.getScheduledInterviewDate() != null){
+                Date scheduledInterviewDate = new Date(applyJobRequest.getScheduledInterviewDate().getTime());
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(scheduledInterviewDate);
+                int year = cal.get(Calendar.YEAR);
+                int month = cal.get(Calendar.MONTH);
+                int day = cal.get(Calendar.DAY_OF_MONTH);
+                interviewDateVal = day + "/" + month + "/" +year;
+            }
+            if(applyJobRequest.getTimeSlot() != null){
+                InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", applyJobRequest.getTimeSlot()).findUnique();
+                if(interviewTimeSlot != null){
+                    interviewTimeVal = interviewTimeSlot.getInterviewTimeSlotName();
+                }
+            }
         }
 
         /*
@@ -406,7 +480,8 @@ public class JobService {
         String partnerNameKey = "entry.1066838351";
         String partnerIdKey = "entry.34374237";
         String partnerMobileKey = "entry.483855268";
-
+        String interviewDateKey = "entry.1055797412";
+        String interviewTime = "entry.414736621";
 
         String url;
         if(!Play.isDev(Play.current())){
@@ -447,7 +522,9 @@ public class JobService {
                 + jobIsHotKey + "=" + URLEncoder.encode(jobIsHotVal,"UTF-8") + "&"
                 + partnerNameKey + "=" + URLEncoder.encode(partnerNameVal,"UTF-8") + "&"
                 + partnerIdKey + "=" + URLEncoder.encode(partnerIdVal,"UTF-8") + "&"
-                + partnerMobileKey + "=" + URLEncoder.encode(partnerMobileVal,"UTF-8");
+                + partnerMobileKey + "=" + URLEncoder.encode(partnerMobileVal,"UTF-8") + "&"
+                + interviewDateKey + "=" + URLEncoder.encode(interviewDateVal,"UTF-8") + "&"
+                + interviewTime + "=" + URLEncoder.encode(interviewTimeVal,"UTF-8");
 
                 try {
                     GoogleSheetHttpRequest googleSheetHttpRequest = new GoogleSheetHttpRequest();

@@ -108,7 +108,7 @@ public class JobRelevancyEngine {
         // iterate on all job roles available in static table
         for (Long jobRoleId : jobRoleIds) {
 
-
+            
             // check if we have a map for this job role already that counts related job role entries
             TreeMap<Long, Double> relatedJobrolesToCount = jobRoleToRelatedJobRolesByCount.get(jobRoleId);
 
