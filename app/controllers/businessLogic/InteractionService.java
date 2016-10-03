@@ -378,4 +378,22 @@ public class InteractionService {
         );
         InteractionService.createInteraction(interaction);
     }
+
+    public static void createInteractionForCandidateAssessmentAttempts( String objAuuId, String objBuuId,
+                                                                        Integer interactionType, String interactionResult)
+    {
+        Interaction interaction = new Interaction(
+                objAuuId,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                objBuuId,
+                ServerConstants.OBJECT_TYPE_ASSESSMENT_ATTEMPT,
+                interactionType,
+                null,
+                interactionResult,
+                INTERACTION_CREATED_SELF,
+                INTERACTION_CHANNEL_CANDIDATE_WEBSITE
+        );
+        InteractionService.createInteraction(interaction);
+
+    }
 }

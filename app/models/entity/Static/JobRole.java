@@ -3,6 +3,8 @@ package models.entity.Static;
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.CacheStrategy;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import models.entity.Intelligence.RelatedJobRole;
 import models.entity.OM.JobHistory;
 import models.entity.OM.JobPreference;
 import models.entity.OM.JobToSkill;

@@ -49,8 +49,33 @@ body{
     background:rgba(0,0,0,0.55);
 }
 
+.materialDot{
+    height: 6px;
+    width: 6px;
+    border-radius: 100%;
+    background: #2980b9;
+}
+
+.incentiveEmptyBody{
+    font-size: 12px;
+    border-radius: 4px;
+    padding: 4px 8px 4px 8px;
+    background: transparent;
+    color: #000;
+}
+
+.incentiveBody{
+    margin-left: 4px;
+    font-size: 14px;
+    border-radius: 4px;
+    padding: 4px 8px 4px 8px;
+    background: rgb(82, 178, 31);
+    font-weight: 600;
+    color: #fff;
+}
+
 #jobLogo{
-    margin-top: 14%;
+    margin-top: 12%;
 }
 
 .fade-background {
@@ -82,7 +107,7 @@ body{
 
 #profileTitle{
     width: 100%;
-    color: #286ab6;
+    color: #26A69A;
     padding: 16px;
     border-left: 3px solid #ffaf00;
     background-color: #f8f8f8;
@@ -90,7 +115,7 @@ body{
 
 #profileTitleEditProfile {
     width: 100%;
-    color: #286ab6;
+    color: #26A69A;
     padding: 16px;
     border-left: 3px solid #ffaf00;
     background-color: #f8f8f8;
@@ -315,10 +340,10 @@ div.inblockDiv{
 .jobApplyBtn{
     border: none;
     color: white;
-    margin-top: 16%;
     background: #09ac58;
     padding: 6%;
     width: 120px;
+    margin-top: 12%;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.16);
 }
 

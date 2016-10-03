@@ -59,6 +59,7 @@ public class ServerConstants {
     public static final int OBJECT_TYPE_JOB_POST= 6;
     public static final int OBJECT_TYPE_JOB_POST_VIEW= 7;
     public static final int OBJECT_TYPE_PARTNER= 8;
+    public static final int OBJECT_TYPE_ASSESSMENT_ATTEMPT= 9;
 
 
     public static final boolean FOLLOW_UP_DEACTIVATE = false;
@@ -94,7 +95,7 @@ public class ServerConstants {
     public static final String SDF_FORMAT_YYYYMMDD = "yyyy-MM-dd";
 
     public static final String PROD_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/1NIGQC5jmSDuQaGUF0Jw1UG-Dz_3huFtZf9Bo7ncPl4g/formResponse";
-    public static final String DEV_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/e/1FAIpQLSeEX9eWKCq-kByKdhgVbSU7jflD19pMXkua_7XcsBXlwpwvmA/formResponse";
+    public static final String DEV_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/e/1FAIpQLSdyYKeNROcs8sPAxpQ6PqT7Xd_V8vetjk2HNFYoakPjjX_z5Q/formResponse";
     public static final String PROD_GOOGLE_FORM_FOR_SCRAPPED_JOB_APPLICATION = "https://docs.google.com/a/trujobs.in/forms/d/e/1FAIpQLSdrf0MhV6g9sVBtsCOm5hCGfgFgZ_hdaqAT6EAlf1FnOsslnw/formResponse";
 
     public static final String PROD_GOOGLE_FORM_FOR_JOB_POSTS = "https://docs.google.com/forms/d/1QVHzqnts0IkD3Wk8in4urqb70BseI9YWZm9B_MgGXUE/formResponse";

@@ -12,6 +12,7 @@ import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import controllers.AnalyticsLogic.JobRelevancyEngine;
 import controllers.businessLogic.*;
 import controllers.businessLogic.Assessment.AssessmentService;
 import controllers.security.*;
@@ -1400,9 +1401,20 @@ public class Application extends Controller {
 
     public static Result getRelevantJobsPostsForCandidate(long id) {
         Candidate existingCandidate = Candidate.find.where().eq("candidateId", id).findUnique();
-        if(existingCandidate != null){
+        if (existingCandidate != null) {
             return ok(toJson(JobSearchService.getRelevantJobsPostsForCandidate(FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()))));
         }
         return ok("ok");
+    }
+
+    @Security.Authenticated(RecSecured.class)
+    public static Result getAllTimeSlots(){
+        List<InterviewTimeSlot> interviewTimeSlotList = InterviewTimeSlot.find.findList();
+        return ok(toJson(interviewTimeSlotList));
+    }
+
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result updateAllRelevantJobCategories() {
+        return ok(toJson(JobRelevancyEngine.updateAllRelevantJobCategories()));
     }
 }

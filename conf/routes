@@ -49,6 +49,7 @@ POST        /getAllExperience                                             contro
 POST        /getAllJobStatus                                              controllers.Application.getAllJobStatus()
 POST        /getAllJobExpQuestion                                         controllers.Application.getAllJobExpQuestion()
 POST        /getAllPricingPlans                                           controllers.Application.getAllPricingPlans()
+POST        /getAllTimeSlots                                              controllers.Application.getAllTimeSlots()
 POST        /getJobExpQuestion/:jobRoleIdList                             controllers.Application.getJobExpQuestion(jobRoleIdList : String)
 POST        /getRelevantJobsPostsForCandidate/:id                         controllers.Application.getRelevantJobsPostsForCandidate(id : Long)
 POST        /getSearchCandidateResult                                     controllers.Application.getSearchCandidateResult()
@@ -204,6 +205,9 @@ POST        /api/getDeactivatedCandidateList                              contro
 ## 'U' of CRUD - API
 ## ---------------
 POST        /api/deactiveToActive                                         controllers.Application.deactiveToActive()
+
+## Compute API
+GET         /api/compute/updateAllRelevantJobCategories                    controllers.Application.updateAllRelevantJobCategories()
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /robots.txt                                                   controllers.Assets.at(path="/public", file="robots.txt")
