@@ -51,6 +51,7 @@ POST        /getAllJobExpQuestion                                         contro
 POST        /getAllPricingPlans                                           controllers.Application.getAllPricingPlans()
 POST        /getAllTimeSlots                                              controllers.Application.getAllTimeSlots()
 POST        /getJobExpQuestion/:jobRoleIdList                             controllers.Application.getJobExpQuestion(jobRoleIdList : String)
+POST        /getRelevantJobsPostsForCandidate/:id                         controllers.Application.getRelevantJobsPostsForCandidate(id : Long)
 POST        /getSearchCandidateResult                                     controllers.Application.getSearchCandidateResult()
 POST        /processCsv                                                   controllers.Application.processcsv()
 POST        /signUpSupport                                                controllers.Application.signUpSupport()

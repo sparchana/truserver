@@ -208,10 +208,17 @@ $(function() {
             alert("Please select interview days");
             status = 0;
         }
+        
         //checking partner incentives
-        if(partnerJoiningIncentiveVal < partnerInterviewIncentiveVal){
-            console.log("here");
-            alert("partner interview salary cannot be greater than partner joining salary");
+        if (partnerInterviewIncentiveVal < 0) {
+            alert("Partner interview incentive cannot be negative");
+            status = 0;
+        }
+        else if (partnerJoiningIncentiveVal < 0) {
+            alert("Partner joining incentive cannot be negative");
+            status = 0;
+        } else if (partnerJoiningIncentiveVal < partnerInterviewIncentiveVal){
+            alert("Partner interview incentive cannot be greater than partner joining incentive");
             status = 0;
         }
 

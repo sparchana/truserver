@@ -1399,6 +1399,14 @@ public class Application extends Controller {
         return ok("NA");
     }
 
+    public static Result getRelevantJobsPostsForCandidate(long id) {
+        Candidate existingCandidate = Candidate.find.where().eq("candidateId", id).findUnique();
+        if (existingCandidate != null) {
+            return ok(toJson(JobSearchService.getRelevantJobsPostsForCandidate(FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()))));
+        }
+        return ok("ok");
+    }
+
     @Security.Authenticated(RecSecured.class)
     public static Result getAllTimeSlots(){
         List<InterviewTimeSlot> interviewTimeSlotList = InterviewTimeSlot.find.findList();
