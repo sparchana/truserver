@@ -250,16 +250,22 @@ public class JobSearchService {
 
             List<JobPost> exactJobRoleJobs = queryAndReturnJobPosts(jobRoleIds, null, null, false, ServerConstants.SOURCE_INTERNAL);
 
-            //getting all jobroles excluding candidate's job role preference
+            List<Long> relevantJobRoleIds = JobRelevancyEngine.getRelatedJobRoleIds(jobRoleIds);
+
+            List<JobPost> relevantJobRoleJobs = queryAndReturnJobPosts(relevantJobRoleIds, null, null, false, ServerConstants.SOURCE_INTERNAL);
+
+            //getting all jobroles excluding candidate's job role preference & relevant job roles
             List<JobRole> jobRoleList = JobRole.find.where()
                     .notIn("jobRoleId", jobRoleIds)
+                    .notIn("jobRoleId", relevantJobRoleIds)
                     .findList();
 
             List<Long> otherJobRoleList = jobRoleList.stream().map(JobRole::getJobRoleId).collect(Collectors.toList());
 
-            //getting all the internal jobs apart form candidate's job role pref
+            //getting all the internal jobs apart form candidate's job role pref & relevant job roles
             List<JobPost> otherJobRoleJobs = queryAndReturnJobPosts(otherJobRoleList, null, null, false, ServerConstants.SOURCE_INTERNAL);
 
+            exactJobRoleJobs.addAll(relevantJobRoleJobs);
             exactJobRoleJobs.addAll(otherJobRoleJobs);
 
             return exactJobRoleJobs;
