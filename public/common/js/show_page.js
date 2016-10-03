@@ -552,7 +552,7 @@ function processDataForSelectedJobPost(returnedData) {
                                 } catch (exception) {
                                     console.log("exception occured!!" + exception.stack);
                                 }
-                            }
+                            };
                             if(jobPost.source == 0){
                                 popularJobCount++;
                             }
