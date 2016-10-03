@@ -58,7 +58,7 @@ body{
 
 .incentiveEmptyBody{
     font-size: 12px;
-    border-radius: 4px;
+    border-radius: 2px;
     padding: 4px 8px 4px 8px;
     background: transparent;
     color: #000;
@@ -69,7 +69,7 @@ body{
     font-size: 14px;
     border-radius: 4px;
     padding: 4px 8px 4px 8px;
-    background: rgb(70, 181, 158);
+    background: rgb(110, 104, 105);
     font-weight: 600;
     color: #fff;
 }
@@ -350,12 +350,13 @@ div.inblockDiv{
 
 .jobInfoBtn{
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 500;
     border: none;
     color: #5e81ff;
     background: transparent;
     padding: 6%;
     width: 120px;
+    display: inline-block;
     margin-top: 2%;
 }
 
@@ -484,7 +485,7 @@ hr{
 .candidateCard{
     padding: 2%;
     background: #286ab6;
-    box-shadow: 0 1px 8px rgba(0,0,0,0.12), 0 4px 4px rgba(0,0,0,0.12);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .arrow-left {
@@ -497,7 +498,7 @@ hr{
 .candidateInformation{
     padding: 2%;
     background: #fff;
-    box-shadow: -2px 0 12px rgba(0,0,0,0.12), -2px 0px 0px rgba(0,0,0,0.12);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.1);
 }
 
 #triangle-left {

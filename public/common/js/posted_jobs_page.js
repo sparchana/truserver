@@ -214,6 +214,16 @@ function processJobPostAppliedStatus(status) {
 function processDataForHotJobPost(returnedData) {
     if (returnedData != "Error" && returnedData != "") {
         jobId = returnedData.jobPostId;
+        if(returnedData.jobPostPartnerInterviewIncentive != null){
+            $("#interviewIncentiveVal").html("₹" + returnedData.jobPostPartnerInterviewIncentive + " interview incentive");
+        } else{
+            $("#interviewIncentiveVal").html("Interview incentive not specified");
+        }
+        if(returnedData.jobPostPartnerJoiningIncentive != null){
+            $("#joiningIncentiveVal").html("₹" + returnedData.jobPostPartnerJoiningIncentive + " joining incentive");
+        } else{
+            $("#joiningIncentiveVal").html("Joining incentive not specified");
+        }
         if (returnedData.jobPostTitle != null && returnedData.jobPostTitle != "") {
             $("#postedJobTitle").html(returnedData.jobPostTitle + " | " + returnedData.company.companyName);
         }

@@ -455,11 +455,21 @@ function processDataAllJobPosts(returnedData) {
                 var infoBtn = document.createElement("div");
                 infoBtn.className = "jobInfoBtn";
                 infoBtn.id = "info_btn_" + jobPost.jobPostId;
-                infoBtn.textContent = "Job info";
                 applyBtnDiv.appendChild(infoBtn);
                 infoBtn.onclick = function () {
                     $("#job_detail_view_" + jobPost.jobPostId).slideToggle(300);
                 };
+
+                var infoIcon = document.createElement("img");
+                infoIcon.src = "/assets/common/img/info_icon.svg";
+                infoIcon.setAttribute('height', '16px');
+                infoIcon.style = "margin-top: -4px; display : inline-block";
+                infoBtn.appendChild(infoIcon);
+
+                var infoText = document.createElement("div");
+                infoText.textContent = "Job info";
+                infoText.style = "margin-top: -4px; margin-left: 4px; display : inline-block";
+                infoBtn.appendChild(infoText);
 
                 // job post info view
                 var jobDetailDiv = document.createElement("div");
