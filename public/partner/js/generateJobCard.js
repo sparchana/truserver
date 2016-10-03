@@ -11,6 +11,8 @@ var prefTimeSlot;
 
 var scheduledInterviewDate;
 
+
+
 $(window).resize(function(){
     var w = window.innerWidth;
     if(w < 640){
@@ -120,7 +122,7 @@ function getAllAppliedJobs() {
                 { "data": "jobAppliedOn" }
             ],
             "language": {
-                "emptyTable": "Looks like you have not added any candidates yet! " + '<a href="/partner/' + localStorage.getItem("candidateId") + '/jobs"><font color="'+ "#2980b9" +'">Apply now!</font></a>',
+                "emptyTable": "Looks like you have applied to any of the jobs yet for this candidate! " + '<a href="/partner/' + localStorage.getItem("candidateId") + '/jobs"><font color="'+ "#2980b9" +'">Apply now!</font></a>',
             },
             "scrollX": true,
             "destroy": true
@@ -738,6 +740,7 @@ function checkSlotAvailability(x, interviewDays) {
 }
 
 function confirmApply() {
+    $("#applyButton").addClass("jobApplied").removeClass("jobApplyBtnModal").prop('disabled',true).html("Applying");
     // checking if the candidate exists + if the partner has created this particular candidate or not
     var candidateId = localStorage.getItem("candidateId");
     try {
@@ -758,8 +761,11 @@ function processDataCheckCandidate(returnedData) {
     if(returnedData != '0'){
         applyJobSubmit(jobPostId, returnedData.candidateMobile, prefLocation, prefTimeSlot, scheduledInterviewDate, true);
     } else{
-        console.log("Partner doesn't own the candidate");
+        //Partner doesn't own the candidate
+        window.location = "/partner/myCandidates";
     }
+    $("#apply_btn_" + jobPostId).addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied").click(false);
+    $("#applyBtnDiv_" + jobPostId).prop('disabled',true).click(false);
 }
 
 $(function() {

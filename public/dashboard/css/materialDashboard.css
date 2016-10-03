@@ -368,6 +368,20 @@ div.inblockDiv{
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
 }
 
+.jobApplied{
+    border: none;
+    color: white;
+    background: rgba(255, 188, 0, 0.57);
+    padding: 2%;
+    display: block;
+    width: 176px;
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.16);
+}
+
+.jobApplied:hover{
+    cursor: not-allowed;
+}
+
 hr{
     margin: 6px;
 }

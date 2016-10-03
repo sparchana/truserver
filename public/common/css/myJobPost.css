@@ -518,6 +518,15 @@ hr{
     width: 120px;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.16);
 }
+
+.jobApplyPartner{
+    border: none;
+    color: white;
+    background: #09ac58;
+    padding: 6%;
+    width: 120px;
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.16);
+}
     #categoriesNameDes{
     font-size:16px;
     text-align: left;
@@ -584,6 +593,12 @@ hr{
         width:48%;
     }
     .jobApplyBtnV2{
+        margin-top: 6%;
+        background: #09ac58;
+        padding: 4%;
+        box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.16);
+    }
+    .jobApplyPartner{
         margin-top: 6%;
         background: #09ac58;
         padding: 4%;
@@ -1349,10 +1364,16 @@ li .dropdown-menu{
 /*  New addition of css */
 
 
- .jobApplyBtnV2:hover{
-     cursor: pointer;
-     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
- }
+.jobApplyBtnV2:hover{
+ cursor: pointer;
+ box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
+}
+
+.jobApplyPartner:hover{
+ cursor: pointer;
+ box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
+}
+
 .posted_job_details_container{
     margin-top: 90px;
     \background-color:white;
