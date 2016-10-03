@@ -266,6 +266,7 @@ public class JobSearchService {
             List<JobPost> otherJobRoleJobs = queryAndReturnJobPosts(otherJobRoleList, null, null, false, ServerConstants.SOURCE_INTERNAL);
 
             exactJobRoleJobs.addAll(relevantJobRoleJobs);
+            
             exactJobRoleJobs.addAll(otherJobRoleJobs);
 
             return exactJobRoleJobs;
