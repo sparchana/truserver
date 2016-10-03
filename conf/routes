@@ -200,7 +200,7 @@ GET         /employer/postJob                                             contro
 ## ---------------
 POST        /api/alpha/:vId                                               controllers.AnalyticsController.alphaHandler(vId: Integer)
 POST        /api/getDeactivatedCandidateList                              controllers.Application.getDeactivatedCandidateList()
-GET        /api/getRelatedJobRole/                                       controllers.Application.getRelatedJobRole(format: String ?=null, jobRoleIds: String ?= null)
+POST        /api/getRelatedJobRole/                                       controllers.Application.getRelatedJobRole(format: String ?=null, jobRoleIds: String ?= null)
 
 ## 'U' of CRUD - API
 ## ---------------

@@ -1406,6 +1406,7 @@ public class Application extends Controller {
         return ok(toJson(JobRelevancyEngine.updateAllRelevantJobCategories()));
     }
 
+    @Security.Authenticated(SuperAdminSecured.class)
     public static Result getRelatedJobRole(String format, String jobRoleIds) {
         List<RelatedJobRole> relatedJobRoleList;
         if(jobRoleIds != null) {

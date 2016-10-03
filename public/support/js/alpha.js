@@ -46,48 +46,30 @@ function executeAlphaRequest(mobile){
     }
 }
 
-function constructTableForRelevantJobs(tableName, rows) {
+function constructTableForRelevantJobs(rows) {
 
     var data = new google.visualization.DataTable();
+    var tableDivId = 'job_relevancy_table_div';
+    if($('#job-relevancy-table-content')){
+        $(tableDivId).empty();
+    }
 
     if(rows != null){
-        $.each( rows, function( rName, postData) {
+        data.addColumn('string', "Job Role");
+        data.addColumn('string', "Relevant Job Role");
 
-            $.each ( postData, function (rowIndex, innerData){
-                $.extend(rValue, innerData);
-                //rowArray.push(rValue);
-                var googleRowOneRow = [];
-                $.each( rValue  , function( cName, value ) {
-                    //console.log( "cValue:"+value );
-                    googleRowOneRow.push(""+value);
-                    /* Add the column name once */
-                    if(f){
-                        data.addColumn('string', cName);
-                    }
-                });
-                googleTableRows.push(googleRowOneRow);
-                f=false;
-            })
+        var googleTableRows = [];
+
+        $.each( rows, function( key, value) {
+            var googleRowOneRow = [];
+            googleTableRows.push([key, value.join(", ")]);
         });
         data.addRows(googleTableRows);
-
-        var csv = google.visualization.dataTableToCsv(data);
-        var csvString = csv;
-        var a         = document.createElement('a');
-        a.href        = 'data:attachment/csv,' +  encodeURIComponent(csvString);
-        a.target      = '_blank';
-        a.download    = 'truAnalytics_'+tableName+'.csv';
-        a.textContent = tableName;
-        $('div[id="csv_'+tableName+'"]').append(a);
-        /*        var components = [
-         {type: 'csv', datasource: 'https://spreadsheets.google.com/tq?key=pCQbetd-CptHnwJEfo8tALA'}
-         ];
-         var container = document.getElementById('toolbar_div_'+tableDivId);
-         google.visualization.drawToolbar(container, components);*/
 
         var table = new google.visualization.Table(document.getElementById(tableDivId ));
         table.draw(data, {showRowNumber: true, width: '100%', height: '100%'});
 
+        pushToSnackbar("Relevant Job Roles Fetched Successfully !!");
     }
 }
 
@@ -104,12 +86,12 @@ function constructTableForData(tableName, row) {
     $('#tabular-content').append($('<div id="csv_'+tableName+'"></div><div id="'+tableDivId+'"></div>'));
     $('#chart_container').append($('<div id="chart_'+tableName+'"></div>'));
 
-    if(row != null){
+    if (row != null) {
         $.each( row, function( rName, postData) {
             var formatedDate = new Date(rName).toLocaleDateString();
             var rValue = {"FormattedDate": formatedDate};
 
-            $.each ( postData, function (rowIndex, innerData){
+            $.each ( postData, function (rowIndex, innerData) {
                 $.extend(rValue, innerData);
                 //rowArray.push(rValue);
                 var googleRowOneRow = [];
@@ -117,7 +99,7 @@ function constructTableForData(tableName, row) {
                     //console.log( "cValue:"+value );
                     googleRowOneRow.push(""+value);
                     /* Add the column name once */
-                    if(f){
+                    if (f) {
                         data.addColumn('string', cName);
                     }
                 });
@@ -141,7 +123,7 @@ function constructTableForData(tableName, row) {
         var container = document.getElementById('toolbar_div_'+tableDivId);
         google.visualization.drawToolbar(container, components);*/
 
-        var table = new google.visualization.Table(document.getElementById(tableDivId ));
+        var table = new google.visualization.Table(document.getElementById(tableDivId));
         table.draw(data, {showRowNumber: true, width: '100%', height: '100%'});
 
     }
@@ -358,7 +340,7 @@ function getJSON(url, type) {
             // so check the status
             if (req.status == 200) {
                 // Resolve the promise with the response text
-                resolve(req.response);
+                resolve(JSON.parse(req.response));
             }
             else {
                 // Otherwise reject with the status text
@@ -381,15 +363,7 @@ function renderUpdateRelevantJobRoles(data) {
     if(data != null) {
         var totalUpdates = data.length;
         pushToSnackbar("Relevant JobRoles Re-computed and Updated ("+totalUpdates+") Successfully !");
-
-        // Use it!
-        getJSON('/api/getRelatedJobRole', 'POST').then(function(response) {
-            console.log("Success!", response);
-        }, function(error) {
-            console.error("Failed!", error);
-        }).catch(function() {
-                pushToSnackbar('Could not update Relevant JobRoles Table !!');
-        });
+        fetchAndDisplayRelevantJobs();
     } else {
         pushToSnackbar("Unsuccessful operation. Check Logs !!");
     }
@@ -408,6 +382,16 @@ function updateRelevantJobRoles() {
     }
 }
 
+function fetchAndDisplayRelevantJobs() {
+    getJSON('/api/getRelatedJobRole/?format=only_name', 'POST').then(function(response) {
+        constructTableForRelevantJobs(response)
+    }, function(error) {
+        console.error("Failed!", error);
+    }).catch(function() {
+        pushToSnackbar('Could not update Relevant JobRoles Table !!');
+    });
+}
+
 $(function(){
     $("#btnDeActiveToActive").click(function(){
         saveDeactivationChanges();
@@ -421,6 +405,9 @@ $(function(){
     });
     $( "#updateRelevantJobRoles" ).click(function() {
         updateRelevantJobRoles();
+    });
+    $( "#jobRelevancyTab" ).click(function() {
+        fetchAndDisplayRelevantJobs();
     });
 
     var dialog = document.querySelector('dialog');
