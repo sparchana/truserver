@@ -117,6 +117,12 @@ public class JobService {
         newJobPost.setJobPostWorkFromHome(addJobPostRequest.getJobPostWorkFromHome());
         newJobPost.setJobPostPartnerInterviewIncentive(addJobPostRequest.getPartnerInterviewIncentive());
         newJobPost.setJobPostPartnerJoiningIncentive(addJobPostRequest.getPartnerJoiningIncentive());
+
+        newJobPost.setGender(addJobPostRequest.getJobPostGender());
+        newJobPost.setJobPostLanguageRequirement(getJobPostLanguageRequirement(addJobPostRequest.getJobPostLanguage(), newJobPost));
+        newJobPost.setJobPostMinAge(addJobPostRequest.getJobPostMinAge());
+        newJobPost.setJobPostMaxAge(addJobPostRequest.getJobPostMaxAge());
+
         if (addJobPostRequest.getJobPostWorkingDays() != null) {
             Byte workingDayByte = Byte.parseByte(addJobPostRequest.getJobPostWorkingDays(), 2);
             newJobPost.setJobPostWorkingDays(workingDayByte);
@@ -148,6 +154,19 @@ public class JobService {
         newJobPost.setRecruiterProfile(recruiterProfile);
 
         return newJobPost;
+    }
+
+    private static List<JobPostLanguageRequirement> getJobPostLanguageRequirement(List<Integer> jobPostLanguageList, JobPost newJobPost) {
+
+        List<JobPostLanguageRequirement> languageRequirementList = new ArrayList<>();
+        List<Language> languageList = Language.find.where().in("LanguageId", jobPostLanguageList).findList();
+        for(Language language: languageList){
+            JobPostLanguageRequirement jobPostLanguageRequirement = new JobPostLanguageRequirement();
+            jobPostLanguageRequirement.setLanguage(language);
+            jobPostLanguageRequirement.setJobPost(newJobPost);
+            languageRequirementList.add(jobPostLanguageRequirement);
+        }
+        return languageRequirementList;
     }
 
     public static ApplyJobResponse applyJob(ApplyJobRequest applyJobRequest,

@@ -19,6 +19,9 @@
     <link rel="stylesheet" href="/assets/support/css/bootstrap-datetimepicker.min.css">
     <script type="text/javascript" src="/assets/support/js/Moment.js"></script>
 
+      <!-- Include the plugin's CSS and JS: -->
+    <link rel="stylesheet" href="/assets/support/css/bootstrap-multiselect.css" type="text/css"/>
+
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lato" />
     <link rel="stylesheet" href="/assets/support/css/nprogress.css">
     <link rel="stylesheet" href="/assets/support/css/animate.css">
@@ -120,6 +123,43 @@
               <textarea rows="4" cols="80" id="jobPostDescription" class="form-control input-md" maxlength="5000"></textarea>
             </div>
           </div>
+
+            <div class="row">
+              <div class="col-sm-3"><h5>Gender Requirement: <font color="red">*</font></h5></div>
+              <div class="col-sm-9">
+                <select id="jobPostGender" class="selectDropdown">
+                  <option value="-1">Select</option>
+                  <option value="0">Male</option>
+                  <option value="1">Female</option>
+                  <option value="2">Any</option>
+                </select>
+                <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+              </div>
+            </div>
+
+
+            <div class="row">
+              <div class="col-sm-3"><h5>Language Requirement: <font color="red">*</font></h5></div>
+              <div class="col-sm-9">
+                <select id="jobPostLanguage" multiple="multiple" class="selectDropdown"></select>
+                <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-3"><h5>Min Age:<font color="red">*</font></h5></div>
+              <div class="col-sm-9">
+                <input id="jobPostMinAge" value="0" max="60" style="width: 15%; display: inline-block" placeholder="Min Age" type="number" class="form-control input-md">
+                <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-3"><h5>Max Age:</h5></div>
+              <div class="col-sm-9">
+                <input id="jobPostMaxAge" value="0" max="70" style="width: 15%" placeholder="Max Age" type="number" class="form-control input-md">
+              </div>
+            </div>
 
           <div class="row">
             <div class="col-sm-3"><h5>Min Salary:<font color="red">*</font></h5></div>
@@ -337,5 +377,6 @@
     <script type="text/javascript" src="/assets/support/js/add_company.js"></script>
     <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
     <script type="text/javascript" src="/assets/support/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript" src="/assets/support/js/bootstrap-multiselect.js"></script>
   </body>
 </html>

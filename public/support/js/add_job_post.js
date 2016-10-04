@@ -64,7 +64,11 @@ function processDataAddJobPost(returnedData) {
 function processDataAddRecruiterAndUpdateRecId(returnedData) {
     recId = returnedData.recruiterId;
 }
-
+function scrollTo(selector) {
+    $('html, body').animate({
+        scrollTop: $(selector).offset().top
+    }, 1000);
+}
 // job_post_form ajax script
 $(function() {
     $("#job_post_form").submit(function(eventObj) {
@@ -208,6 +212,45 @@ $(function() {
             alert("Please select interview days");
             status = 0;
         }
+
+        // checking age, location, gender
+        var jobPostLanguage = $('#jobPostLanguage').val();
+        var minAge = $("#jobPostMinAge").val();
+        var maxAge = $("#jobPostMaxAge").val();
+        var jobPostGender = parseInt(document.getElementById("jobPostGender").value);
+        if (status !=0 ){
+            if (minAge == 0 || !isValidAge(minAge)) {
+                $("#jobPostMinAge").removeClass('invalid').addClass('invalid');
+                alert("Please enter Job Post Min Age Requirement");
+                status = 0;
+            }
+            if (!isValidAge(maxAge)) {
+                $("#jobPostMaxAge").removeClass('invalid').addClass('invalid');
+                alert("Please enter Job Post Max Age Requirement");
+                status = 0;
+            }
+            if(maxAge !=0 && minAge > maxAge) {
+                $("#jobPostMinAge").removeClass('invalid').addClass('invalid');
+                $("#jobPostMaxAge").removeClass('invalid').addClass('invalid');
+                alert("Incorrect Min/Max Age");
+                status = 0;
+            }
+            if (! jobPostLanguage && jobPostLanguage == null) {
+                var jobPostLanguageSelector = "#job_post_form div.col-sm-9  span div button";
+                $(jobPostLanguageSelector).removeClass('invalid').addClass('invalid');
+
+                alert("Please enter Job Post Language Requirements");
+                status = 0;
+            }
+            if (jobPostGender == null || jobPostGender == -1) {
+                $("#jobPostGender").removeClass('invalid').addClass('invalid');
+                alert("Please enter Job Post Gender Requirement");
+                status = 0;
+            }
+            if(status == 0){
+                scrollTo("#jobPostGender");
+            }
+        }
         
         //checking partner incentives
         if (partnerInterviewIncentiveVal < 0) {
@@ -300,7 +343,12 @@ $(function() {
                     partnerInterviewIncentive: $("#partnerInterviewIncentive").val(),
                     partnerJoiningIncentive: $("#partnerJoiningIncentive").val(),
                     jobPostInterviewDays: interviewDays,
-                    interviewTimeSlot: slotArray
+                    interviewTimeSlot: slotArray,
+                    jobPostLanguage: jobPostLanguage,
+                    jobPostMinAge: minAge,
+                    jobPostMaxAge: maxAge,
+                    jobPostGender: jobPostGender
+
                 };
                 $.ajax({
                     type: "POST",

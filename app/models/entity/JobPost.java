@@ -159,6 +159,17 @@ public class JobPost extends Model {
     @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
     private List<InterviewDetails> interviewDetailsList;
 
+    @Column(name = "JobPostMinAge", columnDefinition = "int unsigned null")
+    private Integer jobPostMinAge;
+
+    @Column(name = "JobPostMaxAge", columnDefinition = "int unsigned null")
+    private Integer jobPostMaxAge;
+
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
+    private List<JobPostLanguageRequirement> jobPostLanguageRequirement;
+
     public static Finder<String, JobPost> find = new Finder(JobPost.class);
 
     public JobPost() {
@@ -202,6 +213,9 @@ public class JobPost extends Model {
         this.jobPostApplicationList = jobPost.jobPostApplicationList;
         this.gender = jobPost.gender;
         this.source = jobPost.source;
+        this.jobPostMinAge = jobPost.jobPostMinAge;
+        this.jobPostMaxAge = jobPost.jobPostMaxAge;
+        this.jobPostLanguageRequirement = jobPost.jobPostLanguageRequirement;
     }
 
     public RecruiterProfile getRecruiterProfile() {
@@ -523,5 +537,29 @@ public class JobPost extends Model {
                 + "|" + exp + "|" + edu + "|" + getGender()
                 + "|" + getJobPostCreateTimestamp() + "|" + getSource();
         return toS;
+    }
+
+    public Integer getJobPostMinAge() {
+        return jobPostMinAge;
+    }
+
+    public void setJobPostMinAge(Integer jobPostMinAge) {
+        this.jobPostMinAge = jobPostMinAge;
+    }
+
+    public Integer getJobPostMaxAge() {
+        return jobPostMaxAge;
+    }
+
+    public void setJobPostMaxAge(Integer jobPostMaxAge) {
+        this.jobPostMaxAge = jobPostMaxAge;
+    }
+
+    public List<JobPostLanguageRequirement> getJobPostLanguageRequirement() {
+        return jobPostLanguageRequirement;
+    }
+
+    public void setJobPostLanguageRequirement(List<JobPostLanguageRequirement> jobPostLanguageRequirement) {
+        this.jobPostLanguageRequirement = jobPostLanguageRequirement;
     }
 }
