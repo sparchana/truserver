@@ -564,7 +564,14 @@ hr{
     background-color: #286AB6;
     color: white;
 }
+.joiningIncentiveDiv{
+    margin-left: 12px;
+}
+
 @media screen and (max-width: 768px) {
+    .joiningIncentiveDiv{
+        margin-left: 0;
+    }
     #pageNFBtn{
         width:25%;
         border: none;
@@ -1408,7 +1415,6 @@ li .dropdown-menu{
      margin-bottom:5px;
      box-shadow:0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
  }
-
 #aboutCompany{
     margin-top:0px;
     padding: 1% 9%;

@@ -540,8 +540,13 @@ function processDataForSelectedJobPost(returnedData) {
                             rowDiv.appendChild(applyBtnDiv);
 
                             var applyBtn = document.createElement("div");
+                            if(localStorage.getItem("incentives") == "1"){
+                                applyBtn.textContent = "View Job";
+                            } else{
+                                applyBtn.textContent = "View & Apply";
+                            }
                             applyBtn.className = "jobApplyBtn";
-                            applyBtn.textContent = "View & Apply";
+
                             applyBtnDiv.appendChild(applyBtn);
                             applyBtn.onclick=function(){
                                 var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
