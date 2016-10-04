@@ -115,6 +115,13 @@ POST        /partnerSignUp                                                contro
 POST        /partnerUpdateBasicProfile                                    controllers.PartnerController.partnerUpdateBasicProfile()
 POST        /checkPartnerCandidate/:id                                    controllers.PartnerController.checkPartnerCandidate(id : Long)
 
+# recruiter routes
+#~~~~~~~~~~~~~~~~~~~~
+GET         /recruiter                                                    controllers.RecruiterController.recruiterIndex()
+GET         /logoutRecruiter                                              controllers.RecruiterController.logoutRecruiter()
+GET         /checkRecruiterSession                                        controllers.RecruiterController.checkRecruiterSession()
+POST        /recruiterSignUp                                              controllers.RecruiterController.recruiterSignUp()
+
 #new routes
 #~~~~~~~~~~~~~~~~~~~~
 GET         /navBar                                                       controllers.Application.renderPageNavBar()

@@ -47,6 +47,21 @@ public class RecruiterProfile extends Model {
     @Column(name = "RecruiterProfileUpdateTimestamp", columnDefinition = "timestamp null")
     private Timestamp recruiterProfileUpdateTimestamp;
 
+    @Column(name = "RecruiterAlternateMobile", columnDefinition = "varchar(13) null")
+    private String recruiterAlternateMobile;
+
+    @Column(name = "RecruiterDesignation", columnDefinition = "varchar(50) null")
+    private String recruiterDesignation;
+
+    @Column(name = "RecruiterLinkedinProfile", columnDefinition = "varchar(60) null")
+    private String recruiterLinkedinProfile;
+
+    @Column(name = "RecruiterOfficeAddress", columnDefinition = "varchar(500) null")
+    private String recruiterOfficeAddress;
+
+    @Column(name = "RecruiterEmailStatus", columnDefinition = "int signed not null default 0")
+    private int recruiterEmailStatus; // verified, Not-Yet-Verified
+
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "RecStatus")
@@ -155,5 +170,61 @@ public class RecruiterProfile extends Model {
 
     public void setRecStatus(RecruiterStatus recStatus) {
         this.recStatus = recStatus;
+    }
+
+    public String getRecruiterAlternateMobile() {
+        return recruiterAlternateMobile;
+    }
+
+    public void setRecruiterAlternateMobile(String recruiterAlternateMobile) {
+        this.recruiterAlternateMobile = recruiterAlternateMobile;
+    }
+
+    public String getRecruiterDesignation() {
+        return recruiterDesignation;
+    }
+
+    public void setRecruiterDesignation(String recruiterDesignation) {
+        this.recruiterDesignation = recruiterDesignation;
+    }
+
+    public String getRecruiterLinkedinProfile() {
+        return recruiterLinkedinProfile;
+    }
+
+    public void setRecruiterLinkedinProfile(String recruiterLinkedinProfile) {
+        this.recruiterLinkedinProfile = recruiterLinkedinProfile;
+    }
+
+    public JobPost getJobPost() {
+        return jobPost;
+    }
+
+    public void setJobPost(JobPost jobPost) {
+        this.jobPost = jobPost;
+    }
+
+    public Company getCompany() {
+        return company;
+    }
+
+    public void setCompany(Company company) {
+        this.company = company;
+    }
+
+    public String getRecruiterOfficeAddress() {
+        return recruiterOfficeAddress;
+    }
+
+    public void setRecruiterOfficeAddress(String recruiterOfficeAddress) {
+        this.recruiterOfficeAddress = recruiterOfficeAddress;
+    }
+
+    public int getRecruiterEmailStatus() {
+        return recruiterEmailStatus;
+    }
+
+    public void setRecruiterEmailStatus(int recruiterEmailStatus) {
+        this.recruiterEmailStatus = recruiterEmailStatus;
     }
 }

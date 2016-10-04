@@ -1,4 +1,4 @@
-package api.http.httpRequest;
+package api.http.httpRequest.Recruiter;
 
 /**
  * Created by batcoder1 on 18/7/16.
@@ -8,7 +8,7 @@ public class AddRecruiterRequest {
     public String recruiterMobile;
     public String recruiterLandline;
     public String recruiterEmail;
-    public Long recruiterCompany;
+    public String recruiterCompany;
 
     public String getRecruiterName() {
         return recruiterName;
@@ -42,12 +42,11 @@ public class AddRecruiterRequest {
         this.recruiterEmail = recruiterEmail;
     }
 
-    public Long getRecruiterCompany() {
+    public String getRecruiterCompany() {
         return recruiterCompany;
     }
 
-    public void setRecruiterCompany(Long recruiterCompany) {
+    public void setRecruiterCompany(String recruiterCompany) {
         this.recruiterCompany = recruiterCompany;
     }
-
 }

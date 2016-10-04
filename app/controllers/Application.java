@@ -4,6 +4,7 @@ import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
+import api.http.httpRequest.Recruiter.AddRecruiterRequest;
 import api.http.httpResponse.*;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
@@ -39,7 +40,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.avaje.ebean.Expr.eq;
-import static com.avaje.ebean.Expr.le;
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {

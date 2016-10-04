@@ -1,6 +1,6 @@
 package controllers.businessLogic;
 
-import api.http.httpRequest.AddRecruiterRequest;
+import api.http.httpRequest.Recruiter.AddRecruiterRequest;
 import api.http.httpResponse.AddRecruiterResponse;
 import models.entity.Company;
 import models.entity.RecruiterProfile;
