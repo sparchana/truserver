@@ -1,12 +1,12 @@
 package controllers;
 
 import api.ServerConstants;
+import api.http.httpRequest.LoginRequest;
 import api.http.httpRequest.PartnerSignUpRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import controllers.businessLogic.InteractionService;
-import controllers.businessLogic.PartnerService;
+import controllers.businessLogic.*;
 import play.Logger;
 import play.mvc.Result;
 
@@ -25,7 +25,8 @@ public class RecruiterController {
     public static Result recruiterIndex() {
         String sessionId = session().get("recruiterId");
         if(sessionId != null){
-            return redirect("/recruiter/home");
+            return ok(views.html.Recruiter.recruiter_index.render());
+/*            return redirect("/recruiter/home");*/
         }
         return ok(views.html.Recruiter.recruiter_index.render());
     }
@@ -56,8 +57,39 @@ public class RecruiterController {
         }
         Logger.info("JSON req: " + req);
 
-        return ok(toJson("0"));
+        return ok(toJson(RecruiterService.recruiterSignUp(recruiterSignUpRequest)));
+    }
 
+    public static Result addPassword() {
+        JsonNode req = request().body().asJson();
+        RecruiterSignUpRequest recruiterSignUpRequest = new RecruiterSignUpRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            recruiterSignUpRequest = newMapper.readValue(req.toString(), RecruiterSignUpRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Logger.info("JSON req: " + req);
+
+        String recruiterMobile = recruiterSignUpRequest.getRecruiterAuthMobile();
+        String recruiterPassword = recruiterSignUpRequest.getRecruiterPassword();
+
+        return ok(toJson(RecruiterAuthService.savePassword(recruiterMobile, recruiterPassword)));
+    }
+
+    public static Result loginSubmit() {
+        JsonNode req = request().body().asJson();
+        LoginRequest loginRequest = new LoginRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            loginRequest = newMapper.readValue(req.toString(), LoginRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Logger.info("req JSON: " + req );
+        String loginMobile = loginRequest.getCandidateLoginMobile();
+        String loginPassword = loginRequest.getCandidateLoginPassword();
+        return ok(toJson(RecruiterService.login(loginMobile, loginPassword)));
     }
 
 }

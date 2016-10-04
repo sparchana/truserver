@@ -2,10 +2,10 @@
  * Created by adarsh on 10/9/16.
  */
 var returnedOtp;
-var candidateMobile;
+var recruiterMobile;
 
 function processDataSignUpSubmit(returnedData) {
-
+    returnedOtp = returnedData.otp;
 }
 
 /*
@@ -72,15 +72,49 @@ $(function() {
     });
 }); // end of function
 */
+function processDataAddAuth(returnedData) {
+    console.log(returnedData);
+}
+
+
+function signUpRecruiter2(){
+    var d = {
+        recruiterPassword: "testing",
+        recruiterAuthMobile: "+919949999999"
+    };
+    $.ajax({
+        type: "POST",
+        url: "/addRecruiterPassword",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(d),
+        success: processDataAddAuth
+    });
+}
 
 function signUpRecruiter(){
     var d = {
-        recruiterName : "Test",
-        recruiterMobile : "+919999999999",
+        candidateLoginMobile: "+919949999999",
+        candidateLoginPassword: "testing"
+    };
+    $.ajax({
+        type: "POST",
+        url: "/recruiterLoginSubmit",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(d),
+        success: processDataAddAuth
+    });
+}
+
+
+function signUpRecruiter1(){
+    var d = {
+        recruiterName : "Test1",
+        recruiterMobile : "+919949999999",
         recruiterEmail : "asd@gmail.com",
-        recruiterCompany : "test company"
+        recruiterCompanyName : "test company"
     };
 
+    recruiterMobile =  "+91" + d.recruiterMobile;
     $.ajax({
         type: "POST",
         url: "/recruiterSignUp",

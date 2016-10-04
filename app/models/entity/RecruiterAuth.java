@@ -3,6 +3,7 @@ package models.entity;
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import models.util.Util;
+import play.Logger;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -53,6 +54,12 @@ public class RecruiterAuth extends Model {
         this.authUpdateTimestamp = new Timestamp(System.currentTimeMillis());
         this.authSessionId = UUID.randomUUID().toString();
         this.passwordSalt = Util.randomInt();
+    }
+
+    public static void savePassword(RecruiterAuth auth) {
+        auth.save();
+        Logger.info("Password Saved!");
+
     }
 
     public long getRecruiterAuthId() {

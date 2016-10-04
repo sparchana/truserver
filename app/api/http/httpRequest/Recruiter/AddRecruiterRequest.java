@@ -8,7 +8,8 @@ public class AddRecruiterRequest {
     public String recruiterMobile;
     public String recruiterLandline;
     public String recruiterEmail;
-    public String recruiterCompany;
+    public Long recruiterCompany;
+    public String recruiterCompanyName;
 
     public String getRecruiterName() {
         return recruiterName;
@@ -42,11 +43,19 @@ public class AddRecruiterRequest {
         this.recruiterEmail = recruiterEmail;
     }
 
-    public String getRecruiterCompany() {
+    public Long getRecruiterCompany() {
         return recruiterCompany;
     }
 
-    public void setRecruiterCompany(String recruiterCompany) {
+    public void setRecruiterCompany(Long recruiterCompany) {
         this.recruiterCompany = recruiterCompany;
+    }
+
+    public String getRecruiterCompanyName() {
+        return recruiterCompanyName;
+    }
+
+    public void setRecruiterCompanyName(String recruiterCompanyName) {
+        this.recruiterCompanyName = recruiterCompanyName;
     }
 }

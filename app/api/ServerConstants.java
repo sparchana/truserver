@@ -42,6 +42,9 @@ public class ServerConstants {
     public static final int PARTNER_STATUS_NOT_VERIFIED = 0;
     public static final int PARTNER_STATUS_VERIFIED= 1;
 
+    public static final int RECRUITER_STATUS_NOT_VERIFIED = 0;
+    public static final int RECRUITER_STATUS_VERIFIED= 1;
+
     public static final int CANDIDATE_NOT_ASSESSED = 0;
     public static final int CANDIDATE_ASSESSED= 1;
 
