@@ -38,7 +38,7 @@ public class AnalyticsController extends Controller {
         } else {
             Logger.info("FromDate" + analyticsRequest.getFromThisDate());
             Logger.info("toDate" + analyticsRequest.getToThisDate());
-            if(analyticsRequest.getMetrics() != null){
+            if(analyticsRequest.getMetrics() != null) {
                 Logger.info("sizeOfMetricsArray" + analyticsRequest.getMetrics().size());
             }
         }

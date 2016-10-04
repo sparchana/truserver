@@ -56,6 +56,7 @@
                     <!-- <a href="#visual-tab" class="mdl-layout__tab is-active">Visual</a> -->
                     <a href="#tabular-tab" class="mdl-layout__tab" id="tabularTab">Metrics Tab</a>
                     <a href="#deactivated-candidate-tab" class="mdl-layout__tab" id="deactivatedCandidateTab">De-Active/Active Tab</a>
+                    <a href="#job-relevancy-tab" class="mdl-layout__tab" id="jobRelevancyTab">Job Relevancy Tab</a>
                 </div>
             </header>
 
@@ -102,6 +103,7 @@
                         <div id="table_div"></div>
                     </div>
                 </section>
+                <!-- De-Activate Tab Content-->
                 <section class="mdl-layout__tab-panel" id="deactivated-candidate-tab">
                     <div class="page-content">
                         <table id="deactivatedCandidateTable" class="table table-striped table-bordered" style="margin-top: 16px;display: none; table-layout: fixed; overflow-x: scroll;" cellspacing="0" width="100%">
@@ -120,6 +122,12 @@
                         <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="btnDeActiveToActive">
                             Save
                         </button>
+                    </div>
+                </section>
+                <!-- Job Relevancy Tab Content -->
+                <section class="mdl-layout__tab-panel is-active" id="job-relevancy-tab">
+                    <div class="page-content" id="job-relevancy-table-content">
+                        <div id="job_relevancy_table_div"></div>
                     </div>
                 </section>
 
