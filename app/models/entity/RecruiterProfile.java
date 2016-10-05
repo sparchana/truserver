@@ -5,6 +5,8 @@ import com.avaje.ebean.annotation.PrivateOwned;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import models.entity.Static.PartnerProfileStatus;
+import models.entity.Static.RecruiterProfileStatus;
 import models.entity.Static.RecruiterStatus;
 
 import javax.persistence.*;
@@ -43,10 +45,6 @@ public class RecruiterProfile extends Model {
     @Column(name = "RecruiterProfileCreateTimestamp", columnDefinition = "timestamp not null default current_timestamp")
     private Timestamp recruiterProfileCreateTimestamp;
 
-    @UpdatedTimestamp
-    @Column(name = "RecruiterProfileUpdateTimestamp", columnDefinition = "timestamp null")
-    private Timestamp recruiterProfileUpdateTimestamp;
-
     @Column(name = "RecruiterAlternateMobile", columnDefinition = "varchar(13) null")
     private String recruiterAlternateMobile;
 
@@ -76,6 +74,11 @@ public class RecruiterProfile extends Model {
     @JsonManagedReference
     @JoinColumn(name = "RecCompany")
     private Company company;
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonManagedReference
+    @JoinColumn(name = "profile_status_id", referencedColumnName = "profile_status_id")
+    private RecruiterProfileStatus recruiterprofilestatus;
 
     public static Finder<String, RecruiterProfile> find = new Finder(RecruiterProfile.class);
 
@@ -156,14 +159,6 @@ public class RecruiterProfile extends Model {
         this.recruiterProfileCreateTimestamp = recruiterProfileCreateTimestamp;
     }
 
-    public Timestamp getRecruiterProfileUpdateTimestamp() {
-        return recruiterProfileUpdateTimestamp;
-    }
-
-    public void setRecruiterProfileUpdateTimestamp(Timestamp recruiterProfileUpdateTimestamp) {
-        this.recruiterProfileUpdateTimestamp = recruiterProfileUpdateTimestamp;
-    }
-
     public RecruiterStatus getRecStatus() {
         return recStatus;
     }
@@ -226,5 +221,13 @@ public class RecruiterProfile extends Model {
 
     public void setRecruiterEmailStatus(int recruiterEmailStatus) {
         this.recruiterEmailStatus = recruiterEmailStatus;
+    }
+
+    public RecruiterProfileStatus getRecruiterprofilestatus() {
+        return recruiterprofilestatus;
+    }
+
+    public void setRecruiterprofilestatus(RecruiterProfileStatus recruiterprofilestatus) {
+        this.recruiterprofilestatus = recruiterprofilestatus;
     }
 }

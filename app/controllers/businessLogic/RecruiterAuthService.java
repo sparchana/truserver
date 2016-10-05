@@ -8,6 +8,7 @@ import api.http.httpResponse.PartnerSignUpResponse;
 import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
 import models.entity.*;
 import models.entity.Static.PartnerProfileStatus;
+import models.entity.Static.RecruiterProfileStatus;
 import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
@@ -68,20 +69,16 @@ public class RecruiterAuthService {
 
                 recruiterSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
-                //TODO recruiter profile status table
-/*
                 try {
-                    existingPartner.setPartnerprofilestatus(PartnerProfileStatus.find.where().eq("profile_status_id", ServerConstants.PARTNER_STATE_ACTIVE).findUnique());
-                    partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_SUCCESS);
+                    existingRecruiter.setRecruiterprofilestatus(RecruiterProfileStatus.find.where().eq("profile_status_id", ServerConstants.RECRUITER_STATE_ACTIVE).findUnique());
+                    recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.STATUS_SUCCESS);
                 } catch (NullPointerException n) {
-                    Logger.info("Oops ProfileStatusId"+ " doesnot exists");
-                    partnerSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_FAILURE);
+                    Logger.info("Oops recruiterStatusId"+ " doesnot exists");
+                    recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.STATUS_FAILURE);
                 }
-*/
 
                 existingRecruiter.update();
                 Logger.info("recruiter status confirmed");
-
 
                 recruiterSignUpResponse.setRecruiterMobile(existingRecruiter.getRecruiterProfileMobile());
             }

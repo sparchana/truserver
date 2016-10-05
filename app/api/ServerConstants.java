@@ -84,6 +84,9 @@ public class ServerConstants {
     public static final int PARTNER_STATE_ACTIVE = 1;
     public static final int PARTNER_STATE_DEACTIVE = 2;
 
+    public static final int RECRUITER_STATE_ACTIVE = 1;
+    public static final int RECRUITER_STATE_DEACTIVE = 2;
+
     public static final String INTERACTION_CREATED_BY_AGENT = "AGENT 1";
 
     public static final int DEV_ACCESS_LEVEL_PARTNER_ROLE = 0;
