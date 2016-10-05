@@ -105,5 +105,4 @@ public class RecruiterController {
         Logger.info("req JSON: " + req );
         return ok(toJson(RecruiterLeadService.createLeadWithOtherDetails(recruiterLeadRequest)));
     }
-
 }

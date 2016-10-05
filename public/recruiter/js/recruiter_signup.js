@@ -106,7 +106,7 @@ function signUpRecruiter2(){
 }
 
 
-function signUpRecruiter(){
+function signUpRecruiter5(){
     var d = {
         recruiterName : "Test1",
         recruiterMobile : "+919989999999",
@@ -123,6 +123,32 @@ function signUpRecruiter(){
         success: processDataSignUpSubmit
     });
 }
+
+function signUpRecruiter(){
+    var x = [];
+    x.push(1);
+    x.push(2);
+
+    var y = [];
+    y.push(5);
+    y.push(6);
+    y.push(7);
+    var d = {
+        recruiterMobile : "+918883338833",
+        recruiterRequirement : "Delivery boy",
+        recruiterJobLocality : x,
+        recruiterJobRole : y
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "/addRecruiterLead",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify(d),
+        success: processDataSignUpSubmit
+    });
+}
+
 
 /*
 // form ajax script

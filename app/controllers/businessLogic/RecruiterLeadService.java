@@ -80,6 +80,7 @@ public class RecruiterLeadService {
             List<Integer> jobRoleList = recruiterLeadRequest.getRecruiterJobRole();
             List<Integer> jobLocalityList = recruiterLeadRequest.getRecruiterJobLocality();
 
+            lead.setRecruiterLeadMobile(FormValidator.convertToIndianMobileFormat(recruiterLeadRequest.getRecruiterMobile()));
             if(jobRoleList != null){
                 lead.setRecruiterLeadToJobRoleList(getRecruiterJobPreferenceList(jobRoleList, lead));
             }
