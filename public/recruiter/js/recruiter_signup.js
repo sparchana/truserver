@@ -4,80 +4,26 @@
 var returnedOtp;
 var recruiterMobile;
 
+function processDataLeadSubmit(returnedData) {
+    console.log(returnedData);
+    if(returnedData.status = 1){
+        alert("Thanks! We will get in touch shortly!");
+        location.reload();
+    } else{
+        notifyError("Oops! Looks like something went wrong! Please try again after some time1");
+    }
+}
+
 function processDataSignUpSubmit(returnedData) {
     returnedOtp = returnedData.otp;
 }
 
-/*
-function processDataAddAuth(returnedData) {
-    if(returnedData.status == 1) {
-        // Store
-        window.location = "/partner/home";
-
-    } else {
-        $('#errorMsg').show();
-    }
-}
-
-$(function() {
-    $("#form_otp").submit(function(eventObj) {
-        eventObj.preventDefault();
-        var userOtp = $('#partnerOtp').val();
-        if(userOtp == returnedOtp){
-            $('#incorrectOtpMsg').hide();
-            $('#form_otp').hide();
-            $('#form_auth').show();
-            $('#errorMsg').hide();
-            $('#incorrectMsg').hide();
-        }
-        else {
-            $('#incorrectOtpMsg').show();
-            $('#errorMsg').hide();
-            $('#candidateOtp').val('');
-        }
-    }); // end of submit
-}); // end of function
-
-$(function() {
-    $("#form_auth").submit(function(eventObj) {
-        eventObj.preventDefault();
-        var userPwd = $('#partnerPassword').val();
-        var passwordCheck = validatePassword(userPwd);
-        if(passwordCheck == 0){
-            alert("Please set min 6 chars for password");
-        } else if(passwordCheck == 1){
-            alert("Password cannot have blank spaces. Enter a valid password");
-        }
-        else{
-            document.getElementById("btnSubmit").disabled = true;
-            try {
-                var authPassword = $('#partnerPassword').val();
-                var authMobile = candidateMobile;
-                var d = {
-                    partnerPassword: authPassword,
-                    partnerAuthMobile: authMobile
-                };
-                console.log(d);
-                $.ajax({
-                    type: "POST",
-                    url: "/addPartnerPassword",
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify(d),
-                    success: processDataAddAuth
-                });
-            } catch (exception) {
-                console.log("exception occured!!" + exception);
-            }
-        }
-    });
-}); // end of function
-*/
 function processDataAddAuth(returnedData) {
     console.log(returnedData);
 }
 
 
-function signUpRecruiter4(){
+function addRecruiterPassword(){
     var d = {
         recruiterPassword: "testing",
         recruiterAuthMobile: "+919949999999"
@@ -91,7 +37,7 @@ function signUpRecruiter4(){
     });
 }
 
-function signUpRecruiter2(){
+function recruiterLoginSubmit(){
     var d = {
         candidateLoginMobile: "+919949999999",
         candidateLoginPassword: "testing"
@@ -106,7 +52,7 @@ function signUpRecruiter2(){
 }
 
 
-function signUpRecruiter5(){
+function signUpRecruiter(){
     var d = {
         recruiterName : "Test1",
         recruiterMobile : "+919989999999",
@@ -124,101 +70,67 @@ function signUpRecruiter5(){
     });
 }
 
-function signUpRecruiter(){
-    var x = [];
-    x.push(1);
-    x.push(2);
+function requestLead(){
+    var recruiterLeadMobile = $("#mobileNumber").val();
+    var recruiterLeadRequirement = $("#recruiterRequirement").val();
+    var jobLocalitySelected = $("#locationOption").val();
+    var jobRoleSelected = $("#jobRoleOption").val();
 
-    var y = [];
-    y.push(5);
-    y.push(6);
-    y.push(7);
-    var d = {
-        recruiterMobile : "+918883338833",
-        recruiterRequirement : "Delivery boy",
-        recruiterJobLocality : x,
-        recruiterJobRole : y
-    };
+    var statusCheck = 1;
+    var res = validateMobile(recruiterLeadMobile);
 
-    $.ajax({
-        type: "POST",
-        url: "/addRecruiterLead",
-        contentType: "application/json; charset=utf-8",
-        data: JSON.stringify(d),
-        success: processDataSignUpSubmit
-    });
+    if(res == 0){
+        notifyError("Enter a valid mobile number");
+        statusCheck=0;
+    } else if(res == 1){
+        notifyError("Enter 10 digit mobile number");
+        statusCheck=0;
+    } else if(jobLocalitySelected == "") {
+        notifyError("Please Enter the localities where you are looking for employees");
+        statusCheck=0;
+    } else if(jobRoleSelected == "") {
+        notifyError("Please Enter the required job roles");
+        statusCheck=0;
+    } else if(recruiterLeadRequirement == "") {
+        notifyError("Please Enter your hiring requirement");
+        statusCheck=0;
+    }
+
+    if(statusCheck == 1){
+        var preferredJobRoleList = [];
+        var preferredJobLocationList = [];
+
+        var jobPref = jobRoleSelected.split(",");
+        var jobLocalityPref = jobLocalitySelected.split(",");
+
+        var i;
+        /* job role preferences  */
+        for (i = 0; i < jobPref.length; i++) {
+            preferredJobRoleList.push(parseInt(jobPref[i]));
+        }
+
+        /* job role preferences  */
+        for (i = 0; i < jobLocalityPref.length; i++) {
+            preferredJobLocationList.push(parseInt(jobLocalityPref[i]));
+        }
+
+        var d = {
+            recruiterMobile : recruiterLeadMobile,
+            recruiterRequirement : recruiterLeadRequirement,
+            recruiterJobLocality : preferredJobLocationList,
+            recruiterJobRole : preferredJobRoleList
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/addRecruiterLead",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(d),
+            success: processDataLeadSubmit
+        });
+    }
 }
 
-
-/*
-// form ajax script
-$(function() {
-    $("#partner_signup_form").submit(function(eventObj) {
-        eventObj.preventDefault();
-        var statusCheck = 1;
-        var partnerName = $('#partnerFirstName').val();
-        var partnerLastName = $('#partnerLastName').val();
-        var phone = $('#partnerMobile').val();
-        var checkPartnerName = validateName(partnerName);
-        var res = validateMobile(phone);
-        var selectedPartnerType = $('#partnerType').val();
-        var localitySelected = $('#partnerLocality').val();
-
-        //checking first name
-        switch(checkPartnerName){
-            case 0: alert("Your first name contains number. Please Enter a valid first name"); statusCheck=0; break;
-            case 2: alert("Your first name cannot be blank spaces. Enter a valid first name"); statusCheck=0; break;
-            case 3: alert("Your first name contains special symbols. Enter a valid first name"); statusCheck=0; break;
-            case 4: alert("Please enter your first name"); statusCheck=0; break;
-        }
-
-        if(res == 0){
-            alert("Enter a valid mobile number");
-            statusCheck = 0;
-        } else if(res == 1){
-            alert("Enter 10 digit mobile number");
-            statusCheck=0;
-        } else if(localitySelected == "") {
-            alert("Please select your Locality");
-            statusCheck=0;
-        } else if(selectedPartnerType == -1) {
-            alert("Please select organization type");
-            statusCheck=0;
-        }
-
-        if(partnerLastName != ""){
-            var checkPartnerLastName = validateName(partnerLastName);
-            //checking last name
-            switch(checkPartnerLastName){
-                case 0: alert("Your last name contains number. Please Enter a valid last name"); statusCheck=0; break;
-                case 2: alert("Your last name cannot be blank spaces. Enter a valid last name"); statusCheck=0; break;
-                case 3: alert("Your last name contains special symbols. Enter a valid last name"); statusCheck=0; break;
-                case 4: alert("Please enter your last name"); statusCheck=0; break;
-            }
-        } else{
-            partnerLastName = null;
-        }
-
-        if(statusCheck == 1){
-            candidateMobile = phone;
-            $("#registerPartnerBtnSubmit").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Please Wait");
-            document.getElementById("registerBtnSubmit").disabled = true;
-
-            var d = {
-                partnerName : partnerName,
-                partnerLastName : partnerLastName,
-                partnerMobile : phone,
-                partnerType : selectedPartnerType,
-                partnerLocality : localitySelected
-            };
-
-            $.ajax({
-                type: "POST",
-                url: "/partnerSignUp",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify(d),
-                success: processDataSignUpSubmit
-            });
-        }
-    }); // end of submit
-}); // end of function*/
+function notifyError(msg){
+    $.notify(msg, "error");
+}

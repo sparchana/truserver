@@ -15,6 +15,8 @@ import javax.persistence.NonUniqueResultException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static play.libs.Json.toJson;
+
 /**
  * Created by dodo on 5/10/16.
  */
