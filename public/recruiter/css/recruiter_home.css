@@ -1,0 +1,77 @@
+nav{
+    background: transparent;
+    box-shadow: 0 0 0 0;
+    transition: 0.2s;
+}
+.navbar-fixed{
+    position: absolute;
+    z-index:9999;
+    box-shadow: none;
+}
+#sectionOne{
+    padding: 0;
+    background-image:linear-gradient(rgba(24, 26, 45, 0.5),rgba(24, 26, 45, 0.5)),url("/assets/recruiter/img/image1.png");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    height:100vh;
+    background-size: 100%;
+}
+
+#leadForm{
+    text-align: left;
+    padding:2%;
+    background-color:#000;
+    opacity: 0.5;
+}
+
+
+#companyHiringRow{
+    text-align: center;
+    width: 100%;
+    margin-top: 10%;
+}
+#companyHiringRowSub{
+    padding: 1%;
+    margin: 0;
+    background-color: #fff;
+}
+
+
+
+
+
+#sectionTwo{
+    height: 200px;
+}
+
+#candidateStats{
+    padding: 2%;
+    border-right: 2px solid black;
+}
+#jobRolesStats{
+    padding: 2%;
+}
+#stats{
+    padding: 2%;
+    text-align: center;
+}
+#testimonial{
+    text-align: center;
+}
+
+
+
+
+
+
+
+footer{
+    background-color: #ff5252;
+}
+.page-footer{
+    background-color: #ff5252;
+}
+.footer-copyright{
+    text-align: center;
+}

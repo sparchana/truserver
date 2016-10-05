@@ -3,11 +3,48 @@
     <head>
         <meta charset="UTF-8">
         <title>Title</title>
+
+            <!-- Bootstrap Core CSS -->
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/assets/common/css/custom_token_input.css" type="text/css" />
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css">
+
+        @*<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>*@
         <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
+
+        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+        <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+        <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
+
+        <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
+        <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+
+        <style>
+        body{
+            background: #696969;
+        }
+        </style>
+
     </head>
     <body>
         <div onclick="signUpRecruiter()">test</div>
 
+        <div>
+            <input type="text" id="testInput" name="blah" />
+            <script type="text/javascript">
+                $(document).ready(function() {
+                    $("#testInput").tokenInput(getLocality(), {
+                        theme: "facebook",
+                        placeholder: "Where do you live?",
+                        minChars: 1,
+                        hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
+                        preventDuplicates: true
+                    });
+                });
+            </script>
+        </div>
+
+        <script type="text/javascript" src="/assets/common/js/home_page.js"></script>
         <script type="text/javascript" src="/assets/recruiter/js/recruiter_signup.js"></script>
     </body>
 </html>

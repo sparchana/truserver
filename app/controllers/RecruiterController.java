@@ -23,13 +23,13 @@ import static play.mvc.Results.redirect;
  * Created by dodo on 4/10/16.
  */
 public class RecruiterController {
-    public static Result recruiterIndex() {
+    public static Result recruiterHome() {
         String sessionId = session().get("recruiterId");
         if(sessionId != null){
-            return ok(views.html.Recruiter.recruiter_index.render());
+            return ok(views.html.Recruiter.recruiter_home.render());
 /*            return redirect("/recruiter/home");*/
         }
-        return ok(views.html.Recruiter.recruiter_index.render());
+        return ok(views.html.Recruiter.recruiter_home.render());
     }
 
     public static Result logoutRecruiter() {
