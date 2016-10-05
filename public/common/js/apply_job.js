@@ -53,7 +53,6 @@ function processDataApplyJob(returnedData) {
 
 // apply_job ajax script
 function applyJob(id, localityId, triggerModal){
-    $("#applyButton").addClass("appliedBtn").removeClass("jobApplyBtnModal").prop('disabled',true).html("Applying");
     applyJobFlag = 1;
     applyJobId = id;
     var phone = localStorage.getItem("mobile");
@@ -101,6 +100,7 @@ function applyJobSubmit(jobPostId, phone, localityId, prefTimeSlot, scheduledInt
             data: JSON.stringify(d),
             success: processDataApplyJob
         });
+
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
