@@ -5,10 +5,8 @@ import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.PrivateOwned;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import models.entity.OM.JobPostToLocality;
+import models.entity.OM.RecruiterLeadToJobRole;
 import models.entity.OM.RecruiterLeadToLocality;
-import models.entity.OO.FollowUp;
-import models.entity.Static.LeadSource;
 import play.Logger;
 
 import javax.persistence.*;
@@ -52,7 +50,15 @@ public class RecruiterLead extends Model {
     @JsonManagedReference
     @PrivateOwned
     @OneToMany(mappedBy = "recruiterLead", cascade = CascadeType.ALL)
+    private List<RecruiterLeadToJobRole> recruiterLeadToJobRoleList;
+
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "recruiterLead", cascade = CascadeType.ALL)
     private List<RecruiterLeadToLocality> recruiterLeadToLocalityList;
+
+    @Column(name = "recruiter_lead_requirement", columnDefinition = "varchar(50) not null")
+    private String recruiterLeadRequirement = "";
 
     public static Finder<String, RecruiterLead> find = new Finder(RecruiterLead.class);
 
@@ -74,7 +80,6 @@ public class RecruiterLead extends Model {
         Logger.info("inside addLead model member method ");
         lead.save();
     }
-
 
     public long getRecruiterLeadId() {
         return recruiterLeadId;
@@ -146,5 +151,21 @@ public class RecruiterLead extends Model {
 
     public void setRecruiterLeadToLocalityList(List<RecruiterLeadToLocality> recruiterLeadToLocalityList) {
         this.recruiterLeadToLocalityList = recruiterLeadToLocalityList;
+    }
+
+    public List<RecruiterLeadToJobRole> getRecruiterLeadToJobRoleList() {
+        return recruiterLeadToJobRoleList;
+    }
+
+    public void setRecruiterLeadToJobRoleList(List<RecruiterLeadToJobRole> recruiterLeadToJobRoleList) {
+        this.recruiterLeadToJobRoleList = recruiterLeadToJobRoleList;
+    }
+
+    public String getRecruiterLeadRequirement() {
+        return recruiterLeadRequirement;
+    }
+
+    public void setRecruiterLeadRequirement(String recruiterLeadRequirement) {
+        this.recruiterLeadRequirement = recruiterLeadRequirement;
     }
 }
