@@ -77,7 +77,7 @@ function processDataAddAuth(returnedData) {
 }
 
 
-function signUpRecruiter2(){
+function signUpRecruiter4(){
     var d = {
         recruiterPassword: "testing",
         recruiterAuthMobile: "+919949999999"
@@ -91,7 +91,7 @@ function signUpRecruiter2(){
     });
 }
 
-function signUpRecruiter(){
+function signUpRecruiter2(){
     var d = {
         candidateLoginMobile: "+919949999999",
         candidateLoginPassword: "testing"
@@ -106,10 +106,10 @@ function signUpRecruiter(){
 }
 
 
-function signUpRecruiter1(){
+function signUpRecruiter(){
     var d = {
         recruiterName : "Test1",
-        recruiterMobile : "+919949999999",
+        recruiterMobile : "+919989999999",
         recruiterEmail : "asd@gmail.com",
         recruiterCompanyName : "test company"
     };

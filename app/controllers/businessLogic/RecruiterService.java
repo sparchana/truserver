@@ -12,6 +12,7 @@ import api.http.httpResponse.Recruiter.AddRecruiterResponse;
 import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
 import models.entity.*;
 import models.entity.Static.Locality;
+import models.entity.Static.RecruiterStatus;
 import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
@@ -107,10 +108,24 @@ public class RecruiterService {
             newRecruiter.setRecruiterProfileMobile(FormValidator.convertToIndianMobileFormat(recruiterSignUpRequest.getRecruiterMobile()));
             newRecruiter = getAndSetRecruiterValues(recruiterSignUpRequest, newRecruiter, existingCompany);
             triggerOtp(newRecruiter, recruiterSignUpResponse);
+
+            //setting recruiter lead
+            String leadName = recruiterSignUpRequest.getRecruiterName();
+            RecruiterLead lead = RecruiterLeadService.createOrUpdateConvertedRecruiterLead(leadName, FormValidator.convertToIndianMobileFormat(recruiterSignUpRequest.getRecruiterMobile()));
+            newRecruiter.setRecruiterLead(lead);
+
+            //setting recruiter status as "NEW"
+            RecruiterStatus recruiterStatus = RecruiterStatus.find.where().eq("RecruiterStatusId", 1).findUnique();
+            if(recruiterStatus != null){
+                newRecruiter.setRecStatus(recruiterStatus);
+            }
+
             newRecruiter.save();
 
             recruiterSignUpResponse.setStatus(AddRecruiterResponse.STATUS_SUCCESS);
             recruiterSignUpResponse.setRecruiterId(newRecruiter.getRecruiterProfileId());
+            Logger.info("Recruiter successfully saved");
+
         } else{
             RecruiterAuth auth = RecruiterAuthService.isAuthExists(recruiterProfile.getRecruiterProfileId());
             if(auth == null ) {
@@ -122,12 +137,12 @@ public class RecruiterService {
 
                 triggerOtp(newRecruiter, recruiterSignUpResponse);
             } else{
+                Logger.info("Recruiter Already exists");
                 recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.STATUS_EXISTS);
             }
             recruiterProfile.update();
         }
 
-        Logger.info("Recruiter successfully saved");
 
         return recruiterSignUpResponse;
     }
@@ -142,8 +157,18 @@ public class RecruiterService {
                 newRecruiter.setRecruiterProfileMobile(FormValidator.convertToIndianMobileFormat(recruiterSignUpRequest.getRecruiterMobile()));
                 newRecruiter = getAndSetRecruiterValues(recruiterSignUpRequest, newRecruiter, existingCompany);
 
+                //setting recruiter status as "ACTIVE"
+                RecruiterStatus recruiterStatus = RecruiterStatus.find.where().eq("RecruiterStatusId", 2).findUnique();
+                if(recruiterStatus != null){
+                    newRecruiter.setRecStatus(recruiterStatus);
+                }
+
+                //setting recruiter lead
+                String leadName = recruiterSignUpRequest.getRecruiterName();
+                RecruiterLead lead = RecruiterLeadService.createOrUpdateConvertedRecruiterLead(leadName, FormValidator.convertToIndianMobileFormat(recruiterSignUpRequest.getRecruiterMobile()));
+                newRecruiter.setRecruiterLead(lead);
+
                 newRecruiter.save();
-                Logger.info("3");
 
                 addRecruiterResponse.setStatus(AddRecruiterResponse.STATUS_SUCCESS);
                 addRecruiterResponse.setRecruiterId(newRecruiter.getRecruiterProfileId());
@@ -153,6 +178,18 @@ public class RecruiterService {
                 Logger.info("Recruiter successfully saved");
             } else{
                 existingRecruiter = getAndSetRecruiterValues(recruiterSignUpRequest, existingRecruiter, existingCompany);
+
+                //setting recruiter status as "ACTIVE"
+                RecruiterStatus recruiterStatus = RecruiterStatus.find.where().eq("RecruiterStatusId", 2).findUnique();
+                if(recruiterStatus != null){
+                    existingRecruiter.setRecStatus(recruiterStatus);
+                }
+
+                //setting recruiter lead
+                String leadName = recruiterSignUpRequest.getRecruiterName();
+                RecruiterLead lead = RecruiterLeadService.createOrUpdateConvertedRecruiterLead(leadName, FormValidator.convertToIndianMobileFormat(recruiterSignUpRequest.getRecruiterMobile()));
+                existingRecruiter.setRecruiterLead(lead);
+
                 existingRecruiter.update();
                 addRecruiterResponse.setRecruiterId(existingRecruiter.getRecruiterProfileId());
                 addRecruiterResponse.setStatus(AddRecruiterResponse.STATUS_UPDATE);

@@ -1,5 +1,6 @@
 package models.entity;
 
+import api.ServerConstants;
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.PrivateOwned;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
@@ -8,10 +9,12 @@ import models.entity.OM.JobPostToLocality;
 import models.entity.OM.RecruiterLeadToLocality;
 import models.entity.OO.FollowUp;
 import models.entity.Static.LeadSource;
+import play.Logger;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by dodo on 5/10/16.
@@ -31,13 +34,13 @@ public class RecruiterLead extends Model {
     private int recruiterLeadStatus;
 
     @Column(name = "recruiter_lead_name", columnDefinition = "varchar(50) not null")
-    private String recruiter_lead_name = "";
+    private String recruiterLeadName = "";
 
     @Column(name = "recruiter_lead_mobile", columnDefinition = "varchar(13) not null")
     private String recruiterLeadMobile;
 
     @Column(name = "recruiter_lead_channel", columnDefinition = "int signed not null")
-    private int recruiter_lead_channel;
+    private int recruiterLeadChannel;
 
     @Column(name = "recruiter_lead_creation_timestamp", columnDefinition = "timestamp not null")
     private Timestamp recruiterLeadCreationTimestamp;
@@ -52,6 +55,26 @@ public class RecruiterLead extends Model {
     private List<RecruiterLeadToLocality> recruiterLeadToLocalityList;
 
     public static Finder<String, RecruiterLead> find = new Finder(RecruiterLead.class);
+
+    public RecruiterLead(){
+        this.recruiterLeadUUId = UUID.randomUUID().toString();
+        this.recruiterLeadStatus = ServerConstants.LEAD_STATUS_NEW;
+        this.recruiterLeadCreationTimestamp = new Timestamp(System.currentTimeMillis());
+    }
+
+    public RecruiterLead(String leadName, String leadMobile, int leadChannel) {
+        this.recruiterLeadUUId = UUID.randomUUID().toString();
+        this.recruiterLeadStatus = ServerConstants.LEAD_STATUS_NEW;
+        this.recruiterLeadCreationTimestamp = new Timestamp(System.currentTimeMillis());
+        this.recruiterLeadName = leadName;
+        this.recruiterLeadMobile = leadMobile;
+        this.recruiterLeadChannel = leadChannel;
+    }
+    public static void addLead(RecruiterLead lead) {
+        Logger.info("inside addLead model member method ");
+        lead.save();
+    }
+
 
     public long getRecruiterLeadId() {
         return recruiterLeadId;
@@ -77,12 +100,12 @@ public class RecruiterLead extends Model {
         this.recruiterLeadStatus = recruiterLeadStatus;
     }
 
-    public String getRecruiter_lead_name() {
-        return recruiter_lead_name;
+    public String getRecruiterLeadName() {
+        return recruiterLeadName;
     }
 
-    public void setRecruiter_lead_name(String recruiter_lead_name) {
-        this.recruiter_lead_name = recruiter_lead_name;
+    public void setRecruiterLeadName(String recruiterLeadName) {
+        this.recruiterLeadName = recruiterLeadName;
     }
 
     public String getRecruiterLeadMobile() {
@@ -93,12 +116,12 @@ public class RecruiterLead extends Model {
         this.recruiterLeadMobile = recruiterLeadMobile;
     }
 
-    public int getRecruiter_lead_channel() {
-        return recruiter_lead_channel;
+    public int getRecruiterLeadChannel() {
+        return recruiterLeadChannel;
     }
 
-    public void setRecruiter_lead_channel(int recruiter_lead_channel) {
-        this.recruiter_lead_channel = recruiter_lead_channel;
+    public void setRecruiterLeadChannel(int recruiterLeadChannel) {
+        this.recruiterLeadChannel = recruiterLeadChannel;
     }
 
     public Timestamp getRecruiterLeadCreationTimestamp() {

@@ -234,4 +234,12 @@ public class RecruiterProfile extends Model {
     public void setRecruiterprofilestatus(RecruiterProfileStatus recruiterprofilestatus) {
         this.recruiterprofilestatus = recruiterprofilestatus;
     }
+
+    public RecruiterLead getRecruiterLead() {
+        return recruiterLead;
+    }
+
+    public void setRecruiterLead(RecruiterLead recruiterLead) {
+        this.recruiterLead = recruiterLead;
+    }
 }
