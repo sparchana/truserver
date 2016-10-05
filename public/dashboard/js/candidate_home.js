@@ -113,6 +113,7 @@ function processDataAllJobPosts(returnedData) {
 
                 var rowDiv = document.createElement("div");
                 rowDiv.className = "row";
+                rowDiv.style = "margin: 0; padding: 0";
                 centreTag.appendChild(rowDiv);
 
                 var col = document.createElement("div");

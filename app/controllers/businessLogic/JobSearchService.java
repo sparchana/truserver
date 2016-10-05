@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import static api.ServerConstants.SORT_BY_DATE_POSTED;
 import static api.ServerConstants.SORT_BY_SALARY;
 import static api.ServerConstants.SORT_DEFAULT;
+import static play.libs.Json.toJson;
 
 /**
  * Created by zero on 15/8/16.
@@ -254,20 +255,31 @@ public class JobSearchService {
 
             List<JobPost> relevantJobRoleJobs = queryAndReturnJobPosts(relevantJobRoleIds, null, null, false, ServerConstants.SOURCE_INTERNAL);
 
+            List<Long> finalJobRoleIdList = new ArrayList<>();
+            finalJobRoleIdList.addAll(jobRoleIds);
+            finalJobRoleIdList.addAll(relevantJobRoleIds);
+
             //getting all jobroles excluding candidate's job role preference & relevant job roles
             List<JobRole> jobRoleList = JobRole.find.where()
-                    .notIn("jobRoleId", jobRoleIds)
-                    .notIn("jobRoleId", relevantJobRoleIds)
+                    .notIn("jobRoleId", finalJobRoleIdList )
                     .findList();
 
-            List<Long> otherJobRoleList = jobRoleList.stream().map(JobRole::getJobRoleId).collect(Collectors.toList());
+            List<Long> otherJobRoleIdList = jobRoleList.stream().map(JobRole::getJobRoleId).collect(Collectors.toList());
 
             //getting all the internal jobs apart form candidate's job role pref & relevant job roles
-            List<JobPost> otherJobRoleJobs = queryAndReturnJobPosts(otherJobRoleList, null, null, false, ServerConstants.SOURCE_INTERNAL);
+            List<JobPost> otherJobRoleJobs = queryAndReturnJobPosts(otherJobRoleIdList, null, null, false, ServerConstants.SOURCE_INTERNAL);
 
-            exactJobRoleJobs.addAll(relevantJobRoleJobs);
-            
-            exactJobRoleJobs.addAll(otherJobRoleJobs);
+            for(JobPost jobPost : relevantJobRoleJobs) {
+                if(!exactJobRoleJobs.contains(jobPost)) {
+                    exactJobRoleJobs.add(jobPost);
+                }
+            }
+
+            for(JobPost jobPost : otherJobRoleJobs) {
+                if(!exactJobRoleJobs.contains(jobPost)) {
+                    exactJobRoleJobs.add(jobPost);
+                }
+            }
 
             return exactJobRoleJobs;
         }
