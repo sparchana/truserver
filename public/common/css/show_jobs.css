@@ -28,8 +28,8 @@
 #showAllJobsMobileHeader{
     display: none;
 }
-
 @media screen and (max-width: 768px){
+
     #applyToJobs{
         padding: 0;
         text-align: center;

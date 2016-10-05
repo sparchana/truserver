@@ -22,6 +22,7 @@
             <!-- Bootstrap Core CSS -->
         <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css">
+        <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/materialDashboard.css">
         <link rel="stylesheet" type="text/css" href="/assets/common/css/selected_jobroles.css">
 
         <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
@@ -36,10 +37,10 @@
         <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
 
         <script>
-                $('html, body').css({
-                    'overflow': 'hidden',
-                    'height': '100%'
-                });
+            $('html, body').css({
+                'overflow': 'hidden',
+                'height': '100%'
+            });
         </script>
     </head>
     <body>
@@ -56,11 +57,14 @@
                 function processDataCheckNavBar(returnedData) {
                     if(returnedData == '1'){
                         $('#nav_bar_inc').load('/navBarLoggedIn');
+                        localStorage.setItem("incentives", "0");
                     } else if(returnedData == '2'){
                         $('#nav_bar_inc').load('/partnerNavBarLoggedIn');
                         $(".leadBox").hide();
+                        localStorage.setItem("incentives", "1");
                     } else {
                         $('#nav_bar_inc').load('/navBar');
+                        localStorage.setItem("incentives", "0");
                     }
                 }
 
