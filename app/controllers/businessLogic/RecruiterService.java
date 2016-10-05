@@ -94,6 +94,7 @@ public class RecruiterService {
                 AddCompanyResponse addCompanyResponse;
                 AddCompanyRequest addCompanyRequest = new AddCompanyRequest();
                 addCompanyRequest.setCompanyName(recruiterSignUpRequest.getRecruiterCompanyName());
+                addCompanyRequest.setCompanyStatus(1);
                 addCompanyResponse = CompanyService.addCompany(addCompanyRequest);
 
                 existingCompany = Company.find.where().eq("companyId", addCompanyResponse.getCompanyId()).findUnique();
