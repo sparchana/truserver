@@ -35,7 +35,7 @@ public class RecruiterController {
     public static Result logoutRecruiter() {
         session().clear();
         Logger.info("Recruiter Logged Out");
-        return ok(views.html.Recruiter.recruiter_index.render());
+        return ok(views.html.Recruiter.recruiter_home.render());
     }
 
     public static Result checkRecruiterSession() {

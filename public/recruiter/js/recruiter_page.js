@@ -20,7 +20,7 @@ function getRequirement(){
 
 ///Scroll
 $(document).scroll(function(){
-    if ($(this).scrollTop() >250) {
+    if ($(this).scrollTop() > 80) {
         $('nav').css({"background": "#039BE5"});
     }
     else{

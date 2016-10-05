@@ -132,5 +132,5 @@ function requestLead(){
 }
 
 function notifyError(msg){
-    $.notify(msg, "error");
+    Materialize.toast(msg, 3000, 'rounded');
 }

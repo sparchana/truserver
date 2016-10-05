@@ -9,7 +9,6 @@ ul.token-input-list-facebook {
     z-index: 9999999;
     font-size: 13px;
     margin: 0;
-    padding: 2px 0 1px;
     background-color: transparent;
     list-style-type: none;
     clear: left;
@@ -27,8 +26,8 @@ ul.token-input-list-facebook li input {
 
 li.token-input-token-facebook {
     overflow: hidden;
-    height: 30px;
-    margin: 3px;
+    height: 12%;
+    margin-top: 12px;
     padding: 2px;
     color: #000;
     background-color: #ffffff;
@@ -43,17 +42,16 @@ li.token-input-token-facebook {
 
 li.token-input-token-facebook p {
     display: inline;
-    padding: 8px;
-    background: #fff;
+    background: transparent;
     z-index: 9999999;
-    margin: 0;
+    margin: 0 0 0 4px;
     color: #000;
 }
 
 li.token-input-token-facebook span {
     color: #000;
     height: 12px;
-    padding: 8px;
+    padding: 4px;
     font-size: 16px;
     margin-left: 8px;
     z-index: 9999999;

@@ -30,16 +30,8 @@
 
         <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
         <script type="text/javascript" src="/assets/common/js/validation.js"></script>
-        <script type="text/javascript" src="/assets/partner/js/notify.min.js"></script>
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        @*<script>
-        localStorage.clear();
-        $('html, body').css({
-        'overflow': 'hidden',
-        'height': '100%'
-        });
-        </script>*@
     </head>
     <body>
         <div class="navbar-fixed">
@@ -77,39 +69,44 @@
                 <h4>Log In</h4>
             </div>
         </div>
-            <!-- First Container -->
-        <div class="container-fluid" id="sectionOne">
-                <!-- Hiring Container -->
-            <div class="row" id="companyHiringRow">
-                <div class="container" style="margin-bottom: 0">
-                    <div class="row">
-                        <form class="col s12 l4" id="leadForm">
-                            <div class="row">
-                                <div class="input-field col s12 l12">
-                                    <input type="text" id="mobileNumber" placeholder="Mobile Number">
+
+        <div class="parallax-container custom-parallax-container">
+            <div class="parallax"><img class="customParallaxContainer" src="/assets/recruiter/img/image1.png"></div>
+                <!-- First Container -->
+            <div class="container-fluid" id="sectionOne">
+                    <!-- Hiring Container -->
+                <div class="row" id="companyHiringRow">
+                    <div class="container" style="margin-bottom: 0">
+                        <div class="row">
+                            <form class="col s12 l4" id="leadForm">
+
+                                <h5 style="color: #fff">Employee enquiry</h5>
+                                <div class="row">
+                                    <div class="input-field col s12 l12">
+                                        <input type="text" id="mobileNumber" style="color: #fff" maxlength="10" placeholder="Mobile Number">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="input-field col s12 l12">
-                                    <input type="text" id="jobRoleOption" placeholder="Job Role">
-                                    <script type="text/javascript">
-                                            $(document).ready(function () {
-                                                $("#jobRoleOption").tokenInput(getJob(), {
-                                                    theme: "facebook",
-                                                    placeholder: "What jobs are you looking",
-                                                    minChars: 1,
-                                                    tokenLimit: 3,
-                                                    hintText: "Start Typing Jobs (eg: delivery boy, driver, etc..)",
-                                                    preventDuplicates: true
-                                                });
+                                <div class="row">
+                                    <div class="input-field col s12 l12" style="margin-top: -28px">
+                                        <input type="text" id="jobRoleOption" placeholder="Job Role">
+                                        <script type="text/javascript">
+                                        $(document).ready(function () {
+                                            $("#jobRoleOption").tokenInput(getJob(), {
+                                                theme: "facebook",
+                                                placeholder: "What jobs are you looking",
+                                                minChars: 1,
+                                                tokenLimit: 3,
+                                                hintText: "Start Typing Jobs (eg: delivery boy, driver, etc..)",
+                                                preventDuplicates: true
                                             });
-                                        </script>
+                                        });
+                                    </script>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="input-field col s12 l12">
-                                    <input type="text" id="locationOption" placeholder="Location">
-                                    <script type="text/javascript">
+                                <div class="row">
+                                    <div class="input-field col s12 l12" style="margin-top: -6px">
+                                        <input type="text" id="locationOption" placeholder="Location">
+                                        <script type="text/javascript">
                                             $(document).ready(function () {
                                                 $("#locationOption").tokenInput(getLocality(), {
                                                     theme: "facebook",
@@ -121,12 +118,12 @@
                                                 });
                                             });
                                         </script>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="input-field col s12 l12">
-                                    <input type="text" id="recruiterRequirement">
-                                    <script type="text/javascript">
+                                <div class="row">
+                                    <div class="input-field col s12 l12" style="margin-top: -6px">
+                                        <input type="text" id="recruiterRequirement">
+                                        <script type="text/javascript">
                                             $(document).ready(function () {
                                                 $("#recruiterRequirement").tokenInput(getRequirement(), {
                                                     theme: "facebook",
@@ -138,17 +135,17 @@
                                                 });
                                             });
                                         </script>
+                                    </div>
                                 </div>
-                            </div>
-                            <a class="waves-effect waves-light transparent btn right" onclick="requestLead()" style="border: 1px solid #ffffff"><font style="color: #ffffff">Submit</font></a>
-                        </form>
+                                <a class="waves-effect waves-light transparent btn right" onclick="requestLead()" style="border: 1px solid #ffffff"><font style="color: #ffffff">Submit</font></a>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="container" style="margin-top: -7%;
-            text-align: center">
+        <div class="container" style="margin-top: -7%; z-index: 999; position: relative; text-align: center">
             <div class="row" id="companyHiringRowSub">
                 <font size="4" style="margin: 2%">Company Hiring Form Us</font>
                 <div class="row" style="margin: 1%">
