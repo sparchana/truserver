@@ -12,6 +12,9 @@ alter table recruiterprofile add column recruiterlinkedinprofile bigint signed n
 alter table recruiterprofile add column recruiterofficeaddress varchar(500) null;
 alter table recruiterprofile add column recruiteremailstatus int signed not null default 0;
 alter table recruiterprofile add column profile_status_id int signed;
+alter table recruiterprofile add column recruiter_lead_recruiter_lead_id bigint signed;
+
+alter table recruiterprofile add constraint uq_recruiterprofile_recruiter_lead_recruiter_lead_id unique (recruiter_lead_recruiter_lead_id);
 
 alter table recruiterprofile add constraint fk_recruiterprofile_profile_status_id foreign key (profile_status_id) references recruiter_profile_status (profile_status_id) on delete restrict on update restrict;
 create index ix_recruiterprofile_profile_status_id on recruiterprofile (profile_status_id);
@@ -51,6 +54,7 @@ create table recruiterleadtolocality (
   constraint pk_recruiterleadtolocality primary key (recruiter_lead_to_locality_id)
 );
 
+alter table recruiterprofile add constraint fk_recruiterprofile_recruiter_lead_recruiter_lead_id foreign key (recruiter_lead_recruiter_lead_id) references recruiter_lead (recruiter_lead_id) on delete restrict on update restrict;
 
 alter table recruiterleadtolocality add constraint fk_recruiterleadtolocality_localityid foreign key (localityid) references locality (localityid) on delete restrict on update restrict;
 create index ix_recruiterleadtolocality_localityid on recruiterleadtolocality (localityid);
@@ -62,6 +66,9 @@ create index ix_recruiterleadtolocality_recruiter_lead_id on recruiterleadtoloca
 
 alter table recruiterprofile drop foreign key fk_recruiterprofile_profile_status_id;
 drop index ix_recruiterprofile_profile_status_id on recruiterprofile;
+
+alter table recruiterprofile drop foreign key fk_recruiterprofile_recruiter_lead_recruiter_lead_id;
+drop index uq_recruiterprofile_recruiter_lead_recruiter_lead_id on recruiterprofile;
 
 alter table recruiterleadtolocality drop foreign key fk_recruiterleadtolocality_localityid;
 drop index ix_recruiterleadtolocality_localityid on recruiterleadtolocality;
@@ -75,6 +82,7 @@ alter table recruiterprofile drop column recruiterlinkedinprofile;
 alter table recruiterprofile drop column recruiterofficeaddress;
 alter table recruiterprofile drop column recruiteremailstatus;
 alter table recruiterprofile drop column profile_status_id;
+alter table recruiterprofile drop column recruiter_lead_recruiter_lead_id;
 
 drop table if exists recruiter_profile_status;
 drop table if exists recruiter_auth;

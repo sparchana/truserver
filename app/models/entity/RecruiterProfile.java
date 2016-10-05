@@ -80,6 +80,10 @@ public class RecruiterProfile extends Model {
     @JoinColumn(name = "profile_status_id", referencedColumnName = "profile_status_id")
     private RecruiterProfileStatus recruiterprofilestatus;
 
+    @JsonManagedReference
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private RecruiterLead recruiterLead;
+
     public static Finder<String, RecruiterProfile> find = new Finder(RecruiterProfile.class);
 
     public RecruiterProfile() {
