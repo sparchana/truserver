@@ -1417,4 +1417,7 @@ public class Application extends Controller {
     public static Result updateAllRelevantJobCategories() {
         return ok(toJson(JobRelevancyEngine.updateAllRelevantJobCategories()));
     }
+    public static Result recruiterHome(){
+        return ok(views.html.Recruiter.recruiter_home.render());
+    }
 }
