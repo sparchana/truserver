@@ -40,6 +40,7 @@ create table recruiter_lead (
   recruiter_lead_mobile         varchar(13) not null,
   recruiter_lead_channel        int signed not null,
   recruiter_lead_creation_timestamp timestamp not null,
+  recruiter_lead_requirement    varchar(50) not null,
   recruiter_lead_update_timestamp datetime(6) not null,
   constraint uq_recruiter_lead_recruiter_lead_uuid unique (recruiter_lead_uuid),
   constraint pk_recruiter_lead primary key (recruiter_lead_id)
@@ -54,6 +55,21 @@ create table recruiterleadtolocality (
   constraint pk_recruiterleadtolocality primary key (recruiter_lead_to_locality_id)
 );
 
+create table recruiterleadtojobrole (
+  recruiter_lead_to_job_role_id bigint signed auto_increment not null,
+  recruiter_lead_to__job_role_create_timestamp timestamp not null default current_timestamp,
+  jobroleid                     bigint signed,
+  recruiter_lead_id             bigint signed,
+  recruiter_lead_to_job_role_update_timestamp datetime(6) not null,
+  constraint pk_recruiterleadtojobrole primary key (recruiter_lead_to_job_role_id)
+);
+
+alter table recruiterleadtojobrole add constraint fk_recruiterleadtojobrole_jobroleid foreign key (jobroleid) references jobrole (jobroleid) on delete restrict on update restrict;
+create index ix_recruiterleadtojobrole_jobroleid on recruiterleadtojobrole (jobroleid);
+
+alter table recruiterleadtojobrole add constraint fk_recruiterleadtojobrole_recruiter_lead_id foreign key (recruiter_lead_id) references recruiter_lead (recruiter_lead_id) on delete restrict on update restrict;
+create index ix_recruiterleadtojobrole_recruiter_lead_id on recruiterleadtojobrole (recruiter_lead_id);
+
 alter table recruiterprofile add constraint fk_recruiterprofile_recruiter_lead_recruiter_lead_id foreign key (recruiter_lead_recruiter_lead_id) references recruiter_lead (recruiter_lead_id) on delete restrict on update restrict;
 
 alter table recruiterleadtolocality add constraint fk_recruiterleadtolocality_localityid foreign key (localityid) references locality (localityid) on delete restrict on update restrict;
@@ -63,6 +79,12 @@ alter table recruiterleadtolocality add constraint fk_recruiterleadtolocality_re
 create index ix_recruiterleadtolocality_recruiter_lead_id on recruiterleadtolocality (recruiter_lead_id);
 
 # --- !Downs
+
+alter table recruiterleadtojobrole drop foreign key fk_recruiterleadtojobrole_jobroleid;
+drop index ix_recruiterleadtojobrole_jobroleid on recruiterleadtojobrole;
+
+alter table recruiterleadtojobrole drop foreign key fk_recruiterleadtojobrole_recruiter_lead_id;
+drop index ix_recruiterleadtojobrole_recruiter_lead_id on recruiterleadtojobrole;
 
 alter table recruiterprofile drop foreign key fk_recruiterprofile_profile_status_id;
 drop index ix_recruiterprofile_profile_status_id on recruiterprofile;
@@ -88,3 +110,4 @@ drop table if exists recruiter_profile_status;
 drop table if exists recruiter_auth;
 drop table if exists recruiter_lead;
 drop table if exists recruiterleadtolocality;
+drop table if exists recruiterleadtojobrole;

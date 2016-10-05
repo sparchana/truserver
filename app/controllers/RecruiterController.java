@@ -3,6 +3,7 @@ package controllers;
 import api.ServerConstants;
 import api.http.httpRequest.LoginRequest;
 import api.http.httpRequest.PartnerSignUpRequest;
+import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -92,4 +93,16 @@ public class RecruiterController {
         return ok(toJson(RecruiterService.login(loginMobile, loginPassword)));
     }
 
+    public static Result addWebsiteLead() {
+        JsonNode req = request().body().asJson();
+        RecruiterLeadRequest recruiterLeadRequest = new RecruiterLeadRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            recruiterLeadRequest = newMapper.readValue(req.toString(), RecruiterLeadRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Logger.info("req JSON: " + req );
+        return ok(toJson(RecruiterLeadService.createLeadWithOtherDetails(recruiterLeadRequest)));
+    }
 }
