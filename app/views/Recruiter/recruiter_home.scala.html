@@ -31,6 +31,8 @@
         <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
         <script type="text/javascript" src="/assets/common/js/validation.js"></script>
 
+        <meta name="theme-color" content="#000000">
+
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     </head>
     <body>
@@ -108,6 +110,10 @@
                         <img src="/assets/recruiter/img/user.svg" width="16px" style="display: inline-block; margin: -4px 2px 2px 2px;">
                         <h6 style="color: #fff; font-size: 16px;  display: inline-block"><font color="#2ec866">20000+</font> candidates to recruit</h6>
                     </div>
+                    <center class="hide-on-med-and-up" id="mobileEnquiryBtn">
+                        <a class="waves-effect waves-light transparent btn modal-trigger" style="border:1px solid #2ec866; color:#2ec866" data-target="recEnquiry">Enquiry</a>
+                    </center>
+
                 </div>
 
             </div>
@@ -169,17 +175,14 @@
 
                 </div>
             </div>
-            <center class="hide-on-med-and-up" id="mobileEnquiryBtn">
-            <a class="waves-effect waves-light transparent btn modal-trigger" style="border:1px solid #2ec866;color:#2ec866" data-target="recEnquiry">Enquiry</a>
-            </center>
 
-        <div class="container hide-on-med-and-up" style="text-align: center">
+        <div class="container hide-on-med-and-up" style="text-align: center; background: transparent">
             <!-- Modal Trigger -->
                 <!-- Modal Structure -->
-            <div id="recEnquiry" class="modal bottom-sheet">
+            <div id="recEnquiry" class="modal bottom-sheet" style=" background: rgba(0, 0, 0, 0.76); z-index: 999">
                 <form>
                     <div class="container">
-                        <h5 style="color: #000">Employee enquiry</h5>
+                        <h5 style="color: #fff">Employee enquiry</h5>
                         <div class="row" style="margin-bottom: 2%">
                             <div class="input-field col s12 l3">
                                 <input type="text" id="mobileNumberModal" style="color: #b7b5b0" maxlength="10" placeholder="Mobile Number">
@@ -193,6 +196,7 @@
                                         placeholder: "What jobs are you looking",
                                         minChars: 1,
                                         tokenLimit: 3,
+                                        zindex: 9999999,
                                         hintText: "Start Typing Jobs (eg: delivery boy, driver, etc..)",
                                         preventDuplicates: true
                                     });
@@ -208,6 +212,7 @@
                                         placeholder: "Which area you are looking at?",
                                         minChars: 1,
                                         tokenLimit: 3,
+                                        zindex: 9999999,
                                         hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
                                         preventDuplicates: true
                                     });
@@ -224,7 +229,7 @@
                                 </select>
                             </div>
                         </div>
-                        <a class="waves-effect waves-light ascentGreen lighten-1 btn right" onclick="requestLeadModal()" style="border: 1px solid #ffffff;margin-bottom: 16px"><font style="color: #ffffff">Submit</font></a>
+                        <a class="waves-effect waves-light ascentGreen lighten-1 btn right" onclick="requestModalLead   ()" style="border: 1px solid #ffffff;margin-bottom: 16px"><font style="color: #ffffff">Submit</font></a>
                     </div>
                 </form>
                 </div>
@@ -233,12 +238,12 @@
 
         <div class="container" id="companyHiringBox">
             <div class="row" id="companyHiringCompanyLogo">
-                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
-                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
-                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
-                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
-                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
-                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
+                <div class="col s6 l2"><img src="/assets/recruiter/img/company/driveu.png" style="height: 50px; padding: 6px"></div>
+                <div class="col s6 l2"><img src="/assets/recruiter/img/company/urban_clap.png" style="height: 50px; padding: 6px"></div>
+                <div class="col s6 l2"><img src="/assets/recruiter/img/company/bb_logo.png" style="height: 50px; padding: 6px"></div>
+                <div class="col s6 l2"><img src="/assets/recruiter/img/company/dunkin_donuts.png" style="height: 50px; padding: 6px"></div>
+                <div class="col s6 l2"><img src="/assets/recruiter/img/company/porter_logo.png" style="height: 50px; padding: 6px"></div>
+                <div class="col s6 l2"><img src="/assets/recruiter/img/company/swiggy.png" style="height: 50px; padding: 6px"></div>
             </div>
             <div class="row" id="companyHiringHeader">
                 <font size="4" style="margin: 2%">Company Hiring Form Us</font>

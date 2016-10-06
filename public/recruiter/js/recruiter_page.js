@@ -60,15 +60,15 @@ $(document).ready(function(){
             text: 'delivery boys'
         })
         .typistPause(1000)
-        .typistRemove(23)
+        .typistRemove(13)
         .typistPause(500)
         .typistAdd('drivers')
         .typistPause(1000)
-        .typistRemove(6)
+        .typistRemove(7)
         .typistPause(500)
         .typistAdd('telecallers')
         .typistPause(1000)
-        .typistRemove(10)
+        .typistRemove(11)
         .typistPause(500)
         .typistAdd('now!')
         .typistStop();
