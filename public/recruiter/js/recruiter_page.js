@@ -48,15 +48,6 @@ function processDataCheckJobs(returnedData) {
         jobArray.push(item);
     });
 }
-$('.modal-trigger').leanModal({
-        dismissible: true, // Modal can be dismissed by clicking outside of the modal
-        opacity: .2, // Opacity of modal background
-        in_duration: 100, // Transition in duration
-        out_duration: 100, // Transition out duration
-        starting_top: '4%', // Starting top style attribute
-        ending_top: '4%' // Ending top style attribute
-    }
-);
 ///modal
 $(document).ready(function(){
     $('select').material_select();

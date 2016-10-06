@@ -33,6 +33,11 @@
     background: rgb(84, 85, 99);
 }
 
+.ascentGreen {
+    background-color: #2ec866 !important;
+}
+
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     /* display: none; <- Crashes Chrome on hover */
