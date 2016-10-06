@@ -99,22 +99,31 @@ public class JobService {
 
     }
 
-    public static JobPost getAndSetJobPostValues(AddJobPostRequest addJobPostRequest, JobPost newJobPost, List<Integer> jobPostLocalityList) {
+    public static JobPost getAndSetJobPostValues(AddJobPostRequest addJobPostRequest,
+                                                 JobPost newJobPost,
+                                                 List<Integer> jobPostLocalityList)
+    {
         newJobPost.setJobPostMinSalary(addJobPostRequest.getJobPostMinSalary());
         newJobPost.setJobPostMaxSalary(addJobPostRequest.getJobPostMaxSalary());
+
         newJobPost.setJobPostStartTime(addJobPostRequest.getJobPostStartTime());
         newJobPost.setJobPostEndTime(addJobPostRequest.getJobPostEndTime());
+
         newJobPost.setJobPostIsHot(addJobPostRequest.getJobPostIsHot());
-        newJobPost.setJobPostIsHot(addJobPostRequest.getJobPostIsHot());
+
         newJobPost.setJobPostDescription(addJobPostRequest.getJobPostDescription());
         newJobPost.setJobPostTitle(addJobPostRequest.getJobPostTitle());
+
         newJobPost.setJobPostIncentives(addJobPostRequest.getJobPostIncentives());
         newJobPost.setJobPostMinRequirement(addJobPostRequest.getJobPostMinRequirement());
+
         newJobPost.setJobPostAddress(addJobPostRequest.getJobPostAddress());
         newJobPost.setJobPostPinCode(addJobPostRequest.getJobPostPinCode());
+
         newJobPost.setJobPostVacancies(addJobPostRequest.getJobPostVacancies());
         newJobPost.setJobPostDescriptionAudio(addJobPostRequest.getJobPostDescriptionAudio());
         newJobPost.setJobPostWorkFromHome(addJobPostRequest.getJobPostWorkFromHome());
+
         newJobPost.setJobPostPartnerInterviewIncentive(addJobPostRequest.getPartnerInterviewIncentive());
         newJobPost.setJobPostPartnerJoiningIncentive(addJobPostRequest.getPartnerJoiningIncentive());
 

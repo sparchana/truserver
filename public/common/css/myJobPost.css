@@ -518,6 +518,15 @@ hr{
     width: 120px;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.16);
 }
+
+.jobApplyPartner{
+    border: none;
+    color: white;
+    background: #09ac58;
+    padding: 6%;
+    width: 120px;
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.16);
+}
     #categoriesNameDes{
     font-size:16px;
     text-align: left;
@@ -555,7 +564,14 @@ hr{
     background-color: #286AB6;
     color: white;
 }
+.joiningIncentiveDiv{
+    margin-left: 12px;
+}
+
 @media screen and (max-width: 768px) {
+    .joiningIncentiveDiv{
+        margin-left: 0;
+    }
     #pageNFBtn{
         width:25%;
         border: none;
@@ -584,6 +600,12 @@ hr{
         width:48%;
     }
     .jobApplyBtnV2{
+        margin-top: 6%;
+        background: #09ac58;
+        padding: 4%;
+        box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.16);
+    }
+    .jobApplyPartner{
         margin-top: 6%;
         background: #09ac58;
         padding: 4%;
@@ -1349,13 +1371,22 @@ li .dropdown-menu{
 /*  New addition of css */
 
 
- .jobApplyBtnV2:hover{
-     cursor: pointer;
-     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
- }
+.jobApplyBtnV2:hover{
+ cursor: pointer;
+ box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
+}
+
+.jobApplyPartner:hover{
+ cursor: pointer;
+ box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
+}
+
+#incentiveSection{
+    margin-bottom: 12px;
+}
+
 .posted_job_details_container{
     margin-top: 90px;
-    \background-color:white;
 
 }
 .posted_job_details_center{
@@ -1384,7 +1415,6 @@ li .dropdown-menu{
      margin-bottom:5px;
      box-shadow:0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.2),0 1px 5px 0 rgba(0,0,0,.12);
  }
-
 #aboutCompany{
     margin-top:0px;
     padding: 1% 9%;

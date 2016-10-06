@@ -314,6 +314,7 @@ function processDataForSelectedJobPost(returnedData) {
 
                             var rowDiv = document.createElement("div");
                             rowDiv.className = "row";
+                            rowDiv.style = "margin: 0; padding: 0";
                             centreTag.appendChild(rowDiv);
 
                             var col = document.createElement("div");
@@ -454,14 +455,98 @@ function processDataForSelectedJobPost(returnedData) {
                                 $('[data-toggle="tooltip"]').tooltip()
                             });
 
+                            if(localStorage.getItem("incentives") == "1"){
+                                var incentiveDetails = document.createElement("div");
+                                incentiveDetails.className = "row";
+                                incentiveDetails.id = "incentiveDetails";
+                                jobBodyCol.appendChild(incentiveDetails);
+
+                                //!*  interview incentive  *!/
+
+                                var interviewIncentiveCol = document.createElement("div");
+                                interviewIncentiveCol.className = "col-sm-4";
+                                incentiveDetails.appendChild(interviewIncentiveCol);
+
+                                var interviewIncentiveRow = document.createElement("div");
+                                interviewIncentiveRow.className = "row";
+                                interviewIncentiveCol.appendChild(interviewIncentiveRow);
+
+                                var interviewIncentiveRowCol = document.createElement("div");
+                                interviewIncentiveRowCol.className = "col-sm-12";
+                                interviewIncentiveRow.appendChild(interviewIncentiveRowCol);
+
+                                var incentiveIconDiv = document.createElement("div");
+                                incentiveIconDiv.style = "display : inline-block;top:0";
+                                interviewIncentiveRowCol.appendChild(incentiveIconDiv);
+
+                                var incentiveIcon = document.createElement("img");
+                                incentiveIcon.src = "/assets/partner/img/coin.png";
+                                incentiveIcon.setAttribute('height', '20px');
+                                incentiveIcon.style = "margin: -4px 0 0 -5px";
+                                incentiveIconDiv.appendChild(incentiveIcon);
+
+                                var interviewIncentiveVal = document.createElement("div");
+                                interviewIncentiveVal.className = "incentiveEmptyBody";
+                                interviewIncentiveVal.style = "display: inline-block;";
+                                if(jobPost.jobPostPartnerInterviewIncentive == null || jobPost.jobPostPartnerInterviewIncentive == 0){
+                                    interviewIncentiveVal.textContent = "Interview incentive not specified";
+                                } else{
+                                    interviewIncentiveVal.textContent = "₹" + rupeeFormatSalary(jobPost.jobPostPartnerInterviewIncentive) + " interview incentive";
+                                    incentiveIcon.src = "/assets/partner/img/money-bag.png";
+                                    interviewIncentiveVal.className = "incentiveBody";
+                                }
+                                interviewIncentiveRowCol.appendChild(interviewIncentiveVal);
+
+                                //!*  joining incentive  *!/
+
+                                var joiningIncentiveCol = document.createElement("div");
+                                joiningIncentiveCol.className = "col-sm-4";
+                                incentiveDetails.appendChild(joiningIncentiveCol);
+
+                                var joiningIncentiveRow = document.createElement("div");
+                                joiningIncentiveRow.className = "row";
+                                joiningIncentiveCol.appendChild(joiningIncentiveRow);
+
+                                var joiningIncentiveRowCol = document.createElement("div");
+                                joiningIncentiveRowCol.className = "col-sm-12";
+                                joiningIncentiveRow.appendChild(joiningIncentiveRowCol);
+
+                                incentiveIconDiv = document.createElement("div");
+                                incentiveIconDiv.style = "display : inline-block;top:0";
+                                joiningIncentiveRowCol.appendChild(incentiveIconDiv);
+
+                                incentiveIcon = document.createElement("img");
+                                incentiveIcon.src = "/assets/partner/img/coin.png";
+                                incentiveIcon.setAttribute('height', '20px');
+                                incentiveIcon.style = "margin: -4px 0 0 -5px";
+                                incentiveIconDiv.appendChild(incentiveIcon);
+
+                                var joiningIncentiveVal = document.createElement("div");
+                                joiningIncentiveVal.className = "incentiveEmptyBody";
+                                joiningIncentiveVal.style = "display: inline-block;";
+                                if(jobPost.jobPostPartnerJoiningIncentive == null || jobPost.jobPostPartnerJoiningIncentive == 0){
+                                    joiningIncentiveVal.textContent = "Joining Incentive not specified";
+                                } else{
+                                    joiningIncentiveVal.textContent =  "₹" + rupeeFormatSalary(jobPost.jobPostPartnerJoiningIncentive) + " joining incentive";
+                                    incentiveIcon.src = "/assets/partner/img/money-bag.png";
+                                    joiningIncentiveVal.className = "incentiveBody";
+                                }
+                                incentiveIconDiv.appendChild(joiningIncentiveVal);
+                            }
+
                             //!*  apply button *!/
                             var applyBtnDiv = document.createElement("div");
                             applyBtnDiv.className = "col-sm-2";
                             rowDiv.appendChild(applyBtnDiv);
 
                             var applyBtn = document.createElement("div");
+                            if(localStorage.getItem("incentives") == "1"){
+                                applyBtn.textContent = "View Job";
+                            } else{
+                                applyBtn.textContent = "View & Apply";
+                            }
                             applyBtn.className = "jobApplyBtn";
-                            applyBtn.textContent = "View & Apply";
+
                             applyBtnDiv.appendChild(applyBtn);
                             applyBtn.onclick=function(){
                                 var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
@@ -473,7 +558,7 @@ function processDataForSelectedJobPost(returnedData) {
                                 } catch (exception) {
                                     console.log("exception occured!!" + exception.stack);
                                 }
-                            }
+                            };
                             if(jobPost.source == 0){
                                 popularJobCount++;
                             }

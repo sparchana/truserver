@@ -59,11 +59,14 @@
                     if(returnedData == '1'){
                         $('#nav_bar_inc').load('/navBarLoggedIn');
                         $(".jobApplyBtnV2").show();
+                        $("#incentiveSection").hide();
                     } else if(returnedData == '2'){
                         $('#nav_bar_inc').load('/partnerNavBarLoggedIn');
                         $(".jobApplyBtnV2").hide();
+                        $("#incentiveSection").show();
                     } else {
                         $('#nav_bar_inc').load('/navBar');
+                        $("#incentiveSection").hide();
                     }
                 }
 
@@ -136,6 +139,17 @@
         <div class="posted_job_details_container">
             <div id="aboutCompanyTitle">Job Description</div>
             <br>
+            <div id="incentiveSection">
+                <div style="display: inline-block;">
+                    <img src="/assets/partner/img/money-bag.png" style="margin-top: -4px">
+                    <h5 id="interviewIncentiveVal" style="display: inline-block; font-weight: 600"></h5>
+                </div>
+                <div style="display: inline-block;" class="joiningIncentiveDiv">
+                    <img src="/assets/partner/img/money-bag.png" style="margin-top: -4px">
+                    <h5 id="joiningIncentiveVal" style="display: inline-block; font-weight: 600"></h5>
+                </div>
+            </div>
+
             <!--Job Details to display-->
             <div class="posted_job_details_center">
                 <div class="row" style="padding:1% 3%;margin:1% 0% 1% 0%">
