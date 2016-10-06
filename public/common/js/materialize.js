@@ -460,7 +460,7 @@ if ($) {
       inDuration: 300,
       outDuration: 225,
       constrain_width: false, // Constrains width of dropdown to the activator
-      hover: true,
+      hover: false,
       gutter: 0, // Spacing from edge
       belowOrigin: false,
       alignment: 'left',

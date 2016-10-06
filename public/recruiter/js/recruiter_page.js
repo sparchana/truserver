@@ -21,7 +21,7 @@ function getRequirement(){
 ///Scroll
 $(document).scroll(function(){
     if ($(this).scrollTop() > 80) {
-        $('nav').css({"background": "#039BE5"});
+        $('nav').css({"background": "rgba(0, 0, 0, 0.5)"});
     }
     else{
         $('nav').css({"background": "transparent"});
@@ -29,8 +29,7 @@ $(document).scroll(function(){
 });
 
 function processDataCheckLocality(returnedData) {
-    returnedData.forEach(function(locality)
-    {
+    returnedData.forEach(function(locality) {
         var id = locality.localityId;
         var name = locality.localityName;
         var item = {};
@@ -41,8 +40,7 @@ function processDataCheckLocality(returnedData) {
 }
 
 function processDataCheckJobs(returnedData) {
-    returnedData.forEach(function(job)
-    {
+    returnedData.forEach(function(job) {
         var id = job.jobRoleId;
         var name = job.jobName;
         var item = {};
@@ -52,11 +50,26 @@ function processDataCheckJobs(returnedData) {
     });
 }
 
+//TODO reset password for recruiter
+
 ///modal
 $(document).ready(function(){
+    $('select').material_select();
     $(".button-collapse").sideNav();
     $('.parallax').parallax();
     $('.modal-trigger').leanModal({dismissible: true});
+
+    $('.typist')
+        .typist({
+            text: 'Delivery boy'
+        })
+        .typistPause(1500) // 2 sec
+        .typistRemove(12)
+        .typistAdd('Driver')
+        .typistPause(1500) // 2 sec
+        .typistRemove(6)
+        .typistAdd('Telecaller')
+        .typistStop();
 
     try {
         $.ajax({
@@ -105,6 +118,4 @@ $(document).ready(function(){
     item ["id"] = id;
     item ["name"] = name;
     requirementArray.push(item);
-
-
 });
