@@ -22,7 +22,7 @@ public class RecruiterLeadToJobRole extends Model {
     @Column(name = "recruiter_lead_to_job_role_id", columnDefinition = "bigint signed", unique = true)
     private Long recruiterLeadToJobRoleId;
 
-    @Column(name = "recruiter_lead_to__job_role_create_timeStamp", columnDefinition = "timestamp not null default current_timestamp")
+    @Column(name = "recruiter_lead_to_job_role_create_timeStamp", columnDefinition = "timestamp not null default current_timestamp")
     private Timestamp recruiterLeadToJobRoleCreateTimeStamp;
 
     @UpdatedTimestamp

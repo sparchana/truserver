@@ -57,10 +57,10 @@ $(document).ready(function(){
 
     $('.typist')
         .typist({
-            text: 'Delivery boy'
+            text: 'Delivery boys'
         })
         .typistPause(1500) // 2 sec
-        .typistRemove(12)
+        .typistRemove(123)
         .typistAdd('Driver')
         .typistPause(1500) // 2 sec
         .typistRemove(6)

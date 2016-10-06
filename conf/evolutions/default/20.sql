@@ -57,7 +57,7 @@ create table recruiterleadtolocality (
 
 create table recruiterleadtojobrole (
   recruiter_lead_to_job_role_id bigint signed auto_increment not null,
-  recruiter_lead_to__job_role_create_timestamp timestamp not null default current_timestamp,
+  recruiter_lead_to_job_role_create_timestamp timestamp not null default current_timestamp,
   jobroleid                     bigint signed,
   recruiter_lead_id             bigint signed,
   recruiter_lead_to_job_role_update_timestamp datetime(6) not null,
