@@ -17,7 +17,6 @@
 .select-wrapper input.select-dropdown{
     color: #8e8e8e;
 }
-
 ::-webkit-scrollbar
 {
     width: 6px;  /* for vertical scrollbars */
@@ -32,6 +31,16 @@
 ::-webkit-scrollbar-thumb
 {
     background: rgb(84, 85, 99);
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+body{
+    font-family:Lato;
 }
 
 nav{
@@ -52,7 +61,7 @@ nav{
 .footerLeadForm{
     position: absolute;
     width:100%;
-    padding: 2%;
+    padding: 1%;
     bottom: 0;
     text-align: center;
     background: rgba(0, 0, 0, 0.68)
@@ -61,12 +70,13 @@ nav{
 .sectionOneBody{
     font-family: Lato;
     text-align: center;
-    margin-top: 12%;
+    margin-top: 9%;
     padding: 4%;
 }
 
 .custom-parallax-container{
     position: relative;
+    margin-bottom:4% ;
     height: 100vh;
     background: linear-gradient(rgba(24, 26, 45, 0.4), rgba(0, 0, 0, 0.9)) no-repeat center;
 }
@@ -128,6 +138,7 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
     padding: 1%;
     margin: 0;
     background-color: #fff;
+
 }
 
 #sectionTwo{
@@ -148,19 +159,46 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
 #testimonial{
     text-align: center;
 }
-
-footer{
-    background-color: #ff5252;
-}
-.page-footer{
-    background-color: #ff5252;
-}
 .footer-copyright{
     text-align: center;
 }
-
+#companyHiringBox{
+    padding: 0;
+    text-align: center;
+    border: 1px solid #f3f3f3;
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
+}
+#companyHiringHeader{
+    margin: 0;
+    padding: 1%;
+    background-color: #fbfbfb;
+    color: #000;
+}
+#companyHiringCompanyLogo{
+    margin:0;
+    padding: 4%;
+    border-bottom: 1px solid #e2e2e2;
+}
+#companyHiringCompanyLogo img{
+    margin-bottom: 2%;
+}
+#modalLeftBox{
+    background-color: rgb(55, 71, 79);
+    height: 100%;
+}
+#inputContainerModalSignup{
+    padding: 2%;
+}
+#inputContainerModalSignup >.input-field > input{
+    margin: 0;
+}
+#modalRightBox{
+    margin-top:10%;
+    text-align: center;
+}
 @media screen and (max-width: 768px) {
     #leadForm{
+        margin-top:6%;
         padding: 6%;
     }
     .customParallaxContainer{

@@ -40,7 +40,7 @@
                     <div class="nav-wrapper">
                         <a href="#!" class="brand-logo">
                             <img src="/assets/common/img/logo-main.gif" style="height: 42px;
-                                margin-top: 2%">
+                                margin-top: -2%">
                         </a>
                         <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
                         <ul class="right hide-on-med-and-down">
@@ -59,8 +59,30 @@
         </div>
             <!-- Modal SignUp Structure -->
         <div id="modalSignUp" class="modal">
-            <div class="modal-content">
-                <h4>Sign Up</h4>
+            <div class="row">
+                <div class="col l4 hide-on-small-only" id="modalLeftBox">
+                    <div class="row">
+                        Sample1
+                    </div>
+                    <div class="row">
+                        Sample2
+                    </div>
+                </div>
+                <form>
+                    <div class="col l8" id="modalRightBox">
+                        <div class="row" id="inputContainerModalSignup">
+                            <div class="input-field col s12">
+                                <input placeholder="Name" id="rec_name" type="text" class="validate">
+                                <input placeholder="Mobile" id="rec_mobile" type="text" maxlength="10" class="validate">
+                                <input placeholder="Email" id="rec_email" type="email" class="validate">
+                                <input placeholder="Company" id="rec_company" type="text" class="validate">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <a href="#modalSignUp" class="waves-effect waves-light grey lighten-5 btn modal-trigger"><font style="color: #000000">SignUp</font></a>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
             <!-- Modal LogIn Structure -->
@@ -76,8 +98,8 @@
             </div>
 
             <div class="sectionOneBody">
-                <h2 style="color: #fff">Welcome to Trujobs Employer Zone</h2>
-                <h4 class="typist" style="color: #2ec866"><font color="#fff">Hire </font></h4>
+                <h4 style="color: #fff">Welcome to Trujobs Employer Zone</h4>
+                <h5 class="typist" style="color: #2ec866"><font color="#fff">Hire </font></h5>
             </div>
 
             <div class="footerLeadForm valign-wrapper">
@@ -132,11 +154,24 @@
                                 </div>
                             </div>
                             <a class="waves-effect waves-light transparent btn right" onclick="requestLead()" style="border: 1px solid #ffffff"><font style="color: #ffffff">Submit</font></a>
-
                         </div>
                     </form>
 
                 </div>
+            </div>
+        </div>
+
+        <div class="container" id="companyHiringBox">
+            <div class="row" id="companyHiringCompanyLogo">
+                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
+                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
+                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
+                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
+                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
+                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
+            </div>
+            <div class="row" id="companyHiringHeader">
+                <font size="4" style="margin: 2%">Company Hiring Form Us</font>
             </div>
         </div>
 
@@ -219,7 +254,8 @@
                 </div>
             </div>
         </div>
-        <footer class="page-footer" style="background-color: #546e7a;">
+            <!--Footer start-->
+        <footer class="page-footer" style="background-color: #37474f;">
             <div class="container">
                 <div class="row">
                     <div class="col l6 s12">
