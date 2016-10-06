@@ -100,7 +100,6 @@ public class CompanyService {
             CompanyType companyType = CompanyType.find.where().eq("companyTypeId", addCompanyRequest.getCompanyType()).findUnique();
             newCompany.setCompType(companyType);
         }
-
         if(addCompanyRequest.getCompanyLocality() != null){
             Locality locality = Locality.find.where().eq("localityId", addCompanyRequest.getCompanyLocality()).findUnique();
             newCompany.setCompanyLocality(locality);
