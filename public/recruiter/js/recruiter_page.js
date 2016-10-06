@@ -57,14 +57,20 @@ $(document).ready(function(){
 
     $('.typist')
         .typist({
-            text: 'Delivery boys'
+            text: 'delivery boys'
         })
-        .typistPause(1500) // 2 sec
-        .typistRemove(123)
-        .typistAdd('Driver')
-        .typistPause(1500) // 2 sec
+        .typistPause(1000)
+        .typistRemove(23)
+        .typistPause(500)
+        .typistAdd('drivers')
+        .typistPause(1000)
         .typistRemove(6)
-        .typistAdd('Telecaller')
+        .typistPause(500)
+        .typistAdd('telecallers')
+        .typistPause(1000)
+        .typistRemove(10)
+        .typistPause(500)
+        .typistAdd('now!')
         .typistStop();
 
     try {
