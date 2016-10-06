@@ -21,13 +21,12 @@ function getRequirement(){
 ///Scroll
 $(document).scroll(function(){
     if ($(this).scrollTop() > 80) {
-        $('nav').css({"background": "#039BE5"});
+        $('nav').css({"background": "#37474f"});
     }
     else{
         $('nav').css({"background": "transparent"});
     }
 });
-
 function processDataCheckLocality(returnedData) {
     returnedData.forEach(function(locality)
     {
@@ -51,13 +50,20 @@ function processDataCheckJobs(returnedData) {
         jobArray.push(item);
     });
 }
-
+$('.modal-trigger').leanModal({
+        dismissible: true, // Modal can be dismissed by clicking outside of the modal
+        opacity: .2, // Opacity of modal background
+        in_duration: 100, // Transition in duration
+        out_duration: 100, // Transition out duration
+        starting_top: '4%', // Starting top style attribute
+        ending_top: '4%', // Ending top style attribute
+    }
+);
 ///modal
 $(document).ready(function(){
     $(".button-collapse").sideNav();
     $('.parallax').parallax();
     $('.modal-trigger').leanModal({dismissible: true});
-
     try {
         $.ajax({
             type: "POST",
@@ -105,6 +111,4 @@ $(document).ready(function(){
     item ["id"] = id;
     item ["name"] = name;
     requirementArray.push(item);
-
-
 });

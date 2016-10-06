@@ -59,8 +59,30 @@
         </div>
             <!-- Modal SignUp Structure -->
         <div id="modalSignUp" class="modal">
-            <div class="modal-content">
-                <h4>Sign Up</h4>
+            <div class="row">
+                <div class="col l4 hide-on-small-only" id="modalLeftBox">
+                    <div class="row">
+                        Sample1
+                    </div>
+                    <div class="row">
+                        Sample2
+                    </div>
+                </div>
+                <form>
+                    <div class="col l8" id="modalRightBox">
+                        <div class="row" id="inputContainerModalSignup">
+                            <div class="input-field col s12">
+                                <input placeholder="Name" id="rec_name" type="text" class="validate">
+                                <input placeholder="Mobile" id="rec_mobile" type="text" maxlength="10" class="validate">
+                                <input placeholder="Email" id="rec_email" type="email" class="validate">
+                                <input placeholder="Company" id="rec_company" type="text" class="validate">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <a href="#modalSignUp" class="waves-effect waves-light grey lighten-5 btn modal-trigger"><font style="color: #000000">SignUp</font></a>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
             <!-- Modal LogIn Structure -->
@@ -78,16 +100,17 @@
                 <div class="row" id="companyHiringRow">
                     <div class="container" style="margin-bottom: 0">
                         <div class="row">
-                            <form class="col s12 l4" id="leadForm">
+                            <form class="col s12 m6 l4" id="leadForm">
 
-                                <h5 style="color: #fff">Employee enquiry</h5>
+                                <h5 style="color: #fff;
+                                    margin: 0">Employee enquiry</h5>
                                 <div class="row">
                                     <div class="input-field col s12 l12">
                                         <input type="text" id="mobileNumber" style="color: #fff" maxlength="10" placeholder="Mobile Number">
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="input-field col s12 l12" style="margin-top: -28px">
+                                    <div class="input-field col s12 l12" style="margin-top: -30px">
                                         <input type="text" id="jobRoleOption" placeholder="Job Role">
                                         <script type="text/javascript">
                                         $(document).ready(function () {
@@ -145,18 +168,17 @@
             </div>
         </div>
 
-        <div class="container" style="margin-top: -7%; z-index: 999; position: relative; text-align: center">
-            <div class="row" id="companyHiringRowSub">
+        <div class="container" id="companyHiringBox">
+            <div class="row" id="companyHiringCompanyLogo">
+                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
+                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
+                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
+                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
+                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
+                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
+            </div>
+            <div class="row" id="companyHiringHeader">
                 <font size="4" style="margin: 2%">Company Hiring Form Us</font>
-                <div class="row" style="margin: 1%">
-                    <div class="col s3 l3">
-                        <img src="/assets/recruiter/img/megaphone.svg" style="height: 40px;">
-                    </div>
-
-                    <div class="col s3 l3"><img src="/assets/recruiter/img/megaphone.svg" style="height: 40px;"></div>
-                    <div class="col s3 l3"><img src="/assets/recruiter/img/megaphone.svg" style="height: 40px;"></div>
-                    <div class="col s3 l3"><img src="/assets/recruiter/img/megaphone.svg" style="height: 40px;"></div>
-                </div>
             </div>
         </div>
 
@@ -240,7 +262,8 @@
                 </div>
             </div>
         </div>
-        <footer class="page-footer" style="background-color: #546e7a;">
+            <!--Footer start-->
+        <footer class="page-footer" style="background-color: #37474f;">
             <div class="container">
                 <div class="row">
                     <div class="col l6 s12">
