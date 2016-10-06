@@ -44,7 +44,6 @@ function processDataCheckAllJobRoles(jobPostJobRoles) {
                     jobAnchorFooter.style = "font-size: 12px";
                     jobAnchorFooter.onclick = function () {
                         var jobRoleName = jobRoleItem.jobName;
-
                         var jobRoleId = jobRoleItem.jobRoleId;
                         var jobPostBreak = jobRoleName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g, '_');
                         jobPostBreak = jobPostBreak.toLowerCase();

@@ -70,7 +70,7 @@ function getLocalityPref(localityPrefList) {
 
 function getInYearMonthFormat(d){
     if(d == null) {
-        return "-";
+        return "NA";
     } else {
         var totalYear = Math.round((parseInt(d)/12)*100)/100;
         /*var yr = Math.floor((parseInt(d)/12)).toString();
@@ -89,7 +89,7 @@ function getLanguageKnown(languageKnownList){
     var languageString = [];
     try {
         if(languageKnownList == null || languageKnownList.length<1){
-            return "-";
+            return "NA";
         }
         languageKnownList.forEach(function (languageKnown) {
             languageString.push('' + languageKnown.language.languageName + ' ('+languageKnown.understanding + ', ' + languageKnown.verbalAbility + ', ' + languageKnown.readWrite+')');
@@ -101,7 +101,7 @@ function getLanguageKnown(languageKnownList){
 
 function getLastWithdrawnSalary(salary) {
     if(salary == null){
-        return "-";
+        return "NA";
     } else {
         return salary;
     }
@@ -110,7 +110,7 @@ function getLastWithdrawnSalary(salary) {
 
 function getGender(gender) {
     if(gender == null){
-        return "-";
+        return "NA";
     } else if(gender == "0"){
         return "M";
     } else if(gender == "1"){
@@ -124,7 +124,7 @@ function getEducation(candidateEducation) {
             return candidateEducation.education.educationName;
         }
     }
-    return "-";
+    return "NA";
 }
 
 function getSkills(skillList) {
@@ -148,14 +148,14 @@ function getSkills(skillList) {
             return skills;
         }
     }
-    return "-";
+    return "NA";
 }
 
 function getHomeLocality(locality) {
     if(locality != null){
         return locality.localityName;
     } else {
-        return "-";
+        return "NA";
     }
 }
 
@@ -187,7 +187,7 @@ function getPastOrCurrentCompanyName(jobHistoryList) {
     if(expArray.length > 0){
         return expArray;
     } else {
-        return "-";
+        return "NA";
     }
 }
 
@@ -199,7 +199,7 @@ function getYesNo(assesment) {
             return "yes";
         }
     }
-    return "-";
+    return "NA";
 }
 
 function getExperience(candidateExpList) {
@@ -214,7 +214,7 @@ function getExperience(candidateExpList) {
         });
         return candidateExpArray;
     }
-    return "-";
+    return "NA";
 }
 function getAge(birthday) { // birthday is in milisec
     var ageDifMs = Date.now() - birthday;
@@ -230,13 +230,13 @@ function getProperProfileStatus(profileStatus) {
             return profileStatus.profileStatusName;
         }
     }
-    return "-";
+    return "NA";
 }
 function getExpiry(expiryObject) {
     if(expiryObject != null){
         return expiryObject.statusExpiryDate;
     }
-    return "-";
+    return "NA";
 }
 
 
@@ -244,13 +244,13 @@ function getLastName(lastName) {
     if(lastName != null){
         return lastName;
     }
-    return "";
+    return "NA";
 }
 function getFirstName(firstName) {
     if(firstName != null){
         return firstName;
     }
-    return "";
+    return "NA";
 }
 
 function getIdProof(idProofList) {
@@ -267,7 +267,7 @@ function getIdProof(idProofList) {
             return idProofArray;
         }
     }
-    return "-";
+    return "NA";
 }
 
 
