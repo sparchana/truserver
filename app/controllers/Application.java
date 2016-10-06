@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
 import controllers.businessLogic.*;
 import controllers.businessLogic.Assessment.AssessmentService;
+import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.*;
 import models.entity.*;
 import models.entity.Intelligence.RelatedJobRole;
@@ -1471,5 +1472,12 @@ public class Application extends Controller {
             }
         }
         return ok(toJson(relevantJobs));
+    }
+
+    public static Result getMatchingCandidate(String jobPostId) {
+        if (jobPostId!=null) {
+            return ok(toJson(JobPostWorkflowEngine.getMatchingCandidate(Long.parseLong(jobPostId))));
+        }
+        return badRequest();
     }
 }

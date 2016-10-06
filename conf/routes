@@ -35,6 +35,7 @@ GET         /updateLeadStatus/:leadId/:leadStatus/:res                    contro
 GET         /support/administrator/alphaRequest/:mobile                   controllers.Application.removeDuplicateLeadOrCandidate(mobile: String)
 GET         /support/administrator/uploadCSV                              controllers.Application.uploadCSV()
 GET         /support/ifExists/:mobile                                     controllers.Application.ifExists(mobile: String)
+GET         /support/getMatchingCandidate/                                controllers.Application.getMatchingCandidate(jobPostId: String ?= null)
 
 POST        /addCompany                                                   controllers.Application.addCompany()
 POST        /addCompanyLogo                                               controllers.Application.addCompanyLogo()
