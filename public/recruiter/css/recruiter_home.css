@@ -1,3 +1,48 @@
+::-webkit-scrollbar
+{
+    width: 6px;  /* for vertical scrollbars */
+    height: 6px; /* for horizontal scrollbars */
+}
+
+::-webkit-scrollbar-track
+{
+    background: rgba(255, 255, 255, 1);
+}
+
+::-webkit-scrollbar-thumb
+{
+    background: rgb(84, 85, 99);
+}
+
+::-webkit-input-placeholder { /* WebKit browsers */
+    font-size: 14px;
+    color: #999;
+    font-weight: 300;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    font-size: 14px;
+    color: #999;
+    font-weight: 300;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    font-size: 14px;
+    color: #999;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+    font-size: 14px;
+    color: #999;
+    font-weight: 300;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+body{
+    font-family:Lato;
+}
 nav{
     background: transparent;
     box-shadow: 0 0 0 0;
@@ -8,23 +53,27 @@ nav{
     z-index:9999;
     box-shadow: none;
 }
+.customParallaxContainer{
+    position: absolute;
+}
+
+.custom-parallax-container{
+    margin-bottom:4% ;
+    height: 100vh;
+    background: linear-gradient(rgba(24, 26, 45, 0.5), rgba(24, 26, 45, 0.5)) no-repeat center;
+}
+
 #sectionOne{
     padding: 0;
-    background-image:linear-gradient(rgba(24, 26, 45, 0.5),rgba(24, 26, 45, 0.5)),url("/assets/recruiter/img/image1.png");
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-position: center;
-    height:100vh;
     background-size: 100%;
 }
 
 #leadForm{
     text-align: left;
-    padding:2%;
-    background-color:#000;
-    opacity: 0.5;
+    padding: 2%;
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.5);
 }
-
 
 #companyHiringRow{
     text-align: center;
@@ -35,11 +84,8 @@ nav{
     padding: 1%;
     margin: 0;
     background-color: #fff;
+
 }
-
-
-
-
 
 #sectionTwo{
     height: 200px;
@@ -59,19 +105,46 @@ nav{
 #testimonial{
     text-align: center;
 }
-
-
-
-
-
-
-
-footer{
-    background-color: #ff5252;
-}
-.page-footer{
-    background-color: #ff5252;
-}
 .footer-copyright{
     text-align: center;
+}
+#companyHiringBox{
+    padding: 0;
+    text-align: center;
+    border: 1px solid #f3f3f3;
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
+}
+#companyHiringHeader{
+    margin: 0;
+    padding: 1%;
+    background-color: #fbfbfb;
+    color: #000;
+}
+#companyHiringCompanyLogo{
+    margin:0;
+    padding: 4%;
+    border-bottom: 1px solid #e2e2e2;
+}
+#companyHiringCompanyLogo img{
+    margin-bottom: 2%;
+}
+#modalLeftBox{
+    background-color: rgb(55, 71, 79);
+    height: 100%;
+}
+#inputContainerModalSignup{
+    padding: 2%;
+}
+#inputContainerModalSignup >.input-field > input{
+    margin: 0;
+}
+#modalRightBox{
+    margin-top:10%;
+    text-align: center;
+}
+@media screen and (max-width: 768px) {
+    #leadForm{
+        margin-top:6%;
+        padding: 6%;
+    }
 }

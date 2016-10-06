@@ -1,136 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Recruiter | Trujobs - Hepling You to Get Best Employees</title>
+    <head>
+        <meta charset="UTF-8">
+        <title>Recruiter | Trujobs - Hepling You to Get Best Employees</title>
 
-  <meta name="keywords" content="driving jobs, fresher jobs, jobs for freshers, job search sites, job posting, sales jobs, beautician jobs,
+        <meta name="keywords" content="driving jobs, fresher jobs, jobs for freshers, job search sites, job posting, sales jobs, beautician jobs,
         medical transcription jobs, online job search, find jobs, receptionist jobs, admin jobs, office assistant jobs,
         plumbing work, teacher job, online teaching jobs, jobs in schools, teacher vacancy, teacher recruitment, entry level jobs,
         delivery boy jobs,call center jobs, BPO jobs, kpo jobs, job job job, data entry jobs, back office jobs,
         receptionist jobs, beautician jobs, experienced jobs, jobs in Bangalore, cashier jobs, entry level jobs,
         plumber jobs, electrician jobs, job search, accountant jobs, job vacancy, bangalore vacancy">
 
-    <!-- Bootstrap Core CSS -->
-  <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
-  <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
-  <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
+            <!-- Bootstrap Core CSS -->
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
 
-  <link rel="stylesheet" href="/assets/common/css/token-input-facebook.css" type="text/css" />
+        <link rel="stylesheet" href="/assets/common/css/custom_token_input.css" type="text/css" />
 
-  @*<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>*@
-  <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
+        <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
 
-  <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
-  <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
-  <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
+        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+        <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
 
-  <!--Import Google Icon Font-->
-  <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
+            <!--Import Google Icon Font-->
+        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
 
-  <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
-  <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+        <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
+        <script type="text/javascript" src="/assets/common/js/validation.js"></script>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  @*<script>
-            localStorage.clear();
-            $('html, body').css({
-              'overflow': 'hidden',
-              'height': '100%'
-            });
-        </script>*@
-</head>
-<body>
-    <div class="navbar-fixed">
-    <nav>
-        <div class="container">
-        <div class="nav-wrapper">
-            <a href="#!" class="brand-logo">
-                <img src="/assets/common/img/logo-main.gif" style="height:42px;margin-top: 2%">
-            </a>
-            <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
-            <ul class="right hide-on-med-and-down">
-                <li><a href="#">HOME</a></li>
-                <li><a href="#modalSignUp" class="waves-effect waves-light grey lighten-5 btn modal-trigger"><font style="color:#000000">SignUp</font></a></li>
-                <li><a href="#modalLogIn" class="waves-effect waves-light transparent btn modal-trigger" style="border:1px solid #ffffff"><font style="color:#ffffff">LogIn</font></a></li>
-            </ul>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </head>
+    <body>
+        <div class="navbar-fixed">
+            <nav>
+                <div class="container">
+                    <div class="nav-wrapper">
+                        <a href="#!" class="brand-logo">
+                            <img src="/assets/common/img/logo-main.gif" style="height: 42px;
+                                margin-top: 2%">
+                        </a>
+                        <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+                        <ul class="right hide-on-med-and-down">
+                            <li><a href="#">HOME</a></li>
+                            <li><a href="#modalSignUp" class="waves-effect waves-light grey lighten-5 btn modal-trigger"><font style="color: #000000">SignUp</font></a></li>
+                            <li><a href="#modalLogIn" class="waves-effect waves-light transparent btn modal-trigger" style="border: 1px solid #ffffff"><font style="color: #ffffff">LogIn</font></a></li>
+                        </ul>
+                    </div>
+                    <ul class="side-nav" id="mobile-demo">
+                        <li><a href="#">HOME</a></li>
+                        <li><a href="#">SIGNUP</a></li>
+                        <li><a href="#">LOGIN</a></li>
+                    </ul>
+                </div>
+            </nav>
         </div>
-            <ul class="side-nav" id="mobile-demo">
-                <li><a href="#">HOME</a></li>
-                <li><a href="#">SIGNUP</a></li>
-                <li><a href="#">LOGIN</a></li>
-            </ul>
+            <!-- Modal SignUp Structure -->
+        <div id="modalSignUp" class="modal">
+            <div class="row">
+                <div class="col l4 hide-on-small-only" id="modalLeftBox">
+                    <div class="row">
+                        Sample1
+                    </div>
+                    <div class="row">
+                        Sample2
+                    </div>
+                </div>
+                <form>
+                    <div class="col l8" id="modalRightBox">
+                        <div class="row" id="inputContainerModalSignup">
+                            <div class="input-field col s12">
+                                <input placeholder="Name" id="rec_name" type="text" class="validate">
+                                <input placeholder="Mobile" id="rec_mobile" type="text" maxlength="10" class="validate">
+                                <input placeholder="Email" id="rec_email" type="email" class="validate">
+                                <input placeholder="Company" id="rec_company" type="text" class="validate">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <a href="#modalSignUp" class="waves-effect waves-light grey lighten-5 btn modal-trigger"><font style="color: #000000">SignUp</font></a>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-    </nav>
-    </div>
-        <!-- Modal SignUp Structure -->
-    <div id="modalSignUp" class="modal">
-        <div class="modal-content">
-            <h4>Sign Up</h4>
+            <!-- Modal LogIn Structure -->
+        <div id="modalLogIn" class="modal">
+            <div class="modal-content">
+                <h4>Log In</h4>
+            </div>
         </div>
-    </div>
-        <!-- Modal LogIn Structure -->
-    <div id="modalLogIn" class="modal">
-        <div class="modal-content">
-            <h4>Log In</h4>
-        </div>
-    </div>
-    <!-- First Container -->
-        <div class="container-fluid" id="sectionOne">
-            <!-- Hiring Container -->
+
+        <div class="parallax-container custom-parallax-container">
+            <div class="parallax"><img class="customParallaxContainer" src="/assets/recruiter/img/image1.png"></div>
+                <!-- First Container -->
+            <div class="container-fluid" id="sectionOne">
+                    <!-- Hiring Container -->
                 <div class="row" id="companyHiringRow">
                     <div class="container" style="margin-bottom: 0">
                         <div class="row">
-                                    <form class="col s12 l4" id="leadForm">
-                                        <div class="row">
-                                            <div class="input-field col s12 l12">
-                                                 <input  type="text" id="mobileNumber" placeholder="Mobile Number">
-                                             </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="input-field col s12 l12">
-                                                    <input type="text" id="jobRoleOption" placeholder="Job Role">
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="input-field col s12 l12">
-                                                    <input type="text" id="locationOption" placeholder="Location">
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="input-field col s12 l12">
-                                                <input type="text" id="locationOption" placeholder="Job Timing">
-                                             </div>
-                                        </div>
-                                    </form>
+                            <form class="col s12 m6 l4" id="leadForm">
+
+                                <h5 style="color: #fff;
+                                    margin: 0">Employee enquiry</h5>
+                                <div class="row">
+                                    <div class="input-field col s12 l12">
+                                        <input type="text" id="mobileNumber" style="color: #fff" maxlength="10" placeholder="Mobile Number">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12 l12" style="margin-top: -30px">
+                                        <input type="text" id="jobRoleOption" placeholder="Job Role">
+                                        <script type="text/javascript">
+                                        $(document).ready(function () {
+                                            $("#jobRoleOption").tokenInput(getJob(), {
+                                                theme: "facebook",
+                                                placeholder: "What jobs are you looking",
+                                                minChars: 1,
+                                                tokenLimit: 3,
+                                                hintText: "Start Typing Jobs (eg: delivery boy, driver, etc..)",
+                                                preventDuplicates: true
+                                            });
+                                        });
+                                    </script>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12 l12" style="margin-top: -6px">
+                                        <input type="text" id="locationOption" placeholder="Location">
+                                        <script type="text/javascript">
+                                            $(document).ready(function () {
+                                                $("#locationOption").tokenInput(getLocality(), {
+                                                    theme: "facebook",
+                                                    placeholder: "Which area you are looking at?",
+                                                    minChars: 1,
+                                                    tokenLimit: 3,
+                                                    hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
+                                                    preventDuplicates: true
+                                                });
+                                            });
+                                        </script>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="input-field col s12 l12" style="margin-top: -6px">
+                                        <input type="text" id="recruiterRequirement">
+                                        <script type="text/javascript">
+                                            $(document).ready(function () {
+                                                $("#recruiterRequirement").tokenInput(getRequirement(), {
+                                                    theme: "facebook",
+                                                    placeholder: "What is your requirement?",
+                                                    minChars: 1,
+                                                    tokenLimit: 1,
+                                                    hintText: "Start Typing Jobs (eg: delivery boy, driver, etc..)",
+                                                    preventDuplicates: true
+                                                });
+                                            });
+                                        </script>
+                                    </div>
+                                </div>
+                                <a class="waves-effect waves-light transparent btn right" onclick="requestLead()" style="border: 1px solid #ffffff"><font style="color: #ffffff">Submit</font></a>
+                            </form>
                         </div>
                     </div>
                 </div>
-        </div>
-
-    <div class="container" style="margin-top: -7%;text-align: center">
-        <div class="row" id="companyHiringRowSub">
-        <font size="4" style="margin: 2%">Company Hiring Form Us</font>
-            <div class="row" style="margin: 1%">
-                <div class="col s3 l3">
-                    <img src="/assets/recruiter/img/megaphone.svg" style="height:40px;">
-                </div>
-
-                <div class="col s3 l3"><img src="/assets/recruiter/img/megaphone.svg" style="height:40px;"></div>
-                <div class="col s3 l3"><img src="/assets/recruiter/img/megaphone.svg" style="height:40px;"></div>
-                <div class="col s3 l3"><img src="/assets/recruiter/img/megaphone.svg" style="height:40px;"></div>
             </div>
         </div>
-    </div>
+
+        <div class="container" id="companyHiringBox">
+            <div class="row" id="companyHiringCompanyLogo">
+                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
+                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
+                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
+                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
+                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
+                <div class="col s6 l2"><img src="/assets/recruiter/img/megaphone.svg" style="height: 50px;"></div>
+            </div>
+            <div class="row" id="companyHiringHeader">
+                <font size="4" style="margin: 2%">Company Hiring Form Us</font>
+            </div>
+        </div>
 
 
-    <div class="container" id="stats">
+        <div class="container" id="stats">
             <div class="row">
                 <h3>Number for candidates</h3>
                 <div class="col l6 s6" id="candidateStats">
                     <div class="row">
-                        <img src="/assets/recruiter/img/megaphone.svg" style="height:100px;">
+                        <img src="/assets/recruiter/img/megaphone.svg" style="height: 100px;">
                     </div>
                     <div class="row">
                         25000+
@@ -141,7 +199,7 @@
                 </div>
                 <div class="col l6 s6" id="jobRolesStats">
                     <div class="row">
-                        <img src="/assets/recruiter/img/megaphone.svg" style="height:100px;">
+                        <img src="/assets/recruiter/img/megaphone.svg" style="height: 100px;">
                     </div>
                     <div class="row">
                         35+
@@ -151,81 +209,84 @@
                     </div>
                 </div>
             </div>
-    </div>
-    <div class="container" id="testimonial">
-        <div class="row">
-            <div class="col l4 s12">
-                <div class="row">
-                    <div class="col s12 m12">
-                        <div class="card">
-                            <div class="card-image">
-                                <img src="/assets/recruiter/img/megaphone.svg" style="height:100px;">
-                                <span class="card-title">Card Title</span>
-                            </div>
-                            <div class="card-content">
-                                <p>I am a very simple card. I am good at containing small bits of information.
-                                    I am convenient because I require little markup to use effectively.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col l4 s12">
-                <div class="row">
-                    <div class="col s12 m12">
-                        <div class="card">
-                            <div class="card-image">
-                                <img src="/assets/recruiter/img/megaphone.svg" style="height:100px;">
-                                <span class="card-title">Card Title</span>
-                            </div>
-                            <div class="card-content">
-                                <p>I am a very simple card. I am good at containing small bits of information.
-                                    I am convenient because I require little markup to use effectively.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col l4 s12">
-                <div class="row">
-                    <div class="col s12 m12">
-                        <div class="card">
-                            <div class="card-image">
-                                <img src="/assets/recruiter/img/megaphone.svg" style="height:100px;">
-                                <span class="card-title">Card Title</span>
-                            </div>
-                            <div class="card-content">
-                                <p>I am a very simple card. I am good at containing small bits of information.
-                                    I am convenient because I require little markup to use effectively.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
-    </div>
-    <footer class="page-footer" style="background-color: #546e7a;">
-        <div class="container">
+        <div class="container" id="testimonial">
             <div class="row">
-                <div class="col l6 s12">
-                    <h5 class="white-text">Jobs in Bangalore</h5>
-                    <p class="grey-text text-lighten-4">You can use rows and columns here to organize your footer content.</p>
+                <div class="col l4 s12">
+                    <div class="row">
+                        <div class="col s12 m12">
+                            <div class="card">
+                                <div class="card-image">
+                                    <img src="/assets/recruiter/img/megaphone.svg" style="height: 100px;">
+                                    <span class="card-title">Card Title</span>
+                                </div>
+                                <div class="card-content">
+                                    <p>I am a very simple card. I am good at containing small bits of information.
+                                        I am convenient because I require little markup to use effectively.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col l4 offset-l2 s12">
-                    <h5 class="white-text">Links</h5>
-                    <ul>
-                        <li><a class="grey-text text-lighten-3" href="#!">Write us at: info@@trujobs.in</a></li>
-                        <li><a class="grey-text text-lighten-3" href="#!">Have queries? Talk to us at 8880007799</a></li>
-                    </ul>
+                <div class="col l4 s12">
+                    <div class="row">
+                        <div class="col s12 m12">
+                            <div class="card">
+                                <div class="card-image">
+                                    <img src="/assets/recruiter/img/megaphone.svg" style="height: 100px;">
+                                    <span class="card-title">Card Title</span>
+                                </div>
+                                <div class="card-content">
+                                    <p>I am a very simple card. I am good at containing small bits of information.
+                                        I am convenient because I require little markup to use effectively.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col l4 s12">
+                    <div class="row">
+                        <div class="col s12 m12">
+                            <div class="card">
+                                <div class="card-image">
+                                    <img src="/assets/recruiter/img/megaphone.svg" style="height: 100px;">
+                                    <span class="card-title">Card Title</span>
+                                </div>
+                                <div class="card-content">
+                                    <p>I am a very simple card. I am good at containing small bits of information.
+                                        I am convenient because I require little markup to use effectively.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="footer-copyright">
+            <!--Footer start-->
+        <footer class="page-footer" style="background-color: #37474f;">
             <div class="container">
-            © 2016 Trujobs.in | Bengaluru, India. All Right Reserved. Privacy Policy
+                <div class="row">
+                    <div class="col l6 s12">
+                        <h5 class="white-text">Jobs in Bangalore</h5>
+                        <p class="grey-text text-lighten-4">You can use rows and columns here to organize your footer content.</p>
+                    </div>
+                    <div class="col l4 offset-l2 s12">
+                        <h5 class="white-text">Links</h5>
+                        <ul>
+                            <li><a class="grey-text text-lighten-3" href="#!">Write us at: info@@trujobs.in</a></li>
+                            <li><a class="grey-text text-lighten-3" href="#!">Have queries? Talk to us at 8880007799</a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-        </div>
-    </footer>
-</body>
+            <div class="footer-copyright">
+                <div class="container">
+            © 2016 Trujobs.in | Bengaluru, India. All Right Reserved. Privacy Policy
+                </div>
+            </div>
+        </footer>
+    </body>
+    <script type="text/javascript" src="/assets/recruiter/js/recruiter_signup.js"></script>
+    <script type="text/javascript" src="/assets/common/js/home_page.js"></script>
     <script type="text/javascript" src="/assets/recruiter/js/recruiter_page.js"></script>
 </html>
