@@ -45,8 +45,8 @@
                         <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
                         <ul class="right hide-on-med-and-down">
                             <li><a href="#" style="font-weight: 600">HOME</a></li>
-                            <li><a href="#modalSignUp" class="waves-effect waves-light ascentGreen lighten-1 btn modal-trigger"><font style="color: #fff; font-weight: 600">SignUp</font></a></li>
-                            <li><a href="#modalLogIn" class="waves-effect waves-light transparent btn modal-trigger" style="border: 1px solid #ffffff"><font style="font-weight: 600; color: #ffffff">LogIn</font></a></li>
+                            <li><a data-target="modalSignUp" class="waves-effect waves-light ascentGreen lighten-1 btn modal-trigger"><font style="color: #fff; font-weight: 600">SignUp</font></a></li>
+                            <li><a data-target="modalLogIn" class="waves-effect waves-light transparent btn modal-trigger" style="border: 1px solid #ffffff"><font style="font-weight: 600; color: #ffffff">LogIn</font></a></li>
                         </ul>
                     </div>
                     <ul class="side-nav" id="mobile-demo">
@@ -115,7 +115,7 @@
             <div class="footerLeadForm valign-wrapper">
                 <div style="width: 100%; text-align: center" class="container">
                     <form>
-                        <div class="container">
+                        <div class="container hide-on-small-only">
                             <h5 style="color: #fff">Employee enquiry</h5>
                             <div class="row">
                                 <div class="input-field col s12 l3">
@@ -167,6 +167,66 @@
                         </div>
                     </form>
 
+                </div>
+            </div>
+            <center class="hide-on-med-and-up" id="mobileEnquiryBtn">
+            <a class="waves-effect waves-light transparent btn modal-trigger" style="border:1px solid #2ec866;color:#2ec866" data-target="recEnquiry">Enquiry</a>
+            </center>
+
+        <div class="container hide-on-med-and-up" style="text-align: center">
+            <!-- Modal Trigger -->
+                <!-- Modal Structure -->
+            <div id="recEnquiry" class="modal bottom-sheet">
+                <form>
+                    <div class="container">
+                        <h5 style="color: #000">Employee enquiry</h5>
+                        <div class="row" style="margin-bottom: 2%">
+                            <div class="input-field col s12 l3">
+                                <input type="text" id="mobileNumberModal" style="color: #b7b5b0" maxlength="10" placeholder="Mobile Number">
+                            </div>
+                            <div class="input-field col s12 l3" style="margin-top: -5px">
+                                <input type="text" id="jobRoleOptionModal" placeholder="Job Role">
+                                <script type="text/javascript">
+                                $(document).ready(function () {
+                                    $("#jobRoleOptionModal").tokenInput(getJob(), {
+                                        theme: "facebook",
+                                        placeholder: "What jobs are you looking",
+                                        minChars: 1,
+                                        tokenLimit: 3,
+                                        hintText: "Start Typing Jobs (eg: delivery boy, driver, etc..)",
+                                        preventDuplicates: true
+                                    });
+                                });
+                            </script>
+                            </div>
+                            <div class="input-field col s12 l3">
+                                <input type="text" id="locationOptionModal" placeholder="Location">
+                                <script type="text/javascript">
+                                $(document).ready(function () {
+                                    $("#locationOptionModal").tokenInput(getLocality(), {
+                                        theme: "facebook",
+                                        placeholder: "Which area you are looking at?",
+                                        minChars: 1,
+                                        tokenLimit: 3,
+                                        hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
+                                        preventDuplicates: true
+                                    });
+                                });
+                            </script>
+                            </div>
+
+                            <div class="input-field col s12 l3">
+                                <select id="recruiterRequirementModal">
+                                    <option value="" disabled selected>Requirement Type</option>
+                                    <option value="part time">Part time</option>
+                                    <option value="full time">Full Time</option>
+                                    <option value="contract">Contract</option>
+                                </select>
+                            </div>
+                        </div>
+                        <a class="waves-effect waves-light ascentGreen lighten-1 btn right" onclick="requestLeadModal()" style="border: 1px solid #ffffff;margin-bottom: 16px"><font style="color: #ffffff">Submit</font></a>
+                    </div>
+                </form>
                 </div>
             </div>
         </div>
