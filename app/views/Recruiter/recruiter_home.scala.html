@@ -82,14 +82,70 @@
                         </div>
                         <div class="row" id="inputContainerModalSignup">
                             <div class="input-field col s12">
-                                <a href="#" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">SignUp</font></a>
+                                <a onclick="signUpRecruiter()" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">SignUp</font></a>
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
-            <!-- Modal LogIn Structure -->
+            <!-- Modal otp Structure -->
+        <div id="modalOtp" class="modal">
+            <div id="otpSection">
+                <div class="row">
+                    <div class="col l4 hide-on-small-only" id="modalLeftBox">
+                        <div class="row">
+                        Sample1
+                        </div>
+                        <div class="row">
+                        Sample2
+                        </div>
+                    </div>
+                    <form>
+                        <div class="col l8" id="modalRightBox">
+                            <div class="row" id="inputContainerModalSignup">
+                                <div class="input-field col s12">
+                                    <input placeholder="Enter OTP" id="rec_otp" type="number" class="validate">
+                                </div>
+                            </div>
+                            <div class="row" id="inputContainerModalSignup">
+                                <div class="input-field col s12">
+                                    <a onclick="verifyOtp()" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">Verify OTP</font></a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div id="passwordSection">
+                <div class="row">
+                    <div class="col l4 hide-on-small-only" id="modalLeftBox">
+                        <div class="row">
+                        Sample1
+                        </div>
+                        <div class="row">
+                        Sample2
+                        </div>
+                    </div>
+                    <form>
+                        <div class="col l8" id="modalRightBox">
+                            <div class="row" id="inputContainerModalSignup">
+                                <div class="input-field col s12">
+                                    <input placeholder="Enter Password" id="rec_password" type="password" class="validate">
+                                </div>
+                            </div>
+                            <div class="row" id="inputContainerModalSignup">
+                                <div class="input-field col s12">
+                                    <a onclick="savePassword()" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">Create Account</font></a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal LogIn Structure -->
         <div id="modalLogIn" class="modal">
             <div class="modal-content">
                 <h4>Log In</h4>

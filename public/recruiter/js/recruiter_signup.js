@@ -2,7 +2,7 @@
  * Created by adarsh on 10/9/16.
  */
 var returnedOtp;
-var recruiterMobile;
+var recruiterMobileVal;
 
 function processDataLeadSubmit(returnedData) {
     console.log(returnedData);
@@ -15,26 +15,58 @@ function processDataLeadSubmit(returnedData) {
 }
 
 function processDataSignUpSubmit(returnedData) {
-    returnedOtp = returnedData.otp;
+    if(returnedData.status == 1){
+        $('#modalSignUp').closeModal();
+        $("#modalOtp").openModal();
+
+        $("#otpSection").show();
+        $("#passwordSection").hide();
+
+        returnedOtp = returnedData.otp;
+    }
+}
+
+function verifyOtp(){
+    var recruiterOtp = $("#rec_otp").val();
+    if(validateOtp(recruiterOtp) == 0){
+        notifyError("Please enter a valid 4 digit otp!");
+    } else{
+        if(recruiterOtp == returnedOtp){
+            $("#otpSection").hide();
+            $("#passwordSection").show();
+        }
+        else {
+            notifyError("OTP incorrect!");
+        }
+    }
 }
 
 function processDataAddAuth(returnedData) {
-    console.log(returnedData);
+    if(returnedData.status == 1){
+        notifyError("Success");
+        $('#modalOtp').closeModal();
+    }
 }
 
 
-function addRecruiterPassword(){
-    var d = {
-        recruiterPassword: "testing",
-        recruiterAuthMobile: "+919949999999"
-    };
-    $.ajax({
-        type: "POST",
-        url: "/addRecruiterPassword",
-        contentType: "application/json; charset=utf-8",
-        data: JSON.stringify(d),
-        success: processDataAddAuth
-    });
+function savePassword(){
+    var recruiterPassword = $("#rec_password").val();
+
+    if(recruiterPassword.length > 4){
+        var d = {
+            recruiterPassword: recruiterPassword,
+            recruiterAuthMobile: recruiterMobileVal
+        };
+        $.ajax({
+            type: "POST",
+            url: "/addRecruiterPassword",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(d),
+            success: processDataAddAuth
+        });
+    } else{
+        notifyError("Please enter a valid password");
+    }
 }
 
 function recruiterLoginSubmit(){
@@ -53,21 +85,54 @@ function recruiterLoginSubmit(){
 
 
 function signUpRecruiter(){
-    var d = {
-        recruiterName : "Test1",
-        recruiterMobile : "+919989999999",
-        recruiterEmail : "asd@gmail.com",
-        recruiterCompanyName : "test company"
-    };
+    var recruiterName = $("#rec_name").val();
+    var recruiterMobile = $("#rec_mobile").val();
+    var recruiterEmail = $("#rec_email").val();
+    var recruiterCompany = $("#rec_company").val();
 
-    recruiterMobile =  "+91" + d.recruiterMobile;
-    $.ajax({
-        type: "POST",
-        url: "/recruiterSignUp",
-        contentType: "application/json; charset=utf-8",
-        data: JSON.stringify(d),
-        success: processDataSignUpSubmit
-    });
+    var nameCheck = validateName(recruiterName);
+    var statusCheck = 1;
+
+    var res = validateMobile(recruiterMobile);
+    //checking recruiter name
+    switch(nameCheck){
+        case 0: notifyError("Name contains number. Please Enter a valid Name"); statusCheck=0; break;
+        case 2: notifyError("Name cannot be blank spaces. Enter a valid name"); statusCheck=0; break;
+        case 3: notifyError("Name contains special symbols. Enter a valid name"); statusCheck=0; break;
+        case 4: notifyError("Please enter your name"); statusCheck=0; break;
+    }
+
+    if(res == 0){
+        notifyError("Enter a valid mobile number");
+        statusCheck = 0;
+    } else if(res == 1){
+        notifyError("Enter 10 digit mobile number");
+        statusCheck = 0;
+    } else if(!validateEmail(recruiterEmail)){
+        notifyError("Enter a valid email");
+        statusCheck = 0;
+    } else if(recruiterCompany == "") {
+        notifyError("Please enter your company");
+        statusCheck = 0;
+    }
+
+    if(statusCheck){
+        var d = {
+            recruiterName : recruiterName,
+            recruiterMobile : recruiterMobile,
+            recruiterEmail : recruiterEmail,
+            recruiterCompanyName : recruiterCompany
+        };
+
+        recruiterMobileVal =  "+91" + d.recruiterMobile;
+        $.ajax({
+            type: "POST",
+            url: "/recruiterSignUp",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(d),
+            success: processDataSignUpSubmit
+        });
+    }
 }
 
 function requestLead(){
