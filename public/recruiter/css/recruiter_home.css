@@ -169,9 +169,6 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
 #testimonial{
     text-align: center;
 }
-.footer-copyright{
-    text-align: center;
-}
 #companyHiringBox{
     padding: 0;
     text-align: center;
@@ -204,6 +201,10 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
 }
 #modalRightBox{
     margin-top:10%;
+    text-align: center;
+}
+footer.page-footer .footer-copyright{
+    background: rgba(0,0,0,0.6);
     text-align: center;
 }
 @media screen and (max-width: 768px) {

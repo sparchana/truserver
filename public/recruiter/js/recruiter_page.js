@@ -21,7 +21,7 @@ function getRequirement(){
 ///Scroll
 $(document).scroll(function(){
     if ($(this).scrollTop() > 80) {
-        $('nav').css({"background": "rgba(0, 0, 0, 0.5)"});
+        $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
     }
     else{
         $('nav').css({"background": "transparent"});
