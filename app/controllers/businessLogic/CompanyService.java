@@ -70,7 +70,7 @@ public class CompanyService {
         return addCompanyResponse;
     }
 
-    public static Company getAndAddCompanyValues(AddCompanyRequest addCompanyRequest, Company newCompany){
+    public static Company getAndAddCompanyValues(AddCompanyRequest addCompanyRequest, Company newCompany) {
         newCompany.setCompanyName(addCompanyRequest.getCompanyName());
         newCompany.setCompanyEmployeeCount(addCompanyRequest.getCompanyEmployeeCount());
         newCompany.setCompanyWebsite(addCompanyRequest.getCompanyWebsite());
