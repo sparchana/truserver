@@ -4,7 +4,6 @@
 
 var localityArray = [];
 var jobArray = [];
-var requirementArray = [];
 
 function getLocality(){
     return localityArray;
@@ -12,10 +11,6 @@ function getLocality(){
 
 function getJob(){
     return jobArray;
-}
-
-function getRequirement(){
-    return requirementArray;
 }
 
 ///Scroll
@@ -108,26 +103,4 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-
-    // setting requirements
-    var id = "Full Time";
-    var name = "Full Time";
-    var item = {};
-    item ["id"] = id;
-    item ["name"] = name;
-    requirementArray.push(item);
-
-    id = "Part Time";
-    name = "part Time";
-    item = {};
-    item ["id"] = id;
-    item ["name"] = name;
-    requirementArray.push(item);
-
-    id = "Contract";
-    name = "Contract";
-    item = {};
-    item ["id"] = id;
-    item ["name"] = name;
-    requirementArray.push(item);
 });
