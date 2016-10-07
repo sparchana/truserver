@@ -49,6 +49,7 @@ function uploadLogo(){
 }
 
 function processDataAddCompany(returnedData) {
+    console.log(returnedData);
     companyId = returnedData.companyId;
     companyStatus = returnedData.status;
 }
@@ -234,6 +235,9 @@ function saveForm(){
         window.close();
     } else if(companyStatus == -1 && recruiterStatus == 4){
         alert("Existing Recruiter Updated");
+        window.close();
+    } else if(companyStatus == -1 && recruiterStatus == 1){
+        alert("New Recruiter Created");
         window.close();
     }
 } // end of submit
