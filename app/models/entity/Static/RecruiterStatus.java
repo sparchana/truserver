@@ -1,6 +1,7 @@
 package models.entity.Static;
 
 import com.avaje.ebean.Model;
+import models.entity.RecruiterProfile;
 
 import javax.persistence.*;
 
@@ -17,4 +18,6 @@ public class RecruiterStatus extends Model {
 
     @Column(name = "RecruiterStatusName", columnDefinition = "varchar(20) not null")
     private String recruiterStatusName;
+
+    public static Finder<String, RecruiterStatus> find = new Finder(RecruiterStatus.class);
 }
