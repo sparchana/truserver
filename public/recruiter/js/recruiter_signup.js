@@ -156,7 +156,7 @@ function requestLead(){
     } else if(jobRoleSelected == "") {
         notifyError("Please Enter the required job roles");
         statusCheck=0;
-    } else if(recruiterLeadRequirement == "") {
+    } else if(recruiterLeadRequirement == null || recruiterLeadRequirement == "") {
         notifyError("Please Enter your hiring requirement");
         statusCheck=0;
     }

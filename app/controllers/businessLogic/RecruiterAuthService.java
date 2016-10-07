@@ -70,8 +70,11 @@ public class RecruiterAuthService {
                 recruiterSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
                 try {
-                    existingRecruiter.setRecruiterprofilestatus(RecruiterProfileStatus.find.where().eq("profile_status_id", ServerConstants.RECRUITER_STATE_ACTIVE).findUnique());
-                    recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.STATUS_SUCCESS);
+                    RecruiterProfileStatus recruiterProfileStatus = RecruiterProfileStatus.find.where().eq("profile_status_id", ServerConstants.RECRUITER_STATE_ACTIVE).findUnique();
+                    existingRecruiter.setRecruiterprofilestatus(recruiterProfileStatus);
+                    if(recruiterProfileStatus != null){
+                        recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.STATUS_SUCCESS);
+                    }
                 } catch (NullPointerException n) {
                     Logger.info("Oops recruiterStatusId"+ " doesnot exists");
                     recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.STATUS_FAILURE);
