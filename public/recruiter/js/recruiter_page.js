@@ -27,6 +27,12 @@ $(document).scroll(function(){
         $('nav').css({"background": "transparent"});
     }
 });
+$(document).on('scroll', function() {
+    if($(this).scrollTop()>=$('#companyHiringBox').position().top){
+        $("#candidateStats").css("opacity","1");
+        $("#jobRolesStats").css("opacity","1");
+    }
+});
 function processDataCheckLocality(returnedData) {
     returnedData.forEach(function(locality) {
         var id = locality.localityId;

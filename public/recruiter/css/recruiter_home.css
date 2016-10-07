@@ -157,10 +157,12 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
 }
 
 #candidateStats{
-    padding: 2%;
+    transition: 0.8s;
+    opacity:0;
 }
 #jobRolesStats{
-    padding: 2%;
+    transition: 0.8s;
+    opacity:0;
 }
 #stats{
     padding: 2%;
@@ -169,6 +171,7 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
     margin-bottom: 2%;
 }
 #testimonial{
+
     background-color: #ffffff;
     text-align: center;
 }
@@ -216,6 +219,10 @@ footer.page-footer .footer-copyright{
     width: 72px;
     background: #2ec866;
     margin: 2%;
+}
+#fbLogo:hover{
+    cursor:pointer;
+    content:url(/assets/recruiter/img/fb.svg);
 }
 @media screen and (max-width: 768px) {
     #leadForm{

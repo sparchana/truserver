@@ -223,7 +223,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <a class="waves-effect waves-light transparent btn right" onclick="requestLead()" style="border: 1px solid #ffffff"><font style="color: #ffffff">Submit</font></a>
+                            <a id="requestLeadBtn" class="waves-effect waves-light transparent btn right" onclick="requestLead()" style="border: 1px solid #ffffff"><font style="color: #ffffff">Submit</font></a>
                         </div>
                     </form>
 
@@ -283,7 +283,7 @@
                                 </select>
                             </div>
                         </div>
-                        <a class="waves-effect waves-light ascentGreen lighten-1 btn right" onclick="requestModalLead   ()" style="border: 1px solid #ffffff;margin-bottom: 16px"><font style="color: #ffffff">Submit</font></a>
+                        <a class="waves-effect waves-light ascentGreen lighten-1 btn right" onclick="requestModalLead()" style="border: 1px solid #ffffff;margin-bottom: 16px"><font style="color: #ffffff">Submit</font></a>
                     </div>
                 </form>
                 </div>
@@ -308,9 +308,9 @@
             <div class="row">
                 <h5>Highlights</h5>
                 <center><div class="materialDash"></div></center>
-                <div class="col l6 s6" id="candidateStats">
+                <div class="col l6 s6" style="padding: 2%;">
                     <div class="row">
-                        <img src="/assets/recruiter/img/candidate.svg" style="height: 70px;">
+                        <img src="/assets/recruiter/img/candidate.svg" id="candidateStats" style="height: 70px;">
                     </div>
                     <div class="row" style="margin:2px">
                         25000+
@@ -319,9 +319,9 @@
                         Number of candidates
                     </div>
                 </div>
-                <div class="col l6 s6" id="jobRolesStats">
+                <div class="col l6 s6" style="padding: 2%;">
                     <div class="row">
-                        <img src="/assets/recruiter/img/suitcase.svg" style="height: 70px;">
+                        <img src="/assets/recruiter/img/suitcase.svg" id="jobRolesStats" style="height: 70px;">
                     </div>
                     <div class="row" style="margin:2px">
                         35+
@@ -402,16 +402,21 @@
             <div class="container">
                 <div class="row">
                     <div class="col l6 s12">
-                        <h5 class="white-text">Jobs in Bangalore</h5>
-                        <p class="grey-text text-lighten-4">You can use rows and columns here to organize your footer content.</p>
+                        <h5 class="white-text">Hire in Bangalore</h5>
+                        <p class="grey-text text-lighten-4">Connect With Us On<img src="/assets/recruiter/img/fbmain.svg" id="fbLogo" style="margin-left:2%;width:6%"></p>
                     </div>
                     <div class="col l4 offset-l2 s12">
-                        <h5 class="white-text">Links</h5>
+                        <h5 class="white-text">Get in touch</h5>
                         <ul>
                             <li><a class="grey-text text-lighten-3" href="#!">Write us at: info@@trujobs.in</a></li>
                             <li><a class="grey-text text-lighten-3" href="#!">Have queries? Talk to us at 8880007799</a></li>
                         </ul>
                     </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row" style="margin:0">
+                    <img src="/assets/recruiter/img/skyline_small.svg" width="100%">
                 </div>
             </div>
             <div class="footer-copyright">
@@ -423,6 +428,5 @@
     </body>
     <script type="text/javascript" src="/assets/recruiter/js/typist.js"></script>
     <script type="text/javascript" src="/assets/recruiter/js/recruiter_signup.js"></script>
-    <script type="text/javascript" src="/assets/common/js/home_page.js"></script>
     <script type="text/javascript" src="/assets/recruiter/js/recruiter_page.js"></script>
 </html>
