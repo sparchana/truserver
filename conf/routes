@@ -35,7 +35,8 @@ GET         /updateLeadStatus/:leadId/:leadStatus/:res                    contro
 GET         /support/administrator/alphaRequest/:mobile                   controllers.Application.removeDuplicateLeadOrCandidate(mobile: String)
 GET         /support/administrator/uploadCSV                              controllers.Application.uploadCSV()
 GET         /support/ifExists/:mobile                                     controllers.Application.ifExists(mobile: String)
-GET         /support/getMatchingCandidate/                                controllers.Application.getMatchingCandidate(jobPostId: String ?= null)
+GET         /support/api/getJobPostMatchingParams/:jobPostId              controllers.Application.getJobPostMatchingParams(jobPostId: Long)
+GET         /support/workflow                                             controllers.Application.renderWorkflow()
 
 POST        /addCompany                                                   controllers.Application.addCompany()
 POST        /addCompanyLogo                                               controllers.Application.addCompanyLogo()
@@ -57,6 +58,7 @@ POST        /getSearchCandidateResult                                     contro
 POST        /processCsv                                                   controllers.Application.processcsv()
 POST        /signUpSupport                                                controllers.Application.signUpSupport()
 POST        /getAllDeactivationReason                                     controllers.Application.getAllDeactivationReason()
+POST        /support/api/getMatchingCandidate/                            controllers.Application.getMatchingCandidate()
 
 # user dashboard
 # ~~~~~~~~~~~~~~

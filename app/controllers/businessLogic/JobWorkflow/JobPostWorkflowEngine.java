@@ -10,25 +10,23 @@ import models.entity.OM.JobPostLanguageRequirement;
 import models.entity.OM.JobPostToLocality;
 import models.entity.Static.Experience;
 import models.entity.Static.Locality;
-import org.h2.tools.Server;
-import org.mockito.cglib.core.Local;
 import play.Logger;
 
 import java.util.*;
 
-import static play.libs.Json.toJson;
 
 /**
  * Created by zero on 4/10/16.
  */
 public class JobPostWorkflowEngine {
+
     /**
      *
      *  @param jobPostId  match candidates for this jobPost
      *  @param minAge  min age criteria to be taken into consideration while matching
      *  @param maxAge  max range criteria to be taken into consideration while matching
      *  @param gender  gender criteria to be taken into consideration while matching
-     *  @param experience  experience duration to be taken into consideration while matching
+     *  @param experienceId experience duration to be taken into consideration while matching
      *  @param jobPostLocalityIdList  candidates to be matched within x Km of any of the provided locality
      *  @param languageIdList  candidate to be matched for any of this language. Output contains the
      *                       indication to show matching & non-matching language
@@ -41,7 +39,9 @@ public class JobPostWorkflowEngine {
                                                                            Long minSalary,
                                                                            Long maxSalary,
                                                                            Integer gender,
-                                                                           Experience experience,
+                                                                           Integer experienceId,
+                                                                           Long jobRoleId,
+                                                                           Integer educationId,
                                                                            List<Long> jobPostLocalityIdList,
                                                                            List<Integer> languageIdList)
     {
@@ -50,7 +50,8 @@ public class JobPostWorkflowEngine {
 
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
 
-        Long jobRoleId = jobPost.getJobRole().getJobRoleId();
+        // geDurationFromExperience returns minExperience req. (in Months)
+        ExperienceValue experience = getDurationFromExperience(experienceId);
 
         // get jobrolepref for candidate
 
@@ -74,7 +75,7 @@ public class JobPostWorkflowEngine {
         }
 
         // select candidate based on specific gender req, else pass
-        if (gender != null && gender != ServerConstants.GENDER_ANY) {
+        if (gender != null && gender>=0 && gender != ServerConstants.GENDER_ANY) {
             query = query
                     .where()
                     .isNotNull("candidateGender")
@@ -82,21 +83,24 @@ public class JobPostWorkflowEngine {
         }
 
         // select candidate whose totalExperience falls under the req exp
-        if (experience != null && experience.getExperienceId() != 5) {
+        if (experience != null) {
 
-            // geDurationFromExperience returns minExperience req. (in Months)
-            Integer minExperience = getDurationFromExperience(experience);
-
-            if(minExperience == 0) {
+            if(experience.minExperienceValue == 0) {
                 query = query
                         .where()
                         .isNotNull("candidateTotalExperience")
-                        .eq("candidateTotalExperience", minExperience).query();
+                        .eq("candidateTotalExperience", experience.minExperienceValue).query();
             } else {
                 query = query
                         .where()
                         .isNotNull("candidateTotalExperience")
-                        .ge("candidateTotalExperience", minExperience).query();
+                        .ge("candidateTotalExperience", experience.minExperienceValue).query();
+                if(experience.maxExperienceValue != 0) {
+                    query = query
+                            .where()
+                            .isNotNull("candidateTotalExperience")
+                            .le("candidateTotalExperience", experience.maxExperienceValue).query();
+                }
             }
         }
 
@@ -134,7 +138,16 @@ public class JobPostWorkflowEngine {
         if (jobRoleId != null) {
             query = query.select("*").fetch("jobPreferencesList")
                     .where()
-                    .eq("jobPreferencesList.jobRole.jobRoleId", jobRoleId)
+                    .in("jobPreferencesList.jobRole.jobRoleId", jobRoleId)
+                    .query();
+        }
+
+        // education match
+        if (educationId != null && educationId != 0) {
+            query = query.select("*").fetch("candidateEducation")
+                    .where()
+                    .isNotNull("candidateEducation")
+                    .eq("candidateEducation.education.educationId", educationId)
                     .query();
         }
 
@@ -150,8 +163,51 @@ public class JobPostWorkflowEngine {
         return matchedCandidateList;
     }
 
+    /**
+     * @param jobPostId
+     * Prepare params and calls getMatchingCandidate
+     */
+    public static Map<Long, CandidateMatchingJobPost> getMatchingCandidate(Long jobPostId)
+    {
+        // prep params for a jobPost
+        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+
+        Integer minAge = jobPost.getJobPostMinAge();
+        Integer maxAge = jobPost.getJobPostMaxAge();
+        Long minSalary = jobPost.getJobPostMinSalary();
+        Long maxSalary = jobPost.getJobPostMaxSalary();
+        Integer gender = jobPost.getGender();
+
+        Long jobRoleId = jobPost.getJobRole().getJobRoleId();
+
+        // geDurationFromExperience returns minExperience req. (in Months)
+        Integer experienceId = jobPost.getJobPostExperience() != null ? jobPost.getJobPostExperience().getExperienceId(): null;
+
+        Integer educationId = jobPost.getJobPostEducation() != null ? jobPost.getJobPostEducation().getEducationId() : null;
+
+        List<JobPostToLocality> jobPostToLocalityList = jobPost.getJobPostToLocalityList();
+        List<Long> localityIdList = new ArrayList<>();
+        for (JobPostToLocality jobPostToLocality: jobPostToLocalityList) {
+            localityIdList.add(jobPostToLocality.getLocality().getLocalityId());
+        }
+
+        List<JobPostLanguageRequirement> languageRequirements = jobPost.getJobPostLanguageRequirement();
+        List<Integer> languageIdList = new ArrayList<>();
+        for (JobPostLanguageRequirement requirement : languageRequirements) {
+            languageIdList.add(requirement.getLanguage().getLanguageId());
+        }
+
+        Logger.info(" minAge : "+minAge + " - " + " maxAge : "+maxAge + " - " + " minSalary : "+minSalary + " - " + " maxSalary : "+maxSalary + " - " + " gender : "+gender + " - " + " experienceId : "+experienceId + " - " + " localityIdList : "+localityIdList + " - " + " languageIdList: "+languageIdList);
+        // call master method
+        return getMatchingCandidate(jobPostId, minAge, maxAge, minSalary, maxSalary, gender, experienceId, jobRoleId, educationId, localityIdList, languageIdList);
+    }
+
     private static List<Candidate> filterByLatLngOrHomeLocality(List<Candidate> candidateList, List<Long> jobPostLocalityIdList) {
         List<Candidate> filteredCandidate = new ArrayList<>();
+
+        if (jobPostLocalityIdList == null){
+            return filteredCandidate;
+        }
 
         List<Locality> localityList = Locality.find.where().in("localityId", jobPostLocalityIdList).findList();
 
@@ -161,20 +217,24 @@ public class JobPostWorkflowEngine {
 
                 // candidate home locality matches with the job post locality
 
-                if ((candidate.getLocality() == null || ! jobPostLocalityIdList.contains(candidate.getLocality().getLocalityId()))
-                        && (candidate.getCandidateLocalityLat() != null && candidate.getCandidateLocalityLng()!= null)) {
+                if ((candidate.getLocality() == null || ! jobPostLocalityIdList.contains(candidate.getLocality().getLocalityId()))) {
 
-                    // is candidate within x km from any of the jobpost locality
-                    for (Locality locality : localityList) {
-                        if (MatchingEngineService.getDistanceFromCenter(
-                                locality.getLat(),
-                                locality.getLng(),
-                                candidate.getCandidateLocalityLat(),
-                                candidate.getCandidateLocalityLng()
-                        ) > ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS) {
-                            // candidate is not within req distance from jobPost latlng
-                            filteredCandidate.remove(candidate);
+                    if((candidate.getCandidateLocalityLat() != null && candidate.getCandidateLocalityLng()!= null)){
+                        // is candidate within x km from any of the jobpost locality
+                        for (Locality locality : localityList) {
+                            if (MatchingEngineService.getDistanceFromCenter(
+                                    locality.getLat(),
+                                    locality.getLng(),
+                                    candidate.getCandidateLocalityLat(),
+                                    candidate.getCandidateLocalityLng()
+                            ) > ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS) {
+                                // candidate is not within req distance from jobPost latlng
+                                filteredCandidate.remove(candidate);
+                                break;
+                            }
                         }
+                    } else {
+                        filteredCandidate.remove(candidate);
                     }
                 }
             }
@@ -189,54 +249,38 @@ public class JobPostWorkflowEngine {
         return featureMap;
     }
 
-
-    /**
-     * @param jobPostId
-     * Prepare params and calls getMatchingCandidate
-     */
-    public static Map<Long, CandidateMatchingJobPost> getMatchingCandidate(Long jobPostId)
-    {
-        // prep params for a jobPost
-        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
-        Integer minAge = jobPost.getJobPostMinAge();
-        Integer maxAge = jobPost.getJobPostMaxAge();
-        Long minSalary = jobPost.getJobPostMinSalary();
-        Long maxSalary = jobPost.getJobPostMaxSalary();
-        Integer gender = jobPost.getGender();
-        Experience experience = jobPost.getJobPostExperience();
-
-        List<JobPostToLocality> jobPostToLocalityList = jobPost.getJobPostToLocalityList();
-        List<Long> localityIdList = new ArrayList<>();
-        for (JobPostToLocality jobPostToLocality: jobPostToLocalityList) {
-            localityIdList.add(jobPostToLocality.getLocality().getLocalityId());
-        }
-
-        List<JobPostLanguageRequirement> languageRequirements = jobPost.getJobPostLanguageRequirement();
-        List<Integer> languageIdList = new ArrayList<>();
-        for (JobPostLanguageRequirement requirement : languageRequirements) {
-            languageIdList.add(requirement.getLanguage().getLanguageId());
-        }
-
-        Logger.info(" minAge : "+minAge + " - " + " maxAge : "+maxAge + " - " + " minSalary : "+minSalary + " - " + " maxSalary : "+maxSalary + " - " + " gender : "+gender + " - " + " experience : "+experience + " - " + " localityIdList : "+localityIdList + " - " + " languageIdList: "+languageIdList);
-        // call master method
-        return getMatchingCandidate(jobPostId, minAge, maxAge, minSalary, maxSalary, gender, experience, localityIdList, languageIdList);
-    }
-
-    private static int getDurationFromExperience(Experience experience) {
+    private static ExperienceValue getDurationFromExperience(Integer experienceId) {
 
         // experience table should have a minValue column containing the minValue
         // which should be considered while computation
+        ExperienceValue experienceValue = new ExperienceValue();
+        experienceValue.minExperienceValue = 0; // in months
+        experienceValue.maxExperienceValue = 0; // in months
 
-        int minExperienceValue = 0; // in months
 
-        if(experience.getExperienceId() == 2) {
-            minExperienceValue = 6;
-        } else if(experience.getExperienceId() == 3) {
-            minExperienceValue = 24;
-        } else if(experience.getExperienceId() == 4) {
-            minExperienceValue = 48;
+        if(experienceId == null ){
+          return null;
+        } else if (experienceId == 1){
+            experienceValue.minExperienceValue = 0;
+            experienceValue.maxExperienceValue = 0; // in months
+        } else if(experienceId == 2) {
+            experienceValue.minExperienceValue = 6;
+            experienceValue.maxExperienceValue = 24; // in months
+        } else if(experienceId == 3) {
+            experienceValue.minExperienceValue = 24;
+            experienceValue.maxExperienceValue = 48; // in months
+        } else if(experienceId == 4) {
+            experienceValue.minExperienceValue = 48;
+            experienceValue.maxExperienceValue = 72; // in months
+        } else {
+            return null;
         }
 
-        return minExperienceValue;
+        return experienceValue;
+    }
+
+    private static class ExperienceValue {
+        int minExperienceValue;
+        int maxExperienceValue;
     }
 }
