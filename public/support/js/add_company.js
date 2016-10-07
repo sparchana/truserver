@@ -66,7 +66,7 @@ function updateForm() {
             logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/" + f.name;
             status = 1;
         }
-    } else{
+    } else {
         status = 1;
         logo = $("#companyOldLogo").val();
     }
@@ -124,21 +124,25 @@ function saveForm(){
         if($("#companyName").val() == ""){
             alert("Please Enter company Name");
             status=0;
-        } else if($("#companyLogo").val() == ""){
-            alert("Please Enter company Logo");
-            status=0;
-        } else if((f.type).substring(0,1) != "i"){
+        } else if(document.getElementById("companyLogo").value != "" && (f.type).substring(0,1) != "i"){
             alert("Please select a valid image for logo");
             status=0;
         }
         if(status == 1){
             var d;
             var logo;
-            if(($("#companyLogo").val()).substring(0,4) == "http"){
-                logo = $("#companyLogo").val();
-            } else{
-                logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/" + f.name;
+
+            if ($("#companyLogo").val() != "") {
+                if (($("#companyLogo").val()).substring(0, 4) == "http") {
+                    logo = $("#companyLogo").val();
+                } else {
+                    logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/" + f.name;
+                }
             }
+            else {
+                logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/default_company_logo.png";
+            }
+
             d = {
                 companyId: $("#companyId").val(),
                 companyName: $("#companyName").val(),
@@ -170,7 +174,7 @@ function saveForm(){
                 $("#recruiterCompany").prop('disabled', false);
                 $("#recruiterCompany").val(companyId);
                 $("#companySection").hide();
-            } else{
+            } else {
                 uploadLogo();
             }
         }
@@ -223,7 +227,6 @@ function saveForm(){
         });
     }
 
-    console.log(companyStatus + " -- " + recruiterStatus);
     if(companyStatus == 1 && recruiterStatus == 1){
         alert("New Company and New Recruiter Created successfully created");
         window.close();

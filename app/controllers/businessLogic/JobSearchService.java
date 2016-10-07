@@ -2,7 +2,6 @@ package controllers.businessLogic;
 
 import api.ServerConstants;
 import api.http.FormValidator;
-import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Expr;
 import com.avaje.ebean.Query;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
@@ -11,7 +10,6 @@ import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.OM.JobPreference;
 import models.entity.Static.JobRole;
-import play.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,8 +18,6 @@ import java.util.stream.Collectors;
 
 import static api.ServerConstants.SORT_BY_DATE_POSTED;
 import static api.ServerConstants.SORT_BY_SALARY;
-import static api.ServerConstants.SORT_DEFAULT;
-import static play.libs.Json.toJson;
 
 /**
  * Created by zero on 15/8/16.
