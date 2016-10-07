@@ -217,4 +217,8 @@ public class SmsUtil {
         sendSms(mobile, msg);
     }
 
+    public static void sendRecruiterLeadMsg(String mobile) {
+        String msg = "Thank you for getting in touch with us. We will contact you soon! Welcome to www.Trujobs.in!";
+        sendSms(mobile, msg);
+    }
 }

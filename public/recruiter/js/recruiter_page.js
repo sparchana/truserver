@@ -57,10 +57,10 @@ $(document).ready(function(){
 
     $('.typist')
         .typist({
-            text: 'delivery boys'
+            text: 'delivery executives'
         })
         .typistPause(1000)
-        .typistRemove(13)
+        .typistRemove(19)
         .typistPause(500)
         .typistAdd('drivers')
         .typistPause(1000)
@@ -69,6 +69,10 @@ $(document).ready(function(){
         .typistAdd('telecallers')
         .typistPause(1000)
         .typistRemove(11)
+        .typistPause(500)
+        .typistAdd('sales executives')
+        .typistPause(1000)
+        .typistRemove(16)
         .typistPause(500)
         .typistAdd('now!')
         .typistStop();
