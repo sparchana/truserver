@@ -50,6 +50,7 @@ input::-webkit-inner-spin-button {
 }
 body{
     font-family:Lato;
+    background-color: #fafafa;
 }
 
 nav{
@@ -157,7 +158,6 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
 
 #candidateStats{
     padding: 2%;
-    border-right: 2px solid black;
 }
 #jobRolesStats{
     padding: 2%;
@@ -165,8 +165,11 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
 #stats{
     padding: 2%;
     text-align: center;
+    margin-top: 2%;
+    margin-bottom: 2%;
 }
 #testimonial{
+    background-color: #ffffff;
     text-align: center;
 }
 #companyHiringBox{
@@ -184,6 +187,7 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
 #companyHiringCompanyLogo{
     margin:0;
     padding: 4%;
+    background-color: #ffffff;
     border-bottom: 1px solid #e2e2e2;
 }
 #companyHiringCompanyLogo img{
@@ -206,6 +210,12 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
 footer.page-footer .footer-copyright{
     background: rgba(0,0,0,0.6);
     text-align: center;
+}
+.materialDash{
+    height: 2px;
+    width: 72px;
+    background: #2ec866;
+    margin: 2%;
 }
 @media screen and (max-width: 768px) {
     #leadForm{
