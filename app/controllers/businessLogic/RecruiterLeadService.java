@@ -9,6 +9,7 @@ import models.entity.OM.RecruiterLeadToLocality;
 import models.entity.RecruiterLead;
 import models.entity.Static.JobRole;
 import models.entity.Static.Locality;
+import models.util.SmsUtil;
 import play.Logger;
 
 import javax.persistence.NonUniqueResultException;
@@ -89,6 +90,7 @@ public class RecruiterLeadService {
             Logger.info("Existing lead made contact");
             recruiterLeadResponse.setStatus(RecruiterLeadResponse.STATUS_SUCCESS);
         }
+        SmsUtil.sendRecruiterLeadMsg(FormValidator.convertToIndianMobileFormat(recruiterLeadRequest.getRecruiterMobile()));
         return recruiterLeadResponse;
     }
 
