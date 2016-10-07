@@ -10,7 +10,7 @@ function processDataLeadSubmit(returnedData) {
         alert("Thanks! We will get in touch shortly!");
         location.reload();
     } else{
-        notifyError("Oops! Looks like something went wrong! Please try again after some time1");
+        notifyError("Oops! Looks like something went wrong! Please try again after some time!");
     }
 }
 
