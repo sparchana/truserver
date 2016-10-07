@@ -15,7 +15,7 @@
 }
 
 .select-wrapper input.select-dropdown{
-    color: #8e8e8e;
+    color: #b1b1b1;
 }
 ::-webkit-scrollbar
 {
@@ -217,6 +217,7 @@ footer.page-footer .footer-copyright{
     background: #2ec866;
     margin: 2%;
 }
+
 @media screen and (max-width: 768px) {
     #leadForm{
         margin-top:6%;
