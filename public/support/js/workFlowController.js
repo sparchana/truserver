@@ -857,6 +857,10 @@ $(function() {
 
     document.getElementById('moveSelectedBtn').addEventListener("click", function () {
         app.getSelectionFromTable();
-        app.submitSelectedCandidateList();
+        if(app.selectedCandidateList.length > 0){
+            app.submitSelectedCandidateList();
+        } else {
+            app.notify("Please select candidate(s) to move to pre-screen", "danger");
+        }
     });
 });
