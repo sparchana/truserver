@@ -41,6 +41,10 @@ public class RecruiterLeadToLocality extends Model {
 
     public static Finder<String, RecruiterLeadToLocality> find = new Finder(RecruiterLeadToLocality.class);
 
+    public RecruiterLeadToLocality(){
+        this.recruiterLeadToLocalityCreateTimeStamp = new Timestamp(System.currentTimeMillis());
+    }
+
     public Long getRecruiterLeadToLocalityId() {
         return recruiterLeadToLocalityId;
     }
