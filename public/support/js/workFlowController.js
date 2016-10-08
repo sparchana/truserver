@@ -16,6 +16,14 @@ function getJob(){
     return allJobArray;
 }
 
+function getAppliedOn(data) {
+    if(data != null) {
+        return data;
+    } else {
+        return "NA";
+    }
+}
+
 
 function getJobPref(jobPrefList) {
     var jobString = [];
@@ -160,7 +168,7 @@ function getYesNo(assesment) {
         if (assesment == '0' || assesment == false) {
             return "No";
         } else {
-            return "yes";
+            return "Yes";
         }
     }
     return "NA";
@@ -691,7 +699,7 @@ $(function() {
                     'candidateSkillList': getSkills(newCandidate.candidate.candidateSkillList),
                     'candidateTimeShiftPref': timeShiftPref,
                     'candidateExperience': getInYearMonthFormat(newCandidate.candidate.candidateTotalExperience),
-                    'candidateIsAssessmentComplete': getYesNo(newCandidate.candidate.candidateIsAssessed),
+                    'candidateIsAssessmentComplete': getYesNo(newCandidate.featureMap.ASSESSMENT_ATTEMPT_ID),
                     'candidateGender': getGender(newCandidate.candidate.candidateGender),
                     'candidateIsEmployed': getYesNo(newCandidate.candidate.candidateIsEmployed),
                     'candidateCreateTimestamp': getDateTime(newCandidate.candidate.candidateCreateTimestamp),
@@ -704,7 +712,9 @@ $(function() {
                     'candidateExperienceLetter': getYesNo(newCandidate.candidate.candidateExperienceLetter),
                     'isActive': getProperProfileStatus(newCandidate.candidate.candidateprofilestatus),
                     'candidateExpiry': getExpiry(newCandidate.candidate.candidateStatusDetail),
-                    'candidateIdProofs': getIdProof(newCandidate.candidate.idProofReferenceList)
+                    'candidateIdProofs': getIdProof(newCandidate.candidate.idProofReferenceList),
+                    'jobAppliedOn': getAppliedOn(newCandidate.featureMap.APPLIED_ON),
+                    'lastActive': (newCandidate.featureMap.LAST_ACTIVE)
                 })
             });
 
@@ -740,7 +750,9 @@ $(function() {
                     {"data": "candidateExperienceLetter"},
                     {"data": "isActive"},
                     {"data": "candidateExpiry"},
-                    {"data": "candidateIdProofs"}
+                    {"data": "candidateIdProofs"},
+                    {"data": "jobAppliedOn"},
+                    {"data": "lastActive"}
                 ],
                 "deferRender": true,
                 "scroller": true,

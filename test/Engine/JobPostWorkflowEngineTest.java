@@ -71,7 +71,7 @@ public class JobPostWorkflowEngineTest {
             Application fakeApp = fakeApplication();
             TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
             running(server, () -> {
-                Logger.info(String.valueOf(toJson(JobPostWorkflowEngine.getMatchingCandidate(jobPostId).size())));
+                Logger.info(String.valueOf(toJson(JobPostWorkflowEngine.getMatchingCandidate(jobPostId))));
             });
         }
     }
