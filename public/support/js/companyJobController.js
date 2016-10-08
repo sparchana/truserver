@@ -68,6 +68,9 @@ function renderDashboard() {
                                     return "Is Hot";
                                 }
                                 return "Is not Hot";
+                            },
+                            'match' : function () {
+                                return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'" style="cursor:pointer;" target="_blank"><button class="btn primary">Match</button></a>'
                             }
                         })
                     });
@@ -85,7 +88,8 @@ function renderDashboard() {
                 { "data": "jobLocation" },
                 { "data": "jobRole" },
                 { "data": "jobExperience" },
-                { "data": "jobIsHot" }
+                { "data": "jobIsHot" },
+                { "data": "match" }
             ],
             "order": [[0, "desc"]],
             "language": {

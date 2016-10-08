@@ -238,7 +238,7 @@ function getIdProof(idProofList) {
 $(function() {
     'use strict';
     var app = {
-        jpId: 534,
+        jpId: null,
         jpJobRoleId: 0,
         jpLocalityIdList: [],
         jpMinSalary: null,
@@ -271,8 +271,16 @@ $(function() {
         });
     };
 
+    app.setJPId = function setJPId(){
+        var pathname = window.location.pathname; // Returns path only
+        var jpId = pathname.split('/');
+        app.jpId = jpId[(jpId.length) - 1];
+    };
+
     app.init = function () {
         NProgress.start();
+
+        app.setJPId();
 
         // create multiselect for languages
         try {
@@ -348,7 +356,6 @@ $(function() {
         } catch (exception) {
             console.log("exception occured!!" + exception);
         }
-
 
         function processDataCheckEducation(returnedEdu) {
             if(returnedEdu != null) {
@@ -476,19 +483,16 @@ $(function() {
                 app.jpGender = returnedData.gender;
                 $("#genderSelect").val(app.jpGender);
                 $("#genderSelect").multiselect('rebuild');
-                console.log("gender:" + returnedData.gender);
             }
             if (returnedData.jobPostExperience !=null) {
                 app.jpExperienceId = returnedData.jobPostExperience.experienceId;
                 $("#experienceSelect").val(app.jpExperienceId);
                 $("#experienceSelect").multiselect('rebuild');
-                console.log("EXperience:" + app.jpExperienceId);
             }
             if (returnedData.jobPostEducation !=null) {
                 app.jpEducationId = returnedData.jobPostEducation.educationId;
                 $("#educationSelect").val(app.jpEducationId);
                 $("#educationSelect").multiselect('rebuild');
-                console.log("education:" + app.jpEducationId);
             }
             if (returnedData.jobPostLanguageRequirement != null) {
                 var req = returnedData.jobPostLanguageRequirement;
@@ -521,7 +525,6 @@ $(function() {
                 item ["name"] = returnedData.jobRole.jobName;
                 jobPostJobRole.push(item);
                 app.jpJobRoleId = (returnedData.jobRole.jobRoleId);
-                console.log("after fetch from jobPost app.jpJobRoleId"+app.jpJobRoleId);
             }
             if($("#jobPostJobRole").val() == "") {
                 $("#jobPostJobRole").tokenInput(getJob(), {
@@ -586,16 +589,12 @@ $(function() {
         app.jpJobRoleId = null;
 
         app.jpJobRoleId = (parseInt($("#jobPostJobRole").val()));
-        console.log("before final submission: "+ app.jpJobRoleId);
 
         app.jpExperienceId = $('#experienceSelect').val();
-        console.log(app.jpExperienceId);
 
         app.jpEducationId = $('#educationSelect').val();
-        console.log(app.jpEducationId);
 
         app.jpGender = $('#genderSelect').val();
-        console.log(app.jpGender);
 
         app.jpMinSalary = $('#minSalary').val();
         app.jpMaxSalary = $('#maxSalary').val();
@@ -622,7 +621,6 @@ $(function() {
                 jobPostLanguageIdList: app.jpLanguageIdList
             };
 
-            console.log("-->"+JSON.stringify(d));
             NProgress.start();
             try {
                 $.ajax({
@@ -644,10 +642,9 @@ $(function() {
         app.jpCandidateList = [];
         $.each( returnedData, function( key, value) {
             if(value!= null) {
-                app.jpCandidateList.push(value.candidate);
+                app.jpCandidateList.push(value);
             }
         });
-        console.log("length:"+app.jpCandidateList.length);
 
         // destroy table
         app.renderTable();
@@ -666,42 +663,43 @@ $(function() {
         try {
             app.jpCandidateList.forEach(function (newCandidate) {
                 // prep strings for display
+                app.addFooter();
 
                 var timeShiftPref = "";
                 var locality = "";
-                if (newCandidate.timeShiftPreference != null) {
-                    timeShiftPref = newCandidate.timeShiftPreference.timeShift.timeShiftName;
+                if (newCandidate.candidate.timeShiftPreference != null) {
+                    timeShiftPref = newCandidate.candidate.timeShiftPreference.timeShift.timeShiftName;
                 }
-                if (newCandidate.locality != null) {
-                    locality = newCandidate.locality.localityName;
+                if (newCandidate.candidate.locality != null) {
+                    locality = newCandidate.candidate.locality.localityName;
                 }
                 returnedDataArray.push({
-                    'cLID': '<a href="/candidateSignupSupport/' + newCandidate.lead.leadId + '/false" target="_blank">' + newCandidate.lead.leadId + '</a>',
-                    'candidateFirstName': getFirstName(newCandidate.candidateFirstName) + " " + getLastName(newCandidate.candidateLastName),
-                    'candidateMobile': newCandidate.candidateMobile,
-                    'candidateLastWithdrawnSalary': getLastWithdrawnSalary(newCandidate.candidateLastWithdrawnSalary),
-                    'candidateJobPref': getJobPref(newCandidate.jobPreferencesList),
-                    'candidateLocalityPref': getLocalityPref(newCandidate.localityPreferenceList),
-                    'locality': getHomeLocality(newCandidate.locality),
-                    'candidateLanguage': getLanguageKnown(newCandidate.languageKnownList),
-                    'candidateEducation': getEducation(newCandidate.candidateEducation),
-                    'candidateSkillList': getSkills(newCandidate.candidateSkillList),
+                    'cLID': '<a href="/candidateSignupSupport/' + newCandidate.candidate.lead.leadId + '/false" target="_blank">' + newCandidate.candidate.lead.leadId + '</a>',
+                    'candidateFirstName': getFirstName(newCandidate.candidate.candidateFirstName) + " " + getLastName(newCandidate.candidate.candidateLastName),
+                    'candidateMobile': newCandidate.candidate.candidateMobile,
+                    'candidateLastWithdrawnSalary': getLastWithdrawnSalary(newCandidate.candidate.candidateLastWithdrawnSalary),
+                    'candidateJobPref': getJobPref(newCandidate.candidate.jobPreferencesList),
+                    'candidateLocalityPref': getLocalityPref(newCandidate.candidate.localityPreferenceList),
+                    'locality': getHomeLocality(newCandidate.candidate.locality),
+                    'candidateLanguage': getLanguageKnown(newCandidate.candidate.languageKnownList),
+                    'candidateEducation': getEducation(newCandidate.candidate.candidateEducation),
+                    'candidateSkillList': getSkills(newCandidate.candidate.candidateSkillList),
                     'candidateTimeShiftPref': timeShiftPref,
-                    'candidateExperience': getInYearMonthFormat(newCandidate.candidateTotalExperience),
-                    'candidateIsAssessmentComplete': getYesNo(newCandidate.candidateIsAssessed),
-                    'candidateGender': getGender(newCandidate.candidateGender),
-                    'candidateIsEmployed': getYesNo(newCandidate.candidateIsEmployed),
-                    'candidateCreateTimestamp': getDateTime(newCandidate.candidateCreateTimestamp),
-                    'pastOrCurrentCompanyName': getPastOrCurrentCompanyName(newCandidate.jobHistoryList),
-                    'isMinProfileComplete': getYesNo(newCandidate.isMinProfileComplete),
-                    'followUp': getYesNo(newCandidate.lead.followUp),
-                    'noOfJobApplication': newCandidate.jobApplicationList.length,
-                    'experience': getExperience(newCandidate.candidateExpList),
-                    'age': getAge(newCandidate.candidateDOB),
-                    'candidateExperienceLetter': getYesNo(newCandidate.candidateExperienceLetter),
-                    'isActive': getProperProfileStatus(newCandidate.candidateprofilestatus),
-                    'candidateExpiry': getExpiry(newCandidate.candidateStatusDetail),
-                    'candidateIdProofs': getIdProof(newCandidate.idProofReferenceList)
+                    'candidateExperience': getInYearMonthFormat(newCandidate.candidate.candidateTotalExperience),
+                    'candidateIsAssessmentComplete': getYesNo(newCandidate.candidate.candidateIsAssessed),
+                    'candidateGender': getGender(newCandidate.candidate.candidateGender),
+                    'candidateIsEmployed': getYesNo(newCandidate.candidate.candidateIsEmployed),
+                    'candidateCreateTimestamp': getDateTime(newCandidate.candidate.candidateCreateTimestamp),
+                    'pastOrCurrentCompanyName': getPastOrCurrentCompanyName(newCandidate.candidate.jobHistoryList),
+                    'isMinProfileComplete': getYesNo(newCandidate.candidate.isMinProfileComplete),
+                    'followUp': getYesNo(newCandidate.candidate.lead.followUp),
+                    'noOfJobApplication': newCandidate.candidate.jobApplicationList.length,
+                    'experience': getExperience(newCandidate.candidate.candidateExpList),
+                    'age': getAge(newCandidate.candidate.candidateDOB),
+                    'candidateExperienceLetter': getYesNo(newCandidate.candidate.candidateExperienceLetter),
+                    'isActive': getProperProfileStatus(newCandidate.candidate.candidateprofilestatus),
+                    'candidateExpiry': getExpiry(newCandidate.candidate.candidateStatusDetail),
+                    'candidateIdProofs': getIdProof(newCandidate.candidate.idProofReferenceList)
                 })
             });
 
@@ -771,9 +769,6 @@ $(function() {
         } catch (exception) {
             console.log("exception occured!!" + exception.stack);
         }
-
-        app.addFooter();
-
     };
 
 
@@ -796,9 +791,5 @@ $(function() {
     app.formSubmit.submit(function(eventObj) {
         eventObj.preventDefault();
         app.fetchCandidateList();
-
-        if(shouldAddFooter){
-            app.addFooter();
-        }
     });
 });

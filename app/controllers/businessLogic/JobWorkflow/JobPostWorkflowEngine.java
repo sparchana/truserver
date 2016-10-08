@@ -8,7 +8,6 @@ import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.OM.JobPostLanguageRequirement;
 import models.entity.OM.JobPostToLocality;
-import models.entity.Static.Experience;
 import models.entity.Static.Locality;
 import play.Logger;
 

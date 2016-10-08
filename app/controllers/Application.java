@@ -1509,7 +1509,7 @@ public class Application extends Controller {
         return badRequest();
     }
 
-    public static Result renderWorkflow() {
+    public static Result renderWorkflow(Long jobPostId) {
         return ok(views.html.workflow.render());
     }
 
