@@ -11,6 +11,7 @@
 
             <!-- Include the plugin's CSS and JS: -->
         <link rel="stylesheet" href="/assets/support/css/bootstrap-multiselect.css" type="text/css"/>
+        <link rel="stylesheet" href="/assets/support/css/select.dataTables.min.css" type="text/css"/>
 
         <style>
         tfoot input {
@@ -22,6 +23,16 @@
             margin: 1%;
         }
 
+        #otherControls #moveSelectedBtn {
+            margin: 16px;
+
+        }
+
+        #otherControls {
+            padding-right: 16px;
+            padding-left: 16px;
+            text-align: center;
+        }
         a {
             color: #5cb85c;
         }
@@ -34,6 +45,9 @@
         }
         tr th input{
             width: 100%;
+        }
+        #candidateMatchResultTable tbody tr.selected{
+            background-color: #dff0d8;
         }
 
         #filterTable input {
@@ -172,6 +186,7 @@
                         <th>ID-Proofs</th>
                         <th>Job Applied on</th>
                         <th>Last Active</th>
+                        <th>Candidate Id</th>
                     </tr>
                 </thead>
                 <tfoot>
@@ -204,14 +219,19 @@
                         <th>ID-Proofs</th>
                         <th>Job Applied on</th>
                         <th>Last Active</th>
+                        <th>Candidate Id</th>
                     </tr>
                 </tfoot>
                 <tbody>
                 </tbody>
             </table>
         </div>
+        <div id="otherControls">
+            <button type="submit" id="moveSelectedBtn" class="btn btn-success btn-lg">Move To Pre-Screen</button>
+        </div>
         <script type="text/javascript" src="/assets/build/support/sapp.min.js"></script>
         <script type="text/javascript" src="/assets/build/support/workFlowController.min.js"></script>
         <script type="text/javascript" src="/assets/support/js/bootstrap-multiselect.js"></script>
+        <script type="text/javascript" src="/assets/support/js/dataTables.select.min.js"></script>
     </body>
 </html>

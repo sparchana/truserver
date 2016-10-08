@@ -1516,4 +1516,25 @@ public class Application extends Controller {
     public static Result getJobPostMatchingParams(long jobPostId) {
         return ok(toJson(JobPost.find.where().eq("jobPostId", jobPostId).findUnique()));
     }
+
+    public static Result saveSelectedCandidate() {
+        JsonNode selectedCandidateIdsJson = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + selectedCandidateIdsJson);
+        if(selectedCandidateIdsJson == null){
+            return badRequest();
+        }
+        SelectedCandidateRequest selectedCandidateRequest= new SelectedCandidateRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+
+        // since jsonReq has single/multiple values in array
+        newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+
+        try {
+            selectedCandidateRequest = newMapper.readValue(selectedCandidateIdsJson.toString(), SelectedCandidateRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ok(toJson(JobPostWorkflowEngine.saveSelectedCandidates(selectedCandidateRequest.getSelectedCandidateIdList())));
+    }
 }

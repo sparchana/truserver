@@ -264,7 +264,10 @@ $(function() {
         tableContainerId: 'candidateMatchResultTable',
         formSubmit: $('#candidateMatchForm'),
         url: "/support/api/getMatchingCandidate/",
-        shouldSend: true
+        shouldSend: true,
+        table: null,
+        selectedCandidateList: [],
+        url_save_selected_candidate: "/support/api/saveSelectedCandidate/"
     };
 
     app.notify = function notifyError(msg, type){
@@ -687,7 +690,7 @@ $(function() {
                     locality = newCandidate.candidate.locality.localityName;
                 }
                 returnedDataArray.push({
-                    'cLID': '<a href="/candidateSignupSupport/' + newCandidate.candidate.lead.leadId + '/false" target="_blank">' + newCandidate.candidate.lead.leadId + '</a>',
+                    'cLID': '<a href="/candidateSignupSupport/' + newCandidate.candidate.lead.leadId + '/false" target="_blank" id="'+newCandidate.candidate.lead.leadId +'">' + newCandidate.candidate.lead.leadId + '</a>',
                     'candidateFirstName': getFirstName(newCandidate.candidate.candidateFirstName) + " " + getLastName(newCandidate.candidate.candidateLastName),
                     'candidateMobile': newCandidate.candidate.candidateMobile,
                     'candidateLastWithdrawnSalary': getLastWithdrawnSalary(newCandidate.candidate.candidateLastWithdrawnSalary),
@@ -714,16 +717,18 @@ $(function() {
                     'candidateExpiry': getExpiry(newCandidate.candidate.candidateStatusDetail),
                     'candidateIdProofs': getIdProof(newCandidate.candidate.idProofReferenceList),
                     'jobAppliedOn': getAppliedOn(newCandidate.featureMap.APPLIED_ON),
-                    'lastActive': (newCandidate.featureMap.LAST_ACTIVE)
+                    'lastActive': (newCandidate.featureMap.LAST_ACTIVE),
+                    'candidateId': newCandidate.candidate.candidateId
                 })
             });
 
             app.tableContainer.show();
 
-            var table =  $('table#'+app.tableContainerId).DataTable({
+            app.table =  $('table#'+app.tableContainerId).DataTable({
                 "data": returnedDataArray,
                 "order": [[27, "desc"]],
                 "scrollX": true,
+                "rowId": "candidateId",
                 "columns": [
                     {"data": "cLID"},
                     {"data": "candidateFirstName"},
@@ -752,7 +757,8 @@ $(function() {
                     {"data": "candidateExpiry"},
                     {"data": "candidateIdProofs"},
                     {"data": "jobAppliedOn"},
-                    {"data": "lastActive"}
+                    {"data": "lastActive"},
+                    {"data": "candidateId"}
                 ],
                 "deferRender": true,
                 "scroller": true,
@@ -765,11 +771,14 @@ $(function() {
                 "dom": 'Bfrtip',
                 "buttons": [
                     'copy', 'csv', 'excel'
-                ]
+                ],
+                "select": {
+                    "style": 'multi'
+                }
             });
 
             // Apply the search filter
-            table.columns().every(function () {
+            app.table.columns().every(function () {
                 var that = this;
                 $('input', this.footer()).on('keyup change', function () {
                     if (that.search() !== this.value) {
@@ -800,13 +809,54 @@ $(function() {
         }
     };
 
+    app.getSelectionFromTable = function () {
+        var selectedCandidateIds = app.table.rows( { selected: true } ).ids();
+        var arrayLength = selectedCandidateIds.length;
+        app.selectedCandidateList = [];
+        for (var i = 0; i < arrayLength; i++) {
+            app.selectedCandidateList.push(parseInt(selectedCandidateIds[i]));
+        }
+        console.log(app.selectedCandidateList);
+    };
+
+    app.submitForm = function () {
+        app.formSubmit.submit(function(eventObj) {
+            eventObj.preventDefault();
+            app.fetchCandidateList();
+        });
+    };
+
+    app.submitSelectedCandidateList = function () {
+        NProgress.start();
+        var d = {
+            selectedCandidateIdList: app.selectedCandidateList
+        };
+        try {
+            $.ajax({
+                type: "POST",
+                url: app.url_save_selected_candidate,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: app.processSelectionResponse
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception.stack);
+        }
+        NProgress.done();
+
+    };
+    app.processSelectionResponse = function (returnedData) {
+      console.log(returnedData);
+    };
 
     // seq of execution on doc ready
     app.init();
     app.initParams();
 
-    app.formSubmit.submit(function(eventObj) {
-        eventObj.preventDefault();
-        app.fetchCandidateList();
+    app.submitForm();
+
+    document.getElementById('moveSelectedBtn').addEventListener("click", function () {
+        app.getSelectionFromTable();
+        app.submitSelectedCandidateList();
     });
 });

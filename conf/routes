@@ -59,6 +59,7 @@ POST        /processCsv                                                   contro
 POST        /signUpSupport                                                controllers.Application.signUpSupport()
 POST        /getAllDeactivationReason                                     controllers.Application.getAllDeactivationReason()
 POST        /support/api/getMatchingCandidate/                            controllers.Application.getMatchingCandidate()
+POST        /support/api/saveSelectedCandidate/                           controllers.Application.saveSelectedCandidate()
 
 # user dashboard
 # ~~~~~~~~~~~~~~

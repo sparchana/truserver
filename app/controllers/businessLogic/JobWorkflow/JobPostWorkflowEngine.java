@@ -2,6 +2,7 @@ package controllers.businessLogic.JobWorkflow;
 
 import api.InteractionConstants;
 import api.ServerConstants;
+import api.http.httpRequest.SelectedCandidateRequest;
 import api.http.httpResponse.CandidateMatchingJobPost;
 import com.avaje.ebean.*;
 import controllers.businessLogic.MatchingEngineService;
@@ -19,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.avaje.ebean.Expr.eq;
+import static play.libs.Json.toJson;
 
 
 /**
@@ -367,6 +369,12 @@ public class JobPostWorkflowEngine {
         }
 
         return experienceValue;
+    }
+
+    public static Object saveSelectedCandidates(List<Long> selectedCandidateIdList) {
+        List<Candidate> selectedCandidateList = Candidate.find.where().in("candidateId", selectedCandidateIdList).findList();
+        Logger.info("SelectedCandidateList" + toJson(selectedCandidateList ));
+        return selectedCandidateList;
     }
 
     private static class ExperienceValue {
