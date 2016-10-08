@@ -38,22 +38,22 @@
     <body>
         <div class="navbar-fixed">
             <nav>
-                <div class="container">
+                <div class="container" style="width: 85%;">
                     <div class="nav-wrapper">
                         <a href="#!" class="brand-logo">
-                            <img src="/assets/common/img/logo-main.gif" style="height: 42px;
+                            <img src="/assets/common/img/logo-main.gif" style="height: 40px;
                                 margin-top: -2%">
                         </a>
-@*                        <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+                        <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
                         <ul class="right hide-on-med-and-down">
                             <li><a data-target="modalSignUp" class="waves-effect waves-light ascentGreen lighten-1 btn modal-trigger"><font style="color: #fff; font-weight: 600">SignUp</font></a></li>
                             <li><a data-target="modalLogIn" class="waves-effect waves-light transparent btn modal-trigger" style="border: 1px solid #ffffff"><font style="font-weight: 600; color: #ffffff">LogIn</font></a></li>
-                        </ul>*@
+                        </ul>
                     </div>
-@*                    <ul class="side-nav" id="mobile-demo">
+                    <ul class="side-nav" id="mobile-demo">
                         <li><a href="#">SIGNUP</a></li>
                         <li><a href="#">LOGIN</a></li>
-                    </ul>*@
+                    </ul>
                 </div>
             </nav>
         </div>
@@ -61,12 +61,7 @@
         <div id="modalSignUp" class="modal">
             <div class="row">
                 <div class="col l4 hide-on-small-only" id="modalLeftBox">
-                    <div class="row">
-                        Sample1
-                    </div>
-                    <div class="row">
-                        Sample2
-                    </div>
+
                 </div>
                 <form>
                     <div class="col l8" id="modalRightBox">
@@ -80,7 +75,7 @@
                         </div>
                         <div class="row" id="inputContainerModalSignup">
                             <div class="input-field col s12">
-                                <a onclick="signUpRecruiter()" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">SignUp</font></a>
+                              <button onclick="signUpRecruiter()" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">SignUp</font>
                             </div>
                         </div>
                     </div>
@@ -157,16 +152,14 @@
 
             <div class="sectionOneBody" style="display:flex; justify-content:center; align-items:center;">
                 <div>
-                    <h4 style="color: #fff">Welcome to Trujobs Employer Zone</h4>
+                    <h4 style="color: #fff">We will schedule and manage your interviews.</h4>
                     <h5 class="typist" style="color: #2ec866"><font color="#fff">Hire </font></h5>
-                    <br>
-                    <div style="color: #fff; font-size: 24px;  display: inline-block">We will schedule and manage your interviews.</div>
                     <div>
                         <img src="/assets/recruiter/img/user.svg" width="16px" style="display: inline-block; margin: -4px 2px 2px 2px;">
-                        <h6 style="color: #fff; font-size: 16px;  display: inline-block"><font color="#2ec866"><b>25000+</b></font> candidates to recruit</h6>
+                        <h6 style="color: #fff; font-size: 16px;  display: inline-block"><font color="#2ec866"><b>25000+ </b></font>verified candidates to hire!</h6>
                     </div>
                     <center class="hide-on-med-and-up" id="mobileEnquiryBtn">
-                        <a class="waves-effect waves-light transparent btn modal-trigger" style="border:1px solid #2ec866; color:#2ec866" data-target="recEnquiry">Enquiry</a>
+                        <a class="waves-effect waves-light transparent btn modal-trigger" style="border:1px solid #2ec866; color:#2ec866" data-target="recEnquiry">Request Call Back</a>
                     </center>
 
                 </div>
@@ -176,60 +169,9 @@
             <div class="footerLeadForm valign-wrapper hide-on-small-only">
                 <div style="width: 100%; text-align: center" class="container">
                     <h5 style="color: #fff">Looking to hire?</h5>
-                    <h6 style="color: #fff">Fill up the form and we will call you back</h6>
 
-                    <form style="border: 1px solid rgba(177, 177, 177, 0.39); margin-top: 12px">
-                        <div class="container">
-                            <div class="row">
-                                <div class="input-field col s12 l3">
-                                    <input type="text" id="mobileNumber" style="color: #b7b5b0" maxlength="10" placeholder="Mobile Number">
-                                </div>
-
-                                <div class="input-field col s12 l3">
-                                    <input type="text" id="jobRoleOption" placeholder="Job Role">
-                                    <script type="text/javascript">
-                                        $(document).ready(function () {
-                                            $("#jobRoleOption").tokenInput(getJob(), {
-                                                theme: "facebook",
-                                                placeholder: "Job roles are you looking to hire?",
-                                                minChars: 1,
-                                                tokenLimit: 3,
-                                                hintText: "Start Typing Jobs (eg: delivery boy, driver, etc..)",
-                                                preventDuplicates: true
-                                            });
-                                        });
-                                    </script>
-                                </div>
-
-                                <div class="input-field col s12 l3">
-                                    <input type="text" id="locationOption" placeholder="Location">
-                                    <script type="text/javascript">
-                                        $(document).ready(function () {
-                                            $("#locationOption").tokenInput(getLocality(), {
-                                                theme: "facebook",
-                                                placeholder: "Location(s) you want to hire?",
-                                                minChars: 1,
-                                                tokenLimit: 3,
-                                                hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
-                                                preventDuplicates: true
-                                            });
-                                        });
-                                    </script>
-                                </div>
-
-                                <div class="input-field col s12 l3">
-                                    <select id="recruiterRequirement">
-                                        <option value="" disabled selected>Specify Requirement</option>
-                                        <option value="part time">Part time</option>
-                                        <option value="full time">Full Time</option>
-                                        <option value="contract">Contract</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
                     <center>
-                        <a class="waves-effect waves-light ascentGreen btn" style="margin-top: 12px" id="requestLeadBtn" onclick="requestLead()"><font style="color: #ffffff">Submit</font></a>
+                        <a data-target="modalHire" class="waves-effect waves-light ascentGreen btn modal-trigger" style="margin-top: 12px;margin-bottom:36px" id="requestLeadBtn"><font style="color: #ffffff">Request Call Back</font></a>
                     </center>
 
                 </div>
@@ -241,7 +183,7 @@
             <div id="recEnquiry" class="modal bottom-sheet" style=" background: rgba(0, 0, 0, 0.76); z-index: 999">
                 <form>
                     <div class="container">
-                        <h5 style="color: #fff">Employee enquiry</h5>
+                        <h5 style="color:#fff">Fill up the form and we will call you back</h5>
                         <div class="row" style="margin-bottom: 2%">
                             <div class="input-field col s12 l3">
                                 <input type="text" id="mobileNumberModal" style="color: #b7b5b0" maxlength="10" placeholder="Mobile Number">
@@ -295,6 +237,67 @@
             </div>
         </div>
 
+            <!-- Modal Hire Form Structure -->
+        <div id="modalHire" class="modal hide-on-small-only">
+            <center><font style="font-size:22px">Fill up the form and will call you back</font></center>
+            <center><div class="materialDash"></div></center>
+            <form>
+                <div class="row">
+                    <div class="col l12">
+                        <div class="input-field col s12 l12">
+                            <input type="text" id="mobileNumber" style="margin-bottom:0" maxlength="10" placeholder="Mobile Number">
+                        </div>
+
+                        <div class="input-field col s12 l12">
+                            <input type="text" id="jobRoleOption" placeholder="Job Role">
+                            <script type="text/javascript">
+                                        $(document).ready(function () {
+                                            $("#jobRoleOption").tokenInput(getJob(), {
+                                                theme: "facebook",
+                                                placeholder: "Job roles you are looking to hire?",
+                                                minChars: 1,
+                                                tokenLimit: 3,
+                                                zindex:99999,
+                                                hintText: "Start Typing Jobs (eg: delivery boy, driver, etc..)",
+                                                preventDuplicates: true
+                                            });
+                                        });
+                                    </script>
+                        </div>
+
+                        <div class="input-field col s12 l12">
+                            <input type="text" id="locationOption" placeholder="Location">
+                            <script type="text/javascript">
+                                        $(document).ready(function () {
+                                            $("#locationOption").tokenInput(getLocality(), {
+                                                theme: "facebook",
+                                                placeholder: "Location(s) you want to hire?",
+                                                minChars: 1,
+                                                tokenLimit: 3,
+                                                zindex:99999,
+                                                hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
+                                                preventDuplicates: true
+                                            });
+                                        });
+                                    </script>
+                        </div>
+
+                        <div class="input-field col s12 l12" style="z-index:9999;position:relative">
+                            <select id="recruiterRequirement">
+                                <option value="" disabled selected>Specify Requirement</option>
+                                <option value="part time">Part time</option>
+                                <option value="full time">Full Time</option>
+                                <option value="contract">Contract</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <center>
+                <a class="waves-effect waves-light ascentGreen btn" style="margin-top: 12px;margin-bottom:5%" onclick="requestLead()"><font style="color: #ffffff">Submit</font></a>
+            </center>
+        </div>
+
         <div class="container" id="companyHiringBox">
             <div class="row" id="companyHiringCompanyLogo">
                 <div class="col s6 l2"><img src="/assets/recruiter/img/company/driveu.png" style="height: 50px; padding: 6px"></div>
@@ -305,7 +308,7 @@
                 <div class="col s6 l2"><img src="/assets/recruiter/img/company/swiggy.png" style="height: 50px; padding: 6px"></div>
             </div>
             <div class="row" id="companyHiringHeader">
-                <font size="4" style="margin: 2%">Company Hiring Form Us</font>
+                <font size="4" style="margin: 2%">Companies Hiring Form Us</font>
             </div>
         </div>
 
