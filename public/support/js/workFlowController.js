@@ -360,7 +360,7 @@ $(function() {
         function processDataCheckEducation(returnedEdu) {
             if(returnedEdu != null) {
                 var data = [
-                    {label: "Select None", value: "0"}
+                    {label: "None Selected", value: "0"}
                 ];
 
                 returnedEdu.forEach(function (education) {
@@ -482,8 +482,13 @@ $(function() {
             if (returnedData.gender !=null) {
                 app.jpGender = returnedData.gender;
                 $("#genderSelect").val(app.jpGender);
-                $("#genderSelect").multiselect('rebuild');
+            } else {
+                app.jpGender = -1;
             }
+
+            $("#genderSelect").val(app.jpGender);
+            $("#genderSelect").multiselect('rebuild');
+
             if (returnedData.jobPostExperience !=null) {
                 app.jpExperienceId = returnedData.jobPostExperience.experienceId;
                 $("#experienceSelect").val(app.jpExperienceId);
