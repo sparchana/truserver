@@ -47,6 +47,8 @@ function processDataCheckJobs(returnedData) {
         item ["id"] = id;
         item ["name"] = name;
         jobArray.push(item);
+        var option = $('<option value=' + id + '></option>').text(name);
+        $('#testToken').append(option);
     });
 }
 ///modal

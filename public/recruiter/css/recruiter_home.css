@@ -45,6 +45,18 @@
     color: #2ec866;
 }
 
+.select-wrapper{
+    display: none;
+}
+div.Tokenize ul.TokensContainer, div.Tokenize ul.Dropdown{
+    height: 100px;
+    width: 400px;
+}
+div.Tokenize ul.TokensContainer li.TokenSearch input{
+    height: auto;
+    width: auto;
+    box-shadow: none;
+}
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

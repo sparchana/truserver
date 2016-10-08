@@ -31,6 +31,9 @@
         <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
         <script type="text/javascript" src="/assets/common/js/validation.js"></script>
 
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/jquery.tokenize.css" />
+        <script type="text/javascript" src="/assets/recruiter/js/jquery.tokenize.js"></script>
+
         <meta name="theme-color" content="#000000">
 
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -310,6 +313,16 @@
         </div>
 
         <div class="container" id="stats">
+
+            <select id="testToken" multiple="multiple" class="tokenCustomInput tokenize-sample">
+            </select>
+            <script type="text/javascript">
+                $('#testToken').tokenize({
+                    displayDropdownOnFocus: true,
+                    placeholder: "zzzzz",
+                    maxElements: 3
+                });
+            </script>
             <div class="row">
                 <h5>Highlights</h5>
                 <center><div class="materialDash"></div></center>
