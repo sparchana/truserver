@@ -119,6 +119,17 @@ POST        /partnerSignUp                                                contro
 POST        /partnerUpdateBasicProfile                                    controllers.PartnerController.partnerUpdateBasicProfile()
 POST        /checkPartnerCandidate/:id                                    controllers.PartnerController.checkPartnerCandidate(id : Long)
 
+# recruiter routes
+#~~~~~~~~~~~~~~~~~~~~
+GET         /recruiter                                                    controllers.RecruiterController.recruiterHome()
+GET         /logoutRecruiter                                              controllers.RecruiterController.logoutRecruiter()
+GET         /checkRecruiterSession                                        controllers.RecruiterController.checkRecruiterSession()
+
+POST        /addRecruiterLead                                             controllers.RecruiterController.addWebsiteLead()
+POST        /recruiterSignUp                                              controllers.RecruiterController.recruiterSignUp()
+POST        /addRecruiterPassword                                         controllers.RecruiterController.addPassword()
+POST        /recruiterLoginSubmit                                         controllers.RecruiterController.loginSubmit()
+
 #new routes
 #~~~~~~~~~~~~~~~~~~~~
 GET         /navBar                                                       controllers.Application.renderPageNavBar()
@@ -131,6 +142,7 @@ GET         /jobs/:jobTitle/:jobLocation/:jobCompany/:jobId               contro
 GET         /job/:jobTitle/:jobLocation/:jobCompany/:jobId                controllers.Application.getJobPostDetails( jobTitle: String , jobLocation : String , jobCompany :String , jobId : Long )
 GET         /job/:rolePara/:idPara                                        controllers.Application.renderJobRoleJobPage( rolePara: String, idPara:Long)
 GET         /jobs/:rolePara/:idPara                                       controllers.Application.getJobRoleWiseJobPosts( rolePara: String, idPara:Long)
+
 # Both support and user
 # ~~~~~~~~~~~~~~~~~~~~~
 

@@ -1,4 +1,4 @@
-package api.http.httpResponse;
+package api.http.httpResponse.Recruiter;
 
 /**
  * Created by batcoder1 on 18/7/16.

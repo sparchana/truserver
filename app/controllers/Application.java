@@ -4,6 +4,7 @@ import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
+import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpResponse.*;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
@@ -40,7 +41,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.avaje.ebean.Expr.eq;
-import static com.avaje.ebean.Expr.le;
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {
@@ -281,14 +281,14 @@ public class Application extends Controller {
     public static Result addRecruiter() {
         JsonNode req = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
-        AddRecruiterRequest addRecruiterRequest = new AddRecruiterRequest();
+        RecruiterSignUpRequest recruiterSignUpRequest = new RecruiterSignUpRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
-            addRecruiterRequest = newMapper.readValue(req.toString(), AddRecruiterRequest.class);
+            recruiterSignUpRequest = newMapper.readValue(req.toString(), RecruiterSignUpRequest.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(RecruiterService.addRecruiter(addRecruiterRequest)));
+        return ok(toJson(RecruiterService.createRecruiterProfile(recruiterSignUpRequest)));
     }
 
     @Security.Authenticated(RecSecured.class)

@@ -211,4 +211,14 @@ public class SmsUtil {
         String msg = "Hi " + partnerFirstName + ", you have applied to " + jobPostTitle + " job at " + companyName + " @" + localityName + " for your candidate - " + candidateFirstName +". To know more about status of Applications, call us at +91 8048039089. www.trujobs.in";
         sendSms(partnerMobile, msg);
     }
+
+    public static void sendRecruiterOTPSms(int otp, String mobile) {
+        String msg = "Use OTP " + otp + " to register as a recruiter. Welcome to www.Trujobs.in!";
+        sendSms(mobile, msg);
+    }
+
+    public static void sendRecruiterLeadMsg(String mobile) {
+        String msg = "Welcome to www.Trujobs.in! Thank you for getting in touch with us. Our business team will contact you within 24 hours!";
+        sendSms(mobile, msg);
+    }
 }

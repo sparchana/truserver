@@ -21,7 +21,6 @@ import java.util.UUID;
 import static controllers.businessLogic.PartnerInteractionService.*;
 import static models.util.Util.generateOtp;
 import static play.mvc.Controller.session;
-import static play.mvc.Results.ok;
 
 /**
  * Created by adarsh on 9/9/16.
