@@ -162,6 +162,7 @@ function requestLead(){
     }
 
     if(statusCheck == 1){
+        $("#requestLeadBtn").addClass("disabled");
         processLeadRequest(jobRoleSelected, jobLocalitySelected, recruiterLeadMobile, recruiterLeadRequirement);
     }
 }
@@ -193,6 +194,7 @@ function requestModalLead(){
     }
 
     if(statusCheck == 1) {
+        $("#requestLeadModal").addClass("disabled");
         processLeadRequest(jobRoleSelected, jobLocalitySelected, recruiterLeadMobile, recruiterLeadRequirement);
     }
 }
