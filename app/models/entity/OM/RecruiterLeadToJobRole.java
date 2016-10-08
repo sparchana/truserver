@@ -41,6 +41,10 @@ public class RecruiterLeadToJobRole extends Model {
 
     public static Finder<String, RecruiterLeadToJobRole> find = new Finder(RecruiterLeadToJobRole.class);
 
+    public RecruiterLeadToJobRole(){
+        this.recruiterLeadToJobRoleCreateTimeStamp = new Timestamp(System.currentTimeMillis());
+    }
+
     public Long getRecruiterLeadToJobRoleId() {
         return recruiterLeadToJobRoleId;
     }
