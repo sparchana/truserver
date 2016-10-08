@@ -41,7 +41,7 @@
                 <div class="container" style="width: 85%;">
                     <div class="nav-wrapper">
                         <a href="#!" class="brand-logo">
-                            <img src="/assets/recruiter/img/trujobs-recruiter.png" style="height: 40px;
+                            <img id="navLogo" src="/assets/recruiter/img/trujobs-recruiter.png" style="height: 40px;
                                 margin-top: -2%">
                         </a>
                         <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
@@ -129,7 +129,7 @@
                             </div>
                             <div class="row" id="inputContainerModalSignup">
                                 <div class="input-field col s12">
-                                    <a onclick="savePassword()" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">Create Account</font></a>
+                                    <a onclick="savePassword()" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff; font-weight: bold">Create Account</font></a>
                                 </div>
                             </div>
                         </div>
@@ -152,12 +152,17 @@
 
             <div class="sectionOneBody" style="display:flex; justify-content:center; align-items:center;">
                 <div>
-                    <h4 style="color: #fff">We will schedule and manage your interviews.</h4>
+                    <h4 style="color: #fff">We will schedule and manage your interviews</h4>
                     <h5 class="typist" style="color: #2ec866"><font color="#fff">Hire </font></h5>
                     <div>
                         <img src="/assets/recruiter/img/user.svg" width="16px" style="display: inline-block; margin: -4px 2px 2px 2px;">
                         <h6 style="color: #fff; font-size: 16px;  display: inline-block"><font color="#2ec866"><b>25000+ </b></font>verified candidates to hire!</h6>
                     </div>
+                    <br>
+                    <center class="hide-on-small-only">
+                        <a data-target="modalHire" class="waves-effect waves-light ascentGreen lighten-1 btn modal-trigger" style="margin-top: 12px;margin-bottom:36px" id="requestLeadBtn"><font style="color: #ffffff"><b>Request Call Back</b></font></a>
+                    </center>
+
                     <center class="hide-on-med-and-up" id="mobileEnquiryBtn">
                         <a class="waves-effect waves-light transparent btn modal-trigger" style="border:1px solid #2ec866; color:#2ec866" data-target="recEnquiry">Request Call Back</a>
                     </center>
@@ -168,12 +173,25 @@
 
             <div class="footerLeadForm valign-wrapper hide-on-small-only">
                 <div style="width: 100%; text-align: center" class="container">
-                    <h5 style="color: #fff">Looking to hire?</h5>
-
-                    <center>
-                        <a data-target="modalHire" class="waves-effect waves-light ascentGreen btn modal-trigger" style="margin-top: 12px;margin-bottom:36px" id="requestLeadBtn"><font style="color: #ffffff">Request Call Back</font></a>
-                    </center>
-
+                    <div style="color: #fff; font-size: 20px">How it works</div>
+                    <center><div class="materialDash"></div></center>
+                    <div class="row">
+                        <div class="input-field col s4 l4">
+                            <img src="/assets/recruiter/img/green/phone-call.svg" width="32px">
+                            <br>
+                            <center style="margin-top: 12px;"><h6 style="color: #fff">Call 99800293925 to specify your requirements</h6></center>
+                        </div>
+                        <div class="input-field col s4 l4">
+                            <img src="/assets/recruiter/img/green/calendar.svg" width="32px">
+                            <br>
+                            <center style="margin-top: 12px;"><h6 style="color: #fff">We will schedule interviews for you with prescreened candidates</h6></center>
+                        </div>
+                        <div class="input-field col s4 l4">
+                            <img src="/assets/recruiter/img/green/interview.svg" width="32px">
+                            <br>
+                            <center style="margin-top: 12px;"><h6 style="color: #fff">Conduct interviews and make offers!</h6></center>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -183,17 +201,17 @@
             <div id="recEnquiry" class="modal bottom-sheet" style=" background: rgba(0, 0, 0, 0.76); z-index: 999">
                 <form>
                     <div class="container">
-                        <h5 style="color:#fff">Fill up the form and we will call you back</h5>
+                        <h5 style="color:#fff">Let us know your hiring needs</h5>
                         <div class="row" style="margin-bottom: 2%">
                             <div class="input-field col s12 l3">
-                                <input type="text" id="mobileNumberModal" style="color: #b7b5b0" maxlength="10" placeholder="Mobile Number">
+                                <input type="text" id="mobileNumberModal" style="color: #fff; border-bottom: 1px solid rgba(158, 158, 158, 0.32);" maxlength="10" placeholder="Mobile Number">
                             </div>
-                            <div class="input-field col s12 l12">
+                            <div class="input-field col s12 l12" style="margin-top: -4px">
                                 <select id="jobRoleOptionModal" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
                                 <script type="text/javascript">
                                     $('#jobRoleOptionModal').tokenize({
                                         displayDropdownOnFocus: true,
-                                        placeholder: "Job roles you are looking to hire",
+                                        placeholder: "Job role(s) you are looking to hire [max .3]",
                                         maxElements: 3
                                     });
                                 </script>
@@ -204,22 +222,30 @@
                                 <script type="text/javascript">
                                     $('#jobLocationOptionModal').tokenize({
                                         displayDropdownOnFocus: true,
-                                        placeholder: "Job roles you are looking to hire",
+                                        placeholder: "Location(s) you want to hire [max. 3]",
                                         maxElements: 3
                                     });
                                 </script>
                             </div>
 
-                            <div class="input-field col s12 l3">
-                                <select id="recruiterRequirementModal">
+                            <div class="input-field col s12 l12">
+                                <select id="recruiterRequirementModal" multiple="multiple" class="tokenCustomInput tokenize-sample">
                                     <option value="" disabled selected>Requirement Type</option>
                                     <option value="part time">Part time</option>
                                     <option value="full time">Full Time</option>
                                     <option value="contract">Contract</option>
+                                    <option value="any">Any</option>
                                 </select>
+                                <script type="text/javascript">
+                                    $('#recruiterRequirementModal').tokenize({
+                                        displayDropdownOnFocus: true,
+                                        placeholder: "Specify work shift",
+                                        maxElements: 1
+                                    });
+                                </script>
                             </div>
                         </div>
-                        <a class="waves-effect waves-light ascentGreen lighten-1 btn right" id="requestLeadModal" onclick="requestModalLead()" style="border: 1px solid #ffffff;margin-bottom: 16px"><font style="color: #ffffff">Submit</font></a>
+                        <a class="waves-effect waves-light ascentGreen lighten-1 btn right" id="requestLeadModal" onclick="requestModalLead()" style="margin-bottom: 16px"><font style="color: #ffffff">Request Call Back</font></a>
                     </div>
                 </form>
                 </div>
@@ -228,13 +254,15 @@
 
             <!-- Modal Hire Form Structure -->
         <div id="modalHire" class="modal hide-on-small-only">
-            <center><font style="font-size:22px">Fill up the form and will call you back</font></center>
-            <center><div class="materialDash"></div></center>
-            <form>
+            <div style="background: rgba(0, 0, 0, 0.75); padding: 8%">
+                <center><font style="font-size: 22px; color: #fff">Let us know your hiring needs</font></center>
+            </div>
+
+            <form style="background: #fff; padding: 4%">
                 <div class="row">
                     <div class="col l12">
                         <div class="input-field col s12 l12">
-                            <input type="text" id="mobileNumber" style="margin-bottom:0" maxlength="10" placeholder="Mobile Number">
+                            <input type="text" id="mobileNumber" style="margin-bottom:4px; border-bottom: 1px solid rgba(158, 158, 158, 0.32)" maxlength="10" placeholder="Mobile Number">
                         </div>
 
                         <div class="input-field col s12 l12">
@@ -242,7 +270,7 @@
                             <script type="text/javascript">
                                 $('#jobRoleOption').tokenize({
                                     displayDropdownOnFocus: true,
-                                    placeholder: "Job roles you are looking to hire",
+                                    placeholder: "Job role(s) you are looking to hire [max. 3]",
                                     maxElements: 3
                                 });
                             </script>
@@ -253,34 +281,35 @@
                             <script type="text/javascript">
                                 $('#jobLocationOption').tokenize({
                                     displayDropdownOnFocus: true,
-                                    placeholder: "Job roles you are looking to hire",
+                                    placeholder: "Location(s) you want to hire [max. 3]",
                                     maxElements: 3
                                 });
                             </script>
                         </div>
 
-                        <style>
-                            div.Tokenize ul.TokensContainer, div.Tokenize ul.Dropdown{
-                                height: 40px;
-                                width: auto;
-                                border: none;
-                            }
-                        </style>
-
-                        <div class="input-field col s12 l12" style="z-index:9999;position:relative">
-                            <select id="recruiterRequirement">
-                                <option value="" disabled selected>Specify Requirement</option>
+                        <div class="input-field col s12 l12">
+                            <select id="recruiterRequirement" multiple="multiple" class="tokenCustomInput tokenize-sample">
+                                <option value="" disabled selected>Requirement Type</option>
                                 <option value="part time">Part time</option>
                                 <option value="full time">Full Time</option>
                                 <option value="contract">Contract</option>
+                                <option value="any">Any</option>
                             </select>
+                            <script type="text/javascript">
+                                $('#recruiterRequirement').tokenize({
+                                    displayDropdownOnFocus: true,
+                                    placeholder: "Specify work shift",
+                                    maxElements: 1
+                                });
+                            </script>
                         </div>
+                        <center>
+                            <a class="waves-effect waves-light ascentGreen lighten-1 btn" style="margin-top: 24px; margin-bottom: 0; width: 100%" onclick="requestLead()"><font style="color: #ffffff">Request Call Back</font></a>
+                        </center>
+
                     </div>
                 </div>
             </form>
-            <center>
-                <a class="waves-effect waves-light ascentGreen btn" style="margin-top: 12px;margin-bottom:5%" onclick="requestLead()"><font style="color: #ffffff">Submit</font></a>
-            </center>
         </div>
 
         <div class="container" id="companyHiringBox">

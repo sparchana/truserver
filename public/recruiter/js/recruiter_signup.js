@@ -5,10 +5,24 @@ var returnedOtp;
 var recruiterMobileVal;
 
 function processDataLeadSubmit(returnedData) {
-    console.log(returnedData);
     if(returnedData.status = 1){
-        alert("Thanks! We will get in touch shortly!");
-        location.reload();
+        notifySuccess("Thanks! Our business team will get in touch with you within 24 hours!");
+
+        //for mobile inputs
+        $('#recEnquiry').closeModal();
+        $("#requestLeadModal").removeClass("disabled");
+        $('#mobileNumberModal').val('');
+        $('#jobRoleOptionModal').tokenize().clear();
+        $('#jobLocationOptionModal').tokenize().clear();
+        $('#recruiterRequirementModal').tokenize().clear();
+
+        $('#modalHire').closeModal();
+        $("#requestLeadBtn").removeClass("disabled");
+        $('#mobileNumber').val('');
+        $('#jobRoleOption').tokenize().clear();
+        $('#jobLocationOption').tokenize().clear();
+        $('#recruiterRequirement').tokenize().clear();
+
     } else{
         notifyError("Oops! Looks like something went wrong! Please try again after some time!");
     }
@@ -138,7 +152,7 @@ function signUpRecruiter(){
 function requestLead(){
     var recruiterLeadMobile = $("#mobileNumber").val();
     var recruiterLeadRequirement = $("#recruiterRequirement").val();
-    var jobLocalitySelected = $("#locationOption").val();
+    var jobLocalitySelected = $("#jobLocationOption").val();
     var jobRoleSelected = $("#jobRoleOption").val();
 
     var statusCheck = 1;
@@ -147,17 +161,17 @@ function requestLead(){
     if(res == 0){
         notifyError("Enter a valid mobile number");
         statusCheck=0;
-    } else if(res == 1){
+    } else if(res == 1) {
         notifyError("Enter 10 digit mobile number");
+        statusCheck = 0;
+    } else if(jobRoleSelected == null) {
+        notifyError("Please enter the required job roles");
         statusCheck=0;
-    } else if(jobLocalitySelected == "") {
-        notifyError("Please Enter the localities where you are looking for employees");
+    } else if(jobLocalitySelected == null) {
+        notifyError("Please enter the localities where you are looking for employees");
         statusCheck=0;
-    } else if(jobRoleSelected == "") {
-        notifyError("Please Enter the required job roles");
-        statusCheck=0;
-    } else if(recruiterLeadRequirement == null || recruiterLeadRequirement == "") {
-        notifyError("Please Enter your hiring requirement");
+    } else if(recruiterLeadRequirement == null) {
+        notifyError("Please specify work shift");
         statusCheck=0;
     }
 
@@ -170,7 +184,7 @@ function requestLead(){
 function requestModalLead(){
     var recruiterLeadMobile = $("#mobileNumberModal").val();
     var recruiterLeadRequirement = $("#recruiterRequirementModal").val();
-    var jobLocalitySelected = $("#locationOptionModal").val();
+    var jobLocalitySelected = $("#jobLocationOptionModal").val();
     var jobRoleSelected = $("#jobRoleOptionModal").val();
 
     var statusCheck = 1;
@@ -179,17 +193,17 @@ function requestModalLead(){
     if(res == 0){
         notifyError("Enter a valid mobile number");
         statusCheck=0;
-    } else if(res == 1){
+    } else if(res == 1) {
         notifyError("Enter 10 digit mobile number");
+        statusCheck = 0;
+    } else if(jobRoleSelected == null) {
+        notifyError("Please enter the required job roles");
         statusCheck=0;
-    } else if(jobLocalitySelected == "") {
-        notifyError("Please Enter the localities where you are looking for employees");
+    } else if(jobLocalitySelected == null) {
+        notifyError("Please enter the localities where you are looking for employees");
         statusCheck=0;
-    } else if(jobRoleSelected == "") {
-        notifyError("Please Enter the required job roles");
-        statusCheck=0;
-    } else if(recruiterLeadRequirement == "") {
-        notifyError("Please Enter your hiring requirement");
+    } else if(recruiterLeadRequirement == null) {
+        notifyError("Please specify work shift");
         statusCheck=0;
     }
 
@@ -203,23 +217,20 @@ function processLeadRequest(jobRoleSelected, jobLocalitySelected, recruiterLeadM
     var preferredJobRoleList = [];
     var preferredJobLocationList = [];
 
-    var jobPref = jobRoleSelected.split(",");
-    var jobLocalityPref = jobLocalitySelected.split(",");
-
     var i;
     /* job role preferences  */
-    for (i = 0; i < jobPref.length; i++) {
-        preferredJobRoleList.push(parseInt(jobPref[i]));
+    for (i = 0; i < Object.keys(jobRoleSelected).length; i++) {
+        preferredJobRoleList.push(parseInt(jobRoleSelected[i]));
     }
 
-    /* job role preferences  */
-    for (i = 0; i < jobLocalityPref.length; i++) {
-        preferredJobLocationList.push(parseInt(jobLocalityPref[i]));
+    /* job locality preferences  */
+    for (i = 0; i < Object.keys(jobLocalitySelected).length; i++) {
+        preferredJobLocationList.push(parseInt(jobLocalitySelected[i]));
     }
 
     var d = {
         recruiterMobile : recruiterLeadMobile,
-        recruiterRequirement : recruiterLeadRequirement,
+        recruiterRequirement : recruiterLeadRequirement[0],
         recruiterJobLocality : preferredJobLocationList,
         recruiterJobRole : preferredJobRoleList
     };
@@ -234,5 +245,9 @@ function processLeadRequest(jobRoleSelected, jobLocalitySelected, recruiterLeadM
 }
 
 function notifyError(msg){
-    Materialize.toast(msg, 3000, 'rounded');
+    Materialize.toastError(msg, 3000, 'rounded');
+}
+
+function notifySuccess(msg){
+    Materialize.toastSuccess(msg, 3000, 'rounded');
 }
