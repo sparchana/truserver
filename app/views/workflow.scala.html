@@ -22,6 +22,16 @@
             margin: 1%;
         }
 
+        a {
+            color: #5cb85c;
+        }
+        #matchPane  div.panel.panel-success  div.panel-heading{
+            background-color: #5cb85c;
+            color: white;
+        }
+        #matchBtn {
+            float: right;
+        }
         tr th input{
             width: 100%;
         }
@@ -59,8 +69,8 @@
         </nav>
         <div id="searchError" style="text-align: center; color:red"><h5 id="searchErrorMsg"></h5></div>
         <div id="matchPane">
-            <div class="panel panel-primary">
-                <div class="panel-heading" data-toggle="collapse" data-target="#matchPaneBody" onmouseover="" style="cursor: pointer;">match Options</div>
+            <div class="panel panel-success">
+                <div class="panel-heading" data-toggle="collapse" data-target="#matchPaneBody" onmouseover="" style="cursor: pointer;">Match Options</div>
                 <div class="panel-body collapse in" id="matchPaneBody">
                     <form id="candidateMatchForm">
                         <div class="row">
@@ -125,7 +135,7 @@
                         </div>
 
                         <br>
-                        <button type="submit" data-toggle="collapse" data-target="#matchPaneBody" id="matchBtn" class="btn btn-primary ">Match Candidate</button>
+                        <button type="submit" data-toggle="collapse" data-target="#matchPaneBody" id="matchBtn" class="btn btn-success ">Match Candidate</button>
                     </form>
                     <div style="margin-top: 16px"></div>
                 </div>

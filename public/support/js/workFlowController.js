@@ -722,7 +722,7 @@ $(function() {
 
             var table =  $('table#'+app.tableContainerId).DataTable({
                 "data": returnedDataArray,
-                "order": [[15, "desc"]],
+                "order": [[27, "desc"]],
                 "scrollX": true,
                 "columns": [
                     {"data": "cLID"},

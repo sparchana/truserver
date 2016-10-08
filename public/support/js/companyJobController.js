@@ -70,7 +70,7 @@ function renderDashboard() {
                                 return "Is not Hot";
                             },
                             'match' : function () {
-                                return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'" style="cursor:pointer;" target="_blank"><button class="btn primary">Match</button></a>'
+                                return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'" style="cursor:pointer;" target="_blank"><button class="btn btn-success">Match</button></a>'
                             }
                         })
                     });

@@ -51,7 +51,7 @@ public class JobPostWorkflowEngine {
                                                                            List<Long> jobPostLocalityIdList,
                                                                            List<Integer> languageIdList)
     {
-        Map<Long, CandidateMatchingJobPost> matchedCandidateList = new LinkedHashMap<>();
+        Map<Long, CandidateMatchingJobPost> matchedCandidateMap = new LinkedHashMap<>();
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
@@ -101,12 +101,12 @@ public class JobPostWorkflowEngine {
                         .where()
                         .isNotNull("candidateTotalExperience")
                         .ge("candidateTotalExperience", experience.minExperienceValue).query();
-                if(experience.maxExperienceValue != 0) {
-                    query = query
-                            .where()
-                            .isNotNull("candidateTotalExperience")
-                            .le("candidateTotalExperience", experience.maxExperienceValue).query();
-                }
+            }
+            if(experience.maxExperienceValue != 0) {
+                query = query
+                        .where()
+                        .isNotNull("candidateTotalExperience")
+                        .le("candidateTotalExperience", experience.maxExperienceValue).query();
             }
         }
 
@@ -165,10 +165,10 @@ public class JobPostWorkflowEngine {
             CandidateMatchingJobPost candidateMatchingJobPost = new CandidateMatchingJobPost();
             candidateMatchingJobPost.setCandidate(candidate);
             candidateMatchingJobPost.setFeatureMap(allFeature.get(candidate.getCandidateId()));
-            matchedCandidateList.put(candidate.getCandidateId(), candidateMatchingJobPost);
+            matchedCandidateMap.put(candidate.getCandidateId(), candidateMatchingJobPost);
         }
 
-        return matchedCandidateList;
+        return matchedCandidateMap;
     }
 
     /**
@@ -211,16 +211,16 @@ public class JobPostWorkflowEngine {
     }
 
     private static List<Candidate> filterByLatLngOrHomeLocality(List<Candidate> candidateList, List<Long> jobPostLocalityIdList) {
-        List<Candidate> filteredCandidate = new ArrayList<>();
+        List<Candidate> filteredCandidateList = new ArrayList<>();
 
         if (jobPostLocalityIdList == null){
-            return filteredCandidate;
+            return filteredCandidateList;
         }
 
         List<Locality> localityList = Locality.find.where().in("localityId", jobPostLocalityIdList).findList();
 
         if (jobPostLocalityIdList.size() > 0) {
-            filteredCandidate.addAll(candidateList);
+            filteredCandidateList.addAll(candidateList);
             for (Candidate candidate : candidateList) {
 
                 // candidate home locality matches with the job post locality
@@ -237,18 +237,18 @@ public class JobPostWorkflowEngine {
                                     candidate.getCandidateLocalityLng()
                             ) > ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS) {
                                 // candidate is not within req distance from jobPost latlng
-                                filteredCandidate.remove(candidate);
+                                filteredCandidateList.remove(candidate);
                                 break;
                             }
                         }
                     } else {
-                        filteredCandidate.remove(candidate);
+                        filteredCandidateList.remove(candidate);
                     }
                 }
             }
         }
 
-        return filteredCandidate;
+        return filteredCandidateList;
     }
 
     private static Map<Long, Map<CandidateMatchingJobPost.FEATURE, Object>> computeFeatureMap(List<Candidate> candidateList, JobPost jobPost) {
@@ -327,8 +327,10 @@ public class JobPostWorkflowEngine {
                     featureMap.put(CandidateMatchingJobPost.FEATURE.LAST_ACTIVE, sfd.format(mostRecentInteraction.getCreationTimestamp()));
                 }
 
-                // compute has attempted assessment for this JobPost-JobRole, If yes then this contains assessmentId
+                // compute 'has attempted assessment' for this JobPost-JobRole, If yes then this contains assessmentId
                 featureMap.put(CandidateMatchingJobPost.FEATURE.ASSESSMENT_ATTEMPT_ID, assessmentMap.get(candidate.getCandidateId()));
+
+                // other intelligent scoring will come here
             }
 
             allFeature.put(candidate.getCandidateId(), featureMap);
