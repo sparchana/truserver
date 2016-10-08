@@ -4,6 +4,7 @@ import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.httpRequest.SelectedCandidateRequest;
 import api.http.httpResponse.CandidateMatchingJobPost;
+import api.http.httpResponse.WorkflowResponse;
 import com.avaje.ebean.*;
 import controllers.businessLogic.MatchingEngineService;
 import models.entity.Candidate;
@@ -371,10 +372,22 @@ public class JobPostWorkflowEngine {
         return experienceValue;
     }
 
-    public static Object saveSelectedCandidates(List<Long> selectedCandidateIdList) {
+    public static WorkflowResponse saveSelectedCandidates(List<Long> selectedCandidateIdList) {
+        WorkflowResponse response = new WorkflowResponse();
         List<Candidate> selectedCandidateList = Candidate.find.where().in("candidateId", selectedCandidateIdList).findList();
-        Logger.info("SelectedCandidateList" + toJson(selectedCandidateList ));
-        return selectedCandidateList;
+
+        if (selectedCandidateIdList.size() == 0) {
+            response.setStatus(WorkflowResponse.STATUS.FAILED);
+            response.setMessage("Something Went Wrong ! Please try again");
+            return response;
+        }
+
+        response.setStatus(WorkflowResponse.STATUS.SUCCESS);
+        response.setMessage("Selection completed successfully.");
+        response.setRedirectUrl("/support/workflow/");
+        response.setNextView("pre_screen_view");
+
+        return response;
     }
 
     private static class ExperienceValue {

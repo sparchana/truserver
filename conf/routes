@@ -36,7 +36,7 @@ GET         /support/administrator/alphaRequest/:mobile                   contro
 GET         /support/administrator/uploadCSV                              controllers.Application.uploadCSV()
 GET         /support/ifExists/:mobile                                     controllers.Application.ifExists(mobile: String)
 GET         /support/api/getJobPostMatchingParams/:jobPostId              controllers.Application.getJobPostMatchingParams(jobPostId: Long)
-GET         /support/workflow/:jobPostId                                  controllers.Application.renderWorkflow(jobPostId: Long)
+GET         /support/workflow/:jobPostId/                                 controllers.Application.renderWorkflow(jobPostId: Long, view: String ?= null)
 
 POST        /addCompany                                                   controllers.Application.addCompany()
 POST        /addCompanyLogo                                               controllers.Application.addCompanyLogo()

@@ -264,10 +264,12 @@ $(function() {
         tableContainerId: 'candidateMatchResultTable',
         formSubmit: $('#candidateMatchForm'),
         url: "/support/api/getMatchingCandidate/",
+        view: "match_view",
         shouldSend: true,
         table: null,
         selectedCandidateList: [],
-        url_save_selected_candidate: "/support/api/saveSelectedCandidate/"
+        urlSaveSelectedCandidate: "/support/api/saveSelectedCandidate/",
+        currentView: ""
     };
 
     app.notify = function notifyError(msg, type){
@@ -282,16 +284,18 @@ $(function() {
         });
     };
 
-    app.setJPId = function setJPId(){
-        var pathname = window.location.pathname; // Returns path only
-        var jpId = pathname.split('/');
-        app.jpId = jpId[(jpId.length) - 1];
+    app.setCurrentView = function () {
+        var pathElement = window.location.search.split('=');
+        app.currentView = pathElement[pathElement.length - 1];
+    };
+
+    app.setJPId = function (){
+        var pathElement = window.location.pathname.split('/');
+        app.jpId = pathElement[pathElement.length - 2];
     };
 
     app.init = function () {
         NProgress.start();
-
-        app.setJPId();
 
         // create multiselect for languages
         try {
@@ -834,10 +838,10 @@ $(function() {
         try {
             $.ajax({
                 type: "POST",
-                url: app.url_save_selected_candidate,
+                url: app.urlSaveSelectedCandidate,
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(d),
-                success: app.processSelectionResponse
+                success: app.responseInterpreter
             });
         } catch (exception) {
             console.log("exception occured!!" + exception.stack);
@@ -845,22 +849,37 @@ $(function() {
         NProgress.done();
 
     };
-    app.processSelectionResponse = function (returnedData) {
-      console.log(returnedData);
+
+    app.responseInterpreter = function (response) {
+      console.log(response);
+        if(response.status == "SUCCESS") {
+            app.currentView = response.nextView;
+            app.notify(response.message + " Redirecting to " + response.nextView, 'success');
+            setTimeout(function () {
+                window.location= response.redirectUrl +app.jpId+"/?view="+response.nextView;
+            }, 3000)
+        } else {
+            app.notify(response.message, 'danger');
+        }
     };
 
-    // seq of execution on doc ready
-    app.init();
-    app.initParams();
+    // seq of match_view execution on doc ready
+    app.setJPId();
+    app.setCurrentView();
 
-    app.submitForm();
+    if(app.currentView == "match_view") {
+        app.init();
+        app.initParams();
 
-    document.getElementById('moveSelectedBtn').addEventListener("click", function () {
-        app.getSelectionFromTable();
-        if(app.selectedCandidateList.length > 0){
-            app.submitSelectedCandidateList();
-        } else {
-            app.notify("Please select candidate(s) to move to pre-screen", "danger");
-        }
-    });
+        app.submitForm();
+
+        document.getElementById('moveSelectedBtn').addEventListener("click", function () {
+            app.getSelectionFromTable();
+            if(app.selectedCandidateList.length > 0){
+                app.submitSelectedCandidateList();
+            } else {
+                app.notify("Please select candidate(s) to move to pre-screen", "danger");
+            }
+        });
+    }
 });

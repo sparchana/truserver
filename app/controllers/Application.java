@@ -1509,8 +1509,18 @@ public class Application extends Controller {
         return badRequest();
     }
 
-    public static Result renderWorkflow(Long jobPostId) {
-        return ok(views.html.workflow.render());
+    public static Result renderWorkflow(Long jobPostId, String view) {
+        if(view == null) {
+            return badRequest();
+        }
+
+        switch (view) {
+            case "match_view":
+                return ok(views.html.match_candidate.render());
+            case "pre_screen_view":
+                return ok(views.html.pre_screen.render());
+        }
+        return badRequest();
     }
 
     public static Result getJobPostMatchingParams(long jobPostId) {

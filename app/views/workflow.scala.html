@@ -1,4 +1,4 @@
-
+@(content: Html)
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -81,157 +81,11 @@
                 </div><!-- /.navbar-collapse -->
             </div><!-- /.container-fluid -->
         </nav>
-        <div id="searchError" style="text-align: center; color:red"><h5 id="searchErrorMsg"></h5></div>
-        <div id="matchPane">
-            <div class="panel panel-success">
-                <div class="panel-heading" data-toggle="collapse" data-target="#matchPaneBody" onmouseover="" style="cursor: pointer;">Match Options</div>
-                <div class="panel-body collapse in" id="matchPaneBody">
-                    <form id="candidateMatchForm">
-                        <div class="row">
-                            <div class="col-sm-1"><h6>Min Age:</h6></div>
-                            <div class="col-sm-5">
-                                <input type="number" id="minAge" name="minAge" placeholder="Minimum Age?" min="0" max="80" class="form-control input-md">
-                            </div>
-                            <div class="col-sm-1"><h6>Max Age:</h6></div>
-                            <div class="col-sm-5">
-                                <input type="number" id="maxAge" name="maxAge" placeholder="Maximum Age?" min="0" max="70" class="form-control input-md">
-                            </div>
-                        </div>
-
-                        <div class="row" style="margin-top: 16px">
-                            <div class="col-sm-1"><h6>Min Salary:</h6></div>
-                            <div class="col-sm-5">
-                                <input type="number" id="minSalary" name="minSalary" placeholder="Minimum Salary?" min="0" class="form-control input-md">
-                            </div>
-                            <div class="col-sm-1"><h6>Max Salary:</h6></div>
-                            <div class="col-sm-5">
-                                <input type="number" id="maxSalary" name="maxSalary" placeholder="Maximum Salary?" min="0" class="form-control input-md">
-                            </div>
-                        </div>
-
-
-                        <div class="row" style="margin-top: 16px">
-                            <div class="col-sm-1"><h6>Job Role :</h6></div>
-                            <div class="col-sm-5">
-                                <input type="text" id="jobPostJobRole" >
-                            </div>
-                            <div class="col-sm-1"><h6>Locality:</h6></div>
-                            <div class="col-sm-5">
-                                <input type="text" id="jobPostLocality" placeholder="Where do you want to work?">
-                            </div>
-                        </div>
-
-                        <div class="row" style="margin-top: 16px">
-                            <div class="col-sm-1"><h6>Experience :</h6></div>
-                            <div class="col-sm-5">
-                                <select id="experienceSelect"></select>
-                            </div>
-                            <div class="col-sm-1"><h6>Language </h6></div>
-                            <div class="col-sm-5" id="languageMultiSelectDiv">
-                                <select id="languageMultiSelect" multiple="multiple"></select>
-                            </div>
-                        </div>
-
-                        <div class="row" style="margin-top: 16px">
-                            <div class="col-sm-1"><h6>Education </h6></div>
-                            <div class="col-sm-5" id="educationSelectDiv">
-                                <select id="educationSelect"></select>
-                            </div>
-                            <div class="col-sm-1"><h6>Gender </h6></div>
-                            <div class="col-sm-5" id="genderSelectDiv">
-                                <select id="genderSelect">
-                                    <option value="-1">None Selected</option>
-                                    <option value="2">Any</option>
-                                    <option value="0">Male</option>
-                                    <option value="1">Female</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <br>
-                        <button type="submit" data-toggle="collapse" data-target="#matchPaneBody" id="matchBtn" class="btn btn-success ">Match Candidate</button>
-                    </form>
-                    <div style="margin-top: 16px"></div>
-                </div>
-            </div>
-            <div id="matchError" style="text-align: center; color:red"><h5 id="matchErrorMsg"></h5></div>
-            <table id="candidateMatchResultTable" class="table table-striped table-bordered" style="margin-top: 16px; display: none; table-layout: fixed; overflow-x:scroll;" cellspacing="0" width="100%">
-                <thead>
-                    <tr>
-                        <th>CLID</th>
-                        <th>Candidate Name</th>
-                        <th>Mobile</th>
-                        <th>JobRole Pref</th>
-                        <th>Locality Pref</th>
-                        <th>Home Location</th>
-                        <th>Exp (Year)</th>
-                        <th>isEmployed?</th>
-                        <th>Current/Lastdrawn Salary</th>
-                        <th>Language Known</th>
-                        <th>Education</th>
-                        <th>Skills</th>
-                        <th>Gender</th>
-                        <th>isAssessed?</th>
-                        <th>TimeShift Pref</th>
-                        <th>Created On</th>
-                        <th>Past Company</th>
-                        <th>MinProfile?</th>
-                        <th>FollowUp?</th>
-                        <th>No.ofJobApp?</th>
-                        <th>Experience</th>
-                        <th>Age</th>
-                        <th>Experience/Relieving Letter</th>
-                        <th>isActive</th>
-                        <th>De-ActivationExpiryDate</th>
-                        <th>ID-Proofs</th>
-                        <th>Job Applied on</th>
-                        <th>Last Active</th>
-                        <th>Candidate Id</th>
-                    </tr>
-                </thead>
-                <tfoot>
-                    <tr>
-                        <th>CLID</th>
-                        <th>Name</th>
-                        <th>Mobile</th>
-                        <th>JobRole Pref</th>
-                        <th>Locality Pref</th>
-                        <th>Home Location</th>
-                        <th>Exp (Year)</th>
-                        <th>isEmployed?</th>
-                        <th>Current/Lastdrawn Salary</th>
-                        <th>Language Known</th>
-                        <th>Education</th>
-                        <th>Skills</th>
-                        <th>Gender</th>
-                        <th>isAssessed?</th>
-                        <th>TimeShift Pref</th>
-                        <th>Created On</th>
-                        <th>Past Company</th>
-                        <th>MinProfile?</th>
-                        <th>FollowUp?</th>
-                        <th>No.ofJobApp?</th>
-                        <th>Experience</th>
-                        <th>Age</th>
-                        <th>Experience/Relieving Letter</th>
-                        <th>isActive</th>
-                        <th>De-ActivationExpiryDate</th>
-                        <th>ID-Proofs</th>
-                        <th>Job Applied on</th>
-                        <th>Last Active</th>
-                        <th>Candidate Id</th>
-                    </tr>
-                </tfoot>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
-        <div id="otherControls">
-            <button type="submit" id="moveSelectedBtn" class="btn btn-success btn-lg">Move To Pre-Screen</button>
-        </div>
+        @content
         <script type="text/javascript" src="/assets/build/support/sapp.min.js"></script>
         <script type="text/javascript" src="/assets/build/support/workFlowController.min.js"></script>
         <script type="text/javascript" src="/assets/support/js/bootstrap-multiselect.js"></script>
         <script type="text/javascript" src="/assets/support/js/dataTables.select.min.js"></script>
+
     </body>
 </html>
