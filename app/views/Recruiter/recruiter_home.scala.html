@@ -61,10 +61,13 @@
         <div id="modalSignUp" class="modal">
             <div class="row">
                 <div class="col l4 hide-on-small-only" id="modalLeftBox">
-
+                    <img src="/assets/recruiter/img/image2.jpg">
                 </div>
-                <form>
                     <div class="col l8" id="modalRightBox">
+                        <font style="font-size: 22px">Sign Up With TruJobs</font>
+                        <center><div class="materialDashSignUp"></div></center>
+                        <font style="font-size: 14px;">Please fill the details for Signing Up with TruJobs</font>
+                        <form>
                         <div class="row" id="inputContainerModalSignup">
                             <div class="input-field col s12">
                                 <input placeholder="Name" id="rec_name" type="text" class="validate">
@@ -72,14 +75,13 @@
                                 <input placeholder="Email" id="rec_email" type="email" class="validate">
                                 <input placeholder="Company" id="rec_company" type="text" class="validate">
                             </div>
-                        </div>
-                        <div class="row" id="inputContainerModalSignup">
                             <div class="input-field col s12">
-                              <button onclick="signUpRecruiter()" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">SignUp</font>
+                              <a onclick="signUpRecruiter()" id="SignSubmitUpBtn" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">SignUp</font></a>
+                                <p><font style="font-size: 14px;">Have an Account ? <span  data-target="modalLogIn" class="modal-trigger"><font style="font-weight:600">Sign In</span></font></p>
                             </div>
                         </div>
+                        </form>
                     </div>
-                </form>
             </div>
         </div>
             <!-- Modal otp Structure -->
@@ -188,6 +190,13 @@
                             <div class="input-field col s12 l3">
                                 <input type="text" id="mobileNumberModal" style="color: #b7b5b0" maxlength="10" placeholder="Mobile Number">
                             </div>
+                            <style>
+                            div.Tokenize ul.TokensContainer, div.Tokenize ul.Dropdown{
+                                height: 40px;
+                                width: auto;
+                                border: none;
+                            }
+                            </style>
                             <div class="input-field col s12 l12">
                                 <select id="jobRoleOptionModal" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
                                 <script type="text/javascript">
@@ -210,17 +219,24 @@
                                 </script>
                             </div>
 
-                            <div class="input-field col s12 l3">
-                                <select id="recruiterRequirementModal">
-                                    <option value="" disabled selected>Requirement Type</option>
+                            <div class="input-field col s12 l12">
+                                <select id="recruiterRequirementModal" class="tokenCustomInput tokenize-sample">
+                                    <option value="" disabled selected>Specify Requirement</option>
                                     <option value="part time">Part time</option>
                                     <option value="full time">Full Time</option>
                                     <option value="contract">Contract</option>
                                 </select>
+                                <script type="text/javascript">
+                                $('#recruiterRequirementModal').tokenize({
+                                    displayDropdownOnFocus: true,
+                                    placeholder: "What is your requirement",
+                                    maxElements: 1
+                                });
+                            </script>
                             </div>
                         </div>
+                        </div>
                         <a class="waves-effect waves-light ascentGreen lighten-1 btn right" id="requestLeadModal" onclick="requestModalLead()" style="border: 1px solid #ffffff;margin-bottom: 16px"><font style="color: #ffffff">Submit</font></a>
-                    </div>
                 </form>
                 </div>
             </div>
@@ -236,7 +252,13 @@
                         <div class="input-field col s12 l12">
                             <input type="text" id="mobileNumber" style="margin-bottom:0" maxlength="10" placeholder="Mobile Number">
                         </div>
-
+                        <style>
+                        div.Tokenize ul.TokensContainer, div.Tokenize ul.Dropdown{
+                            height: 40px;
+                            width: auto;
+                            border: none;
+                        }
+                        </style>
                         <div class="input-field col s12 l12">
                             <select id="jobRoleOption" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
                             <script type="text/javascript">
@@ -259,23 +281,22 @@
                             </script>
                         </div>
 
-                        <style>
-                            div.Tokenize ul.TokensContainer, div.Tokenize ul.Dropdown{
-                                height: 40px;
-                                width: auto;
-                                border: none;
-                            }
-                        </style>
-
-                        <div class="input-field col s12 l12" style="z-index:9999;position:relative">
-                            <select id="recruiterRequirement">
-                                <option value="" disabled selected>Specify Requirement</option>
-                                <option value="part time">Part time</option>
-                                <option value="full time">Full Time</option>
-                                <option value="contract">Contract</option>
-                            </select>
+                        <div class="input-field col s12 l12">
+                                <select id="recruiterRequirement" class="tokenCustomInput tokenize-sample">
+                                    <option value="" disabled selected>Specify Requirement</option>
+                                    <option value="part time">Part time</option>
+                                    <option value="full time">Full Time</option>
+                                    <option value="contract">Contract</option>
+                                </select>
+                                <script type="text/javascript">
+                                $('#recruiterRequirement').tokenize({
+                                    displayDropdownOnFocus: true,
+                                    placeholder: "What is your requirement",
+                                    maxElements: 1
+                                });
+                            </script>
+                            </div>
                         </div>
-                    </div>
                 </div>
             </form>
             <center>

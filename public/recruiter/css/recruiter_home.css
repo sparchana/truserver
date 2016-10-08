@@ -50,9 +50,10 @@
 }
 
 div.Tokenize ul.TokensContainer li.TokenSearch input{
-    height: auto;
-    width: auto;
+    height: 10%;
+    width: 100%;
     box-shadow: none;
+    border-bottom:1px solid #1d1d1d;
 }
 
 input::-webkit-outer-spin-button,
@@ -211,22 +212,29 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
 }
 #modalSignUp{
     overflow: hidden;
-    width: 45%;
+    width: 40%;
     margin-top: 0;
 }
 #modalLeftBox{
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
     background-color: rgb(55, 71, 79);
     height: 100vh;
 }
 #inputContainerModalSignup{
     text-align: center;
-    padding: 2%;
 }
 #inputContainerModalSignup >.input-field > input{
-    margin: 0;
+    margin:0 0 2% 0;
+}
+#SignSubmitUpBtn{
+    margin:4% 0;
+    width: 100%;
 }
 #modalRightBox{
-    margin-top:10%;
+    margin-top:6%;
+    padding: 0 4%;
     text-align: center;
 }
 footer.page-footer .footer-copyright{
@@ -238,6 +246,12 @@ footer.page-footer .footer-copyright{
     width: 72px;
     background: #2ec866;
     margin: 2%;
+}
+.materialDashSignUp{
+    height: 1px;
+    width: 25%;
+    background: #eceeeb;
+    margin: 3%;
 }
 #fbLogo:hover{
     cursor:pointer;
