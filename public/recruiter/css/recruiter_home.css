@@ -45,6 +45,15 @@
     color: #2ec866;
 }
 
+.select-wrapper{
+    display: none;
+}
+
+div.Tokenize ul.TokensContainer li.TokenSearch input{
+    height: auto;
+    width: auto;
+    box-shadow: none;
+}
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -75,7 +84,7 @@ nav{
 .footerLeadForm{
     position: absolute;
     width:100%;
-    padding: 1%;
+    padding: 2%;
     bottom: 0;
     text-align: center;
     background: rgba(0, 0, 0, 0.68)
@@ -125,7 +134,7 @@ input[type=tel]:focus:not([readonly]),
 input[type=number]:focus:not([readonly]),
 input[type=search]:focus:not([readonly]),
 textarea.materialize-textarea:focus:not([readonly]) {
-    border-bottom: 1px solid #fff;
+    border-bottom: 1px solid #000;
 }
 
 input:not([type]):focus:not([readonly]) + label,
@@ -141,7 +150,7 @@ input[type=tel]:focus:not([readonly]) + label,
 input[type=number]:focus:not([readonly]) + label,
 input[type=search]:focus:not([readonly]) + label,
 textarea.materialize-textarea:focus:not([readonly]) + label {
-    color: #fff;
+    color: #000;
 }
 
 #companyHiringRow{
@@ -200,11 +209,17 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
 #companyHiringCompanyLogo img{
     margin-bottom: 2%;
 }
+#modalSignUp{
+    overflow: hidden;
+    width: 45%;
+    margin-top: 0;
+}
 #modalLeftBox{
     background-color: rgb(55, 71, 79);
-    height: 100%;
+    height: 100vh;
 }
 #inputContainerModalSignup{
+    text-align: center;
     padding: 2%;
 }
 #inputContainerModalSignup >.input-field > input{
@@ -222,14 +237,33 @@ footer.page-footer .footer-copyright{
     height: 2px;
     width: 72px;
     background: #2ec866;
-    margin: 2%;
+    margin: 1%;
+}
+.materialDashForm{
+    height: 2px;
+    width: 25%;
+    background: #eceeeb;
+    margin: 3%;
 }
 #fbLogo:hover{
     cursor:pointer;
     content:url(/assets/recruiter/img/fb.svg);
 }
+#modalHire{
+    color:#000;
+    margin-top:0;
+    width:30%;
+    background: transparent;
+}
 
+#mobileNumber{
+    color: #000;
+}
 @media screen and (max-width: 768px) {
+    #mobileNumber{
+        color: #fff;
+    }
+
     #leadForm{
         margin-top:6%;
         padding: 6%;
@@ -242,4 +276,32 @@ footer.page-footer .footer-copyright{
     #mobileEnquiryBtn{
         margin-top: 10%;
     }
+    ::-webkit-input-placeholder {
+        color: #c5c5c5;
+        font-size: 14px;
+    }
+
+    :-moz-placeholder { /* Firefox 18- */
+        color: #c5c5c5;
+        font-size: 14px;
+    }
+
+    ::-moz-placeholder {  /* Firefox 19+ */
+        color: #c5c5c5;
+        font-size: 14px;
+    }
+
+    :-ms-input-placeholder {
+        color: #c5c5c5;
+        font-size: 14px;
+    }
 }
+
+@media screen and (max-width: 1000px){
+    #navLogo{
+        height:46%;
+        margin-top: 11%;
+        content:url("/assets/common/img/logo-main.gif");
+    }
+}
+

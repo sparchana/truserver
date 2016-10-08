@@ -36,6 +36,10 @@ function processDataCheckLocality(returnedData) {
         item ["id"] = id;
         item ["name"] = name;
         localityArray.push(item);
+        var option = $('<option value=' + id + '></option>').text(name);
+        $('#jobLocationOption').append(option);
+        option = $('<option value=' + id + '></option>').text(name);
+        $('#jobLocationOptionModal').append(option);
     });
 }
 
@@ -47,6 +51,10 @@ function processDataCheckJobs(returnedData) {
         item ["id"] = id;
         item ["name"] = name;
         jobArray.push(item);
+        var option = $('<option value=' + id + '></option>').text(name);
+        $('#jobRoleOption').append(option);
+        option = $('<option value=' + id + '></option>').text(name);
+        $('#jobRoleOptionModal').append(option);
     });
 }
 ///modal
