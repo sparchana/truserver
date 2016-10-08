@@ -16,8 +16,6 @@
         <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
         <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
 
-        <link rel="stylesheet" href="/assets/common/css/custom_token_input.css" type="text/css" />
-
         <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
 
         <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
@@ -28,7 +26,6 @@
         <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
 
-        <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
         <script type="text/javascript" src="/assets/common/js/validation.js"></script>
 
         <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/jquery.tokenize.css" />
@@ -44,7 +41,7 @@
                 <div class="container" style="width: 85%;">
                     <div class="nav-wrapper">
                         <a href="#!" class="brand-logo">
-                            <img src="/assets/common/img/logo-main.gif" style="height: 40px;
+                            <img src="/assets/recruiter/img/trujobs-recruiter.png" style="height: 40px;
                                 margin-top: -2%">
                         </a>
                         <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
@@ -191,37 +188,26 @@
                             <div class="input-field col s12 l3">
                                 <input type="text" id="mobileNumberModal" style="color: #b7b5b0" maxlength="10" placeholder="Mobile Number">
                             </div>
-                            <div class="input-field col s12 l3" style="margin-top: -5px">
-                                <input type="text" id="jobRoleOptionModal" placeholder="Job Role">
+                            <div class="input-field col s12 l12">
+                                <select id="jobRoleOptionModal" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
                                 <script type="text/javascript">
-                                $(document).ready(function () {
-                                    $("#jobRoleOptionModal").tokenInput(getJob(), {
-                                        theme: "facebook",
-                                        placeholder: "Job Role(s)",
-                                        minChars: 1,
-                                        tokenLimit: 3,
-                                        zindex: 9999999,
-                                        hintText: "Start Typing Jobs (eg: delivery boy, driver, etc..)",
-                                        preventDuplicates: true
+                                    $('#jobRoleOptionModal').tokenize({
+                                        displayDropdownOnFocus: true,
+                                        placeholder: "Job roles you are looking to hire",
+                                        maxElements: 3
                                     });
-                                });
-                            </script>
+                                </script>
                             </div>
-                            <div class="input-field col s12 l3">
-                                <input type="text" id="locationOptionModal" placeholder="Location">
+
+                            <div class="input-field col s12 l12">
+                                <select id="jobLocationOptionModal" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
                                 <script type="text/javascript">
-                                $(document).ready(function () {
-                                    $("#locationOptionModal").tokenInput(getLocality(), {
-                                        theme: "facebook",
-                                        placeholder: "Locality(s)",
-                                        minChars: 1,
-                                        tokenLimit: 3,
-                                        zindex: 9999999,
-                                        hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
-                                        preventDuplicates: true
+                                    $('#jobLocationOptionModal').tokenize({
+                                        displayDropdownOnFocus: true,
+                                        placeholder: "Job roles you are looking to hire",
+                                        maxElements: 3
                                     });
-                                });
-                            </script>
+                                </script>
                             </div>
 
                             <div class="input-field col s12 l3">
@@ -252,38 +238,34 @@
                         </div>
 
                         <div class="input-field col s12 l12">
-                            <input type="text" id="jobRoleOption" placeholder="Job Role">
+                            <select id="jobRoleOption" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
                             <script type="text/javascript">
-                                        $(document).ready(function () {
-                                            $("#jobRoleOption").tokenInput(getJob(), {
-                                                theme: "facebook",
-                                                placeholder: "Job roles you are looking to hire?",
-                                                minChars: 1,
-                                                tokenLimit: 3,
-                                                zindex:99999,
-                                                hintText: "Start Typing Jobs (eg: delivery boy, driver, etc..)",
-                                                preventDuplicates: true
-                                            });
-                                        });
-                                    </script>
+                                $('#jobRoleOption').tokenize({
+                                    displayDropdownOnFocus: true,
+                                    placeholder: "Job roles you are looking to hire",
+                                    maxElements: 3
+                                });
+                            </script>
                         </div>
 
                         <div class="input-field col s12 l12">
-                            <input type="text" id="locationOption" placeholder="Location">
+                            <select id="jobLocationOption" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
                             <script type="text/javascript">
-                                        $(document).ready(function () {
-                                            $("#locationOption").tokenInput(getLocality(), {
-                                                theme: "facebook",
-                                                placeholder: "Location(s) you want to hire?",
-                                                minChars: 1,
-                                                tokenLimit: 3,
-                                                zindex:99999,
-                                                hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
-                                                preventDuplicates: true
-                                            });
-                                        });
-                                    </script>
+                                $('#jobLocationOption').tokenize({
+                                    displayDropdownOnFocus: true,
+                                    placeholder: "Job roles you are looking to hire",
+                                    maxElements: 3
+                                });
+                            </script>
                         </div>
+
+                        <style>
+                            div.Tokenize ul.TokensContainer, div.Tokenize ul.Dropdown{
+                                height: 40px;
+                                width: auto;
+                                border: none;
+                            }
+                        </style>
 
                         <div class="input-field col s12 l12" style="z-index:9999;position:relative">
                             <select id="recruiterRequirement">
@@ -316,16 +298,6 @@
         </div>
 
         <div class="container" id="stats">
-
-            <select id="testToken" multiple="multiple" class="tokenCustomInput tokenize-sample">
-            </select>
-            <script type="text/javascript">
-                $('#testToken').tokenize({
-                    displayDropdownOnFocus: true,
-                    placeholder: "zzzzz",
-                    maxElements: 3
-                });
-            </script>
             <div class="row">
                 <h5>Highlights</h5>
                 <center><div class="materialDash"></div></center>
