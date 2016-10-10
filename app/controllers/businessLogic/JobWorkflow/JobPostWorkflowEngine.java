@@ -1,23 +1,25 @@
 package controllers.businessLogic.JobWorkflow;
 
 import api.ServerConstants;
+import api.http.httpRequest.Workflow.SelectedCandidateRequest;
 import api.http.httpResponse.CandidateFeature;
 import api.http.httpResponse.CandidateMatchingJobPost;
-import api.http.httpResponse.WorkflowResponse;
+import api.http.httpResponse.Workflow.WorkflowResponse;
 import com.avaje.ebean.*;
 import controllers.businessLogic.MatchingEngineService;
 import models.entity.Candidate;
 import models.entity.Interaction;
 import models.entity.JobPost;
-import models.entity.OM.CandidateAssessmentAttempt;
-import models.entity.OM.JobApplication;
-import models.entity.OM.JobPostLanguageRequirement;
-import models.entity.OM.JobPostToLocality;
+import models.entity.OM.*;
+import models.entity.Static.JobPostWorkflowStatus;
 import models.entity.Static.Locality;
 import play.Logger;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static play.mvc.Controller.session;
 
 /**
  * Created by zero on 4/10/16.
@@ -314,7 +316,7 @@ public class JobPostWorkflowEngine {
 //                .setRawSql(rawSql)
 //                .findList();
 
-        // linked hash map maintain the insertion order
+        // linked hash map maintains the insertion order
         Map<String, ArrayList<Interaction>> objAUUIDToInteractions = new LinkedHashMap<>();
 
         for (Interaction interaction : allInteractions) {
@@ -343,7 +345,7 @@ public class JobPostWorkflowEngine {
                 ArrayList<Interaction> interactionsOfCandidate = objAUUIDToInteractions.get(candidate.getCandidateUUId());
                 if(interactionsOfCandidate != null) {
                     Interaction mostRecentInteraction = interactionsOfCandidate.get(0);
-                    feature.setLastActive(sfd.format(mostRecentInteraction.getCreationTimestamp()));
+                    feature.setLastActive(getDateCluster(mostRecentInteraction.getCreationTimestamp().getTime()));
                 }
 
                 // compute 'has attempted assessment' for this JobPost-JobRole, If yes then this contains assessmentId
@@ -388,11 +390,22 @@ public class JobPostWorkflowEngine {
         return experienceValue;
     }
 
-    public static WorkflowResponse saveSelectedCandidates(List<Long> selectedCandidateIdList) {
+    public static WorkflowResponse saveSelectedCandidates(SelectedCandidateRequest request) {
         WorkflowResponse response = new WorkflowResponse();
-        List<Candidate> selectedCandidateList = Candidate.find.where().in("candidateId", selectedCandidateIdList).findList();
+        List<Candidate> selectedCandidateList = Candidate.find.where().in("candidateId", request.getSelectedCandidateIdList()).findList();
 
-        if (selectedCandidateIdList.size() == 0) {
+        JobPost jobPost = JobPost.find.where().eq("jobPostId", request.getJobPostId()).findUnique();
+        JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_SELECTED).findUnique();
+
+        for (Candidate candidate: selectedCandidateList) {
+            JobPostWorkflow jobPostWorkflow = new JobPostWorkflow();
+            jobPostWorkflow.setJobPost(jobPost);
+            jobPostWorkflow.setCandidate(candidate);
+            jobPostWorkflow.setCreatedBy(session().get("sessionUsername"));
+            jobPostWorkflow.setStatus(status);
+            jobPostWorkflow.save();
+        }
+        if (request.getSelectedCandidateIdList().size() == 0) {
             response.setStatus(WorkflowResponse.STATUS.FAILED);
             response.setMessage("Something Went Wrong ! Please try again");
             return response;
@@ -406,8 +419,59 @@ public class JobPostWorkflowEngine {
         return response;
     }
 
+    public static Map<Long, CandidateMatchingJobPost> getSelectedCandidate(Long jobPostId) {
+        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where().eq("job_post_id", jobPostId).orderBy().desc("creation_timestamp").findList();
+        List<Candidate> candidateList = new ArrayList<>();
+
+        Map<Long, CandidateMatchingJobPost> selectedCandidateMap = new LinkedHashMap<>();
+
+        // until view is not available over this table, this loop get the distinct candidate who
+        // got selected for a job post recently
+        for( JobPostWorkflow jpwf: jobPostWorkflowList) {
+            if (! candidateList.contains(jpwf.getCandidate())) {
+                candidateList.add(jpwf.getCandidate());
+            }
+        }
+        Map<Long, CandidateFeature> allFeature = computeFeature(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique());
+
+        for ( Candidate candidate: candidateList) {
+            CandidateMatchingJobPost candidateMatchingJobPost= new CandidateMatchingJobPost();
+            candidateMatchingJobPost.setCandidate(candidate);
+            candidateMatchingJobPost.setFeature(allFeature.get(candidate.getCandidateId()));
+            selectedCandidateMap.put(candidate.getCandidateId(), candidateMatchingJobPost);
+        }
+        return selectedCandidateMap;
+    }
+
     private static class ExperienceValue {
         int minExperienceValue;
         int maxExperienceValue;
+    }
+
+    public static String getDateCluster(Long timeInMill) {
+        String clusterLable;
+        Calendar cal = Calendar.getInstance();
+        Calendar currentCal = Calendar.getInstance();
+        cal.setTimeInMillis(timeInMill);
+
+        int currentDay = currentCal.get(Calendar.DAY_OF_YEAR);
+        int doyDiff = currentDay - cal.get(Calendar.DAY_OF_YEAR);
+
+        if( doyDiff > 60) {
+            clusterLable = "Beyond two months";
+        } else if( doyDiff > 30) {
+            clusterLable = "Last two months";
+        } else if( doyDiff > 15) {
+            clusterLable = "Last one month";
+        } else if (doyDiff > 7) {
+            clusterLable = "Last 14 days";
+        } else if ( doyDiff > 3) {
+            clusterLable = "Last 7 days";
+        } else if ( doyDiff > 1) {
+            clusterLable = "Last 3 days";
+        } else {
+            clusterLable = "Within 24 hrs";
+        }
+        return clusterLable;
     }
 }

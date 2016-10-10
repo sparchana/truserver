@@ -60,6 +60,7 @@ POST        /signUpSupport                                                contro
 POST        /getAllDeactivationReason                                     controllers.Application.getAllDeactivationReason()
 POST        /support/api/getMatchingCandidate/                            controllers.Application.getMatchingCandidate()
 POST        /support/api/saveSelectedCandidate/                           controllers.Application.saveSelectedCandidate()
+POST        /support/api/getSelectedCandidate/:jpId                       controllers.Application.getSelectedCandidate(jpId: Long)
 
 # user dashboard
 # ~~~~~~~~~~~~~~

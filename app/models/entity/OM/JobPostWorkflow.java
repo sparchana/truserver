@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
 import models.entity.JobPost;
+import models.entity.Static.JobPostWorkflowStatus;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -26,19 +27,23 @@ public class JobPostWorkflow extends Model {
 
     @ManyToOne
     @JsonManagedReference
-    @JoinColumn(name = "JobPostId", referencedColumnName = "JobPostId")
+    @JoinColumn(name = "job_post_id", referencedColumnName = "JobPostId")
     private JobPost jobPost;
 
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "CandidateId", referencedColumnName = "CandidateId")
+    @JoinColumn(name = "candidate_id", referencedColumnName = "CandidateId")
     private Candidate candidate;
 
-    @Column(name = "CreationTimestamp", columnDefinition = "timestamp default current_timestamp not null", nullable = false)
+    @Column(name = "creation_timestamp", columnDefinition = "timestamp default current_timestamp not null", nullable = false)
     private Timestamp creationTimestamp;
 
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "status_id", referencedColumnName = "status_id")
+    private JobPostWorkflowStatus status;
 
-    @Column(name = "CreatedBy", columnDefinition = "varchar(255) null", nullable = false)
+    @Column(name = "createdby", columnDefinition = "varchar(255) null", nullable = false)
     private String createdBy;
 
     public JobPostWorkflow() {
@@ -51,16 +56,8 @@ public class JobPostWorkflow extends Model {
         return jobPostWorkflowId;
     }
 
-    public void setJobPostWorkflowId(long jobPostWorkflowId) {
-        this.jobPostWorkflowId = jobPostWorkflowId;
-    }
-
     public String getJobPostWorkflowUUId() {
         return jobPostWorkflowUUId;
-    }
-
-    public void setJobPostWorkflowUUId(String jobPostWorkflowUUId) {
-        this.jobPostWorkflowUUId = jobPostWorkflowUUId;
     }
 
     public JobPost getJobPost() {
@@ -83,16 +80,20 @@ public class JobPostWorkflow extends Model {
         return creationTimestamp;
     }
 
-    public void setCreationTimestamp(Timestamp creationTimestamp) {
-        this.creationTimestamp = creationTimestamp;
-    }
-
     public String getCreatedBy() {
         return createdBy;
     }
 
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public JobPostWorkflowStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(JobPostWorkflowStatus status) {
+        this.status = status;
     }
 }
 

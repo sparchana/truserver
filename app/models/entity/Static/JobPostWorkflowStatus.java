@@ -2,7 +2,6 @@ package models.entity.Static;
 
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.CacheStrategy;
-import models.entity.OM.JobApplication;
 
 import javax.persistence.*;
 
@@ -13,7 +12,7 @@ import javax.persistence.*;
 @CacheStrategy
 @Entity(name = "job_post_workflow_status")
 @Table(name = "job_post_workflow_status")
-public class JobWorkflowStatus extends Model {
+public class JobPostWorkflowStatus extends Model {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "status_id", columnDefinition = "int unsigned", unique = true)
@@ -22,7 +21,7 @@ public class JobWorkflowStatus extends Model {
     @Column(name = "status_title", columnDefinition = "varchar(255) null")
     private String statusTitle;
 
-    public static Model.Finder<String, JobWorkflowStatus> find = new Model.Finder(JobWorkflowStatus.class);
+    public static Model.Finder<String, JobPostWorkflowStatus> find = new Model.Finder(JobPostWorkflowStatus.class);
 
     public int getStatusId() {
         return statusId;

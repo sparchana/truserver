@@ -1,7 +1,7 @@
 /**
  * Created by zero on 07/10/16.
  */
-
+var globalRecAgentNumber;
 var allLocalityArray = [];
 var allJobArray = [];
 var shouldAddFooter = true;
@@ -242,6 +242,45 @@ function getIdProof(idProofList) {
     return "NA";
 }
 
+openPreScreenModal =  function (mobile) {
+    alert("will open pre screen modal in future for candidate_id : " + mobile);
+};
+
+callHandler = function (mobile, id) {
+    console.log("agentMobileNumber:"+globalRecAgentNumber);
+    if(typeof globalRecAgentNumber != 'undefined'){
+        console.log("Call Initiated for " +"+"+ mobile + " by " + globalRecAgentNumber);
+        var s = {
+            api_key: "dae93473-50a6-11e5-bbe8-067cf20e9301",
+            agent_number: globalRecAgentNumber,
+            phone_number: "+"+mobile,
+            sr_number: "+918880007799"
+        };
+
+        try {
+            $.ajax({
+                url: "https://sr.knowlarity.com/vr/api/click2call/",
+                async: false,
+                type: "POST",
+                data: s,
+                contentType: "jsonp",
+                dataType: 'jsonp',
+                cache: !1,
+                success: function (returnedData) {
+                    console.log("KW Response : " + JSON.stringify(returnedData));
+                    openPreScreenModal(id);
+                },
+                error: function (error) {
+                    console.log("Response Error: " + JSON.stringify(error));
+                    openPreScreenModal(id);
+                }
+            });
+        } catch (exception) {
+        }
+    } else {
+        openPreScreenModal(id);
+    }
+};
 
 $(function() {
     'use strict';
@@ -260,14 +299,14 @@ $(function() {
         jpTableFormattedCandidateList: [],
         jpCandidateList: [],
         jpTotalExpInMonths: null,
-        tableContainer: $('#candidateMatchResultTable'),
-        tableContainerId: 'candidateMatchResultTable',
+        tableContainer: $('#candidateResultTable'),
+        tableContainerId: 'candidateResultTable',
         formSubmit: $('#candidateMatchForm'),
         url: "/support/api/getMatchingCandidate/",
         view: "match_view",
         shouldSend: true,
         table: null,
-        selectedCandidateList: [],
+        jpSelectedCandidateList: [],
         urlSaveSelectedCandidate: "/support/api/saveSelectedCandidate/",
         currentView: ""
     };
@@ -668,21 +707,21 @@ $(function() {
 
         app.notify("Total Candidate Matched : " + app.jpCandidateList.length, 'warning');
         // destroy table
-        app.renderTable();
+        app.renderTable(app.jpCandidateList);
         // construct new table
 
     };
 
-    app.renderTable = function () {
-        if (app.jpCandidateList == null || app.jpCandidateList.length == 0) {
+    app.renderTable = function (candidateList) {
+        if (candidateList == null || candidateList.length == 0) {
             console.log("candiateList Empty");
             app.tableContainer.hide();
-            app.notify("No Candidates Matched !", 'danger');
+            app.notify("No Candidates !", 'danger');
             return;
         }
         var returnedDataArray = [];
         try {
-            app.jpCandidateList.forEach(function (newCandidate) {
+            candidateList.forEach(function (newCandidate) {
                 // prep strings for display
                 app.addFooter();
 
@@ -694,44 +733,59 @@ $(function() {
                 if (newCandidate.candidate.locality != null) {
                     locality = newCandidate.candidate.locality.localityName;
                 }
+
+                var varColumn = function(){
+                    if(app.currentView == "pre_screen_view") {
+                        return '<input type="submit" value="Call"  style="width:100px" onclick="callHandler('+newCandidate.candidate.candidateMobile+', '+newCandidate.candidate.candidateId+');" id="'+newCandidate.candidate.lead.leadId+'" class="btn btn-primary">'
+                    } else {
+                        return "NA";
+                    }
+                };
+
                 returnedDataArray.push({
                     'cLID': '<a href="/candidateSignupSupport/' + newCandidate.candidate.lead.leadId + '/false" target="_blank" id="'+newCandidate.candidate.lead.leadId +'">' + newCandidate.candidate.lead.leadId + '</a>',
                     'candidateFirstName': getFirstName(newCandidate.candidate.candidateFirstName) + " " + getLastName(newCandidate.candidate.candidateLastName),
                     'candidateMobile': newCandidate.candidate.candidateMobile,
-                    'candidateLastWithdrawnSalary': getLastWithdrawnSalary(newCandidate.candidate.candidateLastWithdrawnSalary),
                     'candidateJobPref': getJobPref(newCandidate.candidate.jobPreferencesList),
                     'candidateLocalityPref': getLocalityPref(newCandidate.candidate.localityPreferenceList),
                     'locality': getHomeLocality(newCandidate.candidate.locality),
+                    'age': getAge(newCandidate.candidate.candidateDOB),
+                    'candidateExperience': getInYearMonthFormat(newCandidate.candidate.candidateTotalExperience),
+                    'candidateIsEmployed': getYesNo(newCandidate.candidate.candidateIsEmployed),
+                    'candidateLastWithdrawnSalary': getLastWithdrawnSalary(newCandidate.candidate.candidateLastWithdrawnSalary),
                     'candidateLanguage': getLanguageKnown(newCandidate.candidate.languageKnownList),
                     'candidateEducation': getEducation(newCandidate.candidate.candidateEducation),
                     'candidateSkillList': getSkills(newCandidate.candidate.candidateSkillList),
-                    'candidateTimeShiftPref': timeShiftPref,
-                    'candidateExperience': getInYearMonthFormat(newCandidate.candidate.candidateTotalExperience),
-                    'candidateIsAssessmentComplete': getYesNo(newCandidate.feature.assessmentAttemptId),
                     'candidateGender': getGender(newCandidate.candidate.candidateGender),
-                    'candidateIsEmployed': getYesNo(newCandidate.candidate.candidateIsEmployed),
-                    'candidateCreateTimestamp': getDateTime(newCandidate.candidate.candidateCreateTimestamp),
                     'pastOrCurrentCompanyName': getPastOrCurrentCompanyName(newCandidate.candidate.jobHistoryList),
-                    'isMinProfileComplete': getYesNo(newCandidate.candidate.isMinProfileComplete),
-                    'followUp': getYesNo(newCandidate.candidate.lead.followUp),
-                    'noOfJobApplication': newCandidate.candidate.jobApplicationList.length,
-                    'experience': getExperience(newCandidate.candidate.candidateExpList),
-                    'age': getAge(newCandidate.candidate.candidateDOB),
-                    'candidateExperienceLetter': getYesNo(newCandidate.candidate.candidateExperienceLetter),
-                    'isActive': getProperProfileStatus(newCandidate.candidate.candidateprofilestatus),
-                    'candidateExpiry': getExpiry(newCandidate.candidate.candidateStatusDetail),
-                    'candidateIdProofs': getIdProof(newCandidate.candidate.idProofReferenceList),
+                    'candidateIsAssessmentComplete': getYesNo(newCandidate.feature.assessmentAttemptId),
                     'jobAppliedOn': getAppliedOn(newCandidate.feature.appliedOn),
+                    'noOfJobApplication': newCandidate.candidate.jobApplicationList.length,
+                    'candidateExperienceLetter': getYesNo(newCandidate.candidate.candidateExperienceLetter),
+                    'candidateIdProofs': getIdProof(newCandidate.candidate.idProofReferenceList),
+                    'candidateTimeShiftPref': timeShiftPref,
                     'lastActive': (newCandidate.feature.lastActive),
-                    'candidateId': newCandidate.candidate.candidateId
+                    'candidateCreateTimestamp': getDateTime(newCandidate.candidate.candidateCreateTimestamp),
+                    'isMinProfileComplete': getYesNo(newCandidate.candidate.isMinProfileComplete),
+                    'experience': getExperience(newCandidate.candidate.candidateExpList),
+                    'candidateId': newCandidate.candidate.candidateId,
+                    'varColumn': varColumn
                 })
             });
 
             app.tableContainer.show();
+            var select;
+            if(app.currentView == "match_view") {
+                select = {
+                    "style": 'multi'
+                };
+            } else {
+                select = false;
+            }
 
             app.table =  $('table#'+app.tableContainerId).DataTable({
                 "data": returnedDataArray,
-                "order": [[27, "desc"]],
+                "order": [[21, "asc"]],
                 "scrollX": true,
                 "rowId": "candidateId",
                 "columns": [
@@ -741,6 +795,7 @@ $(function() {
                     {"data": "candidateJobPref"},
                     {"data": "candidateLocalityPref"},
                     {"data": "locality"},
+                    {"data": "age"},
                     {"data": "candidateExperience"},
                     {"data": "candidateIsEmployed"},
                     {"data": "candidateLastWithdrawnSalary"},
@@ -748,22 +803,19 @@ $(function() {
                     {"data": "candidateEducation"},
                     {"data": "candidateSkillList"},
                     {"data": "candidateGender"},
-                    {"data": "candidateIsAssessmentComplete"},
-                    {"data": "candidateTimeShiftPref"},
-                    {"data": "candidateCreateTimestamp"},
                     {"data": "pastOrCurrentCompanyName"},
-                    {"data": "isMinProfileComplete"},
-                    {"data": "followUp"},
-                    {"data": "noOfJobApplication"},
-                    {"data": "experience"},
-                    {"data": "age"},
-                    {"data": "candidateExperienceLetter"},
-                    {"data": "isActive"},
-                    {"data": "candidateExpiry"},
-                    {"data": "candidateIdProofs"},
+                    {"data": "candidateIsAssessmentComplete"},
                     {"data": "jobAppliedOn"},
+                    {"data": "noOfJobApplication"},
+                    {"data": "candidateExperienceLetter"},
+                    {"data": "candidateIdProofs"},
+                    {"data": "candidateTimeShiftPref"},
                     {"data": "lastActive"},
-                    {"data": "candidateId"}
+                    {"data": "candidateCreateTimestamp"},
+                    {"data": "isMinProfileComplete"},
+                    {"data": "experience"},
+                    {"data": "candidateId"},
+                    {"data": "varColumn"}
                 ],
                 "deferRender": true,
                 "scroller": true,
@@ -777,9 +829,7 @@ $(function() {
                 "buttons": [
                     'copy', 'csv', 'excel'
                 ],
-                "select": {
-                    "style": 'multi'
-                }
+                "select": select
             });
 
             // Apply the search filter
@@ -817,11 +867,11 @@ $(function() {
     app.getSelectionFromTable = function () {
         var selectedCandidateIds = app.table.rows( { selected: true } ).ids();
         var arrayLength = selectedCandidateIds.length;
-        app.selectedCandidateList = [];
+        app.jpSelectedCandidateList = [];
         for (var i = 0; i < arrayLength; i++) {
-            app.selectedCandidateList.push(parseInt(selectedCandidateIds[i]));
+            app.jpSelectedCandidateList.push(parseInt(selectedCandidateIds[i]));
         }
-        console.log(app.selectedCandidateList);
+        console.log(app.jpSelectedCandidateList);
     };
 
     app.submitForm = function () {
@@ -834,7 +884,8 @@ $(function() {
     app.submitSelectedCandidateList = function () {
         NProgress.start();
         var d = {
-            selectedCandidateIdList: app.selectedCandidateList
+            jobPostId: app.jpId,
+            selectedCandidateIdList: app.jpSelectedCandidateList
         };
         try {
             $.ajax({
@@ -864,6 +915,187 @@ $(function() {
         }
     };
 
+    // pre_screen methods
+    app.initPreScreenView = function () {
+        NProgress.start();
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/support/api/getSelectedCandidate/"+app.jpId,
+                data: false,
+                contentType: false,
+                processData: false,
+                success: app.updatePreScreenTable
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception.stack);
+        }
+        NProgress.done();
+    };
+
+    app.updatePreScreenTable = function (returnedData) {
+            // form candidateList.
+            app.jpSelectedCandidateList = [];
+            $.each( returnedData, function( key, value) {
+                if(value!= null) {
+                    app.jpSelectedCandidateList.push(value);
+                }
+            });
+
+            app.notify("Total Candidate Selected : " + app.jpSelectedCandidateList.length, 'warning');
+
+            app.renderTable(app.jpSelectedCandidateList);
+    };
+
+    app.getSupportAgent = function () {
+        /* ajax commands to fetch supportAgent Info */
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/getSupportAgent",
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: app.processSupportAgentData
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    };
+
+    app.processSupportAgentData = function (returnedData) {
+        var mobileNum = returnedData.agentMobileNumber;
+
+        if(mobileNum != null){
+            globalRecAgentNumber = mobileNum;
+        }
+    };
+    app.processPreScreenUI = function (returnedData) {
+        if (returnedData != null) {
+            if (app.jpSelectedCandidateList == null || app.jpSelectedCandidateList.length == 0) {
+                console.log("SelectedCandidateList Empty");
+                app.tableContainer.hide();
+                app.notify("No Selected Candidates Found !", 'danger');
+                return;
+            }
+            var returnedDataArray = [];
+            try {
+                app.jpSelectedCandidateList.forEach(function (newCandidate) {
+                    // prep strings for display
+                    app.addFooter();
+
+                    var timeShiftPref = "";
+                    var locality = "";
+                    if (newCandidate.timeShiftPreference != null) {
+                        timeShiftPref = newCandidate.timeShiftPreference.timeShift.timeShiftName;
+                    }
+                    if (newCandidate.locality != null) {
+                        locality = newCandidate.locality.localityName;
+                    }
+                    returnedDataArray.push({
+                        'cLID': '<a href="/candidateSignupSupport/' + newCandidate.lead.leadId + '/false" target="_blank" id="'+newCandidate.candidate.lead.leadId +'">' + newCandidate.candidate.lead.leadId + '</a>',
+                        'candidateFirstName': getFirstName(newCandidate.candidateFirstName) + " " + getLastName(newCandidate.candidate.candidateLastName),
+                        'candidateMobile': newCandidate.candidateMobile,
+                        'candidateJobPref': getJobPref(newCandidate.jobPreferencesList),
+                        'candidateLocalityPref': getLocalityPref(newCandidate.localityPreferenceList),
+                        'locality': getHomeLocality(newCandidate.locality),
+                        'age': getAge(newCandidate.candidateDOB),
+                        'candidateExperience': getInYearMonthFormat(newCandidate.candidateTotalExperience),
+                        'candidateIsEmployed': getYesNo(newCandidate.candidateIsEmployed),
+                        'candidateLastWithdrawnSalary': getLastWithdrawnSalary(newCandidate.candidateLastWithdrawnSalary),
+                        'candidateLanguage': getLanguageKnown(newCandidate.languageKnownList),
+                        'candidateEducation': getEducation(newCandidate.candidateEducation),
+                        'candidateSkillList': getSkills(newCandidate.candidateSkillList),
+                        'candidateGender': getGender(newCandidate.candidateGender),
+                        'pastOrCurrentCompanyName': getPastOrCurrentCompanyName(newCandidate.jobHistoryList),
+                        'candidateIsAssessmentComplete': getYesNo(newCandidate.feature.assessmentAttemptId),
+                        'jobAppliedOn': getAppliedOn(newCandidate.feature.appliedOn),
+                        'noOfJobApplication': newCandidate.jobApplicationList.length,
+                        'candidateExperienceLetter': getYesNo(newCandidate.candidateExperienceLetter),
+                        'candidateIdProofs': getIdProof(newCandidate.idProofReferenceList),
+                        'candidateTimeShiftPref': timeShiftPref,
+                        'lastActive': (newCandidate.feature.lastActive),
+                        'candidateCreateTimestamp': getDateTime(newCandidate.candidateCreateTimestamp),
+                        'isMinProfileComplete': getYesNo(newCandidate.isMinProfileComplete),
+                        'experience': getExperience(newCandidate.candidateExpList),
+                        'candidateId': newCandidate.candidateId
+                    })
+                });
+
+                app.tableContainer.show();
+
+                app.table =  $('table#'+app.tableContainerId).DataTable({
+                    "data": returnedDataArray,
+                    "order": [[21, "asc"]],
+                    "scrollX": true,
+                    "rowId": "candidateId",
+                    "columns": [
+                        {"data": "cLID"},
+                        {"data": "candidateFirstName"},
+                        {"data": "candidateMobile"},
+                        {"data": "candidateJobPref"},
+                        {"data": "candidateLocalityPref"},
+                        {"data": "locality"},
+                        {"data": "age"},
+                        {"data": "candidateExperience"},
+                        {"data": "candidateIsEmployed"},
+                        {"data": "candidateLastWithdrawnSalary"},
+                        {"data": "candidateLanguage"},
+                        {"data": "candidateEducation"},
+                        {"data": "candidateSkillList"},
+                        {"data": "candidateGender"},
+                        {"data": "pastOrCurrentCompanyName"},
+                        {"data": "candidateIsAssessmentComplete"},
+                        {"data": "jobAppliedOn"},
+                        {"data": "noOfJobApplication"},
+                        {"data": "candidateExperienceLetter"},
+                        {"data": "candidateIdProofs"},
+                        {"data": "candidateTimeShiftPref"},
+                        {"data": "lastActive"},
+                        {"data": "candidateCreateTimestamp"},
+                        {"data": "isMinProfileComplete"},
+                        {"data": "experience"},
+                        {"data": "candidateId"}
+                    ],
+                    "deferRender": true,
+                    "scroller": true,
+                    "scrollY": '48vh',
+                    "scrollCollapse": true,
+                    "language": {
+                        "emptyTable": "No data available"
+                    },
+                    "destroy": true,
+                    "dom": 'Bfrtip',
+                    "buttons": [
+                        'copy', 'csv', 'excel'
+                    ],
+                    "select": {
+                        "style": 'multi'
+                    }
+                });
+
+                // Apply the search filter
+                app.table.columns().every(function () {
+                    var that = this;
+                    $('input', this.footer()).on('keyup change', function () {
+                        if (that.search() !== this.value) {
+                            that
+                                .search(this.value)
+                                .draw();
+                        }
+                    });
+                });
+
+                /* Initialise datatables */
+                $.fn.dataTable.moment('dd/MM/YYYY HH:mm:ss');
+
+            } catch (exception) {
+                console.log("exception occured!!" + exception.stack);
+            }
+        }
+    };
+
     // seq of match_view execution on doc ready
     app.setJPId();
     app.setCurrentView();
@@ -876,11 +1108,16 @@ $(function() {
 
         document.getElementById('moveSelectedBtn').addEventListener("click", function () {
             app.getSelectionFromTable();
-            if(app.selectedCandidateList.length > 0){
+            if(app.jpSelectedCandidateList.length > 0){
                 app.submitSelectedCandidateList();
             } else {
                 app.notify("Please select candidate(s) to move to pre-screen", "danger");
             }
         });
+    }
+    else if(app.currentView == "pre_screen_view") {
+        app.getSupportAgent();
+        app.initPreScreenView();
+
     }
 });
