@@ -217,6 +217,12 @@ public class RecruiterService {
         if(addRecruiterRequest.getRecruiterEmail() != null){
             newRecruiter.setRecruiterProfileEmail(addRecruiterRequest.getRecruiterEmail());
         }
+        if(addRecruiterRequest.getRecruiterContactCredits() != null){
+            newRecruiter.setRecruiterCandidateUnlockCredits(Long.valueOf(addRecruiterRequest.getRecruiterContactCredits()));
+        }
+        if(addRecruiterRequest.getRecruiterInterviewCredits() != null){
+            newRecruiter.setRecruiterInterviewUnlockCredits(Long.valueOf(addRecruiterRequest.getRecruiterInterviewCredits()));
+        }
         return newRecruiter;
     }
 
