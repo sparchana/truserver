@@ -22,6 +22,15 @@ function processDataLogoutRecruiter() {
     window.location = "/recruiter";
 }
 
+$(window).resize(function(){
+    var width = $(window).width();
+    if(width < 780){
+        $("#editBtn").removeClass("btn-large").addClass("btn-small");
+    } else{
+        $("#editBtn").removeClass("btn-small").addClass("btn-large");
+    }
+});
+
 $(document).scroll(function(){
     if ($(this).scrollTop() > 80) {
         $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
@@ -33,6 +42,13 @@ $(document).scroll(function(){
 
 $(document).ready(function(){
     checkRecruiterLogin();
+    var width = $(window).width();
+    if(width < 780){
+        $("#editBtn").removeClass("btn-large").addClass("btn-small");
+    } else{
+        $("#editBtn").removeClass("btn-small").addClass("btn-large");
+    }
+
     try {
         $.ajax({
             type: "GET",

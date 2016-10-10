@@ -293,7 +293,11 @@ footer.page-footer .footer-copyright{
 
 /* recruiter home css */
 body#recruiterHome{
-    background: linear-gradient(rgba(188, 172, 191, 0.39), rgba(188, 172, 191, 0.39)), url(../img/blurred_background.jpg) no-repeat;
+/*    background: linear-gradient(rgba(188, 172, 191, 0.39), rgba(188, 172, 191, 0.39)), url(../img/blurred_background.jpg) no-repeat;*/
+    background: #348F50; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to left, #348F50 , #56B4D3); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to left, #348F50 , #56B4D3); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background-repeat: no-repeat;
     background-size: 100% 50%;
 }
 
