@@ -126,7 +126,7 @@ $(function() {
                 notifyError("Please Enter recruiter Contact", 'danger');
                 status=0;
             }
-            
+
             if(status == 1){
                 try{
                     var rec = {

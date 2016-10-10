@@ -83,6 +83,10 @@ public class RecruiterService {
     public static RecruiterSignUpResponse recruiterSignUp(RecruiterSignUpRequest recruiterSignUpRequest){
         RecruiterSignUpResponse recruiterSignUpResponse = new RecruiterSignUpResponse();
         RecruiterProfile newRecruiter = new RecruiterProfile();
+        RecruiterStatus recruiterStatus = RecruiterStatus.find.where().eq("RecruiterStatusId", "1").findUnique();
+        if(recruiterStatus != null){
+            newRecruiter.setRecStatus(recruiterStatus); //setting rec status as 'new'
+        }
 
         Logger.info("Checking for mobile number: " + FormValidator.convertToIndianMobileFormat(recruiterSignUpRequest.getRecruiterMobile()));
         RecruiterProfile recruiterProfile = isRecruiterExists(FormValidator.convertToIndianMobileFormat(recruiterSignUpRequest.getRecruiterMobile()));
@@ -135,7 +139,7 @@ public class RecruiterService {
                 recruiterSignUpResponse.setRecruiterId(recruiterProfile.getRecruiterProfileId());
                 recruiterSignUpResponse.setRecruiterMobile(recruiterProfile.getRecruiterProfileMobile());
 
-                triggerOtp(newRecruiter, recruiterSignUpResponse);
+                triggerOtp(recruiterProfile, recruiterSignUpResponse);
             } else{
                 Logger.info("Recruiter Already exists");
                 recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.STATUS_EXISTS);
