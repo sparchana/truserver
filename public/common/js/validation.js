@@ -92,3 +92,6 @@ function validateOtp(otp) {
 function isValidSalary(salary){
     return !/[~`!#$%\^&*.+=\-\[\]\\';,/{}|\\":<>\?]/g.test(salary);
 }
+function isValidAge(age){
+    return !/[~`!#$%\^&*.+=\-\[\]\\';,/{}|\\":<>\?]/g.test(age);
+}
