@@ -33,6 +33,10 @@ public class AddJobPostRequest {
     public Long partnerInterviewIncentive;
     public Long partnerJoiningIncentive;
     public String jobPostInterviewDays;
+    public List<Integer> jobPostLanguage;
+    public Integer jobPostMinAge;
+    public Integer jobPostMaxAge;
+    public Integer jobPostGender;
 
     public List<Integer> interviewTimeSlot;
 
@@ -269,4 +273,37 @@ public class AddJobPostRequest {
     public void setInterviewTimeSlot(List<Integer> interviewTimeSlot) {
         this.interviewTimeSlot = interviewTimeSlot;
     }
+
+    public List<Integer> getJobPostLanguage() {
+        return jobPostLanguage;
+    }
+
+    public void setJobPostLanguage(List<Integer> jobPostLanguage) {
+        this.jobPostLanguage = jobPostLanguage;
+    }
+
+    public Integer getJobPostMinAge() {
+        return jobPostMinAge;
+    }
+
+    public void setJobPostMinAge(Integer jobPostMinAge) {
+        this.jobPostMinAge = jobPostMinAge;
+    }
+
+    public Integer getJobPostMaxAge() {
+        return jobPostMaxAge;
+    }
+
+    public void setJobPostMaxAge(Integer jobPostMaxAge) {
+        this.jobPostMaxAge = jobPostMaxAge;
+    }
+
+    public Integer getJobPostGender() {
+        return jobPostGender;
+    }
+
+    public void setJobPostGender(Integer jobPostGender) {
+        this.jobPostGender = jobPostGender;
+    }
 }
+
