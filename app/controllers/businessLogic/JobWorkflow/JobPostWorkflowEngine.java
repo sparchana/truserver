@@ -1,8 +1,7 @@
 package controllers.businessLogic.JobWorkflow;
 
-import api.InteractionConstants;
 import api.ServerConstants;
-import api.http.httpRequest.SelectedCandidateRequest;
+import api.http.httpResponse.CandidateFeature;
 import api.http.httpResponse.CandidateMatchingJobPost;
 import api.http.httpResponse.WorkflowResponse;
 import com.avaje.ebean.*;
@@ -19,10 +18,6 @@ import play.Logger;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-
-import static com.avaje.ebean.Expr.eq;
-import static play.libs.Json.toJson;
-
 
 /**
  * Created by zero on 4/10/16.
@@ -162,12 +157,12 @@ public class JobPostWorkflowEngine {
 
         List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList);
 
-        Map<Long, Map<CandidateMatchingJobPost.FEATURE, Object>> allFeature = computeFeatureMap(candidateList, jobPost);
+        Map<Long, CandidateFeature> allFeature = computeFeature(candidateList, jobPost);
 
         for (Candidate candidate : candidateList) {
             CandidateMatchingJobPost candidateMatchingJobPost = new CandidateMatchingJobPost();
             candidateMatchingJobPost.setCandidate(candidate);
-            candidateMatchingJobPost.setFeatureMap(allFeature.get(candidate.getCandidateId()));
+            candidateMatchingJobPost.setFeature(allFeature.get(candidate.getCandidateId()));
             matchedCandidateMap.put(candidate.getCandidateId(), candidateMatchingJobPost);
         }
 
@@ -254,11 +249,11 @@ public class JobPostWorkflowEngine {
         return filteredCandidateList;
     }
 
-    private static Map<Long, Map<CandidateMatchingJobPost.FEATURE, Object>> computeFeatureMap(List<Candidate> candidateList, JobPost jobPost) {
+    private static Map<Long, CandidateFeature> computeFeature(List<Candidate> candidateList, JobPost jobPost) {
         SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT_HH);
 
         // candidateId --> featureMap
-        Map<Long, Map<CandidateMatchingJobPost.FEATURE, Object>> allFeature = new LinkedHashMap<>();
+        Map<Long, CandidateFeature> allFeature = new LinkedHashMap<>();
 
         List<String> candidateUUIdList = new ArrayList<>();
         List<Long> candidateIdList = new ArrayList<>();
@@ -278,13 +273,13 @@ public class JobPostWorkflowEngine {
                                             .findList();
 
         // prep candidate->jobApplication mapping to reduce lookup time to O(1)
-        Map<Long, Object> jobApplicationMap = new HashMap<>();
+        Map<Long, String> jobApplicationMap = new HashMap<>();
         for (JobApplication jobApplication: allJobApplication) {
             jobApplicationMap.put(jobApplication.getCandidate().getCandidateId(), sfd.format(jobApplication.getJobApplicationCreateTimeStamp()));
         }
 
         // prep candidate->jobApplication mapping to reduce lookup time to O(1)
-        Map<Long, Object> assessmentMap = new HashMap<>();
+        Map<Long, Integer> assessmentMap = new HashMap<>();
         for (CandidateAssessmentAttempt attempt: allAssessmentAttempt) {
             assessmentMap.put(attempt.getCandidate().getCandidateId(), attempt.getAttemptId());
         }
@@ -315,28 +310,28 @@ public class JobPostWorkflowEngine {
 
 
         for (Candidate candidate: candidateList) {
-            Map<CandidateMatchingJobPost.FEATURE, Object> featureMap = allFeature.get(candidate.getCandidateId());
+            CandidateFeature feature = allFeature.get(candidate.getCandidateId());
 
-            if( featureMap == null) {
-                featureMap = new LinkedHashMap<>();
+            if( feature == null) {
+                feature = new CandidateFeature();
 
                 // compute applied on
-                featureMap.put(CandidateMatchingJobPost.FEATURE.APPLIED_ON, jobApplicationMap.get(candidate.getCandidateId()));
+                feature.setAppliedOn(jobApplicationMap.get(candidate.getCandidateId()));
 
                 // compute last active on
                 ArrayList<Interaction> interactionsOfCandidate = objAUUIDToInteractions.get(candidate.getCandidateUUId());
                 if(interactionsOfCandidate != null) {
                     Interaction mostRecentInteraction = interactionsOfCandidate.get(0);
-                    featureMap.put(CandidateMatchingJobPost.FEATURE.LAST_ACTIVE, sfd.format(mostRecentInteraction.getCreationTimestamp()));
+                    feature.setLastActive(sfd.format(mostRecentInteraction.getCreationTimestamp()));
                 }
 
                 // compute 'has attempted assessment' for this JobPost-JobRole, If yes then this contains assessmentId
-                featureMap.put(CandidateMatchingJobPost.FEATURE.ASSESSMENT_ATTEMPT_ID, assessmentMap.get(candidate.getCandidateId()));
+                feature.setAssessmentAttemptId(assessmentMap.get(candidate.getCandidateId()));
 
                 // other intelligent scoring will come here
             }
 
-            allFeature.put(candidate.getCandidateId(), featureMap);
+            allFeature.put(candidate.getCandidateId(), feature);
         }
 
         return allFeature;

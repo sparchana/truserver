@@ -706,7 +706,7 @@ $(function() {
                     'candidateSkillList': getSkills(newCandidate.candidate.candidateSkillList),
                     'candidateTimeShiftPref': timeShiftPref,
                     'candidateExperience': getInYearMonthFormat(newCandidate.candidate.candidateTotalExperience),
-                    'candidateIsAssessmentComplete': getYesNo(newCandidate.featureMap.ASSESSMENT_ATTEMPT_ID),
+                    'candidateIsAssessmentComplete': getYesNo(newCandidate.feature.assessmentAttemptId),
                     'candidateGender': getGender(newCandidate.candidate.candidateGender),
                     'candidateIsEmployed': getYesNo(newCandidate.candidate.candidateIsEmployed),
                     'candidateCreateTimestamp': getDateTime(newCandidate.candidate.candidateCreateTimestamp),
@@ -720,8 +720,8 @@ $(function() {
                     'isActive': getProperProfileStatus(newCandidate.candidate.candidateprofilestatus),
                     'candidateExpiry': getExpiry(newCandidate.candidate.candidateStatusDetail),
                     'candidateIdProofs': getIdProof(newCandidate.candidate.idProofReferenceList),
-                    'jobAppliedOn': getAppliedOn(newCandidate.featureMap.APPLIED_ON),
-                    'lastActive': (newCandidate.featureMap.LAST_ACTIVE),
+                    'jobAppliedOn': getAppliedOn(newCandidate.feature.appliedOn),
+                    'lastActive': (newCandidate.feature.lastActive),
                     'candidateId': newCandidate.candidate.candidateId
                 })
             });

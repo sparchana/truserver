@@ -2,8 +2,6 @@ package api.http.httpResponse;
 
 import models.entity.Candidate;
 
-import java.util.Map;
-
 /**
  * Created by zero on 4/10/16.
  */
@@ -20,7 +18,7 @@ public class CandidateMatchingJobPost {
         IS_GENDER_REQ_SATISFIED
     }
     public Candidate candidate;
-    private Map<FEATURE, Object> featureMap;
+    private CandidateFeature feature;
 
     public Candidate getCandidate() {
         return candidate;
@@ -30,11 +28,11 @@ public class CandidateMatchingJobPost {
         this.candidate = candidate;
     }
 
-    public Map<FEATURE, Object> getFeatureMap() {
-        return featureMap;
+    public CandidateFeature getFeature() {
+        return feature;
     }
 
-    public void setFeatureMap(Map<FEATURE, Object> featureMap) {
-        this.featureMap = featureMap;
+    public void setFeature(CandidateFeature feature) {
+        this.feature = feature;
     }
 }
