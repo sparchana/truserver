@@ -18,10 +18,6 @@ function processDataLogin(returnedData) {
     }
 }
 
-function processDataLogoutRecruiter() {
-    window.location = "/recruiter";
-}
-
 function processDataLeadSubmit(returnedData) {
     if(returnedData.status = 1){
         notifySuccess("Thanks! Our business team will get in touch with you within 24 hours!");

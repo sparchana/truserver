@@ -18,6 +18,10 @@ function logoutRecruiter() {
     }
 }
 
+function processDataLogoutRecruiter() {
+    window.location = "/recruiter";
+}
+
 $(document).scroll(function(){
     if ($(this).scrollTop() > 80) {
         $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
@@ -26,7 +30,6 @@ $(document).scroll(function(){
         $('nav').css({"background": "transparent"});
     }
 });
-
 
 $(document).ready(function(){
     checkRecruiterLogin();
