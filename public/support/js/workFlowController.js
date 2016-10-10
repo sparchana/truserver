@@ -666,6 +666,7 @@ $(function() {
             }
         });
 
+        app.notify("Total Candidate Matched : " + app.jpCandidateList.length, 'warning');
         // destroy table
         app.renderTable();
         // construct new table

@@ -293,6 +293,27 @@ public class JobPostWorkflowEngine {
                 .orderBy().desc("creationTimestamp")
                 .findList();
 
+//        returns nothing for some uuids ex:
+//        '227dd429-9236-45c2-957f-be978919bc63, 55903b0e-4904-40f5-bfc7-06967175647f, 94d45261-fd01-4361-b52d-dc50923e10c2'
+
+//        StringBuilder interactionQueryBuilder = new StringBuilder("select objectauuid, creationtimestamp from interaction i " +
+//                " where i.objectauuid " +
+//                " in ('"+candidateListString+"') " +
+//                " and creationtimestamp = " +
+//                " (select max(creationtimestamp) from interaction where i.objectauuid = interaction.objectauuid) " +
+//                " order by creationTimestamp desc ");
+//
+//
+//        RawSql rawSql = RawSqlBuilder.parse(interactionQueryBuilder.toString())
+//                .tableAliasMapping("i", "interaction")
+//                .columnMapping("objectauuid", "objectAUUId")
+//                .columnMapping("creationtimestamp", "creationTimestamp")
+//                .create();
+//
+//        List<Interaction> allInteractions= Ebean.find(Interaction.class)
+//                .setRawSql(rawSql)
+//                .findList();
+
         // linked hash map maintain the insertion order
         Map<String, ArrayList<Interaction>> objAUUIDToInteractions = new LinkedHashMap<>();
 
