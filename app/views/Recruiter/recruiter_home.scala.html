@@ -38,16 +38,16 @@
                             <img id="navLogo" src="/assets/recruiter/img/trujobs-recruiter.png" style="height: 40px;
                                 margin-top: -2%">
                         </a>
-@*                        <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+                        <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
                         <ul class="right hide-on-med-and-down">
                             <li><a data-target="modalSignUp" class="waves-effect waves-light ascentGreen lighten-1 btn modal-trigger"><font style="color: #fff; font-weight: 600">SignUp</font></a></li>
                             <li><a data-target="modalLogIn" class="waves-effect waves-light transparent btn modal-trigger" style="border: 1px solid #ffffff"><font style="font-weight: 600; color: #ffffff">LogIn</font></a></li>
-                        </ul>*@
+                        </ul>
                     </div>
-@*                    <ul class="side-nav" id="mobile-demo">
+                    <ul class="side-nav" id="mobile-demo">
                         <li><a href="#">SIGNUP</a></li>
                         <li><a href="#">LOGIN</a></li>
-                    </ul>*@
+                    </ul>
                 </div>
             </nav>
         </div>
@@ -55,10 +55,13 @@
         <div id="modalSignUp" class="modal">
             <div class="row">
                 <div class="col l4 hide-on-small-only" id="modalLeftBox">
-
+                    <img src="/assets/recruiter/img/image2.jpg">
                 </div>
-                <form>
                     <div class="col l8" id="modalRightBox">
+                        <font style="font-size: 22px">Sign Up With TruJobs</font>
+                        <center><div class="materialDashSignUp"></div></center>
+                        <font style="font-size: 14px;">Please fill the details for Signing Up with TruJobs</font>
+                        <form>
                         <div class="row" id="inputContainerModalSignup">
                             <div class="input-field col s12">
                                 <input placeholder="Name" id="rec_name" type="text" class="validate">
@@ -66,77 +69,75 @@
                                 <input placeholder="Email" id="rec_email" type="email" class="validate">
                                 <input placeholder="Company" id="rec_company" type="text" class="validate">
                             </div>
-                        </div>
-                        <div class="row" id="inputContainerModalSignup">
                             <div class="input-field col s12">
-                              <button onclick="signUpRecruiter()" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">SignUp</font>
+                              <a onclick="signUpRecruiter()" id="SignSubmitUpBtn" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">SignUp</font></a>
+                                <p><font style="font-size: 14px;">Have an Account ? <span  data-target="modalLogIn" class="modal-trigger"><font style="font-weight:600">Sign In</span></font></p>
                             </div>
                         </div>
+                        </form>
                     </div>
-                </form>
             </div>
         </div>
             <!-- Modal otp Structure -->
         <div id="modalOtp" class="modal">
             <div id="otpSection">
-                <div class="row">
-                    <div class="col l4 hide-on-small-only" id="modalLeftBox">
-                        <div class="row">
-                        Sample1
-                        </div>
-                        <div class="row">
-                        Sample2
+                <div style="background: rgba(0, 0, 0, 0.75); padding: 8%">
+                    <center><font style="font-size: 22px; color: #fff">OTP Verification</font></center>
+                </div>
+                <form style="background: #fff; padding: 4%">
+                    <div class="row">
+                        <div class="col l12">
+                            <div class="input-field col s12 l12">
+                                <input type="text" id="rec_otp" style="margin-bottom:4px; border-bottom: 1px solid rgba(158, 158, 158, 0.32)" maxlength="4" placeholder="OTP">
+                            </div>
+                            <div class="input-field col s12">
+                                <a onclick="verifyOtp()" id="SignSubmitUpBtn" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">Enter OTP</font></a>
+                            </div>
                         </div>
                     </div>
-                    <form>
-                        <div class="col l8" id="modalRightBox">
-                            <div class="row" id="inputContainerModalSignup">
-                                <div class="input-field col s12">
-                                    <input placeholder="Enter OTP" id="rec_otp" type="number" class="validate">
-                                </div>
-                            </div>
-                            <div class="row" id="inputContainerModalSignup">
-                                <div class="input-field col s12">
-                                    <a onclick="verifyOtp()" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">Verify OTP</font></a>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+                </form>
             </div>
             <div id="passwordSection">
-                <div class="row">
-                    <div class="col l4 hide-on-small-only" id="modalLeftBox">
+                <div style="background: rgba(0, 0, 0, 0.75); padding: 8%">
+                    <center><font style="font-size: 22px; color: #fff">New Password</font></center>
+                </div>
+                    <form style="background: #fff; padding: 4%">
                         <div class="row">
-                        Sample1
-                        </div>
-                        <div class="row">
-                        Sample2
-                        </div>
-                    </div>
-                    <form>
-                        <div class="col l8" id="modalRightBox">
-                            <div class="row" id="inputContainerModalSignup">
-                                <div class="input-field col s12">
-                                    <input placeholder="Enter Password" id="rec_password" type="password" class="validate">
+                            <div class="col l12">
+                                <div class="input-field col s12 l12">
+                                    <input type="password" id="rec_password" style="margin-bottom:4px; border-bottom: 1px solid rgba(158, 158, 158, 0.32)" maxlength="10" placeholder="Enter Password" class="validate">
                                 </div>
-                            </div>
-                            <div class="row" id="inputContainerModalSignup">
                                 <div class="input-field col s12">
-                                    <a onclick="savePassword()" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff; font-weight: bold">Create Account</font></a>
+                                    <a onclick="savePassword()" id="SignSubmitUpBtn" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">Create Account</font></a>
                                 </div>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
-        </div>
 
         <!-- Modal LogIn Structure -->
         <div id="modalLogIn" class="modal">
-            <div class="modal-content">
-                <h4>Log In</h4>
+            <div style="background: rgba(0, 0, 0, 0.75); padding: 8%">
+                <center><font style="font-size: 22px; color: #fff">Log In</font></center>
             </div>
+            <form style="background: #fff; padding: 4%">
+                <div class="row">
+                    <div class="col l12">
+                        <div class="input-field col s12 l12">
+                            <input type="text" id="mobileNumber" style="margin-bottom:4px; border-bottom: 1px solid rgba(158, 158, 158, 0.32)" maxlength="10" placeholder="Mobile Number">
+                        </div>
+                        <div class="input-field col s12 l12">
+                            <input type="password" id="password" style="margin-bottom:4px; border-bottom: 1px solid rgba(158, 158, 158, 0.32)"  placeholder="Password">
+                        </div>
+                        <div class="input-field col s12">
+                            <a onclick="recruiterLoginSubmit()" id="SignSubmitUpBtn" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">LogIn</font></a>
+                            <p><font style="font-size: 14px;">New User  ? <span  data-target="modalSignUp" class="modal-trigger"><font style="font-weight:600">Sign Up</span></font></p>
+                        </div>
+
+                    </div>
+                </div>
+            </form>
         </div>
 
         <div class="parallax-container custom-parallax-container">
@@ -258,7 +259,13 @@
                         <div class="input-field col s12 l12">
                             <input type="text" id="mobileNumber" style="margin-bottom:4px; border-bottom: 1px solid rgba(158, 158, 158, 0.32)" maxlength="10" placeholder="Mobile Number">
                         </div>
-
+                        <style>
+                        div.Tokenize ul.TokensContainer, div.Tokenize ul.Dropdown{
+                            height: 40px;
+                            width: auto;
+                            border: none;
+                        }
+                        </style>
                         <div class="input-field col s12 l12">
                             <select id="jobRoleOption" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
                             <script type="text/javascript">
@@ -348,7 +355,7 @@
                 </div>
             </div>
         </div>
-@*        <div class="container-fluid" id="testimonial">
+        @*<div class="container-fluid" id="testimonial">
             <div class="container">
             <h5>What Recruiter Says !</h5>
             <center><div class="materialDash"></div></center>
@@ -424,7 +431,7 @@
                     <div class="col l4 offset-l2 s12">
                         <h5 class="white-text">Get in touch</h5>
                         <ul>
-                            <li><a class="grey-text text-lighten-3" href="#!">Write us at: info@@trujobs.in</a></li>
+                            <li><a class="grey-text text-lighten-3" href="#!">Write us at: inftrujobs.in</a></li>
                             <li><a class="grey-text text-lighten-3" href="#!">Have queries? Talk to us at 8880007799</a></li>
                         </ul>
                     </div>
