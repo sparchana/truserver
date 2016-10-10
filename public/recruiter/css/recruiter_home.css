@@ -85,7 +85,7 @@ nav{
 .footerLeadForm{
     position: absolute;
     width:100%;
-    padding: 1%;
+    padding: 2%;
     bottom: 0;
     text-align: center;
     background: rgba(0, 0, 0, 0.68)
@@ -163,9 +163,7 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
     padding: 1%;
     margin: 0;
     background-color: #fff;
-
 }
-
 #sectionTwo{
     height: 200px;
 }
@@ -215,6 +213,11 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
     width: 40%;
     margin-top: 0;
 }
+#modalLogIn{
+    overflow: hidden;
+    width: 40%;
+    margin-top: 0;
+}
 #modalLeftBox{
     margin: 0;
     padding: 0;
@@ -245,7 +248,13 @@ footer.page-footer .footer-copyright{
     height: 2px;
     width: 72px;
     background: #2ec866;
-    margin: 2%;
+    margin: 1%;
+}
+.materialDashForm{
+    height: 2px;
+    width: 25%;
+    background: #eceeeb;
+    margin: 3%;
 }
 .materialDashSignUp{
     height: 1px;
@@ -258,14 +267,31 @@ footer.page-footer .footer-copyright{
     content:url(/assets/recruiter/img/fb.svg);
 }
 #modalHire{
-    overflow-y: hidden;
     color:#000;
-    margin-top:0%;
+    margin-top:0;
     width:30%;
-    padding:2%;
+    background: transparent;
 }
-
+#modalLogIn{
+    color:#000;
+    margin-top:0;
+    width:30%;
+    background: transparent;
+}
+#modalOtp{
+    color:#000;
+    margin-top:0;
+    width:30%;
+    background: transparent;
+}
+#mobileNumber{
+    color: #000;
+}
 @media screen and (max-width: 768px) {
+    #mobileNumber{
+        color: #fff;
+    }
+
     #leadForm{
         margin-top:6%;
         padding: 6%;
@@ -278,4 +304,32 @@ footer.page-footer .footer-copyright{
     #mobileEnquiryBtn{
         margin-top: 10%;
     }
+    ::-webkit-input-placeholder {
+        color: #c5c5c5;
+        font-size: 14px;
+    }
+
+    :-moz-placeholder { /* Firefox 18- */
+        color: #c5c5c5;
+        font-size: 14px;
+    }
+
+    ::-moz-placeholder {  /* Firefox 19+ */
+        color: #c5c5c5;
+        font-size: 14px;
+    }
+
+    :-ms-input-placeholder {
+        color: #c5c5c5;
+        font-size: 14px;
+    }
 }
+
+@media screen and (max-width: 1000px){
+    #navLogo{
+        height:46%;
+        margin-top: 11%;
+        content:url("/assets/common/img/logo-main.gif");
+    }
+}
+
