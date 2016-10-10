@@ -5,12 +5,14 @@ import com.avaje.ebean.annotation.PrivateOwned;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import models.entity.OM.JobApplication;
 import models.entity.Static.PartnerProfileStatus;
 import models.entity.Static.RecruiterProfileStatus;
 import models.entity.Static.RecruiterStatus;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -60,6 +62,12 @@ public class RecruiterProfile extends Model {
     @Column(name = "RecruiterEmailStatus", columnDefinition = "int signed not null default 0")
     private int recruiterEmailStatus; // verified, Not-Yet-Verified
 
+    @Column(name = "RecruiterInterviewUnlockCredits", columnDefinition = "int signed null")
+    private Long recruiterInterviewUnlockCredits;
+
+    @Column(name = "RecruiterCandidateUnlockCredits", columnDefinition = "int signed null")
+    private Long recruiterCandidateUnlockCredits;
+
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "RecStatus")
@@ -83,6 +91,11 @@ public class RecruiterProfile extends Model {
     @JsonManagedReference
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private RecruiterLead recruiterLead;
+
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "recruiterProfile", cascade = CascadeType.REMOVE)
+    private List<CreditHistory> creditHistoryList;
 
     public static Finder<String, RecruiterProfile> find = new Finder(RecruiterProfile.class);
 
@@ -241,5 +254,29 @@ public class RecruiterProfile extends Model {
 
     public void setRecruiterLead(RecruiterLead recruiterLead) {
         this.recruiterLead = recruiterLead;
+    }
+
+    public Long getRecruiterInterviewUnlockCredits() {
+        return recruiterInterviewUnlockCredits;
+    }
+
+    public void setRecruiterInterviewUnlockCredits(Long recruiterInterviewUnlockCredits) {
+        this.recruiterInterviewUnlockCredits = recruiterInterviewUnlockCredits;
+    }
+
+    public Long getRecruiterCandidateUnlockCredits() {
+        return recruiterCandidateUnlockCredits;
+    }
+
+    public void setRecruiterCandidateUnlockCredits(Long recruiterCandidateUnlockCredits) {
+        this.recruiterCandidateUnlockCredits = recruiterCandidateUnlockCredits;
+    }
+
+    public List<CreditHistory> getCreditHistoryList() {
+        return creditHistoryList;
+    }
+
+    public void setCreditHistoryList(List<CreditHistory> creditHistoryList) {
+        this.creditHistoryList = creditHistoryList;
     }
 }
