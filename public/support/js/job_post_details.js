@@ -139,6 +139,25 @@ function processDataCheckJobStatus(returnedData) {
     });
 }
 
+function processDataGetAllLanguage(returnLanguage) {
+    var data = [];
+
+    returnLanguage.forEach(function (language) {
+        var opt = {
+            label: language.languageName, value: parseInt(language.languageId)
+        };
+        data.push(opt);
+    });
+
+    var selectList = $('#jobPostLanguage');
+    selectList.multiselect({
+        includeSelectAllOption: true,
+        maxHeight: 300
+    });
+    selectList.multiselect('dataprovider', data);
+    selectList.multiselect('rebuild');
+}
+
 $(document).ready(function () {
     $('#jobPostRecruiter').append(defaultOption);
     var pathname = window.location.pathname; // Returns path only
@@ -302,6 +321,19 @@ $(document).ready(function () {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllLanguage",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetAllLanguage
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
 
 
     var i;
@@ -352,6 +384,30 @@ function processDataForJobPost(returnedData) {
     $("#jobPostTitle").val(returnedData.jobPostTitle);
 
     $("#jobPostDescription").val(returnedData.jobPostDescription);
+
+    // gender, language, age
+    if (returnedData.jobPostMinAge != null) {
+        $("#jobPostMinAge").val(returnedData.jobPostMinAge);
+    }
+    if (returnedData.jobPostMaxAge != null) {
+        $("#jobPostMaxAge").val(returnedData.jobPostMaxAge);
+    }
+    if (returnedData.gender !=null) {
+        $("#jobPostGender").val(returnedData.gender);
+    }
+    if (returnedData.jobPostLanguageRequirement != null) {
+        var arr = [];
+        var req = returnedData.jobPostLanguageRequirement;
+        req.forEach(function (languageRequirement) {
+            if(languageRequirement != null){
+                arr.push(languageRequirement.language.languageId);
+            }
+        });
+        $("#jobPostLanguage").val(arr);
+        $("#jobPostLanguage").multiselect('rebuild');
+    }
+
+
     $("#jobPostMinSalary").val(returnedData.jobPostMinSalary);
     $("#jobPostMaxSalary").val(returnedData.jobPostMaxSalary);
 

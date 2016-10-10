@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
 import controllers.businessLogic.*;
 import controllers.businessLogic.Assessment.AssessmentService;
+import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.*;
 import models.entity.*;
 import models.entity.Intelligence.RelatedJobRole;
@@ -1471,5 +1472,79 @@ public class Application extends Controller {
             }
         }
         return ok(toJson(relevantJobs));
+    }
+
+    public static Result getMatchingCandidate() {
+        JsonNode matchingCandidateRequestJson = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + matchingCandidateRequestJson);
+        if(matchingCandidateRequestJson == null){
+            return badRequest();
+        }
+        MatchingCandidateRequest matchingCandidateRequest= new MatchingCandidateRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+
+        // since jsonReq has single/multiple values in array
+        newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+
+        try {
+            matchingCandidateRequest = newMapper.readValue(matchingCandidateRequestJson.toString(), MatchingCandidateRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (matchingCandidateRequest != null) {
+            return ok(toJson(JobPostWorkflowEngine.getMatchingCandidate(
+                    matchingCandidateRequest.getJobPostId(),
+                    matchingCandidateRequest.getMinAge(),
+                    matchingCandidateRequest.getMaxAge(),
+                    matchingCandidateRequest.getMinSalary(),
+                    matchingCandidateRequest.getMaxSalary(),
+                    matchingCandidateRequest.getGender(),
+                    matchingCandidateRequest.getExperienceId(),
+                    matchingCandidateRequest.getJobPostJobRoleId(),
+                    matchingCandidateRequest.getJobPostEducationId(),
+                    matchingCandidateRequest.getJobPostLocalityIdList(),
+                    matchingCandidateRequest.getJobPostLanguageIdList())));
+        }
+        return badRequest();
+    }
+
+    public static Result renderWorkflow(Long jobPostId, String view) {
+        if(view == null) {
+            return badRequest();
+        }
+
+        switch (view) {
+            case "match_view":
+                return ok(views.html.match_candidate.render());
+            case "pre_screen_view":
+                return ok(views.html.pre_screen.render());
+        }
+        return badRequest();
+    }
+
+    public static Result getJobPostMatchingParams(long jobPostId) {
+        return ok(toJson(JobPost.find.where().eq("jobPostId", jobPostId).findUnique()));
+    }
+
+    public static Result saveSelectedCandidate() {
+        JsonNode selectedCandidateIdsJson = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + selectedCandidateIdsJson);
+        if(selectedCandidateIdsJson == null){
+            return badRequest();
+        }
+        SelectedCandidateRequest selectedCandidateRequest= new SelectedCandidateRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+
+        // since jsonReq has single/multiple values in array
+        newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+
+        try {
+            selectedCandidateRequest = newMapper.readValue(selectedCandidateIdsJson.toString(), SelectedCandidateRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ok(toJson(JobPostWorkflowEngine.saveSelectedCandidates(selectedCandidateRequest.getSelectedCandidateIdList())));
     }
 }
