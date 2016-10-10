@@ -277,12 +277,14 @@ footer.page-footer .footer-copyright{
     color:#000;
     margin-top:0;
     width:30%;
+    box-shadow: none;
     background: transparent;
 }
 #modalOtp{
     color:#000;
     margin-top:0;
     width:30%;
+    box-shadow: none;
     background: transparent;
 }
 #mobileNumber{

@@ -4,6 +4,19 @@
 var returnedOtp;
 var recruiterMobileVal;
 
+function processDataLogin(returnedData) {
+    console.log(returnedData);
+    if(returnedData.status == 1){
+        notifySuccess("Login successful");
+    } else if(returnedData.status == 2){
+        notifyError("Looks like something went wrong. Please try again later");
+    } else if(returnedData.status == 3){
+        notifyError("Recruiter does not exists");
+    } else if(returnedData.status == 4){
+        notifyError("Incorrect login credentials");
+    }
+}
+
 function processDataLeadSubmit(returnedData) {
     if(returnedData.status = 1){
         notifySuccess("Thanks! Our business team will get in touch with you within 24 hours!");
@@ -26,6 +39,38 @@ function processDataLeadSubmit(returnedData) {
     } else{
         notifyError("Oops! Looks like something went wrong! Please try again after some time!");
     }
+}
+
+function resetHireForm() {
+    $('#mobileNumber').val('');
+    $('#jobRoleOption').tokenize().clear();
+    $('#jobLocationOption').tokenize().clear();
+    $('#recruiterRequirement').tokenize().clear();
+}
+
+function resetHireFormMobile() {
+    $('#mobileNumberModal').val('');
+    $('#jobRoleOptionModal').tokenize().clear();
+    $('#jobLocationOptionModal').tokenize().clear();
+    $('#recruiterRequirementModal').tokenize().clear();
+}
+
+function openSignUpModal() {
+    $("#SignSubmitUpBtn").removeClass("disabled");
+    $("#rec_name").val('');
+    $("#rec_email").val('');
+    $("#rec_mobile").val('');
+    $("#rec_company").val('');
+    $("#modalLogIn").closeModal();
+    $("#modalSignUp").openModal();
+}
+
+function openLoginModal() {
+    $("#passwordBtn").removeClass("disabled");
+    $("#loginMobileNumber").val('');
+    $("#password").val('');
+    $("#modalSignUp").closeModal();
+    $("#modalLogIn").openModal();
 }
 
 function processDataSignUpSubmit(returnedData) {
@@ -57,8 +102,10 @@ function verifyOtp(){
 
 function processDataAddAuth(returnedData) {
     if(returnedData.status == 1){
-        notifyError("Success");
+        notifySuccess("Success");
         $('#modalOtp').closeModal();
+    } else{
+        notifyError("Something went wrong. Please try again later");
     }
 }
 
@@ -67,6 +114,7 @@ function savePassword(){
     var recruiterPassword = $("#rec_password").val();
 
     if(recruiterPassword.length > 4){
+        $("#passwordBtn").addClass("disabled");
         var d = {
             recruiterPassword: recruiterPassword,
             recruiterAuthMobile: recruiterMobileVal
@@ -84,17 +132,33 @@ function savePassword(){
 }
 
 function recruiterLoginSubmit(){
-    var d = {
-        candidateLoginMobile: "+919949999999",
-        candidateLoginPassword: "testing"
-    };
-    $.ajax({
-        type: "POST",
-        url: "/recruiterLoginSubmit",
-        contentType: "application/json; charset=utf-8",
-        data: JSON.stringify(d),
-        success: processDataAddAuth
-    });
+    var mobile = $("#loginMobileNumber").val();
+    var password = $("#password").val();
+
+    var res = validateMobile(mobile);
+
+    var statusCheck = 1;
+    if(res == 0){
+        notifyError("Enter a valid mobile number");
+        statusCheck = 0;
+    } else if(res == 1){
+        notifyError("Enter 10 digit mobile number");
+        statusCheck = 0;
+    }
+    if(statusCheck == 1){
+        $("#loginSubmitBtn").addClass("disabled");
+        var d = {
+            candidateLoginMobile: mobile,
+            candidateLoginPassword: password
+        };
+        $.ajax({
+            type: "POST",
+            url: "/recruiterLoginSubmit",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(d),
+            success: processDataLogin
+        });
+    }
 }
 
 

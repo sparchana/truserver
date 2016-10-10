@@ -40,8 +40,8 @@
                         </a>
                         <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
                         <ul class="right hide-on-med-and-down">
-                            <li><a data-target="modalSignUp" class="waves-effect waves-light ascentGreen lighten-1 btn modal-trigger"><font style="color: #fff; font-weight: 600">SignUp</font></a></li>
-                            <li><a data-target="modalLogIn" class="waves-effect waves-light transparent btn modal-trigger" style="border: 1px solid #ffffff"><font style="font-weight: 600; color: #ffffff">LogIn</font></a></li>
+                            <li><a onclick="openSignUpModal()" class="waves-effect waves-light ascentGreen lighten-1 btn"><font style="color: #fff; font-weight: 600">SignUp</font></a></li>
+                            <li><a onclick="openLoginModal()" class="waves-effect waves-light transparent btn" style="border: 1px solid #ffffff"><font style="font-weight: 600; color: #ffffff">LogIn</font></a></li>
                         </ul>
                     </div>
                     <ul class="side-nav" id="mobile-demo">
@@ -64,14 +64,16 @@
                         <form>
                         <div class="row" id="inputContainerModalSignup">
                             <div class="input-field col s12">
-                                <input placeholder="Name" id="rec_name" type="text" class="validate">
-                                <input placeholder="Mobile" id="rec_mobile" type="text" maxlength="10" class="validate">
-                                <input placeholder="Email" id="rec_email" type="email" class="validate">
-                                <input placeholder="Company" id="rec_company" type="text" class="validate">
+                                <form id="signUpForm">
+                                    <input placeholder="Name" id="rec_name" type="text" class="validate">
+                                    <input placeholder="Mobile" id="rec_mobile" type="text" maxlength="10" class="validate">
+                                    <input placeholder="Email" id="rec_email" type="email" class="validate">
+                                    <input placeholder="Company" id="rec_company" type="text" class="validate">
+                                </form>
                             </div>
                             <div class="input-field col s12">
                               <a onclick="signUpRecruiter()" id="SignSubmitUpBtn" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">SignUp</font></a>
-                                <p><font style="font-size: 14px;">Have an Account ? <span  data-target="modalLogIn" class="modal-trigger"><font style="font-weight:600">Sign In</span></font></p>
+                                <p><font style="font-size: 14px;">Have an Account ? <span onclick="openLoginModal()"><font style="font-weight:600">Sign In</span></font></p>
                             </div>
                         </div>
                         </form>
@@ -108,7 +110,7 @@
                                     <input type="password" id="rec_password" style="margin-bottom:4px; border-bottom: 1px solid rgba(158, 158, 158, 0.32)" maxlength="10" placeholder="Enter Password" class="validate">
                                 </div>
                                 <div class="input-field col s12">
-                                    <a onclick="savePassword()" id="SignSubmitUpBtn" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">Create Account</font></a>
+                                    <a onclick="savePassword()" id="passwordBtn" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">Create Account</font></a>
                                 </div>
                             </div>
                         </div>
@@ -121,18 +123,18 @@
             <div style="background: rgba(0, 0, 0, 0.75); padding: 8%">
                 <center><font style="font-size: 22px; color: #fff">Log In</font></center>
             </div>
-            <form style="background: #fff; padding: 4%">
+            <form id="loginModal" style="background: #fff; padding: 4%">
                 <div class="row">
                     <div class="col l12">
                         <div class="input-field col s12 l12">
-                            <input type="text" id="mobileNumber" style="margin-bottom:4px; border-bottom: 1px solid rgba(158, 158, 158, 0.32)" maxlength="10" placeholder="Mobile Number">
+                            <input type="text" id="loginMobileNumber" style="margin-bottom:4px; border-bottom: 1px solid rgba(158, 158, 158, 0.32)" maxlength="10" placeholder="Mobile Number">
                         </div>
                         <div class="input-field col s12 l12">
                             <input type="password" id="password" style="margin-bottom:4px; border-bottom: 1px solid rgba(158, 158, 158, 0.32)"  placeholder="Password">
                         </div>
                         <div class="input-field col s12">
-                            <a onclick="recruiterLoginSubmit()" id="SignSubmitUpBtn" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">LogIn</font></a>
-                            <p><font style="font-size: 14px;">New User  ? <span  data-target="modalSignUp" class="modal-trigger"><font style="font-weight:600">Sign Up</span></font></p>
+                            <a onclick="recruiterLoginSubmit()" id="loginSubmitBtn" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">LogIn</font></a>
+                            <p><font style="font-size: 14px;">New User? <span onclick="openSignUpModal()"><font style="font-weight:600">Sign Up</span></font></p>
                         </div>
 
                     </div>
@@ -155,11 +157,11 @@
                     </div>
                     <br>
                     <center class="hide-on-small-only">
-                        <a data-target="modalHire" class="waves-effect waves-light ascentGreen lighten-1 btn modal-trigger" style="margin-top: 12px;margin-bottom:36px"><font style="color: #ffffff"><b>Request Call Back</b></font></a>
+                        <a data-target="modalHire" onclick="resetHireForm()" class="waves-effect waves-light ascentGreen lighten-1 btn modal-trigger" style="margin-top: 12px;margin-bottom:36px"><font style="color: #ffffff"><b>Request Call Back</b></font></a>
                     </center>
 
                     <center class="hide-on-med-and-up" id="mobileEnquiryBtn">
-                        <a class="waves-effect waves-light transparent btn modal-trigger" style="border:1px solid #2ec866; color:#2ec866" data-target="recEnquiry">Request Call Back</a>
+                        <a class="waves-effect waves-light transparent btn modal-trigger" style="border:1px solid #2ec866; color:#2ec866" data-target="recEnquiry" onclick="resetHireFormMobile()">Request Call Back</a>
                     </center>
 
                 </div>
@@ -259,13 +261,6 @@
                         <div class="input-field col s12 l12">
                             <input type="text" id="mobileNumber" style="margin-bottom:4px; border-bottom: 1px solid rgba(158, 158, 158, 0.32)" maxlength="10" placeholder="Mobile Number">
                         </div>
-                        <style>
-                        div.Tokenize ul.TokensContainer, div.Tokenize ul.Dropdown{
-                            height: 40px;
-                            width: auto;
-                            border: none;
-                        }
-                        </style>
                         <div class="input-field col s12 l12">
                             <select id="jobRoleOption" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
                             <script type="text/javascript">
