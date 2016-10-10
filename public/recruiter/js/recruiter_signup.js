@@ -7,6 +7,7 @@ var recruiterMobileVal;
 function processDataLogin(returnedData) {
     console.log(returnedData);
     if(returnedData.status == 1){
+        window.location = "/recruiter/home";
         notifySuccess("Login successful");
     } else if(returnedData.status == 2){
         notifyError("Looks like something went wrong. Please try again later");
@@ -15,6 +16,26 @@ function processDataLogin(returnedData) {
     } else if(returnedData.status == 4){
         notifyError("Incorrect login credentials");
     }
+}
+
+function logoutRecruiter() {
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/logoutRecruiter",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataLogoutRecruiter
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function processDataLogoutRecruiter() {
+    window.location = "/recruiter";
 }
 
 function processDataLeadSubmit(returnedData) {

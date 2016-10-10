@@ -121,7 +121,8 @@ POST        /checkPartnerCandidate/:id                                    contro
 
 # recruiter routes
 #~~~~~~~~~~~~~~~~~~~~
-GET         /recruiter                                                    controllers.RecruiterController.recruiterHome()
+GET         /recruiter                                                    controllers.RecruiterController.recruiterIndex()
+GET         /recruiter/home                                               controllers.RecruiterController.recruiterHome()
 GET         /logoutRecruiter                                              controllers.RecruiterController.logoutRecruiter()
 GET         /checkRecruiterSession                                        controllers.RecruiterController.checkRecruiterSession()
 

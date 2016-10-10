@@ -54,8 +54,11 @@ public class Application extends Controller {
         * */
         if(sessionId != null){
             String partnerId = session().get("partnerId");
+            String recruiterId = session().get("recruiterId");
             if(partnerId != null){
                 return redirect("/partner/home");
+            } else if(recruiterId != null){
+                return redirect("/recruiter/home");
             } else {
                 return redirect("/dashboard");
             }

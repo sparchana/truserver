@@ -8,8 +8,10 @@ import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
+import controllers.security.SecuredUser;
 import play.Logger;
 import play.mvc.Result;
+import play.mvc.Security;
 
 import java.io.IOException;
 
@@ -23,19 +25,23 @@ import static play.mvc.Results.redirect;
  * Created by dodo on 4/10/16.
  */
 public class RecruiterController {
-    public static Result recruiterHome() {
+    public static Result recruiterIndex() {
         String sessionId = session().get("recruiterId");
         if(sessionId != null){
-            return ok(views.html.Recruiter.recruiter_home.render());
-/*            return redirect("/recruiter/home");*/
+                return redirect("/recruiter/home");
         }
+        return ok(views.html.Recruiter.recruiter_index.render());
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result recruiterHome() {
         return ok(views.html.Recruiter.recruiter_home.render());
     }
 
     public static Result logoutRecruiter() {
         session().clear();
         Logger.info("Recruiter Logged Out");
-        return ok(views.html.Recruiter.recruiter_home.render());
+        return ok(views.html.Recruiter.recruiter_index.render());
     }
 
     public static Result checkRecruiterSession() {

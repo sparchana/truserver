@@ -290,6 +290,16 @@ footer.page-footer .footer-copyright{
 #mobileNumber{
     color: #000;
 }
+
+/* recruiter home css */
+.recruiterHomeSectionHeader{
+    background: linear-gradient(rgba(24, 26, 45, 0.6), rgba(24, 26, 45, 0.6)), url(../img/image2.jpg) no-repeat;
+    height: auto;
+    text-align: center;
+    padding: 6% 4% 4% 4%;
+}
+
+
 @media screen and (max-width: 768px) {
     #mobileNumber{
         color: #fff;
