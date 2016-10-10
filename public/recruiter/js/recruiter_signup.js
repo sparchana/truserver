@@ -18,22 +18,6 @@ function processDataLogin(returnedData) {
     }
 }
 
-function logoutRecruiter() {
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/logoutRecruiter",
-            data: false,
-            async: false,
-            contentType: false,
-            processData: false,
-            success: processDataLogoutRecruiter
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-}
-
 function processDataLogoutRecruiter() {
     window.location = "/recruiter";
 }

@@ -125,6 +125,7 @@ GET         /recruiter                                                    contro
 GET         /recruiter/home                                               controllers.RecruiterController.recruiterHome()
 GET         /logoutRecruiter                                              controllers.RecruiterController.logoutRecruiter()
 GET         /checkRecruiterSession                                        controllers.RecruiterController.checkRecruiterSession()
+GET         /getRecruiterProfileInfo                                      controllers.RecruiterController.getRecruiterProfileInfo()
 
 POST        /addRecruiterLead                                             controllers.RecruiterController.addWebsiteLead()
 POST        /recruiterSignUp                                              controllers.RecruiterController.recruiterSignUp()

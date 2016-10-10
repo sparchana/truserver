@@ -29,12 +29,12 @@
         <meta name="theme-color" content="#000000">
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     </head>
-    <body>
+    <body id="recruiterHome">
         <div class="navbar-fixed">
             <nav>
                 <div class="container" style="width: 85%;">
                     <div class="nav-wrapper">
-                        <a href="#!" class="brand-logo">
+                        <a href="#" class="brand-logo">
                             <img id="navLogo" src="/assets/recruiter/img/trujobs-recruiter.png" style="height: 40px;
                                 margin-top: -2%">
                         </a>
@@ -50,44 +50,105 @@
             </nav>
         </div>
 
-        <div class="recruiterHomeSectionHeader" style="display: flex;justify-content: center;align-items: center;">
-            <div class="container">
-                <h4 style="color: #fff">Welcome to Recruiter home</h4>
+        <div style="display: flex;justify-content: center;align-items: center;">
+            <div class="container recruiterHomeMainCard" >
+                <h4>Recruiter home!</h4>
+                <a class="btn-floating btn-large waves-effect waves-light red" style="margin-top: -22px; float: right"><i class="material-icons">mode_edit</i></a>
+                <hr>
+
+                <div class="row">
+                    <div class="col s12 l3" style="display: flex;justify-content: center;align-items: center;">
+                        <div style="text-align: center">
+                            <img src="/assets/dashboard/img/userMale.svg" id="userImgRecruiter">
+                            <br>
+                            <div id="recName" style="font-size: 20px; font-weight: bold">Not Specified</div>
+                            <h6 id="recMobile" >Not Specified</h6>
+                        </div>
+                    </div>
+
+                    <div class="col s12 l9">
+                        <div class="row">
+                            <div class="col-sm-6" style="margin-top: 4px">
+                                <div style="display : inline-block; margin: 4px;">
+                                    <img src="/assets/recruiter/img/icons/envelope.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block;">
+                                    <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Email</div>
+                                    <div id="recEmail" style="margin-left: 4px; display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6" style="margin-top: 4px">
+                                <div style="display : inline-block; margin: 4px;">
+                                    <img src="/assets/recruiter/img/icons/building.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block; margin-top: 4px">
+                                    <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Company</div>
+                                    <div id="recCompany" style="margin-left: 4px; display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6" >
+                                <div style="display : inline-block; margin: 4px;">
+                                    <img src="/assets/recruiter/img/icons/telephone.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block; margin-top: 4px" style="margin-top: 6px">
+                                    <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Landline</div>
+                                    <div id="recLandline" style="margin: 4px; display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6" >
+                                <div style="display : inline-block; margin: 4px;">
+                                    <img src="/assets/recruiter/img/icons/linkedin-logo.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block; margin-top: 4px">
+                                    <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Linkedin Profile</div>
+                                    <div id="recLinkedin" style="margin: 4px; display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: -6%">
+            <div class="container recruiterHomeMainCard" >
+                <div class="row" style="text-align: center">
+                    <h5>Highlights</h5>
+                    <center><div class="materialDash"></div></center>
+                    <div class="col l6 s6" style="padding: 2%;">
+                        <div class="row">
+                            <img class="responsive-img" src="/assets/recruiter/img/candidate.svg" style="height: 70px;">
+                        </div>
+                        <div class="row" style="margin: 2px">
+                            <b><div style="font-size: 24px">25000+</div></b>
+                        </div>
+                        <div class="row" style="margin: 1px;
+                            font-weight: 600;">
+                            <div style="font-size: 18px">Candidates</div>
+                        </div>
+                    </div>
+                    <div class="col l6 s6" style="padding: 2%;">
+                        <div class="row">
+                            <img class="responsive-img" src="/assets/recruiter/img/suitcase.svg" style="height: 70px;">
+                        </div>
+                        <div class="row" style="margin: 2px">
+                            <b><div style="font-size: 24px">35+</div></b>
+                        </div>
+                        <div class="row" style="font-weight: 600;">
+                            <div style="font-size: 18px">Job roles</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
 
-        <div class="container" id="stats">
-            <div class="row">
-                <h5>Highlights</h5>
-                <center><div class="materialDash"></div></center>
-                <div class="col l6 s6" style="padding: 2%;">
-                    <div class="row">
-                        <img class="responsive-img" src="/assets/recruiter/img/candidate.svg" style="height: 70px;">
-                    </div>
-                    <div class="row" style="margin: 2px">
-                        <b><div style="font-size: 24px">25000+</div></b>
-                    </div>
-                    <div class="row" style="margin: 1px;
-                        font-weight: 600;">
-                        <div style="font-size: 18px">Candidates</div>
-                    </div>
-                </div>
-                <div class="col l6 s6" style="padding: 2%;">
-                    <div class="row">
-                        <img class="responsive-img" src="/assets/recruiter/img/suitcase.svg" style="height: 70px;">
-                    </div>
-                    <div class="row" style="margin: 2px">
-                        <b><div style="font-size: 24px">35+</div></b>
-                    </div>
-                    <div class="row" style="font-weight: 600;">
-                        <div style="font-size: 18px">Job roles</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-            <!--Footer start-->
+        <!--Footer start-->
         <footer class="page-footer" style="background-color: #424242;">
             <div class="container">
                 <div class="row" style="margin: 0">
@@ -121,7 +182,5 @@
     <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
     <script type="text/javascript" src="/assets/common/js/validation.js"></script>
-    <script type="text/javascript" src="/assets/recruiter/js/recruiter_page.js"></script>
-    <script type="text/javascript" src="/assets/recruiter/js/typist.js"></script>
-    <script type="text/javascript" src="/assets/recruiter/js/recruiter_signup.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/recruiter_home.js"></script>
 </html>

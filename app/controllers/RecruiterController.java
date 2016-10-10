@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
 import controllers.security.SecuredUser;
+import models.entity.Partner;
+import models.entity.RecruiterProfile;
 import play.Logger;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -110,5 +112,14 @@ public class RecruiterController {
         }
         Logger.info("req JSON: " + req );
         return ok(toJson(RecruiterLeadService.createLeadWithOtherDetails(recruiterLeadRequest)));
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result getRecruiterProfileInfo() {
+        RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", session().get("recruiterId")).findUnique();
+        if(recruiterProfile != null) {
+            return ok(toJson(recruiterProfile));
+        }
+        return ok("0");
     }
 }

@@ -292,15 +292,67 @@ footer.page-footer .footer-copyright{
 }
 
 /* recruiter home css */
-.recruiterHomeSectionHeader{
-    background: linear-gradient(rgba(24, 26, 45, 0.6), rgba(24, 26, 45, 0.6)), url(../img/image2.jpg) no-repeat;
+body#recruiterHome{
+    background: linear-gradient(rgba(188, 172, 191, 0.39), rgba(188, 172, 191, 0.39)), url(../img/blurred_background.jpg) no-repeat;
+    background-size: 100% 50%;
+}
+
+.recruiterHomeMainCard{
     height: auto;
-    text-align: center;
-    padding: 6% 4% 4% 4%;
+    display: block;
+    margin-top: 8%;
+    background: #fff;
+    border-radius: 4px;
+    padding: 2%;
+}
+
+.recruiterCard{
+    padding: 2%;
+    background: #2ec866 ;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.recruiterCardMain{
+    margin: 6px;
+}
+
+.recruiterInformation {
+    padding: 2%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+#triangle-left {
+    width: 0;
+    height: 0;
+    margin-left: -4.5%;
+    float: left;
+    border-top: 16px solid transparent;
+    border-right: 21px solid #fff;
+    border-bottom: 16px solid transparent;
+}
+
+#userImgRecruiter{
+    border: 2px solid #c7c7c7;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
 }
 
 
 @media screen and (max-width: 768px) {
+    body#recruiterHome{
+        background-size: 100% 30%;
+    }
+
+    .recruiterInformation{
+        padding: 4%;
+        background: #fff;
+        box-shadow: 0 1px 8px rgba(0,0,0,0.12), 0 4px 4px rgba(0,0,0,0.12);
+    }
+
+    .recruiterHomeMainCard {
+        margin-top: 16%;
+    }
     #mobileNumber{
         color: #fff;
     }
