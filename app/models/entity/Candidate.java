@@ -186,13 +186,13 @@ public class Candidate extends Model {
     @Column(name = "CandidatePlaceLng", columnDefinition = "double null")
     private Double candidateLocalityLng;
 
-    @Transient
-    private Double distance;
-
     @JsonBackReference
     @PrivateOwned
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.REMOVE)
     private List<JobPostWorkflow> jobPostWorkflowList;
+
+    @Transient
+    private String matchedLocation;
 
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
@@ -558,6 +558,14 @@ public class Candidate extends Model {
 
     public void setJobPostWorkflowList(List<JobPostWorkflow> jobPostWorkflowList) {
         this.jobPostWorkflowList = jobPostWorkflowList;
+    }
+
+    public String getMatchedLocation() {
+        return matchedLocation;
+    }
+
+    public void setMatchedLocation(String matchedLocation) {
+        this.matchedLocation = matchedLocation;
     }
 }
 

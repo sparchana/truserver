@@ -71,7 +71,7 @@ public class JobPostWorkflowEngineTest {
     }
 
 
-    @Ignore
+    @Test
     public void testGetMatchingCandidateLite() {
         if (type == JobPostWorkflowEngineTest.MethodType.getMatchingCandidateLite) {
             Application fakeApp = fakeApplication();
@@ -92,7 +92,7 @@ public class JobPostWorkflowEngineTest {
         }
     }
 
-    @Test
+    @Ignore
     public void testGetDateCluster() {
         if (type == JobPostWorkflowEngineTest.MethodType.getDateCluster) {
             Application fakeApp = fakeApplication();

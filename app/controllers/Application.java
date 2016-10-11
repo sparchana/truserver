@@ -1558,4 +1558,8 @@ public class Application extends Controller {
 
         return ok(toJson(JobPostWorkflowEngine.getSelectedCandidate(jobPostId)));
     }
+
+    public static Result testMatchingCandidate(Long jpId) {
+       return ok(toJson(JobPostWorkflowEngine.getMatchingCandidate(jpId)));
+    }
 }

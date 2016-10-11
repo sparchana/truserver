@@ -690,10 +690,11 @@ $(function() {
                     data: JSON.stringify(d),
                     success: app.updateMatchTable
                 });
-            } catch (exception) {
+                } catch (exception) {
                 console.log("exception occured!!" + exception.stack);
-            }
-            NProgress.done();}
+                }
+            NProgress.done();
+        }
     };
 
     app.updateMatchTable = function (returnedData) {
@@ -721,6 +722,7 @@ $(function() {
         }
         var returnedDataArray = [];
         try {
+
             candidateList.forEach(function (newCandidate) {
                 // prep strings for display
                 app.addFooter();
@@ -749,6 +751,7 @@ $(function() {
                     'candidateJobPref': getJobPref(newCandidate.candidate.jobPreferencesList),
                     'candidateLocalityPref': getLocalityPref(newCandidate.candidate.localityPreferenceList),
                     'locality': getHomeLocality(newCandidate.candidate.locality),
+                    'matchedLocality': (newCandidate.candidate.matchedLocation),
                     'age': getAge(newCandidate.candidate.candidateDOB),
                     'candidateExperience': getInYearMonthFormat(newCandidate.candidate.candidateTotalExperience),
                     'candidateIsEmployed': getYesNo(newCandidate.candidate.candidateIsEmployed),
@@ -785,7 +788,7 @@ $(function() {
 
             app.table =  $('table#'+app.tableContainerId).DataTable({
                 "data": returnedDataArray,
-                "order": [[21, "asc"]],
+                "order": [[22, "desc"]],
                 "scrollX": true,
                 "rowId": "candidateId",
                 "columns": [
@@ -795,6 +798,7 @@ $(function() {
                     {"data": "candidateJobPref"},
                     {"data": "candidateLocalityPref"},
                     {"data": "locality"},
+                    {"data": "matchedLocality"},
                     {"data": "age"},
                     {"data": "candidateExperience"},
                     {"data": "candidateIsEmployed"},
@@ -847,6 +851,7 @@ $(function() {
             /* Initialise datatables */
             $.fn.dataTable.moment('dd/MM/YYYY HH:mm:ss');
 
+            NProgress.done();
         } catch (exception) {
             console.log("exception occured!!" + exception.stack);
         }
@@ -918,6 +923,8 @@ $(function() {
     // pre_screen methods
     app.initPreScreenView = function () {
         NProgress.start();
+        var d = {};
+
         try {
             $.ajax({
                 type: "POST",
@@ -930,7 +937,6 @@ $(function() {
         } catch (exception) {
             console.log("exception occured!!" + exception.stack);
         }
-        NProgress.done();
     };
 
     app.updatePreScreenTable = function (returnedData) {
@@ -972,11 +978,18 @@ $(function() {
         }
     };
 
+    app.destroyLists = function () {
+        app.jpCandidateList = [];
+        app.jpSelectedCandidateList = [];
+    };
+
     // seq of match_view execution on doc ready
+    app.destroyLists();
     app.setJPId();
     app.setCurrentView();
 
     if(app.currentView == "match_view") {
+
         app.init();
         app.initParams();
 

@@ -201,6 +201,7 @@ POST        /mGetLocalityForLatLngOrPlaceId                               contro
 # Test API
 # ~~~~~~~~~~~~~
 GET         /resolveLatLng/:latlng                                        controllers.TrudroidController.mResolveLatLng(latlng: String)
+GET        /support/api/testMatchingCandidate/:jpId                       controllers.Application.testMatchingCandidate(jpId: Long)
 
 # Scrap API
 # ~~~~~~~~~~~~~

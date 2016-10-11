@@ -95,5 +95,10 @@ public class JobPostWorkflow extends Model {
     public void setStatus(JobPostWorkflowStatus status) {
         this.status = status;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
 }
 
