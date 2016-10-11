@@ -306,16 +306,6 @@ body#recruiterHome{
     padding: 2%;
 }
 
-#triangle-left {
-    width: 0;
-    height: 0;
-    margin-left: -4.5%;
-    float: left;
-    border-top: 16px solid transparent;
-    border-right: 21px solid #fff;
-    border-bottom: 16px solid transparent;
-}
-
 #userImgRecruiter{
     border: 2px solid #c7c7c7;
     width: 90px;

@@ -122,4 +122,10 @@ public class RecruiterController {
         }
         return ok("0");
     }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result recruiterEditProfile() {
+        return ok(views.html.Recruiter.recruiter_edit_profile.render());
+    }
+
 }
