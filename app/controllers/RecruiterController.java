@@ -122,4 +122,7 @@ public class RecruiterController {
         }
         return ok("0");
     }
+    public static Result recruiterCandidateSearch(){
+        return ok(views.html.Recruiter.recruiter_candidate_search.render());
+    }
 }
