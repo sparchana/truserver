@@ -1,22 +1,18 @@
 package controllers.businessLogic;
 
-import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.PartnerSignUpResponse;
 import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
-import models.entity.*;
-import models.entity.Static.PartnerProfileStatus;
-import models.entity.Static.RecruiterProfileStatus;
-import models.util.SmsUtil;
+import models.entity.Recruiter.RecruiterAuth;
+import models.entity.Recruiter.RecruiterProfile;
+import models.entity.Recruiter.Static.RecruiterProfileStatus;
 import models.util.Util;
 import play.Logger;
 
 import java.util.UUID;
 
-import static controllers.businessLogic.PartnerInteractionService.createInteractionForPartnerAddPasswordViaWebsite;
-import static controllers.businessLogic.PartnerInteractionService.createInteractionForPartnerResetPasswordViaWebsite;
 import static play.mvc.Controller.session;
 
 /**

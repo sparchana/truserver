@@ -1,8 +1,8 @@
-package models.entity.Static;
+package models.entity.Recruiter.Static;
 
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import models.entity.RecruiterProfile;
+import models.entity.Recruiter.RecruiterProfile;
 
 import javax.persistence.*;
 import java.util.List;

@@ -1,14 +1,14 @@
-package models.entity;
+package models.entity.Recruiter;
 
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.PrivateOwned;
-import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import models.entity.OM.JobApplication;
-import models.entity.Static.PartnerProfileStatus;
-import models.entity.Static.RecruiterProfileStatus;
-import models.entity.Static.RecruiterStatus;
+import models.entity.Company;
+import models.entity.CreditHistory;
+import models.entity.JobPost;
+import models.entity.Recruiter.Static.RecruiterProfileStatus;
+import models.entity.Recruiter.Static.RecruiterStatus;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -283,5 +283,13 @@ public class RecruiterProfile extends Model {
 
     public void setCreditHistoryList(List<CreditHistory> creditHistoryList) {
         this.creditHistoryList = creditHistoryList;
+    }
+
+    public List<RecruiterPayment> getRecruiterPaymentList() {
+        return recruiterPaymentList;
+    }
+
+    public void setRecruiterPaymentList(List<RecruiterPayment> recruiterPaymentList) {
+        this.recruiterPaymentList = recruiterPaymentList;
     }
 }

@@ -1,16 +1,13 @@
 package controllers;
 
-import api.ServerConstants;
 import api.http.httpRequest.LoginRequest;
-import api.http.httpRequest.PartnerSignUpRequest;
 import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
 import controllers.security.SecuredUser;
-import models.entity.Partner;
-import models.entity.RecruiterProfile;
+import models.entity.Recruiter.RecruiterProfile;
 import play.Logger;
 import play.mvc.Result;
 import play.mvc.Security;

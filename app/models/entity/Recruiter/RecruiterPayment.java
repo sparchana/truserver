@@ -1,9 +1,11 @@
-package models.entity;
+package models.entity.Recruiter;
 
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import models.entity.Recruiter.Static.RecruiterCreditCategory;
 
 import javax.persistence.*;
+import java.sql.Timestamp;
 
 /**
  * Created by dodo on 11/10/16.
@@ -25,12 +27,24 @@ public class RecruiterPayment extends Model {
     @Column(name = "recruiter_payment_mode", columnDefinition = "int signed null")
     private Integer recruiterPaymentMode; // 0 -> prepaid; 1-> postpaid
 
+    @Column(name = "recruiter_payment_create_timestamp", columnDefinition = "timestamp not null default current_timestamp")
+    private Timestamp recruiterPaymentCreateTimestamp;
+
+    @ManyToOne
+    @JsonBackReference
+    @JoinColumn(name = "recruiter_credit_category_id", referencedColumnName = "recruiter_credit_category_id")
+    private RecruiterCreditCategory recruiterCreditCategory;
+
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "RecruiterProfileId", referencedColumnName = "RecruiterProfileId")
     private RecruiterProfile recruiterProfile;
 
     public static Finder<String, RecruiterPayment> find = new Finder(RecruiterPayment.class);
+
+    public RecruiterPayment(){
+        this.recruiterPaymentCreateTimestamp = new Timestamp(System.currentTimeMillis());
+    }
 
     public Integer getRecruiterPaymentId() {
         return recruiterPaymentId;
@@ -62,5 +76,29 @@ public class RecruiterPayment extends Model {
 
     public void setRecruiterPaymentMode(Integer recruiterPaymentMode) {
         this.recruiterPaymentMode = recruiterPaymentMode;
+    }
+
+    public RecruiterProfile getRecruiterProfile() {
+        return recruiterProfile;
+    }
+
+    public void setRecruiterProfile(RecruiterProfile recruiterProfile) {
+        this.recruiterProfile = recruiterProfile;
+    }
+
+    public RecruiterCreditCategory getRecruiterCreditCategory() {
+        return recruiterCreditCategory;
+    }
+
+    public void setRecruiterCreditCategory(RecruiterCreditCategory recruiterCreditCategory) {
+        this.recruiterCreditCategory = recruiterCreditCategory;
+    }
+
+    public Timestamp getRecruiterPaymentCreateTimestamp() {
+        return recruiterPaymentCreateTimestamp;
+    }
+
+    public void setRecruiterPaymentCreateTimestamp(Timestamp recruiterPaymentCreateTimestamp) {
+        this.recruiterPaymentCreateTimestamp = recruiterPaymentCreateTimestamp;
     }
 }

@@ -1,8 +1,12 @@
-package models.entity.Static;
+package models.entity.Recruiter.Static;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.PrivateOwned;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import models.entity.Recruiter.RecruiterPayment;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created by dodo on 10/10/16.
@@ -20,6 +24,11 @@ public class RecruiterCreditCategory extends Model {
 
     @Column(name = "recruiter_credit_unit_price", columnDefinition = "int signed null")
     private Long recruiterCreditUnitPrice;
+
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "recruiterCreditCategory", cascade = CascadeType.REMOVE)
+    private List<RecruiterPayment> recruiterPaymentList;
 
     public static Finder<String, RecruiterCreditCategory> find = new Finder(RecruiterCreditCategory.class);
 
@@ -45,5 +54,13 @@ public class RecruiterCreditCategory extends Model {
 
     public void setRecruiterCreditUnitPrice(Long recruiterCreditUnitPrice) {
         this.recruiterCreditUnitPrice = recruiterCreditUnitPrice;
+    }
+
+    public List<RecruiterPayment> getRecruiterPaymentList() {
+        return recruiterPaymentList;
+    }
+
+    public void setRecruiterPaymentList(List<RecruiterPayment> recruiterPaymentList) {
+        this.recruiterPaymentList = recruiterPaymentList;
     }
 }

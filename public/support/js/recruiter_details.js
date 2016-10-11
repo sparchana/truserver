@@ -5,6 +5,14 @@
 var companyLocality = [];
 var localityArray = [];
 
+var totalAmount = 0;
+var candidateContactCreditAmount = 0;
+var candidateContactCreditUnitPrice = 0;
+var interviewCreditAmount = 0;
+var interviewCreditUnitPrice = 0;
+
+var paymentMode = 0;
+
 function getLocality() {
     return localityArray;
 }
@@ -18,6 +26,70 @@ function processDataGetCompanies(returnedData) {
         var option = $('<option value=' + id + '></option>').text(name);
         $('#recruiterCompany').append(option);
     });
+}
+
+$(document).ready(function() {
+    $('input[type=radio][name=interviewCreditType]').change(function() {
+        if (this.value == 1) {
+            $("#interviewCreditSection").show();
+        } else{
+            $("#interviewCreditSection").hide();
+        }
+    });
+    $('input[type=radio][name=candidateCreditType]').change(function() {
+        if (this.value == 1) {
+            $("#candidateCreditSection").show();
+        } else{
+            $("#candidateCreditSection").hide();
+        }
+    });
+});
+
+function computeCreditValue() {
+    var candidateCreditTypeStatus = 1;
+    var interviewCreditTypeStatus = 1;
+    if($('input:radio[name="candidateCreditType"]:checked').val() == 1){
+        var statusCheck = 1;
+        //the recruiter has paid for candidate unlock credits
+        if($("#candidateContactCreditAmount").val() == ""){
+            statusCheck = 0;
+            candidateCreditTypeStatus = 0;
+            notifyError("Please enter the amount paid by the candidate for candidate contact unlock credits!");
+        } else if($("#candidateContactCreditUnitPrice").val() == ""){
+            statusCheck = 0;
+            candidateCreditTypeStatus = 0;
+            notifyError("Please enter the candidate contact unlock credit unit price!");
+        }
+        if(statusCheck == 1){
+            candidateCreditTypeStatus = 1;
+            candidateContactCreditAmount = parseInt($("#candidateContactCreditAmount").val());
+            totalAmount += candidateContactCreditAmount;
+            candidateContactCreditUnitPrice = parseInt($("#candidateContactCreditUnitPrice").val());
+        }
+    }
+    if($('input:radio[name="interviewCreditType"]:checked').val() == 1){
+        statusCheck = 1;
+        //the recruiter has paid for interview unlock credits
+        if($("#interviewCreditAmount").val() == ""){
+            statusCheck = 0;
+            interviewCreditTypeStatus = 0;
+            notifyError("Please enter the amount paid by the candidate for interview unlock credits!");
+        } else if($("#interviewCreditUnitPrice").val() == ""){
+            statusCheck = 0;
+            interviewCreditTypeStatus = 0;
+            notifyError("Please enter the interview unlock credit unit price!");
+        }
+        if(statusCheck == 1){
+            interviewCreditTypeStatus = 1;
+            interviewCreditAmount = parseInt($("#interviewCreditAmount").val());
+            totalAmount += interviewCreditAmount;
+            interviewCreditUnitPrice = parseInt($("#interviewCreditUnitPrice").val());
+        }
+    }
+    paymentMode = $("#creditMode").val();
+    if(interviewCreditTypeStatus == 1 && candidateCreditTypeStatus == 1){
+        $("#creditModal").modal("hide");
+    }
 }
 
 $(function(){
@@ -60,7 +132,12 @@ function saveRecruiter() {
         recruiterMobile: $("#recruiterMobile").val(),
         recruiterLandline: $("#recruiterLandline").val(),
         recruiterEmail: $("#recruiterEmail").val(),
-        recruiterCompany: $("#recruiterCompany").val()
+        recruiterCompany: $("#recruiterCompany").val(),
+        recruiterInterviewCreditAmount: interviewCreditAmount,
+        recruiterContactCreditAmount: candidateContactCreditAmount,
+        recruiterInterviewCreditUnitPrice: interviewCreditUnitPrice,
+        recruiterContactCreditUnitPrice: candidateContactCreditUnitPrice,
+        recruiterCreditMode: paymentMode
     };
          
     try {

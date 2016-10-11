@@ -10,8 +10,12 @@ public class AddRecruiterRequest {
     public String recruiterEmail;
     public Long recruiterCompany;
     public String recruiterCompanyName;
-    public Integer recruiterInterviewCredits;
-    public Integer recruiterContactCredits;
+    public Integer recruiterTotalAmount;
+    public Integer recruiterInterviewCreditAmount;
+    public Integer recruiterContactCreditAmount;
+    public Integer recruiterInterviewCreditUnitPrice;
+    public Integer recruiterContactCreditUnitPrice;
+    public Integer recruiterCreditMode;
 
     public String getRecruiterName() {
         return recruiterName;
@@ -61,19 +65,51 @@ public class AddRecruiterRequest {
         this.recruiterCompanyName = recruiterCompanyName;
     }
 
-    public Integer getRecruiterInterviewCredits() {
-        return recruiterInterviewCredits;
+    public Integer getRecruiterTotalAmount() {
+        return recruiterTotalAmount;
     }
 
-    public void setRecruiterInterviewCredits(Integer recruiterInterviewCredits) {
-        this.recruiterInterviewCredits = recruiterInterviewCredits;
+    public void setRecruiterTotalAmount(Integer recruiterTotalAmount) {
+        this.recruiterTotalAmount = recruiterTotalAmount;
     }
 
-    public Integer getRecruiterContactCredits() {
-        return recruiterContactCredits;
+    public Integer getRecruiterInterviewCreditAmount() {
+        return recruiterInterviewCreditAmount;
     }
 
-    public void setRecruiterContactCredits(Integer recruiterContactCredits) {
-        this.recruiterContactCredits = recruiterContactCredits;
+    public void setRecruiterInterviewCreditAmount(Integer recruiterInterviewCreditAmount) {
+        this.recruiterInterviewCreditAmount = recruiterInterviewCreditAmount;
+    }
+
+    public Integer getRecruiterContactCreditAmount() {
+        return recruiterContactCreditAmount;
+    }
+
+    public void setRecruiterContactCreditAmount(Integer recruiterContactCreditAmount) {
+        this.recruiterContactCreditAmount = recruiterContactCreditAmount;
+    }
+
+    public Integer getRecruiterInterviewCreditUnitPrice() {
+        return recruiterInterviewCreditUnitPrice;
+    }
+
+    public void setRecruiterInterviewCreditUnitPrice(Integer recruiterInterviewCreditUnitPrice) {
+        this.recruiterInterviewCreditUnitPrice = recruiterInterviewCreditUnitPrice;
+    }
+
+    public Integer getRecruiterContactCreditUnitPrice() {
+        return recruiterContactCreditUnitPrice;
+    }
+
+    public void setRecruiterContactCreditUnitPrice(Integer recruiterContactCreditUnitPrice) {
+        this.recruiterContactCreditUnitPrice = recruiterContactCreditUnitPrice;
+    }
+
+    public Integer getRecruiterCreditMode() {
+        return recruiterCreditMode;
+    }
+
+    public void setRecruiterCreditMode(Integer recruiterCreditMode) {
+        this.recruiterCreditMode = recruiterCreditMode;
     }
 }

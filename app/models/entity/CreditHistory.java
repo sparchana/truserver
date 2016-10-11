@@ -3,8 +3,8 @@ package models.entity;
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import models.entity.Static.Locality;
-import models.entity.Static.RecruiterCreditCategory;
+import models.entity.Recruiter.RecruiterProfile;
+import models.entity.Recruiter.Static.RecruiterCreditCategory;
 
 import javax.persistence.*;
 import java.sql.Timestamp;

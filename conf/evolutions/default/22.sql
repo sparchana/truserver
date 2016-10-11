@@ -22,9 +22,14 @@ create table recruiter_payment (
   recruiter_payment_amount      bigint unsigned not null,
   recruiter_payment_credit_unit_price bigint unsigned null,
   recruiter_payment_mode        int signed null,
+  recruiter_payment_create_timestamp timestamp not null default current_timestamp,
+  recruiter_credit_category_id  bigint signed,
   recruiterprofileid            bigint signed,
   constraint pk_recruiter_payment primary key (recruiter_payment_id)
 );
+
+alter table recruiter_payment add constraint fk_recruiter_payment_recruiter_credit_category_id foreign key (recruiter_credit_category_id) references recruiter_credit_category (recruiter_credit_category_id) on delete restrict on update restrict;
+create index ix_recruiter_payment_recruiter_credit_category_id on recruiter_payment (recruiter_credit_category_id);
 
 alter table recruiter_payment add constraint fk_recruiter_payment_recruiterprofileid foreign key (recruiterprofileid) references recruiterprofile (recruiterprofileid) on delete restrict on update restrict;
 create index ix_recruiter_payment_recruiterprofileid on recruiter_payment (recruiterprofileid);
@@ -45,6 +50,9 @@ drop index ix_credit_history_recruiterprofileid on credit_history;
 
 alter table credit_history drop foreign key fk_credit_history_recruitercreditcategory;
 drop index ix_credit_history_recruitercreditcategory on credit_history;
+
+alter table recruiter_payment drop foreign key fk_recruiter_payment_recruiter_credit_category_id;
+drop index ix_recruiter_payment_recruiter_credit_category_id on recruiter_payment;
 
 alter table recruiter_payment drop foreign key fk_recruiter_payment_recruiterprofileid;
 drop index ix_recruiter_payment_recruiterprofileid on recruiter_payment;

@@ -1,27 +1,28 @@
 package controllers.businessLogic;
 
-import api.InteractionConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.AddCompanyRequest;
 import api.http.httpRequest.Recruiter.AddRecruiterRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpResponse.AddCompanyResponse;
-import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
 import api.http.httpResponse.Recruiter.AddRecruiterResponse;
 import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
+import models.entity.Recruiter.RecruiterAuth;
+import models.entity.Recruiter.RecruiterLead;
+import models.entity.Recruiter.RecruiterPayment;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
-import models.entity.Static.Locality;
-import models.entity.Static.RecruiterStatus;
+import models.entity.Recruiter.Static.RecruiterCreditCategory;
+import models.entity.Recruiter.Static.RecruiterStatus;
 import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
 
-import javax.persistence.NonUniqueResultException;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import static controllers.businessLogic.PartnerInteractionService.createInteractionForPartnerLogin;
 import static models.util.Util.generateOtp;
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
@@ -170,6 +171,9 @@ public class RecruiterService {
 
                 newRecruiter.save();
 
+                //setting all the credit values
+                setCreditHistoryValues(newRecruiter, recruiterSignUpRequest);
+
                 addRecruiterResponse.setStatus(AddRecruiterResponse.STATUS_SUCCESS);
                 addRecruiterResponse.setRecruiterId(newRecruiter.getRecruiterProfileId());
 
@@ -191,6 +195,10 @@ public class RecruiterService {
                 existingRecruiter.setRecruiterLead(lead);
 
                 existingRecruiter.update();
+
+                //setting all the credit values
+                setCreditHistoryValues(existingRecruiter, recruiterSignUpRequest);
+
                 addRecruiterResponse.setRecruiterId(existingRecruiter.getRecruiterProfileId());
                 addRecruiterResponse.setStatus(AddRecruiterResponse.STATUS_UPDATE);
                 Logger.info("Recruiter already exists. Updated The recruiter");
@@ -200,6 +208,119 @@ public class RecruiterService {
             Logger.info("Company Does not exists");
         }
         return addRecruiterResponse;
+    }
+
+    private static void setCreditHistoryValues(RecruiterProfile existingRecruiter, RecruiterSignUpRequest addRecruiterRequest) {
+        //setting values for candidate contact unlock credits
+        if(addRecruiterRequest.getRecruiterContactCreditAmount() != null && addRecruiterRequest.getRecruiterContactCreditAmount() != 0){
+            //has candidate contact unlock credit, hence make an entry in recruiterPayment table
+            RecruiterPayment recruiterPayment = new RecruiterPayment();
+            CreditHistory creditHistory = new CreditHistory();
+
+            //setting creditCategory
+            RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where().eq("recruiter_credit_category_id", 1).findUnique();
+            if(recruiterCreditCategory != null){
+                recruiterPayment.setRecruiterCreditCategory(recruiterCreditCategory);
+                creditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
+            }
+
+            //setting recruiter profile
+            recruiterPayment.setRecruiterProfile(existingRecruiter);
+            creditHistory.setRecruiterProfile(existingRecruiter);
+
+            //setting credit amount in rupees
+            if(addRecruiterRequest.getRecruiterContactCreditAmount() != null || addRecruiterRequest.getRecruiterContactCreditAmount() != 0){
+                recruiterPayment.setRecruiterPaymentAmount(addRecruiterRequest.getRecruiterContactCreditAmount());
+            }
+            //setting credit unit price
+            if(addRecruiterRequest.getRecruiterContactCreditUnitPrice() != null || addRecruiterRequest.getRecruiterContactCreditUnitPrice() != 0){
+                recruiterPayment.setRecruiterCreditUnitPrice(addRecruiterRequest.getRecruiterContactCreditUnitPrice());
+            }
+            //setting credit mode (pre pay, post pay)
+            if(addRecruiterRequest.getRecruiterCreditMode() != null){
+                recruiterPayment.setRecruiterPaymentMode(addRecruiterRequest.getRecruiterCreditMode());
+            }
+            //computing total credits with respect to unit price
+            long availableCredits = 0;
+            long usedCredits = 0;
+            long currentCredits;
+            List<CreditHistory> creditHistoryList = CreditHistory.find.where()
+                    .eq("RecruiterProfileId", existingRecruiter.getRecruiterProfileId())
+                    .eq("RecruiterCreditCategory", 1)
+                    .findList();
+
+            if(creditHistoryList.size() > 0){
+                Collections.reverse(creditHistoryList);
+                availableCredits = creditHistoryList.get(0).getCreditsAvailable();
+                usedCredits = creditHistoryList.get(0).getCreditsUsed();
+            }
+            if(addRecruiterRequest.getRecruiterContactCreditAmount() != 0 && addRecruiterRequest.getRecruiterContactCreditUnitPrice() != 0){
+                currentCredits = (long) (addRecruiterRequest.getRecruiterContactCreditAmount() / addRecruiterRequest.getRecruiterContactCreditUnitPrice());
+                availableCredits += currentCredits;
+                creditHistory.setCreditsAvailable(availableCredits);
+                creditHistory.setCreditsUsed(usedCredits);
+            }
+
+            //saving the values
+            creditHistory.save();
+            recruiterPayment.save();
+        }
+        //setting values for interview unlock credits
+        if(addRecruiterRequest.getRecruiterInterviewCreditAmount() != null && addRecruiterRequest.getRecruiterInterviewCreditAmount() != 0){
+            //has interview unlock credit, hence make an entry in recruiterPayment table
+            RecruiterPayment recruiterPayment = new RecruiterPayment();
+            CreditHistory creditHistory = new CreditHistory();
+
+            //setting creditCategory
+            RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where().eq("recruiter_credit_category_id", 2).findUnique();
+            if(recruiterCreditCategory != null){
+                recruiterPayment.setRecruiterCreditCategory(recruiterCreditCategory);
+                creditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
+            }
+
+            //setting recruiter profile
+            recruiterPayment.setRecruiterProfile(existingRecruiter);
+            creditHistory.setRecruiterProfile(existingRecruiter);
+
+            //setting credit amount in rupees
+            if(addRecruiterRequest.getRecruiterContactCreditAmount() != null || addRecruiterRequest.getRecruiterContactCreditAmount() != 0){
+                recruiterPayment.setRecruiterPaymentAmount(addRecruiterRequest.getRecruiterInterviewCreditAmount());
+            }
+            //setting credit unit price
+            if(addRecruiterRequest.getRecruiterContactCreditUnitPrice() != null || addRecruiterRequest.getRecruiterContactCreditUnitPrice() != 0){
+                recruiterPayment.setRecruiterCreditUnitPrice(addRecruiterRequest.getRecruiterInterviewCreditUnitPrice());
+            }
+
+            //setting credit mode (pre pay, post pay)
+            if(addRecruiterRequest.getRecruiterCreditMode() != null){
+                recruiterPayment.setRecruiterPaymentMode(addRecruiterRequest.getRecruiterCreditMode());
+            }
+
+            //computing total credits with respect to unit price
+            long availableCredits = 0;
+            long usedCredits = 0;
+            long currentCredits;
+            List<CreditHistory> creditHistoryList = CreditHistory.find.where()
+                    .eq("RecruiterProfileId", existingRecruiter.getRecruiterProfileId())
+                    .eq("RecruiterCreditCategory", 2)
+                    .findList();
+
+            if(creditHistoryList.size() > 0){
+                Collections.reverse(creditHistoryList);
+                availableCredits = creditHistoryList.get(0).getCreditsAvailable();
+                usedCredits = creditHistoryList.get(0).getCreditsUsed();
+            }
+            if(addRecruiterRequest.getRecruiterInterviewCreditAmount() != 0 && addRecruiterRequest.getRecruiterInterviewCreditUnitPrice() != null){
+                currentCredits = (long) (addRecruiterRequest.getRecruiterInterviewCreditAmount() / addRecruiterRequest.getRecruiterInterviewCreditUnitPrice());
+                availableCredits += currentCredits;
+                creditHistory.setCreditsAvailable(availableCredits);
+                creditHistory.setCreditsUsed(usedCredits);
+            }
+
+            //saving the values
+            creditHistory.save();
+            recruiterPayment.save();
+        }
     }
 
     public static RecruiterProfile getAndSetRecruiterValues(AddRecruiterRequest addRecruiterRequest, RecruiterProfile newRecruiter, Company existingCompany){
@@ -216,12 +337,6 @@ public class RecruiterService {
         }
         if(addRecruiterRequest.getRecruiterEmail() != null){
             newRecruiter.setRecruiterProfileEmail(addRecruiterRequest.getRecruiterEmail());
-        }
-        if(addRecruiterRequest.getRecruiterContactCredits() != null){
-            newRecruiter.setRecruiterCandidateUnlockCredits(Long.valueOf(addRecruiterRequest.getRecruiterContactCredits()));
-        }
-        if(addRecruiterRequest.getRecruiterInterviewCredits() != null){
-            newRecruiter.setRecruiterInterviewUnlockCredits(Long.valueOf(addRecruiterRequest.getRecruiterInterviewCredits()));
         }
         return newRecruiter;
     }

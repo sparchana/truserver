@@ -29,7 +29,7 @@
     <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css">
   </head>
 
-  <body style="font-size: 13px;">
+  <div style="font-size: 13px;">
     <div class="container">
       <h2>
         Company and Recruiter Section
@@ -81,19 +81,21 @@
           </div>
 
           <div class="row">
-            <div class="col-sm-3"><h5>Recruiter contact unlock credits:</h5></div>
+            <div class="col-sm-3"><h5>Recruiter contact unlock credits available:</h5></div>
             <div class="col-sm-9">
-              <input id="recruiterContactCredits" name="recruiterContactCredits" placeholder="Recruiter interview credits" max="100000" min="0" type="number" class="form-control input-md" >
+                <input id="recruiterContactCredits" type="number" max="999999" class="form-control input-md" disabled>
             </div>
           </div>
 
           <div class="row">
-            <div class="col-sm-3"><h5>Recruiter interview unlock credits:</h5></div>
+            <div class="col-sm-3"><h5>Recruiter interview unlock credits available:</h5></div>
             <div class="col-sm-9">
-              <input id="recruiterInterviewCredits" name="recruiterInterviewCredits" placeholder="Recruiter interview credits" max="100000" min="0" type="number" class="form-control input-md" >
+              <input id="recruiterContactCredits" type="number" max="999999" class="form-control input-md" disabled>
             </div>
           </div>
 
+
+            <div class="btn btn-default" data-toggle="modal" data-target="#creditModal" style="background: #37a12f; color: #fff; margin-bottom: 24px">Add Credits</div>
         </form>
       </div>
 
@@ -178,7 +180,96 @@
       <button class="btn btn-default" onclick="saveForm()">Save</button>
       <br>
     </div>
-      <!-- Javascript import -->
+
+     <!-- modal code for credits -->
+     <div id="creditModal" class="modal fade" role="dialog">
+         <div class="modal-dialog">
+             <!-- Modal content-->
+             <div class="modal-content">
+                 <div class="modal-body" id="model_size">
+                     <form id="add_credits" class="form-horizontal" role="form">
+                         <div class="line_up" id="signInPopup">Add Credits</div>
+                         <h5>Purchased Candidate contact unlock credits?</h5>
+                         <div class="row" style="margin-top: 8px">
+                             <div class="col-sm-12" style="margin-top: 4px">
+                                 <div style="width: 100%;height: 34px;" class="btn-group" data-toggle="buttons">
+                                     <label class="btn btn-custom-check" style="width: 80px">
+                                         <input type="radio" name="candidateCreditType" id="candidateCreditYes" value="1"> &nbsp;Yes&nbsp;&nbsp;
+                                     </label>
+                                     <label class="btn btn-custom-check" style="width: 80px">
+                                         <input type="radio" name="candidateCreditType" id="candidateCreditNo" value="0"> &nbsp;No&nbsp;&nbsp;
+                                     </label>
+                                 </div>
+                             </div>
+                         </div>
+                         <!-- candidate contact credit details -->
+                         <div id="candidateCreditSection" style="display: none;">
+                             Candidate contact unlock credit details::
+                             <div class="row" style="margin-top: 8px">
+                                 <div class="col-sm-5" style="margin-top: 4px">
+                                 Amount paid:
+                                 </div>
+                                 <div class="col-sm-7">
+                                     <input id="candidateContactCreditAmount" placeholder="Amount paid" type="text" class="form-control input-md">
+                                 </div>
+                             </div>
+                             <div class="row" style="margin-top: 8px">
+                                 <div class="col-sm-5" style="margin-top: 4px">
+                                 Unit price:
+                                 </div>
+                                 <div class="col-sm-7">
+                                     <input id="candidateContactCreditUnitPrice" placeholder="Unit price" type="text" class="form-control input-md">
+                                 </div>
+                             </div>
+                         </div>
+
+                         <hr>
+                         <h5>Purchased interview unlock credits?</h5>
+                         <div class="row" style="margin-top: 8px">
+                             <div class="col-sm-12" style="margin-top: 4px">
+                                 <div style="width: 100%;height: 34px;" class="btn-group" data-toggle="buttons">
+                                     <label class="btn btn-custom-check" style="width: 80px">
+                                         <input type="radio" name="interviewCreditType" id="interviewCreditYes" value="1"> &nbsp;Yes&nbsp;&nbsp;
+                                     </label>
+                                     <label class="btn btn-custom-check" style="width: 80px">
+                                         <input type="radio" name="interviewCreditType" id="interviewCreditNo" value="0"> &nbsp;No&nbsp;&nbsp;
+                                     </label>
+                                 </div>
+                             </div>
+                         </div>
+                         <!-- candidate contact credit details -->
+                         <div id="interviewCreditSection" style="display: none;">
+                             Interview unlock credit details::
+                             <div class="row" style="margin-top: 8px">
+                                 <div class="col-sm-5" style="margin-top: 4px">
+                                 Amount paid:
+                                 </div>
+                                 <div class="col-sm-7">
+                                     <input id="interviewCreditAmount" placeholder="Amount paid" type="text" class="form-control input-md">
+                                 </div>
+                             </div>
+                             <div class="row" style="margin-top: 8px">
+                                 <div class="col-sm-5" style="margin-top: 4px">
+                                 Unit price:
+                                 </div>
+                                 <div class="col-sm-7">
+                                     <input id="interviewCreditUnitPrice" placeholder="Unit price" type="text" class="form-control input-md">
+                                 </div>
+                             </div>
+                         </div>
+                         <br>
+                         Select credit payment method:
+                         <select id="creditMode" class="selectDropdown" >
+                             <option value="0">Pre Paid</option>
+                             <option value="1">Post Paid</option>
+                         </select>
+
+                         <div class="btn btn-default" style="background: #37a12f; color: #fff; margin: 24px 0 24px 0; width: 100%" onclick="computeCreditValue()">Done</div>
+                     </form>
+                 </div>
+             </div>
+         </div>
+      </div>
     <script>
       function showCompanyForm(){
         $("#recruiterCompany").val("");
@@ -196,5 +287,6 @@
     <script type="text/javascript" src="/assets/support/js/add_company.js"></script>
     <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
     <script type="text/javascript" src="/assets/support/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript" src="/assets/support/js/bootstrap-notify.min.js"></script>
   </body>
 </html>

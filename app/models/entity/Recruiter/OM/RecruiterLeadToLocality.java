@@ -1,10 +1,10 @@
-package models.entity.OM;
+package models.entity.Recruiter.OM;
 
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import models.entity.RecruiterLead;
+import models.entity.Recruiter.RecruiterLead;
 import models.entity.Static.Locality;
 
 import javax.persistence.*;
