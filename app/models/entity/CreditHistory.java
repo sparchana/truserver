@@ -2,6 +2,9 @@ package models.entity;
 
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import models.entity.Static.Locality;
+import models.entity.Static.RecruiterCreditCategory;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -18,9 +21,6 @@ public class CreditHistory extends Model {
     @Column(name = "credit_history_id", columnDefinition = "int signed", unique = true)
     private long creditHistoryId;
 
-    @Column(name = "credit_type", columnDefinition = "int signed null")
-    private Long creditType;
-
     @Column(name = "credits_available", columnDefinition = "int signed null")
     private Long creditsAvailable;
 
@@ -34,6 +34,11 @@ public class CreditHistory extends Model {
     @JsonBackReference
     @JoinColumn(name = "RecruiterProfileId", referencedColumnName = "RecruiterProfileId")
     private RecruiterProfile recruiterProfile;
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonManagedReference
+    @JoinColumn(name = "RecruiterCreditCategory")
+    private RecruiterCreditCategory recruiterCreditCategory;
 
     public static Model.Finder<String, CreditHistory> find = new Model.Finder(CreditHistory.class);
 
@@ -49,12 +54,12 @@ public class CreditHistory extends Model {
         this.creditHistoryId = creditHistoryId;
     }
 
-    public Long getCreditType() {
-        return creditType;
+    public RecruiterCreditCategory getRecruiterCreditCategory() {
+        return recruiterCreditCategory;
     }
 
-    public void setCreditType(Long creditType) {
-        this.creditType = creditType;
+    public void setRecruiterCreditCategory(RecruiterCreditCategory recruiterCreditCategory) {
+        this.recruiterCreditCategory = recruiterCreditCategory;
     }
 
     public Long getCreditsAvailable() {
