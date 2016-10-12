@@ -20,8 +20,11 @@ public class RecruiterToCandidateUnlocked extends Model {
     @Column(name = "recruiter_to_candidate_unlocked_id", columnDefinition = "int signed", unique = true)
     private Integer recruiterToCandidateUnlockedId;
 
-    @Column(name = "recruiter_to_candidate_unlocked_create_timestamp", columnDefinition = "timestamp not null default current_timestamp")
-    private Timestamp recruiterToCandidateUnlockedCreateTimestamp = new Timestamp(System.currentTimeMillis());
+    @Column(name = "recruiter_to_candidate_unlocked_uuid", columnDefinition = "varchar(255) not null", nullable = false, unique = true)
+    private String recruiterToCandidateUnlockedUUID;
+
+    @Column(name = "create_timestamp", columnDefinition = "timestamp not null default current_timestamp")
+    private Timestamp createTimestamp = new Timestamp(System.currentTimeMillis());
 
     @ManyToOne
     @JsonManagedReference
@@ -35,20 +38,16 @@ public class RecruiterToCandidateUnlocked extends Model {
 
     public static Model.Finder<String, RecruiterToCandidateUnlocked> find = new Model.Finder(RecruiterToCandidateUnlocked.class);
 
+    public RecruiterToCandidateUnlocked(){
+        this.createTimestamp = new Timestamp(System.currentTimeMillis());
+    }
+
     public Integer getRecruiterToCandidateUnlockedId() {
         return recruiterToCandidateUnlockedId;
     }
 
     public void setRecruiterToCandidateUnlockedId(Integer recruiterToCandidateUnlockedId) {
         this.recruiterToCandidateUnlockedId = recruiterToCandidateUnlockedId;
-    }
-
-    public Timestamp getRecruiterToCandidateUnlockedCreateTimestamp() {
-        return recruiterToCandidateUnlockedCreateTimestamp;
-    }
-
-    public void setRecruiterToCandidateUnlockedCreateTimestamp(Timestamp recruiterToCandidateUnlockedCreateTimestamp) {
-        this.recruiterToCandidateUnlockedCreateTimestamp = recruiterToCandidateUnlockedCreateTimestamp;
     }
 
     public RecruiterProfile getRecruiterProfile() {
@@ -65,5 +64,21 @@ public class RecruiterToCandidateUnlocked extends Model {
 
     public void setCandidate(Candidate candidate) {
         this.candidate = candidate;
+    }
+
+    public String getRecruiterToCandidateUnlockedUUID() {
+        return recruiterToCandidateUnlockedUUID;
+    }
+
+    public void setRecruiterToCandidateUnlockedUUID(String recruiterToCandidateUnlockedUUID) {
+        this.recruiterToCandidateUnlockedUUID = recruiterToCandidateUnlockedUUID;
+    }
+
+    public Timestamp getCreateTimestamp() {
+        return createTimestamp;
+    }
+
+    public void setCreateTimestamp(Timestamp createTimestamp) {
+        this.createTimestamp = createTimestamp;
     }
 }

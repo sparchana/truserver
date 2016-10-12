@@ -18,6 +18,9 @@ public class RecruiterPayment extends Model {
     @Column(name = "recruiter_payment_id", columnDefinition = "bigint signed", unique = true)
     private Integer recruiterPaymentId;
 
+    @Column(name = "recruiter_payment_uuid", columnDefinition = "varchar(255) not null", nullable = false, unique = true)
+    private String recruiterPaymentUuid;
+
     @Column(name = "recruiter_payment_amount", columnDefinition = "bigint unsigned not null")
     private long recruiterPaymentAmount;
 
@@ -27,8 +30,8 @@ public class RecruiterPayment extends Model {
     @Column(name = "recruiter_payment_mode", columnDefinition = "int signed null")
     private Integer recruiterPaymentMode; // 0 -> prepaid; 1-> postpaid
 
-    @Column(name = "recruiter_payment_create_timestamp", columnDefinition = "timestamp not null default current_timestamp")
-    private Timestamp recruiterPaymentCreateTimestamp;
+    @Column(name = "create_timestamp", columnDefinition = "timestamp not null default current_timestamp")
+    private Timestamp createTimestamp;
 
     @ManyToOne
     @JsonBackReference
@@ -43,7 +46,7 @@ public class RecruiterPayment extends Model {
     public static Finder<String, RecruiterPayment> find = new Finder(RecruiterPayment.class);
 
     public RecruiterPayment(){
-        this.recruiterPaymentCreateTimestamp = new Timestamp(System.currentTimeMillis());
+        this.createTimestamp = new Timestamp(System.currentTimeMillis());
     }
 
     public Integer getRecruiterPaymentId() {
@@ -95,10 +98,18 @@ public class RecruiterPayment extends Model {
     }
 
     public Timestamp getRecruiterPaymentCreateTimestamp() {
-        return recruiterPaymentCreateTimestamp;
+        return createTimestamp;
     }
 
     public void setRecruiterPaymentCreateTimestamp(Timestamp recruiterPaymentCreateTimestamp) {
-        this.recruiterPaymentCreateTimestamp = recruiterPaymentCreateTimestamp;
+        this.createTimestamp = recruiterPaymentCreateTimestamp;
+    }
+
+    public String getRecruiterPaymentUuid() {
+        return recruiterPaymentUuid;
+    }
+
+    public void setRecruiterPaymentUuid(String recruiterPaymentUuid) {
+        this.recruiterPaymentUuid = recruiterPaymentUuid;
     }
 }

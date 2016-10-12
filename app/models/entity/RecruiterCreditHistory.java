@@ -21,14 +21,17 @@ public class RecruiterCreditHistory extends Model {
     @Column(name = "recruiter_credit_history_id", columnDefinition = "int signed", unique = true)
     private long recruiterCreditHistoryId;
 
+    @Column(name = "recruiter_credit_history_uuid", columnDefinition = "varchar(255) not null", nullable = false, unique = true)
+    private String recruiterCreditHistoryUuid;
+
     @Column(name = "recruiter_credits_available", columnDefinition = "int signed null")
     private Integer recruiterCreditsAvailable;
 
     @Column(name = "recruiter_credits_used", columnDefinition = "int signed null")
     private Integer recruiterCreditsUsed;
 
-    @Column(name = "recruiter_credit_history_create_timestamp", columnDefinition = "timestamp not null default current_timestamp")
-    private Timestamp recruiterCreditHistoryCreateTimestamp;
+    @Column(name = "create_timestamp", columnDefinition = "timestamp not null default current_timestamp")
+    private Timestamp createTimestamp;
 
     @ManyToOne
     @JsonBackReference
@@ -43,7 +46,7 @@ public class RecruiterCreditHistory extends Model {
     public static Model.Finder<String, RecruiterCreditHistory> find = new Model.Finder(RecruiterCreditHistory.class);
 
     public RecruiterCreditHistory() {
-        this.recruiterCreditHistoryCreateTimestamp = new Timestamp(System.currentTimeMillis());
+        this.createTimestamp = new Timestamp(System.currentTimeMillis());
     }
 
     public long getRecruiterCreditHistoryId() {
@@ -71,11 +74,11 @@ public class RecruiterCreditHistory extends Model {
     }
 
     public Timestamp getRecruiterCreditHistoryCreateTimestamp() {
-        return recruiterCreditHistoryCreateTimestamp;
+        return createTimestamp;
     }
 
     public void setRecruiterCreditHistoryCreateTimestamp(Timestamp recruiterCreditHistoryCreateTimestamp) {
-        this.recruiterCreditHistoryCreateTimestamp = recruiterCreditHistoryCreateTimestamp;
+        this.createTimestamp = recruiterCreditHistoryCreateTimestamp;
     }
 
     public RecruiterCreditCategory getRecruiterCreditCategory() {
@@ -92,5 +95,13 @@ public class RecruiterCreditHistory extends Model {
 
     public void setRecruiterProfile(RecruiterProfile recruiterProfile) {
         this.recruiterProfile = recruiterProfile;
+    }
+
+    public String getRecruiterCreditHistoryUuid() {
+        return recruiterCreditHistoryUuid;
+    }
+
+    public void setRecruiterCreditHistoryUuid(String recruiterCreditHistoryUuid) {
+        this.recruiterCreditHistoryUuid = recruiterCreditHistoryUuid;
     }
 }
