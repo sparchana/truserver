@@ -5,7 +5,7 @@ import com.avaje.ebean.annotation.PrivateOwned;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Company;
-import models.entity.CreditHistory;
+import models.entity.RecruiterCreditHistory;
 import models.entity.JobPost;
 import models.entity.Recruiter.Static.RecruiterProfileStatus;
 import models.entity.Recruiter.Static.RecruiterStatus;
@@ -95,7 +95,7 @@ public class RecruiterProfile extends Model {
     @JsonManagedReference
     @PrivateOwned
     @OneToMany(mappedBy = "recruiterProfile", cascade = CascadeType.REMOVE)
-    private List<CreditHistory> creditHistoryList;
+    private List<RecruiterCreditHistory> recruiterCreditHistoryList;
 
     @JsonManagedReference
     @PrivateOwned
@@ -277,12 +277,12 @@ public class RecruiterProfile extends Model {
         this.recruiterCandidateUnlockCredits = recruiterCandidateUnlockCredits;
     }
 
-    public List<CreditHistory> getCreditHistoryList() {
-        return creditHistoryList;
+    public List<RecruiterCreditHistory> getRecruiterCreditHistoryList() {
+        return recruiterCreditHistoryList;
     }
 
-    public void setCreditHistoryList(List<CreditHistory> creditHistoryList) {
-        this.creditHistoryList = creditHistoryList;
+    public void setRecruiterCreditHistoryList(List<RecruiterCreditHistory> recruiterCreditHistoryList) {
+        this.recruiterCreditHistoryList = recruiterCreditHistoryList;
     }
 
     public List<RecruiterPayment> getRecruiterPaymentList() {

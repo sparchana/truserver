@@ -163,4 +163,7 @@ public class ServerConstants {
      ************************/
     public static int SOURCE_INTERNAL = 0;
     public static int SOURCE_BABAJOBS = 1;
+
+    public static int RECRUITER_CATEGORY_CONTACT_UNLOCK = 1;
+    public static int RECRUITER_CATEGORY_INTERVIEW_UNLOCK = 2;
 }
