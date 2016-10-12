@@ -1556,7 +1556,7 @@ public class Application extends Controller {
 
     public static Result getSelectedCandidate(Long jobPostId) {
 
-        return ok(toJson(JobPostWorkflowEngine.getSelectedCandidate(jobPostId)));
+        return ok(toJson(JobPostWorkflowEngine.getSelectedCandidates(jobPostId)));
     }
 
     public static Result testMatchingCandidate(Long jpId) {

@@ -585,7 +585,7 @@ $(function() {
                 jobPostJobRole.push(item);
                 app.jpJobRoleId = (returnedData.jobRole.jobRoleId);
             }
-            if($("#jobPostJobRole").val() == "") {
+            if(jobPostJobRole != null) {
                 $("#jobPostJobRole").tokenInput(getJob(), {
                     theme: "facebook",
                     placeholder: "Job Role?",
@@ -610,7 +610,7 @@ $(function() {
                     app.jpLocalityIdList.push(locality.locality.localityId);
                 });
             }
-            if($("#jobPostLocality").val() == ""){
+            if(localityArray != null){
                 $("#jobPostLocality").tokenInput(getLocality(), {
                     theme: "facebook",
                     placeholder: "job Localities?",
@@ -761,13 +761,13 @@ $(function() {
                     'candidateSkillList': getSkills(newCandidate.candidate.candidateSkillList),
                     'candidateGender': getGender(newCandidate.candidate.candidateGender),
                     'pastOrCurrentCompanyName': getPastOrCurrentCompanyName(newCandidate.candidate.jobHistoryList),
-                    'candidateIsAssessmentComplete': getYesNo(newCandidate.feature.assessmentAttemptId),
-                    'jobAppliedOn': getAppliedOn(newCandidate.feature.appliedOn),
+                    'candidateIsAssessmentComplete': getYesNo(newCandidate.extraData.assessmentAttemptId),
+                    'jobAppliedOn': getAppliedOn(newCandidate.extraData.appliedOn),
                     'noOfJobApplication': newCandidate.candidate.jobApplicationList.length,
                     'candidateExperienceLetter': getYesNo(newCandidate.candidate.candidateExperienceLetter),
                     'candidateIdProofs': getIdProof(newCandidate.candidate.idProofReferenceList),
                     'candidateTimeShiftPref': timeShiftPref,
-                    'lastActive': (newCandidate.feature.lastActive),
+                    'lastActive': (newCandidate.extraData.lastActive),
                     'candidateCreateTimestamp': getDateTime(newCandidate.candidate.candidateCreateTimestamp),
                     'isMinProfileComplete': getYesNo(newCandidate.candidate.isMinProfileComplete),
                     'experience': getExperience(newCandidate.candidate.candidateExpList),
@@ -777,6 +777,7 @@ $(function() {
             });
 
             app.tableContainer.show();
+
             var select;
             if(app.currentView == "match_view") {
                 select = {

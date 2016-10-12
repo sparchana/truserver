@@ -5,9 +5,9 @@ import models.entity.Candidate;
 /**
  * Created by zero on 4/10/16.
  */
-public class CandidateMatchingJobPost {
+public class CandidateWorkflowData {
     public Candidate candidate;
-    private CandidateFeature feature;
+    private CandidateExtraData extraData;
 
     public Candidate getCandidate() {
         return candidate;
@@ -17,11 +17,11 @@ public class CandidateMatchingJobPost {
         this.candidate = candidate;
     }
 
-    public CandidateFeature getFeature() {
-        return feature;
+    public CandidateExtraData getExtraData() {
+        return extraData;
     }
 
-    public void setFeature(CandidateFeature feature) {
-        this.feature = feature;
+    public void setExtraData(CandidateExtraData candidateExtraData) {
+        this.extraData = candidateExtraData;
     }
 }
