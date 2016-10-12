@@ -34,7 +34,6 @@ public class AddJobPostRequest {
     public Long partnerJoiningIncentive;
     public String jobPostInterviewDays;
     public List<Integer> jobPostLanguage;
-    public Integer jobPostMinAge;
     public Integer jobPostMaxAge;
     public Integer jobPostGender;
 
@@ -280,14 +279,6 @@ public class AddJobPostRequest {
 
     public void setJobPostLanguage(List<Integer> jobPostLanguage) {
         this.jobPostLanguage = jobPostLanguage;
-    }
-
-    public Integer getJobPostMinAge() {
-        return jobPostMinAge;
-    }
-
-    public void setJobPostMinAge(Integer jobPostMinAge) {
-        this.jobPostMinAge = jobPostMinAge;
     }
 
     public Integer getJobPostMaxAge() {

@@ -8,7 +8,6 @@ import java.util.List;
  * Created by zero on 7/10/16.
  */
 public class MatchingCandidateRequest extends WorkflowRequest{
-    public Integer minAge ;
     public Integer maxAge ;
     public Long minSalary ;
     public Long maxSalary ;
@@ -18,14 +17,6 @@ public class MatchingCandidateRequest extends WorkflowRequest{
     public Integer jobPostEducationId ;
     public List<Long> jobPostLocalityIdList ;
     public List<Integer> jobPostLanguageIdList ;
-
-    public Integer getMinAge() {
-        return minAge;
-    }
-
-    public void setMinAge(Integer minAge) {
-        this.minAge = minAge;
-    }
 
     public Integer getMaxAge() {
         return maxAge;

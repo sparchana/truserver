@@ -157,6 +157,13 @@ function processDataGetAllLanguage(returnLanguage) {
     selectList.multiselect('dataprovider', data);
     selectList.multiselect('rebuild');
 }
+function processDataGetAllIdProof(returnedData) {
+    console.log(returnedData);
+}
+
+function processDataGetAllAsset(returnedData) {
+    console.log(returnedData);
+}
 
 $(document).ready(function () {
     $('#jobPostRecruiter').append(defaultOption);
@@ -334,6 +341,32 @@ $(document).ready(function () {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllIdProof",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetAllIdProof
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllAsset",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetAllAsset
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
 
 
     var i;
@@ -386,9 +419,6 @@ function processDataForJobPost(returnedData) {
     $("#jobPostDescription").val(returnedData.jobPostDescription);
 
     // gender, language, age
-    if (returnedData.jobPostMinAge != null) {
-        $("#jobPostMinAge").val(returnedData.jobPostMinAge);
-    }
     if (returnedData.jobPostMaxAge != null) {
         $("#jobPostMaxAge").val(returnedData.jobPostMaxAge);
     }

@@ -166,4 +166,9 @@ public class ServerConstants {
      ************************/
     public static int SOURCE_INTERNAL = 0;
     public static int SOURCE_BABAJOBS = 1;
+
+    // is_common status for asset, idPoof
+
+    public static final int IS_NOT_COMMON = 0;
+    public static final int IS_COMMON= 1;
 }

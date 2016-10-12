@@ -3,8 +3,7 @@ package models.entity.OM;
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.JobPost;
-import models.entity.Static.JobRoleToDocument;
-import models.entity.Static.Language;
+import models.entity.Static.*;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -40,8 +39,18 @@ public class PreScreenRequirement  extends Model{
 
     @ManyToOne
     @JsonManagedReference
-    @JoinColumn(name = "job_role_to_document_id", referencedColumnName = "job_role_to_document_id")
-    private JobRoleToDocument jobRoleToDocument;
+    @JoinColumn(name = "id_proof_id", referencedColumnName = "IdProofId")
+    private IdProof idProof;
+
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "asset_id", referencedColumnName = "asset_id")
+    private Asset asset;
+
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "requirements_category_id", referencedColumnName = "requirements_category_id")
+    private RequirementsCategory requirementsCategory;
 
     @ManyToOne
     @JsonManagedReference

@@ -290,7 +290,6 @@ $(function() {
         jpLocalityIdList: [],
         jpMinSalary: null,
         jpMaxSalary: null,
-        jpMinAge: null,
         jpMaxAge: null,
         jpExperienceId: null,
         jpGender: null,
@@ -525,10 +524,6 @@ $(function() {
         if (returnedData != null) {
            app.jpId = returnedData.jobPostId;
             // gender, language, age
-            if (returnedData.jobPostMinAge != null) {
-                app.jpMinAge = returnedData.jobPostMinAge;
-                $("#minAge").val(app.jpMinAge);
-            }
             if (returnedData.jobPostMaxAge != null) {
                 app.jpMaxAge = returnedData.jobPostMaxAge;
                 $("#maxAge").val(app.jpMaxAge);
@@ -657,7 +652,6 @@ $(function() {
 
         app.jpMinSalary = $('#minSalary').val();
         app.jpMaxSalary = $('#maxSalary').val();
-        app.jpMinAge = $('#minAge').val();
         app.jpMaxAge = $('#maxAge').val();
 
         if(app.jpJobRoleId == null || app.jpLocalityIdList == null || app.jpLocalityIdList.length == 0 ) {
@@ -668,7 +662,6 @@ $(function() {
 
             var d = {
                 jobPostId: app.jpId,
-                minAge: app.jpMinAge,
                 maxAge: app.jpMaxAge,
                 minSalary: app.jpMinSalary,
                 maxSalary: app.jpMaxSalary,
@@ -718,6 +711,7 @@ $(function() {
             console.log("candiateList Empty");
             app.tableContainer.hide();
             app.notify("No Candidates !", 'danger');
+            NProgress.done();
             return;
         }
         var returnedDataArray = [];

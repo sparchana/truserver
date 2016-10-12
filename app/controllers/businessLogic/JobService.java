@@ -129,7 +129,6 @@ public class JobService {
 
         newJobPost.setGender(addJobPostRequest.getJobPostGender());
         newJobPost.setJobPostLanguageRequirement(getJobPostLanguageRequirement(addJobPostRequest.getJobPostLanguage(), newJobPost));
-        newJobPost.setJobPostMinAge(addJobPostRequest.getJobPostMinAge());
         newJobPost.setJobPostMaxAge(addJobPostRequest.getJobPostMaxAge());
 
         if (addJobPostRequest.getJobPostWorkingDays() != null) {

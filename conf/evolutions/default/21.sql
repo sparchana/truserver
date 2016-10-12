@@ -12,8 +12,6 @@ create index ix_job_post_language_requirement_jobpostid on job_post_language_req
 alter table job_post_language_requirement add constraint fk_job_post_language_requirement_languageid foreign key (languageid) references language (languageid) on delete restrict on update restrict;
 create index ix_job_post_language_requirement_languageid on job_post_language_requirement (languageid);
 
-
-alter table jobpost add column jobPostMinAge int unsigned null;
 alter table jobpost add column jobPostMaxAge int unsigned null;
 
 # --- !Downs
@@ -26,5 +24,4 @@ drop index ix_job_post_language_requirement_languageid on job_post_language_requ
 
 drop table if exists job_post_language_requirement;
 
-alter table jobpost drop column jobPostMinAge;
 alter table jobpost drop column jobPostMaxAge;

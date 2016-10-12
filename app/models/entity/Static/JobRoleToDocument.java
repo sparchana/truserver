@@ -8,6 +8,7 @@ import models.entity.OM.IDProofReference;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 /**
  * Created by zero on 11/10/16.
@@ -36,9 +37,9 @@ public class JobRoleToDocument extends Model {
     @Column(name = "creation_timestamp", columnDefinition = "timestamp default current_timestamp not null", nullable = false)
     private Timestamp creationTimestamp;
 
-
     public JobRoleToDocument(){
         this.creationTimestamp = new Timestamp(System.currentTimeMillis());
+        this.jobRoleToDocumentUUId = UUID.randomUUID().toString();
     }
 
     public static Finder<String, JobRoleToDocument> find = new Finder(JobRoleToDocument.class);
@@ -49,10 +50,6 @@ public class JobRoleToDocument extends Model {
 
     public String getJobRoleToDocumentUUId() {
         return jobRoleToDocumentUUId;
-    }
-
-    public void setJobRoleToDocumentUUId(String jobRoleToDocumentUUId) {
-        this.jobRoleToDocumentUUId = jobRoleToDocumentUUId;
     }
 
     public JobRole getJobRole() {
@@ -78,4 +75,6 @@ public class JobRoleToDocument extends Model {
     public void setCreationTimestamp(Timestamp creationTimestamp) {
         this.creationTimestamp = creationTimestamp;
     }
+
+
 }

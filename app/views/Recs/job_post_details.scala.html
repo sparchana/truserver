@@ -1,383 +1,396 @@
 <!Doctype html>
 <html lang="en" xmlns="http://www.w3.org/1999/html">
-  <head>
-    <meta charset="UTF-8">
-    <title>Job Post Details - Support | Trujobs.in</title>
-    <link rel="stylesheet" href="/assets/support/css/material.indigo-pink.min.css">
+    <head>
+        <meta charset="UTF-8">
+        <title>Job Post Details - Support | Trujobs.in</title>
+        <link rel="stylesheet" href="/assets/support/css/material.indigo-pink.min.css">
 
-    <link rel="stylesheet" href="/assets/support/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/assets/support/css/bootstrap.min.css">
 
-    <script type="text/javascript" src="/assets/support/js/jquery-1.12.0.min.js"></script>
-    <link rel="stylesheet" href="/assets/common/css/token-input.css" type="text/css" />
-    <link rel="stylesheet" href="/assets/common/css/token-input-facebook.css" type="text/css" />
+        <script type="text/javascript" src="/assets/support/js/jquery-1.12.0.min.js"></script>
+        <link rel="stylesheet" href="/assets/common/css/token-input.css" type="text/css" />
+        <link rel="stylesheet" href="/assets/common/css/token-input-facebook.css" type="text/css" />
 
-    <link rel="stylesheet" href="/assets/support/css/style.css">
-    <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css">
-    <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/dashboard.css">
-    <script type="text/javascript" src="/assets/support/js/job_post_details.js"></script>
+        <link rel="stylesheet" href="/assets/support/css/style.css">
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css">
+        <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/dashboard.css">
+        <script type="text/javascript" src="/assets/support/js/job_post_details.js"></script>
 
-    <link rel="stylesheet" href="/assets/support/css/bootstrap-datetimepicker.min.css">
-    <script type="text/javascript" src="/assets/support/js/Moment.js"></script>
+        <link rel="stylesheet" href="/assets/support/css/bootstrap-datetimepicker.min.css">
+        <script type="text/javascript" src="/assets/support/js/Moment.js"></script>
 
-      <!-- Include the plugin's CSS and JS: -->
-    <link rel="stylesheet" href="/assets/support/css/bootstrap-multiselect.css" type="text/css"/>
+            <!-- Include the plugin's CSS and JS: -->
+        <link rel="stylesheet" href="/assets/support/css/bootstrap-multiselect.css" type="text/css"/>
 
-    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lato" />
-    <link rel="stylesheet" href="/assets/support/css/nprogress.css">
-    <link rel="stylesheet" href="/assets/support/css/animate.css">
-    <script type="text/javascript" src="/assets/support/js/jquery-1.11.1.min.js"></script>
-    <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
+        <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lato" />
+        <link rel="stylesheet" href="/assets/support/css/nprogress.css">
+        <link rel="stylesheet" href="/assets/support/css/animate.css">
+        <script type="text/javascript" src="/assets/support/js/jquery-1.11.1.min.js"></script>
+        <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
 
-    <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
-    <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css">
-    <script type="text/javascript" src="/assets/support/js/add_job_post.js"></script>
+        <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
+        <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css">
+        <script type="text/javascript" src="/assets/support/js/add_job_post.js"></script>
 
-    <script type="text/javascript">
+        <script type="text/javascript">
             $(function () {
-              $('#jobPostStartTimePicker').datetimepicker({
-                format: 'LT'
-              });
-              $('#jobPostEndTimePicker').datetimepicker({
-                format: 'LT'
-              });
+                $('#jobPostStartTimePicker').datetimepicker({
+                    format: 'LT'
+                });
+                $('#jobPostEndTimePicker').datetimepicker({
+                    format: 'LT'
+                });
             });
         </script>
-  </head>
+    </head>
 
-  <body style="font-size: 13px;">
-    <div class="container">
-      <h2>
+    <body style="font-size: 13px;">
+        <div class="container">
+            <h2>
         Job Post Details
-        <a href="/support">
-          <button class="btn" style="align-items: flex-end">Support Home</button>
-        </a>
-        <a href="/logout">
-          <button class="btn btn-danger" style="align-items: flex-end">Logout</button>
-        </a>
-      </h2>
-      <hr>
-      <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block"> : Information visible on website/app
-      <br><font color="red">*</font>: Mandatory information
-      <hr>
-        <div id="jobPostSection" style="width: 68%">
-          <form id="job_post_form">
-          <!-- hidden field -->
-          <input id="jobPostId" style="display: none">
+                <a href="/support">
+                    <button class="btn" style="align-items: flex-end">Support Home</button>
+                </a>
+                <a href="/logout">
+                    <button class="btn btn-danger" style="align-items: flex-end">Logout</button>
+                </a>
+            </h2>
+            <hr>
+            <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block"> : Information visible on website/app
+            <br> <font color="red">*</font>: Mandatory information
+            <hr>
+            <div id="jobPostSection" style="width: 68%">
+                <form id="job_post_form">
+                        <!-- hidden field -->
+                    <input id="jobPostId" style="display: none">
 
-          <div class="row" style="margin-top: 4px">
-            <div class="col-sm-3"><h5>Job Providing company?:<font color="red">*</font> </h5></div>
-            <div class="col-sm-9">
-              <select id="jobPostCompany" onchange="getRecruiters($('#jobPostCompany').val())" style="display: inline-block;" class="selectDropdown" ></select>
-                <img src="/assets/support/images/webIcon.jpg" width="20px">
-            </div>
-          </div>
-
-          <div class="row" style="margin-top: 4px">
-            <div class="col-sm-3"><h5>Select Recruiter?:<font color="red">*</font> </h5></div>
-            <div class="col-sm-9">
-              <select id="jobPostRecruiter" class="selectDropdown"></select>
-              <div style="padding: 8px; margin: 6px; background: rgba(244, 227, 164, 0.48)"><font size="2">(If there is no recruiter for the selected company, please create a recruiter by clicking <a onclick="showRecruiterForm()">here</a></font></div>
-            </div>
-          </div>
-          <div id="recruiterSection" style="display: none; width: 68%; padding: 2%; background: #f8f2f8 ; margin: 2%">
-            <div class="row">
-              <div class="col-sm-3"><h5>Recruiter Name:</h5></div>
-              <div class="col-sm-9">
-                <input id="recruiterName" name="recruiterName" placeholder="Recruiter Name" type="text" class="form-control input-md" >
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-sm-3"><h5>Recruiter Mobile:</h5></div>
-              <div class="col-sm-9">
-                <input id="recruiterMobile" name="recruiterMobile" maxlength="10" placeholder="Recruiter Mobile" type="text" class="form-control input-md" >
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-sm-3"><h5>Recruiter Landline (optional) :</h5></div>
-              <div class="col-sm-9">
-                <input id="recruiterLandline" name="recruiterLandline" placeholder="Recruiter Landline" type="text" class="form-control input-md" >
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-sm-3"><h5>Recruiter Email:</h5></div>
-              <div class="col-sm-9">
-                <input id="recruiterEmail" name="recruiterEmail" placeholder="Recruiter Email" type="text" class="form-control input-md" >
-              </div>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Job Post Title:<font color="red">*</font></h5></div>
-            <div class="col-sm-9">
-                <input id="jobPostTitle" name="jobPostTitle" placeholder="job Post Title" style="width: 70%; display: inline-block" type="text" class="form-control input-md">
-                <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Job Post Description:</h5></div>
-            <div class="col-sm-9">
-              <textarea rows="4" cols="80" id="jobPostDescription" class="form-control input-md" maxlength="5000"></textarea>
-            </div>
-          </div>
-
-            <div class="row">
-              <div class="col-sm-3"><h5>Gender Requirement: <font color="red">*</font></h5></div>
-              <div class="col-sm-9">
-                <select id="jobPostGender" class="selectDropdown">
-                  <option value="-1">Select</option>
-                  <option value="0">Male</option>
-                  <option value="1">Female</option>
-                  <option value="2">Any</option>
-                </select>
-                <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
-              </div>
-            </div>
-
-
-            <div class="row">
-              <div class="col-sm-3"><h5>Language Requirement: <font color="red">*</font></h5></div>
-              <div class="col-sm-9">
-                <select id="jobPostLanguage" multiple="multiple" class="selectDropdown"></select>
-                <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-sm-3"><h5>Min Age:<font color="red">*</font></h5></div>
-              <div class="col-sm-9">
-                <input id="jobPostMinAge" value="0" max="60" style="width: 15%; display: inline-block" placeholder="Min Age" type="number" class="form-control input-md">
-                <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-sm-3"><h5>Max Age:</h5></div>
-              <div class="col-sm-9">
-                <input id="jobPostMaxAge" value="0" max="70" style="width: 15%" placeholder="Max Age" type="number" class="form-control input-md">
-              </div>
-            </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Min Salary:<font color="red">*</font></h5></div>
-            <div class="col-sm-9">
-              <input id="jobPostMinSalary" value="0" max="99999" style="width: 15%; display: inline-block" placeholder="Min Salary" type="number" class="form-control input-md">
-                <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Max Salary:</h5></div>
-            <div class="col-sm-9">
-              <input id="jobPostMaxSalary" value="0" max="99999" style="width: 15%" placeholder="Max Salary" type="number" class="form-control input-md">
-            </div>
-          </div>
-
-          <div class="row" style="margin-top: 4px">
-            <div class="col-sm-3"><h5>Job Post Job Role:<font color="red">*</font></h5></div>
-            <div class="col-sm-7">
-              <input type="text" id="jobPostJobRole" style="display: inline-block; width: 50%">
-            </div>
-              </div>
-
-          <div class="row" style="margin-top: 4px">
-            <div class="col-sm-3"><h5>Job Post Locality(s):<font color="red">*</font></h5></div>
-            <div class="col-sm-7">
-              <input type="text" id="jobPostLocalities" style=";">
-            </div>
-              <div class="col-sm-2" style="margin-top: 10px; margin-left: -24px">
-                  <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
-              </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Job Post Pincode:</h5></div>
-            <div class="col-sm-9">
-              <input id="jobPostPinCode" name="jobPostPinCode" placeholder="Job Post PinCode" type="number" max="999999" class="form-control input-md" >
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Job Post Incentives:</h5></div>
-            <div class="col-sm-9">
-              <textarea rows="4" cols="80" id="jobPostIncentives" class="form-control input-md" maxlength="5000"></textarea>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Job Post Min Requirement:</h5></div>
-            <div class="col-sm-9">
-              <textarea rows="4" cols="80" id="jobPostMinRequirement" class="form-control input-md" maxlength="5000"></textarea>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Job Start Time:</h5></div>
-            <div class='col-sm-5'>
-              <select id="jobPostStartTime" class="selectDropdown" ></select>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Job End Time:</h5></div>
-            <div class='col-sm-5'>
-              <select id="jobPostEndTime" class="selectDropdown" ></select>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Working Days</h5></div>
-            <div class="col-sm-9">
-              <input id="working_1" type="checkbox">Monday &nbsp;&nbsp;&nbsp;
-              <input id="working_2" type="checkbox">Tuesday &nbsp;&nbsp;&nbsp;
-              <input id="working_3" type="checkbox">Wednesday &nbsp;&nbsp;&nbsp;
-              <input id="working_4" type="checkbox">Thursday &nbsp;&nbsp;&nbsp;
-              <input id="working_5" type="checkbox">Friday &nbsp;&nbsp;&nbsp;
-              <input id="working_6" type="checkbox">Saturday &nbsp;&nbsp;&nbsp;
-              <input id="working_7" type="checkbox">Sunday &nbsp;&nbsp;&nbsp;
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Is this a Hot Job?</h5></div>
-            <div class="col-sm-9">
-              <input id="jobPostIsHot" type="checkbox" style="display: inline-block">
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Work From Home?</h5></div>
-            <div class="col-sm-9">
-              <input id="jobPostWorkFromHome" type="checkbox">
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Total Vacancies:<font color="red">*</font></h5></div>
-            <div class="col-sm-9">
-              <input id="jobPostVacancies" value="0" style="width: 15%; display: inline-block" placeholder="Total Vacancies" type="number" class="form-control input-md">
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-sm-3"><h5>Job Pricing Plan:</h5></div>
-            <div class='col-sm-5'>
-              <select id="jobPostPricingPlan" class="selectDropdown" ></select>
-            </div>
-          </div>
-
-          <div class="row" style="margin-top: 4px">
-            <div class="col-sm-3"><h5>Job Post Min Experience req:<font color="red">*</font> </h5></div>
-            <div class="col-sm-9">
-              <select id="jobPostExperience" class="selectDropdown" style="display: inline-block"></select>
-              <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
-
-            </div>
-          </div>
-
-          <div class="row" style="margin-top: 4px">
-            <div class="col-sm-3"><h5>Job Post work shift?: </h5></div>
-            <div class="col-sm-9" style="margin-top: 8px">
-              <select id="jobPostWorkShift" class="selectDropdown" ></select>
-            </div>
-          </div>
-
-          <div class="row" style="margin-top: 4px">
-            <div class="col-sm-3"><h5>Job Post Education Required:</h5></div>
-            <div class="col-sm-9">
-              <select id="jobPostEducation" class="selectDropdown" ></select>
-            </div>
-          </div>
-
-          <div class="row" style="margin-top: 4px">
-            <div class="col-sm-3"><h5>Job Post Status:</h5></div>
-            <div class="col-sm-9">
-              <select id="jobPostStatus" class="selectDropdown"></select>
-            </div>
-          </div>
-          <br>
-            <h4>Interview Details</h4>
-            <div style="background: rgba(144, 202, 249, 0.33); padding: 2%">
-                <div class="row">
-                    <div class="col-sm-3"><h5>Interview Address:</h5></div>
-                    <div class="col-sm-9">
-                        <textarea rows="4" cols="80" id="jobPostAddress" class="form-control input-md" maxlength="5000"></textarea>
+                    <div class="row" style="margin-top: 4px">
+                        <div class="col-sm-3"><h5>Job Providing company?:<font color="red">*</font> </h5></div>
+                        <div class="col-sm-9">
+                            <select id="jobPostCompany" onchange="getRecruiters($('#jobPostCompany').val())" style="display: inline-block;" class="selectDropdown" ></select>
+                            <img src="/assets/support/images/webIcon.jpg" width="20px">
+                        </div>
                     </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-sm-3"><h5>Interview Days</h5></div>
-                    <div class="col-sm-9" id="interviewDaySection">
-                        <input id="interview_day_1" type="checkbox">Monday &nbsp;&nbsp;&nbsp;
-                        <input id="interview_day_2" type="checkbox">Tuesday &nbsp;&nbsp;&nbsp;
-                        <input id="interview_day_3" type="checkbox">Wednesday &nbsp;&nbsp;&nbsp;
-                        <input id="interview_day_4" type="checkbox">Thursday &nbsp;&nbsp;&nbsp;
-                        <input id="interview_day_5" type="checkbox">Friday &nbsp;&nbsp;&nbsp;
-                        <input id="interview_day_6" type="checkbox">Saturday &nbsp;&nbsp;&nbsp;
-                        <input id="interview_day_7" type="checkbox">Sunday &nbsp;&nbsp;&nbsp;
-                        <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                    <div class="row" style="margin-top: 4px">
+                        <div class="col-sm-3"><h5>Select Recruiter?:<font color="red">*</font> </h5></div>
+                        <div class="col-sm-9">
+                            <select id="jobPostRecruiter" class="selectDropdown"></select>
+                            <div style="padding: 8px;
+                                margin: 6px;
+                                background: rgba(244, 227, 164, 0.48)"><font size="2">(If there is no recruiter for the selected company, please create a recruiter by clicking <a onclick="showRecruiterForm()">here</a></font></div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="row" style="margin-top: 4px">
-                    <div class="col-sm-3"><h5>Interview Time Slot:</h5></div>
-                    <div class="col-sm-9">
-                        <div style="width: 100%;
-                            height: 34px;" id="interviewTimeSlot" class="btn-group" data-toggle="buttons"></div>
-                        <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                    <div id="recruiterSection" style="display: none;
+                        width: 68%;
+                        padding: 2%;
+                        background: #f8f2f8 ;
+                        margin: 2%">
+                        <div class="row">
+                            <div class="col-sm-3"><h5>Recruiter Name:</h5></div>
+                            <div class="col-sm-9">
+                                <input id="recruiterName" name="recruiterName" placeholder="Recruiter Name" type="text" class="form-control input-md" >
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-3"><h5>Recruiter Mobile:</h5></div>
+                            <div class="col-sm-9">
+                                <input id="recruiterMobile" name="recruiterMobile" maxlength="10" placeholder="Recruiter Mobile" type="text" class="form-control input-md" >
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-3"><h5>Recruiter Landline (optional) :</h5></div>
+                            <div class="col-sm-9">
+                                <input id="recruiterLandline" name="recruiterLandline" placeholder="Recruiter Landline" type="text" class="form-control input-md" >
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-3"><h5>Recruiter Email:</h5></div>
+                            <div class="col-sm-9">
+                                <input id="recruiterEmail" name="recruiterEmail" placeholder="Recruiter Email" type="text" class="form-control input-md" >
+                            </div>
+                        </div>
                     </div>
-                </div>
+
+                    <div class="row">
+                        <div class="col-sm-3"><h5>Job Post Title:<font color="red">*</font></h5></div>
+                        <div class="col-sm-9">
+                            <input id="jobPostTitle" name="jobPostTitle" placeholder="job Post Title" style="width: 70%;
+                                display: inline-block" type="text" class="form-control input-md">
+                            <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-3"><h5>Job Post Description:</h5></div>
+                        <div class="col-sm-9">
+                            <textarea rows="4" cols="80" id="jobPostDescription" class="form-control input-md" maxlength="5000"></textarea>
+                        </div>
+                    </div>
+                    <div class="panel panel-primary" id="jdRequirementPanel" style="margin: 1% 0;">
+                        <div class="panel-heading" style="cursor: pointer;">Requirements Panel</div>
+                        <div class="panel-container" style="padding: 1%;">
+
+                            <div class="row" style="padding: 6px 0;">
+                                <div class="col-sm-3"><h5>Max Age:</h5></div>
+                                <div class="col-sm-9">
+                                    <input id="jobPostMaxAge" value="0" max="70" style="width: 15%" placeholder="Max Age" type="number" class="form-control input-md">
+                                </div>
+                            </div>
+
+
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Job Post Min Experience req:<font color="red">*</font> </h5></div>
+                                <div class="col-sm-9">
+                                    <select id="jobPostExperience" class="selectDropdown" style="display: inline-block"></select>
+                                    <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Job Post Education Required:</h5></div>
+                                <div class="col-sm-9">
+                                    <select id="jobPostEducation" class="selectDropdown" ></select>
+                                </div>
+                            </div>
+
+                            <div class="row" style="padding: 6px 0;">
+                                <div class="col-sm-3"><h5>Language Requirement: <font color="red">*</font></h5></div>
+                                <div class="col-sm-4">
+                                    <select id="jobPostLanguage" multiple="multiple" class="selectDropdown"></select>
+                                    <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                                </div>
+                            </div>
+
+                            <div class="row" style="padding: 6px 0;">
+                                <div class="col-sm-3"><h5>Documents Requirement: <font color="red">*</font></h5></div>
+                                <div class="col-sm-4">
+                                    <select id="jobPostDocuments" multiple="multiple" class="selectDropdown"></select>
+                                    <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                                </div>
+                            </div>
+
+                            <div class="row" style="padding: 6px 0;">
+                                <div class="col-sm-3"><h5>Assets Requirement: <font color="red">*</font></h5></div>
+                                <div class="col-sm-4">
+                                    <select id="jobPostAssets" multiple="multiple" class="selectDropdown"></select>
+                                    <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-3"><h5>Gender Requirement: <font color="red">*</font></h5></div>
+                        <div class="col-sm-9">
+                            <select id="jobPostGender" class="selectDropdown">
+                                <option value="-1">Select</option>
+                                <option value="0">Male</option>
+                                <option value="1">Female</option>
+                                <option value="2">Any</option>
+                            </select>
+                            <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 4px">
+                        <div class="col-sm-3"><h5>Job Post Job Role:<font color="red">*</font></h5></div>
+                        <div class="col-sm-7">
+                            <input type="text" id="jobPostJobRole" style="display: inline-block; width: 50%">
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 4px">
+                        <div class="col-sm-3"><h5>Job Post Locality(s):<font color="red">*</font></h5></div>
+                        <div class="col-sm-6">
+                            <input type="text" id="jobPostLocalities" style=";">
+                        </div>
+                        <div class="col-sm-3" style="margin-top: 10px;
+                            margin-left: -24px">
+                            <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-3"><h5>Job Post Pincode:</h5></div>
+                        <div class="col-sm-9">
+                            <input id="jobPostPinCode" name="jobPostPinCode" placeholder="Job Post PinCode" type="number" max="999999" class="form-control input-md" >
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-3"><h5>Job Post Incentives:</h5></div>
+                        <div class="col-sm-9">
+                            <textarea rows="4" cols="80" id="jobPostIncentives" class="form-control input-md" maxlength="5000"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-3"><h5>Job Post Min Requirement:</h5></div>
+                        <div class="col-sm-9">
+                            <textarea rows="4" cols="80" id="jobPostMinRequirement" class="form-control input-md" maxlength="5000"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-3"><h5>Job Start Time:</h5></div>
+                        <div class='col-sm-5'>
+                            <select id="jobPostStartTime" class="selectDropdown" ></select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-3"><h5>Job End Time:</h5></div>
+                        <div class='col-sm-5'>
+                            <select id="jobPostEndTime" class="selectDropdown" ></select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-3"><h5>Working Days</h5></div>
+                        <div class="col-sm-9">
+                            <input id="working_1" type="checkbox">Monday &nbsp;&nbsp;&nbsp;
+                            <input id="working_2" type="checkbox">Tuesday &nbsp;&nbsp;&nbsp;
+                            <input id="working_3" type="checkbox">Wednesday &nbsp;&nbsp;&nbsp;
+                            <input id="working_4" type="checkbox">Thursday &nbsp;&nbsp;&nbsp;
+                            <input id="working_5" type="checkbox">Friday &nbsp;&nbsp;&nbsp;
+                            <input id="working_6" type="checkbox">Saturday &nbsp;&nbsp;&nbsp;
+                            <input id="working_7" type="checkbox">Sunday &nbsp;&nbsp;&nbsp;
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-3"><h5>Is this a Hot Job?</h5></div>
+                        <div class="col-sm-9">
+                            <input id="jobPostIsHot" type="checkbox" style="display: inline-block">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-3"><h5>Work From Home?</h5></div>
+                        <div class="col-sm-9">
+                            <input id="jobPostWorkFromHome" type="checkbox">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-3"><h5>Total Vacancies:<font color="red">*</font></h5></div>
+                        <div class="col-sm-9">
+                            <input id="jobPostVacancies" value="0" style="width: 15%;
+                                display: inline-block" placeholder="Total Vacancies" type="number" class="form-control input-md">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-sm-3"><h5>Job Pricing Plan:</h5></div>
+                        <div class='col-sm-5'>
+                            <select id="jobPostPricingPlan" class="selectDropdown" ></select>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 4px">
+                        <div class="col-sm-3"><h5>Job Post work shift?: </h5></div>
+                        <div class="col-sm-9" style="margin-top: 8px">
+                            <select id="jobPostWorkShift" class="selectDropdown" ></select>
+                        </div>
+                    </div>
+
+                    <div class="row" style="margin-top: 4px">
+                        <div class="col-sm-3"><h5>Job Post Status:</h5></div>
+                        <div class="col-sm-9">
+                            <select id="jobPostStatus" class="selectDropdown"></select>
+                        </div>
+                    </div>
+                    <br>
+                    <h4>Interview Details</h4>
+                    <div style="background: rgba(144, 202, 249, 0.33);
+                        padding: 2%">
+                        <div class="row">
+                            <div class="col-sm-3"><h5>Interview Address:</h5></div>
+                            <div class="col-sm-9">
+                                <textarea rows="4" cols="80" id="jobPostAddress" class="form-control input-md" maxlength="5000"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-3"><h5>Interview Days</h5></div>
+                            <div class="col-sm-9" id="interviewDaySection">
+                                <input id="interview_day_1" type="checkbox">Monday &nbsp;&nbsp;&nbsp;
+                                <input id="interview_day_2" type="checkbox">Tuesday &nbsp;&nbsp;&nbsp;
+                                <input id="interview_day_3" type="checkbox">Wednesday &nbsp;&nbsp;&nbsp;
+                                <input id="interview_day_4" type="checkbox">Thursday &nbsp;&nbsp;&nbsp;
+                                <input id="interview_day_5" type="checkbox">Friday &nbsp;&nbsp;&nbsp;
+                                <input id="interview_day_6" type="checkbox">Saturday &nbsp;&nbsp;&nbsp;
+                                <input id="interview_day_7" type="checkbox">Sunday &nbsp;&nbsp;&nbsp;
+                                <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h5>Interview Time Slot:</h5></div>
+                            <div class="col-sm-9">
+                                <div style="width: 100%;
+                                    height: 34px;" id="interviewTimeSlot" class="btn-group" data-toggle="buttons"></div>
+                                <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                            </div>
+                        </div>
+                    </div>
+
+                    <br>
+                    <h4>Partner Incentive Information</h4>
+                    <div style="background: rgba(144, 202, 249, 0.33);
+                        padding: 2%">
+                        <div class="row">
+                            <div class="col-sm-3"><h5>Partner Interview incentive:</h5></div>
+                            <div class="col-sm-9">
+                                <input id="partnerInterviewIncentive" value="0" max="99999" style="width: 18%;
+                                    display: inline-block" placeholder="Partner Interview incentive" type="number" class="form-control input-md">
+                                <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-sm-3"><h5>Partner Joining incentive:</h5></div>
+                            <div class="col-sm-9">
+                                <input id="partnerJoiningIncentive" value="0" max="99999" style="width: 18%;
+                                    display: inline-block" placeholder="Partner Joining incentive" type="number" class="form-control input-md">
+                                <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <br> <br>
+                    <button class="btn btn-default">Save</button>
+                </form>
+                <br>
             </div>
-
-            <br>
-          <h4>Partner Incentive Information</h4>
-          <div style="background: rgba(144, 202, 249, 0.33); padding: 2%">
-            <div class="row">
-              <div class="col-sm-3"><h5>Partner Interview incentive:</h5></div>
-              <div class="col-sm-9">
-                <input id="partnerInterviewIncentive" value="0" max="99999" style="width: 18%; display: inline-block" placeholder="Partner Interview incentive" type="number" class="form-control input-md">
-                <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-sm-3"><h5>Partner Joining incentive:</h5></div>
-              <div class="col-sm-9">
-                <input id="partnerJoiningIncentive" value="0" max="99999" style="width: 18%; display: inline-block" placeholder="Partner Joining incentive" type="number" class="form-control input-md">
-                <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
-              </div>
-            </div>
-
-          </div>
-
-          <br><br>
-          <button class="btn btn-default">Save</button>
-        </form>
-          <br>
-      </div>
-    </div>
-    <script>
-      function showRecruiterForm(){
-        $("#jobPostRecruiter").val("");
-        if($("#jobPostRecruiter").is(':enabled')){
-            $("#jobPostRecruiter").prop('disabled', true);
-        } else{
-            $("#jobPostRecruiter").prop('disabled', false);
-        }
-        $("#recruiterSection").toggle();
+        </div>
+        <script>
+      function showRecruiterForm() {
+          $("#jobPostRecruiter").val("");
+          if ($("#jobPostRecruiter").is(':enabled')) {
+              $("#jobPostRecruiter").prop('disabled', true);
+          } else {
+              $("#jobPostRecruiter").prop('disabled', false);
+          }
+          $("#recruiterSection").toggle();
       }
     </script>
-    <!-- Javascript import -->
-    <script type="text/javascript" src="/assets/common/js/validation.js"></script>
-    <script type="text/javascript" src="/assets/support/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/assets/common/js/apply_job.js"></script>
-    <script type="text/javascript" src="/assets/support/js/add_company.js"></script>
-    <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
-    <script type="text/javascript" src="/assets/support/js/bootstrap-datetimepicker.min.js"></script>
-    <script type="text/javascript" src="/assets/support/js/bootstrap-notify.min.js"></script>
-    <script type="text/javascript" src="/assets/support/js/bootstrap-multiselect.js"></script>
-  </body>
+            <!-- Javascript import -->
+        <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+        <script type="text/javascript" src="/assets/support/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/assets/common/js/apply_job.js"></script>
+        <script type="text/javascript" src="/assets/support/js/add_company.js"></script>
+        <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
+        <script type="text/javascript" src="/assets/support/js/bootstrap-datetimepicker.min.js"></script>
+        <script type="text/javascript" src="/assets/support/js/bootstrap-notify.min.js"></script>
+        <script type="text/javascript" src="/assets/support/js/bootstrap-multiselect.js"></script>
+    </body>
 </html>
