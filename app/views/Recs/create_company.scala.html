@@ -80,20 +80,25 @@
             </div>
           </div>
 
-          <div class="row">
-            <div class="col-sm-3"><h5>Recruiter contact unlock credits available:</h5></div>
-            <div class="col-sm-9">
-                <input id="recruiterContactCredits" type="number" max="999999" class="form-control input-md" disabled>
-            </div>
-          </div>
+            <br>
+            <h3>Credits Section</h3>
+            <hr>
+            <div id="addCreditInfoDiv" style="display: none; margin-top: 24px">
+                <h4>You are adding the following no. of credits for this recruiter::</h4>
+                <div class="row">
+                    <div class="col-sm-3"><h5>Candidate Contact unlock credits:</h5></div>
+                    <div class="col-sm-9" style="margin-top: 12px">
+                        <div id="contactUnlockCreditInfo" style="color: #00c853">N/A</div>
+                    </div>
+                </div>
 
-          <div class="row">
-            <div class="col-sm-3"><h5>Recruiter interview unlock credits available:</h5></div>
-            <div class="col-sm-9">
-              <input id="recruiterContactCredits" type="number" max="999999" class="form-control input-md" disabled>
+                <div class="row">
+                    <div class="col-sm-3"><h5>Candidate interview unlock credits:</h5></div>
+                    <div class="col-sm-9" style="margin-top: 12px">
+                        <div id="interviewUnlockCreditInfo" style="color: #00c853">N/A</div>
+                    </div>
+                </div>
             </div>
-          </div>
-
 
             <div class="btn btn-default" data-toggle="modal" data-target="#creditModal" style="background: #37a12f; color: #fff; margin-bottom: 24px">Add Credits</div>
         </form>

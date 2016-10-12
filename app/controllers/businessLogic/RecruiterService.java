@@ -167,6 +167,20 @@ public class RecruiterService {
                 RecruiterLead lead = RecruiterLeadService.createOrUpdateConvertedRecruiterLead(leadName, FormValidator.convertToIndianMobileFormat(recruiterSignUpRequest.getRecruiterMobile()));
                 newRecruiter.setRecruiterLead(lead);
 
+                //new recruiter hence giving 5 free contact unlock credits
+                RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
+
+                RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where().eq("recruiter_credit_category_id", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK).findUnique();
+                if(recruiterCreditCategory != null){
+                    recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
+                }
+                newRecruiter.setRecruiterCandidateUnlockCredits(5);
+                newRecruiter.setRecruiterInterviewUnlockCredits(0);
+                recruiterCreditHistory.setRecruiterProfile(newRecruiter);
+                recruiterCreditHistory.setRecruiterCreditsAvailable(5);
+                recruiterCreditHistory.setRecruiterCreditsUsed(0);
+                recruiterCreditHistory.save();
+
                 newRecruiter.save();
 
                 //setting all the credit values

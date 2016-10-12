@@ -110,6 +110,8 @@ function computeCreditValue() {
             candidateContactCreditAmount = parseInt($("#candidateContactCreditAmount").val());
             totalAmount += candidateContactCreditAmount;
             candidateContactCreditUnitPrice = parseInt($("#candidateContactCreditUnitPrice").val());
+            $("#addCreditInfoDiv").show();
+            $("#contactUnlockCreditInfo").html("₹" + candidateContactCreditAmount + " @ ₹" + candidateContactCreditUnitPrice + " unit price per credit");
         }
     }
     if($('input:radio[name="interviewCreditType"]:checked').val() == 1){
@@ -129,6 +131,8 @@ function computeCreditValue() {
             interviewCreditAmount = parseInt($("#interviewCreditAmount").val());
             totalAmount += interviewCreditAmount;
             interviewCreditUnitPrice = parseInt($("#interviewCreditUnitPrice").val());
+            $("#addCreditInfoDiv").show();
+            $("#interviewUnlockCreditInfo").html("₹" + interviewCreditAmount + " @ ₹" + interviewCreditUnitPrice + " unit price per credit");
         }
     }
     paymentMode = $("#creditMode").val();
