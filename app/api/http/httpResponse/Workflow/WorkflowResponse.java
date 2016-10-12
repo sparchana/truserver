@@ -1,4 +1,4 @@
-package api.http.httpResponse;
+package api.http.httpResponse.Workflow;
 
 /**
  * Created by zero on 8/10/16.

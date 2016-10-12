@@ -254,9 +254,32 @@ public class JobService {
                     Logger.info("candidate: " + existingCandidate.getCandidateFirstName() + " with mobile: " + existingCandidate.getCandidateMobile() + " applied to the jobPost of JobPostId:" + existingJobPost.getJobPostId());
 
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_SUCCESS);
+
                 } else{
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_EXISTS);
                     Logger.info("candidate: " + existingCandidate.getCandidateFirstName() + " with mobile: " + existingCandidate.getCandidateMobile() + " already applied to jobPost with jobId:" + existingJobPost.getJobPostId());
+                }
+
+                // also create entry in jobPostWorkflow table
+                JobPostWorkflow jobPostWorkflow = JobPostWorkflow.find
+                        .where()
+                        .eq("candidate_id", existingCandidate.getCandidateId())
+                        .eq("job_post_id", existingJobPost.getJobPostId()).setMaxRows(1).findUnique();
+
+                if (jobPostWorkflow == null) {
+                    jobPostWorkflow = new JobPostWorkflow();
+                    jobPostWorkflow.setCandidate(existingCandidate);
+                    jobPostWorkflow.setJobPost(existingJobPost);
+                    jobPostWorkflow.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_SELECTED).findUnique());
+
+                    if(channelType == InteractionService.InteractionChannelType.SELF ||
+                            channelType == InteractionService.InteractionChannelType.SELF_ANDROID ){
+                        jobPostWorkflow.setCreatedBy(channelType.toString());
+                    } else {
+                        // partner, support, recruiter
+                        jobPostWorkflow.setCreatedBy(session().get("sessionUsername"));
+                    }
+                    jobPostWorkflow.save();
                 }
             }
         } else{

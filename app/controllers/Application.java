@@ -5,6 +5,8 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
+import api.http.httpRequest.Workflow.MatchingCandidateRequest;
+import api.http.httpRequest.Workflow.SelectedCandidateRequest;
 import api.http.httpResponse.*;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
@@ -1478,6 +1480,7 @@ public class Application extends Controller {
         return ok(toJson(relevantJobs));
     }
 
+    @Security.Authenticated(RecSecured.class)
     public static Result getMatchingCandidate() {
         JsonNode matchingCandidateRequestJson = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + matchingCandidateRequestJson);
@@ -1513,6 +1516,7 @@ public class Application extends Controller {
         return badRequest();
     }
 
+    @Security.Authenticated(RecSecured.class)
     public static Result renderWorkflow(Long jobPostId, String view) {
         if(view == null) {
             return badRequest();
@@ -1527,10 +1531,12 @@ public class Application extends Controller {
         return badRequest();
     }
 
+    @Security.Authenticated(RecSecured.class)
     public static Result getJobPostMatchingParams(long jobPostId) {
         return ok(toJson(JobPost.find.where().eq("jobPostId", jobPostId).findUnique()));
     }
 
+    @Security.Authenticated(RecSecured.class)
     public static Result saveSelectedCandidate() {
         JsonNode selectedCandidateIdsJson = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + selectedCandidateIdsJson);
@@ -1549,6 +1555,15 @@ public class Application extends Controller {
             e.printStackTrace();
         }
 
-        return ok(toJson(JobPostWorkflowEngine.saveSelectedCandidates(selectedCandidateRequest.getSelectedCandidateIdList())));
+        return ok(toJson(JobPostWorkflowEngine.saveSelectedCandidates(selectedCandidateRequest)));
+    }
+
+    public static Result getSelectedCandidate(Long jobPostId) {
+
+        return ok(toJson(JobPostWorkflowEngine.getSelectedCandidates(jobPostId)));
+    }
+
+    public static Result testMatchingCandidate(Long jpId) {
+       return ok(toJson(JobPostWorkflowEngine.getMatchingCandidate(jpId)));
     }
 }

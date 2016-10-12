@@ -75,6 +75,8 @@ public class JobApplication extends Model {
     @Column(name = "scheduledInterviewDate", columnDefinition = "date null")
     private Date scheduledInterviewDate;
 
+    public static Model.Finder<String, JobApplication> find = new Model.Finder(JobApplication.class);
+
     public JobApplication() {
         this.jobApplicationCreateTimeStamp = new Timestamp(System.currentTimeMillis());
     }
@@ -86,8 +88,6 @@ public class JobApplication extends Model {
     public void setLocality(Locality locality) {
         this.locality = locality;
     }
-
-    public static Model.Finder<String, JobApplication> find = new Model.Finder(JobApplication.class);
 
     public Integer getJobApplicationId() {
         return jobApplicationId;
