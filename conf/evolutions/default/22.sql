@@ -28,6 +28,9 @@ create table recruiter_payment (
   constraint pk_recruiter_payment primary key (recruiter_payment_id)
 );
 
+alter table recruiterprofile drop column recruiterlinkedinprofile;
+alter table recruiterprofile add column recruiterlinkedinprofile varchar(60) null;
+
 alter table recruiter_payment add constraint fk_recruiter_payment_recruiter_credit_category_id foreign key (recruiter_credit_category_id) references recruiter_credit_category (recruiter_credit_category_id) on delete restrict on update restrict;
 create index ix_recruiter_payment_recruiter_credit_category_id on recruiter_payment (recruiter_credit_category_id);
 
@@ -44,6 +47,9 @@ alter table recruiter_credit_history add constraint fk_recruiter_credit_history_
 create index ix_recruiter_credit_history_recruitercreditcategory on recruiter_credit_history (recruitercreditcategory);
 
 # --- !Downs
+
+alter table recruiterprofile drop column recruiterlinkedinprofile;
+alter table recruiterprofile add column recruiterlinkedinprofile bigint signed null;
 
 alter table recruiter_credit_history drop foreign key fk_recruiter_credit_history_recruiterprofileid;
 drop index ix_recruiter_credit_history_recruiterprofileid on recruiter_credit_history;

@@ -8,14 +8,16 @@ public class AddRecruiterRequest {
     public String recruiterMobile;
     public String recruiterLandline;
     public String recruiterEmail;
+    private String recruiterLinkedinProfile;
+    private String recruiterAlternateMobile;
     public Long recruiterCompany;
-    public String recruiterCompanyName;
-    public Integer recruiterTotalAmount;
-    public Integer recruiterInterviewCreditAmount;
-    public Integer recruiterContactCreditAmount;
-    public Integer recruiterInterviewCreditUnitPrice;
-    public Integer recruiterContactCreditUnitPrice;
-    public Integer recruiterCreditMode;
+    private String recruiterCompanyName;
+    private Integer recruiterTotalAmount;
+    private Integer recruiterInterviewCreditAmount;
+    private Integer recruiterContactCreditAmount;
+    private Integer recruiterInterviewCreditUnitPrice;
+    private Integer recruiterContactCreditUnitPrice;
+    private Integer recruiterCreditMode;
 
     public String getRecruiterName() {
         return recruiterName;
@@ -111,5 +113,21 @@ public class AddRecruiterRequest {
 
     public void setRecruiterCreditMode(Integer recruiterCreditMode) {
         this.recruiterCreditMode = recruiterCreditMode;
+    }
+
+    public String getRecruiterLinkedinProfile() {
+        return recruiterLinkedinProfile;
+    }
+
+    public void setRecruiterLinkedinProfile(String recruiterLinkedinProfile) {
+        this.recruiterLinkedinProfile = recruiterLinkedinProfile;
+    }
+
+    public String getRecruiterAlternateMobile() {
+        return recruiterAlternateMobile;
+    }
+
+    public void setRecruiterAlternateMobile(String recruiterAlternateMobile) {
+        this.recruiterAlternateMobile = recruiterAlternateMobile;
     }
 }

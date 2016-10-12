@@ -278,7 +278,6 @@ function saveForm(){
         if($("#recruiterCompany").val() != ""){
             companyId = $("#recruiterCompany").val();
         }
-        console.log(interviewCreditAmount + " " + candidateContactCreditAmount + " " + interviewCreditUnitPrice + " " + candidateContactCreditUnitPrice);
         try{
             var rec = {
                 recruiterName: $("#recruiterName").val(),

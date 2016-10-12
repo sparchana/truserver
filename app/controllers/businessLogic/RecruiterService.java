@@ -338,6 +338,12 @@ public class RecruiterService {
         if(addRecruiterRequest.getRecruiterEmail() != null){
             newRecruiter.setRecruiterProfileEmail(addRecruiterRequest.getRecruiterEmail());
         }
+        if(addRecruiterRequest.getRecruiterAlternateMobile() != null){
+            newRecruiter.setRecruiterAlternateMobile(addRecruiterRequest.getRecruiterAlternateMobile());
+        }
+        if(addRecruiterRequest.getRecruiterLinkedinProfile() != null){
+            newRecruiter.setRecruiterLinkedinProfile(addRecruiterRequest.getRecruiterLinkedinProfile());
+        }
         return newRecruiter;
     }
 

@@ -281,7 +281,7 @@ public class Application extends Controller {
         }
     }
 
-    @Security.Authenticated(RecSecured.class)
+    @Security.Authenticated(SecuredUser.class)
     public static Result addRecruiter() {
         JsonNode req = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
