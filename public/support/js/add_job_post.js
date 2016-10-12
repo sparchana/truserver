@@ -145,7 +145,7 @@ function computeCreditValue() {
 $(function() {
     $("#job_post_form").submit(function(eventObj) {
         eventObj.preventDefault();
-        if($("#jobPostRecruiter").val() == "" && $("#recruiterSection").is(':visible') == true){
+        if(($("#jobPostRecruiter").val() == "" || $("#jobPostRecruiter").val() == "-1" || $("#jobPostRecruiter").val() == null) && $("#recruiterSection").is(':visible') == true){
             var status = 1;
             var recruiterName = validateName($("#recruiterName").val());
             var recruiterMobile = validateMobile($("#recruiterMobile").val());

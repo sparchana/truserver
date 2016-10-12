@@ -188,4 +188,11 @@ public class RecruiterController {
         }
         return ok("0");
     }
+
+    public static Result getAllRecruiterJobPosts() {
+        if(session().get("recruiterId") != null){
+            return ok(toJson(JobPost.find.where().eq("JobRecruiterId", session().get("recruiterId")).findList()));
+        }
+        return ok("0");
+    }
 }
