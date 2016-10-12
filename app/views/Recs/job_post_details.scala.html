@@ -42,6 +42,7 @@
                 });
             });
         </script>
+
     </head>
 
     <body style="font-size: 13px;">
@@ -63,7 +64,7 @@
                 <form id="job_post_form">
                         <!-- hidden field -->
                     <input id="jobPostId" style="display: none">
-                    <div class="panel panel-default" id="jdBasicPanel" style="margin: 1% 0;">
+                    <div class="panel panel-success" id="jdBasicPanel" style="margin: 1% 0;">
                         <div class="panel-heading" style="cursor: pointer;">Basic Details Panel</div>
                         <div class="panel-container" style="padding: 1%;">
                             <div class="row" style="margin-top: 4px">
@@ -199,7 +200,8 @@
                         </div>
                     </div>
 
-                    <div class="panel panel-default" id="jdRequirementPanel" style="margin: 1% 0;">
+                    <br>
+                    <div class="panel panel-success" id="jdRequirementPanel" style="margin: 1% 0;">
                         <div class="panel-heading" style="cursor: pointer;">Requirements Panel</div>
                         <div class="panel-container" style="padding: 1%;">
 
@@ -251,7 +253,9 @@
 
                         </div>
                     </div>
-                    <div class="panel panel-default" id="jdWorkTimingPanel" style="margin: 1% 0;">
+
+                    <br>
+                    <div class="panel panel-success" id="jdWorkTimingPanel" style="margin: 1% 0;">
                         <div class="panel-heading" style="cursor: pointer;">Work Timing Panel</div>
                         <div class="panel-container" style="padding: 1%;">
 
@@ -278,7 +282,7 @@
 
                             <div class="row">
                                 <div class="col-sm-3"><h5>Working Days</h5></div>
-                                <div class="col-sm-9">
+                                <div class="col-sm-9" style="margin: 1% 0">
                                     <input id="working_1" type="checkbox">Monday &nbsp;&nbsp;&nbsp;
                                     <input id="working_2" type="checkbox">Tuesday &nbsp;&nbsp;&nbsp;
                                     <input id="working_3" type="checkbox">Wednesday &nbsp;&nbsp;&nbsp;
@@ -298,14 +302,76 @@
 
                             <div class="row">
                                 <div class="col-sm-3"><h5>Work From Home?</h5></div>
-                                <div class="col-sm-9">
+                                <div class="col-sm-9" style="margin: 1% 0">
                                     <input id="jobPostWorkFromHome" type="checkbox">
                                 </div>
                             </div>
 
                         </div>
                     </div>
-                    <div class="panel panel-default" id="jdOtherPanel" style="margin: 1% 0;">
+
+                    <br>
+                    <div class="panel panel-danger" id="jdInterviewPanel" style="margin: 1% 0;">
+                        <div class="panel-heading" style="cursor: pointer;">Interview Details</div>
+                        <div class="panel-container" style="padding: 1%;">
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Interview Address:</h5></div>
+                                <div class="col-sm-9">
+                                    <textarea rows="4" cols="80" id="jobPostAddress" class="form-control input-md" maxlength="5000"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Interview Days</h5></div>
+                                <div class="col-sm-9" id="interviewDaySection">
+                                    <input id="interview_day_1" type="checkbox">Monday &nbsp;&nbsp;&nbsp;
+                                    <input id="interview_day_2" type="checkbox">Tuesday &nbsp;&nbsp;&nbsp;
+                                    <input id="interview_day_3" type="checkbox">Wednesday &nbsp;&nbsp;&nbsp;
+                                    <input id="interview_day_4" type="checkbox">Thursday &nbsp;&nbsp;&nbsp;
+                                    <input id="interview_day_5" type="checkbox">Friday &nbsp;&nbsp;&nbsp;
+                                    <input id="interview_day_6" type="checkbox">Saturday &nbsp;&nbsp;&nbsp;
+                                    <input id="interview_day_7" type="checkbox">Sunday &nbsp;&nbsp;&nbsp;
+                                    <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Interview Time Slot:</h5></div>
+                                <div class="col-sm-9">
+                                    <div style="width: 100%;
+                                        height: 34px;" id="interviewTimeSlot" class="btn-group" data-toggle="buttons"></div>
+                                    <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br>
+                    <div class="panel panel-danger" id="jdPartnerIncentivePanel" style="margin: 1% 0;">
+                        <div class="panel-heading" style="cursor: pointer;">Partner Incentive Information</div>
+                        <div class="panel-container" style="padding: 1%;">
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Partner Interview incentive:</h5></div>
+                                <div class="col-sm-9">
+                                    <input id="partnerInterviewIncentive" value="0" max="99999" style="width: 38%;
+                                        display: inline-block" placeholder="Partner Interview incentive" type="number" class="form-control input-md">
+                                    <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Partner Joining incentive:</h5></div>
+                                <div class="col-sm-9">
+                                    <input id="partnerJoiningIncentive" value="0" max="99999" style="width: 38%;
+                                        display: inline-block" placeholder="Partner Joining incentive" type="number" class="form-control input-md">
+                                    <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <br>
+                    <div class="panel panel-success" id="jdOtherPanel" style="margin: 1% 0;">
                         <div class="panel-heading" style="cursor: pointer;">Other Detail Panel</div>
                         <div class="panel-container" style="padding: 1%;">
                             <div class="row">
@@ -338,65 +404,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <br>
-                    <h4>Interview Details</h4>
-                    <div style="background: rgba(144, 202, 249, 0.33);
-                        padding: 2%">
-                        <div class="row">
-                            <div class="col-sm-3"><h5>Interview Address:</h5></div>
-                            <div class="col-sm-9">
-                                <textarea rows="4" cols="80" id="jobPostAddress" class="form-control input-md" maxlength="5000"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-sm-3"><h5>Interview Days</h5></div>
-                            <div class="col-sm-9" id="interviewDaySection">
-                                <input id="interview_day_1" type="checkbox">Monday &nbsp;&nbsp;&nbsp;
-                                <input id="interview_day_2" type="checkbox">Tuesday &nbsp;&nbsp;&nbsp;
-                                <input id="interview_day_3" type="checkbox">Wednesday &nbsp;&nbsp;&nbsp;
-                                <input id="interview_day_4" type="checkbox">Thursday &nbsp;&nbsp;&nbsp;
-                                <input id="interview_day_5" type="checkbox">Friday &nbsp;&nbsp;&nbsp;
-                                <input id="interview_day_6" type="checkbox">Saturday &nbsp;&nbsp;&nbsp;
-                                <input id="interview_day_7" type="checkbox">Sunday &nbsp;&nbsp;&nbsp;
-                                <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
-                            </div>
-                        </div>
-
-                        <div class="row" style="margin-top: 4px">
-                            <div class="col-sm-3"><h5>Interview Time Slot:</h5></div>
-                            <div class="col-sm-9">
-                                <div style="width: 100%;
-                                    height: 34px;" id="interviewTimeSlot" class="btn-group" data-toggle="buttons"></div>
-                                <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
-                            </div>
-                        </div>
-                    </div>
-
-                    <br>
-                    <h4>Partner Incentive Information</h4>
-                    <div style="background: rgba(144, 202, 249, 0.33);
-                        padding: 2%">
-                        <div class="row">
-                            <div class="col-sm-3"><h5>Partner Interview incentive:</h5></div>
-                            <div class="col-sm-9">
-                                <input id="partnerInterviewIncentive" value="0" max="99999" style="width: 18%;
-                                    display: inline-block" placeholder="Partner Interview incentive" type="number" class="form-control input-md">
-                                <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-sm-3"><h5>Partner Joining incentive:</h5></div>
-                            <div class="col-sm-9">
-                                <input id="partnerJoiningIncentive" value="0" max="99999" style="width: 18%;
-                                    display: inline-block" placeholder="Partner Joining incentive" type="number" class="form-control input-md">
-                                <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
-                            </div>
-                        </div>
-
                     </div>
 
                     <br> <br>
