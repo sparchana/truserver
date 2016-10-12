@@ -4,19 +4,26 @@ import api.ServerConstants;
 import api.http.httpRequest.LoginRequest;
 import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
+import api.http.httpResponse.Recruiter.JobApplicationResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
 import controllers.security.SecuredUser;
+import models.entity.JobPost;
+import models.entity.OM.JobApplication;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
 import models.entity.Static.Degree;
+import models.entity.Static.InterviewTimeSlot;
+import models.entity.Static.Locality;
 import play.Logger;
 import play.mvc.Result;
 import play.mvc.Security;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static play.libs.Json.toJson;
@@ -156,5 +163,29 @@ public class RecruiterController {
         }
         // no recruiter session found
         return ok("-1");
+    }
+
+    public static Result getAllJobApplicants(long jobPostId) {
+        JobPost jobPost = JobPost.find.where().eq("JobPostId", jobPostId).findUnique();
+        if(jobPost != null){
+            List<JobApplication> jobApplicationList = JobApplication.find.where().eq("JobPostId", jobPostId).findList();
+            List<JobApplicationResponse> jobApplicationResponseList = new ArrayList<>();
+            for(JobApplication jobApplication: jobApplicationList){
+                JobApplicationResponse jobApplicationResponse = new JobApplicationResponse();
+
+                jobApplicationResponse.setCandidate(jobApplication.getCandidate());
+                jobApplicationResponse.setJobApplicationId(jobApplication.getJobApplicationId());
+                jobApplicationResponse.setJobApplicationCreatingTimeStamp(String.valueOf(jobApplication.getJobApplicationCreateTimeStamp()));
+                jobApplicationResponse.setPreScreenLocation(jobApplication.getLocality());
+                jobApplicationResponse.setPreScreenLocation(jobApplication.getLocality());
+                jobApplicationResponse.setInterviewTimeSlot(jobApplication.getInterviewTimeSlot());
+                jobApplicationResponse.setScheduledInterviewDate(jobApplication.getScheduledInterviewDate());
+
+                jobApplicationResponseList.add(jobApplicationResponse);
+            }
+
+            return ok(toJson(jobApplicationResponseList));
+        }
+        return ok("0");
     }
 }
