@@ -1,5 +1,6 @@
 package controllers;
 
+import api.ServerConstants;
 import api.http.httpRequest.LoginRequest;
 import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
@@ -9,6 +10,7 @@ import controllers.businessLogic.*;
 import controllers.security.SecuredUser;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
+import models.entity.RecruiterCreditHistory;
 import models.entity.Static.Degree;
 import play.Logger;
 import play.mvc.Result;
@@ -140,6 +142,16 @@ public class RecruiterController {
                 if(recruiterProfile.getRecruiterCandidateUnlockCredits() > 0 && recruiterProfile.getRecruiterInterviewUnlockCredits() > 0){
                     return ok("1");
                 }
+            }
+        }
+        return ok("0");
+    }
+
+    public static Result unlockCandidateContact(Long candidateId) {
+        if(session().get("recruiterId") != null){
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+            if(recruiterProfile != null){
+                return RecruiterService.unlockCandidate(recruiterProfile, candidateId);
             }
         }
         return ok("0");

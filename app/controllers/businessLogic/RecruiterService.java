@@ -19,11 +19,13 @@ import models.entity.Recruiter.Static.RecruiterStatus;
 import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
+import play.mvc.Result;
 
 import java.util.UUID;
 
 import static models.util.Util.generateOtp;
 import static play.mvc.Controller.session;
+import static play.mvc.Results.ok;
 
 /**
  * Created by batcoder1 on 7/7/16.
@@ -371,5 +373,33 @@ public class RecruiterService {
 
         recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.getStatusSuccess());
         recruiterSignUpResponse.setOtp(randomPIN);
+    }
+
+    public static Result unlockCandidate(RecruiterProfile recruiterProfile, Long candidateId) {
+        recruiterProfile.setRecruiterCandidateUnlockCredits(recruiterProfile.getRecruiterCandidateUnlockCredits() - 1);
+        recruiterProfile.update();
+
+        //making an entry in recruiter credit history table
+        RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
+        recruiterCreditHistory.setRecruiterProfile(recruiterProfile);
+
+        RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where().eq("recruiter_credit_category_id", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK).findUnique();
+        if(recruiterCreditCategory != null){
+            recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
+        }
+
+        RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
+                .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
+                .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK)
+                .setMaxRows(1)
+                .orderBy("recruiter_credit_history_create_timestamp desc")
+                .findUnique();
+
+        if(recruiterCreditHistoryLatest != null){
+            recruiterCreditHistory.setRecruiterCreditsAvailable(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() - 1);
+            recruiterCreditHistory.setRecruiterCreditsUsed(recruiterCreditHistoryLatest.getRecruiterCreditsUsed() + 1);
+            recruiterCreditHistory.save();
+        }
+        return ok("1");
     }
 }
