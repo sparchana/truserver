@@ -121,6 +121,7 @@ function processDataRecruiterSession(returnedData) {
 }
 
 function processDataRecruiterProfile(returnedData) {
+    console.log(returnedData);
     if (returnedData == '0') {
         logoutRecruiter();
     } else{
@@ -205,4 +206,3 @@ function notifyError(msg){
 function notifySuccess(msg){
     Materialize.toastSuccess(msg, 3000, 'rounded');
 }
-

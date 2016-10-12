@@ -256,8 +256,10 @@ public class RecruiterService {
             if(addRecruiterRequest.getRecruiterContactCreditAmount() != 0 && addRecruiterRequest.getRecruiterContactCreditUnitPrice() != 0){
                 currentCredits = (addRecruiterRequest.getRecruiterContactCreditAmount() / addRecruiterRequest.getRecruiterContactCreditUnitPrice());
                 availableCredits += currentCredits;
+                existingRecruiter.setRecruiterCandidateUnlockCredits(availableCredits);
                 recruiterCreditHistory.setRecruiterCreditsAvailable(availableCredits);
                 recruiterCreditHistory.setRecruiterCreditsUsed(usedCredits);
+                existingRecruiter.update();
             }
 
             //saving the values
@@ -315,6 +317,8 @@ public class RecruiterService {
                 availableCredits += currentCredits;
                 recruiterCreditHistory.setRecruiterCreditsAvailable(availableCredits);
                 recruiterCreditHistory.setRecruiterCreditsUsed(usedCredits);
+                existingRecruiter.setRecruiterInterviewUnlockCredits(availableCredits);
+                existingRecruiter.update();
             }
 
             //saving the values

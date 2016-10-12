@@ -6,8 +6,11 @@ import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.PartnerSignUpResponse;
 import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
 import models.entity.Recruiter.RecruiterAuth;
+import models.entity.Recruiter.RecruiterPayment;
 import models.entity.Recruiter.RecruiterProfile;
+import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.Recruiter.Static.RecruiterProfileStatus;
+import models.entity.RecruiterCreditHistory;
 import models.util.Util;
 import play.Logger;
 
@@ -75,6 +78,20 @@ public class RecruiterAuthService {
                     Logger.info("Oops recruiterStatusId"+ " doesnot exists");
                     recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.STATUS_FAILURE);
                 }
+
+                //new recruiter hence giving 5 free contact unlock credits
+                RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
+
+                RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where().eq("recruiter_credit_category_id", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK).findUnique();
+                if(recruiterCreditCategory != null){
+                    recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
+                }
+                existingRecruiter.setRecruiterCandidateUnlockCredits(5);
+                existingRecruiter.setRecruiterInterviewUnlockCredits(0);
+                recruiterCreditHistory.setRecruiterProfile(existingRecruiter);
+                recruiterCreditHistory.setRecruiterCreditsAvailable(5);
+                recruiterCreditHistory.setRecruiterCreditsUsed(0);
+                recruiterCreditHistory.save();
 
                 existingRecruiter.update();
                 Logger.info("recruiter status confirmed");

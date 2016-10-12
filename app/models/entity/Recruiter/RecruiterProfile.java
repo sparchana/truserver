@@ -63,10 +63,10 @@ public class RecruiterProfile extends Model {
     private int recruiterEmailStatus; // verified, Not-Yet-Verified
 
     @Column(name = "RecruiterInterviewUnlockCredits", columnDefinition = "int signed null")
-    private Long recruiterInterviewUnlockCredits;
+    private Integer recruiterInterviewUnlockCredits;
 
     @Column(name = "RecruiterCandidateUnlockCredits", columnDefinition = "int signed null")
-    private Long recruiterCandidateUnlockCredits;
+    private Integer recruiterCandidateUnlockCredits;
 
     @ManyToOne
     @JsonManagedReference
@@ -261,19 +261,19 @@ public class RecruiterProfile extends Model {
         this.recruiterLead = recruiterLead;
     }
 
-    public Long getRecruiterInterviewUnlockCredits() {
+    public Integer getRecruiterInterviewUnlockCredits() {
         return recruiterInterviewUnlockCredits;
     }
 
-    public void setRecruiterInterviewUnlockCredits(Long recruiterInterviewUnlockCredits) {
+    public void setRecruiterInterviewUnlockCredits(Integer recruiterInterviewUnlockCredits) {
         this.recruiterInterviewUnlockCredits = recruiterInterviewUnlockCredits;
     }
 
-    public Long getRecruiterCandidateUnlockCredits() {
+    public Integer getRecruiterCandidateUnlockCredits() {
         return recruiterCandidateUnlockCredits;
     }
 
-    public void setRecruiterCandidateUnlockCredits(Long recruiterCandidateUnlockCredits) {
+    public void setRecruiterCandidateUnlockCredits(Integer recruiterCandidateUnlockCredits) {
         this.recruiterCandidateUnlockCredits = recruiterCandidateUnlockCredits;
     }
 

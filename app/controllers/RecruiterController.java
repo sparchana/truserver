@@ -8,11 +8,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
 import controllers.security.SecuredUser;
 import models.entity.Recruiter.RecruiterProfile;
+import models.entity.Recruiter.Static.RecruiterCreditCategory;
+import models.entity.Static.Degree;
 import play.Logger;
 import play.mvc.Result;
 import play.mvc.Security;
 
 import java.io.IOException;
+import java.util.List;
 
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.request;
@@ -123,6 +126,11 @@ public class RecruiterController {
     @Security.Authenticated(SecuredUser.class)
     public static Result recruiterEditProfile() {
         return ok(views.html.Recruiter.recruiter_edit_profile.render());
+    }
+
+    public static Result getAllCreditCategory() {
+        List<RecruiterCreditCategory> recruiterCreditCategoryList = RecruiterCreditCategory.find.all();
+        return ok(toJson(recruiterCreditCategoryList));
     }
 
 }

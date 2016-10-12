@@ -65,6 +65,8 @@ function computeCreditValue() {
             candidateContactCreditAmount = parseInt($("#candidateContactCreditAmount").val());
             totalAmount += candidateContactCreditAmount;
             candidateContactCreditUnitPrice = parseInt($("#candidateContactCreditUnitPrice").val());
+            $("#addCreditInfoDiv").show();
+            $("#contactUnlockCreditInfo").html("₹" + candidateContactCreditAmount + " @ ₹" + candidateContactCreditUnitPrice + " unit price per credit");
         }
     }
     if($('input:radio[name="interviewCreditType"]:checked').val() == 1){
@@ -84,12 +86,19 @@ function computeCreditValue() {
             interviewCreditAmount = parseInt($("#interviewCreditAmount").val());
             totalAmount += interviewCreditAmount;
             interviewCreditUnitPrice = parseInt($("#interviewCreditUnitPrice").val());
+            $("#addCreditInfoDiv").show();
+            $("#interviewUnlockCreditInfo").html("₹" + interviewCreditAmount + " @ ₹" + interviewCreditUnitPrice + " unit price per credit");
         }
     }
     paymentMode = $("#creditMode").val();
     if(interviewCreditTypeStatus == 1 && candidateCreditTypeStatus == 1){
         $("#creditModal").modal("hide");
     }
+}
+
+function processDataGetCreditCategory(returnedData) {
+    $("#candidateContactCreditUnitPrice").val(returnedData[0].recruiterCreditUnitPrice);
+    $("#interviewCreditUnitPrice").val(returnedData[1].recruiterCreditUnitPrice);
 }
 
 $(function(){
@@ -110,7 +119,20 @@ $(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-    
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllCreditCategory",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetCreditCategory
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
     try {
         $.ajax({
             type: "GET",
@@ -164,6 +186,7 @@ function processDataAddRecruiter(returnedData) {
 }
 
 function processDataForCompanyInfo(returnedData) {
+    console.log(returnedData);
     $("#recruiterName").val(returnedData.recruiterProfileName);
     $("#recruiterMobile").val(returnedData.recruiterProfileMobile);
     if(returnedData.recruiterProfileLandline != null ){
@@ -177,4 +200,18 @@ function processDataForCompanyInfo(returnedData) {
     if(returnedData.company != null ){
         $("#recruiterCompany").val(returnedData.company.companyId);
     }
+    if(returnedData.recruiterCandidateUnlockCredits != null ){
+        $("#recruiterContactCredits").val(returnedData.recruiterCandidateUnlockCredits);
+    }
+    if(returnedData.recruiterInterviewUnlockCredits != null ){
+        $("#recruiterInterviewCredits").val(returnedData.recruiterInterviewUnlockCredits);
+    }
+}
+
+function notifyError(msg){
+    Materialize.toastError(msg, 3000, 'rounded');
+}
+
+function notifySuccess(msg){
+    Materialize.toastSuccess(msg, 3000, 'rounded');
 }
