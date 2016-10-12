@@ -20,8 +20,12 @@ import play.Application;
 import play.Logger;
 import play.test.TestServer;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
 import static play.libs.Json.toJson;
@@ -34,7 +38,8 @@ public class JobPostWorkflowEngineTest {
     enum MethodType {
         getMatchingCandidateLite,
         getMatchingCandidate,
-        getDurationFromExperience
+        getDurationFromExperience,
+        getDateCluster
     }
 
     private JobPostWorkflowEngineTest.MethodType type;
@@ -61,6 +66,7 @@ public class JobPostWorkflowEngineTest {
     public static Collection getTestDataSet() {
         return Arrays.asList(new Object[][]{
                 {JobPostWorkflowEngineTest.MethodType.getMatchingCandidateLite, 534L},
+                {JobPostWorkflowEngineTest.MethodType.getDateCluster, 534L},
         });
     }
 
@@ -82,6 +88,25 @@ public class JobPostWorkflowEngineTest {
             TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
             running(server, () -> {
                 Logger.info(String.valueOf(toJson(JobPostWorkflowEngine.getMatchingCandidate(jobPostId).size())));
+            });
+        }
+    }
+
+    @Ignore
+    public void testGetDateCluster() {
+        if (type == JobPostWorkflowEngineTest.MethodType.getDateCluster) {
+            Application fakeApp = fakeApplication();
+            TestServer server = testServer(TestConstants.TEST_SERVER_PORT, fakeApp);
+            running(server, () -> {
+                DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+                Date myDate = new Date(System.currentTimeMillis());
+                System.out.println("result is "+ dateFormat.format(myDate));
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(myDate);
+                cal.add(Calendar.DATE, -14);
+                System.out.println("test date is "+ cal.get(Calendar.DATE));
+
+                Logger.info(String.valueOf(toJson(JobPostWorkflowEngine.getDateCluster(cal.getTime().getTime()))));
             });
         }
     }

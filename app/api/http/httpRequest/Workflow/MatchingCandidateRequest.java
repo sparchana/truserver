@@ -1,12 +1,13 @@
-package api.http.httpRequest;
+package api.http.httpRequest.Workflow;
+
+import api.http.httpRequest.Workflow.WorkflowRequest;
 
 import java.util.List;
 
 /**
  * Created by zero on 7/10/16.
  */
-public class MatchingCandidateRequest {
-    public Long jobPostId ;
+public class MatchingCandidateRequest extends WorkflowRequest{
     public Integer minAge ;
     public Integer maxAge ;
     public Long minSalary ;
@@ -17,14 +18,6 @@ public class MatchingCandidateRequest {
     public Integer jobPostEducationId ;
     public List<Long> jobPostLocalityIdList ;
     public List<Integer> jobPostLanguageIdList ;
-
-    public Long getJobPostId() {
-        return jobPostId;
-    }
-
-    public void setJobPostId(Long jobPostId) {
-        this.jobPostId = jobPostId;
-    }
 
     public Integer getMinAge() {
         return minAge;

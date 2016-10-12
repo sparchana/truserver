@@ -116,6 +116,9 @@ public class ServerConstants {
     public static final int SHEET_MAIN = 1;
     public static final int SHEET_SCRAPPED = 2;
 
+    // JobPost Workflow status
+    public static final int JWF_STATUS_SELECTED = 1;
+
     public static Map<String, String> devTeamMobile;
     static {
         devTeamMobile = new HashMap<String, String>();
