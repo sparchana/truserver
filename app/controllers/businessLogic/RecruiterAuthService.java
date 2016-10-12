@@ -79,20 +79,6 @@ public class RecruiterAuthService {
                     recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.STATUS_FAILURE);
                 }
 
-                //new recruiter hence giving 5 free contact unlock credits
-                RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
-
-                RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where().eq("recruiter_credit_category_id", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK).findUnique();
-                if(recruiterCreditCategory != null){
-                    recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
-                }
-                existingRecruiter.setRecruiterCandidateUnlockCredits(5);
-                existingRecruiter.setRecruiterInterviewUnlockCredits(0);
-                recruiterCreditHistory.setRecruiterProfile(existingRecruiter);
-                recruiterCreditHistory.setRecruiterCreditsAvailable(5);
-                recruiterCreditHistory.setRecruiterCreditsUsed(0);
-                recruiterCreditHistory.save();
-
                 existingRecruiter.update();
                 Logger.info("recruiter status confirmed");
 
