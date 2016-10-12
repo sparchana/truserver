@@ -129,6 +129,7 @@ GET         /checkRecruiterSession                                        contro
 GET         /getRecruiterProfileInfo                                      controllers.RecruiterController.getRecruiterProfileInfo()
 GET         /recruiter/profile                                            controllers.RecruiterController.recruiterEditProfile()
 
+POST        /getRecruiterCredits/:id                                      controllers.RecruiterController.getRecruiterCredits(id : Long)
 POST        /getAllCreditCategory                                         controllers.RecruiterController.getAllCreditCategory()
 POST        /addRecruiterLead                                             controllers.RecruiterController.addWebsiteLead()
 POST        /recruiterSignUp                                              controllers.RecruiterController.recruiterSignUp()

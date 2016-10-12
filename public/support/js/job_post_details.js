@@ -17,6 +17,15 @@ function getJob() {
     return jobArray;
 }
 
+function processDataCheckRecruiterCredits(returnedData) {
+    if(returnedData == '1'){
+        notifyError("The recruiter has credits for a paid job");
+    } else{
+        notifyError("This job cannot be paid job. The recruiter don't have enough credits for a paid job");
+        $("#jobPostPricingPlan").val(1);
+    }
+}
+
 function getRecruiters(selectedCompanyId) {
     try {
         $.ajax({
@@ -30,6 +39,27 @@ function getRecruiters(selectedCompanyId) {
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
+    }
+}
+
+function checkRecruiterCredits(recruiterId) {
+    if((recruiterId != null || recruiterId != "-1") && $("#jobPostPricingPlan").val() == 2){
+        notifyError("Checking if the job can be converted in a paid job or not!");
+        if(recruiterId > 0){
+            try {
+                $.ajax({
+                    type: "POST",
+                    url: "/getRecruiterCredits/" + recruiterId,
+                    data: false,
+                    async: false,
+                    contentType: false,
+                    processData: false,
+                    success: processDataCheckRecruiterCredits
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
+        }
     }
 }
 
@@ -60,7 +90,7 @@ function processDataCheckJobs(returnedData) {
 function processDataCheckRecruiters(returnedData) {
     $('#jobPostRecruiter').html('');
     if (returnedData != null) {
-        var defaultOption = $('<option value=""></option>').text("Select a Recruiter");
+        var defaultOption = $('<option value="-1"></option>').text("Select a Recruiter");
         $('#jobPostRecruiter').append(defaultOption);
         returnedData.forEach(function (recruiter) {
             var id = recruiter.recruiterProfileId;

@@ -133,4 +133,15 @@ public class RecruiterController {
         return ok(toJson(recruiterCreditCategoryList));
     }
 
+    public static Result getRecruiterCredits(Long recId) {
+        RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", recId).findUnique();
+        if(recruiterProfile != null){
+            if(recruiterProfile.getRecruiterCandidateUnlockCredits() != null && recruiterProfile.getRecruiterInterviewUnlockCredits() != null){
+                if(recruiterProfile.getRecruiterCandidateUnlockCredits() > 0 && recruiterProfile.getRecruiterInterviewUnlockCredits() > 0){
+                    return ok("1");
+                }
+            }
+        }
+        return ok("0");
+    }
 }
