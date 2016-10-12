@@ -157,12 +157,44 @@ function processDataGetAllLanguage(returnLanguage) {
     selectList.multiselect('dataprovider', data);
     selectList.multiselect('rebuild');
 }
-function processDataGetAllIdProof(returnedData) {
-    console.log(returnedData);
+function processDataGetAllIdProof(returnedIdProofs) {
+    var data = [];
+
+    returnedIdProofs.forEach(function (idProof) {
+        var opt = {
+            label: idProof.idProofName, value: parseInt(idProof.idProofId)
+        };
+        data.push(opt);
+    });
+
+    var selectList = $('#jobPostDocument');
+    selectList.multiselect({
+        includeSelectAllOption: true,
+        enableCaseInsensitiveFiltering: true,
+        maxHeight: 300
+    });
+    selectList.multiselect('dataprovider', data);
+    selectList.multiselect('rebuild');
 }
 
-function processDataGetAllAsset(returnedData) {
-    console.log(returnedData);
+function processDataGetAllAsset(returnedAssets) {
+    var data = [];
+
+    returnedAssets.forEach(function (asset) {
+        var opt = {
+            label: asset.assetTitle, value: parseInt(asset.assetId)
+        };
+        data.push(opt);
+    });
+
+    var selectList = $('#jobPostAsset');
+    selectList.multiselect({
+        includeSelectAllOption: true,
+        enableCaseInsensitiveFiltering: true,
+        maxHeight: 300
+    });
+    selectList.multiselect('dataprovider', data);
+    selectList.multiselect('rebuild');
 }
 
 $(document).ready(function () {

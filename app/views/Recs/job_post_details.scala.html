@@ -63,75 +63,143 @@
                 <form id="job_post_form">
                         <!-- hidden field -->
                     <input id="jobPostId" style="display: none">
+                    <div class="panel panel-default" id="jdBasicPanel" style="margin: 1% 0;">
+                        <div class="panel-heading" style="cursor: pointer;">Basic Details Panel</div>
+                        <div class="panel-container" style="padding: 1%;">
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Job Providing company?:<font color="red">*</font> </h5></div>
+                                <div class="col-sm-9">
+                                    <select id="jobPostCompany" onchange="getRecruiters($('#jobPostCompany').val())" style="display: inline-block;" class="selectDropdown" ></select>
+                                    <img src="/assets/support/images/webIcon.jpg" width="20px">
+                                </div>
+                            </div>
 
-                    <div class="row" style="margin-top: 4px">
-                        <div class="col-sm-3"><h5>Job Providing company?:<font color="red">*</font> </h5></div>
-                        <div class="col-sm-9">
-                            <select id="jobPostCompany" onchange="getRecruiters($('#jobPostCompany').val())" style="display: inline-block;" class="selectDropdown" ></select>
-                            <img src="/assets/support/images/webIcon.jpg" width="20px">
-                        </div>
-                    </div>
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Select Recruiter?:<font color="red">*</font> </h5></div>
+                                <div class="col-sm-9">
+                                    <select id="jobPostRecruiter" class="selectDropdown"></select>
+                                    <div style="padding: 8px;
+                                        margin: 6px;
+                                        background: rgba(244, 227, 164, 0.48)"><font size="2">(If there is no recruiter for the selected company, please create a recruiter by clicking <a onclick="showRecruiterForm()">here</a></font></div>
+                                </div>
+                            </div>
 
-                    <div class="row" style="margin-top: 4px">
-                        <div class="col-sm-3"><h5>Select Recruiter?:<font color="red">*</font> </h5></div>
-                        <div class="col-sm-9">
-                            <select id="jobPostRecruiter" class="selectDropdown"></select>
-                            <div style="padding: 8px;
-                                margin: 6px;
-                                background: rgba(244, 227, 164, 0.48)"><font size="2">(If there is no recruiter for the selected company, please create a recruiter by clicking <a onclick="showRecruiterForm()">here</a></font></div>
-                        </div>
-                    </div>
+                            <div id="recruiterSection" style="display: none;
+                                width: 68%;
+                                padding: 2%;
+                                background: #f8f2f8 ;
+                                margin: 2%">
+                                <div class="row">
+                                    <div class="col-sm-3"><h5>Recruiter Name:</h5></div>
+                                    <div class="col-sm-9">
+                                        <input id="recruiterName" name="recruiterName" placeholder="Recruiter Name" type="text" class="form-control input-md" >
+                                    </div>
+                                </div>
 
-                    <div id="recruiterSection" style="display: none;
-                        width: 68%;
-                        padding: 2%;
-                        background: #f8f2f8 ;
-                        margin: 2%">
-                        <div class="row">
-                            <div class="col-sm-3"><h5>Recruiter Name:</h5></div>
-                            <div class="col-sm-9">
-                                <input id="recruiterName" name="recruiterName" placeholder="Recruiter Name" type="text" class="form-control input-md" >
+                                <div class="row">
+                                    <div class="col-sm-3"><h5>Recruiter Mobile:</h5></div>
+                                    <div class="col-sm-9">
+                                        <input id="recruiterMobile" name="recruiterMobile" maxlength="10" placeholder="Recruiter Mobile" type="text" class="form-control input-md" >
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm-3"><h5>Recruiter Landline (optional) :</h5></div>
+                                    <div class="col-sm-9">
+                                        <input id="recruiterLandline" name="recruiterLandline" placeholder="Recruiter Landline" type="text" class="form-control input-md" >
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-sm-3"><h5>Recruiter Email:</h5></div>
+                                    <div class="col-sm-9">
+                                        <input id="recruiterEmail" name="recruiterEmail" placeholder="Recruiter Email" type="text" class="form-control input-md" >
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Job Post Title:<font color="red">*</font></h5></div>
+                                <div class="col-sm-9">
+                                    <input id="jobPostTitle" name="jobPostTitle" placeholder="job Post Title" style="width: 70%;
+                                        display: inline-block" type="text" class="form-control input-md">
+                                    <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Job Post Description:</h5></div>
+                                <div class="col-sm-9">
+                                    <textarea rows="4" cols="80" id="jobPostDescription" class="form-control input-md" maxlength="5000"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Gender : <font color="red">*</font></h5></div>
+                                <div class="col-sm-9">
+                                    <select id="jobPostGender" class="selectDropdown">
+                                        <option value="-1">Select</option>
+                                        <option value="0">Male</option>
+                                        <option value="1">Female</option>
+                                        <option value="2">Any</option>
+                                    </select>
+                                    <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                                </div>
+                            </div>
+
+
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Job Post Job Role:<font color="red">*</font></h5></div>
+                                <div class="col-sm-7">
+                                    <input type="text" id="jobPostJobRole" style="display: inline-block; width: 50%">
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Job Post Locality(s):<font color="red">*</font></h5></div>
+                                <div class="col-sm-6">
+                                    <input type="text" id="jobPostLocalities" style=";">
+                                </div>
+                                <div class="col-sm-3" style="margin-top: 10px;
+                                    margin-left: -24px">
+                                    <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Job Post Pincode:</h5></div>
+                                <div class="col-sm-9">
+                                    <input id="jobPostPinCode" name="jobPostPinCode" placeholder="Job Post PinCode" type="number" max="999999" class="form-control input-md" >
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Min Salary:<font color="red">*</font></h5></div>
+                                <div class="col-sm-9">
+                                    <input id="jobPostMinSalary" value="0" max="99999" style="width: 15%; display: inline-block" placeholder="Min Salary" type="number" class="form-control input-md">
+                                    <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Max Salary:</h5></div>
+                                <div class="col-sm-9">
+                                    <input id="jobPostMaxSalary" value="0" max="99999" style="width: 15%" placeholder="Max Salary" type="number" class="form-control input-md">
+                                </div>
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Total Vacancies:<font color="red">*</font></h5></div>
+                                <div class="col-sm-9">
+                                    <input id="jobPostVacancies" value="0" style="width: 15%;
+                                        display: inline-block" placeholder="Total Vacancies" type="number" class="form-control input-md">
+                                </div>
                             </div>
                         </div>
-
-                        <div class="row">
-                            <div class="col-sm-3"><h5>Recruiter Mobile:</h5></div>
-                            <div class="col-sm-9">
-                                <input id="recruiterMobile" name="recruiterMobile" maxlength="10" placeholder="Recruiter Mobile" type="text" class="form-control input-md" >
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-sm-3"><h5>Recruiter Landline (optional) :</h5></div>
-                            <div class="col-sm-9">
-                                <input id="recruiterLandline" name="recruiterLandline" placeholder="Recruiter Landline" type="text" class="form-control input-md" >
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-sm-3"><h5>Recruiter Email:</h5></div>
-                            <div class="col-sm-9">
-                                <input id="recruiterEmail" name="recruiterEmail" placeholder="Recruiter Email" type="text" class="form-control input-md" >
-                            </div>
-                        </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-sm-3"><h5>Job Post Title:<font color="red">*</font></h5></div>
-                        <div class="col-sm-9">
-                            <input id="jobPostTitle" name="jobPostTitle" placeholder="job Post Title" style="width: 70%;
-                                display: inline-block" type="text" class="form-control input-md">
-                            <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-3"><h5>Job Post Description:</h5></div>
-                        <div class="col-sm-9">
-                            <textarea rows="4" cols="80" id="jobPostDescription" class="form-control input-md" maxlength="5000"></textarea>
-                        </div>
-                    </div>
-                    <div class="panel panel-primary" id="jdRequirementPanel" style="margin: 1% 0;">
+                    <div class="panel panel-default" id="jdRequirementPanel" style="margin: 1% 0;">
                         <div class="panel-heading" style="cursor: pointer;">Requirements Panel</div>
                         <div class="panel-container" style="padding: 1%;">
 
@@ -160,7 +228,7 @@
                             </div>
 
                             <div class="row" style="padding: 6px 0;">
-                                <div class="col-sm-3"><h5>Language Requirement: <font color="red">*</font></h5></div>
+                                <div class="col-sm-3"><h5>Language Req: <font color="red">*</font></h5></div>
                                 <div class="col-sm-4">
                                     <select id="jobPostLanguage" multiple="multiple" class="selectDropdown"></select>
                                     <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
@@ -168,145 +236,110 @@
                             </div>
 
                             <div class="row" style="padding: 6px 0;">
-                                <div class="col-sm-3"><h5>Documents Requirement: <font color="red">*</font></h5></div>
+                                <div class="col-sm-3"><h5>Documents Req: </h5></div>
                                 <div class="col-sm-4">
-                                    <select id="jobPostDocuments" multiple="multiple" class="selectDropdown"></select>
-                                    <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                                    <select id="jobPostDocument" multiple="multiple" class="selectDropdown"></select>
                                 </div>
                             </div>
 
                             <div class="row" style="padding: 6px 0;">
-                                <div class="col-sm-3"><h5>Assets Requirement: <font color="red">*</font></h5></div>
+                                <div class="col-sm-3"><h5>Assets Req: </h5></div>
                                 <div class="col-sm-4">
-                                    <select id="jobPostAssets" multiple="multiple" class="selectDropdown"></select>
-                                    <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                                    <select id="jobPostAsset" multiple="multiple" class="selectDropdown"></select>
                                 </div>
                             </div>
 
                         </div>
                     </div>
+                    <div class="panel panel-default" id="jdWorkTimingPanel" style="margin: 1% 0;">
+                        <div class="panel-heading" style="cursor: pointer;">Work Timing Panel</div>
+                        <div class="panel-container" style="padding: 1%;">
 
-                    <div class="row">
-                        <div class="col-sm-3"><h5>Gender Requirement: <font color="red">*</font></h5></div>
-                        <div class="col-sm-9">
-                            <select id="jobPostGender" class="selectDropdown">
-                                <option value="-1">Select</option>
-                                <option value="0">Male</option>
-                                <option value="1">Female</option>
-                                <option value="2">Any</option>
-                            </select>
-                            <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Job Post Min Req:</h5></div>
+                                <div class="col-sm-9">
+                                    <textarea rows="4" cols="80" id="jobPostMinRequirement" class="form-control input-md" maxlength="5000"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Job Start Time:</h5></div>
+                                <div class='col-sm-5'>
+                                    <select id="jobPostStartTime" class="selectDropdown" ></select>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Job End Time:</h5></div>
+                                <div class='col-sm-5'>
+                                    <select id="jobPostEndTime" class="selectDropdown" ></select>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Working Days</h5></div>
+                                <div class="col-sm-9">
+                                    <input id="working_1" type="checkbox">Monday &nbsp;&nbsp;&nbsp;
+                                    <input id="working_2" type="checkbox">Tuesday &nbsp;&nbsp;&nbsp;
+                                    <input id="working_3" type="checkbox">Wednesday &nbsp;&nbsp;&nbsp;
+                                    <input id="working_4" type="checkbox">Thursday &nbsp;&nbsp;&nbsp;
+                                    <input id="working_5" type="checkbox">Friday &nbsp;&nbsp;&nbsp;
+                                    <input id="working_6" type="checkbox">Saturday &nbsp;&nbsp;&nbsp;
+                                    <input id="working_7" type="checkbox">Sunday &nbsp;&nbsp;&nbsp;
+                                </div>
+                            </div>
+
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Job Post work shift?: </h5></div>
+                                <div class="col-sm-9" style="margin-top: 8px">
+                                    <select id="jobPostWorkShift" class="selectDropdown" ></select>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Work From Home?</h5></div>
+                                <div class="col-sm-9">
+                                    <input id="jobPostWorkFromHome" type="checkbox">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="panel panel-default" id="jdOtherPanel" style="margin: 1% 0;">
+                        <div class="panel-heading" style="cursor: pointer;">Other Detail Panel</div>
+                        <div class="panel-container" style="padding: 1%;">
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Job Post Incentives:</h5></div>
+                                <div class="col-sm-9">
+                                    <textarea rows="4" cols="80" id="jobPostIncentives" class="form-control input-md" maxlength="5000"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Is this a Hot Job?</h5></div>
+                                <div class="col-sm-9">
+                                    <input id="jobPostIsHot" type="checkbox" style="display: inline-block">
+                                </div>
+                            </div>
+
+
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Job Pricing Plan:</h5></div>
+                                <div class='col-sm-5'>
+                                    <select id="jobPostPricingPlan" class="selectDropdown" ></select>
+                                </div>
+                            </div>
+
+
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Job Post Status:</h5></div>
+                                <div class="col-sm-9">
+                                    <select id="jobPostStatus" class="selectDropdown"></select>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="row" style="margin-top: 4px">
-                        <div class="col-sm-3"><h5>Job Post Job Role:<font color="red">*</font></h5></div>
-                        <div class="col-sm-7">
-                            <input type="text" id="jobPostJobRole" style="display: inline-block; width: 50%">
-                        </div>
-                    </div>
-
-                    <div class="row" style="margin-top: 4px">
-                        <div class="col-sm-3"><h5>Job Post Locality(s):<font color="red">*</font></h5></div>
-                        <div class="col-sm-6">
-                            <input type="text" id="jobPostLocalities" style=";">
-                        </div>
-                        <div class="col-sm-3" style="margin-top: 10px;
-                            margin-left: -24px">
-                            <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-3"><h5>Job Post Pincode:</h5></div>
-                        <div class="col-sm-9">
-                            <input id="jobPostPinCode" name="jobPostPinCode" placeholder="Job Post PinCode" type="number" max="999999" class="form-control input-md" >
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-3"><h5>Job Post Incentives:</h5></div>
-                        <div class="col-sm-9">
-                            <textarea rows="4" cols="80" id="jobPostIncentives" class="form-control input-md" maxlength="5000"></textarea>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-3"><h5>Job Post Min Requirement:</h5></div>
-                        <div class="col-sm-9">
-                            <textarea rows="4" cols="80" id="jobPostMinRequirement" class="form-control input-md" maxlength="5000"></textarea>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-3"><h5>Job Start Time:</h5></div>
-                        <div class='col-sm-5'>
-                            <select id="jobPostStartTime" class="selectDropdown" ></select>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-3"><h5>Job End Time:</h5></div>
-                        <div class='col-sm-5'>
-                            <select id="jobPostEndTime" class="selectDropdown" ></select>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-3"><h5>Working Days</h5></div>
-                        <div class="col-sm-9">
-                            <input id="working_1" type="checkbox">Monday &nbsp;&nbsp;&nbsp;
-                            <input id="working_2" type="checkbox">Tuesday &nbsp;&nbsp;&nbsp;
-                            <input id="working_3" type="checkbox">Wednesday &nbsp;&nbsp;&nbsp;
-                            <input id="working_4" type="checkbox">Thursday &nbsp;&nbsp;&nbsp;
-                            <input id="working_5" type="checkbox">Friday &nbsp;&nbsp;&nbsp;
-                            <input id="working_6" type="checkbox">Saturday &nbsp;&nbsp;&nbsp;
-                            <input id="working_7" type="checkbox">Sunday &nbsp;&nbsp;&nbsp;
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-3"><h5>Is this a Hot Job?</h5></div>
-                        <div class="col-sm-9">
-                            <input id="jobPostIsHot" type="checkbox" style="display: inline-block">
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-3"><h5>Work From Home?</h5></div>
-                        <div class="col-sm-9">
-                            <input id="jobPostWorkFromHome" type="checkbox">
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-3"><h5>Total Vacancies:<font color="red">*</font></h5></div>
-                        <div class="col-sm-9">
-                            <input id="jobPostVacancies" value="0" style="width: 15%;
-                                display: inline-block" placeholder="Total Vacancies" type="number" class="form-control input-md">
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-sm-3"><h5>Job Pricing Plan:</h5></div>
-                        <div class='col-sm-5'>
-                            <select id="jobPostPricingPlan" class="selectDropdown" ></select>
-                        </div>
-                    </div>
-
-                    <div class="row" style="margin-top: 4px">
-                        <div class="col-sm-3"><h5>Job Post work shift?: </h5></div>
-                        <div class="col-sm-9" style="margin-top: 8px">
-                            <select id="jobPostWorkShift" class="selectDropdown" ></select>
-                        </div>
-                    </div>
-
-                    <div class="row" style="margin-top: 4px">
-                        <div class="col-sm-3"><h5>Job Post Status:</h5></div>
-                        <div class="col-sm-9">
-                            <select id="jobPostStatus" class="selectDropdown"></select>
-                        </div>
-                    </div>
                     <br>
                     <h4>Interview Details</h4>
                     <div style="background: rgba(144, 202, 249, 0.33);
