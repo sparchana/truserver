@@ -9,6 +9,7 @@ import api.http.httpResponse.AddCompanyResponse;
 import api.http.httpResponse.LoginResponse;
 import api.http.httpResponse.Recruiter.AddRecruiterResponse;
 import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
+import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterLead;
 import models.entity.Recruiter.RecruiterPayment;
@@ -24,6 +25,7 @@ import play.mvc.Result;
 import java.util.UUID;
 
 import static models.util.Util.generateOtp;
+import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 import static play.mvc.Results.ok;
 
@@ -376,30 +378,51 @@ public class RecruiterService {
     }
 
     public static Result unlockCandidate(RecruiterProfile recruiterProfile, Long candidateId) {
-        recruiterProfile.setRecruiterCandidateUnlockCredits(recruiterProfile.getRecruiterCandidateUnlockCredits() - 1);
-        recruiterProfile.update();
+        if(recruiterProfile.getRecruiterCandidateUnlockCredits() != null || recruiterProfile.getRecruiterCandidateUnlockCredits() != 0){
+            //making an entry in recruiter credit history table
+            RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
+            recruiterCreditHistory.setRecruiterProfile(recruiterProfile);
 
-        //making an entry in recruiter credit history table
-        RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
-        recruiterCreditHistory.setRecruiterProfile(recruiterProfile);
+            RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where().eq("recruiter_credit_category_id", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK).findUnique();
+            if(recruiterCreditCategory != null){
+                recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
+            }
 
-        RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where().eq("recruiter_credit_category_id", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK).findUnique();
-        if(recruiterCreditCategory != null){
-            recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
+            RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
+                    .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
+                    .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK)
+                    .setMaxRows(1)
+                    .orderBy("recruiter_credit_history_create_timestamp desc")
+                    .findUnique();
+
+            if(recruiterCreditHistoryLatest != null){
+                recruiterCreditHistory.setRecruiterCreditsAvailable(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() - 1);
+                recruiterCreditHistory.setRecruiterCreditsUsed(recruiterCreditHistoryLatest.getRecruiterCreditsUsed() + 1);
+                //adding a entry in recruiterToCandidateUnblock table
+                RecruiterToCandidateUnlocked recruiterToCandidateUnlocked = new RecruiterToCandidateUnlocked();
+
+                Candidate candidate = Candidate.find.where().eq("Candidateid", candidateId).findUnique();
+                if(candidate != null){
+                    Logger.info("Recruiter with mobile no: " + recruiterProfile.getRecruiterProfileMobile() + " is unlocking candidate with mobile: " + candidate.getCandidateMobile());
+
+                    if(recruiterProfile.getRecruiterCandidateUnlockCredits() != null){
+                        recruiterProfile.setRecruiterCandidateUnlockCredits(recruiterProfile.getRecruiterCandidateUnlockCredits() - 1);
+                        recruiterToCandidateUnlocked.setRecruiterProfile(recruiterProfile);
+                        recruiterToCandidateUnlocked.setCandidate(candidate);
+
+                        //saving/updating all the rows
+                        recruiterProfile.update();
+                        recruiterCreditHistory.save();
+                        recruiterToCandidateUnlocked.save();
+                        return ok("1");
+                    }
+                }
+            } else{
+                recruiterCreditHistory.setRecruiterCreditsAvailable(0);
+                recruiterCreditHistory.setRecruiterCreditsUsed(0);
+            }
         }
-
-        RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
-                .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
-                .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK)
-                .setMaxRows(1)
-                .orderBy("recruiter_credit_history_create_timestamp desc")
-                .findUnique();
-
-        if(recruiterCreditHistoryLatest != null){
-            recruiterCreditHistory.setRecruiterCreditsAvailable(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() - 1);
-            recruiterCreditHistory.setRecruiterCreditsUsed(recruiterCreditHistoryLatest.getRecruiterCreditsUsed() + 1);
-            recruiterCreditHistory.save();
-        }
-        return ok("1");
+        Logger.info("Recruiter with mobile no: " + recruiterProfile.getRecruiterProfileMobile() + " does not have credits to unlock candidate");
+        return ok("0");
     }
 }

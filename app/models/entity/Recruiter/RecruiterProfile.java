@@ -5,6 +5,8 @@ import com.avaje.ebean.annotation.PrivateOwned;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Company;
+import models.entity.OM.JobApplication;
+import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.RecruiterCreditHistory;
 import models.entity.JobPost;
 import models.entity.Recruiter.Static.RecruiterProfileStatus;
@@ -101,6 +103,10 @@ public class RecruiterProfile extends Model {
     @PrivateOwned
     @OneToMany(mappedBy = "recruiterProfile", cascade = CascadeType.REMOVE)
     private List<RecruiterPayment> recruiterPaymentList;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "recruiterProfile", cascade = CascadeType.ALL)
+    private List<RecruiterToCandidateUnlocked> recruiterToCandidateUnlockedList;
 
     public static Finder<String, RecruiterProfile> find = new Finder(RecruiterProfile.class);
 
@@ -291,5 +297,13 @@ public class RecruiterProfile extends Model {
 
     public void setRecruiterPaymentList(List<RecruiterPayment> recruiterPaymentList) {
         this.recruiterPaymentList = recruiterPaymentList;
+    }
+
+    public List<RecruiterToCandidateUnlocked> getRecruiterToCandidateUnlockedList() {
+        return recruiterToCandidateUnlockedList;
+    }
+
+    public void setRecruiterToCandidateUnlockedList(List<RecruiterToCandidateUnlocked> recruiterToCandidateUnlockedList) {
+        this.recruiterToCandidateUnlockedList = recruiterToCandidateUnlockedList;
     }
 }

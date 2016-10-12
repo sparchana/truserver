@@ -28,6 +28,20 @@ create table recruiter_payment (
   constraint pk_recruiter_payment primary key (recruiter_payment_id)
 );
 
+create table recruiter_to_candidate_unlocked (
+  recruiter_to_candidate_unlocked_id int signed auto_increment not null,
+  recruiter_to_candidate_unlocked_create_timestamp timestamp not null default current_timestamp,
+  recruiterprofileid            bigint signed,
+  candidateid                   bigint signed,
+  constraint pk_recruiter_to_candidate_unlocked primary key (recruiter_to_candidate_unlocked_id)
+);
+
+alter table recruiter_to_candidate_unlocked add constraint fk_recruiter_to_candidate_unlocked_recruiterprofileid foreign key (recruiterprofileid) references recruiterprofile (recruiterprofileid) on delete restrict on update restrict;
+create index ix_recruiter_to_candidate_unlocked_recruiterprofileid on recruiter_to_candidate_unlocked (recruiterprofileid);
+
+alter table recruiter_to_candidate_unlocked add constraint fk_recruiter_to_candidate_unlocked_candidateid foreign key (candidateid) references candidate (candidateid) on delete restrict on update restrict;
+create index ix_recruiter_to_candidate_unlocked_candidateid on recruiter_to_candidate_unlocked (candidateid);
+
 alter table recruiterprofile drop column recruiterlinkedinprofile;
 alter table recruiterprofile add column recruiterlinkedinprofile varchar(60) null;
 
@@ -51,6 +65,12 @@ create index ix_recruiter_credit_history_recruitercreditcategory on recruiter_cr
 alter table recruiterprofile drop column recruiterlinkedinprofile;
 alter table recruiterprofile add column recruiterlinkedinprofile bigint signed null;
 
+alter table recruiter_to_candidate_unlocked drop foreign key fk_recruiter_to_candidate_unlocked_recruiterprofileid;
+drop index ix_recruiter_to_candidate_unlocked_recruiterprofileid on recruiter_to_candidate_unlocked;
+
+alter table recruiter_to_candidate_unlocked drop foreign key fk_recruiter_to_candidate_unlocked_candidateid;
+drop index ix_recruiter_to_candidate_unlocked_candidateid on recruiter_to_candidate_unlocked;
+
 alter table recruiter_credit_history drop foreign key fk_recruiter_credit_history_recruiterprofileid;
 drop index ix_recruiter_credit_history_recruiterprofileid on recruiter_credit_history;
 
@@ -69,3 +89,4 @@ alter table recruiterprofile drop column recruitercandidateunlockcredits;
 drop table if exists recruiter_credit_category;
 drop table if exists recruiter_credit_history;
 drop table if exists recruiter_payment;
+drop table if exists recruiter_to_candidate_unlocked;

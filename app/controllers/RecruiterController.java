@@ -154,6 +154,7 @@ public class RecruiterController {
                 return RecruiterService.unlockCandidate(recruiterProfile, candidateId);
             }
         }
-        return ok("0");
+        // no recruiter session found
+        return ok("-1");
     }
 }
