@@ -1,23 +1,26 @@
 package controllers.businessLogic.JobWorkflow;
 
 import api.ServerConstants;
-import api.http.httpResponse.CandidateFeature;
-import api.http.httpResponse.CandidateMatchingJobPost;
-import api.http.httpResponse.WorkflowResponse;
+import api.http.httpRequest.Workflow.SelectedCandidateRequest;
+import api.http.httpResponse.CandidateExtraData;
+import api.http.httpResponse.CandidateWorkflowData;
+import api.http.httpResponse.Workflow.WorkflowResponse;
 import com.avaje.ebean.*;
 import controllers.businessLogic.MatchingEngineService;
 import models.entity.Candidate;
 import models.entity.Interaction;
 import models.entity.JobPost;
-import models.entity.OM.CandidateAssessmentAttempt;
-import models.entity.OM.JobApplication;
-import models.entity.OM.JobPostLanguageRequirement;
-import models.entity.OM.JobPostToLocality;
+import models.entity.OM.*;
+import models.entity.Static.JobPostWorkflowStatus;
 import models.entity.Static.Locality;
+import models.util.Util;
 import play.Logger;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static play.mvc.Controller.session;
 
 /**
  * Created by zero on 4/10/16.
@@ -37,19 +40,19 @@ public class JobPostWorkflowEngine {
      *
      *
     */
-    public static Map<Long, CandidateMatchingJobPost> getMatchingCandidate(Long jobPostId,
-                                                                           Integer minAge,
-                                                                           Integer maxAge,
-                                                                           Long minSalary,
-                                                                           Long maxSalary,
-                                                                           Integer gender,
-                                                                           Integer experienceId,
-                                                                           Long jobRoleId,
-                                                                           Integer educationId,
-                                                                           List<Long> jobPostLocalityIdList,
-                                                                           List<Integer> languageIdList)
+    public static Map<Long, CandidateWorkflowData> getMatchingCandidate(Long jobPostId,
+                                                                        Integer minAge,
+                                                                        Integer maxAge,
+                                                                        Long minSalary,
+                                                                        Long maxSalary,
+                                                                        Integer gender,
+                                                                        Integer experienceId,
+                                                                        Long jobRoleId,
+                                                                        Integer educationId,
+                                                                        List<Long> jobPostLocalityIdList,
+                                                                        List<Integer> languageIdList)
     {
-        Map<Long, CandidateMatchingJobPost> matchedCandidateMap = new LinkedHashMap<>();
+        Map<Long, CandidateWorkflowData> matchedCandidateMap = new LinkedHashMap<>();
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
@@ -155,16 +158,35 @@ public class JobPostWorkflowEngine {
                     .query();
         }
 
+        // should not be in workflow table
+        List<Long> selectedCandidateIdList = new ArrayList<>();
+        for (JobPostWorkflow jpwf : JobPostWorkflow.find.where().eq("job_post_id", jobPostId).findList()) {
+            selectedCandidateIdList.add(jpwf.getCandidate().getCandidateId());
+        }
+
+        query = query.where()
+                    .notIn("candidateId", selectedCandidateIdList)
+                    .query();
+
+        // should be an active candidate
+        query = query.select("*").fetch("candidateprofilestatus")
+                    .where()
+                    .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE)
+                    .query();
+
         List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList);
 
-        Map<Long, CandidateFeature> allFeature = computeFeature(candidateList, jobPost);
+        Map<Long, CandidateExtraData> allFeature = computeExtraData(candidateList, jobPost);
 
-        for (Candidate candidate : candidateList) {
-            CandidateMatchingJobPost candidateMatchingJobPost = new CandidateMatchingJobPost();
-            candidateMatchingJobPost.setCandidate(candidate);
-            candidateMatchingJobPost.setFeature(allFeature.get(candidate.getCandidateId()));
-            matchedCandidateMap.put(candidate.getCandidateId(), candidateMatchingJobPost);
+        if(candidateList.size() != 0) {
+            for (Candidate candidate : candidateList) {
+                CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
+                candidateWorkflowData.setCandidate(candidate);
+                candidateWorkflowData.setExtraData(allFeature.get(candidate.getCandidateId()));
+                matchedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
+            }
         }
+
 
         return matchedCandidateMap;
     }
@@ -173,7 +195,7 @@ public class JobPostWorkflowEngine {
      * @param jobPostId
      * Prepare params and calls getMatchingCandidate
      */
-    public static Map<Long, CandidateMatchingJobPost> getMatchingCandidate(Long jobPostId)
+    public static Map<Long, CandidateWorkflowData> getMatchingCandidate(Long jobPostId)
     {
         // prep params for a jobPost
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
@@ -223,37 +245,43 @@ public class JobPostWorkflowEngine {
 
                 // candidate home locality matches with the job post locality
 
+                StringBuilder matchedLocation = new StringBuilder();
                 if ((candidate.getLocality() == null || ! jobPostLocalityIdList.contains(candidate.getLocality().getLocalityId()))) {
 
                     if((candidate.getCandidateLocalityLat() != null && candidate.getCandidateLocalityLng()!= null)){
                         // is candidate within x km from any of the jobpost locality
                         for (Locality locality : localityList) {
-                            if (MatchingEngineService.getDistanceFromCenter(
+                            double distance = MatchingEngineService.getDistanceFromCenter(
                                     locality.getLat(),
                                     locality.getLng(),
                                     candidate.getCandidateLocalityLat(),
                                     candidate.getCandidateLocalityLng()
-                            ) > ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS) {
+                            );
+                            if (distance > ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS) {
                                 // candidate is not within req distance from jobPost latlng
                                 filteredCandidateList.remove(candidate);
                                 break;
+                            } else {
+                                matchedLocation.append(locality.getLocalityName() + "("+ Util.RoundTo1Decimals(distance)+" KM) " );
                             }
                         }
                     } else {
                         filteredCandidateList.remove(candidate);
                     }
                 }
+                candidate.setMatchedLocation(matchedLocation.toString());
             }
         }
 
         return filteredCandidateList;
     }
 
-    private static Map<Long, CandidateFeature> computeFeature(List<Candidate> candidateList, JobPost jobPost) {
+    private static Map<Long, CandidateExtraData> computeExtraData(List<Candidate> candidateList, JobPost jobPost) {
         SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT_HH);
 
+        if(candidateList.size() == 0) return null;
         // candidateId --> featureMap
-        Map<Long, CandidateFeature> allFeature = new LinkedHashMap<>();
+        Map<Long, CandidateExtraData> candidateExtraDataMap = new LinkedHashMap<>();
 
         List<String> candidateUUIdList = new ArrayList<>();
         List<Long> candidateIdList = new ArrayList<>();
@@ -284,57 +312,65 @@ public class JobPostWorkflowEngine {
             assessmentMap.put(attempt.getCandidate().getCandidateId(), attempt.getAttemptId());
         }
 
+        String candidateListString = String.join("', '", candidateUUIdList);
 
-        // query all interactions of all candidate and order the list by most recent interaction on top
-        // will be used for different types of inference
-        List<Interaction> allInteractions = Interaction.find.where()
-                .in("objectAUUId", candidateUUIdList)
-                .setDistinct(true)
-                .orderBy().desc("creationTimestamp")
-                .findList();
+        StringBuilder interactionQueryBuilder = new StringBuilder("select distinct objectauuid, creationtimestamp from interaction i " +
+                " where i.objectauuid " +
+                " in ('"+candidateListString+"') " +
+                " and creationtimestamp = " +
+                " (select max(creationtimestamp) from interaction where i.objectauuid = interaction.objectauuid) " +
+                " order by creationTimestamp desc ");
 
-        // linked hash map maintain the insertion order
-        Map<String, ArrayList<Interaction>> objAUUIDToInteractions = new LinkedHashMap<>();
 
-        for (Interaction interaction : allInteractions) {
-            String objectAUUID = interaction.getObjectAUUId();
+        Logger.info(interactionQueryBuilder.toString());
+        RawSql rawSql = RawSqlBuilder.parse(interactionQueryBuilder.toString())
+                .tableAliasMapping("i", "interaction")
+                .columnMapping("objectauuid", "objectAUUId")
+                .columnMapping("creationtimestamp", "creationTimestamp")
+                .create();
 
-            ArrayList<Interaction> interactionsOfCandidate = objAUUIDToInteractions.get(objectAUUID);
 
-            if (interactionsOfCandidate == null) {
-                interactionsOfCandidate = new ArrayList<Interaction>();
-                objAUUIDToInteractions.put(objectAUUID, interactionsOfCandidate);
-            }
-            interactionsOfCandidate.add(interaction);
-        }
+//      TODO: Optimization: It takes 4+ sec for query to return map/list for this constraint, prev implementation was faster
+        Logger.info("before interaction query: " + new Timestamp(System.currentTimeMillis()));
+        Map<String, Interaction> lastActiveInteraction= Ebean.find(Interaction.class)
+                .setRawSql(rawSql)
+                .findMap("objectAUUId", String.class);
 
+//        List<Interaction> interactionList = Ebean.find(Interaction.class)
+//                .setRawSql(rawSql)
+//                .findList();
+//
+//        Map<String, Interaction> lastActiveInteraction = new HashMap<>();
+//        for (Interaction interaction: interactionList) {
+//            lastActiveInteraction.put(interaction.getObjectAUUId(), interaction);
+//        }
+        Logger.info("after interaction query: " + new Timestamp(System.currentTimeMillis()));
 
         for (Candidate candidate: candidateList) {
-            CandidateFeature feature = allFeature.get(candidate.getCandidateId());
+            CandidateExtraData candidateExtraData = candidateExtraDataMap.get(candidate.getCandidateId());
 
-            if( feature == null) {
-                feature = new CandidateFeature();
+            if( candidateExtraData == null) {
+                candidateExtraData = new CandidateExtraData();
 
                 // compute applied on
-                feature.setAppliedOn(jobApplicationMap.get(candidate.getCandidateId()));
+                candidateExtraData.setAppliedOn(jobApplicationMap.get(candidate.getCandidateId()));
 
                 // compute last active on
-                ArrayList<Interaction> interactionsOfCandidate = objAUUIDToInteractions.get(candidate.getCandidateUUId());
+                Interaction interactionsOfCandidate = lastActiveInteraction.get(candidate.getCandidateUUId());
                 if(interactionsOfCandidate != null) {
-                    Interaction mostRecentInteraction = interactionsOfCandidate.get(0);
-                    feature.setLastActive(sfd.format(mostRecentInteraction.getCreationTimestamp()));
+                    candidateExtraData.setLastActive(getDateCluster(interactionsOfCandidate.getCreationTimestamp().getTime()));
                 }
 
                 // compute 'has attempted assessment' for this JobPost-JobRole, If yes then this contains assessmentId
-                feature.setAssessmentAttemptId(assessmentMap.get(candidate.getCandidateId()));
+                candidateExtraData.setAssessmentAttemptId(assessmentMap.get(candidate.getCandidateId()));
 
                 // other intelligent scoring will come here
             }
 
-            allFeature.put(candidate.getCandidateId(), feature);
+            candidateExtraDataMap.put(candidate.getCandidateId(), candidateExtraData);
         }
 
-        return allFeature;
+        return candidateExtraDataMap;
     }
 
     private static ExperienceValue getDurationFromExperience(Integer experienceId) {
@@ -367,14 +403,42 @@ public class JobPostWorkflowEngine {
         return experienceValue;
     }
 
-    public static WorkflowResponse saveSelectedCandidates(List<Long> selectedCandidateIdList) {
+    public static WorkflowResponse saveSelectedCandidates(SelectedCandidateRequest request) {
         WorkflowResponse response = new WorkflowResponse();
-        List<Candidate> selectedCandidateList = Candidate.find.where().in("candidateId", selectedCandidateIdList).findList();
+        List<Candidate> selectedCandidateList = Candidate.find.where().in("candidateId", request.getSelectedCandidateIdList()).findList();
 
-        if (selectedCandidateIdList.size() == 0) {
+        if (request.getSelectedCandidateIdList()!=null
+                && request.getSelectedCandidateIdList().size() == 0) {
             response.setStatus(WorkflowResponse.STATUS.FAILED);
             response.setMessage("Something Went Wrong ! Please try again");
             return response;
+        }
+
+        List<Long> selectedCandidateIdList = new ArrayList<>();
+        for (Candidate candidate: selectedCandidateList) {
+            selectedCandidateIdList.add(candidate.getCandidateId());
+        }
+        JobPost jobPost = JobPost.find.where().eq("jobPostId", request.getJobPostId()).findUnique();
+        JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_SELECTED).findUnique();
+
+        Map<?, JobPostWorkflow> workflowMap = JobPostWorkflow.find
+                                                                .where()
+                                                                .eq("job_post_id", request.getJobPostId())
+                                                                .eq("status_id", status.getStatusId())
+                                                                .in("candidate_id", selectedCandidateIdList)
+                                                                .setMapKey("candidate_id")
+                                                                .findMap();
+
+        for (Candidate candidate: selectedCandidateList) {
+            JobPostWorkflow jobPostWorkflow = workflowMap.get(candidate.getCandidateId());
+            if(jobPostWorkflow == null) {
+                jobPostWorkflow = new JobPostWorkflow();
+                jobPostWorkflow.setJobPost(jobPost);
+                jobPostWorkflow.setCandidate(candidate);
+                jobPostWorkflow.setCreatedBy(session().get("sessionUsername"));
+                jobPostWorkflow.setStatus(status);
+                jobPostWorkflow.save();
+            }
         }
 
         response.setStatus(WorkflowResponse.STATUS.SUCCESS);
@@ -385,8 +449,66 @@ public class JobPostWorkflowEngine {
         return response;
     }
 
+    public static Map<Long, CandidateWorkflowData> getSelectedCandidates(Long jobPostId) {
+
+        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find
+                .where()
+                .eq("job_post_id", jobPostId)
+                .eq("status_id", ServerConstants.JWF_STATUS_SELECTED)
+                .setDistinct(true)
+                .orderBy().desc("creation_timestamp").findList();
+
+        List<Candidate> candidateList = new ArrayList<>();
+
+        Map<Long, CandidateWorkflowData> selectedCandidateMap = new LinkedHashMap<>();
+
+        // until view is not available over this table, this loop get the distinct candidate who
+        // got selected for a job post recently
+        for( JobPostWorkflow jpwf: jobPostWorkflowList) {
+            candidateList.add(jpwf.getCandidate());
+        }
+
+        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique());
+
+        for ( Candidate candidate: candidateList) {
+            CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
+            candidateWorkflowData.setCandidate(candidate);
+            candidateWorkflowData.setExtraData(candidateExtraDataMap.get(candidate.getCandidateId()));
+            selectedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
+        }
+
+        return selectedCandidateMap;
+    }
+
     private static class ExperienceValue {
         int minExperienceValue;
         int maxExperienceValue;
+    }
+
+    public static String getDateCluster(Long timeInMill) {
+        String clusterLable;
+        Calendar cal = Calendar.getInstance();
+        Calendar currentCal = Calendar.getInstance();
+        cal.setTimeInMillis(timeInMill);
+
+        int currentDay = currentCal.get(Calendar.DAY_OF_YEAR);
+        int doyDiff = currentDay - cal.get(Calendar.DAY_OF_YEAR);
+
+        if( doyDiff > 60) {
+            clusterLable = "Beyond two months";
+        } else if( doyDiff > 30) {
+            clusterLable = "Last two months";
+        } else if( doyDiff > 15) {
+            clusterLable = "Last one month";
+        } else if (doyDiff > 7) {
+            clusterLable = "Last 14 days";
+        } else if ( doyDiff > 3) {
+            clusterLable = "Last 7 days";
+        } else if ( doyDiff > 1) {
+            clusterLable = "Last 3 days";
+        } else {
+            clusterLable = "Within 24 hrs";
+        }
+        return clusterLable;
     }
 }

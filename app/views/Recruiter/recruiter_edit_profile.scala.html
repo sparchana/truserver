@@ -28,6 +28,7 @@
 
         <meta name="theme-color" content="#000000">
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
     </head>
     <body id="recruiterHome">
         <div class="navbar-fixed">
@@ -83,14 +84,14 @@
                             </div>
                             <div class="input-field col s12 l6">
                                 <i class="material-icons prefix">dialpad</i>
-                                <input placeholder="Enter your landline" id="rec_landline" type="text" maxlength="13" class="validate">
+                                <input placeholder="Enter your landline number" id="rec_landline" type="text" maxlength="13" class="validate">
                                 <label for="rec_landline">Landline</label>
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s12 l6">
                                 <i class="material-icons prefix"><img src="/assets/recruiter/img/icons/linkedin-black.svg" style="margin: -24px 0 0 6px" width="26px"></i>
-                                <input placeholder="Enter your Linked profile link" id="rec_linkedin" type="text" maxlength="36" class="validate">
+                                <input placeholder="Enter your Linkedin profile link" id="rec_linkedin" maxlength="56" type="text" class="validate">
                                 <label for="rec_linkedin">Linkedin Profile</label>
                             </div>
                             <div class="input-field col s12 l6">
@@ -100,6 +101,9 @@
                             </div>
                         </div>
                         <br>
+                        <div onclick="saveForm()" class="waves-effect waves-light right ascentGreen lighten-1 btn"><font style="color: #fff;
+                            font-weight: 600">Save Profile</font></div>
+@*                        <br>
                         <h4>Company Details!</h4>
                         <hr>
                         <div class="row">
@@ -110,8 +114,22 @@
                             </div>
                             <div class="input-field col s12 l6">
                                 <i class="material-icons prefix">location_on</i>
-                                <input placeholder="Enter locality" id="rec_company_locality" type="text" maxlength="10" class="validate">
-                                <label for="rec_company_locality">Locality</label>
+                                <select id="rec_company_locality" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
+                                <script type="text/javascript">
+                                    $('#rec_company_locality').tokenize({
+                                        displayDropdownOnFocus: true,
+                                        placeholder: "Enter company locality",
+                                        maxElements: 1
+                                    });
+                                </script>
+                                <style>
+                                    div.Tokenize ul.TokensContainer {
+                                        margin-left: 44px;
+                                        width: 93%;
+                                        padding-bottom: 12px;
+                                        border-bottom: 1px solid rgba(101, 99, 99, 0.64);
+                                    }
+                                </style>
                             </div>
                         </div>
                         <div class="row">
@@ -144,9 +162,7 @@
                                 <input placeholder="Company Type" id="rec_company_type" type="text" maxlength="15" class="validate">
                                 <label for="rec_company_type">Company Type</label>
                             </div>
-                        </div>
-                        <button type="submit" class="waves-effect waves-light right ascentGreen lighten-1 btn"><font style="color: #fff;
-                            font-weight: 600">Save Profile</font></button>
+                        </div>*@
                     </form>
                 </div>
             </div>
@@ -186,5 +202,5 @@
     <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
     <script type="text/javascript" src="/assets/common/js/validation.js"></script>
-    <script type="text/javascript" src="/assets/recruiter/js/recruiter_home.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/recruiter_edit_profile.js"></script>
 </html>

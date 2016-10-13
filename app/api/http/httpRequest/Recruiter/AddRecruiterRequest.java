@@ -8,10 +8,16 @@ public class AddRecruiterRequest {
     public String recruiterMobile;
     public String recruiterLandline;
     public String recruiterEmail;
+    private String recruiterLinkedinProfile;
+    private String recruiterAlternateMobile;
     public Long recruiterCompany;
-    public String recruiterCompanyName;
-    public Integer recruiterInterviewCredits;
-    public Integer recruiterContactCredits;
+    private String recruiterCompanyName;
+    private Integer recruiterTotalAmount;
+    private Integer recruiterInterviewCreditAmount;
+    private Integer recruiterContactCreditAmount;
+    private Integer recruiterInterviewCreditUnitPrice;
+    private Integer recruiterContactCreditUnitPrice;
+    private Integer recruiterCreditMode;
 
     public String getRecruiterName() {
         return recruiterName;
@@ -61,19 +67,67 @@ public class AddRecruiterRequest {
         this.recruiterCompanyName = recruiterCompanyName;
     }
 
-    public Integer getRecruiterInterviewCredits() {
-        return recruiterInterviewCredits;
+    public Integer getRecruiterTotalAmount() {
+        return recruiterTotalAmount;
     }
 
-    public void setRecruiterInterviewCredits(Integer recruiterInterviewCredits) {
-        this.recruiterInterviewCredits = recruiterInterviewCredits;
+    public void setRecruiterTotalAmount(Integer recruiterTotalAmount) {
+        this.recruiterTotalAmount = recruiterTotalAmount;
     }
 
-    public Integer getRecruiterContactCredits() {
-        return recruiterContactCredits;
+    public Integer getRecruiterInterviewCreditAmount() {
+        return recruiterInterviewCreditAmount;
     }
 
-    public void setRecruiterContactCredits(Integer recruiterContactCredits) {
-        this.recruiterContactCredits = recruiterContactCredits;
+    public void setRecruiterInterviewCreditAmount(Integer recruiterInterviewCreditAmount) {
+        this.recruiterInterviewCreditAmount = recruiterInterviewCreditAmount;
+    }
+
+    public Integer getRecruiterContactCreditAmount() {
+        return recruiterContactCreditAmount;
+    }
+
+    public void setRecruiterContactCreditAmount(Integer recruiterContactCreditAmount) {
+        this.recruiterContactCreditAmount = recruiterContactCreditAmount;
+    }
+
+    public Integer getRecruiterInterviewCreditUnitPrice() {
+        return recruiterInterviewCreditUnitPrice;
+    }
+
+    public void setRecruiterInterviewCreditUnitPrice(Integer recruiterInterviewCreditUnitPrice) {
+        this.recruiterInterviewCreditUnitPrice = recruiterInterviewCreditUnitPrice;
+    }
+
+    public Integer getRecruiterContactCreditUnitPrice() {
+        return recruiterContactCreditUnitPrice;
+    }
+
+    public void setRecruiterContactCreditUnitPrice(Integer recruiterContactCreditUnitPrice) {
+        this.recruiterContactCreditUnitPrice = recruiterContactCreditUnitPrice;
+    }
+
+    public Integer getRecruiterCreditMode() {
+        return recruiterCreditMode;
+    }
+
+    public void setRecruiterCreditMode(Integer recruiterCreditMode) {
+        this.recruiterCreditMode = recruiterCreditMode;
+    }
+
+    public String getRecruiterLinkedinProfile() {
+        return recruiterLinkedinProfile;
+    }
+
+    public void setRecruiterLinkedinProfile(String recruiterLinkedinProfile) {
+        this.recruiterLinkedinProfile = recruiterLinkedinProfile;
+    }
+
+    public String getRecruiterAlternateMobile() {
+        return recruiterAlternateMobile;
+    }
+
+    public void setRecruiterAlternateMobile(String recruiterAlternateMobile) {
+        this.recruiterAlternateMobile = recruiterAlternateMobile;
     }
 }

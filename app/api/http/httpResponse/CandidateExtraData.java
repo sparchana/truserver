@@ -3,7 +3,7 @@ package api.http.httpResponse;
 /**
  * Created by zero on 10/10/16.
  */
-public class CandidateFeature {
+public class CandidateExtraData {
     public String appliedOn;
     public String lastActive;
     public Integer assessmentAttemptId;

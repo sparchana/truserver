@@ -4,10 +4,9 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
 import api.http.httpResponse.Recruiter.RecruiterLeadResponse;
-import models.entity.OM.LocalityPreference;
-import models.entity.OM.RecruiterLeadToJobRole;
-import models.entity.OM.RecruiterLeadToLocality;
-import models.entity.RecruiterLead;
+import models.entity.Recruiter.OM.RecruiterLeadToJobRole;
+import models.entity.Recruiter.OM.RecruiterLeadToLocality;
+import models.entity.Recruiter.RecruiterLead;
 import models.entity.Static.JobRole;
 import models.entity.Static.Locality;
 import models.util.SmsUtil;
@@ -16,8 +15,6 @@ import play.Logger;
 import javax.persistence.NonUniqueResultException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static play.libs.Json.toJson;
 
 /**
  * Created by dodo on 5/10/16.

@@ -1,12 +1,12 @@
-package models.entity;
+package models.entity.Recruiter;
 
 import api.ServerConstants;
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.PrivateOwned;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import models.entity.OM.RecruiterLeadToJobRole;
-import models.entity.OM.RecruiterLeadToLocality;
+import models.entity.Recruiter.OM.RecruiterLeadToJobRole;
+import models.entity.Recruiter.OM.RecruiterLeadToLocality;
 import play.Logger;
 
 import javax.persistence.*;

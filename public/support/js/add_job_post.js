@@ -4,6 +4,14 @@
 
 var recId = 0;
 
+var totalAmount = 0;
+var candidateContactCreditAmount = 0;
+var candidateContactCreditUnitPrice = 0;
+var interviewCreditAmount = 0;
+var interviewCreditUnitPrice = 0;
+
+var paymentMode = 0;
+
 function processDataAddJobPost(returnedData) {
     if(returnedData.status == 1){
         var jobPostLocalities = "";
@@ -82,28 +90,65 @@ function notifyError(msg, type){
     });
 }
 
+function computeCreditValue() {
+    var candidateCreditTypeStatus = 1;
+    var interviewCreditTypeStatus = 1;
+    if($('input:radio[name="candidateCreditType"]:checked').val() == 1){
+        var statusCheck = 1;
+        //the recruiter has paid for candidate unlock credits
+        if($("#candidateContactCreditAmount").val() == ""){
+            statusCheck = 0;
+            candidateCreditTypeStatus = 0;
+            notifyError("Please enter the amount paid by the candidate for candidate contact unlock credits!");
+        } else if($("#candidateContactCreditUnitPrice").val() == ""){
+            statusCheck = 0;
+            candidateCreditTypeStatus = 0;
+            notifyError("Please enter the candidate contact unlock credit unit price!");
+        }
+        if(statusCheck == 1){
+            candidateCreditTypeStatus = 1;
+            candidateContactCreditAmount = parseInt($("#candidateContactCreditAmount").val());
+            totalAmount += candidateContactCreditAmount;
+            candidateContactCreditUnitPrice = parseInt($("#candidateContactCreditUnitPrice").val());
+            $("#addCreditInfoDiv").show();
+            $("#contactUnlockCreditInfo").html("₹" + candidateContactCreditAmount + " @ ₹" + candidateContactCreditUnitPrice + " unit price per credit");
+        }
+    }
+    if($('input:radio[name="interviewCreditType"]:checked').val() == 1){
+        statusCheck = 1;
+        //the recruiter has paid for interview unlock credits
+        if($("#interviewCreditAmount").val() == ""){
+            statusCheck = 0;
+            interviewCreditTypeStatus = 0;
+            notifyError("Please enter the amount paid by the candidate for interview unlock credits!");
+        } else if($("#interviewCreditUnitPrice").val() == ""){
+            statusCheck = 0;
+            interviewCreditTypeStatus = 0;
+            notifyError("Please enter the interview unlock credit unit price!");
+        }
+        if(statusCheck == 1){
+            interviewCreditTypeStatus = 1;
+            interviewCreditAmount = parseInt($("#interviewCreditAmount").val());
+            totalAmount += interviewCreditAmount;
+            interviewCreditUnitPrice = parseInt($("#interviewCreditUnitPrice").val());
+            $("#addCreditInfoDiv").show();
+            $("#interviewUnlockCreditInfo").html("₹" + interviewCreditAmount + " @ ₹" + interviewCreditUnitPrice + " unit price per credit");
+        }
+    }
+    paymentMode = $("#creditMode").val();
+    if(interviewCreditTypeStatus == 1 && candidateCreditTypeStatus == 1){
+        $("#creditModal").modal("hide");
+    }
+}
+
 // job_post_form ajax script
 $(function() {
     $("#job_post_form").submit(function(eventObj) {
         eventObj.preventDefault();
-        if($("#jobPostRecruiter").val() == "" && $("#recruiterSection").is(':visible') == true){
+        if(($("#jobPostRecruiter").val() == "" || $("#jobPostRecruiter").val() == "-1" || $("#jobPostRecruiter").val() == null) && $("#recruiterSection").is(':visible') == true){
             var status = 1;
             var recruiterName = validateName($("#recruiterName").val());
             var recruiterMobile = validateMobile($("#recruiterMobile").val());
-            var recruiterInterviewCreditsVal = $("#recruiterInterviewCredits").val();
-            var recruiterContactCreditsVal = $("#recruiterContactCredits").val();
-
-            if(recruiterInterviewCreditsVal == ""){
-                recruiterInterviewCreditsVal = 0;
-            } else{
-                recruiterInterviewCreditsVal = parseInt(recruiterInterviewCreditsVal);
-            }
-
-            if(recruiterContactCreditsVal == ""){
-                recruiterContactCreditsVal = 0;
-            } else{
-                recruiterContactCreditsVal = parseInt(recruiterContactCreditsVal);
-            }
 
             //checking first name
             switch(recruiterName){
@@ -135,9 +180,11 @@ $(function() {
                         recruiterLandline: $("#recruiterLandline").val(),
                         recruiterEmail: $("#recruiterEmail").val(),
                         recruiterCompany: $("#jobPostCompany").val(),
-                        recruiterInterviewCredits: recruiterInterviewCreditsVal,
-                        recruiterContactCredits: recruiterContactCreditsVal
-
+                        recruiterInterviewCreditAmount: interviewCreditAmount,
+                        recruiterContactCreditAmount: candidateContactCreditAmount,
+                        recruiterInterviewCreditUnitPrice: interviewCreditUnitPrice,
+                        recruiterContactCreditUnitPrice: candidateContactCreditUnitPrice,
+                        recruiterCreditMode: paymentMode
                     };
                 } catch (exception) {
                     console.log("exception occured!!" + exception);

@@ -2,20 +2,29 @@ package controllers;
 
 import api.ServerConstants;
 import api.http.httpRequest.LoginRequest;
-import api.http.httpRequest.PartnerSignUpRequest;
 import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
+import api.http.httpResponse.Recruiter.JobApplicationResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
 import controllers.security.SecuredUser;
-import models.entity.Partner;
-import models.entity.RecruiterProfile;
+import models.entity.JobPost;
+import models.entity.OM.JobApplication;
+import models.entity.Recruiter.RecruiterProfile;
+import models.entity.Recruiter.Static.RecruiterCreditCategory;
+import models.entity.RecruiterCreditHistory;
+import models.entity.Static.Degree;
+import models.entity.Static.InterviewTimeSlot;
+import models.entity.Static.Locality;
 import play.Logger;
 import play.mvc.Result;
 import play.mvc.Security;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.request;
@@ -132,4 +141,69 @@ public class RecruiterController {
         return ok(views.html.Recruiter.recruiter_edit_profile.render());
     }
 
+    public static Result getAllCreditCategory() {
+        List<RecruiterCreditCategory> recruiterCreditCategoryList = RecruiterCreditCategory.find.all();
+        return ok(toJson(recruiterCreditCategoryList));
+    }
+
+    public static Result getRecruiterCredits(Long recId) {
+        RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", recId).findUnique();
+        if(recruiterProfile != null){
+            RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
+                    .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
+                    .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK)
+                    .setMaxRows(1)
+                    .orderBy("recruiter_credit_history_create_timestamp desc")
+                    .findUnique();
+
+            if(recruiterCreditHistoryLatest != null){
+                if(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() > 0){
+                    return ok("1");
+                }
+            }
+        }
+        return ok("0");
+    }
+
+    public static Result unlockCandidateContact(Long candidateId) {
+        if(session().get("recruiterId") != null){
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+            if(recruiterProfile != null){
+                return RecruiterService.unlockCandidate(recruiterProfile, candidateId);
+            }
+        }
+        // no recruiter session found
+        return ok("-1");
+    }
+
+    public static Result getAllJobApplicants(long jobPostId) {
+        JobPost jobPost = JobPost.find.where().eq("JobPostId", jobPostId).findUnique();
+        if(jobPost != null){
+            List<JobApplication> jobApplicationList = JobApplication.find.where().eq("JobPostId", jobPostId).findList();
+            List<JobApplicationResponse> jobApplicationResponseList = new ArrayList<>();
+            for(JobApplication jobApplication: jobApplicationList){
+                JobApplicationResponse jobApplicationResponse = new JobApplicationResponse();
+
+                jobApplicationResponse.setCandidate(jobApplication.getCandidate());
+                jobApplicationResponse.setJobApplicationId(jobApplication.getJobApplicationId());
+                jobApplicationResponse.setJobApplicationCreatingTimeStamp(String.valueOf(jobApplication.getJobApplicationCreateTimeStamp()));
+                jobApplicationResponse.setPreScreenLocation(jobApplication.getLocality());
+                jobApplicationResponse.setPreScreenLocation(jobApplication.getLocality());
+                jobApplicationResponse.setInterviewTimeSlot(jobApplication.getInterviewTimeSlot());
+                jobApplicationResponse.setScheduledInterviewDate(jobApplication.getScheduledInterviewDate());
+
+                jobApplicationResponseList.add(jobApplicationResponse);
+            }
+
+            return ok(toJson(jobApplicationResponseList));
+        }
+        return ok("0");
+    }
+
+    public static Result getAllRecruiterJobPosts() {
+        if(session().get("recruiterId") != null){
+            return ok(toJson(JobPost.find.where().eq("JobRecruiterId", session().get("recruiterId")).findList()));
+        }
+        return ok("0");
+    }
 }

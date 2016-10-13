@@ -60,6 +60,7 @@ POST        /signUpSupport                                                contro
 POST        /getAllDeactivationReason                                     controllers.Application.getAllDeactivationReason()
 POST        /support/api/getMatchingCandidate/                            controllers.Application.getMatchingCandidate()
 POST        /support/api/saveSelectedCandidate/                           controllers.Application.saveSelectedCandidate()
+POST        /support/api/getSelectedCandidate/:jpId                       controllers.Application.getSelectedCandidate(jpId: Long)
 
 # user dashboard
 # ~~~~~~~~~~~~~~
@@ -126,8 +127,13 @@ GET         /recruiter/home                                               contro
 GET         /logoutRecruiter                                              controllers.RecruiterController.logoutRecruiter()
 GET         /checkRecruiterSession                                        controllers.RecruiterController.checkRecruiterSession()
 GET         /getRecruiterProfileInfo                                      controllers.RecruiterController.getRecruiterProfileInfo()
-GET         /recruiter/editProfile                                        controllers.RecruiterController.recruiterEditProfile()
+GET         /recruiter/profile                                            controllers.RecruiterController.recruiterEditProfile()
 
+POST        /getAllJobApplicants/:id                                      controllers.RecruiterController.getAllJobApplicants(id : Long)
+POST        /getAllRecruiterJobPosts                                      controllers.RecruiterController.getAllRecruiterJobPosts
+POST        /getRecruiterCredits/:id                                      controllers.RecruiterController.getRecruiterCredits(id : Long)
+POST        /getAllCreditCategory                                         controllers.RecruiterController.getAllCreditCategory()
+POST        /unlockCandidateContact/:id                                   controllers.RecruiterController.unlockCandidateContact(id : Long)
 POST        /addRecruiterLead                                             controllers.RecruiterController.addWebsiteLead()
 POST        /recruiterSignUp                                              controllers.RecruiterController.recruiterSignUp()
 POST        /addRecruiterPassword                                         controllers.RecruiterController.addPassword()
@@ -204,6 +210,7 @@ POST        /mGetLocalityForLatLngOrPlaceId                               contro
 # Test API
 # ~~~~~~~~~~~~~
 GET         /resolveLatLng/:latlng                                        controllers.TrudroidController.mResolveLatLng(latlng: String)
+GET        /support/api/testMatchingCandidate/:jpId                       controllers.Application.testMatchingCandidate(jpId: Long)
 
 # Scrap API
 # ~~~~~~~~~~~~~

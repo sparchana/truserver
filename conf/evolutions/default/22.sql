@@ -1,57 +1,42 @@
 # --- !Ups
 
-create table credit_history (
-  credit_history_id             int signed auto_increment not null,
-  credits_available             int signed null,
-  credits_used                  int signed null,
-  credit_history_create_timestamp timestamp not null default current_timestamp,
-  recruiterprofileid            bigint signed,
-  recruitercreditcategory       bigint signed,
-  constraint pk_credit_history primary key (credit_history_id)
+create table job_post_workflow (
+  job_post_workflow_id          bigint unsigned auto_increment not null,
+  job_post_workflow_uuid        varchar(255) not null not null,
+  job_post_id                   bigint signed,
+  candidate_id                  bigint signed,
+  creation_timestamp            timestamp default current_timestamp not null not null,
+  status_id                     int unsigned,
+  createdby                     varchar(255) null not null,
+  constraint pk_job_post_workflow primary key (job_post_workflow_id)
 );
 
-create table recruiter_credit_category (
-  recruiter_credit_category_id  bigint signed auto_increment not null,
-  recruiter_credit_type         varchar(50) not null,
-  recruiter_credit_unit_price   int signed null,
-  constraint pk_recruiter_credit_category primary key (recruiter_credit_category_id)
+create table job_post_workflow_status (
+  status_id                     int unsigned auto_increment not null,
+  status_title                  varchar(255) null,
+  constraint pk_job_post_workflow_status primary key (status_id)
 );
 
-create table recruiter_payment (
-  recruiter_payment_id          bigint signed auto_increment not null,
-  recruiter_payment_amount      bigint unsigned not null,
-  recruiter_payment_credit_unit_price bigint unsigned null,
-  recruiter_payment_mode        int signed null,
-  recruiterprofileid            bigint signed,
-  constraint pk_recruiter_payment primary key (recruiter_payment_id)
-);
+alter table job_post_workflow add constraint fk_job_post_workflow_job_post_id foreign key (job_post_id) references jobpost (jobpostid) on delete restrict on update restrict;
+create index ix_job_post_workflow_job_post_id on job_post_workflow (job_post_id);
 
-alter table recruiter_payment add constraint fk_recruiter_payment_recruiterprofileid foreign key (recruiterprofileid) references recruiterprofile (recruiterprofileid) on delete restrict on update restrict;
-create index ix_recruiter_payment_recruiterprofileid on recruiter_payment (recruiterprofileid);
+alter table job_post_workflow add constraint fk_job_post_workflow_candidate_id foreign key (candidate_id) references candidate (candidateid) on delete restrict on update restrict;
+create index ix_job_post_workflow_candidate_id on job_post_workflow (candidate_id);
 
-alter table recruiterprofile add column recruiterinterviewunlockcredits int signed null;
-alter table recruiterprofile add column recruitercandidateunlockcredits int signed null;
-
-alter table credit_history add constraint fk_credit_history_recruiterprofileid foreign key (recruiterprofileid) references recruiterprofile (recruiterprofileid) on delete restrict on update restrict;
-create index ix_credit_history_recruiterprofileid on credit_history (recruiterprofileid);
-
-alter table credit_history add constraint fk_credit_history_recruitercreditcategory foreign key (recruitercreditcategory) references recruiter_credit_category (recruiter_credit_category_id) on delete restrict on update restrict;
-create index ix_credit_history_recruitercreditcategory on credit_history (recruitercreditcategory);
+alter table job_post_workflow add constraint fk_job_post_workflow_status_id foreign key (status_id) references job_post_workflow_status (status_id) on delete restrict on update restrict;
+create index ix_job_post_workflow_status_id on job_post_workflow (status_id);
 
 # --- !Downs
+alter table job_post_workflow drop foreign key fk_job_post_workflow_job_post_id;
+drop index ix_job_post_workflow_job_post_id on job_post_workflow;
 
-alter table credit_history drop foreign key fk_credit_history_recruiterprofileid;
-drop index ix_credit_history_recruiterprofileid on credit_history;
+alter table job_post_workflow drop foreign key fk_job_post_workflow_candidate_id;
+drop index ix_job_post_workflow_candidate_id on job_post_workflow;
 
-alter table credit_history drop foreign key fk_credit_history_recruitercreditcategory;
-drop index ix_credit_history_recruitercreditcategory on credit_history;
+alter table job_post_workflow drop foreign key fk_job_post_workflow_status_id;
+drop index ix_job_post_workflow_status_id on job_post_workflow;
 
-alter table recruiter_payment drop foreign key fk_recruiter_payment_recruiterprofileid;
-drop index ix_recruiter_payment_recruiterprofileid on recruiter_payment;
 
-alter table recruiterprofile drop column recruiterinterviewunlockcredits;
-alter table recruiterprofile drop column recruitercandidateunlockcredits;
+drop table if exists job_post_workflow;
 
-drop table if exists recruiter_credit_category;
-drop table if exists credit_history;
-drop table if exists recruiter_payment;
+drop table if exists job_post_workflow_status;
