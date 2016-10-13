@@ -78,7 +78,7 @@ public class RecruiterController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Logger.info("JSON req: " + req);
+        Logger.info("req JSON: save password json. hiding password. rec mobile mobile: " + recruiterSignUpRequest.getRecruiterAuthMobile());
 
         String recruiterMobile = recruiterSignUpRequest.getRecruiterAuthMobile();
         String recruiterPassword = recruiterSignUpRequest.getRecruiterPassword();
@@ -95,7 +95,7 @@ public class RecruiterController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Logger.info("req JSON: " + req );
+        Logger.info("req JSON: login json. hiding password. login mobile: " + loginRequest.getCandidateLoginMobile());
         String loginMobile = loginRequest.getCandidateLoginMobile();
         String loginPassword = loginRequest.getCandidateLoginPassword();
         return ok(toJson(RecruiterService.login(loginMobile, loginPassword)));
@@ -122,7 +122,14 @@ public class RecruiterController {
         }
         return ok("0");
     }
+
     public static Result recruiterCandidateSearch(){
         return ok(views.html.Recruiter.recruiter_candidate_search.render());
     }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result recruiterEditProfile() {
+        return ok(views.html.Recruiter.recruiter_edit_profile.render());
+    }
+
 }

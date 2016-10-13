@@ -4,20 +4,6 @@
 var returnedOtp;
 var recruiterMobileVal;
 
-function processDataLogin(returnedData) {
-    console.log(returnedData);
-    if(returnedData.status == 1){
-        window.location = "/recruiter/home";
-        notifySuccess("Login successful");
-    } else if(returnedData.status == 2){
-        notifyError("Looks like something went wrong. Please try again later");
-    } else if(returnedData.status == 3){
-        notifyError("Recruiter does not exists");
-    } else if(returnedData.status == 4){
-        notifyError("Incorrect login credentials");
-    }
-}
-
 function processDataLeadSubmit(returnedData) {
     if(returnedData.status = 1){
         notifySuccess("Thanks! Our business team will get in touch with you within 24 hours!");
@@ -66,14 +52,6 @@ function openSignUpModal() {
     $("#modalSignUp").openModal();
 }
 
-function openLoginModal() {
-    $("#passwordBtn").removeClass("disabled");
-    $("#loginMobileNumber").val('');
-    $("#password").val('');
-    $("#modalSignUp").closeModal();
-    $("#modalLogIn").openModal();
-}
-
 function processDataSignUpSubmit(returnedData) {
     if(returnedData.status == 1){
         $('#modalSignUp').closeModal();
@@ -86,165 +64,148 @@ function processDataSignUpSubmit(returnedData) {
     }
 }
 
-function verifyOtp(){
-    var recruiterOtp = $("#rec_otp").val();
-    if(validateOtp(recruiterOtp) == 0){
-        notifyError("Please enter a valid 4 digit otp!");
-    } else{
-        if(recruiterOtp == returnedOtp){
-            $("#otpSection").hide();
-            $("#passwordSection").show();
+// verify_otp_form ajax script
+$(function() {
+    $("#verifyOtpForm").submit(function(eventObj) {
+        eventObj.preventDefault();
+        var recruiterOtp = $("#rec_otp").val();
+        if(validateOtp(recruiterOtp) == 0){
+            notifyError("Please enter a valid 4 digit otp!");
+        } else{
+            if(recruiterOtp == returnedOtp){
+                $("#otpSection").hide();
+                $("#passwordSection").show();
+            }
+            else {
+                notifyError("OTP incorrect!");
+            }
         }
-        else {
-            notifyError("OTP incorrect!");
+    });
+});
+
+// save_password_form ajax script
+$(function() {
+    $("#savePasswordForm").submit(function(eventObj) {
+        eventObj.preventDefault();
+        var recruiterPassword = $("#rec_password").val();
+
+        if(recruiterPassword.length > 4){
+            $("#passwordBtn").addClass("disabled");
+            var d = {
+                recruiterPassword: recruiterPassword,
+                recruiterAuthMobile: recruiterMobileVal
+            };
+            $.ajax({
+                type: "POST",
+                url: "/addRecruiterPassword",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: processDataAddAuth
+            });
+        } else{
+            notifyError("Please enter a valid password");
         }
-    }
-}
+    });
+});
 
 function processDataAddAuth(returnedData) {
     if(returnedData.status == 1){
-        notifySuccess("Success");
+        window.location = "/recruiter/home";
         $('#modalOtp').closeModal();
     } else{
         notifyError("Something went wrong. Please try again later");
     }
 }
 
+// signup_recruiter_form ajax script
+$(function() {
+    $("#modalSignUp").submit(function(eventObj) {
+        eventObj.preventDefault();
+        var recruiterName = $("#rec_name").val();
+        var recruiterMobile = $("#rec_mobile").val();
+        var recruiterEmail = $("#rec_email").val();
+        var recruiterCompany = $("#rec_company").val();
 
-function savePassword(){
-    var recruiterPassword = $("#rec_password").val();
+        var nameCheck = validateName(recruiterName);
+        var statusCheck = 1;
 
-    if(recruiterPassword.length > 4){
-        $("#passwordBtn").addClass("disabled");
-        var d = {
-            recruiterPassword: recruiterPassword,
-            recruiterAuthMobile: recruiterMobileVal
-        };
-        $.ajax({
-            type: "POST",
-            url: "/addRecruiterPassword",
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(d),
-            success: processDataAddAuth
-        });
-    } else{
-        notifyError("Please enter a valid password");
-    }
-}
+        var res = validateMobile(recruiterMobile);
+        //checking recruiter name
+        switch(nameCheck){
+            case 0: notifyError("Name contains number. Please Enter a valid Name"); statusCheck=0; break;
+            case 2: notifyError("Name cannot be blank spaces. Enter a valid name"); statusCheck=0; break;
+            case 3: notifyError("Name contains special symbols. Enter a valid name"); statusCheck=0; break;
+            case 4: notifyError("Please enter your name"); statusCheck=0; break;
+        }
 
-function recruiterLoginSubmit(){
-    var mobile = $("#loginMobileNumber").val();
-    var password = $("#password").val();
+        if(res == 0){
+            notifyError("Enter a valid mobile number");
+            statusCheck = 0;
+        } else if(res == 1){
+            notifyError("Enter 10 digit mobile number");
+            statusCheck = 0;
+        } else if(!validateEmail(recruiterEmail)){
+            notifyError("Enter a valid email");
+            statusCheck = 0;
+        } else if(recruiterCompany == "") {
+            notifyError("Please enter your company");
+            statusCheck = 0;
+        }
 
-    var res = validateMobile(mobile);
+        if(statusCheck){
+            var d = {
+                recruiterName : recruiterName,
+                recruiterMobile : recruiterMobile,
+                recruiterEmail : recruiterEmail,
+                recruiterCompanyName : recruiterCompany
+            };
 
-    var statusCheck = 1;
-    if(res == 0){
-        notifyError("Enter a valid mobile number");
-        statusCheck = 0;
-    } else if(res == 1){
-        notifyError("Enter 10 digit mobile number");
-        statusCheck = 0;
-    }
-    if(statusCheck == 1){
-        $("#loginSubmitBtn").addClass("disabled");
-        var d = {
-            candidateLoginMobile: mobile,
-            candidateLoginPassword: password
-        };
-        $.ajax({
-            type: "POST",
-            url: "/recruiterLoginSubmit",
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(d),
-            success: processDataLogin
-        });
-    }
-}
+            recruiterMobileVal =  "+91" + d.recruiterMobile;
+            $.ajax({
+                type: "POST",
+                url: "/recruiterSignUp",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: processDataSignUpSubmit
+            });
+        }
+    });
+});
+// signup_recruiter_form ajax script
+$(function() {
+    $("#requestEnquiry").submit(function(eventObj) {
+        eventObj.preventDefault();
+        var recruiterLeadMobile = $("#mobileNumber").val();
+        var recruiterLeadRequirement = $("#recruiterRequirement").val();
+        var jobLocalitySelected = $("#jobLocationOption").val();
+        var jobRoleSelected = $("#jobRoleOption").val();
 
+        var statusCheck = 1;
+        var res = validateMobile(recruiterLeadMobile);
 
-function signUpRecruiter(){
-    var recruiterName = $("#rec_name").val();
-    var recruiterMobile = $("#rec_mobile").val();
-    var recruiterEmail = $("#rec_email").val();
-    var recruiterCompany = $("#rec_company").val();
+        if(res == 0){
+            notifyError("Enter a valid mobile number");
+            statusCheck=0;
+        } else if(res == 1) {
+            notifyError("Enter 10 digit mobile number");
+            statusCheck = 0;
+        } else if(jobRoleSelected == null) {
+            notifyError("Please enter the required job roles");
+            statusCheck=0;
+        } else if(jobLocalitySelected == null) {
+            notifyError("Please enter the localities where you are looking for employees");
+            statusCheck=0;
+        } else if(Object.keys(recruiterLeadRequirement).length == 0) {
+            notifyError("Please specify work shift");
+            statusCheck=0;
+        }
 
-    var nameCheck = validateName(recruiterName);
-    var statusCheck = 1;
-
-    var res = validateMobile(recruiterMobile);
-    //checking recruiter name
-    switch(nameCheck){
-        case 0: notifyError("Name contains number. Please Enter a valid Name"); statusCheck=0; break;
-        case 2: notifyError("Name cannot be blank spaces. Enter a valid name"); statusCheck=0; break;
-        case 3: notifyError("Name contains special symbols. Enter a valid name"); statusCheck=0; break;
-        case 4: notifyError("Please enter your name"); statusCheck=0; break;
-    }
-
-    if(res == 0){
-        notifyError("Enter a valid mobile number");
-        statusCheck = 0;
-    } else if(res == 1){
-        notifyError("Enter 10 digit mobile number");
-        statusCheck = 0;
-    } else if(!validateEmail(recruiterEmail)){
-        notifyError("Enter a valid email");
-        statusCheck = 0;
-    } else if(recruiterCompany == "") {
-        notifyError("Please enter your company");
-        statusCheck = 0;
-    }
-
-    if(statusCheck){
-        var d = {
-            recruiterName : recruiterName,
-            recruiterMobile : recruiterMobile,
-            recruiterEmail : recruiterEmail,
-            recruiterCompanyName : recruiterCompany
-        };
-
-        recruiterMobileVal =  "+91" + d.recruiterMobile;
-        $.ajax({
-            type: "POST",
-            url: "/recruiterSignUp",
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(d),
-            success: processDataSignUpSubmit
-        });
-    }
-}
-
-function requestLead(){
-    var recruiterLeadMobile = $("#mobileNumber").val();
-    var recruiterLeadRequirement = $("#recruiterRequirement").val();
-    var jobLocalitySelected = $("#jobLocationOption").val();
-    var jobRoleSelected = $("#jobRoleOption").val();
-
-    var statusCheck = 1;
-    var res = validateMobile(recruiterLeadMobile);
-
-    if(res == 0){
-        notifyError("Enter a valid mobile number");
-        statusCheck=0;
-    } else if(res == 1) {
-        notifyError("Enter 10 digit mobile number");
-        statusCheck = 0;
-    } else if(jobRoleSelected == null) {
-        notifyError("Please enter the required job roles");
-        statusCheck=0;
-    } else if(jobLocalitySelected == null) {
-        notifyError("Please enter the localities where you are looking for employees");
-        statusCheck=0;
-    } else if(recruiterLeadRequirement == null) {
-        notifyError("Please specify work shift");
-        statusCheck=0;
-    }
-
-    if(statusCheck == 1){
-        $("#requestLeadBtn").addClass("disabled");
-        processLeadRequest(jobRoleSelected, jobLocalitySelected, recruiterLeadMobile, recruiterLeadRequirement);
-    }
-}
+        if(statusCheck == 1){
+            $("#requestLeadBtn").addClass("disabled");
+            processLeadRequest(jobRoleSelected, jobLocalitySelected, recruiterLeadMobile, recruiterLeadRequirement);
+        }
+    });
+});
 
 function requestModalLead(){
     var recruiterLeadMobile = $("#mobileNumberModal").val();
@@ -267,7 +228,7 @@ function requestModalLead(){
     } else if(jobLocalitySelected == null) {
         notifyError("Please enter the localities where you are looking for employees");
         statusCheck=0;
-    } else if(recruiterLeadRequirement == null) {
+    } else if(Object.keys(recruiterLeadRequirement).length == 0) {
         notifyError("Please specify work shift");
         statusCheck=0;
     }

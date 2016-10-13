@@ -183,6 +183,21 @@ function saveForm(){
     status = 1;
     var recruiterName = validateName($("#recruiterName").val());
     var recruiterMobile = validateMobile($("#recruiterMobile").val());
+    var recruiterInterviewCreditsVal = $("#recruiterInterviewCredits").val();
+    var recruiterContactCreditsVal = $("#recruiterContactCredits").val();
+
+    if(recruiterInterviewCreditsVal == ""){
+        recruiterInterviewCreditsVal = 0;
+    } else{
+        recruiterInterviewCreditsVal = parseInt(recruiterInterviewCreditsVal);
+    }
+
+    if(recruiterContactCreditsVal == ""){
+        recruiterContactCreditsVal = 0;
+    } else{
+        recruiterContactCreditsVal = parseInt(recruiterContactCreditsVal);
+    }
+
     //checking first name
     switch(recruiterName){
         case 0: alert("Recruiter's name contains number. Please Enter a valid name"); status=0; break;
@@ -211,7 +226,9 @@ function saveForm(){
                 recruiterMobile: $("#recruiterMobile").val(),
                 recruiterLandline: $("#recruiterLandline").val(),
                 recruiterEmail: $("#recruiterEmail").val(),
-                recruiterCompany: companyId
+                recruiterCompany: companyId,
+                recruiterInterviewCredits: recruiterInterviewCreditsVal,
+                recruiterContactCredits: recruiterContactCreditsVal
             };
         } catch (exception) {
             console.log("exception occured!!" + exception);

@@ -25,7 +25,6 @@
         <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
         <script type="text/javascript" src="/assets/recruiter/js/jquery.tokenize.js"></script>
 
-
         <meta name="theme-color" content="#000000">
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     </head>
@@ -72,8 +71,8 @@
                                 </form>
                             </div>
                             <div class="input-field col s12">
-                              <a onclick="signUpRecruiter()" id="SignSubmitUpBtn" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">SignUp</font></a>
-                                <p><font style="font-size: 14px; cursor: pointer">Have an Account? <span onclick="openLoginModal()"><font style="font-weight:600">Sign In</span></font></p>
+                              <button type="submit" id="SignSubmitUpBtn" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">SignUp</font></button>
+                                <p><font style="font-size: 14px; cursor: pointer">Have an Account? <span onclick="openLoginModal()"><font style="cursor: pointer; color: #2ec866; font-weight:600;">Sign In</font></span></p>
                             </div>
                         </div>
                         </form>
@@ -86,14 +85,14 @@
                 <div style="background: rgba(0, 0, 0, 0.75); padding: 8%">
                     <center><font style="font-size: 22px; color: #fff">OTP Verification</font></center>
                 </div>
-                <form style="background: #fff; padding: 4%">
+                <form id="verifyOtpForm" style="background: #fff; padding: 4%">
                     <div class="row">
                         <div class="col l12">
                             <div class="input-field col s12 l12">
                                 <input type="text" id="rec_otp" style="margin-bottom:4px; border-bottom: 1px solid rgba(158, 158, 158, 0.32)" maxlength="4" placeholder="OTP">
                             </div>
                             <div class="input-field col s12">
-                                <a onclick="verifyOtp()" id="SignSubmitUpBtn" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">Enter OTP</font></a>
+                                <button type="submit" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">Enter OTP</font></button>
                             </div>
                         </div>
                     </div>
@@ -103,14 +102,14 @@
                 <div style="background: rgba(0, 0, 0, 0.75); padding: 8%">
                     <center><font style="font-size: 22px; color: #fff">New Password</font></center>
                 </div>
-                    <form style="background: #fff; padding: 4%">
+                    <form id="savePasswordForm" style="background: #fff; padding: 4%">
                         <div class="row">
                             <div class="col l12">
                                 <div class="input-field col s12 l12">
                                     <input type="password" id="rec_password" style="margin-bottom:4px; border-bottom: 1px solid rgba(158, 158, 158, 0.32)" maxlength="10" placeholder="Enter Password" class="validate">
                                 </div>
                                 <div class="input-field col s12">
-                                    <a onclick="savePassword()" id="passwordBtn" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">Create Account</font></a>
+                                    <button type="submit" id="passwordBtn" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">Create Account</font></button>
                                 </div>
                             </div>
                         </div>
@@ -133,8 +132,8 @@
                             <input type="password" id="password" style="margin-bottom:4px; border-bottom: 1px solid rgba(158, 158, 158, 0.32)"  placeholder="Password">
                         </div>
                         <div class="input-field col s12">
-                            <a onclick="recruiterLoginSubmit()" id="loginSubmitBtn" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">LogIn</font></a>
-                            <p><font style="font-size: 14px; cursor: pointer">New User? <span onclick="openSignUpModal()"><font style="font-weight:600">Sign Up</span></font></p>
+                            <button id="loginSubmitBtn" type="submit" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">LogIn</font></button>
+                            <p><font style="font-size: 14px;">New User? <span onclick="openSignUpModal()" style="cursor: pointer; color: #2ec866; font-weight:600;">Sign Up</span></font></p>
                         </div>
 
                     </div>
@@ -255,7 +254,7 @@
                 <center><font style="font-size: 22px; color: #fff">Let us know your hiring needs</font></center>
             </div>
 
-            <form style="background: #fff; padding: 4%">
+            <form id="requestEnquiry" style="background: #fff; padding: 4%">
                 <div class="row">
                     <div class="col l12">
                         <div class="input-field col s12 l12">
@@ -300,7 +299,7 @@
                             </script>
                         </div>
                         <center>
-                            <a class="waves-effect waves-light ascentGreen lighten-1 btn" id="requestLeadBtn" style="margin-top: 24px; margin-bottom: 0; width: 100%" onclick="requestLead()"><font style="color: #ffffff">Request Call Back</font></a>
+                            <button type="submit" class="waves-effect waves-light ascentGreen lighten-1 btn" id="requestLeadBtn" style="margin-top: 24px; margin-bottom: 0; width: 100%"><font style="color: #ffffff">Request Call Back</font></button>
                         </center>
 
                     </div>
@@ -451,4 +450,5 @@
     <script type="text/javascript" src="/assets/recruiter/js/recruiter_page.js"></script>
     <script type="text/javascript" src="/assets/recruiter/js/typist.js"></script>
     <script type="text/javascript" src="/assets/recruiter/js/recruiter_signup.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/recruiter_login.js"></script>
 </html>

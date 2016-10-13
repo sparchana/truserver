@@ -1,22 +1,85 @@
+::-webkit-input-placeholder {
+    color: #8e8e8e;
+    font-size: 14px;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+    color: #8e8e8e;
+    font-size: 14px;
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+    color: #8e8e8e;
+    font-size: 14px;
+}
+
+:-ms-input-placeholder {
+    color: #8e8e8e;
+    font-size: 14px;
+}
+
+.select-wrapper input.select-dropdown{
+    color: #b1b1b1;
+}
+::-webkit-scrollbar
+{
+    width: 6px;  /* for vertical scrollbars */
+    height: 6px; /* for horizontal scrollbars */
+}
+
+::-webkit-scrollbar-track
+{
+    background: rgba(255, 255, 255, 1);
+}
+
+::-webkit-scrollbar-thumb
+{
+    background: rgb(84, 85, 99);
+}
 nav{
-    background-color:#000;
+    background: transparent;
+    box-shadow: 0 0 0 0;
+    transition: 0.2s;
+}
+.navbar-fixed{
+    position: absolute;
+    z-index:9999;
+    box-shadow: none;
+}
+body{
+    background-color: rgba(241, 241, 241, 0.96)
 }
 .navbar-fixed{
     position: relative;
     z-index: 9999;
 }
-/*Class for when element is above threshold*/
-  .pin-top {
-      position: relative;
-  }
-
-/*Class for when element is below threshold*/
-   .pin-bottom {
-       position: relative;
-   }
-
-/*Class for when element is pinned*/
-   .pinned {
-       position: fixed !important;
-   }
-
+#searchbar{
+    background: #b4acac;
+}
+[type="radio"]:not(:checked) + label, [type="radio"]:checked + label{
+    font-size: 16px;
+    font-weight: 200;
+    color:#000000;
+}
+#filterDetail{
+    padding: 0;
+}
+#search{
+    padding:0 4%;
+    margin-left: 0;
+}
+#searchBox > input[type=text] {
+    margin: 0;
+    padding-left: 2%;
+}
+.back-banner-candidate{
+    margin-top: -5%;
+    background: #348F50; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to left, #348F50 , #56B4D3); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to left, #348F50 , #56B4D3); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background-repeat: no-repeat;
+    margin-bottom: 1%;
+}
+#searchBoxContainer{
+    margin-top: 5%;
+}

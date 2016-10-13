@@ -15,11 +15,8 @@ public class RecruiterCreditCategory extends Model {
     @Column(name = "recruiter_credit_category_id", columnDefinition = "bigint signed", unique = true)
     private Integer recruiterCreditCategoryId;
 
-    @Column(name = "recruiter_credit_type", columnDefinition = "int signed null")
-    private Long recruiterCreditType;
-
-    @Column(name = "recruiter_credit_mode", columnDefinition = "int signed null")
-    private Long recruiterCreditMode;
+    @Column(name = "recruiter_credit_type", columnDefinition = "varchar(50) not null")
+    private String recruiterCreditType;
 
     @Column(name = "recruiter_credit_unit_price", columnDefinition = "int signed null")
     private Long recruiterCreditUnitPrice;
@@ -34,20 +31,12 @@ public class RecruiterCreditCategory extends Model {
         this.recruiterCreditCategoryId = recruiterCreditCategoryId;
     }
 
-    public Long getRecruiterCreditType() {
+    public String getRecruiterCreditType() {
         return recruiterCreditType;
     }
 
-    public void setRecruiterCreditType(Long recruiterCreditType) {
+    public void setRecruiterCreditType(String recruiterCreditType) {
         this.recruiterCreditType = recruiterCreditType;
-    }
-
-    public Long getRecruiterCreditMode() {
-        return recruiterCreditMode;
-    }
-
-    public void setRecruiterCreditMode(Long recruiterCreditMode) {
-        this.recruiterCreditMode = recruiterCreditMode;
     }
 
     public Long getRecruiterCreditUnitPrice() {

@@ -97,6 +97,11 @@ public class RecruiterProfile extends Model {
     @OneToMany(mappedBy = "recruiterProfile", cascade = CascadeType.REMOVE)
     private List<CreditHistory> creditHistoryList;
 
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "recruiterProfile", cascade = CascadeType.REMOVE)
+    private List<RecruiterPayment> recruiterPaymentList;
+
     public static Finder<String, RecruiterProfile> find = new Finder(RecruiterProfile.class);
 
     public RecruiterProfile() {

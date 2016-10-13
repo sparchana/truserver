@@ -135,7 +135,7 @@ public class RecruiterService {
                 recruiterSignUpResponse.setRecruiterId(recruiterProfile.getRecruiterProfileId());
                 recruiterSignUpResponse.setRecruiterMobile(recruiterProfile.getRecruiterProfileMobile());
 
-                triggerOtp(newRecruiter, recruiterSignUpResponse);
+                triggerOtp(recruiterProfile, recruiterSignUpResponse);
             } else{
                 Logger.info("Recruiter Already exists");
                 recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.STATUS_EXISTS);
@@ -216,6 +216,12 @@ public class RecruiterService {
         }
         if(addRecruiterRequest.getRecruiterEmail() != null){
             newRecruiter.setRecruiterProfileEmail(addRecruiterRequest.getRecruiterEmail());
+        }
+        if(addRecruiterRequest.getRecruiterContactCredits() != null){
+            newRecruiter.setRecruiterCandidateUnlockCredits(Long.valueOf(addRecruiterRequest.getRecruiterContactCredits()));
+        }
+        if(addRecruiterRequest.getRecruiterInterviewCredits() != null){
+            newRecruiter.setRecruiterInterviewUnlockCredits(Long.valueOf(addRecruiterRequest.getRecruiterInterviewCredits()));
         }
         return newRecruiter;
     }

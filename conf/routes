@@ -126,12 +126,13 @@ GET         /recruiter/home                                               contro
 GET         /logoutRecruiter                                              controllers.RecruiterController.logoutRecruiter()
 GET         /checkRecruiterSession                                        controllers.RecruiterController.checkRecruiterSession()
 GET         /getRecruiterProfileInfo                                      controllers.RecruiterController.getRecruiterProfileInfo()
+GET         /recruiter/editProfile                                        controllers.RecruiterController.recruiterEditProfile()
 
 POST        /addRecruiterLead                                             controllers.RecruiterController.addWebsiteLead()
 POST        /recruiterSignUp                                              controllers.RecruiterController.recruiterSignUp()
 POST        /addRecruiterPassword                                         controllers.RecruiterController.addPassword()
 POST        /recruiterLoginSubmit                                         controllers.RecruiterController.loginSubmit()
-GET         /CandidateSearch                                              controllers.RecruiterController.recruiterCandidateSearch()
+GET         /recruiter/candidateSearch                                              controllers.RecruiterController.recruiterCandidateSearch()
 
 #new routes
 #~~~~~~~~~~~~~~~~~~~~

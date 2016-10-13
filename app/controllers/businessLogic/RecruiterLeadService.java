@@ -4,6 +4,7 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
 import api.http.httpResponse.Recruiter.RecruiterLeadResponse;
+import models.entity.OM.LocalityPreference;
 import models.entity.OM.RecruiterLeadToJobRole;
 import models.entity.OM.RecruiterLeadToLocality;
 import models.entity.RecruiterLead;
@@ -66,11 +67,12 @@ public class RecruiterLeadService {
 
     public static RecruiterLeadResponse createLeadWithOtherDetails(RecruiterLeadRequest recruiterLeadRequest){
         RecruiterLeadResponse recruiterLeadResponse = new RecruiterLeadResponse();
+        List<Integer> jobRoleList = recruiterLeadRequest.getRecruiterJobRole();
+        List<Integer> jobLocalityList = recruiterLeadRequest.getRecruiterJobLocality();
+
         RecruiterLead existingLead = isLeadExists(FormValidator.convertToIndianMobileFormat(recruiterLeadRequest.getRecruiterMobile()));
         if(existingLead == null) {
             RecruiterLead lead = new RecruiterLead();
-            List<Integer> jobRoleList = recruiterLeadRequest.getRecruiterJobRole();
-            List<Integer> jobLocalityList = recruiterLeadRequest.getRecruiterJobLocality();
 
             lead.setRecruiterLeadMobile(FormValidator.convertToIndianMobileFormat(recruiterLeadRequest.getRecruiterMobile()));
             if(jobRoleList != null){
@@ -88,6 +90,26 @@ public class RecruiterLeadService {
             recruiterLeadResponse.setStatus(RecruiterLeadResponse.STATUS_SUCCESS);
         } else {
             Logger.info("Existing lead made contact");
+
+            //resetting lead locality
+            List<RecruiterLeadToLocality> allLocality = RecruiterLeadToLocality.find.where().eq("recruiter_lead_id", existingLead.getRecruiterLeadId()).findList();
+            for(RecruiterLeadToLocality recruiterLeadToLocality : allLocality){
+                recruiterLeadToLocality.delete();
+            }
+            if(jobLocalityList != null){
+                existingLead.setRecruiterLeadToLocalityList(getRecruiterJobLocalityList(jobLocalityList, existingLead));
+            }
+
+            //resetting lead job roles
+            List<RecruiterLeadToJobRole> allJobRoles = RecruiterLeadToJobRole.find.where().eq("recruiter_lead_id", existingLead.getRecruiterLeadId()).findList();
+            for(RecruiterLeadToJobRole recruiterLeadToJobRole : allJobRoles){
+                recruiterLeadToJobRole.delete();
+            }
+            if(jobRoleList != null){
+                existingLead.setRecruiterLeadToJobRoleList(getRecruiterJobPreferenceList(jobRoleList, existingLead));
+            }
+
+            existingLead.update();
             recruiterLeadResponse.setStatus(RecruiterLeadResponse.STATUS_SUCCESS);
         }
         SmsUtil.sendRecruiterLeadMsg(FormValidator.convertToIndianMobileFormat(recruiterLeadRequest.getRecruiterMobile()));

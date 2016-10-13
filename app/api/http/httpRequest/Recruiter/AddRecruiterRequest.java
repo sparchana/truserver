@@ -10,6 +10,8 @@ public class AddRecruiterRequest {
     public String recruiterEmail;
     public Long recruiterCompany;
     public String recruiterCompanyName;
+    public Integer recruiterInterviewCredits;
+    public Integer recruiterContactCredits;
 
     public String getRecruiterName() {
         return recruiterName;
@@ -57,5 +59,21 @@ public class AddRecruiterRequest {
 
     public void setRecruiterCompanyName(String recruiterCompanyName) {
         this.recruiterCompanyName = recruiterCompanyName;
+    }
+
+    public Integer getRecruiterInterviewCredits() {
+        return recruiterInterviewCredits;
+    }
+
+    public void setRecruiterInterviewCredits(Integer recruiterInterviewCredits) {
+        this.recruiterInterviewCredits = recruiterInterviewCredits;
+    }
+
+    public Integer getRecruiterContactCredits() {
+        return recruiterContactCredits;
+    }
+
+    public void setRecruiterContactCredits(Integer recruiterContactCredits) {
+        this.recruiterContactCredits = recruiterContactCredits;
     }
 }

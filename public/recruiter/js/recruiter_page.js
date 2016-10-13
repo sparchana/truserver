@@ -22,7 +22,7 @@ $(document).scroll(function(){
         $('nav').css({"background": "transparent"});
     }
 });
-$(document).on('scroll', function() {
+$(document).scroll(function() {
     if($(this).scrollTop()>=$('#companyHiringBox').position().top){
         $("#candidateStats").css("opacity","1");
         $("#jobRolesStats").css("opacity","1");
