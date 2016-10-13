@@ -97,6 +97,7 @@ nav{
     height: 80%;
     width: 100%;
     padding: 4%;
+    cursor: default;
 }
 
 .custom-parallax-container{
@@ -370,5 +371,19 @@ body#recruiterHome{
         margin-top: 11%;
         content:url("/assets/common/img/logo-main.gif");
     }
+    #modalSignUp{
+        overflow: scroll;
+        width: 90%;
+        margin-top: 0;
+    }
+    #modalLogIn{
+        overflow: scroll;
+        width: 90%;
+        margin-top: 0;
+    }
+    .side-nav a:hover{
+        color: #2ec866;
+    }
+
 }
 

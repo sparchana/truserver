@@ -153,6 +153,7 @@ $(function() {
         }
 
         if(statusCheck){
+            $("#SignSubmitUpBtn").addClass("disabled");
             var d = {
                 recruiterName : recruiterName,
                 recruiterMobile : recruiterMobile,

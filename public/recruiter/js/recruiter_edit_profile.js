@@ -58,6 +58,11 @@ $(document).scroll(function(){
 
 $(document).ready(function(){
     checkRecruiterLogin();
+    $('.button-collapse').sideNav({
+        menuWidth: 240,
+        edge: 'left',
+        closeOnClick: true
+    });
     try {
         $.ajax({
             type: "POST",

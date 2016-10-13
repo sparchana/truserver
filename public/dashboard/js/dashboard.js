@@ -451,6 +451,7 @@ function checkInstitute() {
 /* Prefill the data */
 
 function processDataAndFillAllFields(returnedData) {
+    console.log(returnedData);
     candidateInformation = returnedData;
     $("#jobCount").html(Object.keys(candidateInformation.jobApplicationList).length);
 
