@@ -7,6 +7,7 @@ import models.entity.Recruiter.RecruiterProfile;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 /**
  * Created by dodo on 12/10/16.
@@ -39,6 +40,7 @@ public class RecruiterToCandidateUnlocked extends Model {
     public static Model.Finder<String, RecruiterToCandidateUnlocked> find = new Model.Finder(RecruiterToCandidateUnlocked.class);
 
     public RecruiterToCandidateUnlocked(){
+        this.recruiterToCandidateUnlockedUUID = UUID.randomUUID().toString();
         this.createTimestamp = new Timestamp(System.currentTimeMillis());
     }
 

@@ -6,6 +6,7 @@ import models.entity.Recruiter.Static.RecruiterCreditCategory;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 /**
  * Created by dodo on 11/10/16.
@@ -46,6 +47,7 @@ public class RecruiterPayment extends Model {
     public static Finder<String, RecruiterPayment> find = new Finder(RecruiterPayment.class);
 
     public RecruiterPayment(){
+        this.recruiterPaymentUuid = UUID.randomUUID().toString();
         this.createTimestamp = new Timestamp(System.currentTimeMillis());
     }
 
