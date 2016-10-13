@@ -153,7 +153,7 @@ public class RecruiterController {
                     .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
                     .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK)
                     .setMaxRows(1)
-                    .orderBy("recruiter_credit_history_create_timestamp desc")
+                    .orderBy("create_timestamp desc")
                     .findUnique();
 
             if(recruiterCreditHistoryLatest != null){
