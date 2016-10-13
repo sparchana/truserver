@@ -19,7 +19,7 @@ public class JobRoleToAsset extends Model {
     @Column(name = "job_role_to_asset_id", columnDefinition = "int unsigned", unique = true)
     private int jobRoleToAssetId;
 
-    @Column(name = "job_role_to_asset_uuid", columnDefinition = "varchar(255) not null", nullable = false)
+    @Column(name = "job_role_to_asset_uuid", columnDefinition = "varchar(255)", nullable = false)
     private String jobRoleToAssetUUId; // UUID
 
     @ManyToOne
@@ -33,7 +33,7 @@ public class JobRoleToAsset extends Model {
     private Asset asset;
 
 
-    @Column(name = "creation_timestamp", columnDefinition = "timestamp default current_timestamp not null", nullable = false)
+    @Column(name = "creation_timestamp", columnDefinition = "timestamp default current_timestamp", nullable = false)
     private Timestamp creationTimestamp;
 
     public static Model.Finder<String, JobRoleToAsset> find = new Model.Finder(JobRoleToAsset.class);

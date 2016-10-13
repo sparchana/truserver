@@ -21,7 +21,7 @@ public class JobRoleToDocument extends Model {
     @Column(name = "job_role_to_document_id", columnDefinition = "bigint unsigned", unique = true)
     private long jobRoleToDocumentId;
 
-    @Column(name = "job_role_to_document_uuid", columnDefinition = "varchar(255) not null", nullable = false)
+    @Column(name = "job_role_to_document_uuid", columnDefinition = "varchar(255)", nullable = false)
     private String jobRoleToDocumentUUId; // UUID
 
     @ManyToOne
@@ -34,7 +34,7 @@ public class JobRoleToDocument extends Model {
     @JoinColumn(name = "IdProofId", referencedColumnName = "idProofId")
     private IdProof idProof;
 
-    @Column(name = "creation_timestamp", columnDefinition = "timestamp default current_timestamp not null", nullable = false)
+    @Column(name = "creation_timestamp", columnDefinition = "timestamp default current_timestamp", nullable = false)
     private Timestamp creationTimestamp;
 
     public JobRoleToDocument(){

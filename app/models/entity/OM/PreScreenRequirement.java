@@ -20,10 +20,10 @@ public class PreScreenRequirement  extends Model{
     @Column(name = "pre_screen_requirement_id", columnDefinition = "bigint unsigned", unique = true)
     private long preScreenRequirementId;
 
-    @Column(name = "pre_screen_requirement_uuid", columnDefinition = "varchar(255) not null", nullable = false)
+    @Column(name = "pre_screen_requirement_uuid", columnDefinition = "varchar(255)", nullable = false)
     private String preScreenRequirementUUId; // UUID
 
-    @Column(name = "creation_timestamp", columnDefinition = "timestamp default current_timestamp not null", nullable = false)
+    @Column(name = "creation_timestamp", columnDefinition = "timestamp default current_timestamp", nullable = false)
     private Timestamp creationTimestamp;
 
     @ManyToOne
@@ -31,10 +31,7 @@ public class PreScreenRequirement  extends Model{
     @JoinColumn(name = "job_post_id", referencedColumnName = "JobPostId")
     private JobPost jobPost;
 
-    @Column(name = "flag", columnDefinition = "tinyint(1) null")
-    private boolean flag;
-
-    @Column(name = "category", columnDefinition = "int null", nullable = false)
+    @Column(name = "category", columnDefinition = "int ", nullable = false)
     private Integer category;
 
     @ManyToOne
@@ -59,5 +56,53 @@ public class PreScreenRequirement  extends Model{
 
     public PreScreenRequirement(){
         this.creationTimestamp = new Timestamp(System.currentTimeMillis());
+    }
+
+    public JobPost getJobPost() {
+        return jobPost;
+    }
+
+    public void setJobPost(JobPost jobPost) {
+        this.jobPost = jobPost;
+    }
+
+    public Integer getCategory() {
+        return category;
+    }
+
+    public void setCategory(Integer category) {
+        this.category = category;
+    }
+
+    public IdProof getIdProof() {
+        return idProof;
+    }
+
+    public void setIdProof(IdProof idProof) {
+        this.idProof = idProof;
+    }
+
+    public Asset getAsset() {
+        return asset;
+    }
+
+    public void setAsset(Asset asset) {
+        this.asset = asset;
+    }
+
+    public RequirementsCategory getRequirementsCategory() {
+        return requirementsCategory;
+    }
+
+    public void setRequirementsCategory(RequirementsCategory requirementsCategory) {
+        this.requirementsCategory = requirementsCategory;
+    }
+
+    public Language getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(Language language) {
+        this.language = language;
     }
 }

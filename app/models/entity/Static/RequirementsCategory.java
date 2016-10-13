@@ -18,10 +18,10 @@ public class RequirementsCategory extends Model {
     @Column(name = "requirements_category_id", columnDefinition = "bigint unsigned", unique = true)
     private long requirementsCategoryId;
 
-    @Column(name = "requirements_category_uuid", columnDefinition = "varchar(255) not null", nullable = false)
+    @Column(name = "requirements_category_uuid", columnDefinition = "varchar(255)", nullable = false)
     private String requirementsCategoryUUId = ""; // UUID
 
-    @Column(name = "creation_timestamp", columnDefinition = "timestamp default current_timestamp not null", nullable = false)
+    @Column(name = "creation_timestamp", columnDefinition = "timestamp default current_timestamp", nullable = false)
     private Timestamp creationTimestamp;
 
     @Column(name = "requirements_category_title", columnDefinition = "varchar(255) null")

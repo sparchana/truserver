@@ -9,37 +9,36 @@ create table asset (
 
 create table job_role_to_asset (
   job_role_to_asset_id          int unsigned auto_increment not null,
-  job_role_to_asset_uuid        varchar(255) not null not null,
+  job_role_to_asset_uuid        varchar(255) not null,
   job_role_id                   bigint signed,
   asset_id                      int unsigned,
-  creation_timestamp            timestamp default current_timestamp not null not null,
+  creation_timestamp            timestamp default current_timestamp not null,
   constraint pk_job_role_to_asset primary key (job_role_to_asset_id)
 );
 
 create table job_role_to_document (
   job_role_to_document_id       bigint unsigned auto_increment not null,
-  job_role_to_document_uuid     varchar(255) not null not null,
+  job_role_to_document_uuid     varchar(255) not null,
   job_role_id                   bigint signed,
   idproofid                     int signed,
-  creation_timestamp            timestamp default current_timestamp not null not null,
+  creation_timestamp            timestamp default current_timestamp not null,
   constraint pk_job_role_to_document primary key (job_role_to_document_id)
 );
 
 create table requirements_category (
   requirements_category_id      bigint unsigned auto_increment not null,
-  requirements_category_uuid    varchar(255) not null not null,
-  creation_timestamp            timestamp default current_timestamp not null not null,
+  requirements_category_uuid    varchar(255) not null,
+  creation_timestamp            timestamp default current_timestamp not null,
   requirements_category_title   varchar(255) null,
   constraint pk_requirements_category primary key (requirements_category_id)
 );
 
 create table pre_screen_requirement (
   pre_screen_requirement_id     bigint unsigned auto_increment not null,
-  pre_screen_requirement_uuid   varchar(255) not null not null,
-  creation_timestamp            timestamp default current_timestamp not null not null,
+  pre_screen_requirement_uuid   varchar(255) not null,
+  creation_timestamp            timestamp default current_timestamp not null,
   job_post_id                   bigint signed,
-  flag                          tinyint(1) null,
-  category                      int null not null,
+  category                      int not null,
   id_proof_id                   int signed,
   asset_id                      int unsigned,
   requirements_category_id      bigint unsigned,
