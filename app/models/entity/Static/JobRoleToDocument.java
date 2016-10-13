@@ -75,6 +75,4 @@ public class JobRoleToDocument extends Model {
     public void setCreationTimestamp(Timestamp creationTimestamp) {
         this.creationTimestamp = creationTimestamp;
     }
-
-
 }

@@ -128,7 +128,10 @@ public class JobService {
         newJobPost.setJobPostPartnerJoiningIncentive(addJobPostRequest.getPartnerJoiningIncentive());
 
         newJobPost.setGender(addJobPostRequest.getJobPostGender());
-        newJobPost.setJobPostLanguageRequirement(getJobPostLanguageRequirement(addJobPostRequest.getJobPostLanguage(), newJobPost));
+        newJobPost.setJobPostLanguageRequirements(getJobPostLanguageRequirement(addJobPostRequest.getJobPostLanguage(), newJobPost));
+        newJobPost.setJobPostAssetRequirements(getJobPostAssetRequirement(addJobPostRequest.getJobPostAsset(), newJobPost));
+        newJobPost.setJobPostDocumentRequirements(getJobPostDocumentRequirement(addJobPostRequest.getJobPostDocument(), newJobPost));
+
         newJobPost.setJobPostMaxAge(addJobPostRequest.getJobPostMaxAge());
 
         if (addJobPostRequest.getJobPostWorkingDays() != null) {
@@ -164,7 +167,7 @@ public class JobService {
         return newJobPost;
     }
 
-    private static List<JobPostLanguageRequirement> getJobPostLanguageRequirement(List<Integer> jobPostLanguageList, JobPost newJobPost) {
+    private static List<JobPostLanguageRequirement> getJobPostLanguageRequirement(List<Long> jobPostLanguageList, JobPost newJobPost) {
 
         List<JobPostLanguageRequirement> languageRequirementList = new ArrayList<>();
         List<Language> languageList = Language.find.where().in("LanguageId", jobPostLanguageList).findList();
@@ -175,6 +178,38 @@ public class JobService {
             languageRequirementList.add(jobPostLanguageRequirement);
         }
         return languageRequirementList;
+    }
+
+    private static List<JobPostDocumentRequirement> getJobPostDocumentRequirement(List<Long> jobPostDocumentList, JobPost newJobPost) {
+
+        List<JobPostDocumentRequirement> jobPostDocumentRequirementList = new ArrayList<>();
+        if(jobPostDocumentList == null || jobPostDocumentList.size() == 0) {
+            return jobPostDocumentRequirementList;
+        }
+        List<IdProof> idProofList = IdProof.find.where().in("IdProofId", jobPostDocumentList).findList();
+        for(IdProof idProof: idProofList){
+            JobPostDocumentRequirement jobPostDocumentRequirement = new JobPostDocumentRequirement();
+            jobPostDocumentRequirement.setIdProof(idProof);
+            jobPostDocumentRequirement.setJobPost(newJobPost);
+            jobPostDocumentRequirementList.add(jobPostDocumentRequirement);
+        }
+        return jobPostDocumentRequirementList;
+    }
+
+    private static List<JobPostAssetRequirement> getJobPostAssetRequirement(List<Long> jobPostAssetList, JobPost newJobPost) {
+
+        List<JobPostAssetRequirement> jobPostAssetRequirementList = new ArrayList<>();
+        if(jobPostAssetList == null || jobPostAssetList.size() == 0) {
+            return jobPostAssetRequirementList;
+        }
+        List<Asset> assetList = Asset.find.where().in("asset_id", jobPostAssetList).findList();
+        for(Asset asset: assetList){
+            JobPostAssetRequirement jobPostAssetRequirement = new JobPostAssetRequirement();
+            jobPostAssetRequirement.setAsset(asset);
+            jobPostAssetRequirement.setJobPost(newJobPost);
+            jobPostAssetRequirementList.add(jobPostAssetRequirement);
+        }
+        return jobPostAssetRequirementList;
     }
 
     public static ApplyJobResponse applyJob(ApplyJobRequest applyJobRequest,

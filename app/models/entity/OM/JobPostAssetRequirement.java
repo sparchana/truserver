@@ -5,31 +5,32 @@ import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.JobPost;
+import models.entity.Static.Asset;
 import models.entity.Static.Language;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 
 /**
- * Created by zero on 4/10/16.
+ * Created by zero on 13/10/16.
  */
-@Entity(name = "job_post_language_requirement")
-@Table(name = "job_post_language_requirement")
-public class JobPostLanguageRequirement extends Model {
+@Entity(name = "job_post_asset_requirement")
+@Table(name = "job_post_asset_requirement")
+public class JobPostAssetRequirement extends Model{
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name = "LanguageRequirementId", columnDefinition = "bigint unsigned", unique = true)
-    private long languageRequirementId;
+    @Column(name = "asset_requirement_id", columnDefinition = "bigint unsigned", unique = true)
+    private long assetRequirementId;
 
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "JobPostId", referencedColumnName = "JobPostId")
+    @JoinColumn(name = "job_post_id", referencedColumnName = "JobPostId")
     private JobPost jobPost;
 
     @ManyToOne
     @JsonManagedReference
-    @JoinColumn(name = "LanguageId", referencedColumnName = "LanguageId")
-    private Language language;
+    @JoinColumn(name = "asset_id", referencedColumnName = "asset_id")
+    private Asset asset;
 
     @Column(name = "create_timestamp", columnDefinition = "timestamp not null default current_timestamp")
     private Timestamp createTimeStamp;
@@ -38,13 +39,14 @@ public class JobPostLanguageRequirement extends Model {
     @Column(name = "update_timestamp", columnDefinition = "timestamp null")
     private Timestamp updateTimestamp;
 
-    public JobPostLanguageRequirement() {
+    public JobPostAssetRequirement(){
         this.createTimeStamp = new Timestamp(System.currentTimeMillis());
     }
-    public static Finder<String, JobPostLanguageRequirement> find = new Finder(JobPostLanguageRequirement.class);
 
-    public long getLanguageRequirementId() {
-        return languageRequirementId;
+    public static Finder<String, JobPostAssetRequirement> find = new Finder(JobPostAssetRequirement.class);
+
+    public long getAssetRequirementId() {
+        return assetRequirementId;
     }
 
     public JobPost getJobPost() {
@@ -55,12 +57,12 @@ public class JobPostLanguageRequirement extends Model {
         this.jobPost = jobPost;
     }
 
-    public Language getLanguage() {
-        return language;
+    public Asset getAsset() {
+        return asset;
     }
 
-    public void setLanguage(Language language) {
-        this.language = language;
+    public void setAsset(Asset asset) {
+        this.asset = asset;
     }
 
     public Timestamp getCreateTimeStamp() {

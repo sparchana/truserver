@@ -232,6 +232,8 @@ $(function() {
 
         // checking age, location, gender
         var jobPostLanguage = $('#jobPostLanguage').val();
+        var jobPostDocument = $('#jobPostDocument').val();
+        var jobPostAsset = $('#jobPostAsset').val();
         var maxAge = $("#jobPostMaxAge").val();
         var jobPostGender = parseInt(document.getElementById("jobPostGender").value);
         if (status !=0 ){
@@ -354,6 +356,8 @@ $(function() {
                     jobPostInterviewDays: interviewDays,
                     interviewTimeSlot: slotArray,
                     jobPostLanguage: jobPostLanguage,
+                    jobPostDocument: jobPostDocument,
+                    jobPostAsset: jobPostAsset,
                     jobPostMaxAge: maxAge,
                     jobPostGender: jobPostGender
 

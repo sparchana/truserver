@@ -457,9 +457,9 @@ function processDataForJobPost(returnedData) {
     if (returnedData.gender !=null) {
         $("#jobPostGender").val(returnedData.gender);
     }
-    if (returnedData.jobPostLanguageRequirement != null) {
+    if (returnedData.jobPostLanguageRequirements != null) {
         var arr = [];
-        var req = returnedData.jobPostLanguageRequirement;
+        var req = returnedData.jobPostLanguageRequirements;
         req.forEach(function (languageRequirement) {
             if(languageRequirement != null){
                 arr.push(languageRequirement.language.languageId);
@@ -467,6 +467,28 @@ function processDataForJobPost(returnedData) {
         });
         $("#jobPostLanguage").val(arr);
         $("#jobPostLanguage").multiselect('rebuild');
+    }
+    if (returnedData.jobPostDocumentRequirements != null) {
+        var arr = [];
+        var req = returnedData.jobPostDocumentRequirements;
+        req.forEach(function (documentRequirement) {
+            if(documentRequirement != null){
+                arr.push(documentRequirement.idProof.idProofId);
+            }
+        });
+        $("#jobPostDocument").val(arr);
+        $("#jobPostDocument").multiselect('rebuild');
+    }
+    if (returnedData.jobPostAssetRequirements != null) {
+        var arr = [];
+        var req = returnedData.jobPostAssetRequirements;
+        req.forEach(function (assetRequirement) {
+            if(assetRequirement != null){
+                arr.push(assetRequirement.asset.assetId);
+            }
+        });
+        $("#jobPostAsset").val(arr);
+        $("#jobPostAsset").multiselect('rebuild');
     }
 
 

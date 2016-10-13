@@ -15,7 +15,6 @@ import models.entity.Static.JobPostWorkflowStatus;
 import models.entity.Static.Locality;
 import models.util.Util;
 import play.Logger;
-import scala.Int;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -210,7 +209,7 @@ public class JobPostWorkflowEngine {
             localityIdList.add(jobPostToLocality.getLocality().getLocalityId());
         }
 
-        List<JobPostLanguageRequirement> languageRequirements = jobPost.getJobPostLanguageRequirement();
+        List<JobPostLanguageRequirement> languageRequirements = jobPost.getJobPostLanguageRequirements();
         List<Integer> languageIdList = new ArrayList<>();
         for (JobPostLanguageRequirement requirement : languageRequirements) {
             languageIdList.add(requirement.getLanguage().getLanguageId());

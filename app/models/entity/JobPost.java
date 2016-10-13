@@ -165,7 +165,17 @@ public class JobPost extends Model {
     @JsonManagedReference
     @PrivateOwned
     @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
-    private List<JobPostLanguageRequirement> jobPostLanguageRequirement;
+    private List<JobPostLanguageRequirement> jobPostLanguageRequirements;
+
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
+    private List<JobPostAssetRequirement> jobPostAssetRequirements;
+
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
+    private List<JobPostDocumentRequirement> jobPostDocumentRequirements;
 
     public static Finder<String, JobPost> find = new Finder(JobPost.class);
 
@@ -211,7 +221,9 @@ public class JobPost extends Model {
         this.gender = jobPost.gender;
         this.source = jobPost.source;
         this.jobPostMaxAge = jobPost.jobPostMaxAge;
-        this.jobPostLanguageRequirement = jobPost.jobPostLanguageRequirement;
+        this.jobPostLanguageRequirements = jobPost.jobPostLanguageRequirements;
+        this.jobPostDocumentRequirements = jobPost.jobPostDocumentRequirements;
+        this.jobPostAssetRequirements = jobPost.jobPostAssetRequirements;
     }
 
     public RecruiterProfile getRecruiterProfile() {
@@ -543,11 +555,27 @@ public class JobPost extends Model {
         this.jobPostMaxAge = jobPostMaxAge;
     }
 
-    public List<JobPostLanguageRequirement> getJobPostLanguageRequirement() {
-        return jobPostLanguageRequirement;
+    public List<JobPostLanguageRequirement> getJobPostLanguageRequirements() {
+        return jobPostLanguageRequirements;
     }
 
-    public void setJobPostLanguageRequirement(List<JobPostLanguageRequirement> jobPostLanguageRequirement) {
-        this.jobPostLanguageRequirement = jobPostLanguageRequirement;
+    public void setJobPostLanguageRequirements(List<JobPostLanguageRequirement> jobPostLanguageRequirements) {
+        this.jobPostLanguageRequirements = jobPostLanguageRequirements;
+    }
+
+    public List<JobPostAssetRequirement> getJobPostAssetRequirements() {
+        return jobPostAssetRequirements;
+    }
+
+    public void setJobPostAssetRequirements(List<JobPostAssetRequirement> jobPostAssetRequirements) {
+        this.jobPostAssetRequirements = jobPostAssetRequirements;
+    }
+
+    public List<JobPostDocumentRequirement> getJobPostDocumentRequirements() {
+        return jobPostDocumentRequirements;
+    }
+
+    public void setJobPostDocumentRequirements(List<JobPostDocumentRequirement> jobPostDocumentRequirements) {
+        this.jobPostDocumentRequirements = jobPostDocumentRequirements;
     }
 }

@@ -1,8 +1,10 @@
 # --- !Ups
 create table job_post_language_requirement (
-  languagerequirementid         int unsigned auto_increment not null,
+  languagerequirementid         bigint unsigned auto_increment not null,
   jobpostid                     bigint signed,
   languageid                    int signed,
+  create_timestamp              timestamp not null default current_timestamp,
+  update_timestamp              timestamp null,
   constraint pk_job_post_language_requirement primary key (languagerequirementid)
 );
 
