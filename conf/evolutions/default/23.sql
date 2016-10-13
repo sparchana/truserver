@@ -38,7 +38,7 @@ create table pre_screen_requirement (
   pre_screen_requirement_uuid   varchar(255) not null,
   creation_timestamp            timestamp default current_timestamp not null,
   job_post_id                   bigint signed,
-  category                      int not null,
+  category_id                   int not null,
   id_proof_id                   int signed,
   asset_id                      int unsigned,
   requirements_category_id      bigint unsigned,

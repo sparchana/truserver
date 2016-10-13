@@ -2,11 +2,13 @@ package models.entity.OM;
 
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.Static.*;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 /**
  * Created by zero on 11/10/16.
@@ -31,7 +33,7 @@ public class PreScreenRequirement  extends Model{
     @JoinColumn(name = "job_post_id", referencedColumnName = "JobPostId")
     private JobPost jobPost;
 
-    @Column(name = "category", columnDefinition = "int ", nullable = false)
+    @Column(name = "category_id", columnDefinition = "int", nullable = false)
     private Integer category;
 
     @ManyToOne
@@ -55,8 +57,11 @@ public class PreScreenRequirement  extends Model{
     private Language language;
 
     public PreScreenRequirement(){
+        this.preScreenRequirementUUId = UUID.randomUUID().toString();
         this.creationTimestamp = new Timestamp(System.currentTimeMillis());
     }
+
+    public static Finder<String, PreScreenRequirement> find = new Finder(PreScreenRequirement.class);
 
     public JobPost getJobPost() {
         return jobPost;
@@ -105,4 +110,5 @@ public class PreScreenRequirement  extends Model{
     public void setLanguage(Language language) {
         this.language = language;
     }
+
 }

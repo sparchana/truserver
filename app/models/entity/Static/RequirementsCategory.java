@@ -1,7 +1,6 @@
 package models.entity.Static;
 
 import com.avaje.ebean.Model;
-import models.entity.OM.JobPostWorkflow;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -25,7 +24,7 @@ public class RequirementsCategory extends Model {
     private Timestamp creationTimestamp;
 
     @Column(name = "requirements_category_title", columnDefinition = "varchar(255) null")
-    private String requirementsCategory;
+    private String requirementsCategoryTitle;
 
     public RequirementsCategory(){
         this.creationTimestamp = new Timestamp(System.currentTimeMillis());
@@ -53,11 +52,11 @@ public class RequirementsCategory extends Model {
         this.creationTimestamp = creationTimestamp;
     }
 
-    public String getRequirementsCategory() {
-        return requirementsCategory;
+    public String getRequirementsCategoryTitle() {
+        return requirementsCategoryTitle;
     }
 
-    public void setRequirementsCategory(String requirementsCategory) {
-        this.requirementsCategory = requirementsCategory;
+    public void setRequirementsCategoryTitle(String requirementsCategoryTitle) {
+        this.requirementsCategoryTitle = requirementsCategoryTitle;
     }
 }
