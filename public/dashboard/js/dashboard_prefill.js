@@ -333,6 +333,7 @@ $("#skillBack").click(function(){
 
 function prefillEducationProfile(){
     try {
+        if(candidateInformation.candidateEducation != null){
             if(candidateInformation.candidateEducation.education != null){
                 document.getElementById("highestEducation" + candidateInformation.candidateEducation.education.educationId).checked = true;
                 $("#highestEducation" + candidateInformation.candidateEducation.education.educationId).parent().addClass('active').siblings().removeClass('active');
@@ -353,6 +354,7 @@ function prefillEducationProfile(){
             if(candidateInformation.candidateEducation.candidateLastInstitute != null){
                 $("#candidateEducationInstitute").val(candidateInformation.candidateEducation.candidateLastInstitute);
             }
+        }
     } catch(err){
         console.log(err);
     }
@@ -506,6 +508,7 @@ function saveCandidateBasicProfile(){
 }
 
 function saveCandidateExperienceDetails(){
+    console.log(candidateInformation);
     var experienceStatus = $('input:radio[name="workExperience"]:checked').val();
     var selectedSalary = $('#candidateLastWithdrawnSalary').val();
 
@@ -513,7 +516,7 @@ function saveCandidateExperienceDetails(){
         notifyError("Salary cant have special characters");
     } else if(experienceStatus == null){
         notifyError("Please Select your work experience");
-    } else if(selectedSalary > 99999 || selectedSalary < 300){
+    } else if((selectedSalary > 99999 || selectedSalary < 300) && experienceStatus != 0){
         notifyError("Please Enter a valid Salary");
     }
     else{

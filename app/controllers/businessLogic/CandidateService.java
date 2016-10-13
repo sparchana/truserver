@@ -710,6 +710,7 @@ public class CandidateService
         if(jobRole == null){
             return null;
         }
+
         if(jobHistoryList == null || jobHistoryList.isEmpty()){
             // create new currentJob entry
             jobHistoryList = new ArrayList<>();
