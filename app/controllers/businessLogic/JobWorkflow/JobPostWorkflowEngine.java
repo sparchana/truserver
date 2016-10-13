@@ -30,7 +30,6 @@ public class JobPostWorkflowEngine {
     /**
      *
      *  @param jobPostId  match candidates for this jobPost
-     *  @param minAge  min age criteria to be taken into consideration while matching
      *  @param maxAge  max range criteria to be taken into consideration while matching
      *  @param gender  gender criteria to be taken into consideration while matching
      *  @param experienceId experience duration to be taken into consideration while matching
@@ -66,13 +65,6 @@ public class JobPostWorkflowEngine {
 
         // problem: all age is null/0 and dob is also null
         // select candidate falling under the specified age req
-        if (minAge != null) {
-            int endYear = currentYear - minAge;
-            query = query
-                    .where()
-                    .isNotNull("candidateDOB")
-                    .le("candidateDOB", endYear + "-01-01").query();
-        }
         if (maxAge != null && maxAge !=0 ) {
             int startYear = currentYear - maxAge;
             query = query
@@ -200,7 +192,6 @@ public class JobPostWorkflowEngine {
         // prep params for a jobPost
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
 
-        Integer minAge = jobPost.getJobPostMinAge();
         Integer maxAge = jobPost.getJobPostMaxAge();
         Long minSalary = jobPost.getJobPostMinSalary();
         Long maxSalary = jobPost.getJobPostMaxSalary();
@@ -219,15 +210,15 @@ public class JobPostWorkflowEngine {
             localityIdList.add(jobPostToLocality.getLocality().getLocalityId());
         }
 
-        List<JobPostLanguageRequirement> languageRequirements = jobPost.getJobPostLanguageRequirement();
+        List<JobPostLanguageRequirement> languageRequirements = jobPost.getJobPostLanguageRequirements();
         List<Integer> languageIdList = new ArrayList<>();
         for (JobPostLanguageRequirement requirement : languageRequirements) {
             languageIdList.add(requirement.getLanguage().getLanguageId());
         }
 
-        Logger.info(" minAge : "+minAge + " - " + " maxAge : "+maxAge + " - " + " minSalary : "+minSalary + " - " + " maxSalary : "+maxSalary + " - " + " gender : "+gender + " - " + " experienceId : "+experienceId + " - " + " localityIdList : "+localityIdList + " - " + " languageIdList: "+languageIdList);
+        Logger.info(" maxAge : "+maxAge + " - " + " minSalary : "+minSalary + " - " + " maxSalary : "+maxSalary + " - " + " gender : "+gender + " - " + " experienceId : "+experienceId + " - " + " localityIdList : "+localityIdList + " - " + " languageIdList: "+languageIdList);
         // call master method
-        return getMatchingCandidate(jobPostId, minAge, maxAge, minSalary, maxSalary, gender, experienceId, jobRoleId, educationId, localityIdList, languageIdList);
+        return getMatchingCandidate(jobPostId, maxAge, minSalary, maxSalary, gender, experienceId, jobRoleId, educationId, localityIdList, languageIdList);
     }
 
     private static List<Candidate> filterByLatLngOrHomeLocality(List<Candidate> candidateList, List<Long> jobPostLocalityIdList) {

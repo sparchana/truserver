@@ -904,6 +904,11 @@ public class Application extends Controller {
         return ok(toJson(degreeList));
     }
 
+    public static Result getAllAsset() {
+        List<Asset> assets = Asset.find.setUseQueryCache(!isDevMode).orderBy("asset_title").findList();
+        return ok(toJson(assets));
+    }
+
     @Security.Authenticated(RecSecured.class)
     public static Result getAllCompany() {
         List<Company> companyList = Company.find.where()
@@ -1498,7 +1503,6 @@ public class Application extends Controller {
         if (matchingCandidateRequest != null) {
             return ok(toJson(JobPostWorkflowEngine.getMatchingCandidate(
                     matchingCandidateRequest.getJobPostId(),
-                    matchingCandidateRequest.getMinAge(),
                     matchingCandidateRequest.getMaxAge(),
                     matchingCandidateRequest.getMinSalary(),
                     matchingCandidateRequest.getMaxSalary(),
@@ -1562,4 +1566,5 @@ public class Application extends Controller {
     public static Result testMatchingCandidate(Long jpId) {
        return ok(toJson(JobPostWorkflowEngine.getMatchingCandidate(jpId)));
     }
+
 }

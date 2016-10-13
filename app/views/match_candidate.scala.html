@@ -10,55 +10,49 @@
 
                     <div class="row">
                         <div class="col-sm-1"><h6>Job Role :</h6></div>
-                        <div class="col-sm-5">
+                        <div class="col-sm-3">
                             <input type="text" id="jobPostJobRole" >
                         </div>
                         <div class="col-sm-1"><h6>Locality:</h6></div>
-                        <div class="col-sm-5">
+                        <div class="col-sm-3">
                             <input type="text" id="jobPostLocality" placeholder="Where do you want to work?">
+                        </div>
+                        <div class="col-sm-1"><h6>Max Age:</h6></div>
+                        <div class="col-sm-3" style="width: 15%;">
+                            <input type="number" id="maxAge" name="maxAge" placeholder="Max Age Limit?" min="0" max="70" class="form-control input-md">
                         </div>
                     </div>
 
-                    <div class="row" style="margin-top: 16px">
-                        <div class="col-sm-1"><h6>Min Age:</h6></div>
-                        <div class="col-sm-5">
-                            <input type="number" id="minAge" name="minAge" placeholder="Minimum Age?" min="0" max="80" class="form-control input-md">
-                        </div>
-                        <div class="col-sm-1"><h6>Max Age:</h6></div>
-                        <div class="col-sm-5">
-                            <input type="number" id="maxAge" name="maxAge" placeholder="Maximum Age?" min="0" max="70" class="form-control input-md">
-                        </div>
-                    </div>
 
                     <div class="row" style="margin-top: 16px">
                         <div class="col-sm-1"><h6>Min Salary:</h6></div>
-                        <div class="col-sm-5">
+                        <div class="col-sm-3">
                             <input type="number" id="minSalary" name="minSalary" placeholder="Minimum Salary?" min="0" class="form-control input-md">
                         </div>
                         <div class="col-sm-1"><h6>Max Salary:</h6></div>
-                        <div class="col-sm-5">
+                        <div class="col-sm-3">
                             <input type="number" id="maxSalary" name="maxSalary" placeholder="Maximum Salary?" min="0" class="form-control input-md">
                         </div>
-                    </div>
 
-                    <div class="row" style="margin-top: 16px">
                         <div class="col-sm-1"><h6>Experience :</h6></div>
-                        <div class="col-sm-5">
+                        <div class="col-sm-3">
                             <select id="experienceSelect"></select>
                         </div>
-                        <div class="col-sm-1"><h6>Language </h6></div>
-                        <div class="col-sm-5" id="languageMultiSelectDiv">
-                            <select id="languageMultiSelect" multiple="multiple"></select>
-                        </div>
                     </div>
 
                     <div class="row" style="margin-top: 16px">
+
+                        <div class="col-sm-1"><h6>Language </h6></div>
+                        <div class="col-sm-3" id="languageMultiSelectDiv">
+                            <select id="languageMultiSelect" multiple="multiple"></select>
+                        </div>
+
                         <div class="col-sm-1"><h6>Education </h6></div>
-                        <div class="col-sm-5" id="educationSelectDiv">
+                        <div class="col-sm-3" id="educationSelectDiv">
                             <select id="educationSelect"></select>
                         </div>
                         <div class="col-sm-1"><h6>Gender </h6></div>
-                        <div class="col-sm-5" id="genderSelectDiv">
+                        <div class="col-sm-3" id="genderSelectDiv">
                             <select id="genderSelect">
                                 <option value="-1">None Selected</option>
                                 <option value="2">Any</option>

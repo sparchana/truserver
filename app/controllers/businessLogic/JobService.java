@@ -41,15 +41,22 @@ public class JobService {
 
             createInterviewDetails(addJobPostRequest, newJobPost);
             newJobPost.save();
+
+            saveOrUpdatePreScreenRequirements(newJobPost);
+
             addJobPostResponse.setJobPost(newJobPost);
             addJobPostResponse.setStatus(AddJobPostResponse.STATUS_SUCCESS);
             Logger.info("JobPost with jobId: " + newJobPost.getJobPostId() + " and job title: " + newJobPost.getJobPostTitle() + " created successfully");
         } else{
             Logger.info("Job post already exists. Updating existing job Post");
             existingJobPost = getAndSetJobPostValues(addJobPostRequest, existingJobPost, jobPostLocalityList);
+
             resetInterviewDetails(addJobPostRequest, existingJobPost);
             createInterviewDetails(addJobPostRequest, existingJobPost);
             existingJobPost.update();
+
+            saveOrUpdatePreScreenRequirements(existingJobPost);
+
             addJobPostResponse.setJobPost(existingJobPost);
             addJobPostResponse.setStatus(AddJobPostResponse.STATUS_UPDATE_SUCCESS);
             Logger.info("JobPost with jobId: " + existingJobPost.getJobPostId() + " and job title: " + existingJobPost.getJobPostTitle() + " updated successfully");
@@ -128,8 +135,10 @@ public class JobService {
         newJobPost.setJobPostPartnerJoiningIncentive(addJobPostRequest.getPartnerJoiningIncentive());
 
         newJobPost.setGender(addJobPostRequest.getJobPostGender());
-        newJobPost.setJobPostLanguageRequirement(getJobPostLanguageRequirement(addJobPostRequest.getJobPostLanguage(), newJobPost));
-        newJobPost.setJobPostMinAge(addJobPostRequest.getJobPostMinAge());
+        newJobPost.setJobPostLanguageRequirements(getJobPostLanguageRequirement(addJobPostRequest.getJobPostLanguage(), newJobPost));
+        newJobPost.setJobPostAssetRequirements(getJobPostAssetRequirement(addJobPostRequest.getJobPostAsset(), newJobPost));
+        newJobPost.setJobPostDocumentRequirements(getJobPostDocumentRequirement(addJobPostRequest.getJobPostDocument(), newJobPost));
+
         newJobPost.setJobPostMaxAge(addJobPostRequest.getJobPostMaxAge());
 
         if (addJobPostRequest.getJobPostWorkingDays() != null) {
@@ -165,7 +174,163 @@ public class JobService {
         return newJobPost;
     }
 
-    private static List<JobPostLanguageRequirement> getJobPostLanguageRequirement(List<Integer> jobPostLanguageList, JobPost newJobPost) {
+    private static void saveOrUpdatePreScreenRequirements(JobPost jobPost) {
+        if (jobPost == null) {
+            return;
+        }
+
+        Integer jobPostMaxAge = jobPost.getJobPostMaxAge();
+        Experience jobPostExperience = jobPost.getJobPostExperience();
+        Education jobPostEducation = jobPost.getJobPostEducation();
+        List<JobPostLanguageRequirement> jobPostLanguageRequirements = jobPost.getJobPostLanguageRequirements();
+        List<JobPostDocumentRequirement> jobPostDocumentRequirements = jobPost.getJobPostDocumentRequirements();
+        List<JobPostAssetRequirement> jobPostAssetRequirements = jobPost.getJobPostAssetRequirements();
+
+        List<PreScreenRequirement> preScreenRequirementList = PreScreenRequirement.find.where().eq("job_post_id", jobPost.getJobPostId()).findList();
+        Map<?, RequirementsCategory> requirementsCategoryMap = RequirementsCategory.find.where().setMapKey("requirementsCategoryTitle").findMap();
+
+        Map<String, PreScreenRequirement> oneMap= new HashMap<>();
+        Map<Integer, Map<Integer, PreScreenRequirement>> mapHashMap = new HashMap<>();
+
+        if(preScreenRequirementList.size() > 0 ) {
+            for (PreScreenRequirement ps: preScreenRequirementList) {
+                if( ps.getCategory() != ServerConstants.CATEGORY_JD_REQ_CATEGORY) {
+                    // categories like docs, lang, asset will come here
+                    Map<Integer, PreScreenRequirement> psMap = mapHashMap.get(ps.getCategory());
+                    if(psMap == null) {
+                        psMap = new HashMap<>();
+                    }
+                    if(ps.getCategory() == ServerConstants.CATEGORY_DOCUMENT) {
+                        psMap.put(ps.getIdProof().getIdProofId(), ps);
+                    } else if (ps.getCategory() == ServerConstants.CATEGORY_LANGUAGE) {
+                        psMap.put(ps.getLanguage().getLanguageId(), ps);
+                    } else if (ps.getCategory() == ServerConstants.CATEGORY_ASSET) {
+                        psMap.put(ps.getAsset().getAssetId(), ps);
+                    }
+                    mapHashMap.put(ps.getCategory(), psMap);
+                } else {
+                    // categories with single entrie per jobpost will accumulate here
+                    oneMap.put(ps.getRequirementsCategory().getRequirementsCategoryTitle(), ps);
+                }
+            }
+        }
+
+        if(jobPostMaxAge != null) {
+            PreScreenRequirement preScreenRequirementAge = oneMap.get(ServerConstants.JD_TABLE_AGE);
+            if (preScreenRequirementAge == null){
+                preScreenRequirementAge = new PreScreenRequirement();
+                preScreenRequirementAge.setCategory(ServerConstants.CATEGORY_JD_REQ_CATEGORY);
+                preScreenRequirementAge.setJobPost(jobPost);
+            }
+            preScreenRequirementAge.setRequirementsCategory(requirementsCategoryMap.get(ServerConstants.JD_TABLE_AGE));
+            preScreenRequirementAge.save();
+        } else {
+            PreScreenRequirement preScreenRequirementAge = oneMap.get(ServerConstants.JD_TABLE_AGE);
+            if(preScreenRequirementAge != null) preScreenRequirementAge.delete();
+        }
+
+        if (jobPostExperience != null) {
+            PreScreenRequirement preScreenRequirementExp =  oneMap.get(ServerConstants.JD_TABLE_EXPERIENCE);
+            if (preScreenRequirementExp == null) {
+                preScreenRequirementExp = new PreScreenRequirement();
+                preScreenRequirementExp.setCategory(ServerConstants.CATEGORY_JD_REQ_CATEGORY);
+                preScreenRequirementExp.setJobPost(jobPost);
+            }
+            preScreenRequirementExp.setRequirementsCategory(requirementsCategoryMap.get(ServerConstants.JD_TABLE_EXPERIENCE));
+            preScreenRequirementExp.save();
+        } else {
+            PreScreenRequirement preScreenRequirementExp =  oneMap.get(ServerConstants.JD_TABLE_EXPERIENCE);
+            if(preScreenRequirementExp != null) preScreenRequirementExp.delete();
+        }
+        if (jobPostEducation != null) {
+            PreScreenRequirement preScreenRequirementEdu = oneMap.get(ServerConstants.JD_TABLE_EDUCATION);
+            if (preScreenRequirementEdu == null) {
+                preScreenRequirementEdu = new PreScreenRequirement();
+                preScreenRequirementEdu.setCategory(ServerConstants.CATEGORY_JD_REQ_CATEGORY);
+                preScreenRequirementEdu.setJobPost(jobPost);
+            }
+            preScreenRequirementEdu.setRequirementsCategory(requirementsCategoryMap.get(ServerConstants.JD_TABLE_EDUCATION));
+            preScreenRequirementEdu.save();
+        } else {
+            PreScreenRequirement preScreenRequirementEdu = oneMap.get(ServerConstants.JD_TABLE_EDUCATION);
+            if(preScreenRequirementEdu != null) preScreenRequirementEdu.delete();
+        }
+
+
+        if(jobPostLanguageRequirements != null && jobPostLanguageRequirements.size() > 0) {
+            Map<Integer, PreScreenRequirement> map = mapHashMap.get(ServerConstants.CATEGORY_LANGUAGE);
+            for (JobPostLanguageRequirement languageRequirement: jobPostLanguageRequirements) {
+                PreScreenRequirement preScreenRequirementLanguage = null;
+                if(map != null) {
+                    preScreenRequirementLanguage = map.get(languageRequirement.getLanguage().getLanguageId());
+                }
+                if(preScreenRequirementLanguage == null) {
+                    preScreenRequirementLanguage = new PreScreenRequirement();
+                    preScreenRequirementLanguage.setJobPost(jobPost);
+                    preScreenRequirementLanguage.setCategory(ServerConstants.CATEGORY_LANGUAGE);
+                }
+                preScreenRequirementLanguage.setLanguage(languageRequirement.getLanguage());
+                preScreenRequirementLanguage.save();
+            }
+        } else {
+            Map<Integer, PreScreenRequirement> map = mapHashMap.get(ServerConstants.CATEGORY_LANGUAGE);
+            if(map != null) {
+                for (Map.Entry<Integer, PreScreenRequirement> entry : map.entrySet()) {
+                    entry.getValue().delete();
+                }
+            }
+        }
+
+        if(jobPostDocumentRequirements != null && jobPostDocumentRequirements.size() > 0) {
+            Map<Integer, PreScreenRequirement> map = mapHashMap.get(ServerConstants.CATEGORY_DOCUMENT);
+            for ( JobPostDocumentRequirement jobPostDocumentRequirement: jobPostDocumentRequirements) {
+                PreScreenRequirement preScreenRequirementDocument = null;
+                if(map != null) {
+                    preScreenRequirementDocument = map.get(jobPostDocumentRequirement.getIdProof().getIdProofId());
+                }
+                if(preScreenRequirementDocument == null) {
+                    preScreenRequirementDocument = new PreScreenRequirement();
+                    preScreenRequirementDocument.setCategory(ServerConstants.CATEGORY_DOCUMENT);
+                    preScreenRequirementDocument.setJobPost(jobPost);
+                }
+                preScreenRequirementDocument.setIdProof(jobPostDocumentRequirement.getIdProof());
+                preScreenRequirementDocument.save();
+            }
+        } else {
+            Map<Integer, PreScreenRequirement> map = mapHashMap.get(ServerConstants.CATEGORY_DOCUMENT);
+            if(map != null) {
+                for (Map.Entry<Integer, PreScreenRequirement> entry : map.entrySet()) {
+                    entry.getValue().delete();
+                }
+            }
+        }
+
+        if (jobPostAssetRequirements != null && jobPostAssetRequirements.size() > 0) {
+            Map<Integer, PreScreenRequirement> map = mapHashMap.get(ServerConstants.CATEGORY_ASSET);
+            for ( JobPostAssetRequirement jobPostAssetRequirement: jobPostAssetRequirements) {
+                PreScreenRequirement preScreenRequirementAsset = null;
+                if (map != null) {
+                    preScreenRequirementAsset = map.get(jobPostAssetRequirement.getAsset().getAssetId());
+                }
+                if (preScreenRequirementAsset == null) {
+                    preScreenRequirementAsset = new PreScreenRequirement();
+                    preScreenRequirementAsset.setCategory(ServerConstants.CATEGORY_ASSET);
+                    preScreenRequirementAsset.setJobPost(jobPost);
+                }
+                preScreenRequirementAsset.setAsset(jobPostAssetRequirement.getAsset());
+                preScreenRequirementAsset.save();
+            }
+        } else {
+            Map<Integer, PreScreenRequirement> map = mapHashMap.get(ServerConstants.CATEGORY_ASSET);
+            if(map != null) {
+                for (Map.Entry<Integer, PreScreenRequirement> entry : map.entrySet()) {
+                    entry.getValue().delete();
+                }
+            }
+        }
+    }
+
+    private static List<JobPostLanguageRequirement> getJobPostLanguageRequirement(List<Long> jobPostLanguageList, JobPost newJobPost) {
 
         List<JobPostLanguageRequirement> languageRequirementList = new ArrayList<>();
         List<Language> languageList = Language.find.where().in("LanguageId", jobPostLanguageList).findList();
@@ -176,6 +341,38 @@ public class JobService {
             languageRequirementList.add(jobPostLanguageRequirement);
         }
         return languageRequirementList;
+    }
+
+    private static List<JobPostDocumentRequirement> getJobPostDocumentRequirement(List<Long> jobPostDocumentList, JobPost newJobPost) {
+
+        List<JobPostDocumentRequirement> jobPostDocumentRequirementList = new ArrayList<>();
+        if(jobPostDocumentList == null || jobPostDocumentList.size() == 0) {
+            return jobPostDocumentRequirementList;
+        }
+        List<IdProof> idProofList = IdProof.find.where().in("IdProofId", jobPostDocumentList).findList();
+        for(IdProof idProof: idProofList){
+            JobPostDocumentRequirement jobPostDocumentRequirement = new JobPostDocumentRequirement();
+            jobPostDocumentRequirement.setIdProof(idProof);
+            jobPostDocumentRequirement.setJobPost(newJobPost);
+            jobPostDocumentRequirementList.add(jobPostDocumentRequirement);
+        }
+        return jobPostDocumentRequirementList;
+    }
+
+    private static List<JobPostAssetRequirement> getJobPostAssetRequirement(List<Long> jobPostAssetList, JobPost newJobPost) {
+
+        List<JobPostAssetRequirement> jobPostAssetRequirementList = new ArrayList<>();
+        if(jobPostAssetList == null || jobPostAssetList.size() == 0) {
+            return jobPostAssetRequirementList;
+        }
+        List<Asset> assetList = Asset.find.where().in("asset_id", jobPostAssetList).findList();
+        for(Asset asset: assetList){
+            JobPostAssetRequirement jobPostAssetRequirement = new JobPostAssetRequirement();
+            jobPostAssetRequirement.setAsset(asset);
+            jobPostAssetRequirement.setJobPost(newJobPost);
+            jobPostAssetRequirementList.add(jobPostAssetRequirement);
+        }
+        return jobPostAssetRequirementList;
     }
 
     public static ApplyJobResponse applyJob(ApplyJobRequest applyJobRequest,

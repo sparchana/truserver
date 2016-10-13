@@ -118,6 +118,10 @@ public class ServerConstants {
 
     // JobPost Workflow status
     public static final int JWF_STATUS_SELECTED = 1;
+    // Requirements Table
+    public static final String JD_TABLE_AGE = "age";
+    public static final String JD_TABLE_EXPERIENCE = "experience";
+    public static final String JD_TABLE_EDUCATION = "education";
 
     public static Map<String, String> devTeamMobile;
     static {
@@ -166,4 +170,15 @@ public class ServerConstants {
      ************************/
     public static int SOURCE_INTERNAL = 0;
     public static int SOURCE_BABAJOBS = 1;
+
+    // is_common status for asset, idPoof
+
+    public static final int IS_NOT_COMMON = 0;
+    public static final int IS_COMMON= 1;
+
+    // preScreening category
+    public static final int CATEGORY_DOCUMENT = 1;
+    public static final int CATEGORY_LANGUAGE = 2;
+    public static final int CATEGORY_ASSET = 3;
+    public static final int CATEGORY_JD_REQ_CATEGORY = 4;
 }
