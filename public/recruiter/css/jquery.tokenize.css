@@ -73,7 +73,6 @@ div.Tokenize ul.TokensContainer li.Token.PendingDelete {
 div.Tokenize ul.TokensContainer li.Token,
 div.Tokenize ul.TokensContainer li.TokenSearch {
     margin: 5px 5px 0 0;
-    height: 30px;
     float: left;
     padding: 4px;
 }

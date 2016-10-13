@@ -1,7 +1,6 @@
-package models.entity.Static;
+package models.entity.Recruiter.Static;
 
 import com.avaje.ebean.Model;
-import models.entity.RecruiterProfile;
 
 import javax.persistence.*;
 

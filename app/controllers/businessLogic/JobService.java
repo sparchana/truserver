@@ -10,6 +10,7 @@ import api.http.httpResponse.AddJobPostResponse;
 import api.http.httpResponse.ApplyJobResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Model;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.OM.*;
 import models.entity.Static.*;

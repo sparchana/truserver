@@ -10,6 +10,7 @@ import models.entity.OO.CandidateCurrentJobDetail;
 import models.entity.OO.CandidateEducation;
 import models.entity.OO.CandidateStatusDetail;
 import models.entity.OO.TimeShiftPreference;
+import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Static.CandidateProfileStatus;
 import models.entity.Static.Language;
 import models.entity.Static.Locality;
@@ -193,6 +194,10 @@ public class Candidate extends Model {
 
     @Transient
     private String matchedLocation;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
+    private List<RecruiterToCandidateUnlocked> recruiterToCandidateUnlockedList;
 
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
@@ -566,6 +571,14 @@ public class Candidate extends Model {
 
     public void setMatchedLocation(String matchedLocation) {
         this.matchedLocation = matchedLocation;
+    }
+
+    public List<RecruiterToCandidateUnlocked> getRecruiterToCandidateUnlockedList() {
+        return recruiterToCandidateUnlockedList;
+    }
+
+    public void setRecruiterToCandidateUnlockedList(List<RecruiterToCandidateUnlocked> recruiterToCandidateUnlockedList) {
+        this.recruiterToCandidateUnlockedList = recruiterToCandidateUnlockedList;
     }
 }
 

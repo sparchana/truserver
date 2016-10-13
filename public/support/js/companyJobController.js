@@ -27,7 +27,6 @@ function renderDashboard() {
             "ajax": {
                 "url": "/getAllJobPosts",
                 "dataSrc": function (returnedData) {
-                    console.log(returnedData);
                     var returned_data = new Array();
                     returnedData.forEach(function (jobPost) {
                         returned_data.push({
