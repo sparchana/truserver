@@ -138,6 +138,7 @@ POST        /addRecruiterLead                                             contro
 POST        /recruiterSignUp                                              controllers.RecruiterController.recruiterSignUp()
 POST        /addRecruiterPassword                                         controllers.RecruiterController.addPassword()
 POST        /recruiterLoginSubmit                                         controllers.RecruiterController.loginSubmit()
+GET         /recruiter/candidateSearch                                              controllers.RecruiterController.recruiterCandidateSearch()
 
 #new routes
 #~~~~~~~~~~~~~~~~~~~~

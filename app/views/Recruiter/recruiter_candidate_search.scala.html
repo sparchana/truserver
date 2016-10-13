@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Recruiter | TruJobs - Post jobs and hire the right candidates</title>
+
+        <meta name="keywords" content="hire driver, hire fresher, hire candidate sites, job posting, hire sales candidate, hire beautician,
+        hire, hire receptionist, hire office admin, hire office assistant,
+        hire plumber, hire teacher, hire entry level candidate,
+        hire delivery boys, hire call center executives, hire BPO, hire kpo, hire hire hire , hire data entry candidate, hire back office canididate,
+        hire receptionist, hire beautician, hire experienced candidate, hire in Bangalore, hire cashier, hire entry level candidate, hire freshers,
+        hire plumber, hire electrician, hire accountants, hire in bangalore">
+
+        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+
+            <!-- Bootstrap Core CSS -->
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_candidate_search.css">
+        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/jquery.tokenize.css" />
+
+        <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
+
+        <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
+        <script type="text/javascript" src="/assets/recruiter/js/jquery.tokenize.js"></script>
+        <script>
+    $(document).ready(function () {
+        $('select').material_select();
+    });
+  </script>
+        <meta name="theme-color" content="#000000">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </head>
+    <body>
+        <div class="navbar-fixed">
+            <nav>
+                <div class="container" style="width: 85%;">
+                    <div class="nav-wrapper">
+                        <a href="#!" class="brand-logo">
+                            <img id="navLogo" src="/assets/recruiter/img/trujobs-recruiter.png" style="height: 40px;
+                                margin-top: -2%">
+                        </a>
+                        <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+                        <ul class="right hide-on-med-and-down">
+                            <li><font style="color: #ffffff;">Profile</font></li>
+                            <li><font style="color: #ffffff;">Search</font></li>
+                            <li><a onclick="logoutRecruiter()" class="waves-effect waves-light ascentGreen lighten-1 btn"><font style="color: #fff;
+                                font-weight: 400">Logout</font>
+                            </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <ul class="side-nav" id="mobile-demo">
+                        <li><a onclick="#!">PROFILE</a></li>
+                        <li><a onclick="#!">SEARCH</a></li>
+                        <li><a onclick="logoutRecruiter()">LOGOUT</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+
+        <!--Search bar start-->
+
+        <div class="container-fluid back-banner-candidate">
+            <div class="container" style="padding: 0;" id="searchBoxContainer">
+                <div class="row">
+                    <h3 style="font-weight:600">Candidate Search</h3>
+                </div>
+                <div class="row">
+                    <div class="card col s12 l12" style="margin: 0;padding: 0">
+                        <div class="card-content col s12 l12" style="margin: 0;padding: 20px 1%">
+                            <div class="col s12 l5" id="searchBox">
+                                <input type="text" name="search" placeholder="Job Role">
+                            </div>
+                            <div class="col s12 l5" id="searchBox">
+                                <input type="text" name="search" placeholder="Locality">
+                            </div>
+                            <div class="col s12 l2" style="margin-top: 1%">
+                                <a class="waves-effect waves-light ascentGreen lighten-1 btn right" data-toggle="collapse" data-target="#filterDetail"><font style="color: #fff;
+                                    font-weight: 400">Search</font>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <!--Search bar ends-->
+            <!-- Details container -->
+        <div class="container" style="padding: 0">
+            <div class="row">
+                    <!-- Sort & Filter -->
+                <div class="col s12 l3">
+                    <ul class="collapsible" data-collapsible="accordion">
+                        <li>
+                            <div class="collapsible-header"><i class="material-icons">place</i>
+                                Sort By
+                            </div>
+                            <div class="collapsible-body">
+                                <p>
+                                    <input name="sortyBy" type="radio" id="sortBySalary" />
+                                    <label for="sortBySalary">Salary</label>
+                                    <input name="sortyBy" type="radio" id="sortByLastActive" />
+                                    <label for="sortByLastActive">Last Active</label>
+                                </p>
+                            </div>
+                        </li>
+                    </ul>
+                    <div class="card">
+                        <div class="card-content">
+                            <font size="4">Filter</font>
+                        </div>
+                        <div class="card-content" style="padding: 0">
+                            <div class="row">
+                                <div class="col s12 l12">
+                                    <ul class="collapsible" data-collapsible="accordion">
+                                        <li>
+                                            <div class="collapsible-header"><i class="material-icons">filter_drama</i>
+                                                Gender</div>
+                                            <div class="collapsible-body">
+                                                <p>
+                                                    <input name="filterGender" type="radio" id="filterMale" />
+                                                    <label for="filterMale">Male</label>
+                                                    <input name="filterGender" type="radio" id="filterFemale" />
+                                                    <label for="filterFemale">Female</label>
+                                                </p>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header"><i class="material-icons">place</i>
+                                                Experience</div>
+                                            <div class="collapsible-body">
+                                                <p>
+                                                    <input name="filterExperience" type="radio" id="filterFresher" />
+                                                    <label for="filterFresher">Fresher</label>
+                                                    <input name="filterExperience" type="radio" id="filterExperience" />
+                                                    <label for="filterExperience">Experience</label>
+                                                </p>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header"><i class="material-icons">whatshot</i>
+                                                Distance</div>
+                                            <div class="collapsible-body">
+                                                <p class="range-field">
+                                                    <input type="range" id="filterDistance" min="0" max="10" />
+                                                </p>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header"><i class="material-icons">whatshot</i>
+                                                Salary</div>
+                                            <div class="collapsible-body">
+                                                <p class="range-field">
+                                                    <input type="range" id="filterSalary" min="0" max="10" />
+                                                </p>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header"><i class="material-icons">whatshot</i>
+                                                Education</div>
+                                            <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header"><i class="material-icons">whatshot</i>
+                                                Language</div>
+                                            <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header"><i class="material-icons">whatshot</i>
+                                                Last Active</div>
+                                            <div class="collapsible-body"><p>Lorem ipsum dolor sit amet.</p></div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Candidate Details -->
+                <div class="col s12 l9">
+                    <div class="card">
+                    <div class="card-content" style="padding:0">
+                        <div class="row" style="padding: 5px 2%;margin: 0 2%">
+                            <div class="col s12 l8"  style="padding-top:2px">
+                                <font size="5" style="font-weight:600">Name</font>
+                            </div>
+                            <div class="col s12 l4"  style="padding-top:10px">
+                                <font size="3" style="font-weight:300">Last Active - 12 Hrs Ago</font>
+                            </div>
+
+                        </div>
+                        <div class="divider"></div>
+                        <div class="row" style="padding: 10px 2%;margin: 0">
+                            <div class="col s6 l4" style="margin-top: 4px">
+                                <div style="display: inline-block;
+                                    margin: 4px;">
+                                    <img src="/assets/recruiter/img/icons/envelope.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block;">
+                                    <div style="margin-left: 4px;
+                                        color: #9f9f9f;
+                                        font-size: 11px">Locality</div>
+                                    <div id="recEmail" style="margin-left: 4px;
+                                        display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                            <div class="col s6 l4" style="margin-top: 4px">
+                                <div style="display: inline-block;
+                                    margin: 4px;">
+                                    <img src="/assets/recruiter/img/icons/building.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block;
+                                    margin-top: 4px">
+                                    <div style="margin-left: 4px;
+                                        color: #9f9f9f;
+                                        font-size: 11px">Gender</div>
+                                    <div id="recCompany" style="margin-left: 4px;
+                                        display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                            <div class="col s6 l4">
+                                <div style="display: inline-block;
+                                    margin: 4px;">
+                                    <img src="/assets/recruiter/img/icons/telephone.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block;
+                                    margin-top: 4px" style="margin-top: 6px">
+                                    <div style="margin-left: 4px;
+                                        color: #9f9f9f;
+                                        font-size: 11px">Age</div>
+                                    <div id="recLandline" style="margin: 4px;
+                                        display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" style="padding: 10px 2%;margin: 0">
+                            <div class="col s6 l4" >
+                                <div style="display: inline-block;
+                                    margin: 4px;">
+                                    <img src="/assets/recruiter/img/icons/telephone.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block;
+                                    margin-top: 4px" style="margin-top: 6px">
+                                    <div style="margin-left: 4px;
+                                        color: #9f9f9f;
+                                        font-size: 11px">Languages</div>
+                                    <div id="recLandline" style="margin: 4px;
+                                        display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                            <div class="col s6 l4" style="margin-top: 4px">
+                                <div style="display: inline-block;
+                                    margin: 4px;">
+                                    <img src="/assets/recruiter/img/icons/building.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block;
+                                    margin-top: 4px">
+                                    <div style="margin-left: 4px;
+                                        color: #9f9f9f;
+                                        font-size: 11px">Experience</div>
+                                    <div id="recCompany" style="margin-left: 4px;
+                                        display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                            <div class="col s6 l4" style="margin-top: 4px">
+                                <div style="display: inline-block;
+                                    margin: 4px;">
+                                    <img src="/assets/recruiter/img/icons/building.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block;
+                                    margin-top: 4px">
+                                    <div style="margin-left: 4px;
+                                        color: #9f9f9f;
+                                        font-size: 11px">Language</div>
+                                    <div id="recCompany" style="margin-left: 4px;
+                                        display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="divider"></div>
+                        <div class="row" style="margin: 0 2%;padding:1%;text-align: right">
+                            <a class="waves-effect waves-light ascentGreen lighten-1 btn"><font style="color: #fff;font-weight: 400">Unlock Candidate</font></a>
+                        </div>
+                    </div>
+                </div>
+                    <div class="card">
+                        <div class="card-content" style="padding:0">
+                            <div class="row" style="padding: 5px 2%;margin: 0 2%">
+                                <div class="col s12 l8"  style="padding-top:2px">
+                                    <font size="5" style="font-weight:600">Name</font>
+                                </div>
+                                <div class="col s12 l4"  style="padding-top:10px">
+                                    <font size="3" style="font-weight:300">Last Active - 12 Hrs Ago</font>
+                                </div>
+
+                            </div>
+                            <div class="divider"></div>
+                            <div class="row" style="padding: 10px 2%;margin: 0">
+                                <div class="col s6 l4" style="margin-top: 4px">
+                                    <div style="display: inline-block;
+                                        margin: 4px;">
+                                        <img src="/assets/recruiter/img/icons/envelope.svg" height="24px;" style="margin-top: -4px">
+                                    </div>
+                                    <div style="display: inline-block;">
+                                        <div style="margin-left: 4px;
+                                            color: #9f9f9f;
+                                            font-size: 11px">Locality</div>
+                                        <div id="recEmail" style="margin-left: 4px;
+                                            display: inline-block">Not Specified</div>
+                                    </div>
+                                </div>
+                                <div class="col s6 l4" style="margin-top: 4px">
+                                    <div style="display: inline-block;
+                                        margin: 4px;">
+                                        <img src="/assets/recruiter/img/icons/building.svg" height="24px;" style="margin-top: -4px">
+                                    </div>
+                                    <div style="display: inline-block;
+                                        margin-top: 4px">
+                                        <div style="margin-left: 4px;
+                                            color: #9f9f9f;
+                                            font-size: 11px">Gender</div>
+                                        <div id="recCompany" style="margin-left: 4px;
+                                            display: inline-block">Not Specified</div>
+                                    </div>
+                                </div>
+                                <div class="col s6 l4">
+                                    <div style="display: inline-block;
+                                        margin: 4px;">
+                                        <img src="/assets/recruiter/img/icons/telephone.svg" height="24px;" style="margin-top: -4px">
+                                    </div>
+                                    <div style="display: inline-block;
+                                        margin-top: 4px" style="margin-top: 6px">
+                                        <div style="margin-left: 4px;
+                                            color: #9f9f9f;
+                                            font-size: 11px">Age</div>
+                                        <div id="recLandline" style="margin: 4px;
+                                            display: inline-block">Not Specified</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="padding: 10px 2%;margin: 0">
+                                <div class="col s6 l4" >
+                                    <div style="display: inline-block;
+                                        margin: 4px;">
+                                        <img src="/assets/recruiter/img/icons/telephone.svg" height="24px;" style="margin-top: -4px">
+                                    </div>
+                                    <div style="display: inline-block;
+                                        margin-top: 4px" style="margin-top: 6px">
+                                        <div style="margin-left: 4px;
+                                            color: #9f9f9f;
+                                            font-size: 11px">Languages</div>
+                                        <div id="recLandline" style="margin: 4px;
+                                            display: inline-block">Not Specified</div>
+                                    </div>
+                                </div>
+                                <div class="col s6 l4" style="margin-top: 4px">
+                                    <div style="display: inline-block;
+                                        margin: 4px;">
+                                        <img src="/assets/recruiter/img/icons/building.svg" height="24px;" style="margin-top: -4px">
+                                    </div>
+                                    <div style="display: inline-block;
+                                        margin-top: 4px">
+                                        <div style="margin-left: 4px;
+                                            color: #9f9f9f;
+                                            font-size: 11px">Experience</div>
+                                        <div id="recCompany" style="margin-left: 4px;
+                                            display: inline-block">Not Specified</div>
+                                    </div>
+                                </div>
+                                <div class="col s6 l4" style="margin-top: 4px">
+                                    <div style="display: inline-block;
+                                        margin: 4px;">
+                                        <img src="/assets/recruiter/img/icons/building.svg" height="24px;" style="margin-top: -4px">
+                                    </div>
+                                    <div style="display: inline-block;
+                                        margin-top: 4px">
+                                        <div style="margin-left: 4px;
+                                            color: #9f9f9f;
+                                            font-size: 11px">Language</div>
+                                        <div id="recCompany" style="margin-left: 4px;
+                                            display: inline-block">Not Specified</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="divider"></div>
+                            <div class="row" style="margin: 0 2%;padding:1%;text-align: right">
+                                <a class="waves-effect waves-light ascentGreen lighten-1 btn"><font style="color: #fff;font-weight: 400">Unlock Candidate</font></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-content" style="padding:0">
+                            <div class="row" style="padding: 5px 2%;margin: 0 2%">
+                                <div class="col s12 l8"  style="padding-top:2px">
+                                    <font size="5" style="font-weight:600">Name</font>
+                                </div>
+                                <div class="col s12 l4"  style="padding-top:10px">
+                                    <font size="3" style="font-weight:300">Last Active - 12 Hrs Ago</font>
+                                </div>
+
+                            </div>
+                            <div class="divider"></div>
+                            <div class="row" style="padding: 10px 2%;margin: 0">
+                                <div class="col s6 l4" style="margin-top: 4px">
+                                    <div style="display: inline-block;
+                                        margin: 4px;">
+                                        <img src="/assets/recruiter/img/icons/envelope.svg" height="24px;" style="margin-top: -4px">
+                                    </div>
+                                    <div style="display: inline-block;">
+                                        <div style="margin-left: 4px;
+                                            color: #9f9f9f;
+                                            font-size: 11px">Locality</div>
+                                        <div id="recEmail" style="margin-left: 4px;
+                                            display: inline-block">Not Specified</div>
+                                    </div>
+                                </div>
+                                <div class="col s6 l4" style="margin-top: 4px">
+                                    <div style="display: inline-block;
+                                        margin: 4px;">
+                                        <img src="/assets/recruiter/img/icons/building.svg" height="24px;" style="margin-top: -4px">
+                                    </div>
+                                    <div style="display: inline-block;
+                                        margin-top: 4px">
+                                        <div style="margin-left: 4px;
+                                            color: #9f9f9f;
+                                            font-size: 11px">Gender</div>
+                                        <div id="recCompany" style="margin-left: 4px;
+                                            display: inline-block">Not Specified</div>
+                                    </div>
+                                </div>
+                                <div class="col s6 l4">
+                                    <div style="display: inline-block;
+                                        margin: 4px;">
+                                        <img src="/assets/recruiter/img/icons/telephone.svg" height="24px;" style="margin-top: -4px">
+                                    </div>
+                                    <div style="display: inline-block;
+                                        margin-top: 4px" style="margin-top: 6px">
+                                        <div style="margin-left: 4px;
+                                            color: #9f9f9f;
+                                            font-size: 11px">Age</div>
+                                        <div id="recLandline" style="margin: 4px;
+                                            display: inline-block">Not Specified</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" style="padding: 10px 2%;margin: 0">
+                                <div class="col s6 l4" >
+                                    <div style="display: inline-block;
+                                        margin: 4px;">
+                                        <img src="/assets/recruiter/img/icons/telephone.svg" height="24px;" style="margin-top: -4px">
+                                    </div>
+                                    <div style="display: inline-block;
+                                        margin-top: 4px" style="margin-top: 6px">
+                                        <div style="margin-left: 4px;
+                                            color: #9f9f9f;
+                                            font-size: 11px">Languages</div>
+                                        <div id="recLandline" style="margin: 4px;
+                                            display: inline-block">Not Specified</div>
+                                    </div>
+                                </div>
+                                <div class="col s6 l4" style="margin-top: 4px">
+                                    <div style="display: inline-block;
+                                        margin: 4px;">
+                                        <img src="/assets/recruiter/img/icons/building.svg" height="24px;" style="margin-top: -4px">
+                                    </div>
+                                    <div style="display: inline-block;
+                                        margin-top: 4px">
+                                        <div style="margin-left: 4px;
+                                            color: #9f9f9f;
+                                            font-size: 11px">Experience</div>
+                                        <div id="recCompany" style="margin-left: 4px;
+                                            display: inline-block">Not Specified</div>
+                                    </div>
+                                </div>
+                                <div class="col s6 l4" style="margin-top: 4px">
+                                    <div style="display: inline-block;
+                                        margin: 4px;">
+                                        <img src="/assets/recruiter/img/icons/building.svg" height="24px;" style="margin-top: -4px">
+                                    </div>
+                                    <div style="display: inline-block;
+                                        margin-top: 4px">
+                                        <div style="margin-left: 4px;
+                                            color: #9f9f9f;
+                                            font-size: 11px">Language</div>
+                                        <div id="recCompany" style="margin-left: 4px;
+                                            display: inline-block">Not Specified</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="divider"></div>
+                            <div class="row" style="margin: 0 2%;padding:1%;text-align: right">
+                                <a class="waves-effect waves-light ascentGreen lighten-1 btn"><font style="color: #fff;font-weight: 400">Unlock Candidate</font></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+           </div>
+        </div>
+        <div class="container">
+
+        </div>
+            <!--Footer start-->
+        <footer class="page-footer" style="background-color: #424242;">
+            <div class="container">
+                <div class="row" style="margin: 0">
+                    <div class="col l6 s12">
+                        <h5 class="white-text">Hire in Bangalore</h5>
+                        <p class="grey-text text-lighten-4">Connect With Us On<img src="/assets/recruiter/img/fbmain.svg" id="fbLogo" style="margin-left: 2%;
+                            width: 6%"> </p>
+                    </div>
+                    <div class="col l4 offset-l2 s12">
+                        <h5 class="white-text">Get in touch</h5>
+                        <ul>
+                            <li><a class="grey-text text-lighten-3" href="#!">Write us at: inftrujobs.in</a></li>
+                            <li><a class="grey-text text-lighten-3" href="#!">Have queries? Talk to us at 8880007799</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row" style="margin: 0">
+                    <img src="/assets/recruiter/img/skyline_small.svg" width="100%">
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <div class="container">
+            © 2016 Trujobs.in | Bengaluru, India. All Right Reserved. Privacy Policy
+                </div>
+            </div>
+        </footer>
+    </body>
+    <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
+    <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/typist.js"></script>
+</html>
