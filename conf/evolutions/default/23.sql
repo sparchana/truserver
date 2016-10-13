@@ -5,7 +5,7 @@ create table recruiter_credit_history (
   recruiter_credit_history_uuid varchar(255) not null not null,
   recruiter_credits_available   int signed null,
   recruiter_credits_used        int signed null,
-  recruiter_credit_history_create_timestamp timestamp not null default current_timestamp,
+  create_timestamp timestamp not null default current_timestamp,
   recruiterprofileid            bigint signed,
   recruitercreditcategory       bigint signed,
   constraint pk_recruiter_credit_history primary key (recruiter_credit_history_id)
@@ -24,7 +24,7 @@ create table recruiter_payment (
   recruiter_payment_amount      bigint unsigned not null,
   recruiter_payment_credit_unit_price bigint unsigned null,
   recruiter_payment_mode        int signed null,
-  recruiter_payment_create_timestamp timestamp not null default current_timestamp,
+  create_timestamp timestamp not null default current_timestamp,
   recruiter_credit_category_id  bigint signed,
   recruiterprofileid            bigint signed,
   constraint pk_recruiter_payment primary key (recruiter_payment_id)
@@ -33,7 +33,7 @@ create table recruiter_payment (
 create table recruiter_to_candidate_unlocked (
   recruiter_to_candidate_unlocked_id int signed auto_increment not null,
   recruiter_to_candidate_unlocked_uuid        varchar(255) not null not null,
-  recruiter_to_candidate_unlocked_create_timestamp timestamp not null default current_timestamp,
+  create_timestamp timestamp not null default current_timestamp,
   recruiterprofileid            bigint signed,
   candidateid                   bigint signed,
   constraint pk_recruiter_to_candidate_unlocked primary key (recruiter_to_candidate_unlocked_id)
