@@ -79,47 +79,46 @@
             </div>
           </div>
 
-        </form>
-      </div>
-
-        <br>
-        <h3>Credits Section</h3>
-        <hr>
-        <div class="row" style="margin-top: 8px">
-            <div class="col-sm-3"><h5>Recruiter's Contact credits:</h5></div>
+          <br>
+          <h3>Credits Section <div class="btn btn-default" data-toggle="modal" data-target="#creditModal" style="color: #328234; border-color: #328234">Add Credits</div></h3>
+          <hr>
+          <div class="row" style="margin-top: 8px">
+            <div class="col-sm-3"><h5>Recruiter's Contact Unlock Credits</h5></div>
             <div class="col-sm-9">
-                <input id="recruiterContactCredits" name="recruiterContactCredits" placeholder="Recruiter contact credits" type="text" class="form-control input-md" disabled>
+              <input id="recruiterContactCredits" name="recruiterContactCredits" placeholder="Recruiter contact credits" type="text" class="form-control input-md" disabled>
             </div>
-        </div>
+          </div>
 
-        <div class="row">
-            <div class="col-sm-3"><h5>Recruiter's interview credits:</h5></div>
+          <div class="row">
+            <div class="col-sm-3"><h5>Recruiter's Interview Unlock Credits:</h5></div>
             <div class="col-sm-9">
-                <input id="recruiterInterviewCredits" name="recruiterInterviewCredits" placeholder="Recruiter Interview credits" type="text" class="form-control input-md" disabled>
+              <input id="recruiterInterviewCredits" name="recruiterInterviewCredits" placeholder="Recruiter Interview credits" type="text" class="form-control input-md" disabled>
             </div>
-        </div>
+          </div>
 
-        <div id="addCreditInfoDiv" style="display: none; margin-top: 24px">
+          <div id="addCreditInfoDiv" style="display: none; margin-top: 24px">
             <h4>You are adding the following no. of credits for this recruiter::</h4>
             <div class="row">
-                <div class="col-sm-3"><h5>Candidate Contact unlock credits:</h5></div>
-                <div class="col-sm-9" style="margin-top: 12px">
-                    <div id="contactUnlockCreditInfo" style="color: #00c853">N/A</div>
-                </div>
+              <div class="col-sm-3"><h5>Candidate Contact unlock credits:</h5></div>
+              <div class="col-sm-9" style="margin-top: 12px">
+                <div id="contactUnlockCreditInfo" style="color: #00c853">N/A</div>
+              </div>
             </div>
 
             <div class="row">
-                <div class="col-sm-3"><h5>Candidate interview unlock credits:</h5></div>
-                <div class="col-sm-9" style="margin-top: 12px">
-                    <div id="interviewUnlockCreditInfo" style="color: #00c853">N/A</div>
-                </div>
+              <div class="col-sm-3"><h5>Candidate interview unlock credits:</h5></div>
+              <div class="col-sm-9" style="margin-top: 12px">
+                <div id="interviewUnlockCreditInfo" style="color: #00c853">N/A</div>
+              </div>
             </div>
 
-        </div>
+          </div>
 
-        <div class="btn btn-default" data-toggle="modal" data-target="#creditModal" style="background: #37a12f; color: #fff; margin: 24px 0 24px 0">Add Credits</div>
-      <button class="btn btn-default" onclick="saveRecruiter()">Save</button>
-      <br>
+          <div class="btn btn-default" onclick="saveRecruiter()">Save</div>
+          <br>
+
+        </form>
+      </div>
     </div>
 
       <!-- modal code for credits -->
@@ -129,8 +128,15 @@
         <div class="modal-content">
           <div class="modal-body" id="model_size">
             <form id="add_credits" class="form-horizontal" role="form">
-              <div class="line_up" id="signInPopup">Add Credits</div>
-              <h5>Purchased Candidate contact unlock credits?</h5>
+              <div class="line_up" id="signInPopup"><h4>Add Credits</h4></div>
+              <br>
+              <h5 style="color: #0D47A1; font-weight: bold; display: inline-block">Select payment method: </h5>
+              <select id="creditMode" class="selectDropdown" >
+                <option value="0">Pre Paid</option>
+                <option value="1">Post Paid</option>
+              </select>
+
+              <h5 style="color: #0D47A1; font-weight: bold">Purchased Candidate Contact Unlock Credits?</h5>
               <div class="row" style="margin-top: 8px">
                 <div class="col-sm-12" style="margin-top: 4px">
                   <div style="width: 100%;height: 34px;" class="btn-group" data-toggle="buttons">
@@ -151,7 +157,8 @@
                                  Amount paid:
                   </div>
                   <div class="col-sm-7">
-                    <input id="candidateContactCreditAmount" placeholder="Amount paid" type="text" class="form-control input-md">
+                    <div style="display: inline-block;">₹</div>
+                    <input style="width: 90%; display: inline-block" onblur="calculateContactUnlockCredits()" id="candidateContactCreditAmount" placeholder="Amount paid" type="number" class="form-control input-md">
                   </div>
                 </div>
                 <div class="row" style="margin-top: 8px">
@@ -159,13 +166,17 @@
                                  Unit price:
                   </div>
                   <div class="col-sm-7">
-                    <input id="candidateContactCreditUnitPrice" placeholder="Unit price" type="text" class="form-control input-md">
+                    <div style="display: inline-block;">₹</div>
+                    <input style="width: 90%; display: inline-block" onblur="calculateContactUnlockCredits()" id="candidateContactCreditUnitPrice" placeholder="Amount paid" type="number" class="form-control input-md">
+                    <div id="contactCreditsVal" style="color: #00b0ff; margin: 4px 0 0 12px">
+                      No. of credits: 0
+                    </div>
                   </div>
                 </div>
               </div>
 
               <hr>
-              <h5>Purchased interview unlock credits?</h5>
+              <h5 style="color: #0D47A1; font-weight: bold">Purchased Interview Unlock Credits?</h5>
               <div class="row" style="margin-top: 8px">
                 <div class="col-sm-12" style="margin-top: 4px">
                   <div style="width: 100%;height: 34px;" class="btn-group" data-toggle="buttons">
@@ -186,7 +197,7 @@
                                  Amount paid:
                   </div>
                   <div class="col-sm-7">
-                    <input id="interviewCreditAmount" placeholder="Amount paid" type="text" class="form-control input-md">
+                    <input id="interviewCreditAmount" onblur="calculateInterviewUnlockCredits()" placeholder="Amount paid" type="number" class="form-control input-md">
                   </div>
                 </div>
                 <div class="row" style="margin-top: 8px">
@@ -194,17 +205,13 @@
                                  Unit price:
                   </div>
                   <div class="col-sm-7">
-                    <input id="interviewCreditUnitPrice" placeholder="Unit price" type="text" class="form-control input-md">
+                    <input id="interviewCreditUnitPrice" onblur="calculateInterviewUnlockCredits()" placeholder="Unit price" type="number" class="form-control input-md">
+                    <div id="interviewCreditsVal" style="color: #00b0ff; margin: 4px 0 0 12px">
+                      No. of credits: 0
+                    </div>
                   </div>
                 </div>
               </div>
-
-                <br>
-                Select credit payment method:
-                <select id="creditMode" class="selectDropdown" >
-                  <option value="0">Pre Paid</option>
-                  <option value="1">Post Paid</option>
-              </select>
               <div class="btn btn-default" style="background: #37a12f; color: #fff; margin: 24px 0 24px 0; width: 100%" onclick="computeCreditValue()">Done</div>
             </form>
           </div>
@@ -217,5 +224,6 @@
     <script type="text/javascript" src="/assets/support/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
     <script type="text/javascript" src="/assets/support/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript" src="/assets/support/js/bootstrap-notify.min.js"></script>
   </body>
 </html>
