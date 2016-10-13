@@ -40,7 +40,6 @@ public class JobPostWorkflowEngine {
      *
     */
     public static Map<Long, CandidateWorkflowData> getMatchingCandidate(Long jobPostId,
-                                                                        Integer minAge,
                                                                         Integer maxAge,
                                                                         Long minSalary,
                                                                         Long maxSalary,
