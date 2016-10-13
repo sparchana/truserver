@@ -216,7 +216,6 @@ function processDataForCompanyInfo(returnedData) {
                 }
             } else{
                 if(interviewCreditCount == 0){
-                    console.log("i");
                     if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 2){
                         $("#recruiterInterviewCredits").val(creditHistory.recruiterCreditsAvailable);
                         interviewCreditCount = 1;
