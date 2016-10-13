@@ -64,12 +64,6 @@ public class RecruiterProfile extends Model {
     @Column(name = "RecruiterEmailStatus", columnDefinition = "int signed not null default 0")
     private int recruiterEmailStatus; // verified, Not-Yet-Verified
 
-    @Column(name = "RecruiterInterviewUnlockCredits", columnDefinition = "int signed null")
-    private Integer recruiterInterviewUnlockCredits;
-
-    @Column(name = "RecruiterCandidateUnlockCredits", columnDefinition = "int signed null")
-    private Integer recruiterCandidateUnlockCredits;
-
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "RecStatus")
@@ -265,22 +259,6 @@ public class RecruiterProfile extends Model {
 
     public void setRecruiterLead(RecruiterLead recruiterLead) {
         this.recruiterLead = recruiterLead;
-    }
-
-    public Integer getRecruiterInterviewUnlockCredits() {
-        return recruiterInterviewUnlockCredits;
-    }
-
-    public void setRecruiterInterviewUnlockCredits(Integer recruiterInterviewUnlockCredits) {
-        this.recruiterInterviewUnlockCredits = recruiterInterviewUnlockCredits;
-    }
-
-    public Integer getRecruiterCandidateUnlockCredits() {
-        return recruiterCandidateUnlockCredits;
-    }
-
-    public void setRecruiterCandidateUnlockCredits(Integer recruiterCandidateUnlockCredits) {
-        this.recruiterCandidateUnlockCredits = recruiterCandidateUnlockCredits;
     }
 
     public List<RecruiterCreditHistory> getRecruiterCreditHistoryList() {

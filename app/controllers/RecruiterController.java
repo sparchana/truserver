@@ -145,8 +145,15 @@ public class RecruiterController {
     public static Result getRecruiterCredits(Long recId) {
         RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", recId).findUnique();
         if(recruiterProfile != null){
-            if(recruiterProfile.getRecruiterCandidateUnlockCredits() != null && recruiterProfile.getRecruiterInterviewUnlockCredits() != null){
-                if(recruiterProfile.getRecruiterCandidateUnlockCredits() > 0 && recruiterProfile.getRecruiterInterviewUnlockCredits() > 0){
+            RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
+                    .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
+                    .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK)
+                    .setMaxRows(1)
+                    .orderBy("recruiter_credit_history_create_timestamp desc")
+                    .findUnique();
+
+            if(recruiterCreditHistoryLatest != null){
+                if(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() > 0){
                     return ok("1");
                 }
             }

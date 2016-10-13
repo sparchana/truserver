@@ -76,12 +76,12 @@ public class RecruiterCreditHistory extends Model {
         this.recruiterCreditsUsed = recruiterCreditsUsed;
     }
 
-    public Timestamp getRecruiterCreditHistoryCreateTimestamp() {
+    public Timestamp getCreateTimestamp() {
         return createTimestamp;
     }
 
-    public void setRecruiterCreditHistoryCreateTimestamp(Timestamp recruiterCreditHistoryCreateTimestamp) {
-        this.createTimestamp = recruiterCreditHistoryCreateTimestamp;
+    public void setCreateTimestamp(Timestamp createTimestamp) {
+        this.createTimestamp = createTimestamp;
     }
 
     public RecruiterCreditCategory getRecruiterCreditCategory() {

@@ -200,11 +200,33 @@ function processDataForCompanyInfo(returnedData) {
     if(returnedData.company != null ){
         $("#recruiterCompany").val(returnedData.company.companyId);
     }
-    if(returnedData.recruiterCandidateUnlockCredits != null ){
-        $("#recruiterContactCredits").val(returnedData.recruiterCandidateUnlockCredits);
-    }
-    if(returnedData.recruiterInterviewUnlockCredits != null ){
-        $("#recruiterInterviewCredits").val(returnedData.recruiterInterviewUnlockCredits);
+
+    if(returnedData.recruiterCreditHistoryList != null){
+        var creditHistoryList = returnedData.recruiterCreditHistoryList;
+        creditHistoryList.reverse();
+        var contactCreditCount = 0;
+        var interviewCreditCount = 0;
+        creditHistoryList.forEach(function (creditHistory){
+            if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
+                if(contactCreditCount == 0){
+                    if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
+                        $("#recruiterContactCredits").val(creditHistory.recruiterCreditsAvailable);
+                        contactCreditCount = 1;
+                    }
+                }
+            } else{
+                if(interviewCreditCount == 0){
+                    console.log("i");
+                    if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 2){
+                        $("#recruiterInterviewCredits").val(creditHistory.recruiterCreditsAvailable);
+                        interviewCreditCount = 1;
+                    }
+                }
+            }
+            if(contactCreditCount > 0 && interviewCreditCount > 0){
+                return false;
+            }
+        });
     }
 }
 

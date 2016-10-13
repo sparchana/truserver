@@ -54,9 +54,6 @@ create index ix_recruiter_payment_recruiter_credit_category_id on recruiter_paym
 alter table recruiter_payment add constraint fk_recruiter_payment_recruiterprofileid foreign key (recruiterprofileid) references recruiterprofile (recruiterprofileid) on delete restrict on update restrict;
 create index ix_recruiter_payment_recruiterprofileid on recruiter_payment (recruiterprofileid);
 
-alter table recruiterprofile add column recruiterinterviewunlockcredits int signed null;
-alter table recruiterprofile add column recruitercandidateunlockcredits int signed null;
-
 alter table recruiter_credit_history add constraint fk_recruiter_credit_history_recruiterprofileid foreign key (recruiterprofileid) references recruiterprofile (recruiterprofileid) on delete restrict on update restrict;
 create index ix_recruiter_credit_history_recruiterprofileid on recruiter_credit_history (recruiterprofileid);
 
@@ -85,9 +82,6 @@ drop index ix_recruiter_payment_recruiter_credit_category_id on recruiter_paymen
 
 alter table recruiter_payment drop foreign key fk_recruiter_payment_recruiterprofileid;
 drop index ix_recruiter_payment_recruiterprofileid on recruiter_payment;
-
-alter table recruiterprofile drop column recruiterinterviewunlockcredits;
-alter table recruiterprofile drop column recruitercandidateunlockcredits;
 
 drop table if exists recruiter_credit_category;
 drop table if exists recruiter_credit_history;
