@@ -334,7 +334,7 @@ $(function() {
         }
 
         if(status == 1){
-            if($("#jobPostRecruiter").val() != ""){
+            if($("#jobPostRecruiter").val() != "" && $("#jobPostRecruiter").val() != null && $("#jobPostRecruiter").val() != undefined){
                 recId = $("#jobPostRecruiter").val();
             }
             $("#jobPostExperience").addClass('selectDropdown').removeClass('selectDropdownInvalid');
@@ -469,6 +469,14 @@ function validateContactUnlockCreditValues(){
         statusCheck = 0;
         candidateCreditTypeStatus = 0;
         notifyError("Please enter a valid contact unlock credit unit price!");
+    } else if(parseInt($("#candidateContactCreditAmount").val()) < 0){
+        statusCheck = 0;
+        candidateCreditTypeStatus = 0;
+        notifyError("Contact unlock amount price cannot be negative!");
+    } else if(parseInt($("#candidateContactCreditUnitPrice").val()) < 0){
+        statusCheck = 0;
+        candidateCreditTypeStatus = 0;
+        notifyError("Contact unlock unit price cannot be negative!");
     } else if(parseInt($("#candidateContactCreditUnitPrice").val()) > parseInt($("#candidateContactCreditAmount").val())){
         statusCheck = 0;
         candidateCreditTypeStatus = 0;
@@ -495,6 +503,14 @@ function validateInterviewUnlockCreditValues(){
         statusCheck = 0;
         interviewCreditTypeStatus = 0;
         notifyError("Please enter a valid interview unlock credit unit price!");
+    } else if(parseInt($("#interviewCreditAmount").val()) < 0){
+        statusCheck = 0;
+        candidateCreditTypeStatus = 0;
+        notifyError("Interview unlock amount price cannot be negative!");
+    } else if(parseInt($("#interviewCreditUnitPrice").val()) < 0){
+        statusCheck = 0;
+        candidateCreditTypeStatus = 0;
+        notifyError("Interview unlock unit price cannot be negative!");
     } else if(parseInt($("#interviewCreditUnitPrice").val()) > parseInt($("#interviewCreditAmount").val())){
         statusCheck = 0;
         interviewCreditTypeStatus = 0;
@@ -502,6 +518,7 @@ function validateInterviewUnlockCreditValues(){
     }
     return statusCheck;
 }
+
 function notifyError(msg){
     $.notify({
         message: msg,

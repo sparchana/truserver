@@ -348,23 +348,31 @@ function validateContactUnlockCreditValues(){
     if($("#candidateContactCreditAmount").val() == ""){
         statusCheck = 0;
         candidateCreditTypeStatus = 0;
-        notifyError("Please enter the amount paid by the candidate for candidate contact unlock credits!", "danger");
+        notifyError("Please enter the amount paid by the candidate for candidate contact unlock credits!");
     } else if($("#candidateContactCreditUnitPrice").val() == ""){
         statusCheck = 0;
         candidateCreditTypeStatus = 0;
-        notifyError("Please enter the candidate contact unlock credit unit price!", "danger");
+        notifyError("Please enter the candidate contact unlock credit unit price!");
     } else if(!isValidSalary($("#candidateContactCreditAmount").val())){
         statusCheck = 0;
         candidateCreditTypeStatus = 0;
-        notifyError("Please enter a valid contact unlock credit amount!", "danger");
+        notifyError("Please enter a valid contact unlock credit amount!");
     } else if(!isValidSalary($("#candidateContactCreditUnitPrice").val())){
         statusCheck = 0;
         candidateCreditTypeStatus = 0;
-        notifyError("Please enter a valid contact unlock credit unit price!", "danger");
+        notifyError("Please enter a valid contact unlock credit unit price!");
+    } else if(parseInt($("#candidateContactCreditAmount").val()) < 0){
+        statusCheck = 0;
+        candidateCreditTypeStatus = 0;
+        notifyError("Contact unlock amount price cannot be negative!");
+    } else if(parseInt($("#candidateContactCreditUnitPrice").val()) < 0){
+        statusCheck = 0;
+        candidateCreditTypeStatus = 0;
+        notifyError("Contact unlock unit price cannot be negative!");
     } else if(parseInt($("#candidateContactCreditUnitPrice").val()) > parseInt($("#candidateContactCreditAmount").val())){
         statusCheck = 0;
         candidateCreditTypeStatus = 0;
-        notifyError("Contact unlock credit amount should be greater than its credit unit price!", "danger");
+        notifyError("Contact unlock credit amount should be greater than its credit unit price!");
     }
     return statusCheck;
 }
@@ -374,23 +382,31 @@ function validateInterviewUnlockCreditValues(){
     if($("#interviewCreditAmount").val() == ""){
         statusCheck = 0;
         interviewCreditTypeStatus = 0;
-        notifyError("Please enter the amount paid by the candidate for interview unlock credits!", "danger");
+        notifyError("Please enter the amount paid by the candidate for interview unlock credits!");
     } else if($("#interviewCreditUnitPrice").val() == ""){
         statusCheck = 0;
         interviewCreditTypeStatus = 0;
-        notifyError("Please enter the interview unlock credit unit price!", "danger");
+        notifyError("Please enter the interview unlock credit unit price!");
     } else if(!isValidSalary($("#interviewCreditAmount").val())){
         statusCheck = 0;
         interviewCreditTypeStatus = 0;
-        notifyError("Please enter a valid interview unlock credit amount!", "danger");
+        notifyError("Please enter a valid interview unlock credit amount!");
     } else if(!isValidSalary($("#interviewCreditUnitPrice").val())){
         statusCheck = 0;
         interviewCreditTypeStatus = 0;
-        notifyError("Please enter a valid interview unlock credit unit price!", "danger");
+        notifyError("Please enter a valid interview unlock credit unit price!");
+    } else if(parseInt($("#interviewCreditAmount").val()) < 0){
+        statusCheck = 0;
+        candidateCreditTypeStatus = 0;
+        notifyError("Interview unlock amount price cannot be negative!");
+    } else if(parseInt($("#interviewCreditUnitPrice").val()) < 0){
+        statusCheck = 0;
+        candidateCreditTypeStatus = 0;
+        notifyError("Interview unlock unit price cannot be negative!");
     } else if(parseInt($("#interviewCreditUnitPrice").val()) > parseInt($("#interviewCreditAmount").val())){
         statusCheck = 0;
         interviewCreditTypeStatus = 0;
-        notifyError("Interview unlock credit amount should be greater than its credit unit price!", "danger");
+        notifyError("Interview unlock credit amount should be greater than its credit unit price!");
     }
     return statusCheck;
 }
