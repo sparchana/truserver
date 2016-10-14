@@ -198,8 +198,8 @@ $(function() {
             }
         }
 
-        var minSalary = $("#jobPostMinSalary").val();
-        var maxSalary = $("#jobPostMaxSalary").val();
+        var minSalary = parseInt($("#jobPostMinSalary").val());
+        var maxSalary = parseInt($("#jobPostMaxSalary").val());
 
         var partnerInterviewIncentiveVal = parseInt($("#partnerInterviewIncentive").val());
         var partnerJoiningIncentiveVal = parseInt($("#partnerJoiningIncentive").val());
