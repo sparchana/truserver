@@ -181,4 +181,6 @@ public class ServerConstants {
     public static final int CATEGORY_LANGUAGE = 2;
     public static final int CATEGORY_ASSET = 3;
     public static final int CATEGORY_JD_REQ_CATEGORY = 4;
+    public static int RECRUITER_CATEGORY_CONTACT_UNLOCK = 1;
+    public static int RECRUITER_CATEGORY_INTERVIEW_UNLOCK = 2;
 }

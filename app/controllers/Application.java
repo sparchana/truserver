@@ -20,6 +20,7 @@ import controllers.businessLogic.*;
 import controllers.businessLogic.Assessment.AssessmentService;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.*;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.Intelligence.RelatedJobRole;
 import models.entity.OM.*;
@@ -56,8 +57,11 @@ public class Application extends Controller {
         * */
         if(sessionId != null){
             String partnerId = session().get("partnerId");
+            String recruiterId = session().get("recruiterId");
             if(partnerId != null){
                 return redirect("/partner/home");
+            } else if(recruiterId != null){
+                return redirect("/recruiter/home");
             } else {
                 return redirect("/dashboard");
             }
@@ -279,7 +283,7 @@ public class Application extends Controller {
         }
     }
 
-    @Security.Authenticated(RecSecured.class)
+    @Security.Authenticated(SecuredUser.class)
     public static Result addRecruiter() {
         JsonNode req = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );

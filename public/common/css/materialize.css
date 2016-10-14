@@ -4188,6 +4188,9 @@ nav ul a.btn, nav ul a.btn-large, nav ul a.btn-large, nav ul a.btn-flat, nav ul 
 
 nav ul a:hover {
   background-color: rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
 }
 
 nav ul.left {
@@ -6459,10 +6462,6 @@ input[type=checkbox]:not(:disabled).tabbed:focus ~ .lever::after {
 
 /* Select Field
    ========================================================================== */
-select {
-  display: none;
-}
-
 select.browser-default {
   display: block;
 }

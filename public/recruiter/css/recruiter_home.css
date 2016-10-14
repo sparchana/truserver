@@ -50,9 +50,10 @@
 }
 
 div.Tokenize ul.TokensContainer li.TokenSearch input{
-    height: auto;
-    width: auto;
+    height: 10%;
+    width: 100%;
     box-shadow: none;
+    border-bottom:1px solid #1d1d1d;
 }
 
 input::-webkit-outer-spin-button,
@@ -96,6 +97,7 @@ nav{
     height: 80%;
     width: 100%;
     padding: 4%;
+    cursor: default;
 }
 
 .custom-parallax-container{
@@ -162,9 +164,7 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
     padding: 1%;
     margin: 0;
     background-color: #fff;
-
 }
-
 #sectionTwo{
     height: 200px;
 }
@@ -211,22 +211,34 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
 }
 #modalSignUp{
     overflow: hidden;
-    width: 45%;
+    width: 40%;
+    margin-top: 0;
+}
+#modalLogIn{
+    overflow: hidden;
+    width: 40%;
     margin-top: 0;
 }
 #modalLeftBox{
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
     background-color: rgb(55, 71, 79);
     height: 100vh;
 }
 #inputContainerModalSignup{
     text-align: center;
-    padding: 2%;
 }
 #inputContainerModalSignup >.input-field > input{
-    margin: 0;
+    margin:0 0 2% 0;
+}
+#SignSubmitUpBtn{
+    margin:4% 0;
+    width: 100%;
 }
 #modalRightBox{
-    margin-top:10%;
+    margin-top:6%;
+    padding: 0 4%;
     text-align: center;
 }
 footer.page-footer .footer-copyright{
@@ -245,6 +257,12 @@ footer.page-footer .footer-copyright{
     background: #eceeeb;
     margin: 3%;
 }
+.materialDashSignUp{
+    height: 1px;
+    width: 25%;
+    background: #eceeeb;
+    margin: 3%;
+}
 #fbLogo:hover{
     cursor:pointer;
     content:url(/assets/recruiter/img/fb.svg);
@@ -253,13 +271,63 @@ footer.page-footer .footer-copyright{
     color:#000;
     margin-top:0;
     width:30%;
+    box-shadow: none;
     background: transparent;
 }
-
+#modalLogIn{
+    color:#000;
+    margin-top:0;
+    width:30%;
+    box-shadow: none;
+    background: transparent;
+}
+#modalOtp{
+    color:#000;
+    margin-top:0;
+    width:30%;
+    box-shadow: none;
+    background: transparent;
+}
 #mobileNumber{
     color: #000;
 }
+
+/* recruiter home css */
+body#recruiterHome{
+    background: #f8f6ed;
+}
+
+.recruiterHomeMainCard{
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.12);
+    height: auto;
+    display: block;
+    margin-top: 8%;
+    background: #fff;
+    border-radius: 4px;
+    padding: 2%;
+}
+
+#userImgRecruiter{
+    border: 2px solid #c7c7c7;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+}
+
+.back-banner{
+    height: 380px;
+    background: #348F50; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to left, #348F50 , #56B4D3); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to left, #348F50 , #56B4D3); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background-repeat: no-repeat;
+}
+
+
 @media screen and (max-width: 768px) {
+    .recruiterHomeMainCard {
+        margin-top: 16%;
+        padding: 4%;
+    }
     #mobileNumber{
         color: #fff;
     }
@@ -303,5 +371,19 @@ footer.page-footer .footer-copyright{
         margin-top: 11%;
         content:url("/assets/common/img/logo-main.gif");
     }
+    #modalSignUp{
+        overflow: scroll;
+        width: 90%;
+        margin-top: 0;
+    }
+    #modalLogIn{
+        overflow: scroll;
+        width: 90%;
+        margin-top: 0;
+    }
+    .side-nav a:hover{
+        color: #2ec866;
+    }
+
 }
 

@@ -60,7 +60,11 @@ function processDataCheckJobs(returnedData) {
 ///modal
 $(document).ready(function(){
     $('select').material_select();
-    $(".button-collapse").sideNav();
+    $('.button-collapse').sideNav({
+            menuWidth: 240,
+            edge: 'left',
+            closeOnClick: true
+    });
     $('.parallax').parallax();
     $('.modal-trigger').leanModal({dismissible: true});
 

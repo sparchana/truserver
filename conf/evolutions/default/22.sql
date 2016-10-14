@@ -1,6 +1,5 @@
 # --- !Ups
 
-
 create table job_post_workflow (
   job_post_workflow_id          bigint unsigned auto_increment not null,
   job_post_workflow_uuid        varchar(255) not null not null,
