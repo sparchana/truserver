@@ -180,24 +180,26 @@ public class JobService {
             return;
         }
 
+        // TODO find a simpler approach *****
+
         Integer jobPostMaxAge = jobPost.getJobPostMaxAge();
         Experience jobPostExperience = jobPost.getJobPostExperience();
         Education jobPostEducation = jobPost.getJobPostEducation();
-        List<JobPostLanguageRequirement> jobPostLanguageRequirements = jobPost.getJobPostLanguageRequirements();
-        List<JobPostDocumentRequirement> jobPostDocumentRequirements = jobPost.getJobPostDocumentRequirements();
-        List<JobPostAssetRequirement> jobPostAssetRequirements = jobPost.getJobPostAssetRequirements();
+        List<JobPostLanguageRequirement> jobPostLanguageRequirementList = jobPost.getJobPostLanguageRequirements();
+        List<JobPostDocumentRequirement> jobPostDocumentRequirementList = jobPost.getJobPostDocumentRequirements();
+        List<JobPostAssetRequirement> jobPostAssetRequirementList = jobPost.getJobPostAssetRequirements();
 
         List<PreScreenRequirement> preScreenRequirementList = PreScreenRequirement.find.where().eq("job_post_id", jobPost.getJobPostId()).findList();
         Map<?, RequirementsCategory> requirementsCategoryMap = RequirementsCategory.find.where().setMapKey("requirementsCategoryTitle").findMap();
 
-        Map<String, PreScreenRequirement> oneMap= new HashMap<>();
-        Map<Integer, Map<Integer, PreScreenRequirement>> mapHashMap = new HashMap<>();
+        Map<String, PreScreenRequirement> singleEntityMap= new HashMap<>();
+        Map<Integer, Map<Integer, PreScreenRequirement>> multiEntityMap = new HashMap<>();
 
         if(preScreenRequirementList.size() > 0 ) {
             for (PreScreenRequirement ps: preScreenRequirementList) {
                 if( ps.getCategory() != ServerConstants.CATEGORY_JD_REQ_CATEGORY) {
                     // categories like docs, lang, asset will come here
-                    Map<Integer, PreScreenRequirement> psMap = mapHashMap.get(ps.getCategory());
+                    Map<Integer, PreScreenRequirement> psMap = multiEntityMap.get(ps.getCategory());
                     if(psMap == null) {
                         psMap = new HashMap<>();
                     }
@@ -208,17 +210,17 @@ public class JobService {
                     } else if (ps.getCategory() == ServerConstants.CATEGORY_ASSET) {
                         psMap.put(ps.getAsset().getAssetId(), ps);
                     }
-                    mapHashMap.put(ps.getCategory(), psMap);
+                    multiEntityMap.put(ps.getCategory(), psMap);
                 } else {
-                    // categories with single entrie per jobpost will accumulate here
-                    oneMap.put(ps.getRequirementsCategory().getRequirementsCategoryTitle(), ps);
+                    // categories with single entry per jobpost will accumulate here
+                    singleEntityMap.put(ps.getRequirementsCategory().getRequirementsCategoryTitle(), ps);
                 }
             }
         }
 
         if(jobPostMaxAge != null) {
-            PreScreenRequirement preScreenRequirementAge = oneMap.get(ServerConstants.JD_TABLE_AGE);
-            if (preScreenRequirementAge == null){
+            PreScreenRequirement preScreenRequirementAge = singleEntityMap.get(ServerConstants.JD_TABLE_AGE);
+            if (preScreenRequirementAge == null) {
                 preScreenRequirementAge = new PreScreenRequirement();
                 preScreenRequirementAge.setCategory(ServerConstants.CATEGORY_JD_REQ_CATEGORY);
                 preScreenRequirementAge.setJobPost(jobPost);
@@ -226,12 +228,12 @@ public class JobService {
             preScreenRequirementAge.setRequirementsCategory(requirementsCategoryMap.get(ServerConstants.JD_TABLE_AGE));
             preScreenRequirementAge.save();
         } else {
-            PreScreenRequirement preScreenRequirementAge = oneMap.get(ServerConstants.JD_TABLE_AGE);
+            PreScreenRequirement preScreenRequirementAge = singleEntityMap.get(ServerConstants.JD_TABLE_AGE);
             if(preScreenRequirementAge != null) preScreenRequirementAge.delete();
         }
 
         if (jobPostExperience != null) {
-            PreScreenRequirement preScreenRequirementExp =  oneMap.get(ServerConstants.JD_TABLE_EXPERIENCE);
+            PreScreenRequirement preScreenRequirementExp =  singleEntityMap.get(ServerConstants.JD_TABLE_EXPERIENCE);
             if (preScreenRequirementExp == null) {
                 preScreenRequirementExp = new PreScreenRequirement();
                 preScreenRequirementExp.setCategory(ServerConstants.CATEGORY_JD_REQ_CATEGORY);
@@ -240,11 +242,11 @@ public class JobService {
             preScreenRequirementExp.setRequirementsCategory(requirementsCategoryMap.get(ServerConstants.JD_TABLE_EXPERIENCE));
             preScreenRequirementExp.save();
         } else {
-            PreScreenRequirement preScreenRequirementExp =  oneMap.get(ServerConstants.JD_TABLE_EXPERIENCE);
+            PreScreenRequirement preScreenRequirementExp =  singleEntityMap.get(ServerConstants.JD_TABLE_EXPERIENCE);
             if(preScreenRequirementExp != null) preScreenRequirementExp.delete();
         }
         if (jobPostEducation != null) {
-            PreScreenRequirement preScreenRequirementEdu = oneMap.get(ServerConstants.JD_TABLE_EDUCATION);
+            PreScreenRequirement preScreenRequirementEdu = singleEntityMap.get(ServerConstants.JD_TABLE_EDUCATION);
             if (preScreenRequirementEdu == null) {
                 preScreenRequirementEdu = new PreScreenRequirement();
                 preScreenRequirementEdu.setCategory(ServerConstants.CATEGORY_JD_REQ_CATEGORY);
@@ -253,14 +255,17 @@ public class JobService {
             preScreenRequirementEdu.setRequirementsCategory(requirementsCategoryMap.get(ServerConstants.JD_TABLE_EDUCATION));
             preScreenRequirementEdu.save();
         } else {
-            PreScreenRequirement preScreenRequirementEdu = oneMap.get(ServerConstants.JD_TABLE_EDUCATION);
+            PreScreenRequirement preScreenRequirementEdu = singleEntityMap.get(ServerConstants.JD_TABLE_EDUCATION);
             if(preScreenRequirementEdu != null) preScreenRequirementEdu.delete();
         }
 
 
-        if(jobPostLanguageRequirements != null && jobPostLanguageRequirements.size() > 0) {
-            Map<Integer, PreScreenRequirement> map = mapHashMap.get(ServerConstants.CATEGORY_LANGUAGE);
-            for (JobPostLanguageRequirement languageRequirement: jobPostLanguageRequirements) {
+        if(jobPostLanguageRequirementList != null && jobPostLanguageRequirementList.size() > 0) {
+            Map<Integer, PreScreenRequirement> map = multiEntityMap.get(ServerConstants.CATEGORY_LANGUAGE);
+            List<Integer> idList = new ArrayList<>();
+            for (JobPostLanguageRequirement languageRequirement: jobPostLanguageRequirementList) {
+                idList.add(languageRequirement.getLanguage().getLanguageId());
+
                 PreScreenRequirement preScreenRequirementLanguage = null;
                 if(map != null) {
                     preScreenRequirementLanguage = map.get(languageRequirement.getLanguage().getLanguageId());
@@ -273,8 +278,16 @@ public class JobService {
                 preScreenRequirementLanguage.setLanguage(languageRequirement.getLanguage());
                 preScreenRequirementLanguage.save();
             }
+            if (map != null) {
+                // TODO Simplify this method
+                for (Map.Entry<Integer, PreScreenRequirement> entry : map.entrySet()) {
+                    if (!idList.contains(entry.getValue().getLanguage().getLanguageId())) {
+                        entry.getValue().delete();
+                    }
+                }
+            }
         } else {
-            Map<Integer, PreScreenRequirement> map = mapHashMap.get(ServerConstants.CATEGORY_LANGUAGE);
+            Map<Integer, PreScreenRequirement> map = multiEntityMap.get(ServerConstants.CATEGORY_LANGUAGE);
             if(map != null) {
                 for (Map.Entry<Integer, PreScreenRequirement> entry : map.entrySet()) {
                     entry.getValue().delete();
@@ -282,10 +295,12 @@ public class JobService {
             }
         }
 
-        if(jobPostDocumentRequirements != null && jobPostDocumentRequirements.size() > 0) {
-            Map<Integer, PreScreenRequirement> map = mapHashMap.get(ServerConstants.CATEGORY_DOCUMENT);
-            for ( JobPostDocumentRequirement jobPostDocumentRequirement: jobPostDocumentRequirements) {
+        if(jobPostDocumentRequirementList != null && jobPostDocumentRequirementList.size() > 0) {
+            Map<Integer, PreScreenRequirement> map = multiEntityMap.get(ServerConstants.CATEGORY_DOCUMENT);
+            List<Integer> idList = new ArrayList<>();
+            for ( JobPostDocumentRequirement jobPostDocumentRequirement: jobPostDocumentRequirementList) {
                 PreScreenRequirement preScreenRequirementDocument = null;
+                idList.add(jobPostDocumentRequirement.getIdProof().getIdProofId());
                 if(map != null) {
                     preScreenRequirementDocument = map.get(jobPostDocumentRequirement.getIdProof().getIdProofId());
                 }
@@ -297,8 +312,16 @@ public class JobService {
                 preScreenRequirementDocument.setIdProof(jobPostDocumentRequirement.getIdProof());
                 preScreenRequirementDocument.save();
             }
+            if (map != null) {
+                // TODO Simplify this method
+                for (Map.Entry<Integer, PreScreenRequirement> entry : map.entrySet()) {
+                    if (!idList.contains(entry.getValue().getIdProof().getIdProofId())) {
+                        entry.getValue().delete();
+                    }
+                }
+            }
         } else {
-            Map<Integer, PreScreenRequirement> map = mapHashMap.get(ServerConstants.CATEGORY_DOCUMENT);
+            Map<Integer, PreScreenRequirement> map = multiEntityMap.get(ServerConstants.CATEGORY_DOCUMENT);
             if(map != null) {
                 for (Map.Entry<Integer, PreScreenRequirement> entry : map.entrySet()) {
                     entry.getValue().delete();
@@ -306,10 +329,12 @@ public class JobService {
             }
         }
 
-        if (jobPostAssetRequirements != null && jobPostAssetRequirements.size() > 0) {
-            Map<Integer, PreScreenRequirement> map = mapHashMap.get(ServerConstants.CATEGORY_ASSET);
-            for ( JobPostAssetRequirement jobPostAssetRequirement: jobPostAssetRequirements) {
+        if (jobPostAssetRequirementList != null && jobPostAssetRequirementList.size() > 0) {
+            Map<Integer, PreScreenRequirement> map = multiEntityMap.get(ServerConstants.CATEGORY_ASSET);
+            List<Integer> idList = new ArrayList<>();
+            for ( JobPostAssetRequirement jobPostAssetRequirement: jobPostAssetRequirementList) {
                 PreScreenRequirement preScreenRequirementAsset = null;
+                idList.add(jobPostAssetRequirement.getAsset().getAssetId());
                 if (map != null) {
                     preScreenRequirementAsset = map.get(jobPostAssetRequirement.getAsset().getAssetId());
                 }
@@ -321,8 +346,16 @@ public class JobService {
                 preScreenRequirementAsset.setAsset(jobPostAssetRequirement.getAsset());
                 preScreenRequirementAsset.save();
             }
+            if (map != null) {
+                // TODO Simplify this method
+                for (Map.Entry<Integer, PreScreenRequirement> entry : map.entrySet()) {
+                    if (!idList.contains(entry.getValue().getAsset().getAssetId())) {
+                        entry.getValue().delete();
+                    }
+                }
+            }
         } else {
-            Map<Integer, PreScreenRequirement> map = mapHashMap.get(ServerConstants.CATEGORY_ASSET);
+            Map<Integer, PreScreenRequirement> map = multiEntityMap.get(ServerConstants.CATEGORY_ASSET);
             if(map != null) {
                 for (Map.Entry<Integer, PreScreenRequirement> entry : map.entrySet()) {
                     entry.getValue().delete();
