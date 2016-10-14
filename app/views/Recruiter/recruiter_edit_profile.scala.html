@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Recruiter Profile | TruJobs - Post jobs and hire the right candidates</title>
+
+        <meta name="keywords" content="hire driver, hire fresher, hire candidate sites, job posting, hire sales candidate, hire beautician,
+        hire, hire receptionist, hire office admin, hire office assistant,
+        hire plumber, hire teacher, hire entry level candidate,
+        hire delivery boys, hire call center executives, hire BPO, hire kpo, hire hire hire , hire data entry candidate, hire back office canididate,
+        hire receptionist, hire beautician, hire experienced candidate, hire in Bangalore, hire cashier, hire entry level candidate, hire freshers,
+        hire plumber, hire electrician, hire accountants, hire in bangalore">
+
+        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+
+            <!-- Bootstrap Core CSS -->
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
+        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/jquery.tokenize.css" />
+
+        <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
+
+        <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
+        <script type="text/javascript" src="/assets/recruiter/js/jquery.tokenize.js"></script>
+        <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
+
+        <meta name="theme-color" content="#000000">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    </head>
+    <body id="recruiterHome">
+        <div class="navbar-fixed">
+            <nav>
+                <div class="container" style="width: 85%;">
+                    <div class="nav-wrapper">
+                        <a href="#" class="brand-logo">
+                            <img id="navLogo" src="/assets/recruiter/img/trujobs-recruiter.png" style="height: 40px;
+                                margin-top: -2%">
+                        </a>
+                        <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+                        <ul class="right hide-on-med-and-down">
+                            <li><a href="/recruiter/home">Home</a></li>
+                            <li><a href="#">Profile</a></li>
+                            <li><a onclick="logoutRecruiter()" class="waves-effect waves-light ascentGreen lighten-1 btn"><font style="color: #fff; font-weight: 600">Logout</font></a></li>
+                        </ul>
+                    </div>
+                    <ul class="side-nav" id="mobile-demo">
+                        <li><a href="/recruiter/home">Home</a></li>
+                        <li><a href="#">Profile</a></li>
+                        <li><a onclick="logoutRecruiter()">Logout</a></li>
+                    </ul>
+
+                </div>
+            </nav>
+        </div>
+
+        <div class="back-banner"></div>
+        <div style="display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: -360px">
+            <div class="container recruiterHomeMainCard" >
+                <h5>Recruiter Profile!</h5>
+                <hr>
+                <div class="row">
+                    <form class="col s12">
+                        <div class="row">
+                            <div class="input-field col s12 l6">
+                                <i class="material-icons prefix">account_circle</i>
+                                <input placeholder="Enter your name" id="rec_name" maxlength="35" type="text" class="validate">
+                                <label for="rec_name">Name</label>
+                            </div>
+                            <div class="input-field col s12 l6">
+                                <i class="material-icons prefix">phone</i>
+                                <input placeholder="Enter your mobile" disabled id="rec_mobile" type="text" maxlength="10" class="validate">
+                                <label for="rec_mobile">Mobile</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 l6">
+                                <i class="material-icons prefix">email</i>
+                                <input placeholder="Enter your email" id="rec_email" type="text" maxlength="36" class="validate">
+                                <label for="rec_email">Email</label>
+                            </div>
+                            <div class="input-field col s12 l6">
+                                <i class="material-icons prefix">dialpad</i>
+                                <input placeholder="Enter your landline number" id="rec_landline" type="text" maxlength="13" class="validate">
+                                <label for="rec_landline">Landline</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 l6">
+                                <i class="material-icons prefix"><img src="/assets/recruiter/img/icons/linkedin-black.svg" style="margin: -24px 0 0 6px" width="26px"></i>
+                                <input placeholder="Enter your Linkedin profile link" id="rec_linkedin" maxlength="56" type="text" class="validate">
+                                <label for="rec_linkedin">Linkedin Profile</label>
+                            </div>
+                            <div class="input-field col s12 l6">
+                                <i class="material-icons prefix">phone</i>
+                                <input placeholder="Enter your alternate number" id="rec_alternate_mobile" type="text" maxlength="10" class="validate">
+                                <label for="rec_alternate_mobile">Alternate mobile</label>
+                            </div>
+                        </div>
+                        <br>
+                        <div onclick="saveForm()" class="waves-effect waves-light right ascentGreen lighten-1 btn"><font style="color: #fff;
+                            font-weight: 600">Save Profile</font></div>
+@*                        <br>
+                        <h4>Company Details!</h4>
+                        <hr>
+                        <div class="row">
+                            <div class="input-field col s12 l6">
+                                <i class="material-icons prefix">business</i>
+                                <input placeholder="Company Name" id="rec_company_name" maxlength="35" type="text" class="validate">
+                                <label for="rec_name">Name</label>
+                            </div>
+                            <div class="input-field col s12 l6">
+                                <i class="material-icons prefix">location_on</i>
+                                <select id="rec_company_locality" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
+                                <script type="text/javascript">
+                                    $('#rec_company_locality').tokenize({
+                                        displayDropdownOnFocus: true,
+                                        placeholder: "Enter company locality",
+                                        maxElements: 1
+                                    });
+                                </script>
+                                <style>
+                                    div.Tokenize ul.TokensContainer {
+                                        margin-left: 44px;
+                                        width: 93%;
+                                        padding-bottom: 12px;
+                                        border-bottom: 1px solid rgba(101, 99, 99, 0.64);
+                                    }
+                                </style>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 l6">
+                                <i class="material-icons prefix">location_on</i>
+                                <input placeholder="Company office pincode" id="rec_company_pincode" maxlength="number" type="text" class="validate">
+                                <label for="rec_company_pincode">Pin Code</label>
+                            </div>
+                            <div class="input-field col s12 l6">
+                                <i class="material-icons prefix">web</i>
+                                <input placeholder="Enter website" id="rec_company_website" type="text" maxlength="25" class="validate">
+                                <label for="rec_company_website">Website</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 l12">
+                                <i class="material-icons prefix">reorder</i>
+                                <textarea placeholder="Tell us about your company" id="rec_company_desc" class="materialize-textarea"></textarea>
+                                <label for="rec_company_desc">Company Description</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12 l6">
+                                <i class="material-icons prefix">supervisor_account</i>
+                                <input placeholder="No. of Employees" id="rec_company_employees" type="text" maxlength="15" class="validate">
+                                <label for="rec_company_employees">Total Employee count</label>
+                            </div>
+                            <div class="input-field col s12 l6">
+                                <i class="material-icons prefix">settings_input_composite</i>
+                                <input placeholder="Company Type" id="rec_company_type" type="text" maxlength="15" class="validate">
+                                <label for="rec_company_type">Company Type</label>
+                            </div>
+                        </div>*@
+                    </form>
+                </div>
+            </div>
+        </div>
+
+            <!--Footer start-->
+        <footer class="page-footer" style="background-color: #424242;">
+            <div class="container">
+                <div class="row" style="margin: 0">
+                    <div class="col l6 s12">
+                        <h5 class="white-text">Hire in Bangalore</h5>
+                        <p class="grey-text text-lighten-4">Connect With Us On<img src="/assets/recruiter/img/fbmain.svg" id="fbLogo" style="margin-left: 2%;
+                            width: 6%"> </p>
+                    </div>
+                    <div class="col l4 offset-l2 s12">
+                        <h5 class="white-text">Get in touch</h5>
+                        <ul>
+                            <li><a class="grey-text text-lighten-3" href="#!">Write us at: info@@trujobs.in</a></li>
+                            <li><a class="grey-text text-lighten-3" href="#!">Have queries? Talk to us at 8880007799</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row" style="margin: 0">
+                    <img src="/assets/recruiter/img/skyline_small.svg" width="100%">
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <div class="container">
+            © 2016 Trujobs.in | Bengaluru, India. All Right Reserved. Privacy Policy
+                </div>
+            </div>
+        </footer>
+    </body>
+
+    <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/recruiter_edit_profile.js"></script>
+</html>

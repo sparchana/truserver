@@ -1,4 +1,4 @@
-package models.entity;
+package models.entity.Recruiter;
 
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.UpdatedTimestamp;

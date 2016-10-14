@@ -10,6 +10,7 @@ import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.OM.JobPreference;
 import models.entity.Static.JobRole;
+import play.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Recruiter | TruJobs - Post jobs and hire the right candidates</title>
+        <title>Recruiter Home | TruJobs - Post jobs and hire the right candidates</title>
 
         <meta name="keywords" content="hire driver, hire fresher, hire candidate sites, job posting, hire sales candidate, hire beautician,
         hire, hire receptionist, hire office admin, hire office assistant,
@@ -11,421 +11,156 @@
         hire receptionist, hire beautician, hire experienced candidate, hire in Bangalore, hire cashier, hire entry level candidate, hire freshers,
         hire plumber, hire electrician, hire accountants, hire in bangalore">
 
+        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+
             <!-- Bootstrap Core CSS -->
         <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
         <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
-
-        <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
-
-        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
-        <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
-
-            <!--Import Google Icon Font-->
         <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/jquery.tokenize.css" />
+
         <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
 
-        <script type="text/javascript" src="/assets/common/js/validation.js"></script>
-
-        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/jquery.tokenize.css" />
+        <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
         <script type="text/javascript" src="/assets/recruiter/js/jquery.tokenize.js"></script>
 
-        <meta name="theme-color" content="#000000">
 
+        <meta name="theme-color" content="#000000">
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     </head>
-    <body>
+    <body id="recruiterHome">
         <div class="navbar-fixed">
             <nav>
                 <div class="container" style="width: 85%;">
                     <div class="nav-wrapper">
-                        <a href="#!" class="brand-logo">
-                            <img id="navLogo" src="/assets/recruiter/img/trujobs-recruiter.png" style="height: 40px;
+                        <a href="#" class="brand-logo">
+                            <img id="navLogo" src="/assets/recruiter/img/trujobs-recruiter.png" style="height: 32px;
                                 margin-top: -2%">
                         </a>
-@*                        <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+                        <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
                         <ul class="right hide-on-med-and-down">
-                            <li><a data-target="modalSignUp" class="waves-effect waves-light ascentGreen lighten-1 btn modal-trigger"><font style="color: #fff; font-weight: 600">SignUp</font></a></li>
-                            <li><a data-target="modalLogIn" class="waves-effect waves-light transparent btn modal-trigger" style="border: 1px solid #ffffff"><font style="font-weight: 600; color: #ffffff">LogIn</font></a></li>
-                        </ul>*@
+                            <li><a href="#">Home</a></li>
+                            <li><a href="/recruiter/profile">Profile</a></li>
+                            <li><a onclick="logoutRecruiter()" class="waves-effect waves-light ascentGreen lighten-1 btn"><font style="color: #fff; font-weight: 600">Logout</font></a></li>
+                        </ul>
                     </div>
-@*                    <ul class="side-nav" id="mobile-demo">
-                        <li><a href="#">SIGNUP</a></li>
-                        <li><a href="#">LOGIN</a></li>
-                    </ul>*@
+                    <ul class="side-nav" id="mobile-demo">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="/recruiter/profile">Profile</a></li>
+                        <li><a onclick="logoutRecruiter()">Logout</a></li>
+                    </ul>
                 </div>
             </nav>
         </div>
-            <!-- Modal SignUp Structure -->
-        <div id="modalSignUp" class="modal">
-            <div class="row">
-                <div class="col l4 hide-on-small-only" id="modalLeftBox">
 
-                </div>
-                <form>
-                    <div class="col l8" id="modalRightBox">
-                        <div class="row" id="inputContainerModalSignup">
-                            <div class="input-field col s12">
-                                <input placeholder="Name" id="rec_name" type="text" class="validate">
-                                <input placeholder="Mobile" id="rec_mobile" type="text" maxlength="10" class="validate">
-                                <input placeholder="Email" id="rec_email" type="email" class="validate">
-                                <input placeholder="Company" id="rec_company" type="text" class="validate">
-                            </div>
-                        </div>
-                        <div class="row" id="inputContainerModalSignup">
-                            <div class="input-field col s12">
-                              <button onclick="signUpRecruiter()" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">SignUp</font>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-            <!-- Modal otp Structure -->
-        <div id="modalOtp" class="modal">
-            <div id="otpSection">
+        <div class="back-banner"></div>
+        <div style="display: flex;justify-content: center;align-items: center; margin-top: -360px">
+            <div class="container recruiterHomeMainCard" >
+                <h5>Recruiter home!</h5>
+                <a href="/recruiter/profile" id="editBtn" class="btn-floating btn-large waves-effect waves-light red" style="margin-top: -22px; float: right"><i class="material-icons">mode_edit</i></a>
+                <hr>
+
                 <div class="row">
-                    <div class="col l4 hide-on-small-only" id="modalLeftBox">
-                        <div class="row">
-                        Sample1
-                        </div>
-                        <div class="row">
-                        Sample2
-                        </div>
-                    </div>
-                    <form>
-                        <div class="col l8" id="modalRightBox">
-                            <div class="row" id="inputContainerModalSignup">
-                                <div class="input-field col s12">
-                                    <input placeholder="Enter OTP" id="rec_otp" type="number" class="validate">
-                                </div>
-                            </div>
-                            <div class="row" id="inputContainerModalSignup">
-                                <div class="input-field col s12">
-                                    <a onclick="verifyOtp()" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">Verify OTP</font></a>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div id="passwordSection">
-                <div class="row">
-                    <div class="col l4 hide-on-small-only" id="modalLeftBox">
-                        <div class="row">
-                        Sample1
-                        </div>
-                        <div class="row">
-                        Sample2
+                    <div class="col s12 l3" style="display: flex;justify-content: center;align-items: center;">
+                        <div style="text-align: center">
+                            <img src="/assets/dashboard/img/userMale.svg" id="userImgRecruiter">
+                            <br>
+                            <div id="recName" style="font-size: 18px; font-weight: bold">Not Specified</div>
+                            <h6 id="recMobile" >Not Specified</h6>
                         </div>
                     </div>
-                    <form>
-                        <div class="col l8" id="modalRightBox">
-                            <div class="row" id="inputContainerModalSignup">
-                                <div class="input-field col s12">
-                                    <input placeholder="Enter Password" id="rec_password" type="password" class="validate">
+
+                    <div class="col s12 l9">
+                        <div class="row">
+                            <div class="col-sm-6" style="margin-top: 4px">
+                                <div style="display : inline-block; margin: 4px;">
+                                    <img src="/assets/recruiter/img/icons/envelope.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block;">
+                                    <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Email</div>
+                                    <div id="recEmail" style="margin-left: 4px; display: inline-block">Not Specified</div>
                                 </div>
                             </div>
-                            <div class="row" id="inputContainerModalSignup">
-                                <div class="input-field col s12">
-                                    <a onclick="savePassword()" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff; font-weight: bold">Create Account</font></a>
+
+                            <div class="col-sm-6" style="margin-top: 4px">
+                                <div style="display : inline-block; margin: 4px;">
+                                    <img src="/assets/recruiter/img/icons/building.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block; margin-top: 4px">
+                                    <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Company</div>
+                                    <div id="recCompany" style="margin-left: 4px; display: inline-block">Not Specified</div>
                                 </div>
                             </div>
                         </div>
-                    </form>
+                        <div class="row">
+                            <div class="col-sm-6" >
+                                <div style="display : inline-block; margin: 4px;">
+                                    <img src="/assets/recruiter/img/icons/telephone.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block; margin-top: 4px" style="margin-top: 6px">
+                                    <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Landline</div>
+                                    <div id="recLandline" style="margin: 4px; display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6" >
+                                <div style="display : inline-block; margin: 4px;">
+                                    <img src="/assets/recruiter/img/icons/linkedin-logo.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block; margin-top: 4px">
+                                    <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Linkedin Profile</div>
+                                    <div id="recLinkedin" style="margin: 4px; display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Modal LogIn Structure -->
-        <div id="modalLogIn" class="modal">
-            <div class="modal-content">
-                <h4>Log In</h4>
-            </div>
-        </div>
-
-        <div class="parallax-container custom-parallax-container">
-            <div class="parallax">
-                <img class="customParallaxContainer" src="/assets/recruiter/img/image2.jpg">
-            </div>
-
-            <div class="sectionOneBody" style="display:flex; justify-content:center; align-items:center;">
-                <div>
-                    <h4 style="color: #fff">We will schedule and manage your interviews</h4>
-                    <h5 class="typist" style="color: #2ec866"><font color="#fff">Hire </font></h5>
-                    <div>
-                        <img src="/assets/recruiter/img/user.svg" width="16px" style="display: inline-block; margin: -4px 2px 2px 2px;">
-                        <h6 style="color: #fff; font-size: 16px;  display: inline-block"><font color="#2ec866"><b>25000+ </b></font>verified candidates to hire!</h6>
-                    </div>
-                    <br>
-                    <center class="hide-on-small-only">
-                        <a data-target="modalHire" class="waves-effect waves-light ascentGreen lighten-1 btn modal-trigger" style="margin-top: 12px;margin-bottom:36px"><font style="color: #ffffff"><b>Request Call Back</b></font></a>
-                    </center>
-
-                    <center class="hide-on-med-and-up" id="mobileEnquiryBtn">
-                        <a class="waves-effect waves-light transparent btn modal-trigger" style="border:1px solid #2ec866; color:#2ec866" data-target="recEnquiry">Request Call Back</a>
-                    </center>
-
-                </div>
-
-            </div>
-
-            <div class="footerLeadForm valign-wrapper hide-on-small-only">
-                <div style="width: 100%; text-align: center" class="container">
-                    <div style="color: #fff; font-size: 20px">How it works</div>
+        <div style="margin-top: -6%">
+            <div class="container recruiterHomeMainCard" >
+                <div class="row" style="text-align: center">
+                    <h5>Highlights</h5>
                     <center><div class="materialDash"></div></center>
-                    <div class="row">
-                        <div class="input-field col s4 l4">
-                            <img src="/assets/recruiter/img/green/phone-call.svg" width="32px">
-                            <br>
-                            <center style="margin-top: 12px;"><h6 style="color: #fff">Call 9980293925 to specify your requirements</h6></center>
+                    <div class="col l6 s6" style="padding: 2%;">
+                        <div class="row">
+                            <img class="responsive-img" src="/assets/recruiter/img/candidate.svg" style="height: 70px;">
                         </div>
-                        <div class="input-field col s4 l4">
-                            <img src="/assets/recruiter/img/green/calendar.svg" width="32px">
-                            <br>
-                            <center style="margin-top: 12px;"><h6 style="color: #fff">We will schedule interviews for you with prescreened candidates</h6></center>
+                        <div class="row" style="margin: 2px">
+                            <b><div style="font-size: 20px">25000+</div></b>
                         </div>
-                        <div class="input-field col s4 l4">
-                            <img src="/assets/recruiter/img/green/interview.svg" width="32px">
-                            <br>
-                            <center style="margin-top: 12px;"><h6 style="color: #fff">Conduct interviews and make offers!</h6></center>
+                        <div class="row" style="margin: 1px;
+                            font-weight: 600;">
+                            <div style="font-size: 18px">Candidates</div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-        <div class="container hide-on-med-and-up" style="text-align: center; background: transparent">
-            <!-- Modal Trigger -->
-                <!-- Modal Structure -->
-            <div id="recEnquiry" class="modal bottom-sheet" style=" background: rgba(0, 0, 0, 0.76); z-index: 999">
-                <form>
-                    <div class="container">
-                        <h5 style="color:#fff">Let us know your hiring needs</h5>
-                        <div class="row" style="margin-bottom: 2%">
-                            <div class="input-field col s12 l3">
-                                <input type="text" id="mobileNumberModal" style="color: #fff; border-bottom: 1px solid rgba(158, 158, 158, 0.32);" maxlength="10" placeholder="Mobile Number">
-                            </div>
-                            <div class="input-field col s12 l12" style="margin-top: -4px">
-                                <select id="jobRoleOptionModal" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
-                                <script type="text/javascript">
-                                    $('#jobRoleOptionModal').tokenize({
-                                        displayDropdownOnFocus: true,
-                                        placeholder: "Job role(s) you are looking to hire [max .3]",
-                                        maxElements: 3
-                                    });
-                                </script>
-                            </div>
-
-                            <div class="input-field col s12 l12">
-                                <select id="jobLocationOptionModal" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
-                                <script type="text/javascript">
-                                    $('#jobLocationOptionModal').tokenize({
-                                        displayDropdownOnFocus: true,
-                                        placeholder: "Location(s) you want to hire [max. 3]",
-                                        maxElements: 3
-                                    });
-                                </script>
-                            </div>
-
-                            <div class="input-field col s12 l12">
-                                <select id="recruiterRequirementModal" multiple="multiple" class="tokenCustomInput tokenize-sample">
-                                    <option value="" disabled selected>Requirement Type</option>
-                                    <option value="part time">Part time</option>
-                                    <option value="full time">Full Time</option>
-                                    <option value="contract">Contract</option>
-                                    <option value="any">Any</option>
-                                </select>
-                                <script type="text/javascript">
-                                    $('#recruiterRequirementModal').tokenize({
-                                        displayDropdownOnFocus: true,
-                                        placeholder: "Specify work shift",
-                                        maxElements: 1
-                                    });
-                                </script>
-                            </div>
+                    <div class="col l6 s6" style="padding: 2%;">
+                        <div class="row">
+                            <img class="responsive-img" src="/assets/recruiter/img/suitcase.svg" style="height: 70px;">
                         </div>
-                        <a class="waves-effect waves-light ascentGreen lighten-1 btn right" id="requestLeadModal" onclick="requestModalLead()" style="margin-bottom: 16px"><font style="color: #ffffff">Request Call Back</font></a>
-                    </div>
-                </form>
-                </div>
-            </div>
-        </div>
-
-            <!-- Modal Hire Form Structure -->
-        <div id="modalHire" class="modal hide-on-small-only">
-            <div style="background: rgba(0, 0, 0, 0.75); padding: 8%">
-                <center><font style="font-size: 22px; color: #fff">Let us know your hiring needs</font></center>
-            </div>
-
-            <form style="background: #fff; padding: 4%">
-                <div class="row">
-                    <div class="col l12">
-                        <div class="input-field col s12 l12">
-                            <input type="text" id="mobileNumber" style="margin-bottom:4px; border-bottom: 1px solid rgba(158, 158, 158, 0.32)" maxlength="10" placeholder="Mobile Number">
+                        <div class="row" style="margin: 2px">
+                            <b><div style="font-size: 20px">35+</div></b>
                         </div>
-
-                        <div class="input-field col s12 l12">
-                            <select id="jobRoleOption" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
-                            <script type="text/javascript">
-                                $('#jobRoleOption').tokenize({
-                                    displayDropdownOnFocus: true,
-                                    placeholder: "Job role(s) you are looking to hire [max. 3]",
-                                    maxElements: 3
-                                });
-                            </script>
-                        </div>
-
-                        <div class="input-field col s12 l12">
-                            <select id="jobLocationOption" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
-                            <script type="text/javascript">
-                                $('#jobLocationOption').tokenize({
-                                    displayDropdownOnFocus: true,
-                                    placeholder: "Location(s) you want to hire [max. 3]",
-                                    maxElements: 3
-                                });
-                            </script>
-                        </div>
-
-                        <div class="input-field col s12 l12">
-                            <select id="recruiterRequirement" multiple="multiple" class="tokenCustomInput tokenize-sample">
-                                <option value="" disabled selected>Requirement Type</option>
-                                <option value="part time">Part time</option>
-                                <option value="full time">Full Time</option>
-                                <option value="contract">Contract</option>
-                                <option value="any">Any</option>
-                            </select>
-                            <script type="text/javascript">
-                                $('#recruiterRequirement').tokenize({
-                                    displayDropdownOnFocus: true,
-                                    placeholder: "Specify work shift",
-                                    maxElements: 1
-                                });
-                            </script>
-                        </div>
-                        <center>
-                            <a class="waves-effect waves-light ascentGreen lighten-1 btn" id="requestLeadBtn" style="margin-top: 24px; margin-bottom: 0; width: 100%" onclick="requestLead()"><font style="color: #ffffff">Request Call Back</font></a>
-                        </center>
-
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <div class="container" id="companyHiringBox">
-            <div class="row" id="companyHiringCompanyLogo">
-                <div class="col s6 l2"><img class="responsive-img" src="/assets/recruiter/img/company/driveu.png" style="height: 50px; padding: 6px"></div>
-                <div class="col s6 l2"><img class="responsive-img" src="/assets/recruiter/img/company/urban_clap.png" style="height: 50px; padding: 6px"></div>
-                <div class="col s6 l2"><img class="responsive-img" src="/assets/recruiter/img/company/bb_logo.png" style="height: 50px; padding: 6px"></div>
-                <div class="col s6 l2"><img class="responsive-img" src="/assets/recruiter/img/company/dunkin_donuts.png" style="height: 50px; padding: 6px"></div>
-                <div class="col s6 l2"><img class="responsive-img" src="/assets/recruiter/img/company/porter_logo.png" style="height: 50px; padding: 6px"></div>
-                <div class="col s6 l2"><img class="responsive-img" src="/assets/recruiter/img/company/swiggy.png" style="height: 50px; padding: 6px"></div>
-            </div>
-            <div class="row" id="companyHiringHeader">
-                <font size="4" style="margin: 2%">Companies Hiring Form Us</font>
-            </div>
-        </div>
-
-        <div class="container" id="stats">
-            <div class="row">
-                <h5>Highlights</h5>
-                <center><div class="materialDash"></div></center>
-                <div class="col l6 s6" style="padding: 2%;">
-                    <div class="row">
-                        <img class="responsive-img" src="/assets/recruiter/img/candidate.svg" id="candidateStats" style="height: 70px;">
-                    </div>
-                    <div class="row" style="margin:2px">
-                        <b><div style="font-size: 24px">25000+</div></b>
-                    </div>
-                    <div class="row" style="margin:1px;font-weight:600;">
-                        <div style="font-size: 18px">Candidates</div>
-                    </div>
-                </div>
-                <div class="col l6 s6" style="padding: 2%;">
-                    <div class="row">
-                        <img class="responsive-img" src="/assets/recruiter/img/suitcase.svg" id="jobRolesStats" style="height: 70px;">
-                    </div>
-                    <div class="row" style="margin:2px">
-                        <b><div style="font-size: 24px">35+</div></b>
-                    </div>
-                    <div class="row" style="font-weight:600;">
-                        <div style="font-size: 18px">Job roles</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-@*        <div class="container-fluid" id="testimonial">
-            <div class="container">
-            <h5>What Recruiter Says !</h5>
-            <center><div class="materialDash"></div></center>
-            <div class="row">
-                <div class="col l4 s12">
-                    <div class="row">
-                        <div class="col s12 m12">
-                            <div class="card" style="padding-bottom:4%">
-                                <div class="card-image" style="height:50%; width:100%">
-                                    <img src="/assets/recruiter/img/manger2.jpg">
-                                </div>
-                                <div class="card-content">
-                                    <p>I am a very simple card. I am good at containing small bits of information.
-                                        I am convenient because I require little markup to use effectively.</p>
-                                </div>
-                                <span style="font-size:18px;font-weight:600">Mr. Bond</span>
-                                <div class="row">
-                                    <span class="card-title" style="font-size:12px;margin-bottom: 2%">CEO</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col l4 s12">
-                    <div class="row">
-                        <div class="col s12 m12">
-                            <div class="card" style="padding-bottom:4%">
-                                <div class="card-image" style="height:50%; width:100%">
-                                    <img src="/assets/recruiter/img/manger2.jpg">
-                                </div>
-                                <div class="card-content">
-                                    <p>I am a very simple card. I am good at containing small bits of information.
-                                        I am convenient because I require little markup to use effectively.</p>
-                                </div>
-                                <span style="font-size:18px;font-weight:600">Mr. Bond</span>
-                                <div class="row">
-                                    <span class="card-title" style="font-size:12px;margin-bottom: 2%">CEO</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col l4 s12">
-                    <div class="row">
-                        <div class="col s12 m12">
-                            <div class="card" style="padding-bottom:4%">
-                                <div class="card-image" style="height:50%; width:100%">
-                                    <img src="/assets/recruiter/img/manger2.jpg">
-                                </div>
-                                <div class="card-content">
-                                    <p>I am a very simple card. I am good at containing small bits of information.
-                                        I am convenient because I require little markup to use effectively.</p>
-                                </div>
-                                <span style="font-size:18px;font-weight:600">Mr. Bond</span>
-                                <div class="row">
-                                    <span class="card-title" style="font-size:12px;margin-bottom: 2%">CEO</span>
-                                </div>
-                            </div>
+                        <div class="row" style="font-weight: 600;">
+                            <div style="font-size: 18px">Job roles</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        </div>*@
-            <!--Footer start-->
+
+
+        <!--Footer start-->
         <footer class="page-footer" style="background-color: #424242;">
             <div class="container">
                 <div class="row" style="margin: 0">
                     <div class="col l6 s12">
                         <h5 class="white-text">Hire in Bangalore</h5>
-                        <p class="grey-text text-lighten-4">Connect With Us On<img src="/assets/recruiter/img/fbmain.svg" id="fbLogo" style="margin-left:2%;width:6%"></p>
+                        <p class="grey-text text-lighten-4">Connect With Us On<img src="/assets/recruiter/img/fbmain.svg" id="fbLogo" style="margin-left: 2%;
+                            width: 6%"></p>
                     </div>
                     <div class="col l4 offset-l2 s12">
                         <h5 class="white-text">Get in touch</h5>
@@ -437,7 +172,7 @@
                 </div>
             </div>
             <div class="container-fluid">
-                <div class="row" style="margin:0">
+                <div class="row" style="margin: 0">
                     <img src="/assets/recruiter/img/skyline_small.svg" width="100%">
                 </div>
             </div>
@@ -448,7 +183,9 @@
             </div>
         </footer>
     </body>
-    <script type="text/javascript" src="/assets/recruiter/js/typist.js"></script>
-    <script type="text/javascript" src="/assets/recruiter/js/recruiter_signup.js"></script>
-    <script type="text/javascript" src="/assets/recruiter/js/recruiter_page.js"></script>
+
+    <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
+    <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/recruiter_home.js"></script>
 </html>

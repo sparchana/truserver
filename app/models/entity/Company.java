@@ -5,6 +5,7 @@ import com.avaje.ebean.annotation.PrivateOwned;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.CompanyStatus;
 import models.entity.Static.CompanyType;
 import models.entity.Static.Locality;

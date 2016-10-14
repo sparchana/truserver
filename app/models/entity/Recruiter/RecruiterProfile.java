@@ -1,16 +1,20 @@
-package models.entity;
+package models.entity.Recruiter;
 
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.PrivateOwned;
-import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import models.entity.Static.PartnerProfileStatus;
-import models.entity.Static.RecruiterProfileStatus;
-import models.entity.Static.RecruiterStatus;
+import models.entity.Company;
+import models.entity.OM.JobApplication;
+import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
+import models.entity.RecruiterCreditHistory;
+import models.entity.JobPost;
+import models.entity.Recruiter.Static.RecruiterProfileStatus;
+import models.entity.Recruiter.Static.RecruiterStatus;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -83,6 +87,20 @@ public class RecruiterProfile extends Model {
     @JsonManagedReference
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private RecruiterLead recruiterLead;
+
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "recruiterProfile", cascade = CascadeType.REMOVE)
+    private List<RecruiterCreditHistory> recruiterCreditHistoryList;
+
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "recruiterProfile", cascade = CascadeType.REMOVE)
+    private List<RecruiterPayment> recruiterPaymentList;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "recruiterProfile", cascade = CascadeType.ALL)
+    private List<RecruiterToCandidateUnlocked> recruiterToCandidateUnlockedList;
 
     public static Finder<String, RecruiterProfile> find = new Finder(RecruiterProfile.class);
 
@@ -241,5 +259,29 @@ public class RecruiterProfile extends Model {
 
     public void setRecruiterLead(RecruiterLead recruiterLead) {
         this.recruiterLead = recruiterLead;
+    }
+
+    public List<RecruiterCreditHistory> getRecruiterCreditHistoryList() {
+        return recruiterCreditHistoryList;
+    }
+
+    public void setRecruiterCreditHistoryList(List<RecruiterCreditHistory> recruiterCreditHistoryList) {
+        this.recruiterCreditHistoryList = recruiterCreditHistoryList;
+    }
+
+    public List<RecruiterPayment> getRecruiterPaymentList() {
+        return recruiterPaymentList;
+    }
+
+    public void setRecruiterPaymentList(List<RecruiterPayment> recruiterPaymentList) {
+        this.recruiterPaymentList = recruiterPaymentList;
+    }
+
+    public List<RecruiterToCandidateUnlocked> getRecruiterToCandidateUnlockedList() {
+        return recruiterToCandidateUnlockedList;
+    }
+
+    public void setRecruiterToCandidateUnlockedList(List<RecruiterToCandidateUnlocked> recruiterToCandidateUnlockedList) {
+        this.recruiterToCandidateUnlockedList = recruiterToCandidateUnlockedList;
     }
 }
