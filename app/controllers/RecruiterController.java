@@ -4,10 +4,13 @@ import api.ServerConstants;
 import api.http.httpRequest.LoginRequest;
 import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
+import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpResponse.Recruiter.JobApplicationResponse;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
+import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.SecuredUser;
 import models.entity.JobPost;
 import models.entity.OM.JobApplication;
@@ -29,6 +32,7 @@ import java.util.List;
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.request;
 import static play.mvc.Controller.session;
+import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 import static play.mvc.Results.redirect;
 
@@ -206,4 +210,40 @@ public class RecruiterController {
         }
         return ok("0");
     }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result getMatchingCandidate() {
+        JsonNode matchingCandidateRequestJson = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + matchingCandidateRequestJson);
+        if(matchingCandidateRequestJson == null){
+            return badRequest();
+        }
+        MatchingCandidateRequest matchingCandidateRequest= new MatchingCandidateRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+
+        // since jsonReq has single/multiple values in array
+        newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+
+        try {
+            matchingCandidateRequest = newMapper.readValue(matchingCandidateRequestJson.toString(), MatchingCandidateRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (matchingCandidateRequest != null) {
+            return ok(toJson(JobPostWorkflowEngine.getCandidateForRecruiterSearch(
+                    matchingCandidateRequest.getMinAge(),
+                    matchingCandidateRequest.getMaxAge(),
+                    matchingCandidateRequest.getMinSalary(),
+                    matchingCandidateRequest.getMaxSalary(),
+                    matchingCandidateRequest.getGender(),
+                    matchingCandidateRequest.getExperienceId(),
+                    matchingCandidateRequest.getJobPostJobRoleId(),
+                    matchingCandidateRequest.getJobPostEducationId(),
+                    matchingCandidateRequest.getJobPostLocalityIdList(),
+                    matchingCandidateRequest.getJobPostLanguageIdList())));
+        }
+        return badRequest();
+    }
+
 }

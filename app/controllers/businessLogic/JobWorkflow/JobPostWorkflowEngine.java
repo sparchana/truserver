@@ -511,4 +511,227 @@ public class JobPostWorkflowEngine {
         }
         return clusterLable;
     }
+
+    /**
+     *
+     *  @param jobPostId  match candidates for this jobPost
+     *  @param minAge  min age criteria to be taken into consideration while matching
+     *  @param maxAge  max range criteria to be taken into consideration while matching
+     *  @param gender  gender criteria to be taken into consideration while matching
+     *  @param experienceId experience duration to be taken into consideration while matching
+     *  @param jobPostLocalityIdList  candidates to be matched within x Km of any of the provided locality
+     *  @param languageIdList  candidate to be matched for any of this language. Output contains the
+     *                       indication to show matching & non-matching language
+     *
+     *
+     */
+    public static Map<Long, CandidateWorkflowData> getCandidateForRecruiterSearch(Integer minAge,
+                                                                        Integer maxAge,
+                                                                        Long minSalary,
+                                                                        Long maxSalary,
+                                                                        Integer gender,
+                                                                        Integer experienceId,
+                                                                        Long jobRoleId,
+                                                                        Integer educationId,
+                                                                        List<Long> jobPostLocalityIdList,
+                                                                        List<Integer> languageIdList)
+    {
+        Map<Long, CandidateWorkflowData> matchedCandidateMap = new LinkedHashMap<>();
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+
+        // geDurationFromExperience returns minExperience req. (in Months)
+        ExperienceValue experience = getDurationFromExperience(experienceId);
+
+        // get jobrolepref for candidate
+
+        Query<Candidate> query = Candidate.find.query();
+
+        // problem: all age is null/0 and dob is also null
+        // select candidate falling under the specified age req
+        if (minAge != null) {
+            int endYear = currentYear - minAge;
+            query = query
+                    .where()
+                    .isNotNull("candidateDOB")
+                    .le("candidateDOB", endYear + "-01-01").query();
+        }
+        if (maxAge != null && maxAge !=0 ) {
+            int startYear = currentYear - maxAge;
+            query = query
+                    .where()
+                    .isNotNull("candidateDOB")
+                    .ge("candidateDOB", startYear + "-01-01").query();
+        }
+
+        // select candidate based on specific gender req, else pass
+        if (gender != null && gender>=0 && gender != ServerConstants.GENDER_ANY) {
+            query = query
+                    .where()
+                    .isNotNull("candidateGender")
+                    .eq("candidateGender", gender).query();
+        }
+
+        // select candidate whose totalExperience falls under the req exp
+        if (experience != null) {
+
+            if(experience.minExperienceValue == 0) {
+                query = query
+                        .where()
+                        .isNotNull("candidateTotalExperience")
+                        .eq("candidateTotalExperience", experience.minExperienceValue).query();
+            } else {
+                query = query
+                        .where()
+                        .isNotNull("candidateTotalExperience")
+                        .ge("candidateTotalExperience", experience.minExperienceValue).query();
+            }
+            if(experience.maxExperienceValue != 0) {
+                query = query
+                        .where()
+                        .isNotNull("candidateTotalExperience")
+                        .le("candidateTotalExperience", experience.maxExperienceValue).query();
+            }
+        }
+
+        // select candidate w.r.t candidateLastWithdrawnSalary
+        if (maxSalary != null && maxSalary != 0){
+            query =  query
+                    .where()
+                    .isNotNull("candidateLastWithdrawnSalary")
+                    .le("candidateLastWithdrawnSalary", maxSalary)
+                    .query();
+        } else if (minSalary != null && minSalary != 0) {
+            query =  query
+                    .where()
+                    .isNotNull("candidateLastWithdrawnSalary")
+                    .le("candidateLastWithdrawnSalary", minSalary)
+                    .query();
+        }
+        // select candidate w.r.t language
+        if (languageIdList != null && languageIdList.size() > 0) {
+            query =  query.select("*").fetch("languageKnownList")
+                    .where()
+                    .in("languageKnownList.language.languageId", languageIdList)
+                    .query();
+        }
+
+        /*// select candidate whose LatLng/HomeLocality in within (X) KM of jobPost LatLng
+        if (localityIdList != null && localityIdList.size() > 0) {
+            query =  query.select("*").fetch("locality")
+                    .where()
+                    .in("locality.localityId", localityIdList)
+                    .query();
+        }*/
+
+        // jobpref-jobrole match with jobpost-jobrole
+        if (jobRoleId != null) {
+            query = query.select("*").fetch("jobPreferencesList")
+                    .where()
+                    .in("jobPreferencesList.jobRole.jobRoleId", jobRoleId)
+                    .query();
+        }
+
+        // education match
+        if (educationId != null && educationId != 0) {
+            query = query.select("*").fetch("candidateEducation")
+                    .where()
+                    .isNotNull("candidateEducation")
+                    .eq("candidateEducation.education.educationId", educationId)
+                    .query();
+        }
+
+        // should be an active candidate
+        query = query.select("*").fetch("candidateprofilestatus")
+                .where()
+                .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE)
+                .query();
+
+        List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList);
+
+        Map<Long, CandidateExtraData> allFeature = computeExtraDataForRecruiterSearchResult(candidateList);
+
+        if(candidateList.size() != 0) {
+            for (Candidate candidate : candidateList) {
+                CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
+                candidateWorkflowData.setCandidate(candidate);
+                candidateWorkflowData.setExtraData(allFeature.get(candidate.getCandidateId()));
+                matchedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
+            }
+        }
+
+
+        return matchedCandidateMap;
+    }
+
+    private static Map<Long, CandidateExtraData> computeExtraDataForRecruiterSearchResult(List<Candidate> candidateList) {
+        SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT_HH);
+
+        if(candidateList.size() == 0) return null;
+        // candidateId --> featureMap
+        Map<Long, CandidateExtraData> candidateExtraDataMap = new LinkedHashMap<>();
+
+        List<String> candidateUUIdList = new ArrayList<>();
+        List<Long> candidateIdList = new ArrayList<>();
+
+        for (Candidate candidate: candidateList) {
+            candidateUUIdList.add(candidate.getCandidateUUId());
+            candidateIdList.add(candidate.getCandidateId());
+        }
+        /* */
+
+
+        String candidateListString = String.join("', '", candidateUUIdList);
+
+        StringBuilder interactionQueryBuilder = new StringBuilder("select distinct objectauuid, creationtimestamp from interaction i " +
+                " where i.objectauuid " +
+                " in ('"+candidateListString+"') " +
+                " and creationtimestamp = " +
+                " (select max(creationtimestamp) from interaction where i.objectauuid = interaction.objectauuid) " +
+                " order by creationTimestamp desc ");
+
+
+        Logger.info(interactionQueryBuilder.toString());
+        RawSql rawSql = RawSqlBuilder.parse(interactionQueryBuilder.toString())
+                .tableAliasMapping("i", "interaction")
+                .columnMapping("objectauuid", "objectAUUId")
+                .columnMapping("creationtimestamp", "creationTimestamp")
+                .create();
+
+
+//      TODO: Optimization: It takes 4+ sec for query to return map/list for this constraint, prev implementation was faster
+        Logger.info("before interaction query: " + new Timestamp(System.currentTimeMillis()));
+        Map<String, Interaction> lastActiveInteraction= Ebean.find(Interaction.class)
+                .setRawSql(rawSql)
+                .findMap("objectAUUId", String.class);
+
+//        List<Interaction> interactionList = Ebean.find(Interaction.class)
+//                .setRawSql(rawSql)
+//                .findList();
+//
+//        Map<String, Interaction> lastActiveInteraction = new HashMap<>();
+//        for (Interaction interaction: interactionList) {
+//            lastActiveInteraction.put(interaction.getObjectAUUId(), interaction);
+//        }
+        Logger.info("after interaction query: " + new Timestamp(System.currentTimeMillis()));
+
+        for (Candidate candidate: candidateList) {
+            CandidateExtraData candidateExtraData = candidateExtraDataMap.get(candidate.getCandidateId());
+
+            if( candidateExtraData == null) {
+                candidateExtraData = new CandidateExtraData();
+
+                // compute last active on
+                Interaction interactionsOfCandidate = lastActiveInteraction.get(candidate.getCandidateUUId());
+                if(interactionsOfCandidate != null) {
+                    candidateExtraData.setLastActive(getDateCluster(interactionsOfCandidate.getCreationTimestamp().getTime()));
+                }
+                // other intelligent scoring will come here
+            }
+
+            candidateExtraDataMap.put(candidate.getCandidateId(), candidateExtraData);
+        }
+
+        return candidateExtraDataMap;
+    }
+
 }
