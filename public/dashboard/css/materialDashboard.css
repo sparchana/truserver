@@ -49,14 +49,51 @@ body{
     background:rgba(0,0,0,0.55);
 }
 
+.materialDash{
+    height: 2px;
+    width: 72px;
+    background: #26A69A;
+}
+
+.materialDot{
+    height: 6px;
+    width: 6px;
+    border-radius: 100%;
+    background: #2980b9;
+}
+
+.incentiveEmptyBody{
+    font-size: 12px;
+    border-radius: 2px;
+    padding: 4px 8px 4px 8px;
+    background: transparent;
+    color: #000;
+}
+
+.incentiveBody{
+    margin-left: 4px;
+    font-size: 14px;
+    border-radius: 4px;
+    padding: 4px 8px 4px 8px;
+    background: rgb(110, 104, 105);
+    font-weight: 600;
+    color: #fff;
+}
+
 #jobLogo{
-    margin-top: 14%;
+    margin-top: 12%;
 }
 
 .fade-background {
     border: none;
     background-color: #286ab6;
-    box-shadow: 0 2px 4px #333;
+    box-shadow:0 2px 9px 0 rgba(0,0,0,.4),0 3px 1px -2px rgba(0,0,0,.4),0 1px 9px 0 rgba(0,0,0,.4);
+}
+
+.profileBodyEditProfile{
+    background: #fff;
+    padding: 2%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .profileSectionOne{
@@ -67,25 +104,28 @@ body{
 }
 
 .profileBody{
-    padding-left: 4%;
-    padding-right: 4%;
     padding-top: 1%;
 }
 
 #dashboardProfileBody{
-    background: #fcfcfc;
+    background: #fff;
 }
 
 #profileTitle{
-    color: #fff;
-    padding: 2%;
-    background-color: #286ab6;
+    width: 100%;
+    color: #26A69A;
+    padding: 16px;
+    border-left: 3px solid #ffaf00;
+    background-color: #f8f8f8;
 }
 
 #profileTitleEditProfile {
-    color: #fff;
-    padding: 1%;
-    background-color: #286ab6;
+    width: 100%;
+    color: #26A69A;
+    padding: 16px;
+    border-left: 3px solid #ffaf00;
+    background-color: #f8f8f8;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.1);
 }
 
 #indicatorBtnRed{
@@ -94,12 +134,47 @@ body{
     background-color: rgba(200, 36, 7, 1);
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
 }
+.indicatorBtnRed{
+    width: 80px;
+    text-align: center;
+    margin: 4px 8px 4px 0;
+    border-radius: 2px;
+    padding: 4px 0px 4px 0;
+    background-color: rgba(200, 36, 7, 1);
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
+    display: inline-block;
+}
+.row-eq-height{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display:         flex;
+}
 
-#indicatorBtnGreen{
-    width: 90px;
-    padding: 4px 8px;
+.jobBodyAssessmentAlert{
+    right: 0;
+}
+
+div.assessmentAlertDiv.red{
+    text-align: center;
+    margin-top: 4px;
+    color: #fff;
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    background-color: red;
+    font-weight: bold;
+}
+
+.indicatorBtnGreen{
+    text-align: center;
+    margin: 4px 8px 4px 0;
+    width: 80px;
+    padding: 4px 0px;
     background-color: rgba(11, 126, 22, 1);
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
+    display: inline-block;
 }
 
 #blurred-image-container {
@@ -116,8 +191,8 @@ body{
 .img-src {
     position: absolute;
     background:linear-gradient(
-            rgba(65, 69, 121, 0.4),
-            rgba(12, 12, 24, 0.4)
+            rgba(65, 69, 121, 0.3),
+            rgba(12, 12, 24, 0.3)
     ), url(../img/dashboard_back.png) repeat;
     background-size: 80%;
     top: -10%;
@@ -136,7 +211,26 @@ body{
 #sectionHead{
     color: #ffffff;
     padding-top: 60px;
+    padding-bottom: 24px;
     text-align: center;
+}
+
+.assessmentHeader {
+    margin-bottom: 16px;
+    font-size: 18px;
+    color: #ffffff;
+    text-align: center;
+    font-weight: bold;
+    display: block;
+}
+.profileComplete{
+    text-align: center;
+    margin: 4px 8px 4px 0;
+    width: 80px;
+    padding: 4px 0px;
+    background-color: rgba(11, 126, 22, 1);
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
+    display: inline-block;
 }
 
 .div-fixed {
@@ -160,27 +254,45 @@ body{
     text-align: center;
     display: inline-block;
 }
-
+div.inblockDiv{
+    font-size: 11px;
+    text-align: left;
+    display: inline-block;
+}
+#assessmentDiv span.red{
+    margin-right: 2px;
+    color: rgba(200, 36, 7, 1);
+}
+#assessmentDiv span.yellow{
+    margin-right: 2px;
+    color: #FFEB3B;
+}
 #userImg{
     border: 2px solid #c7c7c7;
     width: 76px;
     height: 76px;
     border-radius: 50%;
 }
+#userImgPartner{
+    border: 2px solid #c7c7c7;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+}
 
 #sectionBody{
     color: #525252;
-    background: #fff;
+    background: #fafafa;
 }
 
 #hotJobItem{
     border-left: 2px rgba(46, 131, 213, 0.6) solid;
-    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.09);
-    padding: 2%;
-    margin-left: 11%;
-    margin-right: 11%;
-    margin-top: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.1);
+    padding: 18px;
+    margin: 8px 8px 0 8px;
     background: #ffffff;
+
+    transition: all 0.7s cubic-bezier(.25,.8,.25,1);
 }
 
 #jobBody {
@@ -197,16 +309,14 @@ body{
 }
 
 #appliedOnId{
-    text-align: center;
+    text-align: left;
 }
 
-#appliedDate{
+.appliedDate{
     margin-top: 4px;
-    color: #fff;
     font-size: 12px;
     padding: 4px 12px;
     border-radius: 20px;
-    background: #3eba2d;
 }
 
 #editProfileBody{
@@ -236,17 +346,62 @@ body{
 .jobApplyBtn{
     border: none;
     color: white;
-    margin-top: 16%;
     background: #09ac58;
     padding: 6%;
+    font-weight: 600;
     width: 120px;
+    margin-top: 12%;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.16);
+}
+
+.jobInfoBtn{
+    cursor: pointer;
+    font-weight: 500;
+    border: none;
+    color: #5e81ff;
+    background: transparent;
+    padding: 6%;
+    width: 120px;
+    display: inline-block;
+    margin-top: 2%;
+
+    -webkit-transition: background 0.4s;
+    -moz-transition:    background 0.4s;
+    -ms-transition:     background 0.4s;
+    -o-transition:      background 0.4s;
+    transition:         background 0.4s;
+}
+
+.jobInfoBtn:hover {
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.03);
+
+    -webkit-transition: background 0.4s;
+    -moz-transition:    background 0.4s;
+    -ms-transition:     background 0.4s;
+    -o-transition:      background 0.4s;
+    transition:         background 0.4s;
+}
+
+.jobDetailCardView{
+    margin: 0 8px 0 8px;
+    padding: 12px 32px 24px 32px;
+    background: #fff;
+    display: none;
+    border-left: 2px rgba(46, 131, 213, 0.6) solid;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .jobApplyBtn:hover{
     cursor: pointer;
     background: #028d38;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
+
+    -webkit-transition: background 0.8s;
+    -moz-transition:    background 0.8s;
+    -ms-transition:     background 0.8s;
+    -o-transition:      background 0.8s;
+    transition:         background 0.8s;
 }
 
 .jobApplyBtnModal{
@@ -264,12 +419,49 @@ body{
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
 }
 
+.jobApplied{
+    border: none;
+    color: white;
+    background: rgba(255, 188, 0, 0.57);
+    padding: 2%;
+    display: block;
+    font-weight: 600;
+    width: 176px;
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.16);
+}
+
+.jobApplied:hover{
+    cursor: not-allowed;
+}
+
 hr{
     margin: 6px;
 }
 
 #hotJobItem:hover{
-    background: #fbfbfb;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.12), 0 4px 4px rgba(0,0,0,0.12);
+    transition: opacity 0.5s ease-in-out;
+}
+
+.editProfileSaveBtn{
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.1);
+    transition: all 0.7s cubic-bezier(.25,.8,.25,1);
+}
+
+.editProfileSaveBtn:hover{
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.22), 0 1px 2px rgba(0,0,0,0.2);
+    transition: all 0.7s cubic-bezier(.25,.8,.25,1);
+}
+
+.editSection{
+    transition: all 0.7s cubic-bezier(.25,.8,.25,1);
+}
+.editSection:hover{
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.1);
+    transition: opacity 0.5s ease-in-out;
 }
 
 #jobSalary, #jobExp, #jobLocation {
@@ -298,10 +490,87 @@ hr{
     background-color: #f4cb6c;
     box-shadow: none;
 }
+.navbar-nav>li>a:hover {
+    color: #ffffff;
+    background-color: rgba(0, 0, 0, 0.31);
+}
+.navbar-nav>li>a {
+    color: #ffffff;
+}
+
+.navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus {
+     background-color: transparent;
+}
+
+.navbar-default .navbar-toggle {
+     border-color: transparent;
+}
+
+.navbar-default .navbar-toggle .icon-bar {
+    background-color: #ffffff;
+}
+
+.candidateCard{
+    padding: 2%;
+    background: #26A69A;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.arrow-left {
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right:10px solid white;
+}
+.candidateInformation{
+    padding: 2%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.1);
+}
+
+#triangle-left {
+    width: 0;
+    height: 0;
+    margin-left: -4.5%;
+    float: left;
+    border-top: 16px solid transparent;
+    border-right: 21px solid #fff;
+    border-bottom: 16px solid transparent;
+}
+
+.row-eq-height{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display:         flex;
+}
+
+.candidatePartner{
+    margin: 6px;
+}
 
 @media screen and (max-width: 800px) {
+    .candidateCard{
+        padding: 4%;
+        background: #286ab6;
+        text-align: center;
+        box-shadow: 0 1px 8px rgba(0,0,0,0.12), 0 4px 4px rgba(0,0,0,0.12);
+    }
+
+    .candidateInformation{
+        padding: 4%;
+        background: #fff;
+        box-shadow: 0 1px 8px rgba(0,0,0,0.12), 0 4px 4px rgba(0,0,0,0.12);
+    }
+
+    .navbar-nav>li>a {
+        background-color: #286ab6;
+        color: #fff;
+    }
+
     #activeLink{
-        color: #3a589a;
+        color: #ffffff;
         font-weight: bold;
     }
     #jobLogo{
@@ -320,7 +589,15 @@ hr{
         background: #ffffff;
     }
 
-    #jobSalary, #jobExp, #jobLocation {
+    .jobDetailCardView {
+        border: none;
+        box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.09);
+        padding: 2% 4% 2% 4%;
+        margin: 0;
+        background: #ffffff;
+    }
+
+    #jobSalary, #jobExp, #jobLocation, #jobShift {
         margin-left: 16%;
     }
 
@@ -328,16 +605,21 @@ hr{
         margin-top: 12px;
         padding: 12px;
         width: 48%;
+        margin-bottom: 4px;
+    }
+    .jobInfoBtn{
+        margin-top: 8px;
+        padding: 12px;
+        width: 48%;
         margin-bottom: 12px;
     }
 
     li{
-        margin-top: -10px;
         background-color: #ffffff;
     }
 
     .navbar-default .navbar-nav>li>a {
-        color: #286ab6;
+        color: #ffffff;
     }
 
     #jobBodyDetails {
@@ -349,10 +631,6 @@ hr{
 
     #jobSalary, #jobExp, #jobLocation {
         padding: 8px;
-    }
-
-    #navLogo{
-        content:url("/assets/new/img/logo-main.gif");
     }
 
     .navbar-default {
@@ -377,5 +655,14 @@ hr{
         margin: 16px 2% 2%;
         background: white;
         border: 1px solid #e5e7db;
+    }
+    .appliedDate{
+        float: right;
+    }
+}
+@media screen and (max-width: 1000px) {
+    #navLogo {
+        margin-top: 10px;
+        content: url("/assets/common/img/logo-main.gif");
     }
 }

@@ -1,5 +1,4 @@
 # --- !Ups
-
 create table support_user_search_permissions (
   support_user_search_permissions_id bigint signed not null auto_increment not null,
   single_query_limit            bigint signed null,

@@ -1,13 +1,12 @@
 package models.entity;
 
+import api.ServerConstants;
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.PrivateOwned;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import models.entity.OM.JobApplication;
-import models.entity.OM.JobPostToBenefits;
-import models.entity.OM.JobPostToLocality;
+import models.entity.OM.*;
 import models.entity.Static.*;
 
 import javax.persistence.*;
@@ -142,11 +141,67 @@ public class JobPost extends Model {
     @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
     private List<JobApplication> jobPostApplicationList;
 
+    @Column(name = "Gender", columnDefinition = "int(1) null")
+    private Integer gender;
+
+    @Column(name = "Source", columnDefinition = "int null")
+    private Integer source; // internal data
+
+    // partner side requirement
+    @Column(name = "JobPostPartnerInterviewIncentive", columnDefinition = "bigint signed null")
+    private Long jobPostPartnerInterviewIncentive;
+
+    @Column(name = "JobPostPartnerJoiningIncentive", columnDefinition = "bigint signed null")
+    private Long jobPostPartnerJoiningIncentive;
+
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
+    private List<InterviewDetails> interviewDetailsList;
+
     public static Finder<String, JobPost> find = new Finder(JobPost.class);
 
     public JobPost() {
         this.jobPostUUId = UUID.randomUUID().toString();
         this.jobPostCreateTimestamp = new Timestamp(System.currentTimeMillis());
+        this.source = ServerConstants.SOURCE_INTERNAL;
+    }
+
+    public JobPost(JobPost jobPost) {
+        this.jobPostId = jobPost.jobPostId;
+        this.jobPostUUId  = jobPost.jobPostUUId;
+        this.jobPostCreateTimestamp = jobPost.jobPostCreateTimestamp;
+        this.jobPostUpdateTimestamp  = jobPost.jobPostUpdateTimestamp;
+        this.jobPostMinSalary = jobPost.jobPostMinSalary;
+        this.jobPostMaxSalary  = jobPost.jobPostMaxSalary;
+        this.jobPostStartTime = jobPost.jobPostStartTime;
+        this.jobPostEndTime  = jobPost.jobPostEndTime;
+        this.jobPostIsHot = jobPost.jobPostIsHot;
+        this.jobPostDescription  = jobPost.jobPostDescription;
+        this.jobPostTitle = jobPost.jobPostTitle;
+        this.jobPostIncentives  = jobPost.jobPostIncentives;
+        this.jobPostMinRequirement = jobPost.jobPostMinRequirement;
+        this.jobPostAddress  = jobPost.jobPostAddress;
+        this.latitude = jobPost.latitude;
+        this.longitude  = jobPost.longitude;
+        this.jobPostPinCode = jobPost.jobPostPinCode;
+        this.jobPostVacancies  = jobPost.jobPostVacancies;
+        this.jobPostDescriptionAudio = jobPost.jobPostDescriptionAudio;
+        this.jobPostWorkFromHome  = jobPost.jobPostWorkFromHome;
+        this.jobPostWorkingDays = jobPost.jobPostWorkingDays;
+        this.jobPostStatus  = jobPost.jobPostStatus;
+        this.pricingPlanType = jobPost.pricingPlanType;
+        this.jobRole  = jobPost.jobRole;
+        this.jobPostToLocalityList = jobPost.jobPostToLocalityList;
+        this.jobPostToBenefitsList  = jobPost.jobPostToBenefitsList;
+        this.company = jobPost.company;
+        this.jobPostShift  = jobPost.jobPostShift;
+        this.jobPostExperience = jobPost.jobPostExperience;
+        this.jobPostEducation  = jobPost.jobPostEducation;
+        this.recruiterProfile = jobPost.recruiterProfile;
+        this.jobPostApplicationList = jobPost.jobPostApplicationList;
+        this.gender = jobPost.gender;
+        this.source = jobPost.source;
     }
 
     public RecruiterProfile getRecruiterProfile() {
@@ -407,5 +462,66 @@ public class JobPost extends Model {
 
     public void setJobPostEducation(Education jobPostEducation) {
         this.jobPostEducation = jobPostEducation;
+    }
+
+    public Integer getGender() {
+        return gender;
+    }
+
+    public void setGender(Integer gender) {
+        this.gender = gender;
+    }
+
+    public Integer getSource() {
+        return source;
+    }
+
+    public void setSource(Integer source) {
+        this.source = source;
+    }
+
+    public Long getJobPostPartnerInterviewIncentive() {
+        return jobPostPartnerInterviewIncentive;
+    }
+
+    public void setJobPostPartnerInterviewIncentive(Long jobPostPartnerInterviewIncentive) {
+        this.jobPostPartnerInterviewIncentive = jobPostPartnerInterviewIncentive;
+    }
+
+    public Long getJobPostPartnerJoiningIncentive() {
+        return jobPostPartnerJoiningIncentive;
+    }
+
+    public void setJobPostPartnerJoiningIncentive(Long jobPostPartnerJoiningIncentive) {
+        this.jobPostPartnerJoiningIncentive = jobPostPartnerJoiningIncentive;
+    }
+
+    public List<InterviewDetails> getInterviewDetailsList() {
+        return interviewDetailsList;
+    }
+
+    public void setInterviewDetailsList(List<InterviewDetails> interviewDetailsList) {
+        this.interviewDetailsList = interviewDetailsList;
+    }
+
+    @Override
+    public String toString() {
+
+        String exp = getJobPostExperience() == null ? "N/A" : getJobPostExperience().getExperienceType();
+        String edu = getJobPostEducation() == null ? "N/A" : getJobPostEducation().getEducationName();
+        String gen = getGender() == null? "N/A" : getGender() == 0 ? "M" : "F";
+        StringBuilder locs = new StringBuilder();
+
+        for (JobPostToLocality loc :jobPostToLocalityList) {
+            locs.append(loc.toString());
+            locs.append(",");
+        }
+
+        String toS = "JOBPOST: " + getJobPostId() + "|" + getJobPostTitle() + "|" + getCompany().getCompanyName()
+                + "|" + locs.toString()
+                + "|" + getJobRole().getJobName() + "|" + getJobPostMinSalary() + "-" + getJobPostMaxSalary()
+                + "|" + exp + "|" + edu + "|" + getGender()
+                + "|" + getJobPostCreateTimestamp() + "|" + getSource();
+        return toS;
     }
 }

@@ -1,0 +1,308 @@
+::-webkit-input-placeholder {
+    color: #8e8e8e;
+    font-size: 14px;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+    color: #8e8e8e;
+    font-size: 14px;
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+    color: #8e8e8e;
+    font-size: 14px;
+}
+
+:-ms-input-placeholder {
+    color: #8e8e8e;
+    font-size: 14px;
+}
+
+.select-wrapper input.select-dropdown{
+    color: #b1b1b1;
+}
+::-webkit-scrollbar
+{
+    width: 6px;  /* for vertical scrollbars */
+    height: 6px; /* for horizontal scrollbars */
+}
+
+::-webkit-scrollbar-track
+{
+    background: rgba(255, 255, 255, 1);
+}
+
+::-webkit-scrollbar-thumb
+{
+    background: rgb(84, 85, 99);
+}
+
+.ascentGreen {
+    background-color: #2ec866 !important;
+}
+
+.dropdown-content li > a, .dropdown-content li > span {
+    color: #2ec866;
+}
+
+.select-wrapper{
+    display: none;
+}
+
+div.Tokenize ul.TokensContainer li.TokenSearch input{
+    height: auto;
+    width: auto;
+    box-shadow: none;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+body{
+    font-family:Lato;
+    background-color: #fafafa;
+}
+
+nav{
+    background: transparent;
+    box-shadow: 0 0 0 0;
+    transition: 0.2s;
+}
+.navbar-fixed{
+    position: absolute;
+    z-index:9999;
+    box-shadow: none;
+}
+.customParallaxContainer{
+    width: 120%;
+    position: absolute;
+}
+
+.footerLeadForm{
+    position: absolute;
+    width:100%;
+    padding: 2%;
+    bottom: 0;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.68)
+}
+
+.sectionOneBody{
+    font-family: Lato;
+    text-align: center;
+    height: 80%;
+    width: 100%;
+    padding: 4%;
+}
+
+.custom-parallax-container{
+    position: relative;
+    margin-bottom:4% ;
+    height: 100vh;
+    background: linear-gradient(rgba(24, 26, 45, 0.4), rgba(0, 0, 0, 0.9)) no-repeat center;
+}
+
+#sectionOne{
+    padding: 0;
+    background-size: 100%;
+}
+
+.sectionOneContainer{
+    margin-top: 12%;
+}
+
+#leadForm{
+    padding: 2%;
+    text-align: left;
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.5);
+}
+
+input:not([type]):focus:not([readonly]),
+input[type=text]:focus:not([readonly]),
+input[type=password]:focus:not([readonly]),
+input[type=email]:focus:not([readonly]),
+input[type=url]:focus:not([readonly]),
+input[type=time]:focus:not([readonly]),
+input[type=date]:focus:not([readonly]),
+input[type=datetime]:focus:not([readonly]),
+input[type=datetime-local]:focus:not([readonly]),
+input[type=tel]:focus:not([readonly]),
+input[type=number]:focus:not([readonly]),
+input[type=search]:focus:not([readonly]),
+textarea.materialize-textarea:focus:not([readonly]) {
+    border-bottom: 1px solid #000;
+}
+
+input:not([type]):focus:not([readonly]) + label,
+input[type=text]:focus:not([readonly]) + label,
+input[type=password]:focus:not([readonly]) + label,
+input[type=email]:focus:not([readonly]) + label,
+input[type=url]:focus:not([readonly]) + label,
+input[type=time]:focus:not([readonly]) + label,
+input[type=date]:focus:not([readonly]) + label,
+input[type=datetime]:focus:not([readonly]) + label,
+input[type=datetime-local]:focus:not([readonly]) + label,
+input[type=tel]:focus:not([readonly]) + label,
+input[type=number]:focus:not([readonly]) + label,
+input[type=search]:focus:not([readonly]) + label,
+textarea.materialize-textarea:focus:not([readonly]) + label {
+    color: #000;
+}
+
+#companyHiringRow{
+    text-align: center;
+    width: 100%;
+    margin-top: 10%;
+}
+#companyHiringRowSub{
+    padding: 1%;
+    margin: 0;
+    background-color: #fff;
+
+}
+
+#sectionTwo{
+    height: 200px;
+}
+
+#candidateStats{
+    transition: 0.8s;
+    opacity:0;
+}
+#jobRolesStats{
+    transition: 0.8s;
+    opacity:0;
+}
+#stats{
+    padding: 2%;
+    text-align: center;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+#testimonial{
+
+    background-color: #ffffff;
+    text-align: center;
+}
+#companyHiringBox{
+    padding: 0;
+    text-align: center;
+    border: 1px solid #f3f3f3;
+    box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
+}
+#companyHiringHeader{
+    margin: 0;
+    padding: 1%;
+    background-color: #fbfbfb;
+    color: #000;
+}
+#companyHiringCompanyLogo{
+    margin:0;
+    padding: 4%;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e2e2e2;
+}
+#companyHiringCompanyLogo img{
+    margin-bottom: 2%;
+}
+#modalSignUp{
+    overflow: hidden;
+    width: 45%;
+    margin-top: 0;
+}
+#modalLeftBox{
+    background-color: rgb(55, 71, 79);
+    height: 100vh;
+}
+#inputContainerModalSignup{
+    text-align: center;
+    padding: 2%;
+}
+#inputContainerModalSignup >.input-field > input{
+    margin: 0;
+}
+#modalRightBox{
+    margin-top:10%;
+    text-align: center;
+}
+footer.page-footer .footer-copyright{
+    background: rgba(0,0,0,0.6);
+    text-align: center;
+}
+.materialDash{
+    height: 2px;
+    width: 72px;
+    background: #2ec866;
+    margin: 1%;
+}
+.materialDashForm{
+    height: 2px;
+    width: 25%;
+    background: #eceeeb;
+    margin: 3%;
+}
+#fbLogo:hover{
+    cursor:pointer;
+    content:url(/assets/recruiter/img/fb.svg);
+}
+#modalHire{
+    color:#000;
+    margin-top:0;
+    width:30%;
+    box-shadow: none;
+    background: transparent;
+}
+
+#mobileNumber{
+    color: #000;
+}
+@media screen and (max-width: 768px) {
+    #mobileNumber{
+        color: #fff;
+    }
+
+    #leadForm{
+        margin-top:6%;
+        padding: 6%;
+    }
+    .customParallaxContainer{
+        width: auto;
+        height: 100%;
+        position: absolute;
+    }
+    #mobileEnquiryBtn{
+        margin-top: 10%;
+    }
+    ::-webkit-input-placeholder {
+        color: #c5c5c5;
+        font-size: 14px;
+    }
+
+    :-moz-placeholder { /* Firefox 18- */
+        color: #c5c5c5;
+        font-size: 14px;
+    }
+
+    ::-moz-placeholder {  /* Firefox 19+ */
+        color: #c5c5c5;
+        font-size: 14px;
+    }
+
+    :-ms-input-placeholder {
+        color: #c5c5c5;
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width: 1000px){
+    #navLogo{
+        height:46%;
+        margin-top: 11%;
+        content:url("/assets/common/img/logo-main.gif");
+    }
+}
+

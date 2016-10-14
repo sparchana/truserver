@@ -1,0 +1,399 @@
+@(id: Long)
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Create Candidate - Partner | Trujobs - Best Jobs for Freshers and Experienced Candidates </title>
+
+        <meta name="keywords" content="driving jobs, fresher jobs, jobs for freshers, job search sites, job posting, sales jobs, beautician jobs,
+            medical transcription jobs, online job search, find jobs, receptionist jobs, admin jobs, office assistant jobs,
+            plumbing work, teacher job, online teaching jobs, jobs in schools, teacher vacancy, teacher recruitment, entry level jobs,
+            delivery boy jobs,call center jobs, BPO jobs, kpo jobs, job job job, data entry jobs, back office jobs,
+            receptionist jobs, beautician jobs, experienced jobs, jobs in Bangalore, cashier jobs, entry level jobs,
+            plumber jobs, electrician jobs, job search, accountant jobs, job vacancy, bangalore vacancy">
+
+        <meta name="description" content="Search and apply for jobs online. Register for FREE and find best
+            fresher and experienced jobs.Give a missed call at 8880007799 for best jobs." />
+        <meta http-equiv="Cache-control" content="public">
+            <!-- Bootstrap Core CSS -->
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/materialDashboard.css">
+        <link rel="stylesheet" type="text/css" href="/assets/partner/css/partnerStyle.css">
+
+        <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
+        @*<script type="text/javascript" src="/assets/common/js/jquery.min_1_12_0.js"></script>*@
+        <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+        <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
+
+        <link rel="stylesheet" href="/assets/common/css/token-input-facebook.css" type="text/css" />
+        <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
+
+        <script type="text/javascript" src="/assets/partner/js/partner_page.js"></script>
+        <script type="text/javascript" src="/assets/partner/js/partner_create_candidate.js"></script>
+        <script type="text/javascript" src="/assets/partner/js/notify.min.js"></script>
+        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+        <style>
+            .modal{
+                top: 180px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="preloader">
+            <div id="loaderLogo">
+                <img id="leaderLogo" src="/assets/common/img/logo-color.gif" alt="TruJobs Logo" height="40px">
+            </div>
+            <div id="status">&nbsp;</div>
+        </div>
+
+            <!-- Nav start -->
+        <div id="nav_bar_inc"></div>
+        <script>
+              $(document).ready(function () {
+                  $('#nav_bar_inc').load('/partnerNavBarLoggedIn');
+              });
+      </script>
+
+        <div id="sectionHeader">
+            <h1 style="letter-spacing: 2px;
+                margin: 10px;"><b><font size="5">Create Candidate Profile</font></b></h1>
+        </div>
+
+        <div class="container" style="padding-bottom: 24px">
+            <h3 style="display: inline-block">Create a new Candidate</h3>
+            <hr>
+            <form id="partnerCandidateProfile" method="post">
+                <div style="padding: 2%">
+                    <div id="profileTitleEditProfile"><font size="2"><b>Basic Profile</b></font></div>
+                    <div id="editProfileBody" class="profileBodyEditProfile">
+                        <div class="row">
+                            <div class="col-sm-3" ><h5>Candidate Name<font color="red">*</font></h5></div>
+                            <div class="col-sm-5">
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <input id="candidateFirstName" name="candidateFirstName" maxLength="49" placeholder="First Name" type="text" class="form-control input-md" required>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <input style="width: 100%" id="candidateLastName" name="candidateFirstName" maxLength="49" placeholder="Last Name" type="text" class="form-control input-md createCandidateLastName">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 8px">
+                            <div class="col-sm-3"><h5>Candidate Mobile No.<font color="red">*</font></h5></div>
+                            <div class="col-sm-5">
+                                <input id="candidateMobile" placeholder="What is candidate's mobile no.?" name="candidateMobile" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" class="form-control input-md">
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 8px">
+                            <div class="col-sm-3"><h5>Job Role Preference(s)(Max: 3)<font color="red">*</font></h5></div>
+                            <div class="col-sm-5" id="candidateJobPrefField">
+                                <input type="text" id="candidateJobPref">
+                                <script type="text/javascript">
+                                    $(document).ready(function () {
+                                        $("#candidateJobPref").tokenInput(getJob(), {
+                                            theme: "facebook",
+                                            placeholder: "What are candidate's interested job roles?",
+                                            hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                                            minChars: 0,
+                                            tokenLimit: 3,
+                                            prePopulate: jobPrefArray,
+                                            preventDuplicates: true
+                                        });
+                                        generateSkills();
+                                    });
+                                </script>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 8px">
+                            <div class="col-sm-3"><h5>Candidate Home Locality<font color="red">*</font></h5></div>
+                            <div class="col-sm-5" id="candidateHomeLocalityField">
+                                <input type="text" id="candidateHomeLocality">
+                                <script type="text/javascript">
+                                    $(document).ready(function () {
+                                        $("#candidateHomeLocality").tokenInput(getLocality(), {
+                                            theme: "facebook",
+                                            placeholder: "What is candidate's home location?",
+                                            hintText: "Start typing localities (eg. Cook, Delivery boy..)",
+                                            minChars: 0,
+                                            tokenLimit: 1,
+                                            prePopulate: currentLocationArray,
+                                            preventDuplicates: true
+                                        });
+                                    });
+                                </script>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 8px">
+                            <div class="col-sm-3" style="margin-top: 5px"><h5 style="margin-top: 4px">Preferred Shift Timings<font color="red">*</font></h5></div>
+                            <div class="col-sm-9">
+                                <select id="candidateTimeShift" class="selectDropdown" style="width: 206px;
+                                    height: 34px;"></select>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 8px">
+                            <div class="col-sm-3"><h5>Date of Birth<font color="red">*</font></h5></div>
+                            <div class="col-sm-5" id="candidateDobField">
+                                <select id="dob_day" class="selectDropdown">
+                                    <option value="">Day</option>
+                                </select>
+
+                                <select id="dob_month" class="selectDropdown">
+                                    <option value="">Month</option>
+                                </select>
+
+                                <select id="dob_year" class="selectDropdown">
+                                    <option value="">Year</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 8px">
+                            <div class="col-sm-3"><h5>Gender<font color="red">*</font></h5></div>
+                            <div class="col-sm-5" style="margin-top: 4px" id="candidateGenderField">
+                                <div style="width: 100%; height: 34px;" class="btn-group" data-toggle="buttons">
+                                    <label class="btn btn-custom-check" style="width: 103px">
+                                        <input type="radio" name="gender" id="genderMale" value="0">&nbsp;Male&nbsp;&nbsp;
+                                    </label>
+                                    <label class="btn btn-custom-check" style="width: 103px">
+                                        <input type="radio" name="gender" id="genderFemale" value="1">&nbsp;Female
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+
+                        <!-- experience and skills starts -->
+                    <div id="profileTitleEditProfile"><font size="2"><b>Work Experience</b></font></div>
+                    <div id="editProfileBody" class="profileBodyEditProfile">
+                        <div class="row">
+                            <div class="col-sm-3"><h5>Candidate Work Experience<font color="red">*</font></h5></div>
+                            <div class="col-sm-5" id="candidateWorkExpField">
+                                <div class="btn-group" data-toggle="buttons" id="fresherExperience">
+                                    <label class="btn btn-custom-check" style="width: 104px" onclick="clickFresher()">
+                                        <input type="radio" name="workExperience" id="fresher" value="0">
+                                        Fresher
+                                    </label>
+                                    <label class="btn btn-custom-check" style="width: 104px" onclick="clickExperienced()">
+                                        <input type="radio" name="workExperience" id="experienced" value="1">
+                                        Experienced
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row" id="totalWorkExperience" style="margin-top: 8px">
+                            <div class="col-sm-3"><h5>Total Work Experience<font color="red">*</font></h5></div>
+                            <div class="col-sm-5" id="candidateTotalWorkExpField">
+                                <select class="selectDropdown" style="width: 136px" id="candidateTotalExperienceYear"></select>
+                                <select id="candidateTotalExperienceMonth" style="width: 136px" class="selectDropdown"></select>
+                            </div>
+                        </div>
+
+                        <div id="isEmployedSelect" class="row" style="margin-top: 8px">
+                            <div class="col-sm-3"><h5>Is the candidate Currently Working?<font color="red">*</font></h5></div>
+                            <div class="col-sm-5" id="currentlyWorkingField">
+                                <div class="btn-group" data-toggle="buttons" style="margin-top: 4px">
+                                    <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickWorkingYes()">
+                                        <input type="radio" name="isEmployed" id="isEmployedYes" value="1"> &nbsp;Yes&nbsp;&nbsp;
+                                    </label>
+                                    <label class="btn btn-custom-check" style="width: 137.5px" onclick="clickWorkingNo()">
+                                        <input type="radio" name="isEmployed" id="isEmployedNo" value="0"> &nbsp;No&nbsp;&nbsp;
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="isEmployedForm" class="subSectionBody" style="margin-top: 16px;">
+                            <h4>Tell us about candidate's current company</h4>
+                            <hr>
+                            <div class="row" >
+                                <div class="col-sm-3"><h5>Current Company<div style="color: #9f9f9f;
+                                    font-size: 12px">(optional)</div></h5>
+                                </div>
+                                <div class="col-sm-5">
+                                    <input id="candidateCurrentCompany" placeholder="What is the Company name?" maxLength="99" style="width: 275px" type="text" class="form-control input-md">
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top: 8px">
+                                <div class="col-sm-3"><h5>What candidate's current Job Role?<div style="color: #9f9f9f;
+                                    font-size: 12px">(optional)</div></h5>
+                                </div>
+                                <div class="col-sm-5">
+                                    <input type="text" id="candidateCurrentJobRole" style="width: 230px;">
+                                    <script type="text/javascript">
+                                        $(document).ready(function () {
+                                            $("#candidateCurrentJobRole").tokenInput(getJob(), {
+                                                theme: "facebook",
+                                                placeholder: "current job role?",
+                                                hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                                                minChars: 0,
+                                                prePopulate: currentJobRole,
+                                                tokenLimit: 3,
+                                                preventDuplicates: true
+                                            });
+                                        });
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row" style="margin-top: 8px;
+                            display: none" id="lastWithdrawnSalaryLayout">
+                            <div class="col-sm-3"><h5>Last Withdrawn Salary<font color="red">*</font></h5></div>
+                            <div class="col-sm-2">
+                                <input id="candidateLastWithdrawnSalary" placeholder="Salary" type="number" class="form-control input-md">
+                            </div>
+                            <div class="col-sm-2" style="margin-top: 8px">₹/month</div>
+                        </div>
+                        <br>
+                    </div>
+                    <br>
+
+                        <!-- Language starts -->
+                    <div id="profileTitleEditProfile"><font size="2"><b>Language Details</b></font></div>
+                    <div id="editProfileBody" class="profileBodyEditProfile">
+                        <table id="languageTable" class="table table-striped" cellspacing="0" width="100%">
+                            <h5 id="languageField">Candidate known languages<font color="red">*</font></h5>
+                            <thead></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
+                    <br>
+                        <!-- skills starts -->
+                    <div id="profileTitleEditProfile"><font size="2"><b>Skills</b></font></div>
+                    <div id="editProfileBody" class="profileBodyEditProfile">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <div id="skill_details" >
+                                    <table id="skillTable" class="table table-striped" cellspacing="0" width="100%">
+                                        <thead></thead>
+                                        <tbody></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+
+                        <!-- education profile starts -->
+                    <div id="profileTitleEditProfile"><font size="2"><b>Education</b></font></div>
+                    <div id="editProfileBody" class="profileBodyEditProfile">
+                        <div class="row" style="margin-top: 4px">
+                            <div class="col-sm-3"><h5>Highest Education Qualification?<font color="red">*</font></h5></div>
+                            <div class="col-sm-9" id="educationField">
+                                <div style="width: 100%;
+                                    height: 34px;" id="candidateHighestEducation" class="btn-group" data-toggle="buttons"></div>
+                            </div>
+                        </div>
+
+                        <div class="row" id="eduConfirm">
+                            <div class="col-sm-3"><h5>Have you successfully completed this course?</h5></div>
+                            <div class="col-sm-9" style="margin-top: 1%">
+                                <input type="radio" name="candidateEducationCompletionStatus" id="eduCompleted" value="1"> &nbsp;Yes&nbsp;&nbsp;
+                                <input type="radio" name="candidateEducationCompletionStatus" id="eduCompletedNot" value="0"> &nbsp;No
+                            </div>
+                        </div>
+
+                        <div id="educationalInstitute" style="display: none">
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Highest Education Degree?<font color="red">*</font></h5></div>
+                                <div class="col-sm-5">
+                                    <select class="selectDropdown" id="candidateHighestDegree" style="width: 342px"></select>
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top: 4px">
+                                <div class="col-sm-3"><h5>Last Attended Education Institute?<div style="color: #9f9f9f;
+                                    font-size: 12px">(optional)</div></h5>
+                                </div>
+                                <div class="col-sm-6">
+                                    <input id="candidateEducationInstitute" style="width: 342px" placeholder="Which was the last college your candidate attended?" type="text" class="form-control input-md">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <br>
+                    <!-- next/save btn -->
+                <button type="submit" class="btn btn-primary" id="registerBtnSubmit" style="float: right">
+                    <div style="display: inline-block">Save</div>
+                    <div style="margin-left: 8px;
+                        display: inline-block">
+                        <img src="/assets/dashboard/img/save.png" height="28px">
+                    </div>
+                </button>
+            </form>
+        </div>
+
+
+        <!-- Start Footer-->
+        <div id="footer_inc"></div>
+        <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+
+        <script>
+                $(document).ready(function () {
+                    $('#footer_inc').load('/footer');
+                });
+                function clickFresher() {
+                    $("#isEmployedNo").click();
+                    $("#lastWithdrawnSalaryLayout").hide();
+                    $("#totalWorkExperience").hide();
+                    $("#isEmployedForm").hide();
+                    $("#isEmployedSelect").hide();
+                }
+                function clickExperienced() {
+                    $("#lastWithdrawnSalaryLayout").show();
+                    $("#totalWorkExperience").show();
+                    $("#isEmployedSelect").show();
+                }
+
+                function clickWorkingYes() {
+                    $("#isEmployedSelect").show();
+                    $("#isEmployedForm").show();
+                }
+
+                function clickWorkingNo() {
+                    $("#isEmployedForm").hide();
+                }
+                prefillSkills(candidateSkill);
+        </script>
+            <!-- Facebook Pixel Code -->
+        <script>
+                !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                        n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+                    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+                    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+                        document,'script','https://connect.facebook.net/en_US/fbevents.js');
+
+                fbq('init', '535139956654403');
+                fbq('track', "PageView");
+        </script>
+        <noscript>
+            <img height="1" width="1" style="display:none"
+            src="https://www.facebook.com/tr?id=535139956654403&ev=PageView&noscript=1"/>
+        </noscript>
+            <!-- End Facebook Pixel Code -->
+
+            <!--  google page view -->
+        <script>
+                (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+                ga('create', 'UA-77156203-1', 'auto');
+                ga('send', 'pageview');
+        </script>
+
+        <script type="text/javascript" src="/assets/common/js/all_job_role_footer.js"></script>
+    </body>
+</html>

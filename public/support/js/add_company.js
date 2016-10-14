@@ -49,6 +49,7 @@ function uploadLogo(){
 }
 
 function processDataAddCompany(returnedData) {
+    console.log(returnedData);
     companyId = returnedData.companyId;
     companyStatus = returnedData.status;
 }
@@ -65,7 +66,7 @@ function updateForm() {
             logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/" + f.name;
             status = 1;
         }
-    } else{
+    } else {
         status = 1;
         logo = $("#companyOldLogo").val();
     }
@@ -123,21 +124,25 @@ function saveForm(){
         if($("#companyName").val() == ""){
             alert("Please Enter company Name");
             status=0;
-        } else if($("#companyLogo").val() == ""){
-            alert("Please Enter company Logo");
-            status=0;
-        } else if((f.type).substring(0,1) != "i"){
+        } else if(document.getElementById("companyLogo").value != "" && (f.type).substring(0,1) != "i"){
             alert("Please select a valid image for logo");
             status=0;
         }
         if(status == 1){
             var d;
             var logo;
-            if(($("#companyLogo").val()).substring(0,4) == "http"){
-                logo = $("#companyLogo").val();
-            } else{
-                logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/" + f.name;
+
+            if ($("#companyLogo").val() != "") {
+                if (($("#companyLogo").val()).substring(0, 4) == "http") {
+                    logo = $("#companyLogo").val();
+                } else {
+                    logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/" + f.name;
+                }
             }
+            else {
+                logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/default_company_logo.png";
+            }
+
             d = {
                 companyId: $("#companyId").val(),
                 companyName: $("#companyName").val(),
@@ -169,7 +174,7 @@ function saveForm(){
                 $("#recruiterCompany").prop('disabled', false);
                 $("#recruiterCompany").val(companyId);
                 $("#companySection").hide();
-            } else{
+            } else {
                 uploadLogo();
             }
         }
@@ -180,10 +185,10 @@ function saveForm(){
     var recruiterMobile = validateMobile($("#recruiterMobile").val());
     //checking first name
     switch(recruiterName){
-        case 0: alert("First name contains number. Please Enter a valid First Name"); status=0; break;
-        case 2: alert("First Name cannot be blank spaces. Enter a valid first name"); status=0; break;
-        case 3: alert("First name contains special symbols. Enter a valid first name"); status=0; break;
-        case 4: alert("Please enter your first name"); status=0; break;
+        case 0: alert("Recruiter's name contains number. Please Enter a valid name"); status=0; break;
+        case 2: alert("Recruiter's name cannot be blank spaces. Enter a valid name"); status=0; break;
+        case 3: alert("Recruiter's name contains special symbols. Enter a valid name"); status=0; break;
+        case 4: alert("Please enter recruiter's name"); status=0; break;
     }
     if(recruiterMobile == 0){
         alert("Enter a valid mobile number");
@@ -196,10 +201,7 @@ function saveForm(){
         status=0;
     }
 
-    console.log("here status: " + status + " company status: " + companyStatus);
-
     if(status == 1 && companyStatus != 4){
-        console.log("Inside");
         if($("#recruiterCompany").val() != ""){
             companyId = $("#recruiterCompany").val();
         }
@@ -225,7 +227,6 @@ function saveForm(){
         });
     }
 
-    console.log(companyStatus + " -- " + recruiterStatus);
     if(companyStatus == 1 && recruiterStatus == 1){
         alert("New Company and New Recruiter Created successfully created");
         window.close();
@@ -234,6 +235,9 @@ function saveForm(){
         window.close();
     } else if(companyStatus == -1 && recruiterStatus == 4){
         alert("Existing Recruiter Updated");
+        window.close();
+    } else if(companyStatus == -1 && recruiterStatus == 1){
+        alert("New Recruiter Created");
         window.close();
     }
 } // end of submit

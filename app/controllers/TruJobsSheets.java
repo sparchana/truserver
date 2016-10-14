@@ -144,7 +144,7 @@ public class TruJobsSheets {
         String clientSecretFile = isDevMode? "client_secret.json" : "client_secret_prod.json";
 
         // Load client secrets.
-        FileInputStream fs = new FileInputStream(userHome + "/truserver/" + clientSecretFile);
+        FileInputStream fs = new FileInputStream(userHome + "/truprojects/truserver/" + clientSecretFile);
         GoogleClientSecrets clientSecrets =
                 GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(fs));
 

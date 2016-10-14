@@ -19,6 +19,35 @@ public class CandidateSignUpResponse {
     public String candidateFirstName;
     public String candidateLastName;
     public String candidateEmail;
+    public int candidateJobPrefStatus;
+    public int candidateHomeLocalityStatus;
+    public int gender;
+
+    /*
+     * To cater mobile needs
+    */
+    public Double candidateHomeLat;
+    public Double candidateHomeLng;
+    public Long candidatePrefJobRoleIdOne;
+    public Long candidatePrefJobRoleIdTwo;
+    public Long candidatePrefJobRoleIdThree;
+    public String candidateHomeLocalityName;
+
+    public int getCandidateJobPrefStatus() {
+        return candidateJobPrefStatus;
+    }
+
+    public void setCandidateJobPrefStatus(int candidateJobPrefStatus) {
+        this.candidateJobPrefStatus = candidateJobPrefStatus;
+    }
+
+    public int getCandidateHomeLocalityStatus() {
+        return candidateHomeLocalityStatus;
+    }
+
+    public void setCandidateHomeLocalityStatus(int candidateHomeLocalityStatus) {
+        this.candidateHomeLocalityStatus = candidateHomeLocalityStatus;
+    }
 
     public void setStatus(int status) {
         this.status = status;
@@ -58,5 +87,93 @@ public class CandidateSignUpResponse {
 
     public int getStatus() {
         return status;
+    }
+
+    public int getOtp() {
+        return otp;
+    }
+
+    public int getIsAssessed() {
+        return isAssessed;
+    }
+
+    public long getLeadId() {
+        return leadId;
+    }
+
+    public long getAccountStatus() {
+        return accountStatus;
+    }
+
+    public long getCandidateId() {
+        return candidateId;
+    }
+
+    public String getCandidateFirstName() {
+        return candidateFirstName;
+    }
+
+    public String getCandidateLastName() {
+        return candidateLastName;
+    }
+
+    public String getCandidateEmail() {
+        return candidateEmail;
+    }
+
+    public Double getCandidateHomeLat() {
+        return candidateHomeLat;
+    }
+
+    public void setCandidateHomeLat(Double candidateHomeLat) {
+        this.candidateHomeLat = candidateHomeLat;
+    }
+
+    public Double getCandidateHomeLng() {
+        return candidateHomeLng;
+    }
+
+    public void setCandidateHomeLng(Double candidateHomeLng) {
+        this.candidateHomeLng = candidateHomeLng;
+    }
+
+    public Long getCandidatePrefJobRoleIdOne() {
+        return candidatePrefJobRoleIdOne;
+    }
+
+    public void setCandidatePrefJobRoleIdOne(Long candidatePrefJobRoleIdOne) {
+        this.candidatePrefJobRoleIdOne = candidatePrefJobRoleIdOne;
+    }
+
+    public Long getCandidatePrefJobRoleIdTwo() {
+        return candidatePrefJobRoleIdTwo;
+    }
+
+    public void setCandidatePrefJobRoleIdTwo(Long candidatePrefJobRoleIdTwo) {
+        this.candidatePrefJobRoleIdTwo = candidatePrefJobRoleIdTwo;
+    }
+
+    public Long getCandidatePrefJobRoleIdThree() {
+        return candidatePrefJobRoleIdThree;
+    }
+
+    public void setCandidatePrefJobRoleIdThree(Long candidatePrefJobRoleIdThree) {
+        this.candidatePrefJobRoleIdThree = candidatePrefJobRoleIdThree;
+    }
+
+    public String getCandidateHomeLocalityName() {
+        return candidateHomeLocalityName;
+    }
+
+    public void setCandidateHomeLocalityName(String candidateHomeLocalityName) {
+        this.candidateHomeLocalityName = candidateHomeLocalityName;
+    }
+
+    public int getGender() {
+        return gender;
+    }
+
+    public void setGender(int gender) {
+        this.gender = gender;
     }
 }

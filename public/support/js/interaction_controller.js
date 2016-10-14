@@ -3,9 +3,8 @@
  */
 
 function processDataForSupportInteraction(returnedData) {
-
     var t = $('table#interactionHistory').DataTable({
-        "order": [[ 0, "desc" ]]
+        "order": [[ 1, "desc" ]]
     });
     //DoTheDue Here
     returnedData.forEach(function (interaction) {
@@ -17,6 +16,7 @@ function processDataForSupportInteraction(returnedData) {
                 interaction.userNote,
                 interaction.userResults,
                 interaction.userCreatedBy,
+                interaction.channel
             ] ).draw( false );
         } else {
             console.log("Null obj encountered");

@@ -41,6 +41,9 @@ public class Locality extends Model {
     @Column(name = "Longitude", columnDefinition = "double(10,6) null")
     private Double lng;
 
+    @Column(name = "PlaceId", columnDefinition = "text null")
+    private String placeId;
+
     @JsonBackReference
     @OneToMany(mappedBy = "locality", cascade = CascadeType.REMOVE)
     private List<LocalityPreference> localityPreferenceList;
@@ -121,5 +124,13 @@ public class Locality extends Model {
 
     public void setCurrentJobDetailList(List<CandidateCurrentJobDetail> currentJobDetailList) {
         this.currentJobDetailList = currentJobDetailList;
+    }
+
+    public String getPlaceId() {
+        return placeId;
+    }
+
+    public void setPlaceId(String placeId) {
+        this.placeId = placeId;
     }
 }

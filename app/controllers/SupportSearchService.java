@@ -10,6 +10,7 @@ import models.entity.SupportUserSearchHistory;
 import models.entity.SupportUserSearchPermissions;
 import models.util.SmsUtil;
 import play.Logger;
+import play.api.Play;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -20,6 +21,8 @@ import java.util.List;
  * Created by zero on 6/7/16.
  */
 public class SupportSearchService {
+
+    private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());
 
     private static final SimpleDateFormat sfd_yyyymmdd = new SimpleDateFormat(ServerConstants.SDF_FORMAT_YYYYMMDD);
 
@@ -83,7 +86,7 @@ public class SupportSearchService {
         if (todaySearchedCount >= dailyLimit) {
             Logger.warn(" Support user " + developer.getDeveloperName() + " has exhausted daily search limit of " + dailyLimit);
             searchCandidateResponse.setStatus(SearchCandidateResponse.STATUS_LIMIT_EXHAUSTED);
-            sendAlertSmsToAdmin(developer.getDeveloperName(), dailyLimit);
+            if(!isDevMode) sendAlertSmsToAdmin(developer.getDeveloperName(), dailyLimit);
             return searchCandidateResponse;
         } else {
             additionalPermissibleCount = dailyLimit - todaySearchedCount;
@@ -141,8 +144,7 @@ public class SupportSearchService {
         Integer rowLimit = additionalPermissibleCount < queryLimit ? additionalPermissibleCount : queryLimit;
 
         if (rowLimit > 0) {
-            candidateResponseList = query.setMaxRows(rowLimit).findList();
-
+            candidateResponseList = query.orderBy("candidateCreateTimestamp, candidateCreateTimestamp desc").setMaxRows(rowLimit).findList();
             if (candidateResponseList.size() < 1) {
                 Logger.info("Search Response empty");
             }

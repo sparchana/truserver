@@ -5,6 +5,7 @@ import play.Logger;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
@@ -60,5 +61,13 @@ public class Util {
             age--;
         }
         return age;
+    }
+    public static Double RoundTo6Decimals(Double val) {
+        DecimalFormat df2 = new DecimalFormat("#####.######");
+        return Double.valueOf(df2.format(val));
+    }
+    public static Double RoundTo1Decimals(Double val) {
+        DecimalFormat df2 = new DecimalFormat("#.#");
+        return Double.valueOf(df2.format(val));
     }
 }

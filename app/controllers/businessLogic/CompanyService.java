@@ -71,23 +71,41 @@ public class CompanyService {
     }
 
     public static Company getAndAddCompanyValues(AddCompanyRequest addCompanyRequest, Company newCompany){
-        newCompany.setCompanyName(addCompanyRequest.getCompanyName());
-        newCompany.setCompanyEmployeeCount(addCompanyRequest.getCompanyEmployeeCount());
-        newCompany.setCompanyWebsite(addCompanyRequest.getCompanyWebsite());
-        newCompany.setCompanyDescription(addCompanyRequest.getCompanyDescription());
-        newCompany.setCompanyAddress(addCompanyRequest.getCompanyAddress());
-        newCompany.setCompanyPinCode(addCompanyRequest.getCompanyPinCode());
-        newCompany.setCompanyLogo(addCompanyRequest.getCompanyLogo());
+        if(addCompanyRequest.getCompanyName() != null){
+            newCompany.setCompanyName(addCompanyRequest.getCompanyName());
+        }
+        if(addCompanyRequest.getCompanyEmployeeCount() != null){
+            newCompany.setCompanyEmployeeCount(addCompanyRequest.getCompanyEmployeeCount());
+        }
+        if(addCompanyRequest.getCompanyWebsite() != null){
+            newCompany.setCompanyWebsite(addCompanyRequest.getCompanyWebsite());
+        }
+        if(addCompanyRequest.getCompanyDescription() != null){
+            newCompany.setCompanyDescription(addCompanyRequest.getCompanyDescription());
+        }
+        if(addCompanyRequest.getCompanyAddress() != null){
+            newCompany.setCompanyAddress(addCompanyRequest.getCompanyAddress());
+        }
+        if(addCompanyRequest.getCompanyPinCode() != null){
+            newCompany.setCompanyPinCode(addCompanyRequest.getCompanyPinCode());
+        }
+        if(addCompanyRequest.getCompanyLogo() != null){
+            newCompany.setCompanyLogo(addCompanyRequest.getCompanyLogo());
+        }
+        if(addCompanyRequest.getCompanyStatus() != null){
+            CompanyStatus companyStatus = CompanyStatus.find.where().eq("companyStatusId", addCompanyRequest.getCompanyStatus()).findUnique();
+            newCompany.setCompStatus(companyStatus);
+        }
 
-        CompanyStatus companyStatus = CompanyStatus.find.where().eq("companyStatusId", addCompanyRequest.getCompanyStatus()).findUnique();
-        newCompany.setCompStatus(companyStatus);
+        if(addCompanyRequest.getCompanyType() != null){
+            CompanyType companyType = CompanyType.find.where().eq("companyTypeId", addCompanyRequest.getCompanyType()).findUnique();
+            newCompany.setCompType(companyType);
+        }
 
-        CompanyType companyType = CompanyType.find.where().eq("companyTypeId", addCompanyRequest.getCompanyType()).findUnique();
-        newCompany.setCompType(companyType);
-
-        Locality locality = Locality.find.where().eq("localityId", addCompanyRequest.getCompanyLocality()).findUnique();
-        newCompany.setCompanyLocality(locality);
-
+        if(addCompanyRequest.getCompanyLocality() != null){
+            Locality locality = Locality.find.where().eq("localityId", addCompanyRequest.getCompanyLocality()).findUnique();
+            newCompany.setCompanyLocality(locality);
+        }
         return newCompany;
     }
 }

@@ -1,5 +1,6 @@
 package models.entity;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import com.avaje.ebean.Model;
 
@@ -43,7 +44,10 @@ public class Interaction extends Model {
     private Timestamp creationTimestamp;
 
     @Column(name = "CreatedBy", columnDefinition = "varchar(255) not null default 'System'", nullable = false)
-    private String createdBy = ServerConstants.INTERACTION_CREATED_SYSTEM;
+    private String createdBy = InteractionConstants.INTERACTION_CREATED_SYSTEM;
+
+    @Column(name = "InteractionChannel", columnDefinition = "int signed not null", nullable = false)
+    private int interactionChannel = 0; // website, android, partner
 
     public static Finder<String, Interaction> find = new Finder(Interaction.class);
 
@@ -52,30 +56,48 @@ public class Interaction extends Model {
     }
 
     // single object constructor
-    public Interaction(String objectAUUId, int objectAType, int interactionType, String note, String result, String createdBy){
+    public Interaction(String objectAUUId, int objectAType, int interactionType, String note, String result, String createdBy, int channel){
         // no need to set creationTimestamp, It is set By - default
         this.objectAUUId = objectAUUId;
         this.objectAType = objectAType;
         this.interactionType = interactionType;
-        this.note = (createdBy == null) ? ServerConstants.INTERACTION_NOTE_CREATED_BY_ERROR : note;
+        this.note = (createdBy == null) ? InteractionConstants.INTERACTION_NOTE_CREATED_BY_ERROR : note;
         this.result = result;
-        this.createdBy = (createdBy == null) ? ServerConstants.INTERACTION_CREATED_ERROR : createdBy;
+        this.createdBy = (createdBy == null) ? InteractionConstants.INTERACTION_CREATED_ERROR : createdBy;
         this.creationTimestamp = new Timestamp(System.currentTimeMillis());
+        this.interactionChannel = channel;
     }
 
     // Two object constructor
-    public Interaction(String objectAUUId, int objectAType, String objectBUUId, int objectBType, int interactionType, String result, String createdBy){
+    public Interaction(String objectAUUId, int objectAType, String objectBUUId, int objectBType, int interactionType, String result, String createdBy, int channel){
         // no need to set creationTimestamp, It is set By - default
         this.objectAUUId = objectAUUId;
         this.objectAType = objectAType;
         this.objectBUUId = objectBUUId;
         this.objectBType = objectBType;
-        this.note = ServerConstants.INTERACTION_NOTE_BLANK;
+        this.note = InteractionConstants.INTERACTION_NOTE_BLANK;
         this.interactionType = interactionType;
         this.result = result;
-        this.createdBy = (createdBy == null) ? ServerConstants.INTERACTION_CREATED_ERROR : createdBy;
+        this.createdBy = (createdBy == null) ? InteractionConstants.INTERACTION_CREATED_ERROR : createdBy;
         this.creationTimestamp = new Timestamp(System.currentTimeMillis());
+        this.interactionChannel = channel;
     }
+
+    // Two object constructor with custom params
+    public Interaction(String objectAUUId, int objectAType, String objectBUUId, int objectBType, int interactionType, String interactionNote, String result, String createdBy, int channel){
+        // no need to set creationTimestamp, It is set By - default
+        this.objectAUUId = objectAUUId;
+        this.objectAType = objectAType;
+        this.objectBUUId = objectBUUId;
+        this.objectBType = objectBType;
+        this.note = interactionNote;
+        this.interactionType = interactionType;
+        this.result = result;
+        this.createdBy = (createdBy == null) ? InteractionConstants.INTERACTION_CREATED_ERROR : createdBy;
+        this.creationTimestamp = new Timestamp(System.currentTimeMillis());
+        this.interactionChannel = channel;
+    }
+
 
     public static void addInteraction(Interaction interaction){
         interaction.save();
@@ -159,6 +181,14 @@ public class Interaction extends Model {
 
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public int getInteractionChannel() {
+        return interactionChannel;
+    }
+
+    public void setInteractionChannel(int interactionChannel) {
+        this.interactionChannel = interactionChannel;
     }
 }
 

@@ -14,10 +14,14 @@ public class MetricsConstants
     public static String METRIC_HEADER_TOTAL_LEADS = "Total Leads";
     public static String METRIC_HEADER_WEBSITE_LEADS = "Website Leads";
     public static String METRIC_HEADER_KNOWLARITY_LEADS = "Knowlarity Leads";
+    public static String METRIC_HEADER_ANDROID_LEADS = "Android Leads";
+    public static String METRIC_HEADER_PARTNER_LEADS = "Partner Leads";
 
     public static String METRIC_HEADER_TOTAL_CANDIDATES = "Total Candidates";
     public static String METRIC_HEADER_WEBSITE_CANDIDATES =  "Website-signups";
     public static String METRIC_HEADER_SUPPORT_CANDIDATES = "Support-Signups";
+    public static String METRIC_HEADER_ANDROID_CANDIDATES = "Android-Signups";
+    public static String METRIC_HEADER_PARTNER_CANDIDATES = "Partner-Signups";
 
     public static String METRIC_HEADER_OTP_VERIFICATIONS = "Mobile Verifications";
     public static String METRIC_HEADER_LOGS_INS = "Log-ins";

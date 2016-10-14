@@ -1,0 +1,128 @@
+.mLabel {
+    position: relative;
+    display: block;
+    margin: 4px auto;
+    padding: 12px 3px 12px 3px;
+    overflow: hidden;
+    border-width: 0;
+    font-size: 14px;
+    border-radius: 2px;
+    cursor: text;
+    background-color: transparent;
+}
+
+.mCircleLabel {
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    border: 1px solid #1ca440;
+    margin: 4px auto;
+    padding: 8px 3px 3px 3px;
+    border-radius: 20px;
+    cursor: text;
+    color: #1ca440;
+    background-color: transparent;
+    transition: background-color .3s;
+}
+
+.mCircleLabel:hover {
+    background-color: #1ca440;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.mBtn {
+    width: 100%;
+    position: relative;
+    margin: 4px auto;
+    padding: 12px 3px 12px 3px;
+    overflow: hidden;
+    border-width: 0;
+    outline: none;
+    border-radius: 2px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.1);
+    background-color: #1ca440;
+    color: #ecf0f1;
+
+    transition: background-color .3s;
+}
+
+.mBtn:hover{
+    background-color: #13722d;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.12), 0 4px 4px rgba(0,0,0,0.12);
+    transition: opacity 0.5s ease-in-out;
+}
+
+.mBtn > * {
+    position: relative;
+}
+
+.mBtn span {
+    display: block;
+    padding: 12px 24px;
+}
+
+.mBtn:before {
+    content: "";
+
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    display: block;
+    width: 0;
+    padding-top: 0;
+
+    border-radius: 100%;
+
+    background-color: rgba(236, 240, 241, .3);
+
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    -o-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.mBtn:active:before {
+    width: 120%;
+    padding-top: 120%;
+
+    transition: width .2s ease-out, padding-top .2s ease-out;
+}
+
+.mBtn.white {
+    background-color: #ffffff;
+    color: #286ab6;
+}
+.mBtn.orange {
+    background-color: #e67e22;
+}
+
+.mBtn.orange:hover, .mBtn.orange:focus {
+    background-color: #d35400;
+}
+
+.mBtn.red {
+    background-color: #e74c3c;
+}
+
+.mBtn.red:hover, .mBtn.red:focus {
+    background-color: #c0392b;
+}
+
+.mBtn.blue {
+    background-color: #415fc1;
+}
+
+.mBtn.blue:hover, .mBtn.blue:focus {
+    background-color: #344e9b;
+}
+
+@media screen and (max-width: 768px) {
+    .mBtn {
+        width: 90%;
+    }
+}

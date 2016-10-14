@@ -13,867 +13,398 @@
         receptionist jobs, beautician jobs, experienced jobs, jobs in Bangalore, cashier jobs, entry level jobs,
         plumber jobs, electrician jobs, job search, accountant jobs, job vacancy, bangalore vacancy">
 
-        <meta name="description" content="Search and apply for jobs online. Register for FREE and find best
-        fresher and experienced jobs.Give a missed call at 8880007799 for best jobs." />
+        <meta name="theme-color" content="#286ab6">
+        <meta name="description" content=".pageNotFoundImg{margin-top:4%;}" />
 
-        <meta http-equiv="Cache-control" content="public">
             <!-- Bootstrap Core CSS -->
-        <link rel="stylesheet" type="text/css" href="/assets/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/assets/common/css/token-input-facebook.css" type="text/css" />
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css">
 
-        <script type="text/javascript" src="/assets/js/jquery.min_1_12_0.js"></script>
-        <script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
-        <link rel="icon" type="image/png" href="/assets/img/icon.png">
-        <link rel="stylesheet" type="text/css" href="/assets/new/css/myStyle.css">
+        @*<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>*@
+        <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
 
+        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+        <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+        <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
 
-        <link rel="stylesheet" href="/assets/css/token-input-facebook.css" type="text/css" />
-        <script type="text/javascript" src="/assets/js/home_page.js"></script>
-        <script type="text/javascript" src="/assets/js/jquery.tokeninput.js"></script>
+        <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
+        <script type="text/javascript" src="/assets/common/js/validation.js"></script>
 
         <script>
+            localStorage.clear();
             $('html, body').css({
                 'overflow': 'hidden',
                 'height': '100%'
             });
-          (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-                      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-                  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-          })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-          ga('create', 'UA-77156203-1', 'auto');
-          ga('send', 'pageview');
         </script>
-
+        <script>
+            $(document).ready(function(){
+                $('#job_cards_inc').load('/jobPostCardView');
+            });
+        </script>
     </head>
     <body>
-
+    <div>
         <div id="preloader">
             <div id="loaderLogo">
-                <img id="leaderLogo" src="/assets/new/img/logo-color.gif" alt="TruJobs Logo" height="40px">
+                <img id="leaderLogo" src="/assets/common/img/logo-color.gif" alt="TruJobs Logo" height="40px">
             </div>
             <div id="status">&nbsp;</div>
         </div>
 
-        <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigationbar">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
+        <!-- Nav start -->
+        <div id="nav_bar_inc"></div>
+        <script>
+            $(document).ready(function(){
+              $('#nav_bar_inc').load('/navBar');
+            });
+        </script>
 
-                    </button>
-                    <div itemscope itemtype ="http://schema.org/logo">
-                    <a class="navbar-brand" href="#"><img id="navLogo" itemprop="Brand" src="/assets/new/img/logo-color.gif" alt="TruJobs Logo" height="30px" style="margin-top: -8px;"></a>
-                    </div>
-                    </div>
-
-                <div class="collapse navbar-collapse" id="navigationbar">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li> <a href="#sectionOne"><font id="navItem1" color="#0065a4" style="font-size: 12px; letter-spacing: 1px;">HOME</font></a></li>
-                        <li> <a href="#applyToJobs"><font id="navItem2" color="#0065a4" style="font-size: 12px; letter-spacing: 1px;">APPLY TO JOBS</font></a></li>
-                        <li> <a href="#forCandidate"><font id="navItem3" color="#0065a4"  style="font-size: 12px; letter-spacing: 1px;">FOR CANDIDATES</font></a></li>
-                        <li> <a href="#forRecruiter"><font id="navItem4" color="#0065a4"  style="font-size: 12px; letter-spacing: 1px;">FOR EMPLOYERS</font></a></li>
-                        <li> <a style="cursor: pointer;" data-toggle="modal" data-target="#myLoginModal" onClick="openLogin()">
-                            <font id="navItem5" color="#0065a4"  style="font-size: 12px; letter-spacing: 1px;">
-                                <img src="/assets/new/img/sign_up.png" height="16px" style="margin-right: 6px"/>SIGN IN
-                            </font></a>
-                        </li>
-                    </ul>
-                </div>
-                    <!-- /.navbar-collapse -->
-            </div>
-                <!-- /.container -->
-        </nav>
-
-        <div class="container">
-            <div id="fixed-menu" style="padding-bottom: 12px; padding-top: 8px; display: none" >
+        <div id="fixed-menu" style="padding-bottom: 12px; padding-top: 8px; display: none" >
+            <div class="custom_container">
                 <div id="leadFormBox" class="input-group">
                     <input type="text" class="form-control" placeholder="Enter mobile number" id="addLeadMobile" pattern="[7-9]{1}[0-9]{9}" maxlength="10">
                     <button class="btn btn-default" type="button" onclick="addLead()" id="addLeadMobileButton">Find Job Now</button>
                 </div>
             </div>
         </div>
-
-        <div id="myLoginModal" class="modal fade" role="dialog">
-            <div class="modal-dialog">
-                    <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-body" id="model_size">
-                        <form id="form_login_candidate" class="form-horizontal" role="form" name="form_login_candidate">
-                            <div class="line_up" id="signInPopup">Sign In</div>
-                            <div class="container-fluid" id="main_signin_box">
-                                <div class="row">
-                                    <div class="col-sm-12" id="logo">
-                                        <input type="text" class="form-control" id="candidateLoginMobile" placeholder="Mobile Number" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" required>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-12" id="pass_input" style="margin-bottom:12px;">
-                                        <input type="password" class="form-control" id="candidateLoginPassword" placeholder="Password" required>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-xs-6">
-                                        <input type="checkbox" class="checkbox-inline" style="margin-right:5px;">Remember me
-                                    </div>
-                                    <div class="col-xs-6 pull-right" style="text-align:right;">
-                                        <a style="cursor: pointer;" onclick="resetPassword()"><font color="#06436a">Forgot Password?</font></a>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-12" id="logo">
-                                        <button type="submit" class="form-control" id="registerBtn" style="margin-top:5px;">Sign In</button>
-                                    </div>
-                                </div>
-                                <hr>
-                                <center>
-                                    Don't have an account?<a style="cursor: pointer;" data-toggle="modal" data-target="#mySignUpModal" onClick="openSignUp()">
-                                        <font color="#06436a">&nbsp;Sign Up</font></a>
-                                </center>
-                            </div>
-                        </form>
-
-                        <form id="form_forgot_password" style="display: none" class="form-horizontal" role="form" name="form_forgot_password" >
-                            <div align="center">
-                                <div class="line_up">Reset Password</div>
-                                    <!-- Text input-->
-                                <br>
-                                <h5>Enter your mobile No</h5>
-                                <div class="form-group">
-                                    <input style="width: 80%;" id="resetPasswordMobile" type="text" maxlength="10" placeholder="Mobile No. (eg: 8880007799)" class="form-control input-md" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" required>
-                                </div>
-
-                                <button type="submit" class="btn btn-primary" id="resetCheckUserBtn" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none">Submit</button>
-
-                            </div>
-                        </form>
-
-                        <form id="form_password_reset_otp" style="display: none" class="form-horizontal" role="form">
-                            <div align="center">
-                                <div class="line_up">Reset Password</div>
-                                    <!-- Text input-->
-                                <br>
-                                <h5 id="helpText"></h5>
-
-                                <div class="form-group">
-                                    <input style="width: 80%;" id="candidateForgotOtp" type="number" minlength="1000" maxlength="9999" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none" >Verify OTP</button>
-
-                            </div>
-                        </form>
-
-                        <form id="form_password_reset_new" style="display: none" class="form-horizontal" role="form">
-                            <div align="center">
-                                <div class="line_up">Reset Password</div>
-                                    <!-- Text input-->
-                                <br>
-                                <h5>Enter New Password</h5>
-
-                                <div class="form-group">
-                                    <input style="width: 80%;" id="candidateNewPassword" type="password" placeholder="Enter new Password" class="form-control input-md" required>
-                                </div>
-                                <button type="submit" class="btn btn-primary" id="resetNewPasswordBtn" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none" >Reset Password</button>
-                            </div>
-                        </form>
-
-                        <center>
-                            <font color="red">
-                                <div class="errorMsgText" id="incorrectMsg" style="margin-top: 2%;display: none;">
-                                    <h5>Incorrect Login Credentials</h5>
-                                </div>
-                                <div class="errorMsgText" id="incorrectMsgLogin" style="margin-top: 2%;display: none;" >
-                                    <h5>Incorrect Login Credentials</h5>
-                                </div>
-                                <div class="errorMsgText" id="errorMsgReset" style="margin-top: 2%;display: none;">
-                                    <h5>User Does Not Exist!</h5>
-                                </div>
-                                <div class="errorMsgText" id="noUserLogin" style="margin-top: 2%;display: none;">
-                                    <h5>User Does Not Exist!</h5>
-                                </div>
-
-                                <div class="errorMsgText" id="wrongOtp" style="margin-top: 2%;display: none;">
-                                    <h5>Incorrect OTP!</h5>
-                                </div>
-
-                                <div class="errorMsgText" id="errorMsg" style="margin-top: 2%;display: none;">
-                                    <h5>Looks like something went wrong. Please try again later!</h5>
-                                </div>
-                            </font>
-                        </center>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div id="mySignUpModal" class="modal fade" role="dialog">
-            <div class="modal-dialog">
-                    <!-- Modal content-->
-                <div class="modal-content">
-                    <div class="modal-body" id="model_size">
-                        <form id="form_signup_candidate_modal"  style="margin-top: 0%; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
-                            <h4 style="font-weight: bold"><center><font color="#0B4063">Sign Up to Apply Jobs</font></center></h4>
-                            <div class="row" id="firstNameLastName">
-                                <div class="col-sm-6" style="padding: 0 4px 0 16px">
-                                    <input id="candidateFirstNameModal" placeholder="First name" type="text" maxLength="49" class="form-control input-md">
-                                </div>
-                                <div class="col-sm-6" style="padding: 0 16px 0 4px">
-                                    <input id="candidateSecondNameModal" placeholder="Last name" type="text" maxLength="49" class="form-control input-md candidateSecondNameMain" >
-                                </div>
-                            </div>
-
-                            <input id="candidateMobileModal" style="margin-top: 8px" placeholder="Mobile No." name="candidateMobile" type="text" maxlength="10" class="form-control input-md" >
-
-                            <div style="margin-top: 8px">
-                                <input type="text" id="candidateJobPrefModal" placeholder="What jobs you are Interested in?">
-                                <script type="text/javascript">
-                                    $(document).ready(function() {
-                                        $("#candidateJobPrefModal").tokenInput(getJob(), {
-                                            theme: "facebook",
-                                            placeholder: "Jobs Interested? (Max: 3)",
-                                            hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-                                            minChars: 0,
-                                            tokenLimit: 3,
-                                            zindex: 9999999,
-                                            preventDuplicates: true
-                                        });
-                                    });
-                                </script>
-                            </div>
-
-                            <div style="margin-top: 8px">
-                                <input type="text" id="candidateLocalityModal" placeholder="What jobs you are Interested in?" style="margin-top: 4px">
-                                <script type="text/javascript">
-                                    $(document).ready(function() {
-                                        $("#candidateLocalityModal").tokenInput(getLocality(), {
-                                            theme: "facebook",
-                                            placeholder: "Locality Interested?",
-                                            minChars: 3,
-                                            zindex: 9999999,
-                                            hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
-                                            preventDuplicates: true
-                                        });
-                                    });
-                                </script>
-                            </div>
-
-                            <button type="submit" id="registerBtnSubmitModal" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
-                                <!-- Text input-->
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div>
+        <div class="container-fluid" style="padding:0%">
             <div id="sectionOne">
-                <font color="white">
-                    <div class="row">
-                        <div class="col-sm-9" id="headingMain">
-                            <h1 style="letter-spacing: 2px;"><b>Find Entry Level and Experienced Jobs </b></h1>
-                            <h2 style="letter-spacing: 2px; margin-top: 10px">Call 8880007799 to find jobs in top companies!</h2>
-                        </div>
-                    </div>
-                </font>
-            </div>
-                <!-- End of sectionOne -->
-        </div>
-        <div class="leadBox">
-            <form id="form_signup_candidate"  style="margin-top: 0%; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
-                <h4 style="font-weight: bold">Job Seeker Registration</h4>
-                <div class="row" id="firstNameLastName">
-                    <div class="col-sm-6" style="padding: 0 4px 0 16px">
-                        <input id="candidateFirstName" placeholder="First name" type="text" maxLength="49" class="form-control input-md">
-                    </div>
-                    <div class="col-sm-6" style="padding: 0 16px 0 4px">
-                        <input id="candidateSecondName" placeholder="Last name" type="text" maxLength="49" class="form-control input-md candidateSecondNameMain" >
-                    </div>
-                </div>
-
-                <input id="candidateMobile" style="margin-top: 8px" placeholder="What is your mobile no.?" name="candidateMobile" type="text" maxlength="10" class="form-control input-md" >
-
-                <div style="margin-top: 8px">
-                    <input type="text" id="candidateJobPref" placeholder="What jobs you are Interested in?">
-                    <script type="text/javascript">
-                                            $(document).ready(function() {
-                                                $("#candidateJobPref").tokenInput(getJob(), {
-                                                    theme: "facebook",
-                                                    placeholder: "What jobs you are Interested? (Max: 3)",
-                                                    hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-                                                    minChars: 0,
-                                                    tokenLimit: 3,
-                                                    preventDuplicates: true
-                                                });
-                                            });
-                                            </script>
-                </div>
-
-                <div style="margin-top: 8px">
-                    <input type="text" id="candidateLocality" style="margin-top: 4px">
-                    <script type="text/javascript">
-                                            $(document).ready(function() {
-                                                $("#candidateLocality").tokenInput(getLocality(), {
-                                                    theme: "facebook",
-                                                    placeholder: "Where do you want to Work?",
-                                                    minChars: 3,
-                                                    hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
-                                                    preventDuplicates: true
-                                                });
-                                            });
-                                            </script>
-                </div>
-
-                <button type="submit" id="registerBtnSubmit" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
-                    <!-- Text input-->
-            </form>
-            <div class="modal fade bs-example-modal-sm" id="myRegistrationModal" tabindex="-1" role="dialog" aria-labelledby="myRegistrationModal">
-                <div class="modal-dialog modal-sm">
-                    <div class="modal-content" style="text-align: center">
-                        <img src="/assets/img/logo.gif" height="40px" alt="TruJobs Logo">
-                        <form id="form_otp" role="form" name="form_otp" style="display: none">
-                            <div class="c_form" style="margin-left: 10%; margin-right: 10%;" align="center">
-                                <h5 id="helpTextSignUp">Enter OTP</h5>
-
-                                <div class="form-group">
-                                    <input id="candidateOtp" style="width: 80%;" min="1000" max="9999" name="candidateOtp" type="number" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
-                                </div>
-
-                                <button type="submit" id="verifyOtpBtn" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none">Verify OTP</button>
-
-                            </div>
-                        </form>
-
-                        <form id="form_auth" role="form" name="form_auth" style="display: none">
-                            <div class="c_form" style="margin-left: 10%; margin-right: 10%;" align="center">
-                                <h4>Enter a password</h4>
-                                <div class="form-group">
-                                    <input id="candidatePassword" minlength="6" name="candidatePassword" type="password" placeholder="Enter password (Min. 6 characters)" class="form-control input-md" required>
-                                </div>
-
-                                    <!-- hidden-->
-                                <div class="form-group" style="display: none;">
-                                    <input id="candidateAuthMobile" name="candidateAuthMobile" type="text"class="form-control input-md" >
-                                </div>
-                                <button type="submit" class="btn btn-primary" id="btnSubmit" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none">Create Account</button>
-                            </div>
-                        </form>
-                        <div id="incorrectOtpMsg" style="margin-top: 2%;display: none; color: #2980b9">
-                            <h5>Incorrect OTP Code. Please Enter Again</h5>
-                        </div>
-
-                        <div id="errorMsg" style="margin-top: 2%;display: none; color: #2980b9">
-                            <h4>Looks like something went wrong. Please try again later!</h4>
-                        </div>
-                    </div>
-                </div>
-                    <!-- Lead form block ends -->
-            </div>
-
-            <div style="text-align: center">
-                <div class="errorMsgText" id="alreadyMsgCandidate" style="margin-top: 2%;display: none;">
-                    <h5>User Already Exists! Please <a data-toggle="modal" data-target="#myLoginModal" style="cursor: hand; color: #888888">Login</a> to Continue</h5>
-                    <br>
-                </div>
-            </div>
-        </div>
-
-            <!-- confirm job modal -->
-        <div class="modal fade" id="jobApplyConfirm" tabindex="-1" role="dialog" aria-labelledby="jobApplyConfirm">
-            <div class="modal-dialog" role="document" id="customModal">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="myModalLabel">Job Application Confirmation</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div id="confirmationMsg">
-                            <center>
-                                <img src="/assets/img/jobApply.png" width="48px">
-                            </center>
-                            <center>
-                                <h5>You are applying for <b><div style="display: inline-block" id="jobNameConfirmation"></div></b> job at <b><div style="display: inline-block" id="companyNameConfirmation"></div></b>.</h5>
-                                <h5>Please select the location where you can work:</h5>
-                                <select id="jobLocality" class="selectDropdown"></select>
-                                <button type="submit" onclick="confirmApply()" id="applyButton" class="jobApplyBtnModal" style="display : none; margin: 6px">Apply</button>
-                            </center>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-            <!-- custom message modal -->
-        <div class="modal fade" id="messagePromptModal" tabindex="-1" role="dialog" aria-labelledby="messagePromptModalLabel">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="myModalLabel">TruJobs</h4>
-                    </div>
-                    <div class="modal-body">
-                        <center>
-                            <img id="customMsgIcon" width="48px">
-                            <div id="customMsg" style="padding: 16px"></div>
-                            <div id="customSubMsg" style="padding: 16px"></div>
-                        </center>
-                    </div>
-                </div>
-            </div>
-        </div>
-            <!-- start hot job -->
-        <div id="applyToJobs">
-            <h3>
-                Apply to Jobs
-            </h3>
-        </div>
-        <div id="hotJobs"></div>
-        <br>
-
-        <div class="company_class">
-            Companies Hiring From Us
-        </div>
-
-        <center>
-            <div class="materialDash"></div>
-
-            <div class="container-fluid" id="company_box">
-                <div class="row">
-                    <div class="col-sm-12">
+                <div class="container hidden-xs">
+                    <font color="white">
                         <div class="row">
-                            <div class="col-lg-1 visible-lg">
-                                <a class="left carousel-control" href="#" style="padding-top: 36px; padding-left: 50px"  role="button" data-slide="prev"></a>
-                            </div>
-                            <div class="col-sm-10">
-                                <div class="container-fluid" id="slider_logo">
-                                    <div id="myCarousel" class="carousel slide" data-ride="carousel">
-                                            <!-- Wrapper for slides -->
-                                        <div class="carousel-inner" role="listbox">
-                                            <div class="item active">
-                                                <div class="row">
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/swiggy-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/urban_clap-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/pink_blue-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/driveu-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/dunkin_donuts-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/online_system-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="item">
-                                                <div class="row">
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/child_help_foundation-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/vito-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/kalmane_koffees-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/eforce-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/trujobs-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/lifecell-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="item">
-                                                <div class="row">
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/chefkart-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/three_sided_square-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/bavanya.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/pizza_hut-min.png" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/Capture.PNG" alt="Companies Hiring">
-                                                    </div>
-                                                    <div class="col-sm-2">
-                                                        <img class="img-responsive" src="https://s3.amazonaws.com/trujobs.in/companyLogos/21north.png" alt="Companies Hiring">
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
+                            <div class="col-sm-9" style="margin: 0; padding: 0">
+                                <img src="/assets/common/img/image4.png" style="display: inline-block; margin-left: -136px" width="150px">
+                                <div style="display: inline-block; width: auto;">
+                                    <h1 style="letter-spacing: 2px; text-align: left; margin: 10px;"><b><font size="5">Find Entry Level and Experienced Jobs </font></b></h1>
+                                    <h2 style="letter-spacing: 2px; margin: 10px; text-align: left"><font size="5">Call 8880007799 to find jobs in top companies!</font></h2>
+                                    <h4 style="letter-spacing: 2px; margin: 10px; text-align: left; display: inline-block; float: left">Download app from</h4>
+                                    <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" target="_blank" style="padding-top: 2px; float: left">
+                                        <img src="/assets/common/img/download_btn.png" alt="PlayStore Logo" height="40px"></a>
                                 </div>
                             </div>
-                            <div class="col-lg-1 visible-lg">
-                                <a class="right carousel-control" style="padding-top: 36px; padding-right: 50px" href="#" role="button" data-slide="next"></a>
-                            </div>
+                        </div>
+                    </font>
+                </div>
+            </div>
+        </div>
+            <!-- End of sectionOne -->
+        <div class="container">
+            <div class="leadBox">
+                <form id="form_signup_candidate"  style="margin-top: 0%; margin-right: 2%; margin-left: 2%" class="form-horizontal" role="form" name="form_signup_candidate" >
+                    <h4 style="font-weight: bold">Job Seeker Registration</h4>
+                    <div class="row" id="firstNameLastName">
+                        <div class="col-sm-6" style="padding: 0 4px 0 16px">
+                            <input id="candidateFirstName" placeholder="First name" type="text" maxLength="49" class="form-control input-md">
+                        </div>
+                        <div class="col-sm-6" style="padding: 0 16px 0 4px">
+                            <input id="candidateSecondName" placeholder="Last name" type="text" maxLength="49" class="form-control input-md candidateSecondNameMain" >
                         </div>
                     </div>
+
+                    <input id="candidateMobile" style="margin-top: 8px" placeholder="What is your mobile no.?" name="candidateMobile" type="text" maxlength="10" class="form-control input-md" >
+
+                    <div style="margin-top: 8px">
+                        <input type="text" id="candidateJobPref" placeholder="What jobs you are Interested in?">
+                        <script type="text/javascript">
+                    $(document).ready(function() {
+                        $("#candidateJobPref").tokenInput(getJob(), {
+                            theme: "facebook",
+                            placeholder: "What jobs you are Interested? (Max: 3)",
+                            hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
+                            minChars: 0,
+                            tokenLimit: 3,
+                            preventDuplicates: true
+                        });
+                    });
+                    </script>
+                    </div>
+
+                    <div style="margin-top: 8px">
+                        <input type="text" id="candidateHomeLocality" style="margin-top: 4px">
+                        <script type="text/javascript">
+                    $(document).ready(function() {
+                        $("#candidateHomeLocality").tokenInput(getLocality(), {
+                            theme: "facebook",
+                            placeholder: "Where do you live?",
+                            minChars: 1,
+                            tokenLimit: 1,
+                            hintText: "Start Typing Area (eg: Whitefield, Agara, etc..)",
+                            preventDuplicates: true
+                        });
+                    });
+                    </script>
+                    </div>
+
+                    <button type="submit" id="registerBtnSubmit" class="btn btn-primary" style="margin-top: 8px; padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; width: 100%" >Register for FREE</button>
+                        <!-- Text input-->
+                </form>
+
+
+                <div style="text-align: center">
+                    <div class="errorMsgText" id="alreadyMsgCandidate" style="margin-top: 2%;display: none;">
+                        <h5>User Already Exists! Please <a data-toggle="modal" data-target="#myLoginModal" style="cursor: hand; color: #888888">Login</a> to Continue</h5>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <center id="jobLoaderDiv" style="position: relative; text-align: center; width: 100%">
+                <h4>Loading Jobs</h4>
+                <svg viewBox="0 0 32 32" width="32" height="32">
+                    <circle id="loadingSpinner" cx="16" cy="16" r="14" fill="none"></circle>
+                </svg>
+            </center>
+            <div id="job_cards_inc"></div>
+        </div>
+
+        <!--  Start Job Icons Box -->
+        <div class="sectionTwo" style="display: table; width: 100%" id="jobs">
+            <h3 id="jobVacancyHead">Click on Job Roles to View Jobs</h3>
+            <center>
+                <div class="materialDash"></div>
+            </center><br>
+
+            <div class="custom_container">
+                <div id="jobRoleGrid" style="width: auto"></div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="company_class">
+                Companies Hiring From Us                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      </Us>
+            </div>
+        </div>
+        <center id="hiringCompanyContent">
+            <div class="materialDash"></div>
+            <div class="container" id="company_box">
+                <div class="row">
+                         <div class="col-sm-12" id="slider_logo">
+                            <div id="myCarousel" class="carousel slide" data-ride="carousel">
+                            <!-- Wrapper for slides -->
+                                <div class="carousel-inner" id="hiringCompanies" role="listbox"></div>
+                                </div>
+                         </div>
                 </div>
             </div>
         </center>
 
-        <div class="sectionStats">
+        <!-- App section -->
+        <div class="container-fluid" id="appStoreContainer">
             <div class="row">
-                <div class="col-sm-4">
-                    <p><img class="hov" src="/assets/img/job_seeker.svg" width="80px"></p>
-                    <h3><b>15000+</b> Job Seekers</h3>
+                <div class="col-xs-6" style="padding-left: 4%">
+                    <img id="appImg1" src="/assets/common/img/image1.png">
+                    <img id="appImg2" src="/assets/common/img/image2.png">
+                    <img id="appImg3" src="/assets/common/img/image3.png">
                 </div>
-                <div id="stats" class="col-sm-4">
-                    <p><img class="hov" src="/assets/img/recruiter.svg" width="80px"></p>
-                    <h3><b>50+</b> Companies </h3>
-                </div>
-                <div id="stats" class="col-sm-4">
-                    <p><img class="hov" src="/assets/img/rupee.svg" width="80px"></p>
-                    <h3>Find a job and earn upto <b>30k</b>!</h3>
-                </div>
-            </div>
-        </div>
-
-        <div class="sectionTwo" id="jobs">
-            <h3 id="jobVacancyHead">Job Roles</h3>
-            <center>
-                <div class="materialDash"></div>
-            </center><br>
-                <!-- Third row -->
-            <div class="row">
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img id="jobRoleIcon" src="/assets/new/img/icons/d_executive.svg" width="50px" alt="Delivery Executive">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Delivery Executive </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/cashier.svg" width="50px" alt="Cashier Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Cashier </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/store_manager.svg" width="50px" alt="Store Manager Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Store Manager </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/data_entry.svg" width="50px" alt="Data Entry Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Data Entry </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/chef.svg" width="50px" alt="Cook Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Cook </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRoleBottom" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/beautician.svg" width="50px" alt="Beautician Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Beautician </span>
-                    </div>
-                </div>
-                </div>
-            </div>
-
-                <!-- second row -->
-            <div class="row">
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/driver.svg" width="50px" alt="Driver Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Driver </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/field_sales.svg" width="50px" alt="Sales Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Field Sales </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/accountant.svg" width="50px">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Accountant </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/receptionist.svg" width="50px" alt="Receptionist Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Receptionist </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRole" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/office_admin.svg" width="50px" alt="Office Admin Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Office Admin </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRoleBottom" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/telecaller.svg" width="50px" alt="Telecaller Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Telecaller </span>
-                    </div>
-                </div>
-                </div>
-            </div>
-                <!-- Third row -->
-            <div class="row">
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRoleRight" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/waiter.svg" width="50px" alt="Waiter Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Waiter </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRoleRight" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/electrician.svg" width="50px" alt="Electrician Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Electrician </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRoleRight" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/carpenter.svg" width="50px" alt="Carpenter Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> Carpenter </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRoleRight" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/bpo.svg" width="50px" alt="Bpo Voice Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> BPO-Voice </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRoleRight" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/bpo.svg" width="50px" alt="BPO Non Voice Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                        <span itemprop="name"> BPO-Non Voice </span>
-                    </div>
-                    </div>
-                </div>
-
-                <div class="col-md-2 col-sm-4 col-xs-6" style="padding: 0">
-                    <div id="jobRoleNoBorder" style="padding-top: 20%; padding-bottom: 20%">
-                        <img src="/assets/new/img/icons/plumber.svg" width="50px" alt="Plumber Job">
-                        <br><div style="margin-top: 6px" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                            <span itemprop="name"> Plumber </span>
+                <div class="col-xs-6" id="playStore">
+                    <h2>TruJobs Android App</h2>
+                    <h4>Download TruJobs app from Google Play Store and apply to 1000+ jobs.</h4>
+                    <div class="row" id="stepContainer">
+                        <div class="col-sm-4">
+                            <img id="step_image" src="/assets/common/img/step1.svg" style="height: 20px;">
+                            <p>Download TruJobs app </p>
+                        </div>
+                        <div class="col-xs-4">
+                            <img id="step_image" src="/assets/common/img/step2.svg" style="height: 20px;">
+                            <p>Register in less than a minute</p>
+                        </div>
+                        <div class="col-xs-4" >
+                            <img id="step_image" src="/assets/common/img/step3.svg" style="height: 20px;">
+                            <p>Apply to jobs and attend Interviews</p>
                         </div>
                     </div>
+                    <div class="row" id="playStoreDownloadButtonContainer">
+                        <a href="https://play.google.com/store/apps/details?id=in.trujobs.dev.trudroid" target="_blank">
+                            <img src="/assets/common/img/download_btn.png" id="playStoreDownloadButton">
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
-
         <!-- Are you a candidate -->
         <div class="sectionThree" id="forCandidate">
-            <div class="row" style="text-align: center">
-                <div class="col-sm-6">
-                    <h3>Are you a Candidate?</h3>
-                    <br>
-                    <center>
-                        <div class="row">
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-1">
-                                <img src="/assets/new/img/circle_1.svg" width="52px" alt="Free Registration">
-                            </div>
-                            <div class="col-sm-1"></div>
-                            <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Give a missed call to 8880007799</h4></div>
-                        </div>
+            <div class="container">
+                <div class="row" style="text-align: center">
+                    <div class="col-sm-6">
+                        <h3>Are you a Candidate?</h3>
                         <br>
-                        <div class="row">
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-1">
-                                <img src="/assets/new/img/circle_2.svg" width="52px" alt="Create Profile">
+                        <center>
+                            <div class="row">
+                                <div class="col-sm-2"></div>
+                                <div class="col-sm-1">
+                                    <img src="/assets/common/img/circle_1.svg" width="52px" alt="Free Registration">
+                                </div>
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Give a missed call to 8880007799</h4></div>
                             </div>
-                            <div class="col-sm-1"></div>
-                            <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Create your Online Profile</h4></div>
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col-sm-2"></div>
-                            <div class="col-sm-1">
-                                <img src="/assets/new/img/circle_3.svg" width="52px" alt="Job Interview">
+                            <br>
+                            <div class="row">
+                                <div class="col-sm-2"></div>
+                                <div class="col-sm-1">
+                                    <img src="/assets/common/img/circle_2.svg" width="52px" alt="Create Profile">
+                                </div>
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Create your Online Profile</h4></div>
                             </div>
-                            <div class="col-sm-1"></div>
-                            <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Attend interviews and get job offers!</h4></div>
-                        </div>
-                        <br>
-                        <a href="#sectionOne"><button id="registerBtn" class="btn btn-primary" style="padding: 2%"><font color="#ffffff">Register for FREE</font></button></a>
-                    </center>
-                </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-sm-2"></div>
+                                <div class="col-sm-1">
+                                    <img src="/assets/common/img/circle_3.svg" width="52px" alt="Job Interview">
+                                </div>
+                                <div class="col-sm-1"></div>
+                                <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Attend interviews and get job offers!</h4></div>
+                            </div>
+                            <br>
+                            <a href="#sectionOne"><button id="registerBtn" class="btn btn-primary" style="padding: 2%"><font color="#ffffff">Register for FREE</font></button></a>
+                        </center>
+                    </div>
 
-                    <!-- Recruiter -->
-                <div class="col-sm-6 hidden-xs" id="recruiterSection"></div>
+                        <!-- Recruiter -->
+                    <div class="col-sm-6 hidden-xs" id="recruiterSection"></div>
+                </div>
             </div>
+        </div>
+
+        <div class="container-fluid" id="sectionStats">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <p><img class="hov" src="/assets/common/img/job_seeker.svg" width="80px"></p>
+                            <h3><b>15000+</b> Job Seekers</h3>
+                        </div>
+                        <div id="stats" class="col-sm-4">
+                            <p><img class="hov" src="/assets/common/img/recruiter.svg" width="80px"></p>
+                            <h3><b>50+</b> Companies </h3>
+                        </div>
+                        <div id="stats" class="col-sm-4">
+                            <p><img class="hov" src="/assets/common/img/rupee.svg" width="80px"></p>
+                            <h3>Find a job and earn upto <b>30k</b>!</h3>
+                        </div>
+                    </div>
         </div>
 
         <!-- Are you a recruiter -->
         <div class="sectionThree"  id="forRecruiter">
-            <div class="row" style="text-align: center">
-                <!-- Recruiter -->
+            <div class="container">
+                <div class="row" style="text-align: center">
+                        <!-- Recruiter -->
+                    <div class="col-sm-6" id="recruiterSection">
+                        <h3>Are you an Employer?</h3>
+                        <br>
+                        <div class="row">
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-1">
+                                <img src="/assets/common/img/circle_2_3.svg" width="52px">
+                            </div>
+                            <div class="col-sm-1"></div>
+                            <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Call 9980293925 to specify requirement</h4></div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-1">
+                                <img src="/assets/common/img/circle_2_2.svg" width="52px">
+                            </div>
+                            <div class="col-sm-1"></div>
+                            <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>We will schedule interviews for you with pre-screened Candidates</h4></div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-sm-2"></div>
+                            <div class="col-sm-1">
+                                <img src="/assets/common/img/circle_2_1.svg" width="52px">
+                            </div>
+                            <div class="col-sm-1"></div>
+                            <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Conduct interviews and make Offers!</h4></div>
+                        </div>
+                        <br>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <div id="recruiter_form_section">
+                            <div class="reg_input">
+                                <a href="https://docs.google.com/a/trujobs.in/forms/d/e/1FAIpQLSeJZdQhkEhYToVDkSyQEj0Ec5q9MAoqZTlMisLjMtNRFMDoHg/viewform" target="_blank">
+                                    <button type="submit" class="form-control" id="modalBtn">Post Job for FREE</button>
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+            <!-- Are you a partner -->
+        <div class="sectionThree"  id="forPartner" style="background: #FDF8D8">
+            <div class="container">
+                <div class="row" style="text-align: center">
+                    <!-- Recruiter -->
                 <div class="col-sm-6" id="recruiterSection">
-                    <h3>Are you a Recruiter?</h3>
+                    <h3>Want to be a Partner? Join us today</h3>
                     <br>
                     <div class="row">
                         <div class="col-sm-2"></div>
                         <div class="col-sm-1">
-                            <img src="/assets/new/img/circle_2_3.svg" width="52px">
+                            <img src="/assets/common/img/circle_2_1.svg" width="52px">
                         </div>
                         <div class="col-sm-1"></div>
-                        <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Call 9980293925 to specify requirement</h4></div>
+                        <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Register yourself as a partner with TruJobs</h4></div>
                     </div>
                     <br>
                     <div class="row">
                         <div class="col-sm-2"></div>
                         <div class="col-sm-1">
-                            <img src="/assets/new/img/circle_2_2.svg" width="52px">
+                            <img src="/assets/common/img/name.svg" width="52px">
                         </div>
                         <div class="col-sm-1"></div>
-                        <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>We will schedule interviews for you with pre-screened Candidates</h4></div>
+                        <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Add your candidates and create their profile</h4></div>
                     </div>
                     <br>
                     <div class="row">
                         <div class="col-sm-2"></div>
                         <div class="col-sm-1">
-                            <img src="/assets/new/img/circle_2_1.svg" width="52px">
+                            <img src="/assets/common/img/apply.svg" width="52px">
                         </div>
                         <div class="col-sm-1"></div>
-                        <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Conduct interviews and make Offers!</h4></div>
+                        <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Browse jobs and apply on behalf of your candidates</h4></div>
+                    </div>
+                    <br>
+                    <div class="row">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-1">
+                            <img src="/assets/common/img/salary_min.svg" width="52px">
+                        </div>
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-8" id="steps" style="margin-top: 8px"><h4>Earn money when your candidates are hired</h4></div>
                     </div>
                     <br>
                 </div>
 
                 <div class="col-sm-6">
                     <div id="recruiter_form_section">
-                        <form id="form_recruiter" class="form-horizontal" role="form" name="form_candidate" >
-                            <label>Recruiter Registration</label>
-                            <div class="reg_input">
-                                <input type="text" class="form-control" id="leadName" maxLength="49" placeholder="Name(eg: Manjunath)" required>
-                            </div>
-                            <div class="reg_input">
-                                <input type="text" class="form-control" id="leadMobile" placeholder="Mobile(eg: 8880007799)" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10"  required>
-                            </div>
-
-                                <!-- hidden-->
-                            <div class="form-group" style="display: none;">
-                                <input id="leadChannel" name="leadChannel" type="number" value="0" class="form-control input-md" >
-                            </div>
-
-                            <div class="form-group" style="display: none;">
-                                <input id="leadType" name="leadType" type="number" class="form-control input-md" value="3">
-                            </div>
-
-                            <div class="form-group" style="display: none;">
-                                <input id="leadInterest" name="leadInterest" type="text" class="form-control input-md" value="Recruiter Registration">
-                            </div>
-                            <div class="reg_input">
-                                <button type="submit" class="form-control" id="modalBtn">Get in Touch</button>
-                            </div>
-                        </form>
-                        <font color="red">
-                            <div id="thanksMsgRecruiter" style="margin-top: 2%;display: none; color: #2980b9">
-                                <h4>Thanks for applying. We will contact you soon!</h4>
-                            </div>
-                            <div id="errorMsgRecruiter" style="margin-top: 2%;display: none; color: #2980b9">
-                                <h4>Looks like something went wrong. Please try again later!</h4>
-                            </div>
-                            <div id="alreadyMsgRecruiter" style="margin-top: 2%;display: none; color: #2980b9">
-                                <h5>User with the above mobile no. already exists!</h5>
-                            </div>
-                        </font>
+                        <div class="reg_input">
+                            <a href="/partner">
+                                <button type="submit" class="form-control" id="modalBtn">Partner for FREE</button>
+                            </a>
+                        </div>
                     </div>
 
                 </div>
             </div>
-        </div>
-
-        <div class="sectionFiveMain">
-            <div class="sectionFive" id="contact" itemscope itemtype ="http://schema.org/contactPoint">
-                <span itemprop="email">Write us at: <a href="mailto:info@@trujobs.in"><font color="#f0f8ff">info@@trujobs.in</font></a></span>
-                <br>
-                <span itemprop="telephone"> Have queries? Talk to us at 8880007799</span>
-                <br>
-                Follow us on &nbsp;
-                <a href="https://www.facebook.com/trujobs" target="_blank">
-                    <img src="/assets/img/fb.png" width="48px"
-                    onmouseover="this.src='/assets/img/fb_blue.png'"
-                    onmouseout="this.src='/assets/img/fb.png'"
-                    border="0" alt=""/>
-                </a>
-            </div>
-            <div class="footer" itemscope itemtype ="http://schema.org/contactPoint">
-                © 2016 Trujobs.in | Bengaluru, India. All Right Reserved.
-            <a href="/privacy" target="/privacy" title="Privacy Policy"> <font color="#f0f8ff">
-                    Privacy Policy&nbsp;&nbsp;</font> </a>
-
             </div>
         </div>
+        <!-- Start Footer-->
+        <div id="footer_inc"></div>
+        <script>
+            $(document).ready(function(){
+                $('#footer_inc').load('/footer');
+            });
+        </script>
 
-            <!-- Including Bootstrap -->
-        <script type="text/javascript" src="/assets/js/validation.js"></script>
-        <script type="text/javascript" src="/assets/js/add_lead.js"></script>
-        <script type="text/javascript" src="/assets/js/apply_job.js"></script>
-        <script type="text/javascript" src="/assets/js/reset_password.js"></script>
-        <script type="text/javascript" src="/assets/js/login.js"></script>
-        <script type="text/javascript" src="/assets/js/signup_candidate.js"></script>
+        <!-- Including Bootstrap -->
+
         <script>
             $(document).ready(function () {
                 $(document).click(function (event) {
@@ -884,6 +415,7 @@
                 $('[data-toggle="tooltip"]').tooltip();
             });
         </script>
+
             <!-- Facebook Pixel Code -->
         <script>
             !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -895,55 +427,24 @@
             fbq('init', '535139956654403');
             fbq('track', "PageView");
         </script>
-
         <noscript>
             <img height="1" width="1" style="display:none"
             src="https://www.facebook.com/tr?id=535139956654403&ev=PageView&noscript=1"/>
         </noscript>
-        <!-- End Facebook Pixel Code -->
+            <!-- End Facebook Pixel Code -->
 
-        <!-- Google Code for trujobs adwords converstion Conversion Page
-        In your html page, add the snippet and call goog_report_conversion when someone clicks on the
-        chosen link or button. -->
-        <script type="text/javascript">
-          /* <![CDATA[ */
-          goog_snippet_vars = function() {
-              var w = window;
-              w.google_conversion_id = 882410740;
-              w.google_conversion_label = "LXetCP7hv2cQ9InipAM";
-              w.google_remarketing_only = false;
-          }
-          // DO NOT CHANGE THE CODE BELOW.
-          goog_report_conversion = function(url) {
-              goog_snippet_vars();
-              window.google_conversion_format = "3";
-              var opt = new Object();
-              opt.onload_callback = function() {
-                  if (typeof(url) != 'undefined') {
-                      window.location = url;
-                  }
-              }
-              var conv_handler = window['google_trackConversion'];
-              if (typeof(conv_handler) == 'function') {
-                  conv_handler(opt);
-              }
-          }
-          /* ]]> */
-        </script>
-                <script type="text/javascript"
-                src="//www.googleadservices.com/pagead/conversion_async.js">
+            <!--  google page view -->
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+            ga('create', 'UA-77156203-1', 'auto');
+            ga('send', 'pageview');
         </script>
 
-        <!-- End google conversion tracker Code -->
-
-        <!--Start of Zopim Live Chat Script-->
-        <script type="text/javascript">
-            window.$zopim||(function(d,s){var z=$zopim=function(c){z._.push(c)},$=z.s=
-                    d.createElement(s),e=d.getElementsByTagName(s)[0];z.set=function(o){z.set.
-            _.push(o)};z._=[];z.set._=[];$.async=!0;$.setAttribute("charset","utf-8");
-                $.src="//v2.zopim.com/?43f2UCHnn08FiSXnTJSqlYnVR7SZVwJA";z.t=+new Date;$.
-                        type="text/javascript";e.parentNode.insertBefore($,e)})(document,"script");
-        </script>
-        <!--End of Zopim Live Chat Script-->
+        <script type="text/javascript" src="/assets/common/js/home_page.js"></script>
+        <script type="text/javascript" src="/assets/common/js/all_hot_jobs.js"></script>
+        <script type="text/javascript" src="/assets/common/js/all_job_role_with_jobs.js"></script>
     </body>
 </html>

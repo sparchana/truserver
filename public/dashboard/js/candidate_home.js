@@ -7,6 +7,7 @@ var jobLocalityArray = [];
 var minProfileComplete = 0;
 var prefLocation;
 var prefLocationName;
+var candidateId = 0;
 
 $(window).load(function() {
     $('html, body').css({
@@ -20,20 +21,7 @@ $(window).load(function() {
 
 $(document).ready(function(){
     checkUserLogin();
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getAllHotJobPosts",
-            data: false,
-            async: false,
-            contentType: false,
-            processData: false,
-            success: processDataAllJobPosts
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
 
-    }
     if(localStorage.getItem("assessed") == '0'){
         $(".assessmentComplete").hide();
         $(".assessmentIncomplete").show();
@@ -49,7 +37,7 @@ $(document).ready(function(){
             type: "GET",
             url: "/getCandidateInfoDashboard",
             data: false,
-            async: false,
+            async: true,
             contentType: false,
             processData: false,
             success: processDataAndFillMinProfile
@@ -59,12 +47,32 @@ $(document).ready(function(){
     }
 });
 
+function getJobsForCandidate() {
+
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getRelevantJobsPostsForCandidate/" + candidateId,
+            data: false,
+            async: true,
+            contentType: false,
+            processData: false,
+            success: processDataAllJobPosts
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+
+    }
+
+}
+
 function processDataAllJobPosts(returnedData) {
     var jobPostCount = Object.keys(returnedData).length;
     if(jobPostCount > 0){
         var count = 0;
         var parent = $("#hotJobs");
-        returnedData.reverse();
+
+        $("#jobLoaderDiv").hide();
         returnedData.forEach(function (jobPost){
             count++;
             if(count){
@@ -105,6 +113,7 @@ function processDataAllJobPosts(returnedData) {
 
                 var rowDiv = document.createElement("div");
                 rowDiv.className = "row";
+                rowDiv.style = "margin: 0; padding: 0";
                 centreTag.appendChild(rowDiv);
 
                 var col = document.createElement("div");
@@ -113,7 +122,7 @@ function processDataAllJobPosts(returnedData) {
 
                 var jobLogo = document.createElement("img");
                 jobLogo.src = jobPost.company.companyLogo;
-                /*                jobLogo.src = "/assets/new/img/" + jobPost.company.companyLogo + ".png";*/
+                /*                jobLogo.src = "/assets/common/img/" + jobPost.company.companyLogo + ".png";*/
                 jobLogo.setAttribute('width', '80%');
                 jobLogo.id = "jobLogo";
                 col.appendChild(jobLogo);
@@ -155,7 +164,7 @@ function processDataAllJobPosts(returnedData) {
                 jobBodySubRowCol.appendChild(salaryIconDiv);
 
                 var salaryIcon = document.createElement("img");
-                salaryIcon.src = "/assets/img/salary.svg";
+                salaryIcon.src = "/assets/common/img/salary.svg";
                 salaryIcon.setAttribute('height', '15px');
                 salaryIcon.style = "margin-top: -4px";
                 salaryIconDiv.appendChild(salaryIcon);
@@ -191,7 +200,7 @@ function processDataAllJobPosts(returnedData) {
                 jobBodySubRowColExp.appendChild(expIconDiv);
 
                 var expIcon = document.createElement("img");
-                expIcon.src = "/assets/img/workExp.svg";
+                expIcon.src = "/assets/common/img/workExp.svg";
                 expIcon.setAttribute('height', '15px');
                 expIcon.style = "margin-top: -4px";
                 expIconDiv.appendChild(expIcon);
@@ -221,7 +230,7 @@ function processDataAllJobPosts(returnedData) {
                 jobBodySubRowColLoc.appendChild(locIconDiv);
 
                 var locIcon = document.createElement("img");
-                locIcon.src = "/assets/img/location.svg";
+                locIcon.src = "/assets/common/img/location.svg";
                 locIcon.setAttribute('height', '15px');
                 locIcon.style = "margin-top: -4px";
                 locIconDiv.appendChild(locIcon);
@@ -246,60 +255,37 @@ function processDataAllJobPosts(returnedData) {
                 var applyBtnDiv = document.createElement("div");
                 applyBtnDiv.className = "col-sm-2";
                 applyBtnDiv.id = "applyBtnDiv_" + jobPost.jobPostId;
-                applyBtnDiv.onclick = function () {
-                    $('#jobApplyConfirm').modal();
-                    jobPostId = jobPost.jobPostId;
-                    jobLocalityArray = [];
-                    $('#applyButton').hide();
-                    addLocalitiesToModal();
-                };
                 rowDiv.appendChild(applyBtnDiv);
 
-                var applyBtn = document.createElement("button");
-                applyBtn.id = "apply_btn_" + jobPost.jobPostId;
+                var applyBtn = document.createElement("div");
                 applyBtn.className = "jobApplyBtn";
-                applyBtn.textContent = "Apply";
+                applyBtn.id = "apply_btn_" + jobPost.jobPostId;
+                applyBtn.textContent = "View & Apply";
                 applyBtnDiv.appendChild(applyBtn);
+                applyBtn.onclick=function(){
+                    var jobPostBreak = jobPost.jobPostTitle.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
+                    jobPostBreak = jobPostBreak.toLowerCase();
+                    var jobCompany = jobPost.company.companyName.replace(/[&\/\\#,+()$~%. '":*?<>{}]/g,'_');
+                    jobCompany = jobPostBreak.toLowerCase();
+                    try {
+                        window.location.href = "/jobs/" + jobPostBreak + "/bengaluru/" + jobCompany + "/" + jobPost.jobPostId;
+                    } catch (exception) {
+                        console.log("exception occured!!" + exception);
+                    }
+                }
             }
         });
+        if(count<4){
+            document.getElementById("hotJobs").style.height = "51%";
+        }
+        else{
+            document.getElementById("hotJobs").style.height = "72%";
+        }
     }
-}
-
-function addLocalitiesToModal() {
-    $("#applyButton").addClass("jobApplyBtnModal").removeClass("appliedBtn").prop('disabled',false).html("Apply");
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getJobPostInfo/" + jobPostId + "/0",
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataForJobPostLocation
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-}
-
-function processDataForJobPostLocation(returnedData) {
-    $("#jobNameConfirmation").html(returnedData.jobPostTitle);
-    $("#companyNameConfirmation").html(returnedData.company.companyName);
-    $('#jobLocality').html('');
-    var defaultOption=$('<option value="-1"></option>').text("Select Preferred Location");
-    $('#jobLocality').append(defaultOption);
-    var jobLocality = returnedData.jobPostToLocalityList;
-    jobLocality.forEach(function (locality) {
-        var item = {};
-        item ["id"] = locality.locality.localityId;
-        item ["name"] = " " + locality.locality.localityName;
-        jobLocalityArray.push(item);
-        var option=$('<option value=' + locality.locality.localityId + '></option>').text(locality.locality.localityName);
-        $('#jobLocality').append(option);
-    });
 }
 
 function confirmApply() {
-    applyJob(jobPostId, prefLocation);
+    applyJob(jobPostId, prefLocation, true);
 }
 
 $(function() {
@@ -315,58 +301,33 @@ $(function() {
 });
 
 function processDataAndFillMinProfile(returnedData) {
+
+    candidateId = returnedData.candidateId;
+    if(returnedData.candidateLastName == "" || returnedData.candidateLastName == null){
+        document.getElementById("userName").innerHTML = returnedData.candidateFirstName;
+    } else{
+        document.getElementById("userName").innerHTML = returnedData.candidateFirstName + " " + returnedData.candidateLastName;
+    }
+    document.getElementById("userMobile").innerHTML = returnedData.candidateMobile;
+
     minProfileComplete = returnedData.isMinProfileComplete;
     if(returnedData.isMinProfileComplete == 0){ // profile not complete
+        $(".profileComplete").hide();
+        $(".profileIncomplete").show();
         localStorage.setItem("minProfile", 0);
     } else{
+        $(".profileComplete").show();
+        $(".profileIncomplete").hide();
         localStorage.setItem("minProfile", 1);
     }
     if(returnedData.candidateIsAssessed == 1){
+        localStorage.setItem("assessed", "1");
         $(".assessmentIncomplete").hide();
         $(".assessmentComplete").show();
     } else {
-        var options = {'showRowNumber': true};
-        var data;
-        var query = new google.visualization.Query('https://docs.google.com/spreadsheets/d/1HwEWPzZD4BFCyeRf5HO_KqNXyaMporxYQfg5lhOoA2g/edit#gid=496359801');
-
-        function sendAndDraw() {
-            console.log("inside send and draw method");
-            var val = localStorage.getItem("mobile");
-            query.setQuery('select C where C=' + val.substring(3, 13));
-            query.send(handleQueryResponse);
-        }
-
-        function handleQueryResponse(response) {
-            console.log("inside handleJqueryResponse method");
-            if (response.isError()) {
-                console.log(" google parse error");
-                return;
-            }
-            data = response.getDataTable();
-            new google.visualization.Table(document.getElementById('table')).draw(data, options);
-            var data2 = document.getElementsByClassName('google-visualization-table-td google-visualization-table-td-number').length;
-            if(data2 == 0){
-                $(".assessmentIncomplete").show();
-                $(".assessmentComplete").hide();
-            }
-            else{
-                $.ajax({
-                    type: "GET",
-                    url: "/updateIsAssessedToAssessed",
-                    processData: false,
-                    success: processAssessedStatus
-                });
-                $(".assessmentIncomplete").hide();
-                $(".assessmentComplete").show();
-                $.ajax({
-                    type: "GET",
-                    url: "/updateIsAssessedToAssessed",
-                    processData: false,
-                    success: processAssessedStatus
-                });
-            }
-        }
-        google.setOnLoadCallback(sendAndDraw);
+        localStorage.setItem("assessed", "0");
+        $(".assessmentIncomplete").show();
+        $(".assessmentComplete").hide();
     }
 
     if (returnedData.candidateGender != null) {
@@ -396,43 +357,34 @@ function processDataAndFillMinProfile(returnedData) {
         var birthDate = new Date(yr + "-" + month + "-" + d);
         var age = today.getFullYear() - birthDate.getFullYear();
         var m = today.getMonth() - birthDate.getMonth();
-        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate()))
-        {
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
             age--;
         }
         document.getElementById("userAge").innerHTML = ", " + age + " years";
-
     }
     try {
         var jobRoles = "";
         var count = 0;
         var jobPref = returnedData.jobPreferencesList;
-        jobPref.forEach(function (job){
-            count ++;
-            var name = job.jobRole.jobName;
-            jobRoles += name;
-            if(count < Object.keys(jobPref).length){
-                jobRoles += ", ";
-            }
-        });
-        document.getElementById("userJobs").innerHTML = jobRoles;
+        if(jobPref.length > 0){
+            jobPref.forEach(function (job){
+                count ++;
+                var name = job.jobRole.jobName;
+                jobRoles += name;
+                if(count < Object.keys(jobPref).length){
+                    jobRoles += ", ";
+                }
+            });
+            document.getElementById("userJobs").innerHTML = jobRoles;
+        }
     } catch(err){
         console.log(err);
     }
 
     try {
-        var localities = "";
-        count = 0;
-        var localityPref = returnedData.localityPreferenceList;
-        localityPref.forEach(function (individualLocality){
-            count++;
-            var name = individualLocality.locality.localityName;
-            localities += name;
-            if(count < Object.keys(localityPref).length){
-                localities += ", ";
-            }
-        });
-        document.getElementById("userLocality").innerHTML = localities;
+        if(returnedData.locality != null){
+            document.getElementById("userLocality").innerHTML = returnedData.locality.localityName;
+        }
     } catch(err){
         console.log("getCandidateLocalityPref error"+err);
     }
@@ -445,119 +397,63 @@ function processDataAndFillMinProfile(returnedData) {
         }
     }
 
-    if(returnedData.candidateLastWithdrawnSalary != null){
-        if(returnedData.candidateLastWithdrawnSalary == "0"){
-            document.getElementById("userCurrentSalary").innerHTML = "Fresher";
-        } else{
-            document.getElementById("userCurrentSalary").innerHTML = "&#x20B9;" + returnedData.candidateLastWithdrawnSalary + "/month";
-        }
-    }
-
-    /* Current Company and Salary */
-    if (Object.keys(returnedData.jobHistoryList).length > 0) {
-        returnedData.jobHistoryList.forEach(function (pastJob) {
-            if(pastJob.currentJob == true){
-                if(pastJob.candidatePastCompany != ""){
-                    document.getElementById("userCurrentCompany").innerHTML = pastJob.candidatePastCompany;
-                } else{
-                    document.getElementById("userCurrentCompany").innerHTML = "Not Specified";
-                }
-                return false;
-            }
-        });
-    }
-
     /* candidate Education */
     try{
         if(returnedData.candidateEducation.education != null) {
             document.getElementById("userEducationLevel").innerHTML = returnedData.candidateEducation.education.educationName;
         }
-    } catch(err){
-        console.log("education is null");
-    }
+    } catch(err){}
 
     /* Work Experience */
     if(returnedData.candidateTotalExperience != null){
         if(returnedData.candidateTotalExperience == 0) {
             document.getElementById("userTotalExperience").innerHTML = "Fresher";
+            document.getElementById("userCurrentSalary").innerHTML = "Not Applicable";
+            document.getElementById("userCurrentCompany").innerHTML = "Not Applicable";
         }
         else {
-            var totalExperience = parseInt(returnedData.candidateTotalExperience);
-            var yrs = parseInt((totalExperience / 12)).toString();
-            var month = totalExperience % 12;
-            if(yrs == 0 && month != 0){
-                document.getElementById("userTotalExperience").innerHTML = month + " months";
-            } else if(month == 0 && yrs != 0){
+                var totalExperience = parseInt(returnedData.candidateTotalExperience);
+                var yrs = parseInt((totalExperience / 12)).toString();
+                var month = totalExperience % 12;
+                if(yrs == 0 && month != 0){
+                    document.getElementById("userTotalExperience").innerHTML = month + " months";
+                } else if(month == 0 && yrs != 0){
                 document.getElementById("userTotalExperience").innerHTML = yrs + " years";
 
             } else{
                 document.getElementById("userTotalExperience").innerHTML = yrs + " yrs and " + month + " mnths";
             }
+
+            /* Current Company and Salary */
+            if (Object.keys(returnedData.jobHistoryList).length > 0) {
+                returnedData.jobHistoryList.forEach(function (pastJob) {
+                    if(pastJob.currentJob == true){
+                        if(pastJob.candidatePastCompany != null){
+                            document.getElementById("userCurrentCompany").innerHTML = pastJob.candidatePastCompany;
+                        } else{
+                            document.getElementById("userCurrentCompany").innerHTML = "Not Specified";
+                        }
+                        return false;
+                    }
+                });
+            }
+
+            if(returnedData.candidateLastWithdrawnSalary != null){
+                if(returnedData.candidateLastWithdrawnSalary == "0"){
+                    document.getElementById("userCurrentSalary").innerHTML = "Not Applicable";
+                } else{
+                    document.getElementById("userCurrentSalary").innerHTML = "&#x20B9;" + returnedData.candidateLastWithdrawnSalary + "/month";
+                }
+            }
         }
     }
 
     var appliedJobs = returnedData.jobApplicationList;
-    $("#jobCount").html(Object.keys(appliedJobs).length);
     appliedJobs.forEach(function (jobApplication) {
         $("#apply_btn_" + jobApplication.jobPost.jobPostId).addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
         $("#applyBtnDiv_" + jobApplication.jobPost.jobPostId).prop('disabled',true);
     });
 
-}
+    getJobsForCandidate();
 
-function sendAndDraw() {
-    var val = localStorage.getItem("mobile");
-    query.setQuery('select C where C=' + val.substring(3, 13));
-    query.send(handleQueryResponse);
-}
-
-function processAssessedStatus(returnedData) {
-    if(returnedData.leadType != '0' && returnedData.leadType != '1') {
-        // existing data hence pre fill form
-    } else {
-        clearModal();
-        alert('Unable to show data');
-    }
-}
-
-function handleQueryResponse(response) {
-    if (response.isError()) {
-        return;
-    }
-    data = response.getDataTable();
-    new google.visualization.Table(document.getElementById('table')).draw(data, options);
-    var data2 = document.getElementsByClassName('google-visualization-table-td google-visualization-table-td-number').length;
-    if(data2>0) {
-        document.getElementById("assessedStatusResult").innerHTML = '<font color="#46AB49">Complete</font>';
-        document.getElementById("assessedStatusAction").innerHTML = '-';
-        $("#assessedIcon").attr('src', '/assets/dashboard/img/right.png');
-        // update isAssessed status to '1'
-        $.ajax({
-            type: "GET",
-            url: "/updateIsAssessedToAssessed",
-            processData: false,
-            success: processAssessedStatus
-        });
-    }
-    else{
-        try{
-            document.getElementById("assessedStatusResult").innerHTML = '<font color="#F26522">Incomplete</font>';
-            document.getElementById("assessedStatusAction").innerHTML = '<font size="2" color="#F26522">(Take assessment)</font></a>';
-            var assessedStatusParent = document.getElementById("assessedStatusParent");
-            assessedStatusParent.addEventListener("click", completeAssessment);
-            assessedStatusParent.style = "cursor: pointer";
-            $("#assessedIcon").attr('src', '/assets/dashboard/img/wrong.png');
-
-        }
-        catch(err){
-        }
-    }
-}
-
-function completeAssessment() {
-    window.open("http://bit.ly/trujobstest");
-}
-
-function completeProfile() {
-    window.open("/dashboard/editProfile");
 }

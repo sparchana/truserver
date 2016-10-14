@@ -1,0 +1,70 @@
+<script>
+    function logoutPartner() {
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/logoutPartner",
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataLogoutPartner
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+    function processDataLogoutPartner() {
+        window.location = "/partner";
+    }
+</script>
+
+<nav class="navbar navbar-fixed-top" style="background: #26A69A" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navigationbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar" style="border: 1px solid #fff;"></span>
+        <span class="icon-bar" style="border: 1px solid #fff;"></span>
+        <span class="icon-bar" style="border: 1px solid #fff;"></span>
+
+      </button>
+      <div itemscope itemtype ="http://schema.org/logo">
+        <a class="navbar-brand" href="/partner/home">
+            <img id="navLogo" itemprop="Brand" src="/assets/common/img/trujobs-partner.png" alt="TruJobs Logo" style="padding: 0px"></a>
+      </div>
+    </div>
+
+    <div class="collapse navbar-collapse" id="navigationbar">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="/partner/home"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">PARTNER DASHBOARD</font></a></li>
+        <li><a href="/partner/candidate/0"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">ADD CANDIDATES</font></a></li>
+        <li><a href="/partner/myCandidates"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">MY CANDIDATES</font></a></li>
+        <li><a href="/partner/editProfile"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">PROFILE</font></a></li>
+        <li><a href="#" onclick="logoutPartner()"><font color="#fff" style="font-size: 12px; letter-spacing: 1px;">LOGOUT</font></a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <!-- custom message modal -->
+<div class="modal fade" id="messagePromptModal" tabindex="-1" role="dialog" aria-labelledby="messagePromptModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">TruJobs</h4>
+            </div>
+            <div class="modal-body">
+                <center>
+                    <img id="customMsgIcon" width="48px">
+                    <div id="customMsg" style="padding: 16px"></div>
+                    <input id="candidateOtp" style="width: 40%" name="candidateOtp" max="9999" placeholder="OTP" type="number" class="form-control input-md" required>
+                    <input id="verifyOtp" style="width: 40%; margin-top: 8px" name="verifyOtp" onclick="verifyCandidateOtp()" value="Verify" type="button" class="btn btn-primary registerPartnerBtnSubmit">
+                    <input id="homeBtn" style="width: 40%; margin-top: 8px; display: none" name="verifyOtp" onclick="myCandidates()" value="Done" type="button" class="btn btn-primary registerPartnerBtnSubmit">
+                </center>
+            </div>
+        </div>
+    </div>
+</div>
+

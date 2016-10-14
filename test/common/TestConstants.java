@@ -14,7 +14,7 @@ import java.util.List;
  * Created by zero on 7/6/16.
  */
 public class TestConstants {
-    public static final int TEST_SERVER_PORT = 9001;
+    public static final int TEST_SERVER_PORT = 9009;
     public static final String BASE_URL = "http://localhost:" + TEST_SERVER_PORT;
 
     // defaults for creating candidate object

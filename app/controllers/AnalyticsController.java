@@ -38,7 +38,7 @@ public class AnalyticsController extends Controller {
         } else {
             Logger.info("FromDate" + analyticsRequest.getFromThisDate());
             Logger.info("toDate" + analyticsRequest.getToThisDate());
-            if(analyticsRequest.getMetrics() != null){
+            if(analyticsRequest.getMetrics() != null) {
                 Logger.info("sizeOfMetricsArray" + analyticsRequest.getMetrics().size());
             }
         }
@@ -52,7 +52,8 @@ public class AnalyticsController extends Controller {
                 Date ed = analyticsRequest.getToThisDate();
                 Boolean shouldUploadToGs = false;
                 if(analyticsRequest.getUpdateGoogleSheet() != null && analyticsRequest.getUpdateGoogleSheet() ){
-                    shouldUploadToGs = true;
+                    Logger.info("UpdateGoogleSheet Req:"+analyticsRequest.getUpdateGoogleSheet());
+                    //shouldUploadToGs = true;
                 }
 
                 List<String> headerList = new ArrayList<>();
@@ -67,7 +68,7 @@ public class AnalyticsController extends Controller {
 
                 Map<String, Map<Date, Map<Integer, Map<String, Object>>>> mapOfHeaderMap =
                         MetricsQueryService.queryAndUpdateMetrics(headerList, sd, ed, shouldUploadToGs);
-                Logger.info("Metrics Query JSON Result:" + toJson(mapOfHeaderMap));
+                //Logger.info("Metrics Query JSON Result:" + toJson(mapOfHeaderMap));
                 return ok(toJson(mapOfHeaderMap));
         }
         return ok("test");

@@ -1,5 +1,6 @@
 package controllers.businessLogic;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.httpResponse.CandidateSignUpResponse;
 import models.entity.Auth;
@@ -14,7 +15,6 @@ import play.Logger;
 import java.util.UUID;
 
 import static play.mvc.Controller.session;
-
 /**
  * Created by batcoder1 on 5/5/16.
  */
@@ -28,10 +28,9 @@ public class AuthService {
         auth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
         session("sessionId", auth.getAuthSessionId());
         session("sessionExpiry", String.valueOf(auth.getAuthSessionIdExpiryMillis()));
-
     }
 
-    public static CandidateSignUpResponse savePassword(String mobile, String password){
+    public static CandidateSignUpResponse savePassword(String mobile, String password, InteractionService.InteractionChannelType channelType){
         CandidateSignUpResponse candidateSignUpResponse = new CandidateSignUpResponse();
 
         Logger.info("to check: " + mobile);
@@ -43,30 +42,69 @@ public class AuthService {
             if(existingAuth != null){
                 // If candidate exists and has a password, reset the old password
                 Logger.info("Resetting password");
+                existingAuth.setAuthStatus(ServerConstants.CANDIDATE_STATUS_VERIFIED);
                 setNewPassword(existingAuth, password);
                 Auth.savePassword(existingAuth);
-                String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_RESET_PASSWORD_SUCCESS;
+                String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_RESET_PASSWORD_SUCCESS;
                 String objAUUID = "";
                 Candidate candidate = Candidate.find.where().eq("candidateId", existingCandidate.getCandidateId()).findUnique();
                 if(candidate != null){
                     objAUUID = candidate.getCandidateUUId();
                 }
-                InteractionService.CreateInteractionForResetPassword(objAUUID, interactionResult);
+                if(channelType == InteractionService.InteractionChannelType.SELF){
+                    InteractionService.createInteractionForCandidateResetPasswordViaWebsite(objAUUID, interactionResult);
+                } else{
+                    InteractionService.createInteractionForCandidateResetPasswordViaAndroid(objAUUID, interactionResult);
+                }
+
                 existingAuth.setAuthSessionId(UUID.randomUUID().toString());
                 existingAuth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
                 /* adding session details */
                 addSession(existingAuth, existingCandidate);
 
+                candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
+
+                candidateSignUpResponse.setCandidateId(existingCandidate.getCandidateId());
                 candidateSignUpResponse.setCandidateFirstName(existingCandidate.getCandidateFirstName());
                 candidateSignUpResponse.setCandidateLastName(existingCandidate.getCandidateLastName());
-                candidateSignUpResponse.setCandidateId(existingCandidate.getCandidateId());
-                candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
-                candidateSignUpResponse.setMinProfile(existingCandidate.getIsMinProfileComplete());
                 candidateSignUpResponse.setIsAssessed(existingCandidate.getCandidateIsAssessed());
+                candidateSignUpResponse.setMinProfile(existingCandidate.getIsMinProfileComplete());
                 candidateSignUpResponse.setLeadId(existingCandidate.getLead().getLeadId());
-            }
+                candidateSignUpResponse.setCandidateJobPrefStatus(0);
+                candidateSignUpResponse.setCandidateHomeLocalityStatus(0);
+                candidateSignUpResponse.setGender(0);
+                if(existingCandidate.getCandidateGender() != null){
+                    if(existingCandidate.getCandidateGender() == 1){
+                        candidateSignUpResponse.setGender(1);
+                    }
+                }
 
-            else{
+                /* START : to cater specifically the app need */
+                if(existingCandidate.getCandidateLocalityLat() != null
+                        || existingCandidate.getCandidateLocalityLng() != null ){
+                    candidateSignUpResponse.setCandidateHomeLat(existingCandidate.getCandidateLocalityLat());
+                    candidateSignUpResponse.setCandidateHomeLng(existingCandidate.getCandidateLocalityLng());
+                }
+                if(!existingCandidate.getJobPreferencesList().isEmpty()){
+                    if(existingCandidate.getJobPreferencesList().size()>0 && existingCandidate.getJobPreferencesList().get(0)!= null)
+                        candidateSignUpResponse.setCandidatePrefJobRoleIdOne(existingCandidate.getJobPreferencesList().get(0).getJobRole().getJobRoleId());
+                    if(existingCandidate.getJobPreferencesList().size()>1 &&existingCandidate.getJobPreferencesList().get(1)!= null)
+                        candidateSignUpResponse.setCandidatePrefJobRoleIdTwo(existingCandidate.getJobPreferencesList().get(1).getJobRole().getJobRoleId());
+                    if(existingCandidate.getJobPreferencesList().size()>2 &&existingCandidate.getJobPreferencesList().get(2)!= null)
+                        candidateSignUpResponse.setCandidatePrefJobRoleIdThree(existingCandidate.getJobPreferencesList().get(2).getJobRole().getJobRoleId());
+                }
+                    /* END */
+                if(existingCandidate.getJobPreferencesList().size() > 0){
+                    candidateSignUpResponse.setCandidateJobPrefStatus(1);
+                }
+                if(existingCandidate.getCandidateLocalityLat() != null && existingCandidate.getCandidateLocalityLng() != null){
+                    candidateSignUpResponse.setCandidateHomeLocalityStatus(1);
+                }
+                if(existingCandidate.getLocality()!= null && existingCandidate.getLocality().getLocalityName()!=null){
+                    candidateSignUpResponse.setCandidateHomeLocalityName(existingCandidate.getLocality().getLocalityName());
+                }
+
+            } else{
                 Auth auth = new Auth();
                 auth.setCandidateId(existingCandidate.getCandidateId());
                 setNewPassword(auth,password);
@@ -79,15 +117,12 @@ public class AuthService {
 
                 candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
-                Interaction interaction = new Interaction(
-                        existingCandidate.getCandidateUUId(),
-                        ServerConstants.OBJECT_TYPE_CANDIDATE,
-                        ServerConstants.INTERACTION_TYPE_WEBSITE,
-                        ServerConstants.INTERACTION_NOTE_BLANK,
-                        ServerConstants.INTERACTION_RESULT_NEW_CANDIDATE + " & " + ServerConstants.INTERACTION_NOTE_SELF_PASSWORD_CHANGED,
-                        ServerConstants.INTERACTION_CREATED_SELF
-                );
-                InteractionService.createInteraction(interaction);
+                String objAUUID = existingCandidate.getCandidateUUId();
+                if (channelType == InteractionService.InteractionChannelType.SELF) {
+                    InteractionService.createInteractionForCandidateAddPasswordViaWebsite(objAUUID);
+                } else{
+                    InteractionService.createInteractionForCandidateAddPasswordViaAndroid(objAUUID);
+                }
                 try {
                     existingCandidate.setCandidateprofilestatus(CandidateProfileStatus.find.where().eq("profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE).findUnique());
                     candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
@@ -113,6 +148,12 @@ public class AuthService {
                 candidateSignUpResponse.setMinProfile(existingCandidate.getIsMinProfileComplete());
                 candidateSignUpResponse.setIsAssessed(existingCandidate.getCandidateIsAssessed());
                 candidateSignUpResponse.setLeadId(existingCandidate.getLead().getLeadId());
+                candidateSignUpResponse.setGender(0);
+                if(existingCandidate.getCandidateGender() != null){
+                    if(existingCandidate.getCandidateGender() == 1){
+                        candidateSignUpResponse.setGender(1);
+                    }
+                }
             }
             Logger.info("Auth Save Successful");
         }
@@ -124,9 +165,11 @@ public class AuthService {
         return candidateSignUpResponse;
     }
     public static void addSession(Auth existingAuth, Candidate existingCandidate){
-        session("sessionId", existingAuth.getAuthSessionId());
-        session("candidateId", String.valueOf(existingCandidate.getCandidateId()));
-        session("leadId", String.valueOf(existingCandidate.getLead().getLeadId()));
-        session("sessionExpiry", String.valueOf(existingAuth.getAuthSessionIdExpiryMillis()));
+        session().put("sessionId", existingAuth.getAuthSessionId());
+        session().put("candidateId", String.valueOf(existingCandidate.getCandidateId()));
+        session().put("candidateMobile", String.valueOf(existingCandidate.getCandidateMobile()));
+        session().put("leadId", String.valueOf(existingCandidate.getLead().getLeadId()));
+        session().put("sessionExpiry", String.valueOf(existingAuth.getAuthSessionIdExpiryMillis()));
+        Logger.info("set-sessionId"+ session().get("candidateMobile"));
     }
 }

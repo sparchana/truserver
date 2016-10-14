@@ -1,18 +1,24 @@
 package controllers;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
+import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpResponse.*;
+import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
 import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import controllers.AnalyticsLogic.JobRelevancyEngine;
 import controllers.businessLogic.*;
+import controllers.businessLogic.Assessment.AssessmentService;
 import controllers.security.*;
 import models.entity.*;
+import models.entity.Intelligence.RelatedJobRole;
 import models.entity.OM.*;
 import models.entity.Static.*;
 import models.util.ParseCSV;
@@ -33,23 +39,32 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.avaje.ebean.Expr.eq;
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {
 
-    private static boolean isDevMode = Play.isDev(Play.current());
+    private static boolean isDevMode = Play.isDev(Play.current()) || Play.isTest(Play.current());
 
     public static Result index() {
         String sessionId = session().get("sessionId");
+        /**
+        * TODO need to change this, modify old partnerSecured to take new partnertFlow into consideration and properly annonate rest of the api end-points
+        * */
         if(sessionId != null){
-            return redirect("/dashboard");
+            String partnerId = session().get("partnerId");
+            if(partnerId != null){
+                return redirect("/partner/home");
+            } else {
+                return redirect("/dashboard");
+            }
         }
         return ok(views.html.index.render());
     }
 
     @Security.Authenticated(RecSecured.class)
     public static Result showCompanyAndJob() {
-        return ok(views.html.company_and_job.render());
+        return ok(views.html.Recs.company_and_job.render());
     }
 
     @Security.Authenticated(PartnerSecured.class)
@@ -67,11 +82,10 @@ public class Application extends Controller {
     }
 
     @Security.Authenticated(Secured.class)
-    public static Result getCandidateInteraction(long id){
+    public static Result getCandidateInteraction(long id) {
         Lead lead = Lead.find.where().eq("leadId",id).findUnique();
         if(lead !=null){
             List<Interaction> fullInteractionList = Interaction.find.where().eq("objectAUUId", lead.getLeadUUId()).findList();
-
             // fetch candidate interaction as well
             Candidate candidate = Candidate.find.where().eq("lead_leadId", id).findUnique();
             if(candidate != null){
@@ -90,20 +104,9 @@ public class Application extends Controller {
                 response.setUserNote(interaction.getNote());
                 response.setUserResults(interaction.getResult());
                 response.setUserCreatedBy(interaction.getCreatedBy());
-                switch (interaction.getInteractionType()) {
-                    case 0: response.setUserInteractionType("Unknown"); break;
-                    case 1: response.setUserInteractionType("Incoming Call"); break;
-                    case 2: response.setUserInteractionType("Out Going Call"); break;
-                    case 3: response.setUserInteractionType("Incoming SMS"); break;
-                    case 4: response.setUserInteractionType("Out Going SMS"); break;
-                    case 5: response.setUserInteractionType("Website Interaction"); break;
-                    case 6: response.setUserInteractionType("Follow Up Call"); break;
-                    case 7: response.setUserInteractionType("New Job Application"); break;
-                    case 8: response.setUserInteractionType("Tried to Apply to a job"); break;
-                    case 9: response.setUserInteractionType("Tried to reset password"); break;
-                    case 10: response.setUserInteractionType("Reset password successful"); break;
-                    default: response.setUserInteractionType("Interaction Undefined in getCandidateInteraction()"); break;
-                }
+                response.setUserInteractionType(InteractionConstants.INTERACTION_TYPE_MAP.get(interaction.getInteractionType()));
+                response.setChannel(InteractionConstants.INTERACTION_CHANNEL.get(interaction.getInteractionChannel()));
+
                 responses.add(response);
             }
             return ok(toJson(responses));
@@ -114,6 +117,7 @@ public class Application extends Controller {
 
     public static Result addLead() {
         JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
         AddLeadRequest addLeadRequest = new AddLeadRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -121,7 +125,6 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Logger.info(addLeadRequest.getLeadMobile() + " JSON req: " + req);
 
         AddLeadResponse addLeadResponse = new AddLeadResponse();
         Lead lead = new Lead(addLeadRequest.getLeadName(),
@@ -131,14 +134,14 @@ public class Application extends Controller {
                 ServerConstants.LEAD_SOURCE_UNKNOWN
         );
         lead.setLeadType(addLeadRequest.getLeadType());
-        boolean isSupport = false;
-        LeadService.createLead(lead, isSupport);
+        LeadService.createLead(lead, InteractionService.InteractionChannelType.SELF);
         addLeadResponse.setStatus(AddLeadResponse.STATUS_SUCCESS);
         return ok(toJson(addLeadResponse));
     }
 
     public static Result signUp() {
         JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
         CandidateSignUpRequest candidateSignUpRequest = new CandidateSignUpRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -146,32 +149,34 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Logger.info("JSON req: " + req);
 
-        boolean isSupport = false;
-        return ok(toJson(CandidateService.signUpCandidate(candidateSignUpRequest, isSupport, ServerConstants.LEAD_SOURCE_UNKNOWN)));
+
+        InteractionService.InteractionChannelType channelType = InteractionService.InteractionChannelType.SELF;
+        return ok(toJson(CandidateService.signUpCandidate(candidateSignUpRequest, channelType, ServerConstants.LEAD_SOURCE_UNKNOWN)));
     }
     @Security.Authenticated(PartnerSecured.class)
     public static Result signUpSupport() {
         JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
         AddSupportCandidateRequest addSupportCandidateRequest = new AddSupportCandidateRequest();
         ObjectMapper newMapper = new ObjectMapper();
+
         // since jsonReq has single/multiple values in array
         newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
         try {
             addSupportCandidateRequest = newMapper.readValue(req.toString(), AddSupportCandidateRequest.class);
-            Logger.info("json" + req.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }
-        boolean isSupport = true;
         return ok(toJson(CandidateService.createCandidateProfile(addSupportCandidateRequest,
-                isSupport,
+                InteractionService.InteractionChannelType.SUPPORT,
                 ServerConstants.UPDATE_ALL_BY_SUPPORT)));
     }
 
     public static Result candidateUpdateBasicProfile() {
         JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
+
         AddCandidateRequest addCandidateRequest = new AddCandidateRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -179,14 +184,13 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Logger.info("Req JSON : " + req);
-        boolean isSupport = false;
-        return ok(toJson(CandidateService.createCandidateProfile(addCandidateRequest, isSupport, ServerConstants.UPDATE_BASIC_PROFILE)));
+
+        return ok(toJson(CandidateService.createCandidateProfile(addCandidateRequest, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_BASIC_PROFILE)));
     }
 
     public static Result candidateUpdateExperienceDetails() {
         JsonNode req = request().body().asJson();
-        Logger.info(" == " + req);
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
         AddCandidateExperienceRequest addCandidateExperienceRequest = new AddCandidateExperienceRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -194,12 +198,12 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        boolean isSupport = false;
-        return ok(toJson(CandidateService.createCandidateProfile(addCandidateExperienceRequest, isSupport, ServerConstants.UPDATE_SKILLS_PROFILE)));
+        return ok(toJson(CandidateService.createCandidateProfile(addCandidateExperienceRequest, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_SKILLS_PROFILE)));
     }
 
     public static Result candidateUpdateEducationDetails() {
         JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
         AddCandidateEducationRequest addCandidateEducationRequest = new AddCandidateEducationRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -207,12 +211,12 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        boolean isSupport = false;
-        return ok(toJson(CandidateService.createCandidateProfile(addCandidateEducationRequest, isSupport, ServerConstants.UPDATE_EDUCATION_PROFILE)));
+        return ok(toJson(CandidateService.createCandidateProfile(addCandidateEducationRequest, InteractionService.InteractionChannelType.SELF, ServerConstants.UPDATE_EDUCATION_PROFILE)));
     }
 
     public static Result addPassword() {
         JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; save password api json");
         CandidateSignUpRequest candidateSignUpRequest = new CandidateSignUpRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -224,11 +228,12 @@ public class Application extends Controller {
         String userMobile = candidateSignUpRequest.getCandidateAuthMobile();
         String userPassword = candidateSignUpRequest.getCandidatePassword();
 
-        return ok(toJson(AuthService.savePassword(userMobile, userPassword)));
+        return ok(toJson(AuthService.savePassword(userMobile, userPassword, InteractionService.InteractionChannelType.SELF)));
     }
 
-    public static Result applyJob() {
+    public static Result applyJob() throws IOException, JSONException {
         JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
         ApplyJobRequest applyJobRequest = new ApplyJobRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -237,16 +242,13 @@ public class Application extends Controller {
             e.printStackTrace();
         }
 
-        String userMobile = applyJobRequest.getCandidateMobile();
-        Integer jobId = applyJobRequest.getJobId();
-
-        return ok(toJson(JobService.applyJob(applyJobRequest)));
+        return ok(toJson(JobService.applyJob(applyJobRequest, InteractionService.InteractionChannelType.SELF)));
     }
 
     @Security.Authenticated(RecSecured.class)
     public static Result addJobPost() {
         JsonNode req = request().body().asJson();
-        Logger.info(req + " == ");
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
         AddJobPostRequest addJobPostRequest = new AddJobPostRequest();
         ObjectMapper newMapper = new ObjectMapper();
         newMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
@@ -277,21 +279,21 @@ public class Application extends Controller {
     @Security.Authenticated(RecSecured.class)
     public static Result addRecruiter() {
         JsonNode req = request().body().asJson();
-        Logger.info(req + " == ");
-        AddRecruiterRequest addRecruiterRequest = new AddRecruiterRequest();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
+        RecruiterSignUpRequest recruiterSignUpRequest = new RecruiterSignUpRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
-            addRecruiterRequest = newMapper.readValue(req.toString(), AddRecruiterRequest.class);
+            recruiterSignUpRequest = newMapper.readValue(req.toString(), RecruiterSignUpRequest.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(RecruiterService.addRecruiter(addRecruiterRequest)));
+        return ok(toJson(RecruiterService.createRecruiterProfile(recruiterSignUpRequest)));
     }
 
     @Security.Authenticated(RecSecured.class)
     public static Result addCompany() {
         JsonNode req = request().body().asJson();
-        Logger.info(req + " == ");
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
         AddCompanyRequest addCompanyRequest = new AddCompanyRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -304,6 +306,7 @@ public class Application extends Controller {
 
     public static Result loginSubmit() {
         JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Login api json ");
         LoginRequest loginRequest = new LoginRequest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -311,30 +314,29 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Logger.info("req JSON: " + req );
         String loginMobile = loginRequest.getCandidateLoginMobile();
         String loginPassword = loginRequest.getCandidateLoginPassword();
-
-        return ok(toJson(CandidateService.login(loginMobile, loginPassword)));
+        return ok(toJson(CandidateService.login(loginMobile, loginPassword, InteractionService.InteractionChannelType.SELF)));
     }
 
     @Security.Authenticated(SecuredUser.class)
     public static Result dashboard() {
-        return ok(views.html.candidate_home.render());
+        return ok(views.html.CandidateDashboard.candidate_home.render());
     }
 
     @Security.Authenticated(SecuredUser.class)
     public static Result editProfile() {
-        return ok(views.html.edit_profile.render());
+        return ok(views.html.CandidateDashboard.edit_profile.render());
     }
 
     @Security.Authenticated(SecuredUser.class)
     public static Result appliedJobs() {
-        return ok(views.html.candidate_applied_job.render());
+        return ok(views.html.CandidateDashboard.candidate_applied_job.render());
     }
 
     public static Result findUserAndSendOtp() {
         JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
         ResetPasswordResquest resetPasswordResquest = new ResetPasswordResquest();
         ObjectMapper newMapper = new ObjectMapper();
         try {
@@ -343,9 +345,8 @@ public class Application extends Controller {
             e.printStackTrace();
         }
         String candidateMobile = resetPasswordResquest.getResetPasswordMobile();
-        Logger.info("==> " + candidateMobile);
 
-        return ok(toJson(CandidateService.findUserAndSendOtp(candidateMobile)));
+        return ok(toJson(CandidateService.findUserAndSendOtp(candidateMobile, InteractionService.InteractionChannelType.SELF)));
     }
 
     public static Result processcsv() {
@@ -354,6 +355,15 @@ public class Application extends Controller {
             return badRequest("error uploading file. Check file type");
         }
         return ok(toJson(ParseCSV.parseCSV(file)));
+    }
+
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result processBabaJCSV() {
+        java.io.File file = (File) request().body().asMultipartFormData().getFile("file").getFile();
+        if(file == null) {
+            return badRequest("error uploading file. Check file type");
+        }
+        return ok(toJson(ParseCSV.parseBabaJobsCSV(file)));
     }
 
     @Security.Authenticated(Secured.class)
@@ -372,8 +382,10 @@ public class Application extends Controller {
                         .eq("leadStatus", ServerConstants.LEAD_STATUS_WON)
                         .findList();
                 break;
-            case 3: // get all
-                allLead = Lead.find.all();
+            case 3: // get all except all the partners
+                allLead = Lead.find.where()
+                        .ne("leadType", ServerConstants.TYPE_PARTNER)
+                        .findList();
                 break;
         }
 
@@ -385,9 +397,33 @@ public class Application extends Controller {
         //getting leadUUID from allLead
         List<String> leadUUIDList = allLead.stream().map(Lead::getLeadUUId).collect(Collectors.toList());
 
-        List<Interaction> interactionsOfLead = Interaction.find.where().in("objectAUUId", leadUUIDList).findList();
+        // query all interactions of all leads which are of type call (channel/createdby = knowlarity) and order
+        // the list by most recent interaction on top
+        List<Interaction> allInteractions = Interaction.find.where()
+                .in("objectAUUId", leadUUIDList)
+                .or(eq("createdBy", InteractionConstants.INTERACTION_CREATED_SYSTEM_KNOWLARITY),
+                        eq("interactionChannel", InteractionConstants.INTERACTION_CHANNEL_KNOWLARITY))
+                .orderBy().desc("creationTimestamp")
+                .findList();
+
+        Map<String, ArrayList<Interaction>> objAUUIDToInteractions = new HashMap<String, ArrayList<Interaction>>();
+
+        // iterate on the entire interactions list and create a mapping between objectauuid (leadid) and
+        // its corressponding interactions
+        for (Interaction i : allInteractions) {
+
+            String objectAUUID = i.getObjectAUUId();
+            ArrayList<Interaction> interactionsOfLead = objAUUIDToInteractions.get(objectAUUID);
+
+            if (interactionsOfLead == null) {
+                interactionsOfLead = new ArrayList<Interaction>();
+                objAUUIDToInteractions.put(objectAUUID, interactionsOfLead);
+            }
+            interactionsOfLead.add(i);
+        }
 
         Logger.info("Entering Loop at " + new Timestamp(System.currentTimeMillis()));
+
         for(Lead lead : allLead) {
             SupportDashboardElementResponse response = new SupportDashboardElementResponse();
 
@@ -413,18 +449,18 @@ public class Application extends Controller {
                 case 0: response.setLeadChannel("Website"); break;
                 case 1: response.setLeadChannel("Knowlarity"); break;
             }
-            int mTotalInteraction=0;
+
+            int mTotalInteraction = 0;
             Timestamp mostRecent = lead.getLeadCreationTimestamp();
-            for(Interaction i: interactionsOfLead) {
-                if(i.getObjectAUUId().equals(lead.getLeadUUId())){
-                    if(i.getInteractionType() == 1 || i.getInteractionType() == 5) {
-                        mTotalInteraction++;
-                        if(mostRecent.getTime() <= i.getCreationTimestamp().getTime()){
-                            mostRecent = i.getCreationTimestamp();
-                        }
-                    }
-                }
+
+            ArrayList<Interaction> iList = objAUUIDToInteractions.get(lead.getLeadUUId());
+            if (iList != null && !iList.isEmpty()) {
+                mTotalInteraction = iList.size();
+                // we have ordered the list by most recent on top. hence check only the top element
+                Timestamp recentInteraction = iList.get(0).getCreationTimestamp();
+                mostRecent =  recentInteraction.getTime() >= mostRecent.getTime() ? recentInteraction : mostRecent;
             }
+
             response.setLastIncomingCallTimestamp(sfd.format(mostRecent));
             response.setTotalInBounds(mTotalInteraction);
             if(lead.getFollowUp() != null && lead.getFollowUp().getFollowUpTimeStamp()!= null){
@@ -510,13 +546,17 @@ public class Application extends Controller {
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
         if(jobPost!=null){
             if(isSupport == 0){
-                String interactionResult = ServerConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB;
+                String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB;
                 String objAUUID = "";
                 if(session().get("candidateId") != null){
                     Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")). findUnique();
                     objAUUID = candidate.getCandidateUUId();
                 }
-                InteractionService.createInteractionForJobApplicationAttempt(objAUUID, jobPost.getJobPostUUId(), interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName());
+                InteractionService.createInteractionForJobApplicationAttemptViaWebsite(
+                        objAUUID,
+                        jobPost.getJobPostUUId(),
+                        interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName()
+                );
             }
 
             return ok(toJson(jobPost));
@@ -527,13 +567,29 @@ public class Application extends Controller {
     @Security.Authenticated(SecuredUser.class)
     public static Result getCandidateJobApplication() {
         if(session().get("candidateId") != null){
+            Long candidateId = Long.parseLong(session().get("candidateId"));
             List<JobApplication> jobApplicationList = JobApplication.find.where().eq("candidateId", session().get("candidateId")).findList();
-            if(jobApplicationList == null)
+            List<JobApplicationWithAssessmentStatusResponse> applicationWithAssessmentStatusResponseList = new ArrayList<>();
+            List<Long> jobRoleIds = new ArrayList<>();
+            if(jobApplicationList == null){
                 return ok("0");
-            return ok(toJson(jobApplicationList));
-        } else{
-            return ok("0");
+            }
+            for (JobApplication jobApplication: jobApplicationList) {
+                 applicationWithAssessmentStatusResponseList.add(new JobApplicationWithAssessmentStatusResponse(jobApplication));
+                if(!jobRoleIds.contains(jobApplication.getJobPost().getJobRole().getJobRoleId())) {
+                    jobRoleIds.add(jobApplication.getJobPost().getJobRole().getJobRoleId());
+                }
+            }
+            Map<Long, Boolean> jobRoleIdsWithAssessmentStatusMap = AssessmentService.getJobRoleIdsVsIsAssessedMap(candidateId, jobRoleIds);
+            for (JobApplicationWithAssessmentStatusResponse jobApplication: applicationWithAssessmentStatusResponseList) {
+                jobApplication.setAssessmentRequired(!jobRoleIdsWithAssessmentStatusMap.get(jobApplication.getJobPost().getJobRole().getJobRoleId()));
+            }
+            if(applicationWithAssessmentStatusResponseList == null) {
+                return ok("0");
+            }
+            return ok(toJson(applicationWithAssessmentStatusResponseList));
         }
+        return ok("0");
     }
 
     public static Result getAllSkills(String ids) {
@@ -564,17 +620,17 @@ public class Application extends Controller {
 
     @Security.Authenticated(RecSecured.class)
     public static Result companyInfoHome(Long id) {
-        return ok(views.html.company_details.render());
+        return ok(views.html.Recs.company_details.render());
     }
 
     @Security.Authenticated(RecSecured.class)
     public static Result recruiterInfoHome(Long id) {
-        return ok(views.html.recruiter_details.render());
+        return ok(views.html.Recs.recruiter_details.render());
     }
 
     @Security.Authenticated(RecSecured.class)
     public static Result jobPostInfoHome(Long id) {
-        return ok(views.html.job_post_details.render());
+        return ok(views.html.Recs.job_post_details.render());
     }
 
     public static Result supportAuth() {
@@ -661,10 +717,11 @@ public class Application extends Controller {
                     Interaction interaction = new Interaction(
                             lead.getLeadUUId(),
                             lead.getLeadType(),
-                            ServerConstants.INTERACTION_TYPE_CALL_OUT,
-                            ServerConstants.INTERACTION_NOTE_BLANK,
-                            ServerConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
-                            session().get("sessionUsername")
+                            InteractionConstants.INTERACTION_TYPE_LEAD_STATUS_UPDATE,
+                            InteractionConstants.INTERACTION_NOTE_BLANK,
+                            InteractionConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
+                            session().get("sessionUsername"),
+                            InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE
                     );
                     interaction.save();
                 } else {
@@ -672,10 +729,11 @@ public class Application extends Controller {
                     Interaction interaction = new Interaction(
                             lead.getLeadUUId(),
                             lead.getLeadType(),
-                            ServerConstants.INTERACTION_TYPE_CALL_OUT,
-                            ServerConstants.INTERACTION_NOTE_BLANK,
-                            ServerConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
-                            session().get("sessionUsername")
+                            InteractionConstants.INTERACTION_TYPE_LEAD_STATUS_UPDATE,
+                            InteractionConstants.INTERACTION_NOTE_BLANK,
+                            InteractionConstants.INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE + newType,
+                            session().get("sessionUsername"),
+                            InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE
                     );
                     interaction.save();
                 }
@@ -718,10 +776,10 @@ public class Application extends Controller {
                     }
                     Logger.info("updateLeadStatus invoked leadId:"+leadId+" status:" + leadStatus);
                     lead.update();
-                    interactionNote = ServerConstants.INTERACTION_NOTE_BLANK;
+                    interactionNote = InteractionConstants.INTERACTION_NOTE_BLANK;
 
                 } else {
-                    interactionNote = ServerConstants.INTERACTION_NOTE_BLANK;
+                    interactionNote = InteractionConstants.INTERACTION_NOTE_BLANK;
                 }
 
                 // If call was connected just set the right interaction result
@@ -747,10 +805,11 @@ public class Application extends Controller {
                 Interaction interaction = new Interaction(
                         lead.getLeadUUId(),
                         lead.getLeadType(),
-                        ServerConstants.INTERACTION_TYPE_CALL_OUT,
+                        InteractionConstants.INTERACTION_TYPE_LEAD_STATUS_UPDATE,
                         interactionNote,
                         interactionResult,
-                        session().get("sessionUsername")
+                        session().get("sessionUsername"),
+                        InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE
                 );
                 interaction.save();
 
@@ -766,135 +825,49 @@ public class Application extends Controller {
         return ok("0");
     }
 
+    public static Result getAllNormalJobPosts() {
+        List<JobPost> jobPosts = JobPost.find.where().orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
+        return ok(toJson(jobPosts));
+    }
     public static Result getAllHotJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").findList();
+        List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
         return ok(toJson(jobPosts));
     }
 
     @Security.Authenticated(Secured.class)
     public static Result getAllJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.all();
+        List<JobPost> jobPosts = JobPost.find.where()
+                                             .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
+                                             .orderBy().desc("jobPostUpdateTimestamp")
+                                             .findList();
         return ok(toJson(jobPosts));
     }
 
-    @Security.Authenticated(SecuredUser.class)
-    public static Result getJobApplicationDetailsForGoogleSheet(Integer jobPostId) {
-        JobApplicationGoogleSheetResponse jobApplicationGoogleSheetResponse = new JobApplicationGoogleSheetResponse();
-
-        //get companyInfo + jobPostInfo
-        JobPost jobpost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
-        if(jobpost != null){
-            jobApplicationGoogleSheetResponse.setJobRoleName(jobpost.getJobPostTitle());
-            jobApplicationGoogleSheetResponse.setCompanyName(jobpost.getCompany().getCompanyName());
-        }
-
-        // get candidate information
-        Lead lead = Lead.find.where().eq("leadId", session().get("leadId")).findUnique();
-        if(lead != null) {
-            Candidate candidate = Candidate.find.where().eq("lead_leadId", lead.getLeadId()).findUnique();
-            if(candidate!=null){
-                jobApplicationGoogleSheetResponse.setCandidateCreationTimestamp(candidate.getCandidateCreateTimestamp());
-                jobApplicationGoogleSheetResponse.setCandidateMobile(candidate.getCandidateMobile());
-                if(candidate.getCandidateLastName() == null){
-                    jobApplicationGoogleSheetResponse.setCandidateName(candidate.getCandidateFirstName());
-                } else{
-                    jobApplicationGoogleSheetResponse.setCandidateName(candidate.getCandidateFirstName() + " " +candidate.getCandidateLastName() );
-                }
-                jobApplicationGoogleSheetResponse.setCandidateLeadId(candidate.getLead().getLeadId());
-                if(candidate.getCandidateGender() != null){
-                    jobApplicationGoogleSheetResponse.setCandidateGender(candidate.getCandidateGender());
-                }
-
-                if(candidate.getCandidateTotalExperience() != null){
-                    jobApplicationGoogleSheetResponse.setCandidateTotalExp(candidate.getCandidateTotalExperience());
-                }
-                jobApplicationGoogleSheetResponse.setCandidateIsAssessed(candidate.getCandidateIsAssessed());
-                jobApplicationGoogleSheetResponse.setCandidateIsEmployed(candidate.getCandidateIsEmployed());
-
-                String languagesKnown = "";
-                String candidateJobPref = "";
-                String candidateLocalityPref = "";
-                String candidateSkills = "";
-
-                //Languages Known
-                if(candidate.getLanguageKnownList() != null && candidate.getLanguageKnownList().size() > 0) {
-                    List<LanguageKnown> languageKnownList = candidate.getLanguageKnownList();
-
-                    for(LanguageKnown l : languageKnownList){
-                        languagesKnown += l.getLanguage().getLanguageName() + "(" + l.getUnderstanding() + ", " +
-                                l.getVerbalAbility() + ", " + l.getReadWrite() + "), ";
-                    }
-                }
-
-                //Skill
-                if(candidate.getCandidateSkillList()!= null && candidate.getCandidateSkillList().size() > 0){
-                    List<CandidateSkill> candidateSkillList = candidate.getCandidateSkillList();
-
-                    for(CandidateSkill skill : candidateSkillList){
-                        candidateSkills += skill.getSkill().getSkillName() + ", ";
-                    }
-                }
-
-                if(candidate.getMotherTongue() != null){
-                    jobApplicationGoogleSheetResponse.setCandidateMotherTongue(candidate.getMotherTongue().getLanguageName());
-                }
-
-                if(candidate.getLocality() != null){
-                    jobApplicationGoogleSheetResponse.setCandidateHomeLocality(candidate.getLocality().getLocalityName());
-                }
-                if(candidate.getCandidateCurrentJobDetail() != null){
-                    jobApplicationGoogleSheetResponse.setCandidateCurrentSalary(candidate.getCandidateCurrentJobDetail().getCandidateCurrentSalary());
-                }
-                if(candidate.getCandidateEducation() != null){
-                    jobApplicationGoogleSheetResponse.setCandidateEducation(candidate.getCandidateEducation().getEducation().getEducationName());
-                }
-
-                //Job Pref
-                List<JobPreference> jobRolePrefList = candidate.getJobPreferencesList();
-
-                for(JobPreference job : jobRolePrefList){
-                    candidateJobPref += job.getJobRole().getJobName() + ", ";
-                }
-
-                //Locality Pref
-                List<LocalityPreference> localityPrefList = candidate.getLocalityPreferenceList();
-
-                for(LocalityPreference locality : localityPrefList){
-                    candidateLocalityPref += locality.getLocality().getLocalityName() + ", ";
-                }
-                jobApplicationGoogleSheetResponse.setCandidateProfileStatus(candidate.getCandidateprofilestatus().getProfileStatusName());
-                if(candidate.getCandidateprofilestatus().getProfileStatusId() == ServerConstants.CANDIDATE_STATE_DEACTIVE){
-                    Date expDate = candidate.getCandidateStatusDetail().getStatusExpiryDate();
-                    if(expDate != null){
-                        jobApplicationGoogleSheetResponse.setCandidateExpiryDate(expDate);
-                    } else{
-                        jobApplicationGoogleSheetResponse.setCandidateExpiryDate(null);
-                    }
-                } else{
-                    jobApplicationGoogleSheetResponse.setCandidateExpiryDate(null);
-                }
-
-                jobApplicationGoogleSheetResponse.setLanguageKnown(languagesKnown);
-                jobApplicationGoogleSheetResponse.setCandidateJobPref(candidateJobPref);
-                jobApplicationGoogleSheetResponse.setCandidateLocalityPref(candidateLocalityPref);
-                jobApplicationGoogleSheetResponse.setCandidateSkill(candidateSkills);
-            }
-        }
-        if(Play.isDev(Play.current()) == false){
-            jobApplicationGoogleSheetResponse.setFormUrl(ServerConstants.PROD_GOOGLE_FORM_FOR_JOB_APPLICATION);
-        } else{
-            jobApplicationGoogleSheetResponse.setFormUrl(ServerConstants.DEV_GOOGLE_FORM_FOR_JOB_APPLICATION);
-        }
-        return ok(toJson(jobApplicationGoogleSheetResponse));
-    }
-
     public static Result getAllLocality() {
-        List<Locality> localities = Locality.find.setUseQueryCache(!isDevMode).findList();
+
+        List<String> cityNames = Arrays.asList("Bangalore", "Bengaluru", "Bangalore Rural", "Bangalore Urban", "Bommasandra");
+
+        List<Locality> localities = Locality.find.setUseQueryCache(!isDevMode)
+                .where().in("city", cityNames)
+                .orderBy("localityName").findList();
+
         return ok(toJson(localities));
     }
 
+    public static Result getAllJobsRolesWithJobs() {
+        List<JobRole> jobs = JobRole.find.setUseQueryCache(!isDevMode).orderBy("jobName").findList();
+        List<JobRole> jobRolesToReturn = new ArrayList<JobRole>();
+        for(JobRole jobRole : jobs){
+            List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",jobRole.getJobRoleId()).findList();
+            if(jobPostList.size() > 0){
+                jobRolesToReturn.add(jobRole);
+            }
+        }
+        return ok(toJson(jobRolesToReturn));
+    }
+
     public static Result getAllJobs() {
-        List<JobRole> jobs = JobRole.find.setUseQueryCache(!isDevMode).findList();
+        List<JobRole> jobs = JobRole.find.setUseQueryCache(!isDevMode).orderBy("jobName").findList();
         return ok(toJson(jobs));
     }
 
@@ -914,23 +887,25 @@ public class Application extends Controller {
     }
 
     public static Result getAllLanguage() {
-        List<Language> languages = Language.find.setUseQueryCache(!isDevMode).findList();
+        List<Language> languages = Language.find.setUseQueryCache(!isDevMode).orderBy("languageName").findList();
         return ok(toJson(languages));
     }
 
     public static Result getAllIdProof() {
-        List<IdProof> idProofs = IdProof.find.setUseQueryCache(!isDevMode).findList();
+        List<IdProof> idProofs = IdProof.find.setUseQueryCache(!isDevMode).orderBy("idProofName").findList();
         return ok(toJson(idProofs));
     }
 
     public static Result getAllDegree() {
-        List<Degree> degreeList = Degree.find.setUseQueryCache(!isDevMode).findList();
+        List<Degree> degreeList = Degree.find.setUseQueryCache(!isDevMode).orderBy("degreeName").findList();
         return ok(toJson(degreeList));
     }
 
     @Security.Authenticated(RecSecured.class)
     public static Result getAllCompany() {
-        List<Company> companyList = Company.find.orderBy("companyName").findList();
+        List<Company> companyList = Company.find.where()
+                .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
+                .orderBy("companyName").findList();
         return ok(toJson(companyList));
     }
 
@@ -977,7 +952,7 @@ public class Application extends Controller {
 
     @Security.Authenticated(RecSecured.class)
     public static Result createCompany() {
-        return ok(views.html.create_company.render());
+        return ok(views.html.Recs.create_company.render());
     }
 
     @Security.Authenticated(PartnerSecured.class)
@@ -993,6 +968,7 @@ public class Application extends Controller {
     @Security.Authenticated(Secured.class)
     public static Result getSearchCandidateResult() {
         JsonNode searchReq = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + searchReq );
         if(searchReq == null) {
             return badRequest();
         }
@@ -1020,7 +996,7 @@ public class Application extends Controller {
 
     @Security.Authenticated(PartnerSecured.class)
     public static Result getAllLeadSource() {
-        List<LeadSource> leadSources = LeadSource.find.all();
+        List<LeadSource> leadSources = LeadSource.find.orderBy("leadSourceName").findList();
         return ok(toJson(leadSources));
     }
     @Security.Authenticated(PartnerSecured.class)
@@ -1042,6 +1018,7 @@ public class Application extends Controller {
     @Security.Authenticated(Secured.class)
     public static Result addOrUpdateFollowUp() {
         JsonNode followUp = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + followUp );
         if(followUp == null){
             return badRequest();
         }
@@ -1109,9 +1086,9 @@ public class Application extends Controller {
         List<String> jobRoleIdList = Arrays.asList(jobRoleIds.split("\\s*,\\s*"));
         Query<JobExpQuestion> query = JobExpQuestion.find.query();
         query = query.select("*").fetch("jobRole")
-                    .where()
-                    .in("jobRole.jobRoleId", jobRoleIdList)
-                    .query();
+                .where()
+                .in("jobRole.jobRoleId", jobRoleIdList)
+                .query();
         List<JobExpQuestion> response = query.findList();
         if(response != null){
             return ok(toJson(response));
@@ -1164,6 +1141,18 @@ public class Application extends Controller {
         return ok("0");
     }
 
+    @Security.Authenticated(SecuredUser.class)
+    public static Result ifCandidateExists(String mobile) {
+        if(mobile != null){
+            mobile = FormValidator.convertToIndianMobileFormat(mobile);
+            Candidate existingCandidate = CandidateService.isCandidateExists(mobile);
+            if(existingCandidate != null) {
+                return ok("1");
+            }
+        }
+        return ok("0");
+    }
+
     @Security.Authenticated(PartnerSecured.class)
     public static Result getAllDeactivationReason() {
         List<Reason> deactivationReasons = Reason.find.all();
@@ -1173,6 +1162,7 @@ public class Application extends Controller {
     @Security.Authenticated(SuperSecured.class)
     public static Result getDeactivatedCandidateList() {
         JsonNode deactivatedCandidateJsonNode = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + deactivatedCandidateJsonNode );
         if(deactivatedCandidateJsonNode == null){
             return badRequest();
         }
@@ -1191,6 +1181,7 @@ public class Application extends Controller {
 
     public static Result deactiveToActive() {
         JsonNode deactiveToActiveJson = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + deactiveToActiveJson );
         if(deactiveToActiveJson == null){
             return badRequest();
         }
@@ -1208,5 +1199,277 @@ public class Application extends Controller {
 
     public static Result postJob() {
         return redirect("http://goo.gl/Dpsvcn");
+    }
+    public static Result renderPageNavBar() {
+        return ok(views.html.Fragment.nav_bar.render());
+    }
+    public static Result renderPageNavBarLoggedIn() {
+        return ok(views.html.Fragment.nav_bar_logged_in.render());
+    }
+    public static Result renderPageFooter() {
+        return ok(views.html.Fragment.footer.render());}
+
+    public static Result renderJobPostCards() { return ok(views.html.Fragment.hot_jobs_card_view.render());}
+    public static Result renderShowAllJobs() { return ok(views.html.Fragment.show_all_jobs_page.render());}
+    public static Result pageNotFound() { return ok(views.html.page_not_found.render());}
+    public static Result renderJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
+        return ok(views.html.Fragment.posted_job_details.render(jobCompany,jobTitle));
+    }
+
+    public static Result getJobPostDetails(String jobTitle, String jobLocation, String jobCompany, long jobId) {
+        JobPost jobPost = JobPost.find.where().eq("JobPostId",jobId).findUnique();
+        if (jobPost != null) {
+            return ok(toJson(jobPost));
+        }
+        return ok("Error");
+    }
+    public static Result renderJobRoleJobPage(String rolePara, Long idPara) {
+        return ok(views.html.Fragment.job_role_page.render(rolePara));
+    }
+
+    public static Result getJobRoleWiseJobPosts(String rolePara, Long idPara) {
+        List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
+        return ok(toJson(jobPostList));
+    }
+
+    public static Result getAllCompanyLogos() {
+        List<Company> companyList = Company.find.where()
+                .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
+                .orderBy("companyName").findList();
+        return ok(toJson(companyList));
+    }
+
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result scrapArena() {
+        return ok(views.html.ScrapArena.render());
+    }
+
+    public static Result checkCandidateSession() {
+        String sessionCandidateId = session().get("candidateId");
+        if(sessionCandidateId != null) {
+            Auth existingAuth = Auth.find.where().eq("candidateId", sessionCandidateId).findUnique();
+            if(existingAuth != null){
+                if(existingAuth.getAuthStatus() == 1){
+                    return ok("1");
+                } else{
+                    return ok("0"); //auth is not verified
+                }
+            }
+            return ok("1");
+        } else{
+            return ok("0");
+        }
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result getAssessmentQuestion(String jobRoleIds, String jobPostIds, Integer limit) {
+
+        /*
+        *  Since the flow is such that assessment is triggered only if user is logged in
+        *  and if jobroleid is null then jobpostid is used to resolve jobroleid and then passed to getQuestion
+        *
+        */
+        if(session().get("candidateId") != null){
+            Long candidateId = Long.parseLong(session().get("candidateId"));
+            List<Long> jobRoleIdList = new ArrayList<>();
+            if (jobRoleIds != null && !jobRoleIds.equalsIgnoreCase("null")) {
+                jobRoleIds = jobRoleIds.replaceAll("[^0-9,]", "");
+                if (jobRoleIds.isEmpty()) {
+                    return ok("Error ! wrong param value");
+                }
+                List<String> jobRoleIdStrList = Arrays.asList(jobRoleIds.split("\\s*,\\s*"));
+                if (jobRoleIdStrList.size() > 0) {
+                    for (String roleId: jobRoleIdStrList) {
+                        if(roleId.isEmpty() || roleId.length() > 3) continue;
+                        jobRoleIdList.add(Long.parseLong(roleId));
+                    }
+                }
+            } else {
+                if (jobPostIds != null && !jobPostIds.equalsIgnoreCase("null")) {
+                    jobPostIds = jobPostIds.replaceAll("[^0-9,]", "");
+                    if (jobPostIds.isEmpty()) {
+                        return ok("Error ! wrong param value");
+                    }
+                    List<String> jobPostIdStrList = Arrays.asList(jobPostIds.split("\\s*,\\s*"));
+                    List<Long> jobPostIdList = new ArrayList<>();
+                    if (jobPostIdStrList.size() > 0) {
+                        for (String jobPostId: jobPostIdStrList) {
+                            if(jobPostId.isEmpty() || jobPostId.length() > 3) continue;
+                            jobPostIdList.add(Long.parseLong(jobPostId));
+                        }
+                    }
+                    List<JobPost> jobPostList = JobPost.find.where().in("jobPostId", jobPostIdList).findList();
+                    for (JobPost jobPost : jobPostList) {
+                        if (!jobRoleIdList.contains(jobPost.getJobRole().getJobRoleId())){
+                            jobRoleIdList.add(jobPost.getJobRole().getJobRoleId());
+                        }
+                    }
+                } else {
+                    Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
+                    for (JobPreference jobPreference : candidate.getJobPreferencesList()) {
+                        jobRoleIdList.add(jobPreference.getJobRole().getJobRoleId());
+                    }
+                }
+            }
+            if (jobRoleIdList.size() == 0) {
+                return ok("NA");
+            }
+            List<AssessmentService.JobRoleWithAssessmentBundle> assessmentBundleList = AssessmentService.getJobRoleIdsVsIsAssessedList(candidateId, jobRoleIdList);
+
+            if (assessmentBundleList != null && assessmentBundleList.size() > 0) {
+                jobRoleIdList = new ArrayList<>();
+                for(AssessmentService.JobRoleWithAssessmentBundle bundle : assessmentBundleList){
+                    if (!bundle.isAssessed()) {
+                        jobRoleIdList.add(bundle.getJobRoleId());
+                    }
+                }
+            }
+            if (jobRoleIdList.size() == 0) {
+                return ok("OK");
+            }
+            List<AssessmentQuestion> assessmentQuestionList = AssessmentService.getQuestions(jobRoleIdList);
+
+            if (assessmentQuestionList.size() > 0) {
+                return ok(toJson(assessmentQuestionList));
+            }
+        }
+        return ok("NA");
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result submitAssessment() {
+        JsonNode assessmentRequestJson = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + assessmentRequestJson );
+        if(assessmentRequestJson == null){
+            return badRequest();
+        }
+        AssessmentRequest assessmentRequest= new AssessmentRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            assessmentRequest = newMapper.readValue(assessmentRequestJson.toString(), AssessmentRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ok(toJson(AssessmentService.addAssessedInfoToGS(assessmentRequest, Long.parseLong(session().get("candidateId")))));
+    }
+
+    public static Result checkNavBar() {
+        if (session().get("partnerId") != null) {
+            // partner logged in
+            return ok("2");
+        } else if (session().get("sessionId") != null) {
+            // candidate logged in
+            return ok("1");
+        } else {
+            return ok("0");
+        }
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result getCandidateJobPrefWithAssessmentStatus(Integer limit) {
+        String candidateId = session().get("candidateId");
+        if(candidateId != null) {
+            List<JobPreference> jobPreferenceList;
+            if (limit!=null){
+                jobPreferenceList = JobPreference.find.where().eq("candidateId", candidateId).setMaxRows(limit).findList();
+            } else {
+                jobPreferenceList = JobPreference.find.where().eq("candidateId", candidateId).findList();
+            }
+            List<CandidateJobPrefs.JobPrefWithAssessmentBundle> jobPrefWithAssessmentBundleList = AssessmentService.getJobPrefVsIsAssessedList(Long.parseLong(candidateId), jobPreferenceList);
+
+            if (jobPrefWithAssessmentBundleList != null) {
+                return ok(toJson(jobPrefWithAssessmentBundleList));
+            }
+        }
+        return ok("0");
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result getJobPostAppliedStatus(Long jobPostId) {
+        String candidateId = session().get("candidateId");
+        if(jobPostId != null && candidateId != null){
+            JobApplication jobApplication = JobApplication.find.where()
+                    .eq("candidateId", candidateId)
+                    .eq("jobPostId", jobPostId).findUnique();
+            if(jobApplication != null){
+                return ok("true");
+            } else {
+                return ok("false");
+            }
+        }
+        return ok("NA");
+    }
+
+    public static Result getRelevantJobsPostsForCandidate(long id) {
+        Candidate existingCandidate = Candidate.find.where().eq("candidateId", id).findUnique();
+        if (existingCandidate != null) {
+            return ok(toJson(JobSearchService.getRelevantJobsPostsForCandidate(FormValidator.convertToIndianMobileFormat(existingCandidate.getCandidateMobile()))));
+        }
+        return ok("ok");
+    }
+
+    @Security.Authenticated(RecSecured.class)
+    public static Result getAllTimeSlots(){
+        List<InterviewTimeSlot> interviewTimeSlotList = InterviewTimeSlot.find.findList();
+        return ok(toJson(interviewTimeSlotList));
+    }
+
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result updateAllRelevantJobCategories() {
+        return ok(toJson(JobRelevancyEngine.updateAllRelevantJobCategories()));
+    }
+
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result getRelatedJobRole(String format, String jobRoleIds) {
+        List<RelatedJobRole> relatedJobRoleList;
+        if(jobRoleIds != null) {
+            relatedJobRoleList = RelatedJobRole.find.where().in("jobRoleId", jobRoleIds).findList();
+        } else {
+            relatedJobRoleList = RelatedJobRole.find.all();
+        }
+
+        Map<Object, List<Object>> relevantJobs = new LinkedHashMap<>();
+        if (format != null) {
+            int mode = format.equalsIgnoreCase("only_id") ? 1 : format.equalsIgnoreCase("only_name") ? 2 : format.equalsIgnoreCase("object") ? 3 : 4;
+            Long prevJobRoleId = null;
+            for (RelatedJobRole relatedJobRole : relatedJobRoleList) {
+                List relatedJobList;
+                if (mode == 1) {
+                    relatedJobList = relevantJobs.get(relatedJobRole.getJobRole().getJobRoleId());
+                } else if (mode == 2) {
+                    relatedJobList = relevantJobs.get(relatedJobRole.getJobRole().getJobName());
+                } else if (mode == 3) {
+                    relatedJobList = relevantJobs.get(relatedJobRole.getJobRole().getJobRoleId());
+                } else {
+                    return badRequest();
+                }
+                if (relatedJobList == null){
+                    relatedJobList = new ArrayList<>();
+                    if (mode == 1) {
+                        relevantJobs.put( relatedJobRole.getJobRole().getJobRoleId(), relatedJobList);
+                    } else if (mode == 2) {
+                        relevantJobs.put( relatedJobRole.getJobRole().getJobName(), relatedJobList);
+                    } else if (mode == 3) {
+                        relevantJobs.put( relatedJobRole.getJobRole().getJobRoleId(), relatedJobList);
+                    } else {
+                        return badRequest();
+                    }
+                }
+                if (prevJobRoleId == null || prevJobRoleId != relatedJobRole.getJobRole().getJobRoleId()) {
+                    prevJobRoleId = relatedJobRole.getJobRole().getJobRoleId();
+                } else {
+                    if (mode == 1) {
+                        relatedJobList.add(relatedJobRole.getRelatedJobRole().getJobRoleId());
+                    } else if (mode == 2) {
+                        relatedJobList.add(relatedJobRole.getRelatedJobRole().getJobName());
+                    } else if (mode == 3) {
+                        relatedJobList.add(relatedJobRole.getRelatedJobRole());
+                    } else {
+                        return badRequest();
+                    }
+                }
+            }
+        }
+        return ok(toJson(relevantJobs));
     }
 }

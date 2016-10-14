@@ -46,7 +46,34 @@ function executeAlphaRequest(mobile){
     }
 }
 
-function constructDataForTable(tableName, row) {
+function constructTableForRelevantJobs(rows) {
+
+    var data = new google.visualization.DataTable();
+    var tableDivId = 'job_relevancy_table_div';
+    if($('#job-relevancy-table-content')){
+        $(tableDivId).empty();
+    }
+
+    if(rows != null){
+        data.addColumn('string', "Job Role");
+        data.addColumn('string', "Relevant Job Role");
+
+        var googleTableRows = [];
+
+        $.each( rows, function( key, value) {
+            var googleRowOneRow = [];
+            googleTableRows.push([key, value.join(", ")]);
+        });
+        data.addRows(googleTableRows);
+
+        var table = new google.visualization.Table(document.getElementById(tableDivId ));
+        table.draw(data, {showRowNumber: true, width: '100%', height: '100%'});
+
+        pushToSnackbar("Relevant Job Roles Fetched Successfully !!");
+    }
+}
+
+function constructTableForData(tableName, row) {
     // generates every thing only for one table
     var data = new google.visualization.DataTable();
 
@@ -59,12 +86,12 @@ function constructDataForTable(tableName, row) {
     $('#tabular-content').append($('<div id="csv_'+tableName+'"></div><div id="'+tableDivId+'"></div>'));
     $('#chart_container').append($('<div id="chart_'+tableName+'"></div>'));
 
-    if(row != null){
+    if (row != null) {
         $.each( row, function( rName, postData) {
             var formatedDate = new Date(rName).toLocaleDateString();
             var rValue = {"FormattedDate": formatedDate};
 
-            $.each ( postData, function (rowIndex, innerData){
+            $.each ( postData, function (rowIndex, innerData) {
                 $.extend(rValue, innerData);
                 //rowArray.push(rValue);
                 var googleRowOneRow = [];
@@ -72,7 +99,7 @@ function constructDataForTable(tableName, row) {
                     //console.log( "cValue:"+value );
                     googleRowOneRow.push(""+value);
                     /* Add the column name once */
-                    if(f){
+                    if (f) {
                         data.addColumn('string', cName);
                     }
                 });
@@ -96,7 +123,7 @@ function constructDataForTable(tableName, row) {
         var container = document.getElementById('toolbar_div_'+tableDivId);
         google.visualization.drawToolbar(container, components);*/
 
-        var table = new google.visualization.Table(document.getElementById(tableDivId ));
+        var table = new google.visualization.Table(document.getElementById(tableDivId));
         table.draw(data, {showRowNumber: true, width: '100%', height: '100%'});
 
     }
@@ -108,7 +135,7 @@ function renderAnalyticsResult(analyticsResult) {
         $('#tabular-content').empty();
         $.each( analyticsResult, function( key, value ) {
             //console.log("ar: " + key);
-            constructDataForTable(key, value);
+            constructTableForData(key, value);
         });
     }
 }
@@ -295,6 +322,75 @@ function saveDeactivationChanges() {
     }
 }
 
+function getJSON(url, type) {
+    // Return a new promise.
+    if (type == null) {
+        return "Error! GET/POST not specified.";
+    }
+    if (url == null) {
+        return "Error! URL not specified.";
+    }
+    return new Promise(function(resolve, reject) {
+        // Do the usual XHR stuff
+        var req = new XMLHttpRequest();
+        req.open(type, url);
+
+        req.onload = function() {
+            // This is called even on 404 etc
+            // so check the status
+            if (req.status == 200) {
+                // Resolve the promise with the response text
+                resolve(JSON.parse(req.response));
+            }
+            else {
+                // Otherwise reject with the status text
+                // which will hopefully be a meaningful error
+                reject(Error(req.statusText));
+            }
+        };
+
+        // Handle network errors
+        req.onerror = function() {
+            reject(Error("Network Error"));
+        };
+
+        // Make the request
+        req.send();
+    });
+}
+
+function renderUpdateRelevantJobRoles(data) {
+    if(data != null) {
+        var totalUpdates = data.length;
+        pushToSnackbar("Relevant JobRoles Re-computed and Updated ("+totalUpdates+") Successfully !");
+        fetchAndDisplayRelevantJobs();
+    } else {
+        pushToSnackbar("Unsuccessful operation. Check Logs !!");
+    }
+}
+
+function updateRelevantJobRoles() {
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/api/compute/updateAllRelevantJobCategories",
+            data: false,
+            success: renderUpdateRelevantJobRoles
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function fetchAndDisplayRelevantJobs() {
+    getJSON('/api/getRelatedJobRole/?format=only_name', 'POST').then(function(response) {
+        constructTableForRelevantJobs(response)
+    }, function(error) {
+        console.error("Failed!", error);
+    }).catch(function() {
+        pushToSnackbar('Could not update Relevant JobRoles Table !!');
+    });
+}
 
 $(function(){
     $("#btnDeActiveToActive").click(function(){
@@ -306,6 +402,12 @@ $(function(){
     });
     $( "#tabularTab" ).click(function() {
         showDrawerElements();
+    });
+    $( "#updateRelevantJobRoles" ).click(function() {
+        updateRelevantJobRoles();
+    });
+    $( "#jobRelevancyTab" ).click(function() {
+        fetchAndDisplayRelevantJobs();
     });
 
     var dialog = document.querySelector('dialog');

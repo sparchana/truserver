@@ -3,6 +3,8 @@ package models.entity.Static;
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.CacheStrategy;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import models.entity.Intelligence.RelatedJobRole;
 import models.entity.OM.JobHistory;
 import models.entity.OM.JobPreference;
 import models.entity.OM.JobToSkill;
@@ -41,6 +43,13 @@ public class JobRole extends Model {
     @JsonBackReference
     @OneToMany(mappedBy = "jobRole", cascade = CascadeType.REMOVE)
     private List<JobToSkill> jobToSkillList;
+
+    @JsonBackReference
+    @OneToMany(mappedBy = "jobRole", cascade = CascadeType.REMOVE)
+    private List<AssessmentQuestion> assessmentQuestionList;
+
+    @Column(name = "JobRoleIcon", columnDefinition = "varchar(255) null")
+    private String jobRoleIcon;
 
     public static Finder<String, JobRole> find = new Finder(JobRole.class);
 
@@ -90,5 +99,21 @@ public class JobRole extends Model {
 
     public void setJobToSkillList(List<JobToSkill> jobToSkillList) {
         this.jobToSkillList = jobToSkillList;
+    }
+
+    public String getJobRoleIcon() {
+        return jobRoleIcon;
+    }
+
+    public void setJobRoleIcon(String jobRoleIcon) {
+        this.jobRoleIcon = jobRoleIcon;
+    }
+
+    public List<AssessmentQuestion> getAssessmentQuestionList() {
+        return assessmentQuestionList;
+    }
+
+    public void setAssessmentQuestionList(List<AssessmentQuestion> assessmentQuestionList) {
+        this.assessmentQuestionList = assessmentQuestionList;
     }
 }

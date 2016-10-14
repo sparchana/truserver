@@ -56,6 +56,7 @@
                     <!-- <a href="#visual-tab" class="mdl-layout__tab is-active">Visual</a> -->
                     <a href="#tabular-tab" class="mdl-layout__tab" id="tabularTab">Metrics Tab</a>
                     <a href="#deactivated-candidate-tab" class="mdl-layout__tab" id="deactivatedCandidateTab">De-Active/Active Tab</a>
+                    <a href="#job-relevancy-tab" class="mdl-layout__tab" id="jobRelevancyTab">Job Relevancy Tab</a>
                 </div>
             </header>
 
@@ -65,13 +66,13 @@
                 <nav class="mdl-navigation">
                     <form id="drawerInputForm">
                         <div class="mdl-grid" id="fromThisDate-grid">
-                            <div class="mdl-cell mdl-cell--3-col">To: </div>
+                            <div class="mdl-cell mdl-cell--3-col">From: </div>
                             <div class="mdl-cell mdl-cell--9-col">
                                 <input id="fromThisDate" name="fromThisDate" type="date" class="mdl-textfield__input"  data-date-inline-picker="true"/>
                             </div>
                         </div>
                         <div class="mdl-grid" id="toThisDate-grid">
-                            <div class="mdl-cell mdl-cell--3-col">From: </div>
+                            <div class="mdl-cell mdl-cell--3-col">To: </div>
                             <div class="mdl-cell mdl-cell--9-col">
                                 <input id="toThisDate" name="toThisDate" type="date" class="mdl-textfield__input"  data-date-inline-picker="true"/>
                             </div>
@@ -102,6 +103,7 @@
                         <div id="table_div"></div>
                     </div>
                 </section>
+                <!-- De-Activate Tab Content-->
                 <section class="mdl-layout__tab-panel" id="deactivated-candidate-tab">
                     <div class="page-content">
                         <table id="deactivatedCandidateTable" class="table table-striped table-bordered" style="margin-top: 16px;display: none; table-layout: fixed; overflow-x: scroll;" cellspacing="0" width="100%">
@@ -120,6 +122,12 @@
                         <button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="btnDeActiveToActive">
                             Save
                         </button>
+                    </div>
+                </section>
+                <!-- Job Relevancy Tab Content -->
+                <section class="mdl-layout__tab-panel is-active" id="job-relevancy-tab">
+                    <div class="page-content" id="job-relevancy-table-content">
+                        <div id="job_relevancy_table_div"></div>
                     </div>
                 </section>
 
@@ -152,6 +160,7 @@
         <!-- top right dot menu item-->
         <ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
         for="tru-menu-lower-right">
+            <a class="mdl-navigation__link" href="#" id="updateRelevantJobRoles"><li class="mdl-menu__item">Update Relevant JobRoles</li></a>
             <a class="mdl-navigation__link show-modal" href="#"><li class="mdl-menu__item">Perish</li></a>
             <a class="mdl-navigation__link" href="/logout"><li class="mdl-menu__item">Logout</li></a>
         </ul><!-- top right dot menu item ends-->

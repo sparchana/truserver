@@ -180,6 +180,11 @@ public class Candidate extends Model {
     @Column(name = "CandidateThirdMobile", columnDefinition = "varchar(13) null")
     private String candidateThirdMobile;
 
+    @Column(name = "CandidatePlaceLat", columnDefinition = "double null")
+    private Double candidateLocalityLat;
+
+    @Column(name = "CandidatePlaceLng", columnDefinition = "double null")
+    private Double candidateLocalityLng;
 
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
@@ -518,6 +523,25 @@ public class Candidate extends Model {
 
     public void setCandidateThirdMobile(String candidateThirdMobile) {
         this.candidateThirdMobile = candidateThirdMobile;
+    }
+
+    public Double getCandidateLocalityLat() {
+        return candidateLocalityLat;
+    }
+
+    public void setCandidateLocalityLat(Double candidateLocalityLat) {
+        this.candidateLocalityLat = candidateLocalityLat;
+    }
+
+    public Double getCandidateLocalityLng() {
+        return candidateLocalityLng;
+    }
+
+    public void setCandidateLocalityLng(Double candidateLocalityLng) {
+        this.candidateLocalityLng = candidateLocalityLng;
+    }
+    public String getCandidateFullName(){
+        return this.candidateFirstName + " " + (this.candidateLastName != null ? this.candidateLastName : "");
     }
 }
 

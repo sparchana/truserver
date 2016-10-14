@@ -1,5 +1,6 @@
 package models.util;
 
+import controllers.businessLogic.InteractionService;
 import play.Logger;
 import play.Play;
 
@@ -19,7 +20,7 @@ import static api.ServerConstants.devTeamMobile;
 public class SmsUtil {
 
     public static String sendSms(String toPhone, String msg) {
-        boolean isDevMode = play.api.Play.isDev(play.api.Play.current());
+        boolean isDevMode = play.api.Play.isDev(play.api.Play.current()) || play.api.Play.isTest(play.api.Play.current());
 
         String uname = Play.application().configuration().getString("sms.gateway.user");
         String id = Play.application().configuration().getString("sms.gateway.password");
@@ -58,31 +59,46 @@ public class SmsUtil {
     public static void sendTryingToCallSms(String mobile) {
 
         String msg = "Hello! We tried calling you from www.TruJobs.in to help you with job search. "
-        + "We will try again in sometime or you can call us on 8880007799";
+        + "We will try again in sometime or you can call us on 8880007799. Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
 
         sendSms(mobile, msg);
 
     }
 
-    public static void sendOTPSms(int otp, String mobile) {
-        String msg = "Welcome to www.Trujobs.in! Use OTP " + otp + " to register and start your job search";
+    public static void sendOTPSms(int otp, String mobile, InteractionService.InteractionChannelType channelType) {
+        String msg = "Use OTP " + otp + " to register and start your job search. Welcome to www.Trujobs.in!";
+        if(channelType == InteractionService.InteractionChannelType.SELF){
+            msg += " Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
+        }
         sendSms(mobile, msg);
     }
 
-    public static void sendResetPasswordOTPSms(int otp, String mobile) {
-        String msg = "Welcome to www.Trujobs.in! Use OTP " + otp + " to reset your password";
+    public static void sendPartnerOTPSms(int otp, String mobile) {
+        String msg = "Use OTP " + otp + " to register as a partner with TruJobs. Welcome to www.Trujobs.in!";
         sendSms(mobile, msg);
     }
 
-    public static void sendJobApplicationSms(String candidateName, String jobTitle, String company, String mobile, String prescreenLocation) {
-        String msg = "Hi " + candidateName + ", you have successfully applied to " + jobTitle + " job at " + company + " @" + prescreenLocation + ". Call us at +91 8048039089 to know about the status of your job application. All the best! www.trujobs.in";
+    public static void sendResetPasswordOTPSms(int otp, String mobile, InteractionService.InteractionChannelType channelType) {
+        String msg = "Use OTP " + otp + " to reset your password. Welcome to www.Trujobs.in!";
+        if(channelType == InteractionService.InteractionChannelType.SELF){
+            msg += " Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
+        }
+        sendSms(mobile, msg);
+    }
+
+    public static void sendJobApplicationSms(String candidateName, String jobTitle, String company, String mobile, String prescreenLocation, InteractionService.InteractionChannelType channelType) {
+        String msg = "Hi " + candidateName + ", you have applied to " + jobTitle + " job at " + company + " @" + prescreenLocation + ".  Please complete the assessment to maximize your chances of getting an interview call." +
+                "Call us at +91 8048039089 to know about the status of your job application. All the best! www.trujobs.in.";
+        if(channelType == InteractionService.InteractionChannelType.SELF){
+            msg += " Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
+        }
         sendSms(mobile, msg);
     }
 
     public static void sendWelcomeSmsFromSupport(String name, String mobile, String password)
     {
         String msg = "Hi " + name + ", Welcome to www.Trujobs.in! Your login details are Username: "
-                + mobile.substring(3, 13) + " and password: " + password + ". Use this to login at trujobs.in !!";
+                + mobile.substring(3, 13) + " and password: " + password + ". Log on to trujobs.in or download Trujobs app at http://bit.ly/2d7zDqR to login and apply to jobs!!";
 
         sendSms(mobile, msg);
     }
@@ -90,8 +106,15 @@ public class SmsUtil {
     public static void sendWelcomeSmsFromWebsite(String name, String mobile)
     {
         String msg = "Hi " + name + ", Welcome to Trujobs.in! "
-                + "Complete your profile and skill assessment today to begin your job search";
+                + "Complete your profile and skill assessment today to begin your job search or download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
 
+        sendSms(mobile, msg);
+    }
+
+    public static void sendWelcomeSmsToPartnerFromWebsite(String name, String mobile)
+    {
+        String msg = "Hi " + name + ", Welcome to Trujobs.in! "
+                + "You are successfully registered as a partner. Login now to add your candidates and help them find jobs!";
         sendSms(mobile, msg);
     }
 
@@ -113,6 +136,30 @@ public class SmsUtil {
 
         String msg = "Hi DevTeam, Duplicate Candidate found with phone number " + mobile + "! "
                 + "Please remove the Duplicate Entry";
+
+        sendSms(devTeamMobile.get("Sandy"), msg);
+        sendSms(devTeamMobile.get("Adarsh"), msg);
+        sendSms(devTeamMobile.get("Archana"), msg);
+    }
+
+    public static void sendDuplicatePartnerSmsToDevTeam(String mobile)
+    {
+        // Idea is to keep getting irritated by receiving msg until issue is resolved :D
+
+        String msg = "Hi DevTeam, Duplicate partner found with phone number " + mobile + "! "
+                + "Please remove the Duplicate Entry";
+
+        sendSms(devTeamMobile.get("Sandy"), msg);
+        sendSms(devTeamMobile.get("Adarsh"), msg);
+        sendSms(devTeamMobile.get("Archana"), msg);
+    }
+
+    public static void sendLocalityNotResolvedSmsToDevTeam(String unResolvedLocality, String city, String state)
+    {
+        // Idea is to tweak AddressResolver based on unresolved lat/lng (s)  :D
+
+        String msg = "Bonjour DevTeam !! AddressResolver was not able to resolve PredictedLocality: "+unResolvedLocality+" to a Proper Locality Object! "
+                + "Max Resolved Info:- City: "+city+" State:"+state;
 
         sendSms(devTeamMobile.get("Sandy"), msg);
         sendSms(devTeamMobile.get("Adarsh"), msg);
@@ -147,5 +194,31 @@ public class SmsUtil {
             e.printStackTrace();
         }
         return deliveryReport;
+    }
+
+    public static void sendOtpToPartnerCreatedCandidate(int otp, String mobile) {
+        String msg = "Hi. You have been registered by on TruJobs for job search. Provide OTP: " + otp + " to complete registration. Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
+        sendSms(mobile, msg);
+    }
+
+    public static void sendJobApplicationSmsViaPartner(String candidateFirstName, String jobPostTitle, String companyName, String candidateMobile, String localityName, String partnerName) {
+        String msg = "Hi " + candidateFirstName + ", we have received your job application for " + jobPostTitle + " job at " + companyName + " @" + localityName + " from our recruitment partner (" + partnerName + ").  " +
+                "Kindly login at www.trujobs.in and access 'View Applied Jobs' section to complete assessment! Download Trujobs app at http://bit.ly/2d7zDqR and apply to jobs!";
+        sendSms(candidateMobile, msg);
+    }
+
+    public static void sendJobApplicationSmsToPartner(String candidateFirstName, String jobPostTitle, String companyName, String partnerMobile, String localityName, String partnerFirstName) {
+        String msg = "Hi " + partnerFirstName + ", you have applied to " + jobPostTitle + " job at " + companyName + " @" + localityName + " for your candidate - " + candidateFirstName +". To know more about status of Applications, call us at +91 8048039089. www.trujobs.in";
+        sendSms(partnerMobile, msg);
+    }
+
+    public static void sendRecruiterOTPSms(int otp, String mobile) {
+        String msg = "Use OTP " + otp + " to register as a recruiter. Welcome to www.Trujobs.in!";
+        sendSms(mobile, msg);
+    }
+
+    public static void sendRecruiterLeadMsg(String mobile) {
+        String msg = "Welcome to www.Trujobs.in! Thank you for getting in touch with us. Our business team will contact you within 24 hours!";
+        sendSms(mobile, msg);
     }
 }
