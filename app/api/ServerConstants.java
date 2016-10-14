@@ -122,6 +122,10 @@ public class ServerConstants {
     public static final String JD_TABLE_AGE = "age";
     public static final String JD_TABLE_EXPERIENCE = "experience";
     public static final String JD_TABLE_EDUCATION = "education";
+    public static final String JD_TABLE_SALARY = "salary";
+    public static final String JD_TABLE_GENDER = "gender";
+    public static final String JD_TABLE_LOCATION = "location";
+    public static final String JD_TABLE_WORKTIMINGS = "worktimings";
 
     public static Map<String, String> devTeamMobile;
     static {

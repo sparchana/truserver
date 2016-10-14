@@ -362,6 +362,63 @@ public class JobService {
                 }
             }
         }
+
+        // common entities
+        if ( jobPost.getJobPostMinSalary() != null) {
+            PreScreenRequirement preScreenRequirementSalary = singleEntityMap.get(ServerConstants.JD_TABLE_SALARY);
+            if (preScreenRequirementSalary == null) {
+                preScreenRequirementSalary = new PreScreenRequirement();
+                preScreenRequirementSalary.setCategory(ServerConstants.CATEGORY_JD_REQ_CATEGORY);
+                preScreenRequirementSalary.setJobPost(jobPost);
+            }
+            preScreenRequirementSalary.setRequirementsCategory(requirementsCategoryMap.get(ServerConstants.JD_TABLE_SALARY));
+            preScreenRequirementSalary.save();
+        } else {
+            PreScreenRequirement preScreenRequirementSalary = singleEntityMap.get(ServerConstants.JD_TABLE_SALARY);
+            if(preScreenRequirementSalary != null) preScreenRequirementSalary.delete();
+        }
+
+        if ( jobPost.getGender() != null) {
+            PreScreenRequirement preScreenRequirementGender = singleEntityMap.get(ServerConstants.JD_TABLE_GENDER);
+            if (preScreenRequirementGender == null) {
+                preScreenRequirementGender = new PreScreenRequirement();
+                preScreenRequirementGender.setCategory(ServerConstants.CATEGORY_JD_REQ_CATEGORY);
+                preScreenRequirementGender.setJobPost(jobPost);
+            }
+            preScreenRequirementGender.setRequirementsCategory(requirementsCategoryMap.get(ServerConstants.JD_TABLE_GENDER));
+            preScreenRequirementGender.save();
+        } else {
+            PreScreenRequirement preScreenRequirementGender = singleEntityMap.get(ServerConstants.JD_TABLE_GENDER);
+            if(preScreenRequirementGender != null) preScreenRequirementGender.delete();
+        }
+
+        if ( jobPost.getJobPostToLocalityList() != null && jobPost.getJobPostToLocalityList().size()>0) {
+            PreScreenRequirement preScreenRequirementLocation = singleEntityMap.get(ServerConstants.JD_TABLE_LOCATION);
+            if (preScreenRequirementLocation == null) {
+                preScreenRequirementLocation = new PreScreenRequirement();
+                preScreenRequirementLocation.setCategory(ServerConstants.CATEGORY_JD_REQ_CATEGORY);
+                preScreenRequirementLocation.setJobPost(jobPost);
+            }
+            preScreenRequirementLocation.setRequirementsCategory(requirementsCategoryMap.get(ServerConstants.JD_TABLE_LOCATION));
+            preScreenRequirementLocation.save();
+        } else {
+            PreScreenRequirement preScreenRequirementLocation = singleEntityMap.get(ServerConstants.JD_TABLE_LOCATION);
+            if(preScreenRequirementLocation != null) preScreenRequirementLocation.delete();
+        }
+
+        if ( jobPost.getJobPostWorkingDays() != 0 && jobPost.getJobPostWorkingDays() != null && jobPost.getJobPostShift() != null) {
+            PreScreenRequirement preScreenRequirementWorkTimings = singleEntityMap.get(ServerConstants.JD_TABLE_WORKTIMINGS);
+            if (preScreenRequirementWorkTimings == null) {
+                preScreenRequirementWorkTimings = new PreScreenRequirement();
+                preScreenRequirementWorkTimings.setCategory(ServerConstants.CATEGORY_JD_REQ_CATEGORY);
+                preScreenRequirementWorkTimings.setJobPost(jobPost);
+            }
+            preScreenRequirementWorkTimings.setRequirementsCategory(requirementsCategoryMap.get(ServerConstants.JD_TABLE_WORKTIMINGS));
+            preScreenRequirementWorkTimings.save();
+        } else {
+            PreScreenRequirement preScreenRequirementWorkTimings = singleEntityMap.get(ServerConstants.JD_TABLE_WORKTIMINGS);
+            if(preScreenRequirementWorkTimings != null) preScreenRequirementWorkTimings.delete();
+        }
     }
 
     private static List<JobPostLanguageRequirement> getJobPostLanguageRequirement(List<Long> jobPostLanguageList, JobPost newJobPost) {

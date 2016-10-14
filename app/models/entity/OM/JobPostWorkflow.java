@@ -9,6 +9,7 @@ import models.entity.Static.JobPostWorkflowStatus;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 /**
  * Created by zero on 10/10/16.
@@ -23,7 +24,7 @@ public class JobPostWorkflow extends Model {
     private long jobPostWorkflowId;
 
     @Column(name = "job_post_workflow_uuid", columnDefinition = "varchar(255) not null", nullable = false)
-    private String jobPostWorkflowUUId = ""; // UUID
+    private String jobPostWorkflowUUId; // UUID
 
     @ManyToOne
     @JsonManagedReference
@@ -48,6 +49,7 @@ public class JobPostWorkflow extends Model {
 
     public JobPostWorkflow() {
         this.creationTimestamp = new Timestamp(System.currentTimeMillis());
+        this.jobPostWorkflowUUId = UUID.randomUUID().toString();
     }
 
     public static Model.Finder<String, JobPostWorkflow> find = new Model.Finder(JobPostWorkflow.class);
