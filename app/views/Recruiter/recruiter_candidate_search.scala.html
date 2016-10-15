@@ -76,11 +76,11 @@
             <span style="font-size: 18px; font-weight: bold">Credits Remaining</span>
             <div style="margin: 4px">
                 <img src="/assets/recruiter/img/coin.svg" width="24px">
-                <span>Contact Unlock: <b><div style="display: inline-block" id="remainingContactCredits"></div></b></span>
+                <span>Contact Unlock: <b><div style="display: inline-block" id="remainingContactCredits">0</div></b></span>
             </div>
             <div style="margin: 4px">
                 <img src="/assets/recruiter/img/coin.svg" width="24px">
-                <span>Interview Unlock: <b><div style="display: inline-block" id="remainingInterviewCredits"></div></b></span>
+                <span>Interview Unlock: <b><div style="display: inline-block" id="remainingInterviewCredits">0</div></b></span>
             </div>
             <a class="waves-effect waves-light orange lighten-1 btn right" data-toggle="collapse" onclick="openCreditModal()"><font style="color: #fff;
                 font-weight: 400"><b>Buy Credits</b></font></a>
@@ -207,11 +207,15 @@
                                         </li>
                                     </ul>
                                     <div class="row">
-                                        <div class="col s8 l8" style="padding-right: 4px;">
-                                            <a class="waves-effect waves-light ascentGreen lighten-1 btn" onclick="performSearch()" style="width: 100%; display: inline-block"><font style="color: #fff;font-weight: 400"><b>Apply Filter</b></font></a>
+                                        <div class="col s8 l7" style="padding-right: 4px;">
+                                            <center>
+                                                <a class="waves-effect waves-light ascentGreen lighten-1 btn" onclick="performSearch()" style="width: 100%; display: inline-block"><font style="color: #fff;font-weight: 400"><b>Apply Filter</b></font></a>
+                                            </center>
                                         </div>
-                                        <div class="col s4 l4" style="padding-left: 0;">
-                                            <a class="waves-effect waves-light orange lighten-1 btn" onclick="resetFilters()" style="width: 100%; display: inline-block"><font style="color: #fff;font-weight: 400"><b>Reset</b></font></a>
+                                        <div class="col s4 l5" style="padding-left: 0;">
+                                            <center>
+                                                <a class="waves-effect waves-light orange lighten-1 btn" onclick="resetFilters()" style="width: 100%; display: inline-block"><font style="color: #fff;font-weight: 400"><b>Reset</b></font></a>
+                                            </center>
                                         </div>
                                     </div>
 
@@ -289,10 +293,29 @@
                 <center><font style="font-size: 22px; color: #fff">Buy Credits</font></center>
             </div>
             <div style="background: #fff; padding: 24px">
-            <center>
-                <h5>Credit Packs</h5>
-                <img src="/assets/recruiter/img/coin.svg" width="36px">
-            </center>
+                <center>
+                    <h5>Credit Packs</h5>
+                    <div class="row">
+                        <div class="col s6 l6">
+                            <div class="packCol">
+                                <img src="/assets/recruiter/img/coin.svg" width="36px">
+                                <h5>Contact Unlock</h5>
+                                <h6>₹100/credit</h6>
+                                <a class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="openCreditModal()"><font style="color: #fff;
+                                    font-weight: 400"><b>Buy Credits</b></font></a>
+                            </div>
+                        </div>
+                        <div class="col s6 l6">
+                            <div class="packCol">
+                                <img src="/assets/recruiter/img/coin.svg" width="36px">
+                                <h5>Interview Unlock</h5>
+                                <h6>₹500/credit</h6>
+                                <a class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="openCreditModal()"><font style="color: #fff;
+                                    font-weight: 400"><b>Buy Credits</b></font></a>
+                            </div>
+                        </div>
+                    </div>
+                </center>
             </div>
         </div>
 
