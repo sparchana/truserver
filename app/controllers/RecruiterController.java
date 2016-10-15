@@ -14,6 +14,7 @@ import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.SecuredUser;
 import models.entity.JobPost;
 import models.entity.OM.JobApplication;
+import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
@@ -136,6 +137,7 @@ public class RecruiterController {
         return ok("0");
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result recruiterCandidateSearch(){
         return ok(views.html.Recruiter.recruiter_candidate_search.render());
     }
@@ -246,4 +248,17 @@ public class RecruiterController {
         return badRequest();
     }
 
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result getUnlockedCandidates() {
+        if(session().get("recruiterId") != null){
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", session().get("recruiterId")).findUnique();
+            if(recruiterProfile != null){
+                return ok(toJson(RecruiterToCandidateUnlocked.find.where()
+                        .eq("recruiterProfileId", recruiterProfile.getRecruiterProfileId())
+                        .findList()));
+            }
+        }
+        return ok("0");
+    }
 }
