@@ -303,6 +303,7 @@ function performSearch() {
         $("#searchJobPanel").hide();
         $("#noCandidateDiv").hide();
         $("#loadingIcon").show();
+
         NProgress.start();
         var d = {
             minAge: "",
