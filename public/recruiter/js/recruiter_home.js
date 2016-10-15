@@ -42,6 +42,11 @@ $(document).scroll(function(){
 
 $(document).ready(function(){
     checkRecruiterLogin();
+    $('.button-collapse').sideNav({
+        menuWidth: 240,
+        edge: 'left',
+        closeOnClick: true
+    });
     var width = $(window).width();
     if(width < 780){
         $("#editBtn").removeClass("btn-large").addClass("btn-small");

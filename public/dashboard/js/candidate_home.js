@@ -67,6 +67,7 @@ function getJobsForCandidate() {
 }
 
 function processDataAllJobPosts(returnedData) {
+    console.log(returnedData);
     var jobPostCount = Object.keys(returnedData).length;
     if(jobPostCount > 0){
         var count = 0;
@@ -281,6 +282,8 @@ function processDataAllJobPosts(returnedData) {
         else{
             document.getElementById("hotJobs").style.height = "72%";
         }
+    } else {
+        $("#jobLoaderDiv").hide();
     }
 }
 
@@ -428,7 +431,7 @@ function processDataAndFillMinProfile(returnedData) {
             if (Object.keys(returnedData.jobHistoryList).length > 0) {
                 returnedData.jobHistoryList.forEach(function (pastJob) {
                     if(pastJob.currentJob == true){
-                        if(pastJob.candidatePastCompany != null){
+                        if(pastJob.candidatePastCompany != null && pastJob.candidatePastCompany != ""){
                             document.getElementById("userCurrentCompany").innerHTML = pastJob.candidatePastCompany;
                         } else{
                             document.getElementById("userCurrentCompany").innerHTML = "Not Specified";

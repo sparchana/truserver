@@ -114,13 +114,13 @@
                 <div class="c_form" style="margin-left: 10%; margin-right: 10%;" align="center">
                     <h5 id="helpTextSignUp">Enter OTP</h5>
 
-                    <form id="verifyOtpForm">
-                        <div class="form-group">
-                            <input id="candidateOtp" style="width: 80%;" min="1000" max="9999" name="candidateOtp" type="number" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
-                        </div>
+                    <div class="form-group">
+                        <input id="candidateOtp" style="width: 80%;" min="1000" max="9999" name="candidateOtp" type="number" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
+                    </div>
 
-                        <button id="verifyOtpBtn" type="submit" class="btn btn-primary" style="padding-top: 3%; padding-bottom: 3%; padding-right: 8%; padding-left: 8%; background: #06436a; border: none">Verify OTP</button>
-                    </form>
+                    <button id="verifyOtpBtn" onclick="verifyOtp()" class="btn btn-primary" style="padding: 3% 8%;
+                        background: #06436a; border: none">Verify OTP</button>
+
                 </div>
             </div>
 
