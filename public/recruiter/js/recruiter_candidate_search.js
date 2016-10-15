@@ -126,7 +126,6 @@ function processDataRecruiterProfile(returnedData) {
         if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
             if(contactCreditCount == 0){
                 if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
-                    console.log(creditHistory.recruiterCreditsAvailable);
                     $("#remainingContactCredits").html(creditHistory.recruiterCreditsAvailable);
                     contactCreditCount = 1;
                 }
@@ -769,7 +768,12 @@ function processDataUnlockCandidate(returnedData) {
         $("#candidate_" + candidateIdVal).html(returnedData.candidateMobile);
     } else if(returnedData.status == 3){
         notifyError("Out of credits! Please recharge");
+        openCreditModal();
     }
+}
+
+function openCreditModal(){
+    $("#modalBuyCredits").openModal();
 }
 
 function notifyError(msg){

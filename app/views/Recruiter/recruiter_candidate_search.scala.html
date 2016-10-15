@@ -2,7 +2,7 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Recruiter Home | TruJobs - Post jobs and hire the right candidates</title>
+        <title>Recruiter | TruJobs - Post jobs and hire the right candidates</title>
 
         <meta name="keywords" content="hire driver, hire fresher, hire candidate sites, job posting, hire sales candidate, hire beautician,
         hire, hire receptionist, hire office admin, hire office assistant,
@@ -17,19 +17,34 @@
         <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
         <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_candidate_search.css">
         <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/jquery.tokenize.css" />
+        <link rel="stylesheet" href="/assets/support/css/nprogress.css">
 
         <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
 
         <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
         <script type="text/javascript" src="/assets/recruiter/js/jquery.tokenize.js"></script>
+        <script type="text/javascript" src="/assets/recruiter/js/recruiter_candidate_search.js"></script>
 
-
+        <style>
+        #nprogress .bar{
+            background: #2ec866;
+        }
+        #nprogress .spinner-icon{
+            border-top-color: #2ec866;
+            border-left-color: #2ec866;
+        }
+        </style>
+        <script>
+            $(document).ready(function () {
+                $('select').material_select();
+            });
+        </script>
         <meta name="theme-color" content="#000000">
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     </head>
-
     <body>
         <div class="navbar-fixed">
             <nav>
@@ -190,10 +205,10 @@
                                         </li>
                                     </ul>
                                     <div class="row">
-                                        <div class="col s12 l8" style="padding-right: 4px;">
+                                        <div class="col s8 l8" style="padding-right: 4px;">
                                             <a class="waves-effect waves-light ascentGreen lighten-1 btn" onclick="performSearch()" style="width: 100%; display: inline-block"><font style="color: #fff;font-weight: 400"><b>Apply Filter</b></font></a>
                                         </div>
-                                        <div class="col s12 l4" style="padding-left: 0;">
+                                        <div class="col s4 l4" style="padding-left: 0;">
                                             <a class="waves-effect waves-light orange lighten-1 btn" onclick="resetFilters()" style="width: 100%; display: inline-block"><font style="color: #fff;font-weight: 400"><b>Reset</b></font></a>
                                         </div>
                                     </div>
@@ -265,52 +280,20 @@
                 </div>
             </div>
         </footer>
+
+            <!-- Modal buy credit Structure -->
+        <div id="modalBuyCredits" class="modal" style="background: transparent; box-shadow: none">
+            <div style="background: rgba(0, 0, 0, 0.75); padding: 6%">
+                <center><font style="font-size: 22px; color: #fff">Buy Credits</font></center>
+            </div>
+            <div style="background: #fff; padding: 24px">
+            <center>
+                Credit body
+            </center>
+            </div>
+        </div>
+
     </body>
-    <head>
-        <meta charset="UTF-8">
-        <title>Recruiter | TruJobs - Post jobs and hire the right candidates</title>
-
-        <meta name="keywords" content="hire driver, hire fresher, hire candidate sites, job posting, hire sales candidate, hire beautician,
-        hire, hire receptionist, hire office admin, hire office assistant,
-        hire plumber, hire teacher, hire entry level candidate,
-        hire delivery boys, hire call center executives, hire BPO, hire kpo, hire hire hire , hire data entry candidate, hire back office canididate,
-        hire receptionist, hire beautician, hire experienced candidate, hire in Bangalore, hire cashier, hire entry level candidate, hire freshers,
-        hire plumber, hire electrician, hire accountants, hire in bangalore">
-
-        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
-
-            <!-- Bootstrap Core CSS -->
-        <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
-        <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
-        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
-        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_candidate_search.css">
-        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/jquery.tokenize.css" />
-        <link rel="stylesheet" href="/assets/support/css/nprogress.css">
-
-        <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
-
-        <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
-        <script type="text/javascript" src="/assets/recruiter/js/jquery.tokenize.js"></script>
-        <script type="text/javascript" src="/assets/recruiter/js/recruiter_candidate_search.js"></script>
-
-        <style>
-            #nprogress .bar{
-                background: #2ec866;
-            }
-            #nprogress .spinner-icon{
-                border-top-color: #2ec866;
-                border-left-color: #2ec866;
-            }
-        </style>
-        <script>
-            $(document).ready(function () {
-                $('select').material_select();
-            });
-        </script>
-        <meta name="theme-color" content="#000000">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    </head>
     <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
     <script type="text/javascript" src="/assets/common/js/validation.js"></script>

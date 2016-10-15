@@ -106,6 +106,13 @@ body{
     -webkit-animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
     animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite; }
 
+
+@media screen and (max-width: 720px) {
+    .back-banner-candidate {
+        margin-top: -16%;
+        padding-top: 7%;
+    }
+}
 @-webkit-keyframes rotate {
     from {
         -webkit-transform: rotate(0);
