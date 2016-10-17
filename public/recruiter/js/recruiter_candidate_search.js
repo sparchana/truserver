@@ -4,7 +4,6 @@
 
 var candidateIdVal;
 var localityArray = [];
-var candidateSearchResultBkp = [];
 var candidateSearchResult = [];
 
 $(document).scroll(function(){
@@ -348,9 +347,9 @@ function processDataMatchCandidate(returnedData) {
     if(candidateCount > 0){
         notifySuccess(candidateCount + " candidates found!");
         $("#candidateResultContainer").html("");
+            candidateSearchResult = [];
         $.each(returnedData, function (key, value) {
             candidateSearchResult.push(value);
-            candidateSearchResultBkp.push(value);
         });
 
         //render candidate cards
