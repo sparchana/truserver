@@ -3,10 +3,12 @@ package controllers.businessLogic;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.AddCompanyRequest;
+import api.http.httpRequest.Recruiter.AddCreditRequest;
 import api.http.httpRequest.Recruiter.AddRecruiterRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpResponse.AddCompanyResponse;
 import api.http.httpResponse.LoginResponse;
+import api.http.httpResponse.Recruiter.AddCreditResponse;
 import api.http.httpResponse.Recruiter.AddRecruiterResponse;
 import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
 import api.http.httpResponse.Recruiter.UnlockContactResponse;
@@ -18,8 +20,10 @@ import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.Recruiter.Static.RecruiterStatus;
+import models.util.EmailUtil;
 import models.util.SmsUtil;
 import models.util.Util;
+import org.apache.commons.mail.EmailException;
 import play.Logger;
 import play.mvc.Result;
 
@@ -452,5 +456,28 @@ public class RecruiterService {
         recruiterCreditHistory.setRecruiterCreditsAvailable(creditCount);
         recruiterCreditHistory.setRecruiterCreditsUsed(0);
         recruiterCreditHistory.save();
+    }
+
+    public static AddCreditResponse requestCreditForRecruiter(AddCreditRequest addCreditRequest){
+        AddCreditResponse addCreditResponse = new AddCreditResponse();
+        if(session().get("recruiterId") != null){
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", session().get("recruiterId")).findUnique();
+            if(recruiterProfile != null){
+                Logger.info("Sending credit request Sms");
+                SmsUtil.sendRequestCreditSms(recruiterProfile, addCreditRequest);
+                Logger.info("Sending credit request Email");
+                try {
+                    EmailUtil.sendRequestCreditEmail(recruiterProfile, addCreditRequest);
+                } catch (EmailException e) {
+                    e.printStackTrace();
+                }
+                addCreditResponse.setStatus(AddCreditResponse.STATUS_SUCCESS);
+            } else{
+                addCreditResponse.setStatus(AddCreditResponse.STATUS_FAILURE);
+            }
+        } else{
+            addCreditResponse.setStatus(AddCreditResponse.STATUS_FAILURE);
+        }
+        return addCreditResponse;
     }
 }

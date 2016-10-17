@@ -4,11 +4,13 @@
 
 var candidateIdVal;
 var localityArray = [];
-var candidateSearchResultBkp = [];
 var candidateSearchResult = [];
 
+var contactCredtUnitPrice;
+var interviewCredtUnitPrice;
+
 $(document).scroll(function(){
-    if ($(this).scrollTop() > 80) {
+    if ($(this).scrollTop() > 20) {
         $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
     }
     else{
@@ -102,20 +104,46 @@ $(document).ready(function(){
         console.log("exception occured!!" + exception);
     }
 
-    $('input[type=radio][name=sortyBy]').change(function() {
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllCreditCategory",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetCreditCategory
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+
+    $('input[type=radio][name=sortBySalary]').change(function() {
         if (this.value == 0) {
-            $("#sortByLastActive").prop("checked", false);
-            $("#sortBySalary").prop("checked", true);
-            sortBySalary();
-        }
-        else if (this.value == 1) {
-            $("#sortByLastActive").prop("checked", true);
-            $("#sortBySalary").prop("checked", false);
-            generateCandidateCards(candidateSearchResultBkp);
+            sortBySalary(this.value);
+        } else if (this.value == 1) {
+            sortBySalary(this.value);
         }
     });
 
+    $('input[type=radio][name=sortByActive]').change(function() {
+        if (this.value == 0) {
+            sortByLastActive(this.value);
+        } else if (this.value == 1) {
+            sortByLastActive(this.value);
+        }
+    });
+
+    $('#searchLocality').tokenize().tokenAdd("All Bangalore");
+
 });
+
+function processDataGetCreditCategory(returnedData) {
+    contactCredtUnitPrice = returnedData[0].recruiterCreditUnitPrice;
+    interviewCredtUnitPrice = returnedData[1].recruiterCreditUnitPrice;
+}
+
 
 function processDataRecruiterProfile(returnedData) {
     var creditHistoryList = returnedData.recruiterCreditHistoryList;
@@ -185,10 +213,7 @@ function processDataExperience(returnedData) {
 function processDataLanguages(returnedData) {
     var parent = $("#languageFilterDiv");
     returnedData.forEach(function (language) {
-        /*<div>
-            <input type="checkbox" class="filled-in" id="filled-in-box" checked="checked" />
-            <label for="filled-in-box">Filled in</label>
-        </div>*/
+
         var mainDiv = document.createElement("div");
         parent.append(mainDiv);
 
@@ -227,11 +252,22 @@ function processDataRecruiterSession(returnedData) {
     }
 }
 
+function validateLocationVal(val, text) {
+    if(text.localeCompare("All Bangalore") != 0){
+        if(val.localeCompare(text) == 0){
+            $('#searchLocality').tokenize().tokenRemove(val);
+            notifyError("Please select a valid location from the dropdown list");
+        }
+    }
+}
+
 function processDataCheckLocality(returnedData) {
+    var option = $('<option id=""></option>').text("All Bangalore");
+    $('#searchLocality').append(option);
     returnedData.forEach(function(locality) {
         var id = locality.localityId;
         var name = locality.localityName;
-        var option = $('<option value=' + id + '></option>').text(name);
+        option = $('<option value=' + id + '></option>').text(name);
         $('#searchLocality').append(option);
      });
 }
@@ -249,6 +285,8 @@ function processDataCheckJobs(returnedData) {
 function resetFilters() {
     $('input:checkbox').removeAttr('checked');
     $('input:radio').removeAttr('checked');
+    $("#maxSalaryVal").html("Max Salary: Not specified");
+    $("#distanceRadius").html("Within 10 kms");
 }
 
 function performSearch() {
@@ -313,7 +351,8 @@ function performSearch() {
             jobPostJobRoleId: searchJobRole,
             jobPostEducationId: searchEducation,
             jobPostLocalityIdList: searchLocality,
-            jobPostLanguageIdList: selectedLanguage
+            jobPostLanguageIdList: selectedLanguage,
+            distanceRadius: parseFloat($("#filterDistance").val())
         };
 
         try {
@@ -331,11 +370,19 @@ function performSearch() {
     }
 }
 
+function updateSliderVal(distanceSlider) {
+    $("#distanceRadius").html("Within " + parseFloat(distanceSlider.value) + "kms");
+}
+
+function updateSalarySliderVal(maxSalarySelected) {
+    $("#maxSalaryVal").html("Max Salary: ₹" + parseFloat(maxSalarySelected.value));
+}
+
 function processDataUnlockedCandidates(returnedData) {
     returnedData.forEach(function (unlockedCandidate){
         try {
             $("#candidate_" + unlockedCandidate.candidate.candidateId).html(unlockedCandidate.candidate.candidateMobile);
-            $("#unlock_candidate_" + unlockedCandidate.candidate.candidateId).prop('disabled',true);
+            $("#unlock_candidate_" + unlockedCandidate.candidate.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 btn").addClass("contactUnlocked right").removeAttr('onclick');
         } catch (err){}
     });
 }
@@ -348,13 +395,14 @@ function processDataMatchCandidate(returnedData) {
     if(candidateCount > 0){
         notifySuccess(candidateCount + " candidates found!");
         $("#candidateResultContainer").html("");
+            candidateSearchResult = [];
         $.each(returnedData, function (key, value) {
             candidateSearchResult.push(value);
-            candidateSearchResultBkp.push(value);
         });
 
-        //render candidate cards
-        generateCandidateCards(candidateSearchResult);
+        //render candidate cards with last active filter
+        $("#latestActive").attr('checked', true);
+        sortByLastActive(1);
 
         try {
             $.ajax({
@@ -415,7 +463,7 @@ function generateCandidateCards(candidateSearchResult) {
         var candidateCardRowColTwoFont = document.createElement("font");
         candidateCardRowColTwoFont.setAttribute("size", "3");
         candidateCardRowColTwoFont.style = "font-weight:600";
-        candidateCardRowColTwoFont.textContent = "Active: " + value.extraData.lastActive;
+        candidateCardRowColTwoFont.textContent = "Active: " + value.extraData.lastActive.lastActiveValueName;
         candidateCardRowColTwo.appendChild(candidateCardRowColTwoFont);
 
         //end of candidateCardRow
@@ -613,7 +661,16 @@ function generateCandidateCards(candidateSearchResult) {
             if(value.candidate.candidateTotalExperience == 0){
                 candidateExperienceVal.textContent = "Fresher";
             } else{
-                candidateExperienceVal.textContent = (parseInt(value.candidate.candidateTotalExperience/12)) + " yrs and " + (value.candidate.candidateTotalExperience)%12 + " months";
+                var yrs = parseInt(value.candidate.candidateTotalExperience/12);
+                var mnths = (value.candidate.candidateTotalExperience) % 12;
+
+                if(yrs == 0){
+                    candidateExperienceVal.textContent = mnths + " months";
+                } else if(mnths == 0){
+                    candidateExperienceVal.textContent = yrs + " years";
+                } else{
+                    candidateExperienceVal.textContent = yrs + " years and " + mnths + " months";
+                }
             }
         } else{
             candidateExperienceVal.textContent = "Not Specified";
@@ -703,34 +760,69 @@ function generateCandidateCards(candidateSearchResult) {
 
         var unlockDivRow = document.createElement("div");
         unlockDivRow.className = "row";
-        unlockDivRow.style = "margin: 2%; padding:1%; text-align: right";
+        unlockDivRow.style = "margin: 2%; padding: 1%; text-align: right; color: #fff";
         candidateCardContent.appendChild(unlockDivRow);
 
-        var unlockCandidateBtn = document.createElement("a");
+        var unlockCandidateBtn = document.createElement("div");
+        unlockCandidateBtn.id = "unlock_candidate_" + value.candidate.candidateId;
         unlockCandidateBtn.onclick = function () {
             unlockContact(value.candidate.candidateId);
         };
-        unlockCandidateBtn.id = "unlock_candidate_" + value.candidate.candidateId;
         unlockCandidateBtn.className = "waves-effect waves-light ascentGreen lighten-1 btn";
         unlockDivRow.appendChild(unlockCandidateBtn);
 
         //candidate last active container
         var candidateUnlockFont = document.createElement("font");
-        candidateUnlockFont.style = "color: #fff;font-weight: bold";
         candidateUnlockFont.id = "candidate_" + value.candidate.candidateId;
         candidateUnlockFont.textContent = "Unlock Contact";
+        candidateUnlockFont.style = "font-weight: bold; font-size: 16px";
         unlockCandidateBtn.appendChild(candidateUnlockFont);
     });
 }
 
-function sortBySalary(){
+function sortBySalary(val){
     var searchLength = Object.keys(candidateSearchResult).length;
     for (var i = 0; i < searchLength; i++) {
         for (var k = 0; k < (searchLength - 1); k++) {
-            if(candidateSearchResult[k].candidate.candidateLastWithdrawnSalary < candidateSearchResult[k + 1].candidate.candidateLastWithdrawnSalary){
-                var tmp = candidateSearchResult[k];
-                candidateSearchResult[k] = candidateSearchResult[k + 1];
-                candidateSearchResult[k + 1] = tmp;
+            if(val == 1){
+                // max salary
+                if(candidateSearchResult[k].candidate.candidateLastWithdrawnSalary < candidateSearchResult[k + 1].candidate.candidateLastWithdrawnSalary){
+                    var tmp = candidateSearchResult[k];
+                    candidateSearchResult[k] = candidateSearchResult[k + 1];
+                    candidateSearchResult[k + 1] = tmp;
+                }
+            } else{
+                //min salary
+                if(candidateSearchResult[k].candidate.candidateLastWithdrawnSalary > candidateSearchResult[k + 1].candidate.candidateLastWithdrawnSalary){
+                    tmp = candidateSearchResult[k];
+                    candidateSearchResult[k] = candidateSearchResult[k + 1];
+                    candidateSearchResult[k + 1] = tmp;
+                }
+            }
+        }
+    }
+    generateCandidateCards(candidateSearchResult);
+}
+
+function sortByLastActive(val){
+    var searchLength = Object.keys(candidateSearchResult).length;
+    for (var i = 0; i < searchLength; i++) {
+        for (var k = 0; k < (searchLength - 1); k++) {
+            if(val == 1){
+                // latest active
+                if(candidateSearchResult[k].extraData.lastActive.lastActiveValueId > candidateSearchResult[k + 1].extraData.lastActive.lastActiveValueId){
+                    var tmp = candidateSearchResult[k];
+                    candidateSearchResult[k] = candidateSearchResult[k + 1];
+                    candidateSearchResult[k + 1] = tmp;
+                }
+            } else{
+                //oldest active
+                if(candidateSearchResult[k].extraData.lastActive.lastActiveValueId < candidateSearchResult[k + 1].extraData.lastActive.lastActiveValueId){
+                    tmp = candidateSearchResult[k];
+                    candidateSearchResult[k] = candidateSearchResult[k + 1];
+                    candidateSearchResult[k + 1] = tmp;
+                }
+
             }
         }
     }
@@ -770,6 +862,125 @@ function processDataUnlockCandidate(returnedData) {
         openCreditModal();
     }
 }
+
+function logoutRecruiter() {
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/logoutRecruiter",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataLogoutRecruiter
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function processDataLogoutRecruiter() {
+    window.location = "/recruiter";
+}
+
+function calculateContactUnlockCredits() {
+    if($("#contactCreditAmount").val() != undefined && $("#contactCreditAmount").val() != null){
+        var contactCreditAmount = parseInt($("#contactCreditAmount").val());
+        if(contactCreditAmount > 0 && contactCreditAmount < 100000){
+            $("#contactCreditsVal").html("No. of credits: " + parseInt(contactCreditAmount / contactCredtUnitPrice));
+        } else{
+            notifyError("Please enter the amount greater than 0 and less than 10000");
+        }
+    } else{
+        notifyError("Please enter the amount");
+    }
+}
+
+function calculateInterviewUnlockCredits() {
+    if($("#interviewCreditAmount").val() != undefined && $("#interviewCreditAmount").val() != null){
+        var interviewCreditAmount = parseInt($("#interviewCreditAmount").val());
+        if(interviewCreditAmount > 0 && interviewCreditAmount < 100000){
+            $("#interviewCreditsVal").html("No. of credits: " + parseInt(interviewCreditAmount / interviewCredtUnitPrice));
+        } else{
+            notifyError("Please enter the amount greater than 0 and less than 10000");
+        }
+    } else{
+        notifyError("Please enter the amount");
+    }
+}
+
+function submitContactCredit() {
+    if($("#contactCreditAmount").val() != undefined && $("#contactCreditAmount").val() != null){
+        var interviewCreditAmount = parseInt($("#contactCreditAmount").val());
+        if(interviewCreditAmount > 0 && interviewCreditAmount < 100000){
+            try {
+                $("#requestContactCredit").addClass("disabled");
+                var d = {
+                    creditAmount: interviewCreditAmount,
+                    noOfCredits: parseInt(Number(interviewCreditAmount / contactCredtUnitPrice)),
+                    creditCategory: 1
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/recruiter/api/requestCredits/",
+                    async: true,
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
+                    success: processDataAddCreditRequest
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception.stack);
+            }
+        } else{
+            notifyError("Please enter the amount greater than 0 and less than 10000");
+        }
+    } else{
+        notifyError("Please enter the amount");
+    }
+}
+
+function submitInterviewCredit() {
+    if($("#interviewCreditAmount").val() != undefined && $("#interviewCreditAmount").val() != null){
+        var interviewCreditAmount = parseInt($("#interviewCreditAmount").val());
+        if(interviewCreditAmount > 0 && interviewCreditAmount < 100000){
+            try {
+                $("#requestInterviewCredit").addClass("disabled");
+                var d = {
+                    creditAmount: interviewCreditAmount,
+                    noOfCredits: parseInt(Number(interviewCreditAmount / interviewCredtUnitPrice)),
+                    creditCategory: 2
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/recruiter/api/requestCredits/",
+                    async: true,
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
+                    success: processDataAddCreditRequest
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception.stack);
+            }
+        } else{
+            notifyError("Please enter the amount greater than 0 and less than 10000");
+        }
+    } else{
+        notifyError("Please enter the amount");
+    }
+}
+
+function processDataAddCreditRequest(returnedData) {
+    $("#requestContactCredit").removeClass("disabled");
+    $("#requestInterviewCredit").removeClass("disabled");
+    if(returnedData.status == 1){
+        notifySuccess("Request submitted. Our business team will contact you within 24 hours")
+    } else{
+        notifyError("Something went wrong. Please try again later");
+    }
+}
+
 
 function openCreditModal(){
     $("#modalBuyCredits").openModal();

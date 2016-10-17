@@ -63,7 +63,8 @@
             align-items: center;
             margin-top: -360px">
             <div class="container recruiterHomeMainCard" >
-                <h5>Recruiter Profile!</h5>
+                <img src="/assets/recruiter/img/manager.svg" width="84px" style="margin-top: -16px">
+                <h4 style="display: inline-block">Recruiter Profile!</h4>
                 <hr>
                 <div class="row">
                     <form class="col s12">
@@ -104,10 +105,9 @@
                             </div>
                         </div>
                         <br>
-                        <div onclick="saveForm()" class="waves-effect waves-light right ascentGreen lighten-1 btn"><font style="color: #fff;
-                            font-weight: 600">Save Profile</font></div>
-                        <br>
-                        <h4>Company Details!</h4>
+                        <img src="/assets/recruiter/img/office.svg" width="84px" style="margin-top: -16px">
+                        <h4 style="display: inline-block">Company Profile!</h4>
+
                         <hr>
                         <div class="row">
                             <div class="input-field col s12 l6">
@@ -122,17 +122,13 @@
                                     $('#rec_company_locality').tokenize({
                                         displayDropdownOnFocus: true,
                                         placeholder: "Enter company locality",
-                                        maxElements: 1
+                                        maxElements: 1,
+                                        newElements: true,
+                                        onAddToken: function (value, text) {
+                                            validateCompanyLocationVal(value, text);
+                                        }
                                     });
                                 </script>
-                                <style>
-                                    div.Tokenize ul.TokensContainer {
-                                        margin-left: 44px;
-                                        width: 93%;
-                                        padding-bottom: 12px;
-                                        border-bottom: 1px solid rgba(101, 99, 99, 0.64);
-                                    }
-                                </style>
                             </div>
                         </div>
                         <div class="row">
@@ -156,16 +152,59 @@
                         </div>
                         <div class="row">
                             <div class="input-field col s12 l6">
+                                <i class="material-icons prefix">reorder</i>
+                                <textarea placeholder="Company office address" id="rec_company_address" class="materialize-textarea"></textarea>
+                                <label for="rec_company_address">Company Address</label>
+                            </div>
+                            <div class="input-field col s12 l6">
+                                <input style="display: none" id="rec_company_old_logo" type="text" class="form-control input-md" >
+                                <img id="rec_company_logo_old" width="90px">
+                                <div class="file-field input-field">
+                                    <div class="btn">
+                                        <span>Upload Company Logo</span>
+                                        <input type="file" id="companyLogo" onchange="readURL(this)" accept='image/*'>
+                                    </div>
+                                    <div class="file-path-wrapper">
+                                        <input class="file-path validate" type="text">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="input-field col s12 l6">
                                 <i class="material-icons prefix">supervisor_account</i>
                                 <input placeholder="No. of Employees" id="rec_company_employees" type="text" maxlength="15" class="validate">
                                 <label for="rec_company_employees">Total Employee count</label>
                             </div>
                             <div class="input-field col s12 l6">
                                 <i class="material-icons prefix">settings_input_composite</i>
-                                <input placeholder="Company Type" id="rec_company_type" type="text" maxlength="15" class="validate">
-                                <label for="rec_company_type">Company Type</label>
+                                <select id="rec_company_type" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
+                                <script type="text/javascript">
+                                    $('#rec_company_type').tokenize({
+                                        displayDropdownOnFocus: true,
+                                        placeholder: "Company type",
+                                        maxElements: 1,
+                                        newElements: true,
+                                        onAddToken: function (value, text) {
+                                            validateCompanyTypeVal(value, text);
+                                        }
+                                    });
+                                </script>
+                                <style>
+                                div.Tokenize ul.TokensContainer {
+                                    margin-left: 44px;
+                                    width: 93%;
+                                    padding-bottom: 12px;
+                                    border-bottom: 1px solid rgba(101, 99, 99, 0.64);
+                                }
+                                </style>
                             </div>
                         </div>
+
+                        <br>
+                        <div onclick="saveForm()" class="waves-effect waves-light right ascentGreen lighten-1 btn"><font style="color: #fff;
+                            font-weight: 600">Save Profile</font></div>
                     </form>
                 </div>
             </div>

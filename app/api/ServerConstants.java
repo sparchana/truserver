@@ -116,6 +116,8 @@ public class ServerConstants {
     public static final int SHEET_MAIN = 1;
     public static final int SHEET_SCRAPPED = 2;
 
+    public static final int RECRUITER_FIRST_TIME = 1;
+
     // JobPost Workflow status
     public static final int JWF_STATUS_SELECTED = 1;
 
@@ -127,6 +129,16 @@ public class ServerConstants {
         devTeamMobile.put("Chillu", "+919035164363");
         devTeamMobile.put("Adarsh", "+918971739586");
         devTeamMobile.put("Sandy", "+919019672209");
+    }
+
+    public static Map<String, String> devTeamEmail;
+    static {
+        devTeamEmail = new HashMap<String, String>();
+        devTeamEmail.put("Archana", "archana@trujobs.in");
+        devTeamEmail.put("Avishek", "avishek@trujobs.in");
+        devTeamEmail.put("recruiter_support", "recruitersupport@trujobs.in");
+        devTeamEmail.put("Adarsh", "adarsh.raj@trujobs.in");
+        devTeamEmail.put("Sandy", "sandeep.kumar@trujobs.in");
     }
 
     public static final Double DEFAULT_MATCHING_ENGINE_RADIUS = 10.0; // In Kilometers
@@ -169,4 +181,12 @@ public class ServerConstants {
 
     public static int RECRUITER_CATEGORY_CONTACT_UNLOCK = 1;
     public static int RECRUITER_CATEGORY_INTERVIEW_UNLOCK = 2;
+
+    public static final String ACTIVE_WITHIN_24_HOURS = "Within 24 hrs";
+    public static final String ACTIVE_LAST_3_DAYS = "Last 3 days";
+    public static final String ACTIVE_LAST_7_DAYS = "Last 7 days";
+    public static final String ACTIVE_LAST_12_DAYS = "Last 12 days";
+    public static final String ACTIVE_LAST_1_MONTH = "Last one month";
+    public static final String ACTIVE_LAST_2_MONTHS = "Last two months";
+    public static final String ACTIVE_BEYOND_2_MONTHS = "Beyond two months";
 }

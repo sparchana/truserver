@@ -1,18 +1,30 @@
 package models.util;
 
+import api.ServerConstants;
+import api.http.httpRequest.Recruiter.AddCreditRequest;
+import models.entity.Recruiter.RecruiterProfile;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
+import play.Logger;
 import play.Play;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+
+import static api.ServerConstants.devTeamEmail;
+import static api.ServerConstants.devTeamMobile;
 
 /**
  * Created by dodo on 15/10/16.
  */
 public class EmailUtil {
-    public static void sendTestEmail() throws EmailException {
 
+/*
         String message = "<center>\n" +
                 "            <div style=\"text-align: center; width: 60%; background: #f9f9f9\">\n" +
                 "                <img src='https://s3.amazonaws.com/trujobs.in/companyLogos/trujobs.png'>\n" +
@@ -34,6 +46,10 @@ public class EmailUtil {
                 "                </div>\n" +
                 "            </div>\n" +
                 "        </center>\n";
+*/
+
+    public static void sendEmail(String to, String message, String subject) throws EmailException {
+        boolean isDevMode = play.api.Play.isDev(play.api.Play.current()) || play.api.Play.isTest(play.api.Play.current());
 
         Email email = new SimpleEmail();
         email.setHostName(Play.application().configuration().getString("mail.smtp.host"));
@@ -42,10 +58,38 @@ public class EmailUtil {
                 , Play.application().configuration().getString("mail.smtp.pass")));
         email.setSSLOnConnect(true);
         email.setContent(message, "text/html; charset=utf-8");
-        email.setFrom("adarsh.raj@trujobs.in");
-        email.setSubject("Welcome mail");
-        email.addTo("rajshahbvm123@gmail.com");
-        email.send();
+        email.setFrom("recruiter.support@trujobs.in", "Trujobs Recruiter");
+        email.setSubject(subject);
+        email.addTo(to);
+        if(isDevMode){
+            Logger.info("DevMode: No Email sent");
+        } else {
+            email.send();
+        }
+
     }
 
+    public static void sendRequestCreditEmail(RecruiterProfile recruiterProfile, AddCreditRequest addCreditRequest) throws EmailException {
+        String cat;
+        if(addCreditRequest.getCreditCategory() == ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK){
+            cat = "contact unlock";
+        } else{
+            cat = "interview unlock";
+        }
+
+        String message = "Hi " + recruiterProfile.getRecruiterProfileName() + "! We have received your request for " + addCreditRequest.getNoOfCredits() + " " + cat
+                + " credits. Our business team will contact you within 24 hours! For more queries, call +91 9980293925. Thank you.";
+
+        sendEmail(recruiterProfile.getRecruiterProfileEmail(), message, "Trujobs.in : Your " + cat + " request is being processed");
+
+        message = "Hi team, recruiter: " + recruiterProfile.getRecruiterProfileName() + " with mobile " + recruiterProfile.getRecruiterProfileMobile() + " of company: " +
+                recruiterProfile.getCompany().getCompanyName() +  " has requested for " + addCreditRequest.getNoOfCredits() + " " + cat
+                + " credits. Amount = ₹" + addCreditRequest.getCreditAmount();
+
+        sendEmail(devTeamEmail.get("Adarsh"), message, "Contact Unlock Credit Request");
+        sendEmail(devTeamEmail.get("Archana"), message, "Contact Unlock Credit Request");
+        sendEmail(devTeamEmail.get("recruiter_support"), message, "Contact Unlock Credit Request");
+        sendEmail(devTeamEmail.get("Avishek"), message, "Contact Unlock Credit Request");
+        sendEmail(devTeamEmail.get("Sandy"), message, "Contact Unlock Credit Request");
+    }
 }

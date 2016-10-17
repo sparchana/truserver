@@ -6,6 +6,7 @@ package api.http.httpResponse.Recruiter;
 public class RecruiterSignUpResponse extends AddRecruiterResponse{
     public String recruiterMobile;
     public int otp;
+    public int firstTime;
 
     public static int getStatusSuccess() {
         return STATUS_SUCCESS;
@@ -43,4 +44,11 @@ public class RecruiterSignUpResponse extends AddRecruiterResponse{
         this.otp = otp;
     }
 
+    public int getFirstTime() {
+        return firstTime;
+    }
+
+    public void setFirstTime(int firstTime) {
+        this.firstTime = firstTime;
+    }
 }

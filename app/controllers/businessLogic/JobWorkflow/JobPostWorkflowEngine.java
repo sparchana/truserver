@@ -74,7 +74,7 @@ public class JobPostWorkflowEngine {
                     .notIn("candidateId", selectedCandidateIdList)
                     .query();
         
-        List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList);
+        List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList, null);
 
         Map<Long, CandidateExtraData> allFeature = computeExtraData(candidateList, jobPost);
 
@@ -238,7 +238,7 @@ public class JobPostWorkflowEngine {
     }
 
 
-    private static List<Candidate> filterByLatLngOrHomeLocality(List<Candidate> candidateList, List<Long> jobPostLocalityIdList) {
+    private static List<Candidate> filterByLatLngOrHomeLocality(List<Candidate> candidateList, List<Long> jobPostLocalityIdList, Double distanceRadius) {
         List<Candidate> filteredCandidateList = new ArrayList<>();
 
         if (jobPostLocalityIdList == null){
@@ -265,7 +265,12 @@ public class JobPostWorkflowEngine {
                                     candidate.getCandidateLocalityLat(),
                                     candidate.getCandidateLocalityLng()
                             );
-                            if (distance > ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS) {
+
+                            Double searchRadius = ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS;
+                            if(distanceRadius != null){
+                                searchRadius = distanceRadius;
+                            }
+                            if (distance > searchRadius) {
                                 // candidate is not within req distance from jobPost latlng
                                 filteredCandidateList.remove(candidate);
                                 break;
@@ -476,31 +481,53 @@ public class JobPostWorkflowEngine {
         int maxExperienceValue;
     }
 
-    public static String getDateCluster(Long timeInMill) {
-        String clusterLable;
+    public static class LastActiveValue{
+        public Integer lastActiveValueId;
+        public String lastActiveValueName;
+    }
+
+    public static LastActiveValue getDateCluster(Long timeInMill) {
+
+        Map<Integer, String> clusterLabel = new HashMap<>();
+        clusterLabel.put(1, ServerConstants.ACTIVE_WITHIN_24_HOURS);
+        clusterLabel.put(2, ServerConstants.ACTIVE_LAST_3_DAYS);
+        clusterLabel.put(3, ServerConstants.ACTIVE_LAST_7_DAYS);
+        clusterLabel.put(4, ServerConstants.ACTIVE_LAST_12_DAYS);
+        clusterLabel.put(5, ServerConstants.ACTIVE_LAST_1_MONTH);
+        clusterLabel.put(6, ServerConstants.ACTIVE_LAST_2_MONTHS);
+        clusterLabel.put(7, ServerConstants.ACTIVE_BEYOND_2_MONTHS);
+
         Calendar cal = Calendar.getInstance();
         Calendar currentCal = Calendar.getInstance();
         cal.setTimeInMillis(timeInMill);
 
+        LastActiveValue lastActiveValue = new LastActiveValue();
         int currentDay = currentCal.get(Calendar.DAY_OF_YEAR);
         int doyDiff = currentDay - cal.get(Calendar.DAY_OF_YEAR);
 
         if( doyDiff > 60) {
-            clusterLable = "Beyond two months";
+            lastActiveValue.lastActiveValueId = 7;
+            lastActiveValue.lastActiveValueName = clusterLabel.get(7);
         } else if( doyDiff > 30) {
-            clusterLable = "Last two months";
+            lastActiveValue.lastActiveValueId = 6;
+            lastActiveValue.lastActiveValueName = clusterLabel.get(6);
         } else if( doyDiff > 15) {
-            clusterLable = "Last one month";
+            lastActiveValue.lastActiveValueId = 5;
+            lastActiveValue.lastActiveValueName = clusterLabel.get(5);
         } else if (doyDiff > 7) {
-            clusterLable = "Last 14 days";
+            lastActiveValue.lastActiveValueId = 4;
+            lastActiveValue.lastActiveValueName = clusterLabel.get(4);
         } else if ( doyDiff > 3) {
-            clusterLable = "Last 7 days";
+            lastActiveValue.lastActiveValueId = 3;
+            lastActiveValue.lastActiveValueName = clusterLabel.get(3);
         } else if ( doyDiff > 1) {
-            clusterLable = "Last 3 days";
+            lastActiveValue.lastActiveValueId = 2;
+            lastActiveValue.lastActiveValueName = clusterLabel.get(2);
         } else {
-            clusterLable = "Within 24 hrs";
+            lastActiveValue.lastActiveValueId = 1;
+            lastActiveValue.lastActiveValueName = clusterLabel.get(1);
         }
-        return clusterLable;
+        return lastActiveValue;
     }
 
     /**
@@ -526,7 +553,7 @@ public class JobPostWorkflowEngine {
                                                                         Long jobRoleId,
                                                                         Integer educationId,
                                                                         List<Long> jobPostLocalityIdList,
-                                                                        List<Integer> languageIdList)
+                                                                        List<Integer> languageIdList, Double radius)
     {
         Map<Long, CandidateWorkflowData> matchedCandidateMap = new LinkedHashMap<>();
 
@@ -538,7 +565,7 @@ public class JobPostWorkflowEngine {
         //query candidate query with the filter params
         query = getFilteredQuery(minAge, maxAge, minSalary, maxSalary,gender, jobRoleId, educationId, languageIdList, experience);
 
-        List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList);
+        List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList, radius);
 
         Map<Long, CandidateExtraData> allFeature = computeExtraDataForRecruiterSearchResult(candidateList);
 

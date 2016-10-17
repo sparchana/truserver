@@ -1,6 +1,9 @@
 package models.util;
 
+import api.ServerConstants;
+import api.http.httpRequest.Recruiter.AddCreditRequest;
 import controllers.businessLogic.InteractionService;
+import models.entity.Recruiter.RecruiterProfile;
 import play.Logger;
 import play.Play;
 
@@ -220,5 +223,25 @@ public class SmsUtil {
     public static void sendRecruiterLeadMsg(String mobile) {
         String msg = "Welcome to www.Trujobs.in! Thank you for getting in touch with us. Our business team will contact you within 24 hours!";
         sendSms(mobile, msg);
+    }
+
+    public static void sendRequestCreditSms(RecruiterProfile recruiterProfile, AddCreditRequest addCreditRequest) {
+        String cat;
+        if(addCreditRequest.getCreditCategory() == ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK){
+            cat = "contact unlock credits";
+        } else{
+            cat = "interview unlock credits";
+        }
+
+        String msg = "Hi " + recruiterProfile.getRecruiterProfileName() + "! We have received your request for " + addCreditRequest.getNoOfCredits() + " " + cat
+                + ". Our business team will contact you within 24 hours! For more queries, call +91 9980293925 Thank you.";
+        sendSms(recruiterProfile.getRecruiterProfileMobile(), msg);
+
+        msg = "Hi team, recruiter " + recruiterProfile.getRecruiterProfileName() + " with mobile " + recruiterProfile.getRecruiterProfileMobile() + " has requested for " + addCreditRequest.getNoOfCredits() + " " + cat
+                + "Thank you.";
+
+        sendSms(devTeamMobile.get("Sandy"), msg);
+        sendSms(devTeamMobile.get("Adarsh"), msg);
+        sendSms(devTeamMobile.get("Archana"), msg);
     }
 }

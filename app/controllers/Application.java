@@ -298,7 +298,7 @@ public class Application extends Controller {
         return ok(toJson(RecruiterService.createRecruiterProfile(recruiterSignUpRequest)));
     }
 
-    @Security.Authenticated(RecSecured.class)
+    @Security.Authenticated(SecuredUser.class)
     public static Result addCompany() {
         JsonNode req = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
@@ -941,7 +941,7 @@ public class Application extends Controller {
         return ok(toJson(companyStatusList));
     }
 
-    @Security.Authenticated(RecSecured.class)
+    @Security.Authenticated(SecuredUser.class)
     public static Result getAllCompanyType() {
         List<CompanyType> companyTypeList = CompanyType.find.findList();
         return ok(toJson(companyTypeList));

@@ -117,8 +117,12 @@ $(function() {
 
 function processDataAddAuth(returnedData) {
     if(returnedData.status == 1){
-        window.location = "/recruiter/home";
         $('#modalOtp').closeModal();
+        $('#messageModal').openModal();
+        setTimeout(function(){
+            window.location = "/recruiter/home";
+        }, 4000);
+
     } else{
         notifyError("Something went wrong. Please try again later");
     }
