@@ -2,7 +2,36 @@
  * Created by dodo on 12/10/16.
  */
 
+var f;
 var companyId;
+
+$('input[type=file]').change(function () {
+    f = this.files[0];
+});
+
+function uploadLogo(){
+    var x = document.getElementById("companyLogo");
+    if ('files' in x) {
+        if (x.files.length == 0) {
+        } else {
+            for (var i = 0; i < x.files.length; i++) {
+                var file = x.files[i];
+
+                var data = new FormData();
+                data.append('picture', file);
+                $.ajax({
+                    type: "POST",
+                    url: "/addCompanyLogo",
+                    async: true,
+                    data: data,
+                    cache: false,
+                    contentType: false,
+                    processData: false
+                });
+            }
+        }
+    }
+}
 
 function processDataCheckLocality(returnedData) {
     returnedData.forEach(function(locality) {
@@ -178,6 +207,11 @@ function processDataRecruiterProfile(returnedData) {
             if(returnedData.company.companyEmployeeCount != null){
                 $("#rec_company_employees").val(returnedData.company.companyEmployeeCount);
             }
+            if(returnedData.company.companyLogo != null){
+                $('#rec_company_logo_old')
+                    .attr('src', returnedData.company.companyLogo);
+                $("#rec_company_old_logo").val(returnedData.company.companyLogo);
+            }
         }
     }
 
@@ -212,8 +246,23 @@ function saveForm() {
         case 4: alert("Please enter recruiter's name"); recruiterStatus=0; break;
     }
 
+    var logo;
 
-    if(recruiterStatus == 1){
+    if ($("#companyLogo").val() != "") {
+        if((f.type).substring(0,1) != "i"){
+            notifyError("Please select a valid image for logo");
+            companyStatus = 0;
+        } else{
+            logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/" + f.name;
+            companyStatus = 1;
+        }
+    } else {
+        companyStatus = 1;
+        logo = $("#rec_company_old_logo").val();
+    }
+
+
+    if(recruiterStatus == 1 && companyStatus == 1){
         try {
             var companyLocalitySelected = $("#rec_company_locality").val();
             var companyTypeSelected = $("#rec_company_type").val();
@@ -229,7 +278,7 @@ function saveForm() {
                 typeSelectedVal = companyTypeSelected[0];
             }
 
-            //TODO: logo, address
+
             var d = {
                 companyId: companyId,
                 companyName: $("#rec_company_name").val(),
@@ -238,6 +287,7 @@ function saveForm() {
                 companyDescription: $("#rec_company_desc").val(),
                 companyPinCode: $("#rec_company_pincode").val(),
                 companyLocality: localitySelectedVal,
+                companyLogo: logo,
                 companyType: typeSelectedVal
             };
 
@@ -251,6 +301,9 @@ function saveForm() {
                 });
             } catch (exception) {
                 console.log("exception occured!!" + exception);
+            }
+            if(document.getElementById("companyLogo").value != "") {
+                uploadLogo();
             }
         } catch (err){}
     }
@@ -285,6 +338,18 @@ function processDataUpdateCompany(returnedData) {
     }
 }
 
+function readURL(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            $('#rec_company_logo_old')
+                .attr('src', e.target.result);
+        };
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
 
 function processDataAddRecruiter(returnedData) {
     if(returnedData.status == 4){
