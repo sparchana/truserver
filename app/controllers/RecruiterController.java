@@ -21,6 +21,8 @@ import models.entity.RecruiterCreditHistory;
 import models.entity.Static.Degree;
 import models.entity.Static.InterviewTimeSlot;
 import models.entity.Static.Locality;
+import models.util.EmailUtil;
+import org.apache.commons.mail.EmailException;
 import play.Logger;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -260,5 +262,10 @@ public class RecruiterController {
             }
         }
         return ok("0");
+    }
+
+    public static Result sendTestEmail() throws EmailException {
+        EmailUtil.sendTestEmail();
+        return ok("1");
     }
 }
