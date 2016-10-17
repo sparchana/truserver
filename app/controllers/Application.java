@@ -15,6 +15,7 @@ import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import controllers.AnalyticsLogic.GlobalAnalyticsService;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
 import controllers.businessLogic.*;
 import controllers.businessLogic.Assessment.AssessmentService;
@@ -1424,6 +1425,11 @@ public class Application extends Controller {
     @Security.Authenticated(SuperAdminSecured.class)
     public static Result updateAllRelevantJobCategories() {
         return ok(toJson(JobRelevancyEngine.updateAllRelevantJobCategories()));
+    }
+
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result updateAllActivityScores() {
+        return ok(toJson(GlobalAnalyticsService.computeActivityScore()));
     }
 
     @Security.Authenticated(SuperAdminSecured.class)
