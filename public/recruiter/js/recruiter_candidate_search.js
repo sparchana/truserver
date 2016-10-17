@@ -117,6 +117,8 @@ $(document).ready(function(){
         }
     });
 
+    $('#searchLocality').tokenize().tokenAdd("All Bangalore");
+
 });
 
 function processDataRecruiterProfile(returnedData) {
@@ -187,10 +189,7 @@ function processDataExperience(returnedData) {
 function processDataLanguages(returnedData) {
     var parent = $("#languageFilterDiv");
     returnedData.forEach(function (language) {
-        /*<div>
-            <input type="checkbox" class="filled-in" id="filled-in-box" checked="checked" />
-            <label for="filled-in-box">Filled in</label>
-        </div>*/
+
         var mainDiv = document.createElement("div");
         parent.append(mainDiv);
 
@@ -229,11 +228,22 @@ function processDataRecruiterSession(returnedData) {
     }
 }
 
+function validateLocationVal(val, text) {
+    if(text.localeCompare("All Bangalore") != 0){
+        if(val.localeCompare(text) == 0){
+            $('#searchLocality').tokenize().tokenRemove(val);
+            notifyError("Please select a valid location from the dropdown list");
+        }
+    }
+}
+
 function processDataCheckLocality(returnedData) {
+    var option = $('<option id=""></option>').text("All Bangalore");
+    $('#searchLocality').append(option);
     returnedData.forEach(function(locality) {
         var id = locality.localityId;
         var name = locality.localityName;
-        var option = $('<option value=' + id + '></option>').text(name);
+        option = $('<option value=' + id + '></option>').text(name);
         $('#searchLocality').append(option);
      });
 }

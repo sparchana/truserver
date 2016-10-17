@@ -218,12 +218,6 @@ function processDataRecruiterProfile(returnedData) {
 }
 
 function validateCompanyTypeVal(val, text) {
-/*    var isValidTokenVal = /^\d+$/.test(val);
-    if(!isValidTokenVal){
-        $('#rec_company_type').tokenize().tokenRemove(val);
-        notifyError("Please select a valid company type from the dropdown list");
-    }*/
-    console.log(val + " -- " + text);
     if(val.localeCompare(text) == 0){
         $('#rec_company_type').tokenize().tokenRemove(val);
         notifyError("Please select a valid company type from the dropdown list");
@@ -232,16 +226,10 @@ function validateCompanyTypeVal(val, text) {
 }
 
 function validateCompanyLocationVal(val, text) {
-    console.log(val + " -- " + text);
     if(val.localeCompare(text) == 0){
         $('#rec_company_locality').tokenize().tokenRemove(val);
         notifyError("Please select a valid location from the dropdown list");
     }
-/*    var isValidTokenVal = /^\d+$/.test(val);
-    if(!isValidTokenVal){
-        $('#rec_company_locality').tokenize().tokenRemove(val);
-
-    }*/
 }
 
 function saveForm() {

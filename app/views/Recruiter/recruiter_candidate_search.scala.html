@@ -112,7 +112,11 @@
                                         displayDropdownOnFocus: true,
                                         placeholder: "Locality",
                                         maxElements: 1,
-                                        nbDropdownElements: 5000
+                                        newElements: true,
+                                        nbDropdownElements: 5000,
+                                        onAddToken: function (value, text) {
+                                            validateLocationVal(value, text);
+                                        }
                                     });
                                 </script>
                             </div>
