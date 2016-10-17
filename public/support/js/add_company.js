@@ -59,6 +59,10 @@ function uploadLogo(){
     }
 }
 
+function closeCreditModal() {
+    $("#creditModal").modal("hide");
+}
+
 function processDataAddCompany(returnedData) {
     console.log(returnedData);
     companyId = returnedData.companyId;
