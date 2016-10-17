@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Recruiter | TruJobs - Post jobs and hire the right candidates</title>
+
+        <meta name="keywords" content="hire driver, hire fresher, hire candidate sites, job posting, hire sales candidate, hire beautician,
+        hire, hire receptionist, hire office admin, hire office assistant,
+        hire plumber, hire teacher, hire entry level candidate,
+        hire delivery boys, hire call center executives, hire BPO, hire kpo, hire hire hire , hire data entry candidate, hire back office canididate,
+        hire receptionist, hire beautician, hire experienced candidate, hire in Bangalore, hire cashier, hire entry level candidate, hire freshers,
+        hire plumber, hire electrician, hire accountants, hire in bangalore">
+
+        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+
+            <!-- Bootstrap Core CSS -->
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_candidate_search.css">
+        <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/jquery.tokenize.css" />
+        <link rel="stylesheet" href="/assets/support/css/nprogress.css">
+
+        <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
+
+        <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
+        <script type="text/javascript" src="/assets/recruiter/js/jquery.tokenize.js"></script>
+        <script type="text/javascript" src="/assets/recruiter/js/recruiter_candidate_search.js"></script>
+
+        <style>
+        #nprogress .bar{
+            background: #2ec866;
+        }
+        #nprogress .spinner-icon{
+            border-top-color: #2ec866;
+            border-left-color: #2ec866;
+        }
+        </style>
+        <script>
+            $(document).ready(function () {
+                $('select').material_select();
+            });
+        </script>
+        <meta name="theme-color" content="#000000">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </head>
+    <body>
+        <div class="navbar-fixed">
+            <nav>
+                <div class="container" style="width: 85%;">
+                    <div class="nav-wrapper">
+                        <a href="#!" class="brand-logo">
+                            <img id="navLogo" src="/assets/recruiter/img/trujobs-recruiter.png" style="height: 40px;
+                                margin-top: -2%">
+                        </a>
+                        <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+                        <ul class="right hide-on-med-and-down">
+                            <li><a href="/recruiter/home">Home</a></li>
+                            <li><a href="/recruiter/candidateSearch">Search Candidate</a></li>
+                            <li><a href="/recruiter/profile">Profile</a></li>
+                            <li><a onclick="logoutRecruiter()" class="waves-effect waves-light ascentGreen lighten-1 btn"><font style="color: #fff; font-weight: 600">Logout</font></a></li>
+                        </ul>
+                    </div>
+                    <ul class="side-nav" id="mobile-demo">
+                        <li><a href="/recruiter/home">Home</a></li>
+                        <li><a href="/recruiter/candidateSearch">Search Candidate</a></li>
+                        <li><a href="/recruiter/profile">Profile</a></li>
+                        <li><a onclick="logoutRecruiter()">Logout</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+
+        <div id="creditView">
+            <span style="font-size: 18px; font-weight: bold">Credits Remaining</span>
+            <div style="margin: 4px">
+                <img src="/assets/recruiter/img/coin.svg" width="24px">
+                <span>Contact Unlock: <b><div style="display: inline-block" id="remainingContactCredits">0</div></b></span>
+            </div>
+            <div style="margin: 4px">
+                <img src="/assets/recruiter/img/coin.svg" width="24px">
+                <span>Interview Unlock: <b><div style="display: inline-block" id="remainingInterviewCredits">0</div></b></span>
+            </div>
+            <a class="waves-effect waves-light orange lighten-1 btn right" data-toggle="collapse" onclick="openCreditModal()"><font style="color: #fff;
+                font-weight: 400"><b>Buy Credits</b></font></a>
+        </div>
+        <!--Search bar start-->
+        <div class="container-fluid back-banner-candidate">
+            <div class="container" style="padding: 0;" id="searchBoxContainer">
+                <div class="row">
+                    <h5 style="font-weight:600; color: #fff; margin-top: 24px">Candidate Search</h5>
+                </div>
+                <div class="row" style="margin-top: -16px">
+                    <div class="card col s12 l12" style="margin: 0;padding: 0">
+                        <div class="card-content col s12 l12" style="margin: 0;padding: 20px 1%">
+                            <div class="col s12 l5" id="searchBox">
+                                <select id="searchJobRole" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
+                                <script type="text/javascript">
+                                    $('#searchJobRole').tokenize({
+                                        displayDropdownOnFocus: true,
+                                        placeholder: "Job Role",
+                                        nbDropdownElements: 1000,
+                                        maxElements: 1
+                                    });
+                                </script>
+                            </div>
+                            <div class="col s12 l5" id="searchBox">
+                                <select id="searchLocality" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
+                                <script type="text/javascript">
+                                    $('#searchLocality').tokenize({
+                                        displayDropdownOnFocus: true,
+                                        placeholder: "Locality",
+                                        maxElements: 1,
+                                        nbDropdownElements: 5000
+                                    });
+                                </script>
+                            </div>
+                            <div class="col s12 l2" style="margin-top: 4px">
+                                <a class="waves-effect waves-light ascentGreen lighten-1 btn right" data-toggle="collapse" onclick="performSearch()" data-target="#filterDetail"><font style="color: #fff;
+                                    font-weight: 400"><b>Search</b></font>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <!--Search bar ends-->
+            <!-- Details container -->
+        <div class="container" style="padding: 0">
+            <div class="row">
+                    <!-- Sort & Filter -->
+                <div class="col s12 l3">
+                    <ul class="collapsible" data-collapsible="accordion">
+                        <li>
+                            <div class="collapsible-header"><i class="material-icons">repeat</i>
+                                Sort By
+                            </div>
+                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
+                                <div>
+                                    <input name="sortyBy" type="radio" value="0" id="sortBySalary" />
+                                    <label for="sortBySalary">Salary</label>
+                                </div>
+                                <div>
+                                    <input name="sortyBy" type="radio" value="1" id="sortByLastActive" />
+                                    <label for="sortByLastActive">Last Active</label>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <div>
+                        <div class="card-content">
+                            <font size="4">Filters</font>
+                        </div>
+                        <div class="card-content" style="padding: 0">
+                            <div class="row">
+                                <div class="col s12 l12">
+                                    <ul class="collapsible" data-collapsible="accordion">
+                                        <li>
+                                            <div class="collapsible-header"><i class="material-icons">perm_identity</i>
+                                                Gender</div>
+                                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
+                                                <div>
+                                                    <input name="filterGender" type="radio" value="0" id="gender_0" />
+                                                    <label for="gender_0">Male</label>
+                                                </div>
+                                                <div>
+                                                    <input name="filterGender" type="radio" value="1" id="gender_1" />
+                                                    <label for="gender_1">Female</label>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header"><i class="material-icons">trending_up</i>
+                                                Experience</div>
+                                            <div class="collapsible-body" id="experienceFilterDiv" style="padding: 8px 18px 8px 18px"></div>
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header"><i class="material-icons">place</i>
+                                                Distance</div>
+                                            <div class="collapsible-body">
+                                                <p class="range-field">
+                                                    <input type="range" id="filterDistance" min="0" max="10" />
+                                                </p>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header"><img src="/assets/recruiter/img/rupee.svg" height="18px" style="margin: 0 18px 0 6px">
+                                                Max Salary</div>
+                                            <div class="collapsible-body">
+                                                <p class="range-field">
+                                                    <input type="range" id="filterSalary" value="0" min="0" max="40000" />
+                                                </p>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header"><i class="material-icons">library_books</i>
+                                                Education</div>
+                                            <div class="collapsible-body" id="educationFilterDiv"  style="padding: 8px 18px 8px 18px"></div>
+
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header"><img src="/assets/recruiter/img/language.svg" height="18px" style="margin: 0 18px 0 6px">
+                                                Language</div>
+                                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px" id="languageFilterDiv"></div>
+                                        </li>
+                                    </ul>
+                                    <div class="row">
+                                        <div class="col s8 l7" style="padding-right: 4px;">
+                                            <center>
+                                                <a class="waves-effect waves-light ascentGreen lighten-1 btn" onclick="performSearch()" style="width: 100%; display: inline-block"><font style="color: #fff;font-weight: 400"><b>Apply Filter</b></font></a>
+                                            </center>
+                                        </div>
+                                        <div class="col s4 l5" style="padding-left: 0;">
+                                            <center>
+                                                <a class="waves-effect waves-light orange lighten-1 btn" onclick="resetFilters()" style="width: 100%; display: inline-block"><font style="color: #fff;font-weight: 400"><b>Reset</b></font></a>
+                                            </center>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    <!-- Candidate Details -->
+                <div class="col s12 l9">
+                    <div id="candidateResultContainer"></div>
+                    <div id="searchJobPanel" style="padding: 120px 6% 0 6%">
+                        <center>
+                            <img src="/assets/recruiter/img/search_candidate.svg" width="96px">
+                            <h5>Welcome to candidate search page.</h5>
+                            <h6>Search among 25000+ candidates</h6>
+                        </center>
+
+                    </div>
+                    <div id="loadingIcon" style="display: none; padding-top: 6%">
+                        <center>
+                            <h5>Searching Candidates</h5>
+                            <svg viewBox="0 0 32 32" width="32" height="32">
+                                <circle id="loadingSpinner" cx="16" cy="16" r="14" fill="none"></circle>
+                            </svg>
+                        </center>
+                    </div>
+                    <div id="noCandidateDiv" style="padding: 120px 6% 0 6%; display: none">
+                        <center>
+                            <img src="/assets/recruiter/img/empty_box.svg" width="96px">
+                            <h5>No Candidates found!</h5>
+                            <h6>Looks like there are no candidates in your desired parameters.</h6>
+                        </center>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="container">
+
+        </div>
+            <!--Footer start-->
+        <footer class="page-footer" style="background-color: #424242;">
+            <div class="container">
+                <div class="row" style="margin: 0">
+                    <div class="col l6 s12">
+                        <h5 class="white-text">Hire in Bangalore</h5>
+                        <p class="grey-text text-lighten-4">Connect With Us On<img src="/assets/recruiter/img/fbmain.svg" id="fbLogo" style="margin-left: 2%;
+                            width: 6%"> </p>
+                    </div>
+                    <div class="col l4 offset-l2 s12">
+                        <h5 class="white-text">Get in touch</h5>
+                        <ul>
+                            <li><a class="grey-text text-lighten-3" href="#!">Write us at: info@@trujobs.in</a></li>
+                            <li><a class="grey-text text-lighten-3" href="#!">Have queries? Talk to us at 8880007799</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="row" style="margin: 0">
+                    <img src="/assets/recruiter/img/skyline_small.svg" width="100%">
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <div class="container">
+            © 2016 Trujobs.in | Bengaluru, India. All Right Reserved. Privacy Policy
+                </div>
+            </div>
+        </footer>
+
+            <!-- Modal buy credit Structure -->
+        <div id="modalBuyCredits" class="modal" style="background: transparent; box-shadow: none">
+            <div style="background: rgba(0, 0, 0, 0.75); padding: 6%">
+                <center><font style="font-size: 22px; color: #fff">Buy Credits</font></center>
+            </div>
+            <div style="background: #fff; padding: 24px">
+                <center>
+                    <h5>Credit Packs</h5>
+                    <div class="row">
+                        <div class="col s6 l6">
+                            <div class="packCol">
+                                <img src="/assets/recruiter/img/coin.svg" width="36px">
+                                <h5>Contact Unlock</h5>
+                                <h6>₹100/credit</h6>
+                                <a class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="openCreditModal()"><font style="color: #fff;
+                                    font-weight: 400"><b>Buy Credits</b></font></a>
+                            </div>
+                        </div>
+                        <div class="col s6 l6">
+                            <div class="packCol">
+                                <img src="/assets/recruiter/img/coin.svg" width="36px">
+                                <h5>Interview Unlock</h5>
+                                <h6>₹500/credit</h6>
+                                <a class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="openCreditModal()"><font style="color: #fff;
+                                    font-weight: 400"><b>Buy Credits</b></font></a>
+                            </div>
+                        </div>
+                    </div>
+                </center>
+            </div>
+        </div>
+
+    </body>
+    <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
+    <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+    <script type="text/javascript" src="/assets/support/js/nprogress.js"></script>
+</html>

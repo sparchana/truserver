@@ -61,7 +61,14 @@ function processDataSignUpSubmit(returnedData) {
         $("#passwordSection").hide();
 
         returnedOtp = returnedData.otp;
+    } else if(returnedData.status == 3){
+        $("#SignSubmitUpBtn").removeClass("disabled");
+        notifyError("Recruiter with the above mobile number already exists!");
+    } else{
+        $("#SignSubmitUpBtn").removeClass("disabled");
+        notifyError("Something went wrong. Please try again later");
     }
+
 }
 
 // verify_otp_form ajax script

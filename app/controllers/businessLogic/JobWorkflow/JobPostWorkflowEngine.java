@@ -53,16 +53,47 @@ public class JobPostWorkflowEngine {
                                                                         List<Integer> languageIdList)
     {
         Map<Long, CandidateWorkflowData> matchedCandidateMap = new LinkedHashMap<>();
-        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
 
         // geDurationFromExperience returns minExperience req. (in Months)
         ExperienceValue experience = getDurationFromExperience(experienceId);
 
-        // get jobrolepref for candidate
+        Query<Candidate> query;
 
+        // query with the passed filter values and return Query<candidate>
+        query = getFilteredQuery(minAge, maxAge, minSalary, maxSalary,gender, jobRoleId, educationId, languageIdList, experience);
+
+        // should not be in workflow table
+        List<Long> selectedCandidateIdList = new ArrayList<>();
+        for (JobPostWorkflow jpwf : JobPostWorkflow.find.where().eq("job_post_id", jobPostId).findList()) {
+            selectedCandidateIdList.add(jpwf.getCandidate().getCandidateId());
+        }
+
+        query = query.where()
+                    .notIn("candidateId", selectedCandidateIdList)
+                    .query();
+        
+        List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList);
+
+        Map<Long, CandidateExtraData> allFeature = computeExtraData(candidateList, jobPost);
+
+        if(candidateList.size() != 0) {
+            for (Candidate candidate : candidateList) {
+                CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
+                candidateWorkflowData.setCandidate(candidate);
+                candidateWorkflowData.setExtraData(allFeature.get(candidate.getCandidateId()));
+                matchedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
+            }
+        }
+
+
+        return matchedCandidateMap;
+    }
+
+    private static Query<Candidate> getFilteredQuery(Integer minAge, Integer maxAge, Long minSalary, Long maxSalary, Integer gender, Long jobRoleId, Integer educationId, List<Integer> languageIdList, ExperienceValue experience) {
         Query<Candidate> query = Candidate.find.query();
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 
         // problem: all age is null/0 and dob is also null
         // select candidate falling under the specified age req
@@ -158,37 +189,13 @@ public class JobPostWorkflowEngine {
                     .query();
         }
 
-        // should not be in workflow table
-        List<Long> selectedCandidateIdList = new ArrayList<>();
-        for (JobPostWorkflow jpwf : JobPostWorkflow.find.where().eq("job_post_id", jobPostId).findList()) {
-            selectedCandidateIdList.add(jpwf.getCandidate().getCandidateId());
-        }
-
-        query = query.where()
-                    .notIn("candidateId", selectedCandidateIdList)
-                    .query();
-
         // should be an active candidate
         query = query.select("*").fetch("candidateprofilestatus")
-                    .where()
-                    .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE)
-                    .query();
+                .where()
+                .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE)
+                .query();
 
-        List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList);
-
-        Map<Long, CandidateExtraData> allFeature = computeExtraData(candidateList, jobPost);
-
-        if(candidateList.size() != 0) {
-            for (Candidate candidate : candidateList) {
-                CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
-                candidateWorkflowData.setCandidate(candidate);
-                candidateWorkflowData.setExtraData(allFeature.get(candidate.getCandidateId()));
-                matchedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
-            }
-        }
-
-
-        return matchedCandidateMap;
+        return query;
     }
 
     /**
@@ -229,6 +236,7 @@ public class JobPostWorkflowEngine {
         // call master method
         return getMatchingCandidate(jobPostId, minAge, maxAge, minSalary, maxSalary, gender, experienceId, jobRoleId, educationId, localityIdList, languageIdList);
     }
+
 
     private static List<Candidate> filterByLatLngOrHomeLocality(List<Candidate> candidateList, List<Long> jobPostLocalityIdList) {
         List<Candidate> filteredCandidateList = new ArrayList<>();
@@ -314,26 +322,9 @@ public class JobPostWorkflowEngine {
 
         String candidateListString = String.join("', '", candidateUUIdList);
 
-        StringBuilder interactionQueryBuilder = new StringBuilder("select distinct objectauuid, creationtimestamp from interaction i " +
-                " where i.objectauuid " +
-                " in ('"+candidateListString+"') " +
-                " and creationtimestamp = " +
-                " (select max(creationtimestamp) from interaction where i.objectauuid = interaction.objectauuid) " +
-                " order by creationTimestamp desc ");
-
-
-        Logger.info(interactionQueryBuilder.toString());
-        RawSql rawSql = RawSqlBuilder.parse(interactionQueryBuilder.toString())
-                .tableAliasMapping("i", "interaction")
-                .columnMapping("objectauuid", "objectAUUId")
-                .columnMapping("creationtimestamp", "creationTimestamp")
-                .create();
-
-
-//      TODO: Optimization: It takes 4+ sec for query to return map/list for this constraint, prev implementation was faster
         Logger.info("before interaction query: " + new Timestamp(System.currentTimeMillis()));
         Map<String, Interaction> lastActiveInteraction= Ebean.find(Interaction.class)
-                .setRawSql(rawSql)
+                .setRawSql(getRawSqlForInteraction(candidateListString))
                 .findMap("objectAUUId", String.class);
 
 //        List<Interaction> interactionList = Ebean.find(Interaction.class)
@@ -511,4 +502,122 @@ public class JobPostWorkflowEngine {
         }
         return clusterLable;
     }
+
+    /**
+     *
+     * this is being used by the recruiter for searching candidates
+     *
+     *  @param minAge  min age criteria to be taken into consideration while matching
+     *  @param maxAge  max range criteria to be taken into consideration while matching
+     *  @param gender  gender criteria to be taken into consideration while matching
+     *  @param experienceId experience duration to be taken into consideration while matching
+     *  @param jobPostLocalityIdList  candidates to be matched within x Km of any of the provided locality
+     *  @param languageIdList  candidate to be matched for any of this language. Output contains the
+     *                       indication to show matching & non-matching language
+     *
+     *
+     */
+    public static Map<Long, CandidateWorkflowData> getCandidateForRecruiterSearch(Integer minAge,
+                                                                        Integer maxAge,
+                                                                        Long minSalary,
+                                                                        Long maxSalary,
+                                                                        Integer gender,
+                                                                        Integer experienceId,
+                                                                        Long jobRoleId,
+                                                                        Integer educationId,
+                                                                        List<Long> jobPostLocalityIdList,
+                                                                        List<Integer> languageIdList)
+    {
+        Map<Long, CandidateWorkflowData> matchedCandidateMap = new LinkedHashMap<>();
+
+        // geDurationFromExperience returns minExperience req. (in Months)
+        ExperienceValue experience = getDurationFromExperience(experienceId);
+
+        Query<Candidate> query = Candidate.find.query();
+
+        //query candidate query with the filter params
+        query = getFilteredQuery(minAge, maxAge, minSalary, maxSalary,gender, jobRoleId, educationId, languageIdList, experience);
+
+        List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList);
+
+        Map<Long, CandidateExtraData> allFeature = computeExtraDataForRecruiterSearchResult(candidateList);
+
+        if(candidateList.size() != 0) {
+            for (Candidate candidate : candidateList) {
+                CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
+                candidateWorkflowData.setCandidate(candidate);
+                candidateWorkflowData.setExtraData(allFeature.get(candidate.getCandidateId()));
+                matchedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
+            }
+        }
+
+
+        return matchedCandidateMap;
+    }
+
+    private static Map<Long, CandidateExtraData> computeExtraDataForRecruiterSearchResult(List<Candidate> candidateList) {
+
+        if(candidateList.size() == 0) return null;
+        // candidateId --> featureMap
+        Map<Long, CandidateExtraData> candidateExtraDataMap = new LinkedHashMap<>();
+
+        List<String> candidateUUIdList = new ArrayList<>();
+        List<Long> candidateIdList = new ArrayList<>();
+
+        for (Candidate candidate: candidateList) {
+            candidateUUIdList.add(candidate.getCandidateUUId());
+            candidateIdList.add(candidate.getCandidateId());
+        }
+
+        String candidateListString = String.join("', '", candidateUUIdList);
+
+        Logger.info("before interaction query: " + new Timestamp(System.currentTimeMillis()));
+        Map<String, Interaction> lastActiveInteraction= Ebean.find(Interaction.class)
+                .setRawSql(getRawSqlForInteraction(candidateListString))
+                .findMap("objectAUUId", String.class);
+
+        Logger.info("after interaction query: " + new Timestamp(System.currentTimeMillis()));
+
+        for (Candidate candidate: candidateList) {
+            CandidateExtraData candidateExtraData = candidateExtraDataMap.get(candidate.getCandidateId());
+
+            if( candidateExtraData == null) {
+                candidateExtraData = new CandidateExtraData();
+
+                // compute last active on
+                Interaction interactionsOfCandidate = lastActiveInteraction.get(candidate.getCandidateUUId());
+                if(interactionsOfCandidate != null) {
+                    candidateExtraData.setLastActive(getDateCluster(interactionsOfCandidate.getCreationTimestamp().getTime()));
+                }
+                // other intelligent scoring will come here
+            }
+
+            candidateExtraDataMap.put(candidate.getCandidateId(), candidateExtraData);
+        }
+
+        return candidateExtraDataMap;
+    }
+
+    private static RawSql getRawSqlForInteraction(String candidateListString){
+        //      TODO: Optimization: It takes 4+ sec for query to return map/list for this constraint, prev implementation was faster
+
+        StringBuilder interactionQueryBuilder = new StringBuilder("select distinct objectauuid, creationtimestamp from interaction i " +
+                " where i.objectauuid " +
+                " in ('"+candidateListString+"') " +
+                " and creationtimestamp = " +
+                " (select max(creationtimestamp) from interaction where i.objectauuid = interaction.objectauuid) " +
+                " order by creationTimestamp desc ");
+
+
+        Logger.info(interactionQueryBuilder.toString());
+
+        RawSql rawSql = RawSqlBuilder.parse(interactionQueryBuilder.toString())
+                .tableAliasMapping("i", "interaction")
+                .columnMapping("objectauuid", "objectAUUId")
+                .columnMapping("creationtimestamp", "creationTimestamp")
+                .create();
+
+        return rawSql;
+    }
+
 }

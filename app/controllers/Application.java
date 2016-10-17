@@ -929,7 +929,7 @@ public class Application extends Controller {
         return ok(toJson(pricingPlanTypeList));
     }
 
-    @Security.Authenticated(RecSecured.class)
+    @Security.Authenticated(SecuredUser.class)
     public static Result getAllExperience() {
         List<Experience> experienceList = Experience.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(experienceList));

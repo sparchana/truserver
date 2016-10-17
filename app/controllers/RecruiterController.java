@@ -4,13 +4,17 @@ import api.ServerConstants;
 import api.http.httpRequest.LoginRequest;
 import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
+import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpResponse.Recruiter.JobApplicationResponse;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
+import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.SecuredUser;
 import models.entity.JobPost;
 import models.entity.OM.JobApplication;
+import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
@@ -29,6 +33,7 @@ import java.util.List;
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.request;
 import static play.mvc.Controller.session;
+import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 import static play.mvc.Results.redirect;
 
@@ -133,6 +138,11 @@ public class RecruiterController {
     }
 
     @Security.Authenticated(SecuredUser.class)
+    public static Result recruiterCandidateSearch(){
+        return ok(views.html.Recruiter.recruiter_candidate_search.render());
+    }
+
+    @Security.Authenticated(SecuredUser.class)
     public static Result recruiterEditProfile() {
         return ok(views.html.Recruiter.recruiter_edit_profile.render());
     }
@@ -199,6 +209,55 @@ public class RecruiterController {
     public static Result getAllRecruiterJobPosts() {
         if(session().get("recruiterId") != null){
             return ok(toJson(JobPost.find.where().eq("JobRecruiterId", session().get("recruiterId")).findList()));
+        }
+        return ok("0");
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result getMatchingCandidate() {
+        JsonNode matchingCandidateRequestJson = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + matchingCandidateRequestJson);
+        if(matchingCandidateRequestJson == null){
+            return badRequest();
+        }
+        MatchingCandidateRequest matchingCandidateRequest= new MatchingCandidateRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+
+        // since jsonReq has single/multiple values in array
+        newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+
+        try {
+            matchingCandidateRequest = newMapper.readValue(matchingCandidateRequestJson.toString(), MatchingCandidateRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (matchingCandidateRequest != null) {
+            return ok(toJson(JobPostWorkflowEngine.getCandidateForRecruiterSearch(
+                    matchingCandidateRequest.getMinAge(),
+                    matchingCandidateRequest.getMaxAge(),
+                    matchingCandidateRequest.getMinSalary(),
+                    matchingCandidateRequest.getMaxSalary(),
+                    matchingCandidateRequest.getGender(),
+                    matchingCandidateRequest.getExperienceId(),
+                    matchingCandidateRequest.getJobPostJobRoleId(),
+                    matchingCandidateRequest.getJobPostEducationId(),
+                    matchingCandidateRequest.getJobPostLocalityIdList(),
+                    matchingCandidateRequest.getJobPostLanguageIdList())));
+        }
+        return badRequest();
+    }
+
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result getUnlockedCandidates() {
+        if(session().get("recruiterId") != null){
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", session().get("recruiterId")).findUnique();
+            if(recruiterProfile != null){
+                return ok(toJson(RecruiterToCandidateUnlocked.find.where()
+                        .eq("recruiterProfileId", recruiterProfile.getRecruiterProfileId())
+                        .findList()));
+            }
         }
         return ok("0");
     }
