@@ -489,13 +489,13 @@ public class JobPostWorkflowEngine {
     public static LastActiveValue getDateCluster(Long timeInMill) {
 
         Map<Integer, String> clusterLabel = new HashMap<>();
-        clusterLabel.put(1, "Within 24 hrs");
-        clusterLabel.put(2, "Last 3 days");
-        clusterLabel.put(3, "Last 7 days");
-        clusterLabel.put(4, "Last 12 days");
-        clusterLabel.put(5, "Last one month");
-        clusterLabel.put(6, "Last two month");
-        clusterLabel.put(7, "Beyond two months");
+        clusterLabel.put(1, ServerConstants.ACTIVE_WITHIN_24_HOURS);
+        clusterLabel.put(2, ServerConstants.ACTIVE_LAST_3_DAYS);
+        clusterLabel.put(3, ServerConstants.ACTIVE_LAST_7_DAYS);
+        clusterLabel.put(4, ServerConstants.ACTIVE_LAST_12_DAYS);
+        clusterLabel.put(5, ServerConstants.ACTIVE_LAST_1_MONTH);
+        clusterLabel.put(6, ServerConstants.ACTIVE_LAST_2_MONTHS);
+        clusterLabel.put(7, ServerConstants.ACTIVE_BEYOND_2_MONTHS);
 
         Calendar cal = Calendar.getInstance();
         Calendar currentCal = Calendar.getInstance();

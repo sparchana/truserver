@@ -136,7 +136,7 @@ public class ServerConstants {
         devTeamEmail = new HashMap<String, String>();
         devTeamEmail.put("Archana", "archana@trujobs.in");
         devTeamEmail.put("Avishek", "avishek@trujobs.in");
-        devTeamEmail.put("Chillu", "sandeep@trujobs.in");
+        devTeamEmail.put("recruiter_support", "recruitersupport@trujobs.in");
         devTeamEmail.put("Adarsh", "adarsh.raj@trujobs.in");
         devTeamEmail.put("Sandy", "sandeep.kumar@trujobs.in");
     }
@@ -181,4 +181,12 @@ public class ServerConstants {
 
     public static int RECRUITER_CATEGORY_CONTACT_UNLOCK = 1;
     public static int RECRUITER_CATEGORY_INTERVIEW_UNLOCK = 2;
+
+    public static final String ACTIVE_WITHIN_24_HOURS = "Within 24 hrs";
+    public static final String ACTIVE_LAST_3_DAYS = "Last 3 days";
+    public static final String ACTIVE_LAST_7_DAYS = "Last 7 days";
+    public static final String ACTIVE_LAST_12_DAYS = "Last 12 days";
+    public static final String ACTIVE_LAST_1_MONTH = "Last one month";
+    public static final String ACTIVE_LAST_2_MONTHS = "Last two months";
+    public static final String ACTIVE_BEYOND_2_MONTHS = "Beyond two months";
 }

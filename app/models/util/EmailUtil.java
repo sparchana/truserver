@@ -72,23 +72,24 @@ public class EmailUtil {
     public static void sendRequestCreditEmail(RecruiterProfile recruiterProfile, AddCreditRequest addCreditRequest) throws EmailException {
         String cat;
         if(addCreditRequest.getCreditCategory() == ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK){
-            cat = "contact unlock credits";
+            cat = "contact unlock";
         } else{
-            cat = "interview unlock credits";
+            cat = "interview unlock";
         }
 
         String message = "Hi " + recruiterProfile.getRecruiterProfileName() + "! We have received your request for " + addCreditRequest.getNoOfCredits() + " " + cat
-                + ". Our business team will contact you within 24 hours! For more queries, call +91 9980293925. Thank you.";
+                + " credits. Our business team will contact you within 24 hours! For more queries, call +91 9980293925. Thank you.";
 
-        sendEmail(recruiterProfile.getRecruiterProfileEmail(), message, "Contact Unlock Request");
+        sendEmail(recruiterProfile.getRecruiterProfileEmail(), message, "Trujobs.in : Your " + cat + " request is being processed");
 
-        message = "Hi team, recruiter " + recruiterProfile.getRecruiterProfileName() + " with mobile " + recruiterProfile.getRecruiterProfileMobile() + " has requested for " + addCreditRequest.getNoOfCredits() + " " + cat
-                + ". Amount = ₹" + addCreditRequest.getCreditAmount();
+        message = "Hi team, recruiter: " + recruiterProfile.getRecruiterProfileName() + " with mobile " + recruiterProfile.getRecruiterProfileMobile() + " of company: " +
+                recruiterProfile.getCompany().getCompanyName() +  " has requested for " + addCreditRequest.getNoOfCredits() + " " + cat
+                + " credits. Amount = ₹" + addCreditRequest.getCreditAmount();
 
-        sendEmail(devTeamEmail.get("Adarsh"), message, "Contact Unlock Request");
-        sendEmail(devTeamEmail.get("Archana"), message, "Contact Unlock Request");
-/*        sendEmail(devTeamEmail.get("Avishek"), message, "Contact Unlock Request");
-        sendEmail(devTeamEmail.get("Chillu"), message, "Contact Unlock Request");*/
-        sendEmail(devTeamEmail.get("Sandy"), message, "Contact Unlock Request");
+        sendEmail(devTeamEmail.get("Adarsh"), message, "Contact Unlock Credit Request");
+        sendEmail(devTeamEmail.get("Archana"), message, "Contact Unlock Credit Request");
+        sendEmail(devTeamEmail.get("recruiter_support"), message, "Contact Unlock Credit Request");
+        sendEmail(devTeamEmail.get("Avishek"), message, "Contact Unlock Credit Request");
+        sendEmail(devTeamEmail.get("Sandy"), message, "Contact Unlock Credit Request");
     }
 }
