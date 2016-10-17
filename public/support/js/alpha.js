@@ -73,13 +73,53 @@ function constructTableForRelevantJobs(rows) {
     }
 }
 
+/*function constructTableForActivityScores (rows) {
+
+    var tdata = new google.visualization.DataTable();
+    var tableDivId = 'activity_scoring_table_div';
+    if($('#activity-scoring-table-content')){
+        $(tableDivId).empty();
+    }
+
+    if(rows != null){
+        tdata.addColumn('string', "Candidate UUID");
+        tdata.addColumn('number', "Activity Score");
+        tdata.addColumn('number', "Last 24hrs");
+        tdata.addColumn('number', "Last 3 Days");
+        tdata.addColumn('number', "Last One Week");
+        tdata.addColumn('number', "Last Two Weeks");
+        tdata.addColumn('number', "Last Month");
+        tdata.addColumn('number', "Last Two Months");
+        tdata.addColumn('number', "Last Three Months");
+
+        var googleTableRows = [];
+
+        $.each( rows, function( key, value) {
+            var googleRowOneRow = [];
+            googleRowOneRow.push(key);
+            $.each( value, function( cname, data) {
+                googleRowOneRow.push(data);
+            });
+
+            googleTableRows.push(googleRowOneRow);
+        });
+
+        tdata.addRows(googleTableRows);
+
+        var table = new google.visualization.Table(document.getElementById(tableDivId ));
+        table.draw(tdata, {showRowNumber: true, width: '100%', height: '100%'});
+
+        pushToSnackbar("Activity scores fetched Successfully !!");
+    }
+}*/
+
 function constructTableForData(tableName, row) {
     // generates every thing only for one table
     var data = new google.visualization.DataTable();
 
     var rowArray = [];
     var f = true;
-    var tableDivId ='tableDiv_'+tableName;
+    var tableDivId ='tableDiv_' + tableName;
     var googleTableRows = [];
     $('div[id="csv_'+tableName+'"]').remove();
     $('div[id="'+tableDivId+'"]').remove();
@@ -392,6 +432,28 @@ function fetchAndDisplayRelevantJobs() {
     });
 }
 
+/*function fetchAndDisplayActivityScores() {
+    getJSON('/api/compute/updateAllActivityScores', 'POST').then(function(response) {
+        constructTableForActivityScores(response)
+    }, function(error) {
+        console.error("Failed!", error);
+    }).catch(function() {
+        pushToSnackbar('Could not update activity scores table !!');
+    });
+
+}*/
+
+function updateActivityScores() {
+    getJSON('/api/compute/updateAllActivityScores', 'POST').then(function(response) {
+        pushToSnackbar('Udpated candidte activity scores table !!');
+    }, function(error) {
+        console.error("Failed!", error);
+    }).catch(function() {
+        pushToSnackbar('Could not update activity scores table !!');
+    });
+
+}
+
 $(function(){
     $("#btnDeActiveToActive").click(function(){
         saveDeactivationChanges();
@@ -406,9 +468,15 @@ $(function(){
     $( "#updateRelevantJobRoles" ).click(function() {
         updateRelevantJobRoles();
     });
+    $( "#updateActivityScores" ).click(function() {
+        updateActivityScores();
+    });
     $( "#jobRelevancyTab" ).click(function() {
         fetchAndDisplayRelevantJobs();
     });
+    /*$( "#activityScoringTab" ).click(function() {
+        fetchAndDisplayActivityScores();
+    });*/
 
     var dialog = document.querySelector('dialog');
     var showModalButton = document.querySelector('.show-modal');

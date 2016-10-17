@@ -198,8 +198,16 @@ $(function() {
             }
         }
 
-        var minSalary = parseInt($("#jobPostMinSalary").val());
-        var maxSalary = parseInt($("#jobPostMaxSalary").val());
+        var minSalary = $("#jobPostMinSalary").val();
+        var maxSalary = $("#jobPostMaxSalary").val();
+
+        if (minSalary != null) {
+            minSalary = parseInt(minSalary);
+        }
+
+        if (maxSalary != null) {
+            maxSalary = parseInt(maxSalary);
+        }
 
         var partnerInterviewIncentiveVal = parseInt($("#partnerInterviewIncentive").val());
         var partnerJoiningIncentiveVal = parseInt($("#partnerJoiningIncentive").val());
