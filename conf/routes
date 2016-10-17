@@ -141,6 +141,7 @@ POST        /addRecruiterPassword                                         contro
 POST        /recruiterLoginSubmit                                         controllers.RecruiterController.loginSubmit()
 POST        /recruiter/api/getMatchingCandidate/                          controllers.RecruiterController.getMatchingCandidate()
 POST        /recruiter/api/getUnlockedCandidates/                         controllers.RecruiterController.getUnlockedCandidates()
+GET        /sendTestEmail                                                 controllers.RecruiterController.sendTestEmail()
 
 #new routes
 #~~~~~~~~~~~~~~~~~~~~

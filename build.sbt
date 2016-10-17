@@ -42,4 +42,6 @@ libraryDependencies += "org.mockito" % "mockito-core" % "1.10.19"
 
 libraryDependencies += "org.json"%"org.json"%"chargebee-1.0"
 
+libraryDependencies += "org.apache.commons" % "commons-email" % "1.3.1"
+
 libraryDependencies += evolutions
