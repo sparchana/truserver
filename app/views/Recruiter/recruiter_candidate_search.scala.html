@@ -132,19 +132,36 @@
             <div class="row">
                     <!-- Sort & Filter -->
                 <div class="col s12 l3">
+                    <div class="card-content">
+                        <font size="4">Sort by</font>
+                    </div>
+
                     <ul class="collapsible" data-collapsible="accordion">
                         <li>
-                            <div class="collapsible-header"><i class="material-icons">repeat</i>
-                                Sort By
-                            </div>
+                            <div class="collapsible-header"><img src="/assets/recruiter/img/rupee.svg" height="18px" style="margin: 0 18px 0 6px">
+                                Salary</div>
                             <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
                                 <div>
-                                    <input name="sortyBy" type="radio" value="0" id="sortBySalary" />
-                                    <label for="sortBySalary">Salary</label>
+                                    <input name="sortBySalary" type="radio" value="0" id="sortByMinSalary" />
+                                    <label for="sortByMinSalary">Min Salary</label>
                                 </div>
                                 <div>
-                                    <input name="sortyBy" type="radio" value="1" id="sortByLastActive" />
-                                    <label for="sortByLastActive">Last Active</label>
+                                    <input name="sortBySalary" type="radio" value="1" id="sortByMaxSalary" />
+                                    <label for="sortByMaxSalary">Max Salary</label>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="collapsible-header"><i class="material-icons">av_timer</i>
+                                Active</div>
+                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
+                                <div>
+                                    <input name="sortByActive" type="radio" value="1" id="latestActive" />
+                                    <label for="latestActive">Latest first</label>
+                                </div>
+                                <div>
+                                    <input name="sortByActive" type="radio" value="0" id="oldestActive" />
+                                    <label for="oldestActive">Oldest first</label>
                                 </div>
                             </div>
                         </li>
@@ -179,19 +196,33 @@
                                         <li>
                                             <div class="collapsible-header"><i class="material-icons">place</i>
                                                 Distance</div>
-                                            <div class="collapsible-body">
-                                                <p class="range-field">
-                                                    <input type="range" id="filterDistance" min="0" max="10" />
-                                                </p>
+                                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
+                                                <div>
+                                                    <center>
+                                                        <div style="font-size: 14px; font-weight: 600;" id="distanceRadius">
+                                                            <b>Within 10kms</b>
+                                                        </div>
+                                                    </center>
+                                                </div>
+                                                <div class="range-field">
+                                                    <input type="range" id="filterDistance" min="0" max="30" value="10" onchange="updateSliderVal(this)" />
+                                                </div>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="collapsible-header"><img src="/assets/recruiter/img/rupee.svg" height="18px" style="margin: 0 18px 0 6px">
                                                 Max Salary</div>
-                                            <div class="collapsible-body">
-                                                <p class="range-field">
-                                                    <input type="range" id="filterSalary" value="0" min="0" max="40000" />
-                                                </p>
+                                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
+                                                <div>
+                                                    <center>
+                                                        <div style="font-size: 14px; font-weight: 600;" id="maxSalaryVal">
+                                                            <b>Max Salary: Not Specified</b>
+                                                        </div>
+                                                    </center>
+                                                </div>
+                                                <div class="range-field">
+                                                    <input type="range" id="filterSalary" value="0" min="0" max="40000" onchange="updateSalarySliderVal(this)" />
+                                                </div>
                                             </div>
                                         </li>
                                         <li>
@@ -207,14 +238,26 @@
                                         </li>
                                     </ul>
                                     <div class="row">
-                                        <div class="col s8 l7" style="padding-right: 4px;">
+                                        <div class="col s8 l8" style="padding-right: 4px;">
                                             <center>
-                                                <a class="waves-effect waves-light ascentGreen lighten-1 btn" onclick="performSearch()" style="width: 100%; display: inline-block"><font style="color: #fff;font-weight: 400"><b>Apply Filter</b></font></a>
+                                                <div class="waves-effect waves-light ascentGreen lighten-1 btn" onclick="performSearch()" style="padding: 0 9px; width: 100%; display: inline-block">
+                                                    <font style="color: #fff;font-weight: 400; font-size: 12px"><b>
+                                                        <center>
+                                                            Apply Filter
+                                                        </center>
+                                                    </b></font>
+                                                </div>
                                             </center>
                                         </div>
-                                        <div class="col s4 l5" style="padding-left: 0;">
+                                        <div class="col s4 l4" style="padding-left: 0; margin: 0">
                                             <center>
-                                                <a class="waves-effect waves-light orange lighten-1 btn" onclick="resetFilters()" style="width: 100%; display: inline-block"><font style="color: #fff;font-weight: 400"><b>Reset</b></font></a>
+                                                <div class="waves-effect waves-light orange lighten-1 btn" onclick="resetFilters()" style="padding: 0 9px; width: 100%; display: inline-block">
+                                                    <font style="color: #fff;font-weight: 400; font-size: 12px"><b>
+                                                        <center>
+                                                            Reset
+                                                        </center>
+                                                    </b></font>
+                                                </div>
                                             </center>
                                         </div>
                                     </div>

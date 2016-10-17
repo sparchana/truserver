@@ -245,7 +245,8 @@ public class RecruiterController {
                     matchingCandidateRequest.getJobPostJobRoleId(),
                     matchingCandidateRequest.getJobPostEducationId(),
                     matchingCandidateRequest.getJobPostLocalityIdList(),
-                    matchingCandidateRequest.getJobPostLanguageIdList())));
+                    matchingCandidateRequest.getJobPostLanguageIdList(),
+                    matchingCandidateRequest.getDistanceRadius())));
         }
         return badRequest();
     }

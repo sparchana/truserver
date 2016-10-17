@@ -74,7 +74,7 @@ public class JobPostWorkflowEngine {
                     .notIn("candidateId", selectedCandidateIdList)
                     .query();
         
-        List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList);
+        List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList, null);
 
         Map<Long, CandidateExtraData> allFeature = computeExtraData(candidateList, jobPost);
 
@@ -238,7 +238,7 @@ public class JobPostWorkflowEngine {
     }
 
 
-    private static List<Candidate> filterByLatLngOrHomeLocality(List<Candidate> candidateList, List<Long> jobPostLocalityIdList) {
+    private static List<Candidate> filterByLatLngOrHomeLocality(List<Candidate> candidateList, List<Long> jobPostLocalityIdList, Double distanceRadius) {
         List<Candidate> filteredCandidateList = new ArrayList<>();
 
         if (jobPostLocalityIdList == null){
@@ -265,7 +265,12 @@ public class JobPostWorkflowEngine {
                                     candidate.getCandidateLocalityLat(),
                                     candidate.getCandidateLocalityLng()
                             );
-                            if (distance > ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS) {
+
+                            Double searchRadius = ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS;
+                            if(distanceRadius != null){
+                                searchRadius = distanceRadius;
+                            }
+                            if (distance > searchRadius) {
                                 // candidate is not within req distance from jobPost latlng
                                 filteredCandidateList.remove(candidate);
                                 break;
@@ -548,7 +553,7 @@ public class JobPostWorkflowEngine {
                                                                         Long jobRoleId,
                                                                         Integer educationId,
                                                                         List<Long> jobPostLocalityIdList,
-                                                                        List<Integer> languageIdList)
+                                                                        List<Integer> languageIdList, Double radius)
     {
         Map<Long, CandidateWorkflowData> matchedCandidateMap = new LinkedHashMap<>();
 
@@ -560,7 +565,7 @@ public class JobPostWorkflowEngine {
         //query candidate query with the filter params
         query = getFilteredQuery(minAge, maxAge, minSalary, maxSalary,gender, jobRoleId, educationId, languageIdList, experience);
 
-        List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList);
+        List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList, radius);
 
         Map<Long, CandidateExtraData> allFeature = computeExtraDataForRecruiterSearchResult(candidateList);
 

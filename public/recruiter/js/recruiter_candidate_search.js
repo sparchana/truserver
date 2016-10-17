@@ -101,16 +101,19 @@ $(document).ready(function(){
         console.log("exception occured!!" + exception);
     }
 
-    $('input[type=radio][name=sortyBy]').change(function() {
+    $('input[type=radio][name=sortBySalary]').change(function() {
         if (this.value == 0) {
-            $("#sortByLastActive").prop("checked", false);
-            $("#sortBySalary").prop("checked", true);
-            sortBySalary();
+            sortBySalary(this.value);
+        } else if (this.value == 1) {
+            sortBySalary(this.value);
         }
-        else if (this.value == 1) {
-            $("#sortByLastActive").prop("checked", true);
-            $("#sortBySalary").prop("checked", false);
-            sortByLastActive();
+    });
+
+    $('input[type=radio][name=sortByActive]').change(function() {
+        if (this.value == 0) {
+            sortByLastActive(this.value);
+        } else if (this.value == 1) {
+            sortByLastActive(this.value);
         }
     });
 
@@ -248,6 +251,8 @@ function processDataCheckJobs(returnedData) {
 function resetFilters() {
     $('input:checkbox').removeAttr('checked');
     $('input:radio').removeAttr('checked');
+    $("#maxSalaryVal").html("Max Salary: Not specified");
+    $("#distanceRadius").html("Within 10 kms");
 }
 
 function performSearch() {
@@ -312,7 +317,8 @@ function performSearch() {
             jobPostJobRoleId: searchJobRole,
             jobPostEducationId: searchEducation,
             jobPostLocalityIdList: searchLocality,
-            jobPostLanguageIdList: selectedLanguage
+            jobPostLanguageIdList: selectedLanguage,
+            distanceRadius: parseFloat($("#filterDistance").val())
         };
 
         try {
@@ -328,6 +334,14 @@ function performSearch() {
             console.log("exception occured!!" + exception.stack);
         }
     }
+}
+
+function updateSliderVal(distanceSlider) {
+    $("#distanceRadius").html("Within " + parseFloat(distanceSlider.value) + "kms");
+}
+
+function updateSalarySliderVal(maxSalarySelected) {
+    $("#maxSalaryVal").html("Max Salary: ₹" + parseFloat(maxSalarySelected.value));
 }
 
 function processDataUnlockedCandidates(returnedData) {
@@ -352,8 +366,9 @@ function processDataMatchCandidate(returnedData) {
             candidateSearchResult.push(value);
         });
 
-        //render candidate cards
-        generateCandidateCards(candidateSearchResult);
+        //render candidate cards with last active filter
+        $("#latestActive").attr('checked', true);
+        sortByLastActive(1);
 
         try {
             $.ajax({
@@ -379,7 +394,6 @@ function generateCandidateCards(candidateSearchResult) {
     var parent = $("#candidateResultContainer");
 
     candidateSearchResult.forEach(function (value){
-        console.log(value);
         var candidateCard = document.createElement("div");
         candidateCard.className = "card";
         parent.append(candidateCard);
@@ -723,28 +737,49 @@ function generateCandidateCards(candidateSearchResult) {
     });
 }
 
-function sortBySalary(){
+function sortBySalary(val){
     var searchLength = Object.keys(candidateSearchResult).length;
     for (var i = 0; i < searchLength; i++) {
         for (var k = 0; k < (searchLength - 1); k++) {
-            if(candidateSearchResult[k].candidate.candidateLastWithdrawnSalary < candidateSearchResult[k + 1].candidate.candidateLastWithdrawnSalary){
-                var tmp = candidateSearchResult[k];
-                candidateSearchResult[k] = candidateSearchResult[k + 1];
-                candidateSearchResult[k + 1] = tmp;
+            if(val == 1){
+                // max salary
+                if(candidateSearchResult[k].candidate.candidateLastWithdrawnSalary < candidateSearchResult[k + 1].candidate.candidateLastWithdrawnSalary){
+                    var tmp = candidateSearchResult[k];
+                    candidateSearchResult[k] = candidateSearchResult[k + 1];
+                    candidateSearchResult[k + 1] = tmp;
+                }
+            } else{
+                //min salary
+                if(candidateSearchResult[k].candidate.candidateLastWithdrawnSalary > candidateSearchResult[k + 1].candidate.candidateLastWithdrawnSalary){
+                    tmp = candidateSearchResult[k];
+                    candidateSearchResult[k] = candidateSearchResult[k + 1];
+                    candidateSearchResult[k + 1] = tmp;
+                }
             }
         }
     }
     generateCandidateCards(candidateSearchResult);
 }
 
-function sortByLastActive(){
+function sortByLastActive(val){
     var searchLength = Object.keys(candidateSearchResult).length;
     for (var i = 0; i < searchLength; i++) {
         for (var k = 0; k < (searchLength - 1); k++) {
-            if(candidateSearchResult[k].extraData.lastActive.lastActiveValueId > candidateSearchResult[k + 1].extraData.lastActive.lastActiveValueId){
-                var tmp = candidateSearchResult[k];
-                candidateSearchResult[k] = candidateSearchResult[k + 1];
-                candidateSearchResult[k + 1] = tmp;
+            if(val == 1){
+                // latest active
+                if(candidateSearchResult[k].extraData.lastActive.lastActiveValueId > candidateSearchResult[k + 1].extraData.lastActive.lastActiveValueId){
+                    var tmp = candidateSearchResult[k];
+                    candidateSearchResult[k] = candidateSearchResult[k + 1];
+                    candidateSearchResult[k + 1] = tmp;
+                }
+            } else{
+                //oldest active
+                if(candidateSearchResult[k].extraData.lastActive.lastActiveValueId < candidateSearchResult[k + 1].extraData.lastActive.lastActiveValueId){
+                    tmp = candidateSearchResult[k];
+                    candidateSearchResult[k] = candidateSearchResult[k + 1];
+                    candidateSearchResult[k + 1] = tmp;
+                }
+
             }
         }
     }
