@@ -73,13 +73,7 @@ public class JobPostWorkflowEngine {
         query = query.where()
                     .notIn("candidateId", selectedCandidateIdList)
                     .query();
-
-        // should be an active candidate
-        query = query.select("*").fetch("candidateprofilestatus")
-                    .where()
-                    .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE)
-                    .query();
-
+        
         List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList);
 
         Map<Long, CandidateExtraData> allFeature = computeExtraData(candidateList, jobPost);

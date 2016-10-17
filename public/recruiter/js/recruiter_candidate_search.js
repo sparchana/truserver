@@ -125,10 +125,8 @@ function processDataRecruiterProfile(returnedData) {
     creditHistoryList.forEach(function (creditHistory){
         if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
             if(contactCreditCount == 0){
-                if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
-                    $("#remainingContactCredits").html(creditHistory.recruiterCreditsAvailable);
-                    contactCreditCount = 1;
-                }
+                $("#remainingContactCredits").html(creditHistory.recruiterCreditsAvailable);
+                contactCreditCount = 1;
             }
         } else{
             if(interviewCreditCount == 0){
