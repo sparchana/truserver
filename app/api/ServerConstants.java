@@ -116,6 +116,8 @@ public class ServerConstants {
     public static final int SHEET_MAIN = 1;
     public static final int SHEET_SCRAPPED = 2;
 
+    public static final int RECRUITER_FIRST_TIME = 1;
+
     // JobPost Workflow status
     public static final int JWF_STATUS_SELECTED = 1;
 
@@ -127,6 +129,16 @@ public class ServerConstants {
         devTeamMobile.put("Chillu", "+919035164363");
         devTeamMobile.put("Adarsh", "+918971739586");
         devTeamMobile.put("Sandy", "+919019672209");
+    }
+
+    public static Map<String, String> devTeamEmail;
+    static {
+        devTeamEmail = new HashMap<String, String>();
+        devTeamEmail.put("Archana", "archana@trujobs.in");
+        devTeamEmail.put("Avishek", "avishek@trujobs.in");
+        devTeamEmail.put("Chillu", "sandeep@trujobs.in");
+        devTeamEmail.put("Adarsh", "adarsh.raj@trujobs.in");
+        devTeamEmail.put("Sandy", "sandeep.kumar@trujobs.in");
     }
 
     public static final Double DEFAULT_MATCHING_ENGINE_RADIUS = 10.0; // In Kilometers

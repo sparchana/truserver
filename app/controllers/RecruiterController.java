@@ -2,6 +2,7 @@ package controllers;
 
 import api.ServerConstants;
 import api.http.httpRequest.LoginRequest;
+import api.http.httpRequest.Recruiter.AddCreditRequest;
 import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
@@ -251,7 +252,6 @@ public class RecruiterController {
         return badRequest();
     }
 
-
     @Security.Authenticated(SecuredUser.class)
     public static Result getUnlockedCandidates() {
         if(session().get("recruiterId") != null){
@@ -265,8 +265,18 @@ public class RecruiterController {
         return ok("0");
     }
 
-    public static Result sendTestEmail() throws EmailException {
-        EmailUtil.sendTestEmail();
-        return ok("1");
+    @Security.Authenticated(SecuredUser.class)
+    public static Result requestCredits() {
+        JsonNode req = request().body().asJson();
+        Logger.info("req JSON: " + req );
+        AddCreditRequest addCreditRequest = new AddCreditRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            addCreditRequest = newMapper.readValue(req.toString(), AddCreditRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ok(toJson(RecruiterService.requestCreditForRecruiter(addCreditRequest)));
     }
 }

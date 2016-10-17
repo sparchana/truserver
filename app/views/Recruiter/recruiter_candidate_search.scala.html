@@ -147,11 +147,11 @@
                             <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
                                 <div>
                                     <input name="sortBySalary" type="radio" value="0" id="sortByMinSalary" />
-                                    <label for="sortByMinSalary">Min Salary</label>
+                                    <label for="sortByMinSalary">Low to High</label>
                                 </div>
                                 <div>
                                     <input name="sortBySalary" type="radio" value="1" id="sortByMaxSalary" />
-                                    <label for="sortByMaxSalary">Max Salary</label>
+                                    <label for="sortByMaxSalary">High to Low</label>
                                 </div>
                             </div>
                         </li>
@@ -161,11 +161,11 @@
                             <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
                                 <div>
                                     <input name="sortByActive" type="radio" value="1" id="latestActive" />
-                                    <label for="latestActive">Latest first</label>
+                                    <label for="latestActive">Newest to oldest</label>
                                 </div>
                                 <div>
                                     <input name="sortByActive" type="radio" value="0" id="oldestActive" />
-                                    <label for="oldestActive">Oldest first</label>
+                                    <label for="oldestActive">Oldest to Newest</label>
                                 </div>
                             </div>
                         </li>
@@ -336,29 +336,34 @@
 
             <!-- Modal buy credit Structure -->
         <div id="modalBuyCredits" class="modal" style="background: transparent; box-shadow: none">
-            <div style="background: rgba(0, 0, 0, 0.75); padding: 6%">
-                <center><font style="font-size: 22px; color: #fff">Buy Credits</font></center>
+            <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
+                <center><font style="color: #fff"><h5>Credit Packs</h5></font></center>
             </div>
             <div style="background: #fff; padding: 24px">
                 <center>
-                    <h5>Credit Packs</h5>
                     <div class="row">
                         <div class="col s6 l6">
                             <div class="packCol">
                                 <img src="/assets/recruiter/img/coin.svg" width="36px">
-                                <h5>Contact Unlock</h5>
-                                <h6>₹100/credit</h6>
-                                <a class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="openCreditModal()"><font style="color: #fff;
-                                    font-weight: 400"><b>Buy Credits</b></font></a>
+                                <div style="display: block; font-size: 16px">Contact Unlock</div>
+                                <br>
+                                <p>Buy credits at ₹100/credit</p>
+                                <input style="width: 70%" placeholder="Enter amount (in ₹)" id="contactCreditAmount" onblur="calculateContactUnlockCredits()" type="number" class="validate">
+                                <div id="contactCreditsVal" style="color: #2ec866;  margin: -12px 0 8px 0">0 Contact credits</div>
+                                <a id="requestContactCredit" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="submitContactCredit()"><font style="color: #fff;
+                                    font-weight: 400"><b>Buy Contact Credits</b></font></a>
                             </div>
                         </div>
                         <div class="col s6 l6">
                             <div class="packCol">
                                 <img src="/assets/recruiter/img/coin.svg" width="36px">
-                                <h5>Interview Unlock</h5>
-                                <h6>₹500/credit</h6>
-                                <a class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="openCreditModal()"><font style="color: #fff;
-                                    font-weight: 400"><b>Buy Credits</b></font></a>
+                                <div style="display: block; font-size: 16px">Interview Unlock</div>
+                                <br>
+                                <p>Buy credits at ₹1000/credit</p>
+                                <input style="width: 70%" placeholder="Enter amount (in ₹)" id="interviewCreditAmount" onblur="calculateInterviewUnlockCredits()" type="number" class="validate">
+                                <div id="interviewCreditsVal" style="color: #2ec866; margin: -12px 0 8px 0">0 Interview credits</div>
+                                <a id="requestInterviewCredit" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="submitInterviewCredit()"><font style="color: #fff;
+                                    font-weight: 400"><b>Buy Interview Credits</b></font></a>
                             </div>
                         </div>
                     </div>

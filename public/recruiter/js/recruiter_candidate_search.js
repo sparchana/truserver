@@ -6,6 +6,9 @@ var candidateIdVal;
 var localityArray = [];
 var candidateSearchResult = [];
 
+var contactCredtUnitPrice;
+var interviewCredtUnitPrice;
+
 $(document).scroll(function(){
     if ($(this).scrollTop() > 20) {
         $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
@@ -101,6 +104,21 @@ $(document).ready(function(){
         console.log("exception occured!!" + exception);
     }
 
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllCreditCategory",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetCreditCategory
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+
     $('input[type=radio][name=sortBySalary]').change(function() {
         if (this.value == 0) {
             sortBySalary(this.value);
@@ -120,6 +138,12 @@ $(document).ready(function(){
     $('#searchLocality').tokenize().tokenAdd("All Bangalore");
 
 });
+
+function processDataGetCreditCategory(returnedData) {
+    contactCredtUnitPrice = returnedData[0].recruiterCreditUnitPrice;
+    interviewCredtUnitPrice = returnedData[1].recruiterCreditUnitPrice;
+}
+
 
 function processDataRecruiterProfile(returnedData) {
     var creditHistoryList = returnedData.recruiterCreditHistoryList;
@@ -858,6 +882,105 @@ function logoutRecruiter() {
 function processDataLogoutRecruiter() {
     window.location = "/recruiter";
 }
+
+function calculateContactUnlockCredits() {
+    if($("#contactCreditAmount").val() != undefined && $("#contactCreditAmount").val() != null){
+        var contactCreditAmount = parseInt($("#contactCreditAmount").val());
+        if(contactCreditAmount > 0 && contactCreditAmount < 100000){
+            $("#contactCreditsVal").html("No. of credits: " + parseInt(contactCreditAmount / contactCredtUnitPrice));
+        } else{
+            notifyError("Please enter the amount greater than 0 and less than 10000");
+        }
+    } else{
+        notifyError("Please enter the amount");
+    }
+}
+
+function calculateInterviewUnlockCredits() {
+    if($("#interviewCreditAmount").val() != undefined && $("#interviewCreditAmount").val() != null){
+        var interviewCreditAmount = parseInt($("#interviewCreditAmount").val());
+        if(interviewCreditAmount > 0 && interviewCreditAmount < 100000){
+            $("#interviewCreditsVal").html("No. of credits: " + parseInt(interviewCreditAmount / interviewCredtUnitPrice));
+        } else{
+            notifyError("Please enter the amount greater than 0 and less than 10000");
+        }
+    } else{
+        notifyError("Please enter the amount");
+    }
+}
+
+function submitContactCredit() {
+    if($("#contactCreditAmount").val() != undefined && $("#contactCreditAmount").val() != null){
+        var interviewCreditAmount = parseInt($("#contactCreditAmount").val());
+        if(interviewCreditAmount > 0 && interviewCreditAmount < 100000){
+            try {
+                $("#requestContactCredit").addClass("disabled");
+                var d = {
+                    creditAmount: interviewCreditAmount,
+                    noOfCredits: parseInt(Number(interviewCreditAmount / contactCredtUnitPrice)),
+                    creditCategory: 1
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/recruiter/api/requestCredits/",
+                    async: true,
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
+                    success: processDataAddCreditRequest
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception.stack);
+            }
+        } else{
+            notifyError("Please enter the amount greater than 0 and less than 10000");
+        }
+    } else{
+        notifyError("Please enter the amount");
+    }
+}
+
+function submitInterviewCredit() {
+    if($("#interviewCreditAmount").val() != undefined && $("#interviewCreditAmount").val() != null){
+        var interviewCreditAmount = parseInt($("#interviewCreditAmount").val());
+        if(interviewCreditAmount > 0 && interviewCreditAmount < 100000){
+            try {
+                $("#requestInterviewCredit").addClass("disabled");
+                var d = {
+                    creditAmount: interviewCreditAmount,
+                    noOfCredits: parseInt(Number(interviewCreditAmount / interviewCredtUnitPrice)),
+                    creditCategory: 2
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/recruiter/api/requestCredits/",
+                    async: true,
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
+                    success: processDataAddCreditRequest
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception.stack);
+            }
+        } else{
+            notifyError("Please enter the amount greater than 0 and less than 10000");
+        }
+    } else{
+        notifyError("Please enter the amount");
+    }
+}
+
+function processDataAddCreditRequest(returnedData) {
+    $("#requestContactCredit").removeClass("disabled");
+    $("#requestInterviewCredit").removeClass("disabled");
+    if(returnedData.status == 1){
+        notifySuccess("Request submitted. Our business team will contact you within 24 hours")
+    } else{
+        notifyError("Something went wrong. Please try again later");
+    }
+}
+
 
 function openCreditModal(){
     $("#modalBuyCredits").openModal();

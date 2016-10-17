@@ -83,6 +83,7 @@ public class RecruiterAuthService {
                 Logger.info("recruiter status confirmed");
 
                 recruiterSignUpResponse.setRecruiterMobile(existingRecruiter.getRecruiterProfileMobile());
+                recruiterSignUpResponse.setFirstTime(ServerConstants.RECRUITER_FIRST_TIME);
             }
             Logger.info("Auth Save Successful");
         }
