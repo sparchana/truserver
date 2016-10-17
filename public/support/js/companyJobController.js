@@ -16,9 +16,11 @@ function renderDashboard() {
     try {
         $('table#jobTable').show();
         $('table#companyTable').hide();
+        $('table#recruiterTable').hide();
 
         $('div#companyTable_info.dataTables_info').hide();
-        $('div#companyTable_wrapper.dataTables_wrapper').hide();
+        $('div#jobTable_wrapper.dataTables_wrapper').hide();
+        $('div#recruiterTable_wrapper.dataTables_wrapper').hide();
 
         if ( $.fn.dataTable.isDataTable( 'table#jobTable' ) ) {
             $('table#jobTable').DataTable().clear();
@@ -110,8 +112,11 @@ function getAllCompany() {
     try {
         $('table#companyTable').show();
         $('table#jobTable').hide();
+        $('table#recruiterTable').hide();
+
         $('div#jobTable_info.dataTables_info').hide();
         $('div#jobTable_wrapper.dataTables_wrapper').hide();
+        $('div#recruiterTable_wrapper.dataTables_wrapper').hide();
 
         if ( $.fn.dataTable.isDataTable( 'table#companyTable' ) ) {
             $('table#companyTable').DataTable().clear();
@@ -148,6 +153,99 @@ function getAllCompany() {
                 { "data": "companyAddress" },
                 { "data": "companyType" },
                 { "data": "companyStatus" }
+            ],
+            "order": [[2, "asc"]],
+            "language": {
+                "emptyTable": "No data available"
+            },
+            "destroy": true,
+            "dom": 'Bfrtip',
+            "buttons": [
+                'copy', 'csv', 'excel'
+            ]
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function getAllRecruiters() {
+    try {
+        $('table#companyTable').hide();
+        $('table#jobTable').hide();
+        $('table#recruiterTable').show();
+
+        $('div#jobTable_info.dataTables_info').hide();
+        $('div#companyTable_wrapper.dataTables_wrapper').hide();
+        $('div#jobTable_wrapper.dataTables_wrapper').hide();
+        $('div#recruiterTable_wrapper.dataTables_wrapper').hide();
+
+        if ( $.fn.dataTable.isDataTable( 'table#recruiterTable' ) ) {
+            $('table#companyTable').DataTable().clear();
+        }
+        var table = $('table#recruiterTable').DataTable({
+            "ajax": {
+                "url": "/getAllRecruiters",
+                "dataSrc": function (returnedData) {
+
+                    var returned_data = new Array();
+                    var contactCredits = 0;
+                    var interviewCredits = 0;
+                    returnedData.forEach(function (recruiter) {
+                        var creditHistoryCount = Object.keys(recruiter.recruiterCreditHistoryList).length;
+                        if(creditHistoryCount > 0){
+                            var creditHistoryList = recruiter.recruiterCreditHistoryList;
+                            creditHistoryList.reverse();
+                            var contactCreditCount = 0;
+                            var interviewCreditCount = 0;
+                            creditHistoryList.forEach(function (creditHistory){
+                                if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
+                                    if(contactCreditCount == 0){
+                                        if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
+                                            contactCredits = creditHistory.recruiterCreditsAvailable;
+                                            contactCreditCount = 1;
+                                        }
+                                    }
+                                } else{
+                                    if(interviewCreditCount == 0){
+                                        if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 2){
+                                            interviewCredits = creditHistory.recruiterCreditsAvailable;
+                                            interviewCreditCount = 1;
+                                        }
+                                    }
+                                }
+                                if(contactCreditCount > 0 && interviewCreditCount > 0){
+                                    return false;
+                                }
+                            });
+                        }
+                        returned_data.push({
+                            'recruiterId': '<a href="'+"/recruiterDetails/"+recruiter.recruiterProfileId+'" id="'+recruiter.recruiterProfileId+'" style="cursor:pointer;" target="_blank">' + recruiter.recruiterProfileId + '</a>',
+                            'creationTimestamp' : function() {
+                                var returnedCreationDate = new Date(recruiter.recruiterProfileCreateTimestamp);
+                                return new Date(returnedCreationDate).toLocaleDateString();
+                            },
+                            'recruiterName': recruiter.recruiterProfileName,
+                            'recruiterCompany' : ((recruiter.company != null) ? '<a href="'+"/companyDetails/"+recruiter.company.companyId+'" style="cursor:pointer;" target="_blank">'+recruiter.company.companyName+'</a>' : ""),
+                            'recruiterMobile' : recruiter.recruiterProfileMobile,
+                            'recruiterEmail' : recruiter.recruiterProfileEmail,
+                            'recruiterContactCredit' : contactCredits,
+                            'recruiterInterviewCredit' : interviewCredits
+                        })
+                    });
+                    return returned_data;
+                }
+            },
+            "deferRender": true,
+            "columns": [
+                { "data": "recruiterId" },
+                { "data": "creationTimestamp" },
+                { "data": "recruiterName" },
+                { "data": "recruiterCompany" },
+                { "data": "recruiterMobile" },
+                { "data": "recruiterEmail" },
+                { "data": "recruiterContactCredit" },
+                { "data": "recruiterInterviewCredit" }
             ],
             "order": [[2, "asc"]],
             "language": {
