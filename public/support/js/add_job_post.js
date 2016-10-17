@@ -126,6 +126,10 @@ function computeCreditValue() {
     }
 }
 
+function closeCreditModal() {
+    $("#creditModal").modal("hide");
+}
+
 // job_post_form ajax script
 $(function() {
     $("#job_post_form").submit(function(eventObj) {

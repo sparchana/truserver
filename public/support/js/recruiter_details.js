@@ -174,7 +174,6 @@ function processDataAddRecruiter(returnedData) {
 }
 
 function processDataForCompanyInfo(returnedData) {
-    console.log(returnedData);
     $("#recruiterName").val(returnedData.recruiterProfileName);
     $("#recruiterMobile").val(returnedData.recruiterProfileMobile);
     if(returnedData.recruiterProfileLandline != null ){
@@ -215,6 +214,10 @@ function processDataForCompanyInfo(returnedData) {
             }
         });
     }
+}
+
+function closeCreditModal() {
+    $("#creditModal").modal("hide");
 }
 
 function notifyError(msg){
