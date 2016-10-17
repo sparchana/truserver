@@ -16,14 +16,12 @@ function processDataCheckLocality(returnedData) {
     });
 }
 
-function processDataCheckJobs(returnedData) {
-    returnedData.forEach(function(job) {
-        var id = job.jobRoleId;
-        var name = job.jobName;
-        var item = {};
-        item ["id"] = id;
-        item ["name"] = name;
+function processDataCompanyType(returnedData) {
+    returnedData.forEach(function(companyType) {
+        var id = companyType.companyTypeId;
+        var name = companyType.companyTypeName;
         var option = $('<option value=' + id + '></option>').text(name);
+        $('#rec_company_type').append(option);
     });
 }
 
@@ -79,11 +77,11 @@ $(document).ready(function(){
     try {
         $.ajax({
             type: "POST",
-            url: "/getAllJobs",
+            url: "/getAllCompanyType",
             data: false,
             contentType: false,
             processData: false,
-            success: processDataCheckJobs
+            success: processDataCompanyType
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
@@ -129,7 +127,7 @@ function processDataRecruiterProfile(returnedData) {
     console.log(returnedData);
     if (returnedData == '0') {
         logoutRecruiter();
-    } else{
+    } else {
         $("#rec_name").val(returnedData.recruiterProfileName);
         $("#rec_mobile").val(returnedData.recruiterProfileMobile);
 
@@ -154,22 +152,112 @@ function processDataRecruiterProfile(returnedData) {
         }
         if(returnedData.company != null){
             companyId = returnedData.company.companyId;
+
+            if(returnedData.company.companyLocality != null){
+                $('#rec_company_locality').tokenize().tokenAdd(returnedData.company.companyLocality.localityId, returnedData.company.companyLocality.localityName);
+            }
+            if(returnedData.company.compType != null){
+                $('#rec_company_type').tokenize().tokenAdd(returnedData.company.compType.companyTypeId, returnedData.company.compType.companyTypeName);
+            }
+
+            if(returnedData.company.companyName != null){
+                $("#rec_company_name").val(returnedData.company.companyName);
+            }
+            if(returnedData.company.companyPinCode != null){
+                $("#rec_company_pincode").val(returnedData.company.companyPinCode);
+            }
+            if(returnedData.company.companyWebsite != null){
+                $("#rec_company_website").val(returnedData.company.companyWebsite);
+            }
+            if(returnedData.company.companyDescription != null){
+                $("#rec_company_desc").val(returnedData.company.companyDescription);
+            }
+            if(returnedData.company.companyAddress != null){
+                $("#rec_company_address").val(returnedData.company.companyAddress);
+            }
+            if(returnedData.company.companyEmployeeCount != null){
+                $("#rec_company_employees").val(returnedData.company.companyEmployeeCount);
+            }
         }
+    }
+
+}
+
+function validateCompanyTypeVal(val) {
+    var isValidTokenVal = /^\d+$/.test(val);
+    if(!isValidTokenVal){
+        $('#rec_company_type').tokenize().tokenRemove(val);
+        notifyError("Please select a valid company type from the dropdown list");
+    }
+}
+
+function validateCompanyLocationVal(val) {
+    var isValidTokenVal = /^\d+$/.test(val);
+    if(!isValidTokenVal){
+        $('#rec_company_locality').tokenize().tokenRemove(val);
+        notifyError("Please select a valid location from the dropdown list");
     }
 }
 
 function saveForm() {
-    var status = 1;
+    var recruiterStatus = 1;
+    var companyStatus = 1;
     var recruiterName = validateName($("#rec_name").val());
 
     //checking first name
     switch(recruiterName){
-        case 0: alert("Recruiter's name contains number. Please Enter a valid name"); status=0; break;
-        case 2: alert("Recruiter's name cannot be blank spaces. Enter a valid name"); status=0; break;
-        case 3: alert("Recruiter's name contains special symbols. Enter a valid name"); status=0; break;
-        case 4: alert("Please enter recruiter's name"); status=0; break;
+        case 0: alert("Recruiter's name contains number. Please Enter a valid name"); recruiterStatus=0; break;
+        case 2: alert("Recruiter's name cannot be blank spaces. Enter a valid name"); recruiterStatus=0; break;
+        case 3: alert("Recruiter's name contains special symbols. Enter a valid name"); recruiterStatus=0; break;
+        case 4: alert("Please enter recruiter's name"); recruiterStatus=0; break;
     }
-    if(status == 1){
+
+
+    if(recruiterStatus == 1){
+        try {
+            var companyLocalitySelected = $("#rec_company_locality").val();
+            var companyTypeSelected = $("#rec_company_type").val();
+
+            var localitySelectedVal = null;
+            var typeSelectedVal = null;
+
+            if(companyLocalitySelected != null){
+                localitySelectedVal = companyLocalitySelected[0];
+            }
+
+            if(companyTypeSelected != null){
+                typeSelectedVal = companyTypeSelected[0];
+            }
+
+            //TODO: logo, address
+            var d = {
+                companyId: companyId,
+                companyName: $("#rec_company_name").val(),
+                companyEmployeeCount: $("#rec_company_employees").val(),
+                companyWebsite: $("#rec_company_website").val(),
+                companyDescription: $("#rec_company_desc").val(),
+                companyPinCode: $("#rec_company_pincode").val(),
+                companyLocality: localitySelectedVal,
+                companyType: typeSelectedVal
+            };
+
+            try {
+                $.ajax({
+                    type: "POST",
+                    url: "/addCompany",
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(d),
+                    success: processDataUpdateCompany
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
+        } catch (err){}
+    }
+}
+
+function processDataUpdateCompany(returnedData) {
+    if(returnedData.status == 2){
         try{
             var rec = {
                 recruiterMobile: ($("#rec_mobile").val()).substring(3, 13),
@@ -192,11 +280,13 @@ function saveForm() {
             data: JSON.stringify(rec),
             success: processDataAddRecruiter
         });
+    } else{
+        alert("Something went wrong! Please try again later");
     }
 }
 
+
 function processDataAddRecruiter(returnedData) {
-    console.log(returnedData);
     if(returnedData.status == 4){
         notifySuccess("Profile updated successfully!");
     } else{

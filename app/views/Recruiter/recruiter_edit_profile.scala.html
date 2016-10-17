@@ -104,9 +104,6 @@
                             </div>
                         </div>
                         <br>
-                        <div onclick="saveForm()" class="waves-effect waves-light right ascentGreen lighten-1 btn"><font style="color: #fff;
-                            font-weight: 600">Save Profile</font></div>
-                        <br>
                         <h4>Company Details!</h4>
                         <hr>
                         <div class="row">
@@ -122,17 +119,13 @@
                                     $('#rec_company_locality').tokenize({
                                         displayDropdownOnFocus: true,
                                         placeholder: "Enter company locality",
-                                        maxElements: 1
+                                        maxElements: 1,
+                                        newElements: true,
+                                        onAddToken: function (value) {
+                                            validateCompanyLocationVal(value);
+                                        }
                                     });
                                 </script>
-                                <style>
-                                    div.Tokenize ul.TokensContainer {
-                                        margin-left: 44px;
-                                        width: 93%;
-                                        padding-bottom: 12px;
-                                        border-bottom: 1px solid rgba(101, 99, 99, 0.64);
-                                    }
-                                </style>
                             </div>
                         </div>
                         <div class="row">
@@ -155,6 +148,14 @@
                             </div>
                         </div>
                         <div class="row">
+                            <div class="input-field col s12 l12">
+                                <i class="material-icons prefix">reorder</i>
+                                <textarea placeholder="Company office address" id="rec_company_address" class="materialize-textarea"></textarea>
+                                <label for="rec_company_address">Company Address</label>
+                            </div>
+                        </div>
+
+                        <div class="row">
                             <div class="input-field col s12 l6">
                                 <i class="material-icons prefix">supervisor_account</i>
                                 <input placeholder="No. of Employees" id="rec_company_employees" type="text" maxlength="15" class="validate">
@@ -162,10 +163,32 @@
                             </div>
                             <div class="input-field col s12 l6">
                                 <i class="material-icons prefix">settings_input_composite</i>
-                                <input placeholder="Company Type" id="rec_company_type" type="text" maxlength="15" class="validate">
-                                <label for="rec_company_type">Company Type</label>
+                                <select id="rec_company_type" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
+                                <script type="text/javascript">
+                                    $('#rec_company_type').tokenize({
+                                        displayDropdownOnFocus: true,
+                                        placeholder: "Company type",
+                                        maxElements: 1,
+                                        newElements: true,
+                                        onAddToken: function (value) {
+                                            validateCompanyTypeVal(value);
+                                        }
+                                    });
+                                </script>
+                                <style>
+                                div.Tokenize ul.TokensContainer {
+                                    margin-left: 44px;
+                                    width: 93%;
+                                    padding-bottom: 12px;
+                                    border-bottom: 1px solid rgba(101, 99, 99, 0.64);
+                                }
+                                </style>
                             </div>
                         </div>
+
+                        <br>
+                        <div onclick="saveForm()" class="waves-effect waves-light right ascentGreen lighten-1 btn"><font style="color: #fff;
+                            font-weight: 600">Save Profile</font></div>
                     </form>
                 </div>
             </div>
