@@ -84,6 +84,14 @@ body{
     margin-top: 5%;
 }
 
+.contactUnlocked{
+    padding: 12px;
+    border-radius: 4px;
+    border: 2px solid #2ec866;
+    color: #2ec866;
+    margin: 8px;
+}
+
 #creditView{
     z-index: 9999;
     color: white;

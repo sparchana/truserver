@@ -358,7 +358,7 @@ function processDataUnlockedCandidates(returnedData) {
     returnedData.forEach(function (unlockedCandidate){
         try {
             $("#candidate_" + unlockedCandidate.candidate.candidateId).html(unlockedCandidate.candidate.candidateMobile);
-            $("#unlock_candidate_" + unlockedCandidate.candidate.candidateId).prop('disabled',true);
+            $("#unlock_candidate_" + unlockedCandidate.candidate.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 btn").addClass("contactUnlocked right").removeAttr('onclick');
         } catch (err){}
     });
 }
@@ -637,7 +637,16 @@ function generateCandidateCards(candidateSearchResult) {
             if(value.candidate.candidateTotalExperience == 0){
                 candidateExperienceVal.textContent = "Fresher";
             } else{
-                candidateExperienceVal.textContent = (parseInt(value.candidate.candidateTotalExperience/12)) + " yrs and " + (value.candidate.candidateTotalExperience)%12 + " months";
+                var yrs = parseInt(value.candidate.candidateTotalExperience/12);
+                var mnths = (value.candidate.candidateTotalExperience) % 12;
+
+                if(yrs == 0){
+                    candidateExperienceVal.textContent = mnths + " months";
+                } else if(mnths == 0){
+                    candidateExperienceVal.textContent = yrs + " years";
+                } else{
+                    candidateExperienceVal.textContent = yrs + " years and " + mnths + " months";
+                }
             }
         } else{
             candidateExperienceVal.textContent = "Not Specified";
@@ -727,22 +736,22 @@ function generateCandidateCards(candidateSearchResult) {
 
         var unlockDivRow = document.createElement("div");
         unlockDivRow.className = "row";
-        unlockDivRow.style = "margin: 2%; padding:1%; text-align: right";
+        unlockDivRow.style = "margin: 2%; padding: 1%; text-align: right; color: #fff";
         candidateCardContent.appendChild(unlockDivRow);
 
-        var unlockCandidateBtn = document.createElement("a");
+        var unlockCandidateBtn = document.createElement("div");
+        unlockCandidateBtn.id = "unlock_candidate_" + value.candidate.candidateId;
         unlockCandidateBtn.onclick = function () {
             unlockContact(value.candidate.candidateId);
         };
-        unlockCandidateBtn.id = "unlock_candidate_" + value.candidate.candidateId;
         unlockCandidateBtn.className = "waves-effect waves-light ascentGreen lighten-1 btn";
         unlockDivRow.appendChild(unlockCandidateBtn);
 
         //candidate last active container
         var candidateUnlockFont = document.createElement("font");
-        candidateUnlockFont.style = "color: #fff;font-weight: bold";
         candidateUnlockFont.id = "candidate_" + value.candidate.candidateId;
         candidateUnlockFont.textContent = "Unlock Contact";
+        candidateUnlockFont.style = "font-weight: bold; font-size: 16px";
         unlockCandidateBtn.appendChild(candidateUnlockFont);
     });
 }
