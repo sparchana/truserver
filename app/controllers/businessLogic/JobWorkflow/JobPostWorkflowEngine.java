@@ -476,31 +476,53 @@ public class JobPostWorkflowEngine {
         int maxExperienceValue;
     }
 
-    public static String getDateCluster(Long timeInMill) {
-        String clusterLable;
+    public static class LastActiveValue{
+        public Integer lastActiveValueId;
+        public String lastActiveValueName;
+    }
+
+    public static LastActiveValue getDateCluster(Long timeInMill) {
+
+        Map<Integer, String> clusterLabel = new HashMap<>();
+        clusterLabel.put(1, "Within 24 hrs");
+        clusterLabel.put(2, "Last 3 days");
+        clusterLabel.put(3, "Last 7 days");
+        clusterLabel.put(4, "Last 12 days");
+        clusterLabel.put(5, "Last one month");
+        clusterLabel.put(6, "Last two month");
+        clusterLabel.put(7, "Beyond two months");
+
         Calendar cal = Calendar.getInstance();
         Calendar currentCal = Calendar.getInstance();
         cal.setTimeInMillis(timeInMill);
 
+        LastActiveValue lastActiveValue = new LastActiveValue();
         int currentDay = currentCal.get(Calendar.DAY_OF_YEAR);
         int doyDiff = currentDay - cal.get(Calendar.DAY_OF_YEAR);
 
         if( doyDiff > 60) {
-            clusterLable = "Beyond two months";
+            lastActiveValue.lastActiveValueId = 7;
+            lastActiveValue.lastActiveValueName = clusterLabel.get(7);
         } else if( doyDiff > 30) {
-            clusterLable = "Last two months";
+            lastActiveValue.lastActiveValueId = 6;
+            lastActiveValue.lastActiveValueName = clusterLabel.get(6);
         } else if( doyDiff > 15) {
-            clusterLable = "Last one month";
+            lastActiveValue.lastActiveValueId = 5;
+            lastActiveValue.lastActiveValueName = clusterLabel.get(5);
         } else if (doyDiff > 7) {
-            clusterLable = "Last 14 days";
+            lastActiveValue.lastActiveValueId = 4;
+            lastActiveValue.lastActiveValueName = clusterLabel.get(4);
         } else if ( doyDiff > 3) {
-            clusterLable = "Last 7 days";
+            lastActiveValue.lastActiveValueId = 3;
+            lastActiveValue.lastActiveValueName = clusterLabel.get(3);
         } else if ( doyDiff > 1) {
-            clusterLable = "Last 3 days";
+            lastActiveValue.lastActiveValueId = 2;
+            lastActiveValue.lastActiveValueName = clusterLabel.get(2);
         } else {
-            clusterLable = "Within 24 hrs";
+            lastActiveValue.lastActiveValueId = 1;
+            lastActiveValue.lastActiveValueName = clusterLabel.get(1);
         }
-        return clusterLable;
+        return lastActiveValue;
     }
 
     /**

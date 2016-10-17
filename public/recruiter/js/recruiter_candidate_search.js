@@ -8,7 +8,7 @@ var candidateSearchResultBkp = [];
 var candidateSearchResult = [];
 
 $(document).scroll(function(){
-    if ($(this).scrollTop() > 80) {
+    if ($(this).scrollTop() > 20) {
         $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
     }
     else{
@@ -111,7 +111,7 @@ $(document).ready(function(){
         else if (this.value == 1) {
             $("#sortByLastActive").prop("checked", true);
             $("#sortBySalary").prop("checked", false);
-            generateCandidateCards(candidateSearchResultBkp);
+            sortByLastActive();
         }
     });
 
@@ -380,6 +380,7 @@ function generateCandidateCards(candidateSearchResult) {
     var parent = $("#candidateResultContainer");
 
     candidateSearchResult.forEach(function (value){
+        console.log(value);
         var candidateCard = document.createElement("div");
         candidateCard.className = "card";
         parent.append(candidateCard);
@@ -415,7 +416,7 @@ function generateCandidateCards(candidateSearchResult) {
         var candidateCardRowColTwoFont = document.createElement("font");
         candidateCardRowColTwoFont.setAttribute("size", "3");
         candidateCardRowColTwoFont.style = "font-weight:600";
-        candidateCardRowColTwoFont.textContent = "Active: " + value.extraData.lastActive;
+        candidateCardRowColTwoFont.textContent = "Active: " + value.extraData.lastActive.lastActiveValueName;
         candidateCardRowColTwo.appendChild(candidateCardRowColTwoFont);
 
         //end of candidateCardRow
@@ -737,6 +738,20 @@ function sortBySalary(){
     generateCandidateCards(candidateSearchResult);
 }
 
+function sortByLastActive(){
+    var searchLength = Object.keys(candidateSearchResult).length;
+    for (var i = 0; i < searchLength; i++) {
+        for (var k = 0; k < (searchLength - 1); k++) {
+            if(candidateSearchResult[k].extraData.lastActive.lastActiveValueId > candidateSearchResult[k + 1].extraData.lastActive.lastActiveValueId){
+                var tmp = candidateSearchResult[k];
+                candidateSearchResult[k] = candidateSearchResult[k + 1];
+                candidateSearchResult[k + 1] = tmp;
+            }
+        }
+    }
+    generateCandidateCards(candidateSearchResult);
+}
+
 function unlockContact(candidateId){
     if(candidateId != null || candidateId != undefined){
         candidateIdVal = candidateId;
@@ -769,6 +784,26 @@ function processDataUnlockCandidate(returnedData) {
         notifyError("Out of credits! Please recharge");
         openCreditModal();
     }
+}
+
+function logoutRecruiter() {
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/logoutRecruiter",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataLogoutRecruiter
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function processDataLogoutRecruiter() {
+    window.location = "/recruiter";
 }
 
 function openCreditModal(){

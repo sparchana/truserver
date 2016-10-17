@@ -1,11 +1,13 @@
 package api.http.httpResponse;
 
+import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
+
 /**
  * Created by zero on 10/10/16.
  */
 public class CandidateExtraData {
     public String appliedOn;
-    public String lastActive;
+    public JobPostWorkflowEngine.LastActiveValue lastActive;
     public Integer assessmentAttemptId;
 
     public String getAppliedOn() {
@@ -16,11 +18,11 @@ public class CandidateExtraData {
         this.appliedOn = appliedOn;
     }
 
-    public String getLastActive() {
+    public JobPostWorkflowEngine.LastActiveValue getLastActive() {
         return lastActive;
     }
 
-    public void setLastActive(String lastActive) {
+    public void setLastActive(JobPostWorkflowEngine.LastActiveValue lastActive) {
         this.lastActive = lastActive;
     }
 

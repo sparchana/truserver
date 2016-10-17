@@ -125,7 +125,7 @@
                                         maxElements: 1,
                                         newElements: true,
                                         onAddToken: function (value, text) {
-                                            validateCompanyLocationVal(value);
+                                            validateCompanyLocationVal(value, text);
                                         }
                                     });
                                 </script>
@@ -186,8 +186,8 @@
                                         placeholder: "Company type",
                                         maxElements: 1,
                                         newElements: true,
-                                        onAddToken: function (value) {
-                                            validateCompanyTypeVal(value);
+                                        onAddToken: function (value, text) {
+                                            validateCompanyTypeVal(value, text);
                                         }
                                     });
                                 </script>
