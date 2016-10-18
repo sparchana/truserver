@@ -241,8 +241,9 @@ public class JobPostWorkflowEngine {
     private static List<Candidate> filterByLatLngOrHomeLocality(List<Candidate> candidateList, List<Long> jobPostLocalityIdList, Double distanceRadius) {
         List<Candidate> filteredCandidateList = new ArrayList<>();
 
+        Logger.info(jobPostLocalityIdList + " : jobLocalityList");
         if (jobPostLocalityIdList == null || jobPostLocalityIdList.isEmpty()){
-            return filteredCandidateList;
+            return candidateList;
         }
 
         List<Locality> localityList = Locality.find.where().in("localityId", jobPostLocalityIdList).findList();

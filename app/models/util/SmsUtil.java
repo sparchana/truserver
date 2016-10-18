@@ -226,21 +226,25 @@ public class SmsUtil {
     }
 
     public static void sendRequestCreditSms(RecruiterProfile recruiterProfile, AddCreditRequest addCreditRequest) {
-        String cat;
-        if(addCreditRequest.getCreditCategory() == ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK){
-            cat = "contact unlock credits";
+        Integer contactCredits = addCreditRequest.getNoOfContactCredits();
+        Integer interviewCredits = addCreditRequest.getNoOfInterviewCredits();
+
+        String creditMsg;
+        if(contactCredits == 0){
+            creditMsg = interviewCredits + " interview unlock credits";
+        } else if(interviewCredits == 0){
+            creditMsg = contactCredits + " contact unlock credits";
         } else{
-            cat = "interview unlock credits";
+            creditMsg = contactCredits + " contact unlock credits and " + interviewCredits + " interview unlock credits";
         }
 
-        String msg = "Hi " + recruiterProfile.getRecruiterProfileName() + "! We have received your request for " + addCreditRequest.getNoOfCredits() + " " + cat
+        String msg = "Hi " + recruiterProfile.getRecruiterProfileName() + "! We have received your request for " + creditMsg
                 + ". Our business team will contact you within 24 hours! For more queries, call +91 9980293925. Thank you.";
         sendSms(recruiterProfile.getRecruiterProfileMobile(), msg);
 
         msg = "Hi team, recruiter: " + recruiterProfile.getRecruiterProfileName() + " with mobile " + recruiterProfile.getRecruiterProfileMobile() + " of company: " +
-                recruiterProfile.getCompany().getCompanyName() +  " has requested for " + addCreditRequest.getNoOfCredits() + " " + cat
-                + " credits. Amount = ₹" + addCreditRequest.getCreditAmount() + ". Thank You";
-
+                recruiterProfile.getCompany().getCompanyName() +  " has requested for " + creditMsg
+                + ". Thank You";
 
         sendSms(devTeamMobile.get("Sandy"), msg);
         sendSms(devTeamMobile.get("Adarsh"), msg);
