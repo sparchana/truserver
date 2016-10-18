@@ -73,6 +73,11 @@ function validateEmail(email) {
     return re.test(email);
 }
 
+function validateInteger(val) {
+    var reg = /^\d+$/;
+    return reg.test(val);
+}
+
 function validateOtp(otp) {
     if(otp == undefined){
         return 0;

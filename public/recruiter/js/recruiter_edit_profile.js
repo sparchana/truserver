@@ -237,12 +237,23 @@ function saveForm() {
     var companyStatus = 1;
     var recruiterName = validateName($("#rec_name").val());
 
+    var recruiterLandline = $("#rec_landline").val();
+    var recruiterPincode = $("#rec_company_pincode").val();
+
     //checking first name
     switch(recruiterName){
         case 0: alert("Recruiter's name contains number. Please Enter a valid name"); recruiterStatus=0; break;
         case 2: alert("Recruiter's name cannot be blank spaces. Enter a valid name"); recruiterStatus=0; break;
         case 3: alert("Recruiter's name contains special symbols. Enter a valid name"); recruiterStatus=0; break;
         case 4: alert("Please enter recruiter's name"); recruiterStatus=0; break;
+    }
+
+    if(!validateInteger(recruiterLandline)){
+        notifyError("Please enter a valid landline number");
+        recruiterStatus = 0;
+    } else if(!validateInteger(recruiterPincode)){
+        notifyError("Please enter a valid pincode number");
+        recruiterStatus = 0;
     }
 
     var logo;
