@@ -739,7 +739,7 @@ $(function () {
                     if (app.currentView == "pre_screen_view" && newCandidate.extraData.preScreenCallAttemptCount != null) {
                         return newCandidate.extraData.preScreenCallAttemptCount
                     } else {
-                        return "";
+                        return "0";
                     }
                 };
                 var varColumn = function () {

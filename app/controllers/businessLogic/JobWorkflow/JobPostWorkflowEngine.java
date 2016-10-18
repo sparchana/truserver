@@ -371,19 +371,25 @@ public class JobPostWorkflowEngine {
     }
 
     public static PreScreenPopulateResponse getJobPostVsCandidate(Long jobPostId, Long candidateId) {
+        PreScreenPopulateResponse populateResponse = new PreScreenPopulateResponse();
 
         Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
-        if (candidate == null) return null;
+        if (candidate == null){
+            populateResponse.setStatus(PreScreenPopulateResponse.Status.FAILURE);
+            return null;
+        }
 
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
-        if (jobPost == null) return null;
+        if (jobPost == null){
+            populateResponse.setStatus(PreScreenPopulateResponse.Status.FAILURE);
+            return null;
+        }
 
         List<PreScreenRequirement> preScreenRequirementList =  PreScreenRequirement.find.where()
                 .eq("jobPost.jobPostId", jobPostId).orderBy().asc("category").findList();
 
 
         // constructor for this class make all default flag as true, we will mark it false wherever its not satisfied
-        PreScreenPopulateResponse populateResponse = new PreScreenPopulateResponse();
         populateResponse.jobPostId = jobPostId;
         populateResponse.candidateId = candidateId;
 
@@ -634,11 +640,10 @@ public class JobPostWorkflowEngine {
         return populateResponse;
     }
 
-    public static Object updatePreScreenAttempt(Long jobPostId, Long candidateId, String callStatus) {
+    public static String updatePreScreenAttempt(Long jobPostId, Long candidateId, String callStatus) {
         // Interaction for PreScreen Call Attempt
         String interactionResult;
 
-        try {
             Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
 
             // fetch existing workflow old
@@ -648,7 +653,7 @@ public class JobPostWorkflowEngine {
                     .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
 
             // A value is for overriding leadStatus is also there in Lead Model setLeadStatus
-            if(candidate != null) {
+            if(candidate != null && jobPostWorkflow != null) {
 
                 // If call was connected just set the right interaction result
                 if (callStatus.equals("CONNECTED")) {
@@ -678,13 +683,10 @@ public class JobPostWorkflowEngine {
                 );
                 return "OK";
             }
-        } catch (NullPointerException n) {
-            n.printStackTrace();
-        }
         return "NA";
     }
 
-    public static Object savePreScreenResult(PreScreenRequest preScreenRequest) {
+    public static String savePreScreenResult(PreScreenRequest preScreenRequest) {
         // fetch existing workflow old
         JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
                 .eq("jobPost.jobPostId", preScreenRequest.getJobPostId())
@@ -694,6 +696,9 @@ public class JobPostWorkflowEngine {
         // save PreScreen candidate
         JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(preScreenRequest.getCandidateId(), preScreenRequest.getJobPostId(), jobPostWorkflowOld);
 
+        if (jobPostWorkflowNew == null) {
+            return "Error";
+        }
         // TODO: null check
 
         // fetch the last attempted pre-screen result for this jobpost workflow
@@ -950,18 +955,12 @@ public class JobPostWorkflowEngine {
 
 
         for(Interaction interaction: allPreScreenCallAttemptInteractions){
-            String currentUUId = null;
-            Integer count = null;
-            if(currentUUId == null || !interaction.getObjectBUUId().equalsIgnoreCase(currentUUId)) {
-                currentUUId = interaction.getObjectBUUId();
-                count = candidateWithPreScreenAttemptCountMap.get(currentUUId);
-            }
-
+            Integer count = candidateWithPreScreenAttemptCountMap.get(interaction.getObjectBUUId());
             if(count == null) {
                 count = 0;
             }
             count++;
-            candidateWithPreScreenAttemptCountMap.put(currentUUId, count);
+            candidateWithPreScreenAttemptCountMap.put(interaction.getObjectBUUId(), count);
         }
 
         for (Candidate candidate: candidateList) {

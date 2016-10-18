@@ -10,6 +10,13 @@ import java.util.List;
  */
 public class PreScreenPopulateResponse {
 
+    public enum Status{
+        UNKNOWN,
+        FAILURE,
+        SUCCESS,
+        INVALID
+    }
+
     public static class PreScreenElement {
         public String propertyTitle;
 
@@ -84,6 +91,7 @@ public class PreScreenPopulateResponse {
     public Long candidateId;
     public String preScreenTitleMsg;
     public List<PreScreenElement> elementList;
+    public Status status;
 
     public PreScreenPopulateResponse(){
         this.elementList = new ArrayList<>();
@@ -95,5 +103,13 @@ public class PreScreenPopulateResponse {
 
     public void setElementList(List<PreScreenElement> elementList) {
         this.elementList = elementList;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

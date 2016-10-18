@@ -204,17 +204,6 @@ public class ServerConstants {
     public static int RECRUITER_CATEGORY_INTERVIEW_UNLOCK = 2;
 
     // pre screen front end ui ids
-    // TODO: use database requirement_category + categoryId from pre_screen_requirement
-    public static final Integer PRE_SCREEN_VIEW_DOCUMENT_ID = 1;
-    public static final Integer PRE_SCREEN_VIEW_LANGUAGE_ID = 2;
-    public static final Integer PRE_SCREEN_VIEW_AGE_ID = 3;
-    public static final Integer PRE_SCREEN_VIEW_EDUCATION_ID = 4;
-    public static final Integer PRE_SCREEN_VIEW_ASSET_ID = 5;
-    public static final Integer PRE_SCREEN_VIEW_GENDER_ID = 6;
-    public static final Integer PRE_SCREEN_VIEW_SALARY_ID = 7;
-    public static final Integer PRE_SCREEN_VIEW_WORK_SHIFT_ID = 8;
-    public static final Integer PRE_SCREEN_VIEW_LOCALITY_ID = 9;
-
 
     public static final String ACTIVE_WITHIN_24_HOURS = "Within 24 hrs";
     public static final String ACTIVE_LAST_3_DAYS = "Last 3 days";

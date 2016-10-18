@@ -70,7 +70,9 @@ function triggerPreScreenResponseSubmission(candidateId, jobPostId) {
 }
 
 function processPreScreenContent(returnedData) {
-    console.log(returnedData);
+    if(returnedData == null || returnedData.status != "SUCCESS") {
+        notifyError("Request failed. Something went Wrong! Please Refresh", 'danger');
+    }
     if(returnedData != null){
         // if(returnedData == "OK" || returnedData == "NA" ) {
         //     processPostPreScreenResponse(returnedData);
@@ -167,11 +169,6 @@ function processPreScreenContent(returnedData) {
 
 
         var elementList = returnedData.elementList;
-        var prevId;
-        var totalLeftAttempts;
-        if(elementList != null && elementList != 'undefined') {
-            totalLeftAttempts = elementList.length;
-        }
         elementList.forEach(function (rowData) {
             if(rowData!=null){
                 if(rowData.isMinReq) {
@@ -221,21 +218,6 @@ function processPreScreenContent(returnedData) {
                     checkMatch.type = "checkbox";
                     checkMatch.id = "checkbox_" + rowData.propertyIdList.join("-");
                     checkMatch.className = "mdl-checkbox__input";
-                    // checkMatch.onclick = function () {
-                    //     var qId = rowData.propertyId;
-                    //     if(!checkMatch.checked){
-                    //         ++totalLeftAttempts;
-                    //     } else {
-                    //         --totalLeftAttempts;
-                    //     }
-                    //     if(totalLeftAttempts > 0 && prevId != qId){
-                    //         prevId = qId;
-                    //     } if(totalLeftAttempts == 0){
-                    //         $('.btn-success.btn-modal-submit').prop('disabled', false);
-                    //     } else {
-                    //         $('.btn-success.btn-modal-submit').prop('disabled', true);
-                    //     }
-                    // };
                     checkMatchLabel.appendChild(checkMatch);
                 } else {
 
@@ -376,4 +358,17 @@ function getPreScreenContent(jobPostId, candidateId) {
     } catch (exception) {
         console.log("exception occured!!" + exception.stack);
     }
+}
+
+
+function notifyError(msg, type){
+    $.notify({
+        message: msg,
+        animate: {
+            enter: 'animated lightSpeedIn',
+            exit: 'animated lightSpeedOut'
+        }
+    },{
+        type: type
+    });
 }
