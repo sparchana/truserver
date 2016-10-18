@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Recruiter | TruJobs - Post jobs and hire the right candidates</title>
+
+    <meta name="keywords" content="hire driver, hire fresher, hire candidate sites, job posting, hire sales candidate, hire beautician,
+        hire, hire receptionist, hire office admin, hire office assistant,
+        hire plumber, hire teacher, hire entry level candidate,
+        hire delivery boys, hire call center executives, hire BPO, hire kpo, hire hire hire , hire data entry candidate, hire back office canididate,
+        hire receptionist, hire beautician, hire experienced candidate, hire in Bangalore, hire cashier, hire entry level candidate, hire freshers,
+        hire plumber, hire electrician, hire accountants, hire in bangalore">
+
+    <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+
+      <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
+    <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_candidate_post_job.css">
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/jquery.tokenize.css" />
+    <link rel="stylesheet" href="/assets/support/css/nprogress.css">
+
+    <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
+
+    <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/jquery.tokenize.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/recruiter_candidate_post_job.js"></script>
+
+    <meta name="theme-color" content="#000000">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  </head>
+  <body>
+    <div class="navbar-fixed">
+      <nav>
+        <div class="container" style="width: 85%;">
+          <div class="nav-wrapper">
+            <a href="#!" class="brand-logo">
+              <img id="navLogo" src="/assets/recruiter/img/trujobs-recruiter.png" style="height: 40px;
+                margin-top: -2%">
+            </a>
+            <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+            <ul class="right hide-on-med-and-down">
+              <li><a href="/recruiter/home">Home</a></li>
+              <li><a href="/recruiter/candidateSearch">Search Candidate</a></li>
+              <li><a href="/recruiter/profile">Edit Profile</a></li>
+              <li><a onclick="logoutRecruiter()"><font style="color: #fff;
+                font-weight: 600">Logout</font>
+              </a>
+              </li>
+            </ul>
+          </div>
+          <ul class="side-nav" id="mobile-demo">
+            <li><a href="/recruiter/home">Home</a></li>
+            <li><a href="/recruiter/candidateSearch">Search Candidate</a></li>
+            <li><a href="/recruiter/profile">Edit Profile</a></li>
+            <li><a onclick="logoutRecruiter()">Logout</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+      <!-- Tab View-->
+    <div class="container-fluid back-banner-candidate">
+      <div class="container">
+        <div class="row">
+          <h5 style="font-weight: 600;color: #fff;margin-top: 114px;">Post Job</h5>
+        </div>
+      </div>
+    </div>
+    <div class="container" style="margin-top:-48px">
+      <div class="row">
+        <div class="col s12" style="padding: 0">
+          <ul class="tabs">
+            <li class="tab col s4"><a href="#jobDetails"><font size="3" style="font-weight: 600">Job Description</font></a></li>
+            <li class="tab col s4"><a href="#jobRequirement"><font size="3" style="font-weight: 600">Job Requirement</font></a></li>
+          </ul>
+        </div>
+        <div id="jobDetails" class="col s12">
+          <div class="container-fluid" style="padding: 0">
+            <div class="row">
+              <div class="col s12 m12" style="padding: 0">
+                <div class="card" style="margin: 0">
+                  <div class="card-content">
+                    <div class="row">
+                      <div class="col s12 l2">
+                        <font size="3" style="font-weight: bold">Basic Details</font>
+                      </div>
+                    </div>
+                    <div class="row" id="jobPostDeatils">
+                      <div class="input-field col s6 l4" style="margin-top: 20px">
+                        <label for="rec_name">Job Post Title :</label>
+                      </div>
+                      <div class="input-field col s6 l4">
+                        <input placeholder="Job Post Title"  type="text" class="validate">
+                      </div>
+                    </div>
+                    <div class="row"id="jobPostDeatils">
+                      <div class="input-field col s6 l4" style="margin-top: 20px">
+                        <label for="rec_name">Job Role :</label>
+                      </div>
+                      <div class="input-field col s6 l4">
+                        <select>
+                          <option value="" disabled selected>Choose your option</option>
+                          <option value="1">Option 1</option>
+                          <option value="2">Option 2</option>
+                          <option value="3">Option 3</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row"id="jobPostDeatils">
+                      <div class="input-field col s6 l4" style="margin-top: 20px">
+                        <label for="rec_name">No. of Job Post :</label>
+                      </div>
+                      <div class="input-field col s6 l4">
+                        <input placeholder="Vacancies"  type="text" class="validate">
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col s12 l12">
+                        <font size="3" style="font-weight: bold">Location Details</font>
+                      </div>
+                    </div>
+                    <div class="row"id="jobPostDeatils">
+                      <div class="input-field col s6 l4" style="margin-top: 20px">
+                        <label for="rec_name">Job Location :</label>
+                      </div>
+                      <div class="input-field col s12 l4">
+                        <select multiple>
+                          <option value="" disabled selected>Choose your option</option>
+                          <option value="1">Option 1</option>
+                          <option value="2">Option 2</option>
+                          <option value="3">Option 3</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row"id="jobPostDeatils">
+                      <div class="input-field col s6 l4" style="margin-top: 20px">
+                        <label for="rec_name">Location Pincode :</label>
+                      </div>
+                      <div class="input-field col s12 l4">
+                        <input placeholder="Pin Code" id="minRequirement" maxlength="6" type="text" class="validate">
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col s12 l12">
+                        <font size="3" style="font-weight: bold">Salary Details</font>
+                      </div>
+                    </div>
+                    <div class="row"id="jobPostDeatils">
+                      <div class="input-field col s6 l4" style="margin-top: 20px">
+                        <label for="rec_name">Salary :</label>
+                      </div>
+                      <div class="input-field col s3 l2">
+                        <input placeholder="Min Salary" id="minRequirement" maxlength="6" type="text" class="validate">
+                      </div>
+                      <div class="input-field col s3 l2">
+                        <input placeholder="Max Salary" id="minRequirement" maxlength="6" type="text" class="validate">
+                      </div>
+                    </div>
+                    <div class="row"id="jobPostDeatils">
+                      <div class="input-field col s6 l4" style="margin-top: 20px">
+                        <label for="rec_name">Incentives :</label>
+                      </div>
+                      <div class="input-field col s6 l4">
+                        <select multiple>
+                          <option value="" disabled selected>Choose your option</option>
+                          <option value="1">Option 1</option>
+                          <option value="2">Option 2</option>
+                          <option value="3">Option 3</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col s12 l12">
+                        <font size="3" style="font-weight: bold">Work Timing Details</font>
+                      </div>
+                    </div>
+                    <div class="row"id="jobPostDeatils">
+                      <div class="input-field col s6 l4" style="margin-top: 20px">
+                        <label for="rec_name">Work Shift :</label>
+                      </div>
+                      <div class="input-field col s6 l4">
+                        <select>
+                          <option value="" disabled selected>Choose your option</option>
+                          <option value="1">Option 1</option>
+                          <option value="2">Option 2</option>
+                          <option value="3">Option 3</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row"id="jobPostDeatils">
+                      <div class="input-field col s6 l4" style="margin-top: 20px">
+                        <label for="rec_name">Job Timing :</label>
+                      </div>
+                      <div class="input-field col s3 l2">
+                        <select>
+                          <option value="" disabled selected>Start</option>
+                          <option value="1">Option 1</option>
+                          <option value="2">Option 2</option>
+                          <option value="3">Option 3</option>
+                        </select>
+                      </div>
+                      <div class="input-field col s3 l2">
+                        <select>
+                          <option value="" disabled selected>End</option>
+                          <option value="1">Option 1</option>
+                          <option value="2">Option 2</option>
+                          <option value="3">Option 3</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row" id="jobPostDeatils" style="margin-bottom:20px;">
+                      <div class="input-field col s3 l4" style="margin-top: 20px">
+                        <label for="rec_name">Working Days :</label>
+                      </div>
+                      <div class="input-field col s9 l7" style="margin-left:-10px">
+                        <input type="checkbox" id="mon" />
+                        <label for="mon">Mon </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="tue" />
+                        <label for="tue">Tue </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="wed" />
+                        <label for="wed">Wed </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="thu" />
+                        <label for="thu">Thr </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="fri" />
+                        <label for="fri">Fri </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="sat" />
+                        <label for="sat">Sat </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="sun" />
+                        <label for="sun">Sun </label>
+                      </div>
+                    </div>
+                    <div class="row" id="jobPostDeatils">
+                      <div class="input-field col s6 l4" style="margin-top: 20px">
+                        <label for="jobDescription">Job Description:</label>
+                      </div>
+                      <div class="input-field col s6 7">
+                        <textarea id="jobDescription" class="materialize-textarea" placeholder="Details About the Job Role"></textarea>
+                      </div>
+                    </div>
+                      <!--Button-->
+                    <div class="row" style="margin: 0">
+                      <a class="waves-effect waves-light orange lighten-1 btn right" onclick="toJobRequirement()"><font style="color: #fff;
+                        font-weight: 400"><b>Next</b></font>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="jobRequirement" class="col s12">
+          <div class="container-fluid" style="padding: 0">
+            <div class="row">
+              <div class="col s12 m12" style="padding: 0">
+                <div class="card" style="margin: 0">
+                  <div class="card-content">
+                    <div class="row">
+                      <div class="col s12 l12">
+                        <font size="3" style="font-weight: bold">Work Requirement</font>
+                      </div>
+                    </div>
+                    <div class="row" id="jobPostDeatils" style="margin-bottom: 25px;">
+                      <div class="input-field col s3 l4" style="margin-top: 18px;">
+                        <label for="jobDescription">Specify Gender :</label>
+                      </div>
+                      <div class="input-field col s9 l7" style="padding: 0;">
+                        <div class="col s4 l2" style="padding: 0;">
+                          <input class="with-gap" name="genderDetail" type="radio" id="male">
+                          <label for="male">Male</label>
+                        </div>
+                        <div class="col s4 l2" style="padding: 0">
+                          <input class="with-gap" name="genderDetail" type="radio" id="female">
+                          <label for="female">Female</label>
+                        </div>
+                        <div class="col s3 l2">
+                          <input class="with-gap" name="genderDetail" type="radio" id="any">
+                          <label for="any">Any</label>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row" id="jobPostDeatils">
+                      <div class="input-field col s6 l4" style="margin-top: 18px">
+                        <label for="jobDescription">Is there any age limitation for this job ?</label>
+                      </div>
+                      <div class="input-field col s6 l4">
+                        <input placeholder="Max Age" id="minRequirement" maxlength="6" type="text" class="validate">
+                      </div>
+                    </div>
+                    <div class="row" id="jobPostDeatils">
+                      <div class="input-field col s6 l4" style="margin-top: 18px">
+                        <label for="jobDescription">Mention minimum Education Qualification :</label>
+                      </div>
+                      <div class="input-field col s6 l4">
+                        <select>
+                          <option value="" disabled selected>Choose your option</option>
+                          <option value="1">Option 1</option>
+                          <option value="2">Option 2</option>
+                          <option value="3">Option 3</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row" id="jobPostDeatils">
+                      <div class="input-field col s6 l4" style="margin-top: 18px">
+                        <label for="jobDescription">Should candidate know any specific language(s) ?</label>
+                      </div>
+                      <div class="input-field col s6 l4">
+                        <select multiple>
+                          <option value="" disabled selected>Choose your option</option>
+                          <option value="1">Option 1</option>
+                          <option value="2">Option 2</option>
+                          <option value="3">Option 3</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row" id="jobPostDeatils">
+                      <div class="input-field col s6 l4" style="margin-top: 18px">
+                        <label for="jobDescription">Should candidate have work experience ?</label>
+                      </div>
+                      <div class="input-field col s6 l4">
+                        <select>
+                          <option value="" disabled selected>Choose your option</option>
+                          <option value="1">Option 1</option>
+                          <option value="2">Option 2</option>
+                          <option value="3">Option 3</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row" id="jobPostDeatils">
+                      <div class="input-field col s6 l4" style="margin-top: 18px">
+                        <label for="jobDescription">Should candidate have any specific documents ?</label>
+                      </div>
+                      <div class="input-field col s6 l4">
+                        <select multiple>
+                          <option value="" disabled selected>Choose your option</option>
+                          <option value="1">Option 1</option>
+                          <option value="2">Option 2</option>
+                          <option value="3">Option 3</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="row" id="jobPostDeatils">
+                      <div class="input-field col s6 l4" style="margin-top: 18px">
+                        <label for="jobDescription">Should candidate own :</label>
+                      </div>
+                      <div class="input-field col s6 l4">
+                        <select>
+                          <option value="" disabled selected>Choose your option</option>
+                          <option value="1">Option 1</option>
+                          <option value="2">Option 2</option>
+                          <option value="3">Option 3</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="row" style="margin: 0">
+                      <a class="waves-effect waves-light ascentGreen btn right" id="saveEdit"><font style="color: #fff;
+                        font-weight: 400"><b>Save</b></font>
+                      </a>
+                      <a class="waves-effect waves-light orange lighten-1 btn right" id="previousTab" onclick="toJobDetail()"><font style="color: #fff;
+                        font-weight: 400"><b>Back</b></font>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+      <!--Footer start-->
+    <footer class="page-footer" style="background-color: #424242;">
+      <div class="container">
+        <div class="row" style="margin: 0">
+          <div class="col l6 s12">
+            <h5 class="white-text">Hire in Bangalore</h5>
+            <p class="grey-text text-lighten-4">Connect With Us On<img src="/assets/recruiter/img/fbmain.svg" id="fbLogo" style="margin-left: 2%;
+              width: 6%"> </p>
+          </div>
+          <div class="col l4 offset-l2 s12">
+            <h5 class="white-text">Get in touch</h5>
+            <ul>
+              <li><a class="grey-text text-lighten-3" href="#!">Write us at: info@@trujobs.in</a></li>
+              <li><a class="grey-text text-lighten-3" href="#!">Have queries? Talk to us at 8880007799</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="container-fluid">
+        <div class="row" style="margin: 0">
+          <img src="/assets/recruiter/img/skyline_small.svg" width="100%">
+        </div>
+      </div>
+      <div class="footer-copyright">
+        <div class="container">
+            © 2016 Trujobs.in | Bengaluru, India. All Right Reserved. Privacy Policy
+        </div>
+      </div>
+    </footer>
+  </body>
+  <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
+  <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+  <script type="text/javascript" src="/assets/support/js/nprogress.js"></script>
+</html>

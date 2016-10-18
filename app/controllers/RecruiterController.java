@@ -39,7 +39,6 @@ import static play.mvc.Controller.session;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 import static play.mvc.Results.redirect;
-
 /**
  * Created by dodo on 4/10/16.
  */
@@ -283,5 +282,8 @@ public class RecruiterController {
     @Security.Authenticated(SecuredUser.class)
     public static Result recruiterJobPost(Long id) {
         return ok(views.html.Recruiter.recruiter_post_free_job.render());
+    }
+    public static Result renderAllRecruiterJobPosts() {
+        return ok(views.html.Recruiter.recruiter_my_jobs.render());
     }
 }
