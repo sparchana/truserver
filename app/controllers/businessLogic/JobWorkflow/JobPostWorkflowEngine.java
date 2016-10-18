@@ -728,6 +728,11 @@ public class JobPostWorkflowEngine {
                 .eq("jobPost.jobPostId", preScreenRequest.getJobPostId())
                 .findList();
 
+        if(preScreenRequirementList == null || preScreenRequirementList.size() == 0) {
+            Logger.error("PreScreen Requirement empty for jobPostId:" +preScreenRequest.getJobPostId());
+            return "Error";
+        }
+
         double score =  ((double) preScreenRequest.getPreScreenIdList().size()/(double) preScreenRequirementList.size());
         Logger.info("score: " + score);
 
