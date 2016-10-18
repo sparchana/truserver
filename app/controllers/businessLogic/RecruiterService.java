@@ -3,12 +3,15 @@ package controllers.businessLogic;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.AddCompanyRequest;
+import api.http.httpRequest.Recruiter.AddCreditRequest;
 import api.http.httpRequest.Recruiter.AddRecruiterRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpResponse.AddCompanyResponse;
 import api.http.httpResponse.LoginResponse;
+import api.http.httpResponse.Recruiter.AddCreditResponse;
 import api.http.httpResponse.Recruiter.AddRecruiterResponse;
 import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
+import api.http.httpResponse.Recruiter.UnlockContactResponse;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterLead;
@@ -17,8 +20,10 @@ import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.Recruiter.Static.RecruiterStatus;
+import models.util.EmailUtil;
 import models.util.SmsUtil;
 import models.util.Util;
+import org.apache.commons.mail.EmailException;
 import play.Logger;
 import play.mvc.Result;
 
@@ -372,6 +377,7 @@ public class RecruiterService {
     }
 
     public static Result unlockCandidate(RecruiterProfile recruiterProfile, Long candidateId) {
+        UnlockContactResponse unlockContactResponse = new UnlockContactResponse();
         Candidate candidate = Candidate.find.where().eq("CandidateId", candidateId).findUnique();
         if(candidate != null){
             RecruiterToCandidateUnlocked existingUnlockedCandidate = RecruiterToCandidateUnlocked.find.where()
@@ -400,28 +406,42 @@ public class RecruiterService {
                         .findUnique();
 
                 if(recruiterCreditHistoryLatest != null){
-                    recruiterCreditHistory.setRecruiterCreditsAvailable(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() - 1);
-                    recruiterCreditHistory.setRecruiterCreditsUsed(recruiterCreditHistoryLatest.getRecruiterCreditsUsed() + 1);
-                    //adding a entry in recruiterToCandidateUnblock table
-                    RecruiterToCandidateUnlocked recruiterToCandidateUnlocked = new RecruiterToCandidateUnlocked();
+                    if(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() > 0){
+                        recruiterCreditHistory.setRecruiterCreditsAvailable(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() - 1);
+                        recruiterCreditHistory.setRecruiterCreditsUsed(recruiterCreditHistoryLatest.getRecruiterCreditsUsed() + 1);
+                        //adding a entry in recruiterToCandidateUnblock table
+                        RecruiterToCandidateUnlocked recruiterToCandidateUnlocked = new RecruiterToCandidateUnlocked();
 
-                    recruiterToCandidateUnlocked.setRecruiterProfile(recruiterProfile);
-                    recruiterToCandidateUnlocked.setCandidate(candidate);
+                        recruiterToCandidateUnlocked.setRecruiterProfile(recruiterProfile);
+                        recruiterToCandidateUnlocked.setCandidate(candidate);
 
-                    //saving/updating all the rows
-                    recruiterCreditHistory.save();
-                    recruiterToCandidateUnlocked.save();
-                    return ok("1");
+                        //saving/updating all the rows
+                        recruiterCreditHistory.save();
+                        recruiterToCandidateUnlocked.save();
+
+                        unlockContactResponse.setStatus(UnlockContactResponse.STATUS_SUCCESS);
+                        unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
+                        return ok(toJson(unlockContactResponse));
+                    } else {
+                        unlockContactResponse.setStatus(UnlockContactResponse.STATUS_NO_CREDITS);
+                        unlockContactResponse.setCandidateMobile(null);
+                        return ok(toJson(unlockContactResponse));
+                    }
                 } else{
-                    recruiterCreditHistory.setRecruiterCreditsAvailable(0);
-                    recruiterCreditHistory.setRecruiterCreditsUsed(0);
+                    unlockContactResponse.setStatus(UnlockContactResponse.STATUS_NO_CREDITS);
+                    unlockContactResponse.setCandidateMobile(null);
+                    return ok(toJson(unlockContactResponse));
                 }
             } else{
-                return ok("2");
+                unlockContactResponse.setStatus(UnlockContactResponse.STATUS_ALREADY_UNLOCKED);
+                unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
+                return ok(toJson(unlockContactResponse));
             }
         }
         Logger.info("Recruiter with mobile no: " + recruiterProfile.getRecruiterProfileMobile() + " does not have credits to unlock candidate");
-        return ok("0");
+        unlockContactResponse.setStatus(UnlockContactResponse.STATUS_FAILURE);
+        unlockContactResponse.setCandidateMobile(null);
+        return ok(toJson(unlockContactResponse));
     }
 
     private static void addContactCredit(RecruiterProfile recruiterProfile, Integer creditCount){
@@ -436,5 +456,28 @@ public class RecruiterService {
         recruiterCreditHistory.setRecruiterCreditsAvailable(creditCount);
         recruiterCreditHistory.setRecruiterCreditsUsed(0);
         recruiterCreditHistory.save();
+    }
+
+    public static AddCreditResponse requestCreditForRecruiter(AddCreditRequest addCreditRequest){
+        AddCreditResponse addCreditResponse = new AddCreditResponse();
+        if(session().get("recruiterId") != null){
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", session().get("recruiterId")).findUnique();
+            if(recruiterProfile != null){
+                Logger.info("Sending credit request Sms");
+                SmsUtil.sendRequestCreditSms(recruiterProfile, addCreditRequest);
+                Logger.info("Sending credit request Email");
+                try {
+                    EmailUtil.sendRequestCreditEmail(recruiterProfile, addCreditRequest);
+                } catch (EmailException e) {
+                    e.printStackTrace();
+                }
+                addCreditResponse.setStatus(AddCreditResponse.STATUS_SUCCESS);
+            } else{
+                addCreditResponse.setStatus(AddCreditResponse.STATUS_FAILURE);
+            }
+        } else{
+            addCreditResponse.setStatus(AddCreditResponse.STATUS_FAILURE);
+        }
+        return addCreditResponse;
     }
 }

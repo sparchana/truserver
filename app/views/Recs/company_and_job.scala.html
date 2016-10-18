@@ -53,6 +53,7 @@
               <a class="mdl-navigation__link" href="/support">Support Home</a>
               <a class="mdl-navigation__link activeLink" href="#" onclick="renderDashboard(); setActive(this);">All JobPosts</a>
               <a class="mdl-navigation__link" href="#" onclick="getAllCompany(); setActive(this);">All Companies</a>
+              <a class="mdl-navigation__link" href="#" onclick="getAllRecruiters()">All Recruiters</a>
               <a class="mdl-navigation__link" href="#" onclick="window.open('/createCompany','_blank');">Create New Company/Recruiter</a>
               <a class="mdl-navigation__link" href="#" onclick="window.open('/jobPostDetails/0','_blank');">Create New Job</a>
               <a class="mdl-navigation__link" href="/logout">Logout</a>
@@ -70,6 +71,7 @@
           <a class="mdl-navigation__link" href="/support">Support Home</a>
           <a class="mdl-navigation__link" href="#" onclick="renderDashboard()">All JobPosts</a>
           <a class="mdl-navigation__link" href="#" onclick="getAllCompany()">All Companies</a>
+          <a class="mdl-navigation__link" href="#" onclick="getAllRecruiters()">All Recruiters</a>
           <a class="mdl-navigation__link" href="#" onclick="window.open('/createCompany','_blank')">Create New Company/Recruiter</a>
           <a class="mdl-navigation__link" href="#" onclick="window.open('/jobPostDetails/0','_blank')">Create New Job</a>
           <a class="mdl-navigation__link" href="/logout">Logout</a>
@@ -108,6 +110,22 @@
                 <th>Company Address</th>
                 <th>Company Type</th>
                 <th>Company Status</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+
+          <table id="recruiterTable" class="table table-striped table-bordered" style="display: none; margin-top: 16px" cellspacing="0" width="100%">
+            <thead>
+              <tr>
+                <th>Recruiter ID</th>
+                <th>recruiter Creation Date</th>
+                <th>Recruiter Name</th>
+                <th>Recruiter Company</th>
+                <th>Recruiter Mobile</th>
+                <th>Recruiter Email</th>
+                <th>Recruiter Contact Credits</th>
+                <th>Recruiter Interview Credits</th>
               </tr>
             </thead>
             <tbody></tbody>

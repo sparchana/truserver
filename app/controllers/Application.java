@@ -16,6 +16,7 @@ import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import controllers.AnalyticsLogic.GlobalAnalyticsService;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
 import controllers.businessLogic.*;
 import controllers.businessLogic.Assessment.AssessmentService;
@@ -298,7 +299,7 @@ public class Application extends Controller {
         return ok(toJson(RecruiterService.createRecruiterProfile(recruiterSignUpRequest)));
     }
 
-    @Security.Authenticated(RecSecured.class)
+    @Security.Authenticated(SecuredUser.class)
     public static Result addCompany() {
         JsonNode req = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
@@ -934,7 +935,7 @@ public class Application extends Controller {
         return ok(toJson(pricingPlanTypeList));
     }
 
-    @Security.Authenticated(RecSecured.class)
+    @Security.Authenticated(SecuredUser.class)
     public static Result getAllExperience() {
         List<Experience> experienceList = Experience.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(experienceList));
@@ -946,7 +947,7 @@ public class Application extends Controller {
         return ok(toJson(companyStatusList));
     }
 
-    @Security.Authenticated(RecSecured.class)
+    @Security.Authenticated(SecuredUser.class)
     public static Result getAllCompanyType() {
         List<CompanyType> companyTypeList = CompanyType.find.findList();
         return ok(toJson(companyTypeList));
@@ -1430,6 +1431,11 @@ public class Application extends Controller {
     @Security.Authenticated(SuperAdminSecured.class)
     public static Result updateAllRelevantJobCategories() {
         return ok(toJson(JobRelevancyEngine.updateAllRelevantJobCategories()));
+    }
+
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result updateAllActivityScores() {
+        return ok(toJson(GlobalAnalyticsService.computeActivityScore()));
     }
 
     @Security.Authenticated(SuperAdminSecured.class)

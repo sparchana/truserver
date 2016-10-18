@@ -126,6 +126,10 @@ function computeCreditValue() {
     }
 }
 
+function closeCreditModal() {
+    $("#creditModal").modal("hide");
+}
+
 // job_post_form ajax script
 $(function() {
     $("#job_post_form").submit(function(eventObj) {
@@ -200,6 +204,14 @@ $(function() {
 
         var minSalary = $("#jobPostMinSalary").val();
         var maxSalary = $("#jobPostMaxSalary").val();
+
+        if (minSalary != null) {
+            minSalary = parseInt(minSalary);
+        }
+
+        if (maxSalary != null) {
+            maxSalary = parseInt(maxSalary);
+        }
 
         var partnerInterviewIncentiveVal = parseInt($("#partnerInterviewIncentive").val());
         var partnerJoiningIncentiveVal = parseInt($("#partnerJoiningIncentive").val());

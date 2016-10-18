@@ -778,7 +778,7 @@ $(function () {
                     'candidateExperienceLetter': getYesNo(newCandidate.candidate.candidateExperienceLetter),
                     'candidateIdProofs': getIdProof(newCandidate.candidate.idProofReferenceList),
                     'candidateTimeShiftPref': timeShiftPref,
-                    'lastActive': (newCandidate.extraData.lastActive),
+                    'lastActive': (newCandidate.extraData.lastActive.lastActiveValueName),
                     'candidateCreateTimestamp': getDateTime(newCandidate.candidate.candidateCreateTimestamp),
                     'isMinProfileComplete': getYesNo(newCandidate.candidate.isMinProfileComplete),
                     'experience': getExperience(newCandidate.candidate.candidateExpList),

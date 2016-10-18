@@ -61,7 +61,7 @@
           <div class="row">
             <div class="col-sm-3"><h5>Recruiter Landline (optional) :</h5></div>
             <div class="col-sm-9">
-              <input id="recruiterLandline" name="recruiterLandline" placeholder="Recruiter Landline" type="text" class="form-control input-md" >
+              <input id="recruiterLandline" name="recruiterLandline" placeholder="Recruiter Landline" maxlength="13" type="text" class="form-control input-md" >
             </div>
           </div>
 
@@ -190,6 +190,7 @@
           <div class="modal-dialog">
                   <!-- Modal content-->
               <div class="modal-content">
+                  <div style="float: right"><img src="/assets/recruiter/img/cancel.png" onclick="closeCreditModal()"></div>
                   <div class="modal-body" id="model_size">
                       <form id="add_credits" class="form-horizontal" role="form">
                           <div class="line_up" id="signInPopup"><h4>Add Credits</h4></div>

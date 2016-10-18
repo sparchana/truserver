@@ -27,7 +27,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.avaje.ebean.Expr.eq;
-import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 
 /**
@@ -173,7 +172,7 @@ public class JobPostWorkflowEngine {
                     .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE)
                     .query();
 
-        List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList);
+        List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList, null);
 
         Map<Long, CandidateExtraData> allFeature = computeExtraData(candidateList, jobPost);
 
@@ -185,6 +184,57 @@ public class JobPostWorkflowEngine {
                 matchedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
             }
         }
+        return matchedCandidateMap;
+    }
+
+
+    /**
+     *
+     * this is being used by the recruiter for searching candidates
+     *
+     *  @param maxAge  max range criteria to be taken into consideration while matching
+     *  @param gender  gender criteria to be taken into consideration while matching
+     *  @param experienceId experience duration to be taken into consideration while matching
+     *  @param jobPostLocalityIdList  candidates to be matched within x Km of any of the provided locality
+     *  @param languageIdList  candidate to be matched for any of this language. Output contains the
+     *                       indication to show matching & non-matching language
+     *
+     *
+     */
+    public static Map<Long, CandidateWorkflowData> getCandidateForRecruiterSearch(Integer maxAge,
+                                                                                  Long minSalary,
+                                                                                  Long maxSalary,
+                                                                                  Integer gender,
+                                                                                  Integer experienceId,
+                                                                                  Long jobRoleId,
+                                                                                  Integer educationId,
+                                                                                  List<Long> jobPostLocalityIdList,
+                                                                                  List<Integer> languageIdList, Double radius)
+    {
+        Map<Long, CandidateWorkflowData> matchedCandidateMap = new LinkedHashMap<>();
+
+        // geDurationFromExperience returns minExperience req. (in Months)
+        ExperienceValue experience = getDurationFromExperience(experienceId);
+
+        Query<Candidate> query = Candidate.find.query();
+
+        //query candidate query with the filter params
+        query = getFilteredQuery(maxAge, minSalary, maxSalary,gender, jobRoleId, educationId, languageIdList, experience);
+
+        List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList, radius);
+
+        Map<Long, CandidateExtraData> allFeature = computeExtraDataForRecruiterSearchResult(candidateList);
+
+        if(candidateList.size() != 0) {
+            for (Candidate candidate : candidateList) {
+                CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
+                candidateWorkflowData.setCandidate(candidate);
+                candidateWorkflowData.setExtraData(allFeature.get(candidate.getCandidateId()));
+                matchedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
+            }
+        }
+
+
         return matchedCandidateMap;
     }
 
@@ -254,7 +304,7 @@ public class JobPostWorkflowEngine {
         }
 
 
-        candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList);
+        candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList, null);
         Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique());
 
         for ( Candidate candidate: candidateList) {
@@ -547,7 +597,7 @@ public class JobPostWorkflowEngine {
                                         }
                                     }
                                     preScreenElement.jobPostElement = jobPostLocalityString.toString();
-                                    List<Candidate> candidateList = filterByLatLngOrHomeLocality(new ArrayList<>(Arrays.asList(candidate)), localityIdList);
+                                    List<Candidate> candidateList = filterByLatLngOrHomeLocality(new ArrayList<>(Arrays.asList(candidate)), localityIdList, null);
                                     if(candidateList.size()>0) preScreenElement.candidateElement = candidateList.get(0).getMatchedLocation();
                                     preScreenElement.isMinReq = false;
                                     preScreenElement.isMatching = true;
@@ -709,39 +759,56 @@ public class JobPostWorkflowEngine {
         return "OK";
     }
 
-    private static class ExperienceValue {
-        int minExperienceValue;
-        int maxExperienceValue;
+    public static class LastActiveValue{
+        public Integer lastActiveValueId;
+        public String lastActiveValueName;
     }
 
-    public static String getDateCluster(Long timeInMill) {
-        String clusterLable;
+    public static LastActiveValue getDateCluster(Long timeInMill) {
+
+        Map<Integer, String> clusterLabel = new HashMap<>();
+        clusterLabel.put(1, ServerConstants.ACTIVE_WITHIN_24_HOURS);
+        clusterLabel.put(2, ServerConstants.ACTIVE_LAST_3_DAYS);
+        clusterLabel.put(3, ServerConstants.ACTIVE_LAST_7_DAYS);
+        clusterLabel.put(4, ServerConstants.ACTIVE_LAST_12_DAYS);
+        clusterLabel.put(5, ServerConstants.ACTIVE_LAST_1_MONTH);
+        clusterLabel.put(6, ServerConstants.ACTIVE_LAST_2_MONTHS);
+        clusterLabel.put(7, ServerConstants.ACTIVE_BEYOND_2_MONTHS);
+
         Calendar cal = Calendar.getInstance();
         Calendar currentCal = Calendar.getInstance();
         cal.setTimeInMillis(timeInMill);
 
+        LastActiveValue lastActiveValue = new LastActiveValue();
         int currentDay = currentCal.get(Calendar.DAY_OF_YEAR);
         int doyDiff = currentDay - cal.get(Calendar.DAY_OF_YEAR);
 
         if( doyDiff > 60) {
-            clusterLable = "Beyond two months";
+            lastActiveValue.lastActiveValueId = 7;
+            lastActiveValue.lastActiveValueName = clusterLabel.get(7);
         } else if( doyDiff > 30) {
-            clusterLable = "Last two months";
+            lastActiveValue.lastActiveValueId = 6;
+            lastActiveValue.lastActiveValueName = clusterLabel.get(6);
         } else if( doyDiff > 15) {
-            clusterLable = "Last one month";
+            lastActiveValue.lastActiveValueId = 5;
+            lastActiveValue.lastActiveValueName = clusterLabel.get(5);
         } else if (doyDiff > 7) {
-            clusterLable = "Last 14 days";
+            lastActiveValue.lastActiveValueId = 4;
+            lastActiveValue.lastActiveValueName = clusterLabel.get(4);
         } else if ( doyDiff > 3) {
-            clusterLable = "Last 7 days";
+            lastActiveValue.lastActiveValueId = 3;
+            lastActiveValue.lastActiveValueName = clusterLabel.get(3);
         } else if ( doyDiff > 1) {
-            clusterLable = "Last 3 days";
+            lastActiveValue.lastActiveValueId = 2;
+            lastActiveValue.lastActiveValueName = clusterLabel.get(2);
         } else {
-            clusterLable = "Within 24 hrs";
+            lastActiveValue.lastActiveValueId = 1;
+            lastActiveValue.lastActiveValueName = clusterLabel.get(1);
         }
-        return clusterLable;
+        return lastActiveValue;
     }
 
-    private static List<Candidate> filterByLatLngOrHomeLocality(List<Candidate> candidateList, List<Long> jobPostLocalityIdList) {
+    private static List<Candidate> filterByLatLngOrHomeLocality(List<Candidate> candidateList, List<Long> jobPostLocalityIdList, Double distanceRadius) {
         List<Candidate> filteredCandidateList = new ArrayList<>();
 
         if (jobPostLocalityIdList == null){
@@ -779,7 +846,11 @@ public class JobPostWorkflowEngine {
                             candidateLat,
                             candidateLng
                     );
-                    if (distance > ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS && candidate.getMatchedLocation() == null) {
+                    Double searchRadius = ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS;
+                    if(distanceRadius != null){
+                        searchRadius = distanceRadius;
+                    }
+                    if (distance > searchRadius && candidate.getMatchedLocation() == null) {
                         localityIncludeCount ++;
                     } else {
                         matchedLocation.append(locality.getLocalityName() + " ("+ Util.RoundTo1Decimals(distance)+" KM) " );
@@ -923,6 +994,11 @@ public class JobPostWorkflowEngine {
         return candidateExtraDataMap;
     }
 
+    private static class ExperienceValue {
+        int minExperienceValue;
+        int maxExperienceValue;
+    }
+
     private static ExperienceValue getDurationFromExperience(Integer experienceId) {
 
         // experience table should have a minValue column containing the minValue
@@ -974,5 +1050,172 @@ public class JobPostWorkflowEngine {
         }
         return null;
     }
+
+
+    private static Query<Candidate> getFilteredQuery(Integer maxAge, Long minSalary, Long maxSalary, Integer gender, Long jobRoleId, Integer educationId, List<Integer> languageIdList, ExperienceValue experience) {
+        Query<Candidate> query = Candidate.find.query();
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+
+        // problem: all age is null/0 and dob is also null
+        // select candidate falling under the specified age req
+        if (maxAge != null && maxAge !=0 ) {
+            int startYear = currentYear - maxAge;
+            query = query
+                    .where()
+                    .isNotNull("candidateDOB")
+                    .ge("candidateDOB", startYear + "-01-01").query();
+        }
+
+        // select candidate based on specific gender req, else pass
+        if (gender != null && gender>=0 && gender != ServerConstants.GENDER_ANY) {
+            query = query
+                    .where()
+                    .isNotNull("candidateGender")
+                    .eq("candidateGender", gender).query();
+        }
+
+        // select candidate whose totalExperience falls under the req exp
+        if (experience != null) {
+
+            if(experience.minExperienceValue == 0) {
+                query = query
+                        .where()
+                        .isNotNull("candidateTotalExperience")
+                        .eq("candidateTotalExperience", experience.minExperienceValue).query();
+            } else {
+                query = query
+                        .where()
+                        .isNotNull("candidateTotalExperience")
+                        .ge("candidateTotalExperience", experience.minExperienceValue).query();
+            }
+            if(experience.maxExperienceValue != 0) {
+                query = query
+                        .where()
+                        .isNotNull("candidateTotalExperience")
+                        .le("candidateTotalExperience", experience.maxExperienceValue).query();
+            }
+        }
+
+        // select candidate w.r.t candidateLastWithdrawnSalary
+        if (maxSalary != null && maxSalary != 0){
+            query =  query
+                    .where()
+                    .isNotNull("candidateLastWithdrawnSalary")
+                    .le("candidateLastWithdrawnSalary", maxSalary)
+                    .query();
+        } else if (minSalary != null && minSalary != 0) {
+            query =  query
+                    .where()
+                    .isNotNull("candidateLastWithdrawnSalary")
+                    .le("candidateLastWithdrawnSalary", minSalary)
+                    .query();
+        }
+        // select candidate w.r.t language
+        if (languageIdList != null && languageIdList.size() > 0) {
+            query =  query.select("*").fetch("languageKnownList")
+                    .where()
+                    .in("languageKnownList.language.languageId", languageIdList)
+                    .query();
+        }
+
+        /*// select candidate whose LatLng/HomeLocality in within (X) KM of jobPost LatLng
+        if (localityIdList != null && localityIdList.size() > 0) {
+            query =  query.select("*").fetch("locality")
+                    .where()
+                    .in("locality.localityId", localityIdList)
+                    .query();
+        }*/
+
+        // jobpref-jobrole match with jobpost-jobrole
+        if (jobRoleId != null) {
+            query = query.select("*").fetch("jobPreferencesList")
+                    .where()
+                    .in("jobPreferencesList.jobRole.jobRoleId", jobRoleId)
+                    .query();
+        }
+
+        // education match
+        if (educationId != null && educationId != 0) {
+            query = query.select("*").fetch("candidateEducation")
+                    .where()
+                    .isNotNull("candidateEducation")
+                    .eq("candidateEducation.education.educationId", educationId)
+                    .query();
+        }
+
+        // should be an active candidate
+        query = query.select("*").fetch("candidateprofilestatus")
+                .where()
+                .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE)
+                .query();
+
+        return query;
+    }
+
+    private static Map<Long, CandidateExtraData> computeExtraDataForRecruiterSearchResult(List<Candidate> candidateList) {
+
+        if(candidateList.size() == 0) return null;
+        // candidateId --> featureMap
+        Map<Long, CandidateExtraData> candidateExtraDataMap = new LinkedHashMap<>();
+
+        List<String> candidateUUIdList = new ArrayList<>();
+        List<Long> candidateIdList = new ArrayList<>();
+
+        for (Candidate candidate: candidateList) {
+            candidateUUIdList.add(candidate.getCandidateUUId());
+            candidateIdList.add(candidate.getCandidateId());
+        }
+
+        String candidateListString = String.join("', '", candidateUUIdList);
+
+        Logger.info("before interaction query: " + new Timestamp(System.currentTimeMillis()));
+        Map<String, Interaction> lastActiveInteraction= Ebean.find(Interaction.class)
+                .setRawSql(getRawSqlForInteraction(candidateListString))
+                .findMap("objectAUUId", String.class);
+
+        Logger.info("after interaction query: " + new Timestamp(System.currentTimeMillis()));
+
+        for (Candidate candidate: candidateList) {
+            CandidateExtraData candidateExtraData = candidateExtraDataMap.get(candidate.getCandidateId());
+
+            if( candidateExtraData == null) {
+                candidateExtraData = new CandidateExtraData();
+
+                // compute last active on
+                Interaction interactionsOfCandidate = lastActiveInteraction.get(candidate.getCandidateUUId());
+                if(interactionsOfCandidate != null) {
+                    candidateExtraData.setLastActive(getDateCluster(interactionsOfCandidate.getCreationTimestamp().getTime()));
+                }
+                // other intelligent scoring will come here
+            }
+
+            candidateExtraDataMap.put(candidate.getCandidateId(), candidateExtraData);
+        }
+
+        return candidateExtraDataMap;
+    }
+
+    private static RawSql getRawSqlForInteraction(String candidateListString){
+        //      TODO: Optimization: It takes 4+ sec for query to return map/list for this constraint, prev implementation was faster
+
+        StringBuilder interactionQueryBuilder = new StringBuilder("select distinct objectauuid, creationtimestamp from interaction i " +
+                " where i.objectauuid " +
+                " in ('"+candidateListString+"') " +
+                " and creationtimestamp = " +
+                " (select max(creationtimestamp) from interaction where i.objectauuid = interaction.objectauuid) " +
+                " order by creationTimestamp desc ");
+
+
+        Logger.info(interactionQueryBuilder.toString());
+
+        RawSql rawSql = RawSqlBuilder.parse(interactionQueryBuilder.toString())
+                .tableAliasMapping("i", "interaction")
+                .columnMapping("objectauuid", "objectAUUId")
+                .columnMapping("creationtimestamp", "creationTimestamp")
+                .create();
+
+        return rawSql;
+    }
+
 
 }

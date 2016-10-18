@@ -17,6 +17,7 @@ public class MatchingCandidateRequest extends WorkflowRequest{
     public Integer jobPostEducationId ;
     public List<Long> jobPostLocalityIdList ;
     public List<Integer> jobPostLanguageIdList ;
+    public Double distanceRadius ;
 
     public Integer getMaxAge() {
         return maxAge;
@@ -88,6 +89,14 @@ public class MatchingCandidateRequest extends WorkflowRequest{
 
     public void setJobPostLanguageIdList(List<Integer> jobPostLanguageIdList) {
         this.jobPostLanguageIdList = jobPostLanguageIdList;
+    }
+
+    public Double getDistanceRadius() {
+        return distanceRadius;
+    }
+
+    public void setDistanceRadius(Double distanceRadius) {
+        this.distanceRadius = distanceRadius;
     }
 }
 
