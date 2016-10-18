@@ -128,17 +128,20 @@ GET         /logoutRecruiter                                              contro
 GET         /checkRecruiterSession                                        controllers.RecruiterController.checkRecruiterSession()
 GET         /getRecruiterProfileInfo                                      controllers.RecruiterController.getRecruiterProfileInfo()
 GET         /recruiter/profile                                            controllers.RecruiterController.recruiterEditProfile()
+GET         /recruiter/candidateSearch                                    controllers.RecruiterController.recruiterCandidateSearch()
 
 POST        /getAllJobApplicants/:id                                      controllers.RecruiterController.getAllJobApplicants(id : Long)
 POST        /getAllRecruiterJobPosts                                      controllers.RecruiterController.getAllRecruiterJobPosts
 POST        /getRecruiterCredits/:id                                      controllers.RecruiterController.getRecruiterCredits(id : Long)
 POST        /getAllCreditCategory                                         controllers.RecruiterController.getAllCreditCategory()
-POST        /unlockCandidateContact/:id                                   controllers.RecruiterController.unlockCandidateContact(id : Long)
+POST        /recruiter/unlockCandidateContact/:id                         controllers.RecruiterController.unlockCandidateContact(id : Long)
 POST        /addRecruiterLead                                             controllers.RecruiterController.addWebsiteLead()
 POST        /recruiterSignUp                                              controllers.RecruiterController.recruiterSignUp()
 POST        /addRecruiterPassword                                         controllers.RecruiterController.addPassword()
 POST        /recruiterLoginSubmit                                         controllers.RecruiterController.loginSubmit()
-GET         /recruiter/candidateSearch                                              controllers.RecruiterController.recruiterCandidateSearch()
+POST        /recruiter/api/getMatchingCandidate/                          controllers.RecruiterController.getMatchingCandidate()
+POST        /recruiter/api/getUnlockedCandidates/                         controllers.RecruiterController.getUnlockedCandidates()
+GET         /recruiter/postFreeJobsRecruiter                              controllers.RecruiterController.postFreeJobsRecruiter()
 
 #new routes
 #~~~~~~~~~~~~~~~~~~~~

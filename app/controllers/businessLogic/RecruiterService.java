@@ -9,6 +9,7 @@ import api.http.httpResponse.AddCompanyResponse;
 import api.http.httpResponse.LoginResponse;
 import api.http.httpResponse.Recruiter.AddRecruiterResponse;
 import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
+import api.http.httpResponse.Recruiter.UnlockContactResponse;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterLead;
@@ -372,6 +373,7 @@ public class RecruiterService {
     }
 
     public static Result unlockCandidate(RecruiterProfile recruiterProfile, Long candidateId) {
+        UnlockContactResponse unlockContactResponse = new UnlockContactResponse();
         Candidate candidate = Candidate.find.where().eq("CandidateId", candidateId).findUnique();
         if(candidate != null){
             RecruiterToCandidateUnlocked existingUnlockedCandidate = RecruiterToCandidateUnlocked.find.where()
@@ -400,28 +402,42 @@ public class RecruiterService {
                         .findUnique();
 
                 if(recruiterCreditHistoryLatest != null){
-                    recruiterCreditHistory.setRecruiterCreditsAvailable(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() - 1);
-                    recruiterCreditHistory.setRecruiterCreditsUsed(recruiterCreditHistoryLatest.getRecruiterCreditsUsed() + 1);
-                    //adding a entry in recruiterToCandidateUnblock table
-                    RecruiterToCandidateUnlocked recruiterToCandidateUnlocked = new RecruiterToCandidateUnlocked();
+                    if(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() > 0){
+                        recruiterCreditHistory.setRecruiterCreditsAvailable(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() - 1);
+                        recruiterCreditHistory.setRecruiterCreditsUsed(recruiterCreditHistoryLatest.getRecruiterCreditsUsed() + 1);
+                        //adding a entry in recruiterToCandidateUnblock table
+                        RecruiterToCandidateUnlocked recruiterToCandidateUnlocked = new RecruiterToCandidateUnlocked();
 
-                    recruiterToCandidateUnlocked.setRecruiterProfile(recruiterProfile);
-                    recruiterToCandidateUnlocked.setCandidate(candidate);
+                        recruiterToCandidateUnlocked.setRecruiterProfile(recruiterProfile);
+                        recruiterToCandidateUnlocked.setCandidate(candidate);
 
-                    //saving/updating all the rows
-                    recruiterCreditHistory.save();
-                    recruiterToCandidateUnlocked.save();
-                    return ok("1");
+                        //saving/updating all the rows
+                        recruiterCreditHistory.save();
+                        recruiterToCandidateUnlocked.save();
+
+                        unlockContactResponse.setStatus(UnlockContactResponse.STATUS_SUCCESS);
+                        unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
+                        return ok(toJson(unlockContactResponse));
+                    } else {
+                        unlockContactResponse.setStatus(UnlockContactResponse.STATUS_NO_CREDITS);
+                        unlockContactResponse.setCandidateMobile(null);
+                        return ok(toJson(unlockContactResponse));
+                    }
                 } else{
-                    recruiterCreditHistory.setRecruiterCreditsAvailable(0);
-                    recruiterCreditHistory.setRecruiterCreditsUsed(0);
+                    unlockContactResponse.setStatus(UnlockContactResponse.STATUS_NO_CREDITS);
+                    unlockContactResponse.setCandidateMobile(null);
+                    return ok(toJson(unlockContactResponse));
                 }
             } else{
-                return ok("2");
+                unlockContactResponse.setStatus(UnlockContactResponse.STATUS_ALREADY_UNLOCKED);
+                unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
+                return ok(toJson(unlockContactResponse));
             }
         }
         Logger.info("Recruiter with mobile no: " + recruiterProfile.getRecruiterProfileMobile() + " does not have credits to unlock candidate");
-        return ok("0");
+        unlockContactResponse.setStatus(UnlockContactResponse.STATUS_FAILURE);
+        unlockContactResponse.setCandidateMobile(null);
+        return ok(toJson(unlockContactResponse));
     }
 
     private static void addContactCredit(RecruiterProfile recruiterProfile, Integer creditCount){
