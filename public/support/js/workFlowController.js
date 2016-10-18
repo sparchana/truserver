@@ -318,7 +318,11 @@ $(function () {
                 exit: 'animated lightSpeedOut'
             }
         }, {
-            type: type
+            type: type,
+            placement: {
+                from: "top",
+                align: "center"
+            }
         });
     };
 
@@ -520,8 +524,30 @@ $(function () {
         NProgress.done();
     };
 
+    app.initJobCard = function () {
+
+        NProgress.start();
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/getJobPostInfo/" + app.jpId + "/1",
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: app.populateJobPostCardUI
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception.stack);
+        }
+        NProgress.done();
+    };
+
     app.processParamsAndUpdateUI = function (returnedData) {
         if (returnedData != null) {
+
+            app.populateJobPostCardUI(returnedData);
+
             app.jpId = returnedData.jobPostId;
             // gender, language, age
             if (returnedData.jobPostMaxAge != null) {
@@ -987,6 +1013,19 @@ $(function () {
             console.log("exception occured!!" + exception);
         }
     };
+    app.populateJobPostCardUI = function (returnedData) {
+        var jobPostTitle = returnedData.jobPostTitle;
+        var jobPostCompany = returnedData.company.companyName;
+        var jobPostSalary = "Rs. "+returnedData.jobPostMinSalary + " - Rs. " + returnedData.jobPostMaxSalary;
+
+        app.renderJobCard(jobPostTitle, jobPostCompany, jobPostSalary);
+    };
+
+    app.renderJobCard = function (jobPostTitle, jobPostCompany, jobPostSalary) {
+        $('#job_post_title').text(jobPostTitle);
+        $('#job_post_company_title').text(jobPostCompany);
+        $('#job_post_salary').text(jobPostSalary);
+    };
 
     app.processSupportAgentData = function (returnedData) {
         var mobileNum = returnedData.agentMobileNumber;
@@ -1007,7 +1046,9 @@ $(function () {
     app.setCurrentView();
 
     if (app.currentView == "match_view") {
-
+        $('#header_view_title').text("Match View");
+        $('.navigation__link').removeClass("mdl-navigation__link--current");
+        $('#match_view_drawer').removeClass("mdl-navigation__link--current").addClass("mdl-navigation__link--current");
         app.init();
         app.initParams();
 
@@ -1023,7 +1064,13 @@ $(function () {
         });
     }
     else if (app.currentView == "pre_screen_view") {
+        $('#header_view_title').text("Pre Screen View");
+        $('.navigation__link').removeClass("mdl-navigation__link--current");
+        $('#pre_screen_view_drawer').removeClass("mdl-navigation__link--current").addClass("mdl-navigation__link--current");
         app.getSupportAgent();
         app.initPreScreenView();
+        app.initJobCard();
+    } else {
+        $('#header_view_title').text("Future View");
     }
 });

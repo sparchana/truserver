@@ -70,7 +70,7 @@ public class CompanyService {
         return addCompanyResponse;
     }
 
-    public static Company getAndAddCompanyValues(AddCompanyRequest addCompanyRequest, Company newCompany){
+    private static Company getAndAddCompanyValues(AddCompanyRequest addCompanyRequest, Company newCompany){
         if(addCompanyRequest.getCompanyName() != null){
             newCompany.setCompanyName(addCompanyRequest.getCompanyName());
         }
@@ -91,6 +91,8 @@ public class CompanyService {
         }
         if(addCompanyRequest.getCompanyLogo() != null){
             newCompany.setCompanyLogo(addCompanyRequest.getCompanyLogo());
+        } else{
+            newCompany.setCompanyLogo(ServerConstants.DEFAULT_COMPANY_LOGO);
         }
         if(addCompanyRequest.getCompanyStatus() != null){
             CompanyStatus companyStatus = CompanyStatus.find.where().eq("companyStatusId", addCompanyRequest.getCompanyStatus()).findUnique();
@@ -109,4 +111,3 @@ public class CompanyService {
         return newCompany;
     }
 }
-

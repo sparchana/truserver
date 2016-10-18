@@ -636,7 +636,7 @@ public class JobPostWorkflowEngine {
                     break;
             }
         }
-
+        populateResponse.setStatus(PreScreenPopulateResponse.Status.SUCCESS);
         return populateResponse;
     }
 

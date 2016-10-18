@@ -71,7 +71,8 @@ function triggerPreScreenResponseSubmission(candidateId, jobPostId) {
 
 function processPreScreenContent(returnedData) {
     if(returnedData == null || returnedData.status != "SUCCESS") {
-        notifyError("Request failed. Something went Wrong! Please Refresh", 'danger');
+        console.log(returnedData);
+        pushToSnackbar("Request failed. Something went Wrong! Please Refresh");
     }
     if(returnedData != null){
         // if(returnedData == "OK" || returnedData == "NA" ) {
@@ -360,15 +361,15 @@ function getPreScreenContent(jobPostId, candidateId) {
     }
 }
 
+function pushToSnackbar(msg) {
+    'use strict';
+    var snackbarContainer = document.querySelector('#tru-snackbar');
 
-function notifyError(msg, type){
-    $.notify({
-        message: msg,
-        animate: {
-            enter: 'animated lightSpeedIn',
-            exit: 'animated lightSpeedOut'
-        }
-    },{
-        type: type
-    });
+    var data = {
+        message: JSON.stringify(msg),
+        timeout: 4000
+    };
+
+    snackbarContainer.MaterialSnackbar.showSnackbar(data);
+
 }

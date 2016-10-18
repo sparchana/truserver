@@ -13,6 +13,7 @@ public class UnlockContactResponse {
 
     public int status;
     public String candidateMobile;
+    public Long candidateId;
 
     public int getStatus() {
         return status;
@@ -28,5 +29,13 @@ public class UnlockContactResponse {
 
     public void setCandidateMobile(String candidateMobile) {
         this.candidateMobile = candidateMobile;
+    }
+
+    public Long getCandidateId() {
+        return candidateId;
+    }
+
+    public void setCandidateId(Long candidateId) {
+        this.candidateId = candidateId;
     }
 }

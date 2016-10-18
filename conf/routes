@@ -127,6 +127,7 @@ POST        /checkPartnerCandidate/:id                                    contro
 #~~~~~~~~~~~~~~~~~~~~
 GET         /recruiter                                                    controllers.RecruiterController.recruiterIndex()
 GET         /recruiter/home                                               controllers.RecruiterController.recruiterHome()
+GET         /recruiter/jobPost/:id                                        controllers.RecruiterController.recruiterJobPost(id : Long)
 GET         /logoutRecruiter                                              controllers.RecruiterController.logoutRecruiter()
 GET         /checkRecruiterSession                                        controllers.RecruiterController.checkRecruiterSession()
 GET         /getRecruiterProfileInfo                                      controllers.RecruiterController.getRecruiterProfileInfo()
@@ -135,6 +136,7 @@ GET         /recruiter/candidateSearch                                    contro
 
 POST        /getAllJobApplicants/:id                                      controllers.RecruiterController.getAllJobApplicants(id : Long)
 POST        /getAllRecruiterJobPosts                                      controllers.RecruiterController.getAllRecruiterJobPosts
+GET         /recruiter/allRecruiterJobPosts                               controllers.RecruiterController.renderAllRecruiterJobPosts
 POST        /getRecruiterCredits/:id                                      controllers.RecruiterController.getRecruiterCredits(id : Long)
 POST        /getAllCreditCategory                                         controllers.RecruiterController.getAllCreditCategory()
 POST        /recruiter/unlockCandidateContact/:id                         controllers.RecruiterController.unlockCandidateContact(id : Long)
