@@ -103,6 +103,7 @@ public class RecruiterService {
                 AddCompanyResponse addCompanyResponse;
                 AddCompanyRequest addCompanyRequest = new AddCompanyRequest();
                 addCompanyRequest.setCompanyName(recruiterSignUpRequest.getRecruiterCompanyName());
+                addCompanyRequest.setCompanyLogo(ServerConstants.DEFAULT_COMPANY_LOGO);
                 addCompanyRequest.setCompanyStatus(1);
                 addCompanyResponse = CompanyService.addCompany(addCompanyRequest);
 
@@ -421,26 +422,31 @@ public class RecruiterService {
 
                         unlockContactResponse.setStatus(UnlockContactResponse.STATUS_SUCCESS);
                         unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
+                        unlockContactResponse.setCandidateId(candidate.getCandidateId());
                         return ok(toJson(unlockContactResponse));
                     } else {
                         unlockContactResponse.setStatus(UnlockContactResponse.STATUS_NO_CREDITS);
                         unlockContactResponse.setCandidateMobile(null);
+                        unlockContactResponse.setCandidateId(null);
                         return ok(toJson(unlockContactResponse));
                     }
                 } else{
                     unlockContactResponse.setStatus(UnlockContactResponse.STATUS_NO_CREDITS);
                     unlockContactResponse.setCandidateMobile(null);
+                    unlockContactResponse.setCandidateId(null);
                     return ok(toJson(unlockContactResponse));
                 }
             } else{
                 unlockContactResponse.setStatus(UnlockContactResponse.STATUS_ALREADY_UNLOCKED);
                 unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
+                unlockContactResponse.setCandidateId(candidate.getCandidateId());
                 return ok(toJson(unlockContactResponse));
             }
         }
         Logger.info("Recruiter with mobile no: " + recruiterProfile.getRecruiterProfileMobile() + " does not have credits to unlock candidate");
         unlockContactResponse.setStatus(UnlockContactResponse.STATUS_FAILURE);
         unlockContactResponse.setCandidateMobile(null);
+        unlockContactResponse.setCandidateId(null);
         return ok(toJson(unlockContactResponse));
     }
 

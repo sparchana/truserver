@@ -335,6 +335,9 @@ function performSearch() {
     } else if(searchLocality.length == 0) {
         notifyError("Please select a locality");
     } else {
+        $("#searchBtn").addClass("disabled");
+        $("#filterBtn").addClass("disabled");
+
         $("#candidateResultContainer").html("");
         $("#searchJobPanel").hide();
         $("#noCandidateDiv").hide();
@@ -389,6 +392,8 @@ function processDataUnlockedCandidates(returnedData) {
 
 function processDataMatchCandidate(returnedData) {
     NProgress.done();
+    $("#searchBtn").removeClass("disabled");
+    $("#filterBtn").removeClass("disabled");
     var candidateCount = Object.keys(returnedData).length;
     $("#loadingIcon").hide();
 
@@ -486,7 +491,7 @@ function generateCandidateCards(candidateSearchResult) {
         candidateCardRowColOne.appendChild(inlineBlockDiv);
 
         var iconImg = document.createElement("img");
-        iconImg.src = "/assets/recruiter/img/icons/envelope.svg";
+        iconImg.src = "/assets/recruiter/img/icons/locality.svg";
         iconImg.style = "margin-top: -4px";
         iconImg.setAttribute('height', '24px');
         inlineBlockDiv.appendChild(iconImg);
@@ -520,7 +525,7 @@ function generateCandidateCards(candidateSearchResult) {
         candidateCardRowColOne.appendChild(inlineBlockDiv);
 
         iconImg = document.createElement("img");
-        iconImg.src = "/assets/recruiter/img/icons/building.svg";
+        iconImg.src = "/assets/recruiter/img/icons/gender.svg";
         iconImg.style = "margin-top: -4px";
         iconImg.setAttribute('height', '24px');
         inlineBlockDiv.appendChild(iconImg);
@@ -558,7 +563,7 @@ function generateCandidateCards(candidateSearchResult) {
         candidateCardRowColOne.appendChild(inlineBlockDiv);
 
         iconImg = document.createElement("img");
-        iconImg.src = "/assets/recruiter/img/icons/building.svg";
+        iconImg.src = "/assets/recruiter/img/icons/age.svg";
         iconImg.style = "margin-top: -4px";
         iconImg.setAttribute('height', '24px');
         inlineBlockDiv.appendChild(iconImg);
@@ -606,7 +611,7 @@ function generateCandidateCards(candidateSearchResult) {
         candidateCardRowColOne.appendChild(inlineBlockDiv);
 
         iconImg = document.createElement("img");
-        iconImg.src = "/assets/recruiter/img/icons/envelope.svg";
+        iconImg.src = "/assets/recruiter/img/icons/education.svg";
         iconImg.style = "margin-top: -4px";
         iconImg.setAttribute('height', '24px');
         inlineBlockDiv.appendChild(iconImg);
@@ -641,7 +646,7 @@ function generateCandidateCards(candidateSearchResult) {
         candidateCardRowColOne.appendChild(inlineBlockDiv);
 
         iconImg = document.createElement("img");
-        iconImg.src = "/assets/recruiter/img/icons/building.svg";
+        iconImg.src = "/assets/recruiter/img/icons/exp.svg";
         iconImg.style = "margin-top: -4px";
         iconImg.setAttribute('height', '24px');
         inlineBlockDiv.appendChild(iconImg);
@@ -688,7 +693,7 @@ function generateCandidateCards(candidateSearchResult) {
         candidateCardRowColOne.appendChild(inlineBlockDiv);
 
         iconImg = document.createElement("img");
-        iconImg.src = "/assets/recruiter/img/icons/building.svg";
+        iconImg.src = "/assets/recruiter/img/icons/salary.svg";
         iconImg.style = "margin-top: -4px";
         iconImg.setAttribute('height', '24px');
         inlineBlockDiv.appendChild(iconImg);
@@ -729,7 +734,7 @@ function generateCandidateCards(candidateSearchResult) {
         candidateCardRowColOne.appendChild(inlineBlockDiv);
 
         iconImg = document.createElement("img");
-        iconImg.src = "/assets/recruiter/img/icons/envelope.svg";
+        iconImg.src = "/assets/recruiter/img/icons/language.svg";
         iconImg.style = "margin-top: -4px";
         iconImg.setAttribute('height', '24px');
         inlineBlockDiv.appendChild(iconImg);
@@ -854,8 +859,10 @@ function processDataUnlockCandidate(returnedData) {
         notifySuccess("Contact successfully unlocked");
         $("#remainingContactCredits").html(parseInt($("#remainingContactCredits").html()) - 1);
         $("#candidate_" + candidateIdVal).html(returnedData.candidateMobile);
+        $("#unlock_candidate_" + returnedData.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 btn").addClass("contactUnlocked right").removeAttr('onclick');
     } else if(returnedData.status == 2){
         notifySuccess("You have already unlocked the candidate");
+        $("#unlock_candidate_" + returnedData.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 btn").addClass("contactUnlocked right").removeAttr('onclick');
         $("#candidate_" + candidateIdVal).html(returnedData.candidateMobile);
     } else if(returnedData.status == 3){
         notifyError("Out of credits! Please recharge");

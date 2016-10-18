@@ -124,6 +124,7 @@ POST        /checkPartnerCandidate/:id                                    contro
 #~~~~~~~~~~~~~~~~~~~~
 GET         /recruiter                                                    controllers.RecruiterController.recruiterIndex()
 GET         /recruiter/home                                               controllers.RecruiterController.recruiterHome()
+GET         /recruiter/jobPost/:id                                        controllers.RecruiterController.recruiterJobPost(id : Long)
 GET         /logoutRecruiter                                              controllers.RecruiterController.logoutRecruiter()
 GET         /checkRecruiterSession                                        controllers.RecruiterController.checkRecruiterSession()
 GET         /getRecruiterProfileInfo                                      controllers.RecruiterController.getRecruiterProfileInfo()
