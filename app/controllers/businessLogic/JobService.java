@@ -190,14 +190,14 @@ public class JobService {
         List<JobPostAssetRequirement> jobPostAssetRequirementList = jobPost.getJobPostAssetRequirements();
 
         List<PreScreenRequirement> preScreenRequirementList = PreScreenRequirement.find.where().eq("job_post_id", jobPost.getJobPostId()).findList();
-        Map<?, RequirementsCategory> requirementsCategoryMap = RequirementsCategory.find.where().setMapKey("requirementsCategoryTitle").findMap();
+        Map<?, ProfileRequirement> profileRequirementMap = ProfileRequirement.find.where().setMapKey("profileRequirementTitle").findMap();
 
         Map<String, PreScreenRequirement> singleEntityMap= new HashMap<>();
         Map<Integer, Map<Integer, PreScreenRequirement>> multiEntityMap = new HashMap<>();
 
         if(preScreenRequirementList.size() > 0 ) {
             for (PreScreenRequirement ps: preScreenRequirementList) {
-                if( ps.getCategory() != ServerConstants.CATEGORY_JD_REQ_CATEGORY) {
+                if( ps.getCategory() != ServerConstants.CATEGORY_PROFILE) {
                     // categories like docs, lang, asset will come here
                     Map<Integer, PreScreenRequirement> psMap = multiEntityMap.get(ps.getCategory());
                     if(psMap == null) {
@@ -212,50 +212,50 @@ public class JobService {
                     }
                     multiEntityMap.put(ps.getCategory(), psMap);
                 } else {
-                    // categories with single entry per jobpost will accumulate here
-                    singleEntityMap.put(ps.getRequirementsCategory().getRequirementsCategoryTitle(), ps);
+                    // categories with single entry per jobPost will accumulate here
+                    singleEntityMap.put(ps.getProfileRequirement().getProfileRequirementTitle(), ps);
                 }
             }
         }
 
         if(jobPostMaxAge != null) {
-            PreScreenRequirement preScreenRequirementAge = singleEntityMap.get(ServerConstants.JD_TABLE_AGE);
+            PreScreenRequirement preScreenRequirementAge = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_AGE);
             if (preScreenRequirementAge == null) {
                 preScreenRequirementAge = new PreScreenRequirement();
-                preScreenRequirementAge.setCategory(ServerConstants.CATEGORY_JD_REQ_CATEGORY);
+                preScreenRequirementAge.setCategory(ServerConstants.CATEGORY_PROFILE);
                 preScreenRequirementAge.setJobPost(jobPost);
             }
-            preScreenRequirementAge.setRequirementsCategory(requirementsCategoryMap.get(ServerConstants.JD_TABLE_AGE));
+            preScreenRequirementAge.setProfileRequirement(profileRequirementMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_AGE));
             preScreenRequirementAge.save();
         } else {
-            PreScreenRequirement preScreenRequirementAge = singleEntityMap.get(ServerConstants.JD_TABLE_AGE);
+            PreScreenRequirement preScreenRequirementAge = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_AGE);
             if(preScreenRequirementAge != null) preScreenRequirementAge.delete();
         }
 
         if (jobPostExperience != null) {
-            PreScreenRequirement preScreenRequirementExp =  singleEntityMap.get(ServerConstants.JD_TABLE_EXPERIENCE);
+            PreScreenRequirement preScreenRequirementExp =  singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_EXPERIENCE);
             if (preScreenRequirementExp == null) {
                 preScreenRequirementExp = new PreScreenRequirement();
-                preScreenRequirementExp.setCategory(ServerConstants.CATEGORY_JD_REQ_CATEGORY);
+                preScreenRequirementExp.setCategory(ServerConstants.CATEGORY_PROFILE);
                 preScreenRequirementExp.setJobPost(jobPost);
             }
-            preScreenRequirementExp.setRequirementsCategory(requirementsCategoryMap.get(ServerConstants.JD_TABLE_EXPERIENCE));
+            preScreenRequirementExp.setProfileRequirement(profileRequirementMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_EXPERIENCE));
             preScreenRequirementExp.save();
         } else {
-            PreScreenRequirement preScreenRequirementExp =  singleEntityMap.get(ServerConstants.JD_TABLE_EXPERIENCE);
+            PreScreenRequirement preScreenRequirementExp =  singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_EXPERIENCE);
             if(preScreenRequirementExp != null) preScreenRequirementExp.delete();
         }
         if (jobPostEducation != null) {
-            PreScreenRequirement preScreenRequirementEdu = singleEntityMap.get(ServerConstants.JD_TABLE_EDUCATION);
+            PreScreenRequirement preScreenRequirementEdu = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_EDUCATION);
             if (preScreenRequirementEdu == null) {
                 preScreenRequirementEdu = new PreScreenRequirement();
-                preScreenRequirementEdu.setCategory(ServerConstants.CATEGORY_JD_REQ_CATEGORY);
+                preScreenRequirementEdu.setCategory(ServerConstants.CATEGORY_PROFILE);
                 preScreenRequirementEdu.setJobPost(jobPost);
             }
-            preScreenRequirementEdu.setRequirementsCategory(requirementsCategoryMap.get(ServerConstants.JD_TABLE_EDUCATION));
+            preScreenRequirementEdu.setProfileRequirement(profileRequirementMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_EDUCATION));
             preScreenRequirementEdu.save();
         } else {
-            PreScreenRequirement preScreenRequirementEdu = singleEntityMap.get(ServerConstants.JD_TABLE_EDUCATION);
+            PreScreenRequirement preScreenRequirementEdu = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_EDUCATION);
             if(preScreenRequirementEdu != null) preScreenRequirementEdu.delete();
         }
 
@@ -365,58 +365,58 @@ public class JobService {
 
         // common entities
         if ( jobPost.getJobPostMinSalary() != null) {
-            PreScreenRequirement preScreenRequirementSalary = singleEntityMap.get(ServerConstants.JD_TABLE_SALARY);
+            PreScreenRequirement preScreenRequirementSalary = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_SALARY);
             if (preScreenRequirementSalary == null) {
                 preScreenRequirementSalary = new PreScreenRequirement();
-                preScreenRequirementSalary.setCategory(ServerConstants.CATEGORY_JD_REQ_CATEGORY);
+                preScreenRequirementSalary.setCategory(ServerConstants.CATEGORY_PROFILE);
                 preScreenRequirementSalary.setJobPost(jobPost);
             }
-            preScreenRequirementSalary.setRequirementsCategory(requirementsCategoryMap.get(ServerConstants.JD_TABLE_SALARY));
+            preScreenRequirementSalary.setProfileRequirement(profileRequirementMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_SALARY));
             preScreenRequirementSalary.save();
         } else {
-            PreScreenRequirement preScreenRequirementSalary = singleEntityMap.get(ServerConstants.JD_TABLE_SALARY);
+            PreScreenRequirement preScreenRequirementSalary = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_SALARY);
             if(preScreenRequirementSalary != null) preScreenRequirementSalary.delete();
         }
 
         if ( jobPost.getGender() != null) {
-            PreScreenRequirement preScreenRequirementGender = singleEntityMap.get(ServerConstants.JD_TABLE_GENDER);
+            PreScreenRequirement preScreenRequirementGender = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_GENDER);
             if (preScreenRequirementGender == null) {
                 preScreenRequirementGender = new PreScreenRequirement();
-                preScreenRequirementGender.setCategory(ServerConstants.CATEGORY_JD_REQ_CATEGORY);
+                preScreenRequirementGender.setCategory(ServerConstants.CATEGORY_PROFILE);
                 preScreenRequirementGender.setJobPost(jobPost);
             }
-            preScreenRequirementGender.setRequirementsCategory(requirementsCategoryMap.get(ServerConstants.JD_TABLE_GENDER));
+            preScreenRequirementGender.setProfileRequirement(profileRequirementMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_GENDER));
             preScreenRequirementGender.save();
         } else {
-            PreScreenRequirement preScreenRequirementGender = singleEntityMap.get(ServerConstants.JD_TABLE_GENDER);
+            PreScreenRequirement preScreenRequirementGender = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_GENDER);
             if(preScreenRequirementGender != null) preScreenRequirementGender.delete();
         }
 
         if ( jobPost.getJobPostToLocalityList() != null && jobPost.getJobPostToLocalityList().size()>0) {
-            PreScreenRequirement preScreenRequirementLocation = singleEntityMap.get(ServerConstants.JD_TABLE_LOCATION);
+            PreScreenRequirement preScreenRequirementLocation = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_LOCATION);
             if (preScreenRequirementLocation == null) {
                 preScreenRequirementLocation = new PreScreenRequirement();
-                preScreenRequirementLocation.setCategory(ServerConstants.CATEGORY_JD_REQ_CATEGORY);
+                preScreenRequirementLocation.setCategory(ServerConstants.CATEGORY_PROFILE);
                 preScreenRequirementLocation.setJobPost(jobPost);
             }
-            preScreenRequirementLocation.setRequirementsCategory(requirementsCategoryMap.get(ServerConstants.JD_TABLE_LOCATION));
+            preScreenRequirementLocation.setProfileRequirement(profileRequirementMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_LOCATION));
             preScreenRequirementLocation.save();
         } else {
-            PreScreenRequirement preScreenRequirementLocation = singleEntityMap.get(ServerConstants.JD_TABLE_LOCATION);
+            PreScreenRequirement preScreenRequirementLocation = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_LOCATION);
             if(preScreenRequirementLocation != null) preScreenRequirementLocation.delete();
         }
 
         if ( jobPost.getJobPostWorkingDays() != 0 && jobPost.getJobPostWorkingDays() != null && jobPost.getJobPostShift() != null) {
-            PreScreenRequirement preScreenRequirementWorkTimings = singleEntityMap.get(ServerConstants.JD_TABLE_WORKTIMINGS);
+            PreScreenRequirement preScreenRequirementWorkTimings = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_WORKTIMINGS);
             if (preScreenRequirementWorkTimings == null) {
                 preScreenRequirementWorkTimings = new PreScreenRequirement();
-                preScreenRequirementWorkTimings.setCategory(ServerConstants.CATEGORY_JD_REQ_CATEGORY);
+                preScreenRequirementWorkTimings.setCategory(ServerConstants.CATEGORY_PROFILE);
                 preScreenRequirementWorkTimings.setJobPost(jobPost);
             }
-            preScreenRequirementWorkTimings.setRequirementsCategory(requirementsCategoryMap.get(ServerConstants.JD_TABLE_WORKTIMINGS));
+            preScreenRequirementWorkTimings.setProfileRequirement(profileRequirementMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_WORKTIMINGS));
             preScreenRequirementWorkTimings.save();
         } else {
-            PreScreenRequirement preScreenRequirementWorkTimings = singleEntityMap.get(ServerConstants.JD_TABLE_WORKTIMINGS);
+            PreScreenRequirement preScreenRequirementWorkTimings = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_WORKTIMINGS);
             if(preScreenRequirementWorkTimings != null) preScreenRequirementWorkTimings.delete();
         }
     }

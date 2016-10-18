@@ -1,10 +1,12 @@
 package models.entity.OM;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.PrivateOwned;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -41,6 +43,12 @@ public class PreScreenResult extends Model {
     @JoinColumn(name = "job_post_workflow_id", referencedColumnName = "job_post_workflow_id")
     private JobPostWorkflow jobPostWorkflow;
 
+    /*@JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "preScreenResult", cascade = CascadeType.ALL)
+    private List<PreScreenResponse> preScreenResponseList;*/
+
+
     public PreScreenResult(){
         this.preScreenResultUUId = UUID.randomUUID().toString();
         this.createTimestamp = new Timestamp(System.currentTimeMillis());
@@ -58,10 +66,6 @@ public class PreScreenResult extends Model {
 
     public Timestamp getCreateTimestamp() {
         return createTimestamp;
-    }
-
-    public void setCreateTimestamp(Timestamp createTimestamp) {
-        this.createTimestamp = createTimestamp;
     }
 
     public Integer getAttemptCount() {
@@ -103,4 +107,12 @@ public class PreScreenResult extends Model {
     public void setJobPostWorkflow(JobPostWorkflow jobPostWorkflow) {
         this.jobPostWorkflow = jobPostWorkflow;
     }
+
+    /*public List<PreScreenResponse> getPreScreenResponseList() {
+        return preScreenResponseList;
+    }
+
+    public void setPreScreenResponseList(List<PreScreenResponse> preScreenResponseList) {
+        this.preScreenResponseList = preScreenResponseList;
+    }*/
 }

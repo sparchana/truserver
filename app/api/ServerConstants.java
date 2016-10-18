@@ -63,6 +63,8 @@ public class ServerConstants {
     public static final int OBJECT_TYPE_JOB_POST_VIEW= 7;
     public static final int OBJECT_TYPE_PARTNER= 8;
     public static final int OBJECT_TYPE_ASSESSMENT_ATTEMPT= 9;
+    public static final int OBJECT_TYPE_PRESCREEN_ATTEMPT= 10;
+    public static final int OBJECT_TYPE_JOB_POST_WORKFLOW= 11;
 
 
     public static final boolean FOLLOW_UP_DEACTIVATE = false;
@@ -118,15 +120,16 @@ public class ServerConstants {
 
     // JobPost Workflow status
     public static final int JWF_STATUS_SELECTED = 1;
+    public static final int JWF_STATUS_PRESCREEN_ATTEMPTED = 2;
+    public static final int JWF_STATUS_PRESCREEN_COMPLETED = 3;
     // Requirements Table
-    public static final String JD_TABLE_AGE = "age";
-    public static final String JD_TABLE_EXPERIENCE = "experience";
-    public static final String JD_TABLE_EDUCATION = "education";
-    public static final String JD_TABLE_SALARY = "salary";
-    public static final String JD_TABLE_GENDER = "gender";
-    public static final String JD_TABLE_LOCATION = "location";
-    public static final String JD_TABLE_WORKTIMINGS = "worktimings";
-
+    public static final String PROFILE_REQUIREMENT_TABLE_AGE = "age";
+    public static final String PROFILE_REQUIREMENT_TABLE_EXPERIENCE = "experience";
+    public static final String PROFILE_REQUIREMENT_TABLE_EDUCATION = "education";
+    public static final String PROFILE_REQUIREMENT_TABLE_SALARY = "salary";
+    public static final String PROFILE_REQUIREMENT_TABLE_GENDER = "gender";
+    public static final String PROFILE_REQUIREMENT_TABLE_LOCATION = "locality";
+    public static final String PROFILE_REQUIREMENT_TABLE_WORKTIMINGS = "worktimings";
     public static Map<String, String> devTeamMobile;
     static {
         devTeamMobile = new HashMap<String, String>();
@@ -184,7 +187,21 @@ public class ServerConstants {
     public static final int CATEGORY_DOCUMENT = 1;
     public static final int CATEGORY_LANGUAGE = 2;
     public static final int CATEGORY_ASSET = 3;
-    public static final int CATEGORY_JD_REQ_CATEGORY = 4;
+    public static final int CATEGORY_PROFILE = 4;
     public static int RECRUITER_CATEGORY_CONTACT_UNLOCK = 1;
     public static int RECRUITER_CATEGORY_INTERVIEW_UNLOCK = 2;
+
+    // pre screen front end ui ids
+    // TODO: use database requirement_category + categoryId from pre_screen_requirement
+    public static final Integer PRE_SCREEN_VIEW_DOCUMENT_ID = 1;
+    public static final Integer PRE_SCREEN_VIEW_LANGUAGE_ID = 2;
+    public static final Integer PRE_SCREEN_VIEW_AGE_ID = 3;
+    public static final Integer PRE_SCREEN_VIEW_EDUCATION_ID = 4;
+    public static final Integer PRE_SCREEN_VIEW_ASSET_ID = 5;
+    public static final Integer PRE_SCREEN_VIEW_GENDER_ID = 6;
+    public static final Integer PRE_SCREEN_VIEW_SALARY_ID = 7;
+    public static final Integer PRE_SCREEN_VIEW_WORK_SHIFT_ID = 8;
+    public static final Integer PRE_SCREEN_VIEW_LOCALITY_ID = 9;
+
+
 }

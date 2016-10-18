@@ -1,6 +1,7 @@
 package models.entity.OM;
 
 import com.avaje.ebean.Model;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
@@ -28,9 +29,17 @@ public class PreScreenResponse extends Model {
     private Timestamp updateTimestamp;
 
     @ManyToOne
-    @JsonManagedReference
+    @JsonBackReference
     @JoinColumn(name = "pre_screen_result_id", referencedColumnName = "pre_screen_result_id")
     private PreScreenResult preScreenResult;
+
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "pre_screen_requirement_id", referencedColumnName = "pre_screen_requirement_id")
+    private PreScreenRequirement preScreenRequirement;
+
+    @Column(name = "pre_screen_response", columnDefinition = "tinyint(1) null")
+    private boolean response;
 
     public PreScreenResponse() {
         this.preScreenResponseUUId = UUID.randomUUID().toString();
@@ -69,5 +78,21 @@ public class PreScreenResponse extends Model {
 
     public void setPreScreenResult(PreScreenResult preScreenResult) {
         this.preScreenResult = preScreenResult;
+    }
+
+    public boolean isResponse() {
+        return response;
+    }
+
+    public void setResponse(boolean response) {
+        this.response = response;
+    }
+
+    public PreScreenRequirement getPreScreenRequirement() {
+        return preScreenRequirement;
+    }
+
+    public void setPreScreenRequirement(PreScreenRequirement preScreenRequirement) {
+        this.preScreenRequirement = preScreenRequirement;
     }
 }

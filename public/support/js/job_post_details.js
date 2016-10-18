@@ -466,8 +466,10 @@ $(document).ready(function () {
 });
 
 function processDataGetCreditCategory(returnedData) {
-    $("#candidateContactCreditUnitPrice").val(returnedData[0].recruiterCreditUnitPrice);
-    $("#interviewCreditUnitPrice").val(returnedData[1].recruiterCreditUnitPrice);
+    if(returnedData!=null){
+        $("#candidateContactCreditUnitPrice").val(returnedData[0].recruiterCreditUnitPrice);
+        $("#interviewCreditUnitPrice").val(returnedData[1].recruiterCreditUnitPrice);
+    }
 }
 
 function processDataGetAllTimeSlots(returnedData) {

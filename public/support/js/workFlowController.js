@@ -5,6 +5,7 @@ var globalRecAgentNumber;
 var allLocalityArray = [];
 var allJobArray = [];
 var shouldAddFooter = true;
+var jobPostId;
 
 
 function getLocality() {
@@ -241,11 +242,13 @@ function getIdProof(idProofList) {
     return "NA";
 }
 
-openPreScreenModal = function (mobile) {
-    alert("will open pre screen modal in future for candidate_id : " + mobile);
+openPreScreenModal = function (mobile, candidateId) {
+    console.log("will open pre screen modal in future for candidate_id : " + mobile);
+    getPreScreenContent(jobPostId, candidateId);
 };
 
-callHandler = function (mobile, id) {
+
+callHandler = function (mobile, candidateId) {
     console.log("agentMobileNumber:" + globalRecAgentNumber);
     if (typeof globalRecAgentNumber != 'undefined') {
         console.log("Call Initiated for " + "+" + mobile + " by " + globalRecAgentNumber);
@@ -267,18 +270,16 @@ callHandler = function (mobile, id) {
                 cache: !1,
                 success: function (returnedData) {
                     console.log("KW Response : " + JSON.stringify(returnedData));
-                    openPreScreenModal(id);
                 },
                 error: function (error) {
                     console.log("Response Error: " + JSON.stringify(error));
-                    openPreScreenModal(id);
                 }
             });
         } catch (exception) {
+            console.log("exception:" + exception.stack);
         }
-    } else {
-        openPreScreenModal(id);
     }
+    openPreScreenModal(mobile, candidateId);
 };
 
 $(function () {
@@ -329,6 +330,7 @@ $(function () {
     app.setJPId = function () {
         var pathElement = window.location.pathname.split('/');
         app.jpId = pathElement[pathElement.length - 2];
+        jobPostId = app.jpId;
     };
 
     app.init = function () {
@@ -709,8 +711,11 @@ $(function () {
             console.log("candiateList Empty");
             app.tableContainer.hide();
             app.notify("No Candidates !", 'danger');
+            $('#moveSelectedBtn').attr('disabled', true);
             NProgress.done();
             return;
+        } else {
+            $('#moveSelectedBtn').attr('disabled', false);
         }
         var returnedDataArray = [];
         try {
@@ -842,7 +847,6 @@ $(function () {
             });
 
             /* Initialise datatables */
-            $.fn.dataTable.moment('dd/MM/YYYY HH:mm:ss');
 
             NProgress.done();
         } catch (exception) {
@@ -863,6 +867,11 @@ $(function () {
     };
 
     app.getSelectionFromTable = function () {
+        if(app.jpSelectedCandidateList == null || app.table == null){
+            app.notify("No Candidates found !", 'danger');
+
+            return;
+        }
         var selectedCandidateIds = app.table.rows({selected: true}).ids();
         var arrayLength = selectedCandidateIds.length;
         app.jpSelectedCandidateList = [];
@@ -1000,6 +1009,5 @@ $(function () {
     else if (app.currentView == "pre_screen_view") {
         app.getSupportAgent();
         app.initPreScreenView();
-
     }
 });

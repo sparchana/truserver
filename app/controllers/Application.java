@@ -6,6 +6,7 @@ import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
+import api.http.httpRequest.Workflow.PreScreenRequest;
 import api.http.httpRequest.Workflow.SelectedCandidateRequest;
 import api.http.httpResponse.*;
 import com.amazonaws.util.json.JSONException;
@@ -1571,4 +1572,36 @@ public class Application extends Controller {
        return ok(toJson(JobPostWorkflowEngine.getMatchingCandidate(jpId)));
     }
 
+    public static Result getJobPostVsCandidate(Long candidateId, Long jobPostId) {
+        if (candidateId == 0L || jobPostId == 0L) {
+            return badRequest();
+        }
+
+        return ok(toJson(JobPostWorkflowEngine.getJobPostVsCandidate(jobPostId, candidateId)));
+    }
+
+    public static Result updatePreScreenAttempt(Long candidateId, Long jobPostId, String callStatus) {
+        if (candidateId == 0L || jobPostId == 0L) {
+            return badRequest();
+        }
+
+        return ok(toJson(JobPostWorkflowEngine.updatePreScreenAttempt(jobPostId, candidateId, callStatus)));
+    }
+
+    public static Result submitPreScreen() {
+        JsonNode preScreenRequestJson = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + preScreenRequestJson);
+        if(preScreenRequestJson == null){
+            return badRequest();
+        }
+        PreScreenRequest preScreenRequest= new PreScreenRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            preScreenRequest = newMapper.readValue(preScreenRequestJson.toString(), PreScreenRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Logger.info(String.valueOf(toJson(preScreenRequest)));
+        return ok(toJson(JobPostWorkflowEngine.savePreScreenResult(preScreenRequest)));
+    }
 }

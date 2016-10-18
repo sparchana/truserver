@@ -2,7 +2,6 @@ package models.entity.OM;
 
 import com.avaje.ebean.Model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.Static.*;
 
@@ -16,7 +15,7 @@ import java.util.UUID;
 
 @Entity(name = "pre_screen_requirement")
 @Table(name = "pre_screen_requirement")
-public class PreScreenRequirement  extends Model{
+public class PreScreenRequirement  extends Model {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "pre_screen_requirement_id", columnDefinition = "bigint unsigned", unique = true)
@@ -48,8 +47,8 @@ public class PreScreenRequirement  extends Model{
 
     @ManyToOne
     @JsonManagedReference
-    @JoinColumn(name = "requirements_category_id", referencedColumnName = "requirements_category_id")
-    private RequirementsCategory requirementsCategory;
+    @JoinColumn(name = "profile_requirement_id", referencedColumnName = "profile_requirement_id")
+    private ProfileRequirement profileRequirement;
 
     @ManyToOne
     @JsonManagedReference
@@ -95,12 +94,12 @@ public class PreScreenRequirement  extends Model{
         this.asset = asset;
     }
 
-    public RequirementsCategory getRequirementsCategory() {
-        return requirementsCategory;
+    public ProfileRequirement getProfileRequirement() {
+        return profileRequirement;
     }
 
-    public void setRequirementsCategory(RequirementsCategory requirementsCategory) {
-        this.requirementsCategory = requirementsCategory;
+    public void setProfileRequirement(ProfileRequirement profileRequirement) {
+        this.profileRequirement = profileRequirement;
     }
 
     public Language getLanguage() {
@@ -111,4 +110,12 @@ public class PreScreenRequirement  extends Model{
         this.language = language;
     }
 
+    public long getPreScreenRequirementId() {
+        return preScreenRequirementId;
+    }
+
+    public String getPreScreenRequirementUUId() {
+        return preScreenRequirementUUId;
+    }
 }
+

@@ -24,12 +24,12 @@ create table job_role_to_document (
   constraint pk_job_role_to_document primary key (job_role_to_document_id)
 );
 
-create table requirements_category (
-  requirements_category_id      bigint unsigned auto_increment not null,
-  requirements_category_uuid    varchar(255) not null,
+create table profile_requirement (
+  profile_requirement_id        bigint unsigned auto_increment not null,
+  profile_requirement_uuid      varchar(255) not null,
   creation_timestamp            timestamp default current_timestamp not null,
-  requirements_category_title   varchar(255) null,
-  constraint pk_requirements_category primary key (requirements_category_id)
+  profile_requirement_title     varchar(255) null,
+  constraint pk_profile_requirement primary key (profile_requirement_id)
 );
 
 create table pre_screen_requirement (
@@ -40,7 +40,7 @@ create table pre_screen_requirement (
   category_id                   int not null,
   id_proof_id                   int signed,
   asset_id                      int unsigned,
-  requirements_category_id      bigint unsigned,
+  profile_requirement_id      bigint unsigned,
   language_id                   int signed,
   constraint pk_pre_screen_requirement primary key (pre_screen_requirement_id)
 );
@@ -110,7 +110,7 @@ alter table recruiter_to_candidate_unlocked add constraint fk_recruiter_to_candi
 create index ix_recruiter_to_candidate_unlocked_candidateid on recruiter_to_candidate_unlocked (candidateid);
 
 alter table recruiterprofile drop column recruiterlinkedinprofile;
-alter table recruiterprofile add column recruiterlinkedinprofile varchar(60) null;
+alter table recruiterprofile add column recruiterlinkedinprofile text null;
 
 alter table recruiter_payment add constraint fk_recruiter_payment_recruiter_credit_category_id foreign key (recruiter_credit_category_id) references recruiter_credit_category (recruiter_credit_category_id) on delete restrict on update restrict;
 create index ix_recruiter_payment_recruiter_credit_category_id on recruiter_payment (recruiter_credit_category_id);
@@ -165,13 +165,25 @@ create index ix_pre_screen_requirement_id_proof_id on pre_screen_requirement (id
 alter table pre_screen_requirement add constraint fk_pre_screen_requirement_asset_id foreign key (asset_id) references asset (asset_id) on delete restrict on update restrict;
 create index ix_pre_screen_requirement_asset_id on pre_screen_requirement (asset_id);
 
-alter table pre_screen_requirement add constraint fk_pre_screen_requirement_requirements_category_id foreign key (requirements_category_id) references requirements_category (requirements_category_id) on delete restrict on update restrict;
-create index ix_pre_screen_requirement_requirements_category_id on pre_screen_requirement (requirements_category_id);
+alter table pre_screen_requirement add constraint fk_pre_screen_requirement_profile_requirement_id foreign key (profile_requirement_id) references profile_requirement (profile_requirement_id) on delete restrict on update restrict;
+create index ix_pre_screen_requirement_profile_requirement_id on pre_screen_requirement (profile_requirement_id);
 
 alter table pre_screen_requirement add constraint fk_pre_screen_requirement_language_id foreign key (language_id) references language (languageid) on delete restrict on update restrict;
 create index ix_pre_screen_requirement_language_id on pre_screen_requirement (language_id);
 
 alter table idproof add column is_common tinyint(1) not null default 0;
+
+-- modified table, existing value to be migrated
+ALTER TABLE company MODIFY COLUMN companyname text not null;
+ALTER TABLE company MODIFY COLUMN companywebsite text null;
+ALTER TABLE company MODIFY COLUMN companydescription text null;
+ALTER TABLE company MODIFY COLUMN companyaddress text null;
+ALTER TABLE company MODIFY COLUMN companylogo text null;
+
+ALTER TABLE recruiterprofile MODIFY COLUMN recruiterdesignation text null;
+ALTER TABLE recruiterprofile MODIFY COLUMN recruiterofficeaddress text null;
+
+
 
 # --- !Downs
 
@@ -212,8 +224,8 @@ drop index ix_pre_screen_requirement_id_proof_id on pre_screen_requirement;
 alter table pre_screen_requirement drop foreign key fk_pre_screen_requirement_asset_id;
 drop index ix_pre_screen_requirement_asset_id on pre_screen_requirement;
 
-alter table pre_screen_requirement drop foreign key fk_pre_screen_requirement_requirements_category_id;
-drop index ix_pre_screen_requirement_requirements_category_id on pre_screen_requirement;
+alter table pre_screen_requirement drop foreign key fk_pre_screen_requirement_profile_requirement_id;
+drop index ix_pre_screen_requirement_profile_requirement_id on pre_screen_requirement;
 
 alter table pre_screen_requirement drop foreign key fk_pre_screen_requirement_language_id;
 drop index ix_pre_screen_requirement_language_id on pre_screen_requirement;
@@ -256,6 +268,15 @@ drop table if exists job_role_to_document;
 
 drop table if exists pre_screen_requirement;
 
-drop table if exists requirements_category;
+drop table if exists profile_requirement;
 
 drop table if exists asset;
+
+ALTER TABLE company MODIFY COLUMN companyname varchar(50) not null;
+ALTER TABLE company MODIFY COLUMN companywebsite varchar(30) null;
+ALTER TABLE company MODIFY COLUMN companydescription varchar(5000) null;
+ALTER TABLE company MODIFY COLUMN companyaddress varchar(1000) null;
+ALTER TABLE company MODIFY COLUMN companylogo varchar(80) null;
+
+ALTER TABLE recruiterprofile MODIFY COLUMN recruiterdesignation VARCHAR (50) null;
+ALTER TABLE recruiterprofile MODIFY COLUMN recruiterofficeaddress VARCHAR(500) null;

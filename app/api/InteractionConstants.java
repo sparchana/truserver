@@ -104,6 +104,7 @@ public class InteractionConstants {
     public static final int INTERACTION_CHANNEL_PARTNER_WEBSITE = 3;
     public static final int INTERACTION_CHANNEL_SUPPORT_WEBSITE = 4;
     public static final int INTERACTION_CHANNEL_KNOWLARITY = 5;
+    public static final int INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_ATTEMPTED = 6;
 
     static {
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_FOLLOWUP_CALL, "Follow Up Call");
