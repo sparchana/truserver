@@ -10,6 +10,8 @@ function processDataCheckLocality(returnedData) {
             var item = {};
             item ["id"] = id;
             item ["name"] = name;
+            var option = $('<option value=' + id + '></option>').text(name);
+            $('#jobPostLocality').append(option);
         });
     }
 }
@@ -21,6 +23,8 @@ function processDataCheckJobs(returnedData) {
         var item = {};
         item ["id"] = id;
         item ["name"] = name;
+        var option = $('<option value=' + id + '></option>').text(name);
+        $('#jobPostJobRole').append(option);
     });
 }
 
@@ -30,14 +34,12 @@ function processDataCheckShift(returnedData) {
             var id = timeshift.timeShiftId;
             var name = timeshift.timeShiftName;
             var option = $('<option value=' + id + '></option>').text(name);
-            $('#jobPostWorkShift').append(option);
+            $('#jobPostShift').append(option);
         });
     }
 }
 
 function processDataCheckEducation(returnedData) {
-    var defaultOption = $('<option value=""></option>').text("Select Education");
-    $('#jobPostEducation').append(defaultOption);
     returnedData.forEach(function (education) {
         var id = education.educationId;
         var name = education.educationName;
@@ -47,8 +49,6 @@ function processDataCheckEducation(returnedData) {
 }
 
 function processDataCheckExperience(returnedData) {
-    var defaultOption = $('<option value=""></option>').text("Select Experience");
-    $('#jobPostExperience').append(defaultOption);
     returnedData.forEach(function (experience) {
         var id = experience.experienceId;
         var name = experience.experienceType;
@@ -58,22 +58,12 @@ function processDataCheckExperience(returnedData) {
 }
 
 function processDataGetAllLanguage(returnLanguage) {
-    var data = [];
-
-    returnLanguage.forEach(function (language) {
-        var opt = {
-            label: language.languageName, value: parseInt(language.languageId)
-        };
-        data.push(opt);
+    returnLanguage.forEach(function (langauge) {
+        var id = langauge.languageId;
+        var name = langauge.languageName;
+        var option = $('<option value=' + id + '></option>').text(name);
+        $('#jobPostLanguage').append(option);
     });
-
-    var selectList = $('#jobPostLanguage');
-    selectList.multiselect({
-        includeSelectAllOption: true,
-        maxHeight: 300
-    });
-    selectList.multiselect('dataprovider', data);
-    selectList.multiselect('rebuild');
 }
 
 function processDataGetAllTimeSlots(returnedData) {
@@ -87,6 +77,29 @@ function processDataGetAllTimeSlots(returnedData) {
     });
 }
 
+$(document).scroll(function(){
+    if ($(this).scrollTop() > 80) {
+        $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
+    }
+    else{
+        $('nav').css({"background": "transparent"});
+    }
+});
+function toJobDetail(){
+    $('ul.tabs').tabs('select_tab', 'jobDetails');
+    $('body').scrollTop(0);
+}
+function toJobRequirement(){
+    $('ul.tabs').tabs('select_tab', 'jobRequirement');
+    $('body').scrollTop(0);
+}
+
+function validateTokenVal(val, text) {
+    if(val.localeCompare(text) == 0){
+        $('#jobPostExperience').tokenize().tokenRemove(val);
+        notifyError("Please select a valid location from the dropdown list");
+    }
+}
 
 $(document).ready(function () {
 /*
@@ -208,11 +221,7 @@ $(document).ready(function () {
     }
 
     var i;
-    var defaultOption = $('<option value="-1"></option>').text("Select Job start time");
-    $('#jobPostStartTime').append(defaultOption);
 
-    defaultOption = $('<option value="-1"></option>').text("Select Job End time");
-    $('#jobPostEndTime').append(defaultOption);
     for(i=0;i<=24;i++){
         var option = document.createElement("option");
         option.value = i;
@@ -232,41 +241,208 @@ $(document).ready(function () {
 /*parseInt(selectedLocality[0])*/
 
 function saveJob() {
-    try {
-        var d = {
-            jobPostId: 0,
-            jobPostTitle: "tezst",
-            jobPostJobRoleId: 3,
-            jobPostVacancies: 20,
-            jobPostLocalities: [1,2,3],
-            jobPostPinCode: 898989,
-            jobPostShiftId: 2,
-            jobPostStartTime: 9,
-            jobPostEndTime: 20,
-            jobPostWorkingDays: "0001110",
-            jobPostMinSalary: 15000,
-            jobPostMaxSalary: 20000,
-            jobPostIncentives: "no",
-            jobPostDescription: "desc",
-            jobPostGender: 0,
-            jobPostMaxAge: 45,
-            jobPostLanguage: [1,2,3],
-            jobPostEducationId: 2,
-            jobPostExperienceId: 4,
-            jobPostIsHot: 1,
-            jobPostCompanyId: 3,
-            jobPostRecruiterId: 46,
-            jobPostStatusId: 1
-        };
-        $.ajax({
-            type: "POST",
-            url: "/addJobPost",
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(d),
-            success: processDataAddJobPost
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
+    var status = 1;
+
+    var minSalary = $("#jobPostMinSalary").val();
+    var maxSalary = $("#jobPostMaxSalary").val();
+
+    if (minSalary != null) {
+        minSalary = parseInt(minSalary);
+    }
+
+    if (maxSalary != null) {
+        maxSalary = parseInt(maxSalary);
+    }
+
+    var jobPostLocalities = [];
+    status = 1;
+    var locality = $('#jobPostLocalities').val();
+    if($("#jobPostTitle").val() == ""){
+        notifyError("Please enter Job Post Title");
+        status = 0;
+    } else if($("#jobPostMinSalary").val() == "0"){
+        notifyError("Please enter Job Post Minimum salary");
+        status = 0;
+    } else if(isValidSalary(minSalary) == false){
+        notifyError("Please enter valid min salary");
+        status = 0;
+    } else if(maxSalary != 0 && (isValidSalary(maxSalary) == false)){
+        notifyError("Please enter valid max salary");
+        status = 0;
+    } else if(maxSalary != 0 && (maxSalary <= minSalary)){
+        notifyError("Max salary should be greater than min salary");
+        status = 0;
+    } else if($("#jobPostJobRole").val() == ""){
+        notifyError("Please enter job roles");
+        status = 0;
+    } else if($("#jobPostVacancies").val() == "" || $("#jobPostVacancies").val() == 0){
+        notifyError("Please enter no. of vacancies");
+        status = 0;
+    } else if($("#jobPostStartTime").val() != -1){
+        if($("#jobPostEndTime").val() != -1){
+            if(parseInt($("#jobPostStartTime").val()) >= parseInt($("#jobPostEndTime").val())){
+                notifyError("Start time cannot be more than end time");
+                status = 0;
+            }
+        } else{
+            notifyError("Please select job end time");
+            status = 0;
+        }
+    } else if(locality == ""){
+        notifyError("Please enter localities");
+        status = 0;
+    } else if($("#jobPostExperience").val() == ""){
+        notifyError("Please enter Job Post Experience required");
+        status = 0;
+    }
+
+    // checking age, location, gender
+    var jobPostLanguage = $('#jobPostLanguage').val();
+    var minAge = $("#jobPostMinAge").val();
+    var maxAge = $("#jobPostMaxAge").val();
+    var jobPostGender = parseInt(document.getElementById("jobPostGender").value);
+    if (status !=0 ){
+        if (minAge == 0 || !isValidAge(minAge)) {
+            $("#jobPostMinAge").removeClass('invalid').addClass('invalid');
+            notifyError("Please enter Job Post Min Age Requirement", 'danger');
+            status = 0;
+        }
+        if (!isValidAge(maxAge)) {
+            $("#jobPostMaxAge").removeClass('invalid').addClass('invalid');
+            notifyError("Please enter Job Post Max Age Requirement", 'danger');
+            status = 0;
+        }
+        if(maxAge !=0 && minAge > maxAge) {
+            $("#jobPostMinAge").removeClass('invalid').addClass('invalid');
+            $("#jobPostMaxAge").removeClass('invalid').addClass('invalid');
+            notifyError("Incorrect Min/Max Age", 'danger');
+            status = 0;
+        }
+        if (! jobPostLanguage && jobPostLanguage == null) {
+            var jobPostLanguageSelector = "#job_post_form div.col-sm-9  span div button";
+            $(jobPostLanguageSelector).removeClass('invalid').addClass('invalid');
+
+            notifyError("Please enter Job Post Language Requirements", 'danger');
+            status = 0;
+        }
+        if (jobPostGender == null || jobPostGender == -1) {
+            $("#jobPostGender").attr('style', "border-color: red;");
+            notifyError("Please enter Job Post Gender Requirement", 'danger');
+            status = 0;
+        }
+        if(status == 0){
+            scrollTo("#jobPostGender");
+        }
+    }
+
+    //checking partner incentives
+    if (partnerInterviewIncentiveVal < 0) {
+        notifyError("Partner interview incentive cannot be negative", 'danger');
+        status = 0;
+    }
+    else if (partnerJoiningIncentiveVal < 0) {
+        notifyError("Partner joining incentive cannot be negative", 'danger');
+        status = 0;
+    } else if (partnerJoiningIncentiveVal < partnerInterviewIncentiveVal){
+        notifyError("Partner interview incentive cannot be greater than partner joining incentive", 'danger');
+        status = 0;
+    }
+
+    if(status == 1){
+        if($("#jobPostRecruiter").val() != "" && $("#jobPostRecruiter").val() != null && $("#jobPostRecruiter").val() != undefined){
+            recId = $("#jobPostRecruiter").val();
+        }
+        $("#jobPostExperience").addClass('selectDropdown').removeClass('selectDropdownInvalid');
+        var i;
+        for(i=0;i<locality.length; i++){
+            jobPostLocalities.push(parseInt(locality[i]));
+        }
+        var jobPostIsHot = 0;
+        var jobPostWorkFromHome = 0;
+        if ($('#jobPostIsHot').is(":checked"))
+        {
+            jobPostIsHot = 1;
+        }
+        if ($('#jobPostWorkFromHome').is(":checked"))
+        {
+            jobPostWorkFromHome = 1;
+        }
+        var maxSalary = $("#jobPostMaxSalary").val();
+        if(maxSalary == 0 || maxSalary == undefined){
+            maxSalary = null;
+        }
+
+        var workingDays = "";
+        for(i=1;i<=7;i++){
+            if($("#working_" + i).is(":checked")){
+                workingDays += "1";
+            } else{
+                workingDays += "0";
+            }
+        }
+
+        var interviewDays = "";
+        for(i=1;i<=7;i++){
+            if($("#interview_day_" + i).is(":checked")){
+                interviewDays += "1";
+            } else{
+                interviewDays += "0";
+            }
+        }
+
+        $('#interviewTimeSlot input:checked').map(function() {
+            var slotId = this.value;
+            slotArray.push(parseInt(slotId));
+        }).get();
+
+        try {
+            var d = {
+                jobPostId: $("#jobPostId").val(),
+                jobPostMinSalary: $("#jobPostMinSalary").val(),
+                jobPostMaxSalary: $("#jobPostMaxSalary").val(),
+                jobPostStartTime: parseInt($("#jobPostStartTime").val()),
+                jobPostEndTime: parseInt($("#jobPostEndTime").val()),
+                jobPostWorkingDays: workingDays,
+                jobPostIsHot: jobPostIsHot,
+                jobPostDescription: $("#jobPostDescription").val(),
+                jobPostTitle: $("#jobPostTitle").val(),
+                jobPostIncentives: $("#jobPostIncentives").val(),
+                jobPostMinRequirement: $("#jobPostMinRequirement").val(),
+                jobPostAddress: $("#jobPostAddress").val(),
+                jobPostPinCode: $("#jobPostPinCode").val(),
+                jobPostVacancies: $("#jobPostVacancies").val(),
+                jobPostLocalities: jobPostLocalities,
+                jobPostJobRoleId: parseInt($("#jobPostJobRole").val()),
+                jobPostCompanyId: $("#jobPostCompany").val(),
+                jobPostDescriptionAudio: "",
+                jobPostWorkFromHome: jobPostWorkFromHome,
+                jobPostShiftId: $("#jobPostWorkShift").val(),
+                jobPostPricingPlanId: $("#jobPostPricingPlan").val(),
+                jobPostEducationId: $("#jobPostEducation").val(),
+                jobPostStatusId: $("#jobPostStatus").val(),
+                pricingPlanTypeId: 1,
+                jobPostExperienceId: $("#jobPostExperience").val(),
+                jobPostRecruiterId: recId,
+                partnerInterviewIncentive: $("#partnerInterviewIncentive").val(),
+                partnerJoiningIncentive: $("#partnerJoiningIncentive").val(),
+                jobPostInterviewDays: interviewDays,
+                interviewTimeSlot: slotArray,
+                jobPostLanguage: jobPostLanguage,
+                jobPostMinAge: minAge,
+                jobPostMaxAge: maxAge,
+                jobPostGender: jobPostGender
+
+            };
+            $.ajax({
+                type: "POST",
+                url: "/addJobPost",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: processDataAddJobPost
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
     }
 }
 
@@ -472,4 +648,12 @@ function processDataForJobPost(returnedData) {
     }
     $("#partnerInterviewIncentive").val(returnedData.jobPostPartnerInterviewIncentive);
     $("#partnerJoiningIncentive").val(returnedData.jobPostPartnerJoiningIncentive);
+}
+
+function notifyError(msg){
+    Materialize.toastError(msg, 3000, 'rounded');
+}
+
+function notifySuccess(msg){
+    Materialize.toastSuccess(msg, 3000, 'rounded');
 }

@@ -59,7 +59,8 @@
                             <li><a href="/recruiter/home">Home</a></li>
                             <li><a href="/recruiter/candidateSearch">Search Candidate</a></li>
                             <li><a href="/recruiter/profile">Profile</a></li>
-                            <li><a onclick="logoutRecruiter()" class="waves-effect waves-light ascentGreen lighten-1 btn"><font style="color: #fff; font-weight: 600">Logout</font></a></li>
+                            <li><a href="/recruiter/postFreeJobsRecruiter">Post Free Jobs</a></li>
+                            <li><a onclick="logoutRecruiter()">Logout</a></li>
                         </ul>
                     </div>
                     <ul class="side-nav" id="mobile-demo">
@@ -372,6 +373,25 @@
         </div>
 
     </body>
+    <script>
+        $(window).resize(function(){
+            var width = $(window).width();
+            if(width < 780){
+                $("#editBtn").removeClass("btn-large").addClass("btn-small");
+            } else{
+                $("#editBtn").removeClass("btn-small").addClass("btn-large");
+            }
+        });
+
+        $(document).scroll(function(){
+            if ($(this).scrollTop() > 80) {
+                $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
+            }
+            else{
+                $('nav').css({"background": "transparent"});
+            }
+        });
+    </script>
     <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
     <script type="text/javascript" src="/assets/common/js/validation.js"></script>
