@@ -143,6 +143,7 @@ POST        /recruiterLoginSubmit                                         contro
 POST        /recruiter/api/getMatchingCandidate/                          controllers.RecruiterController.getMatchingCandidate()
 POST        /recruiter/api/getUnlockedCandidates/                         controllers.RecruiterController.getUnlockedCandidates()
 POST        /recruiter/api/requestCredits/                                controllers.RecruiterController.requestCredits()
+POST        /getRecruiterJobPostInfo/:id                                  controllers.RecruiterController.getRecruiterJobPostInfo(id : Long)
 
 #new routes
 #~~~~~~~~~~~~~~~~~~~~
@@ -179,6 +180,7 @@ POST        /getAllShift                                                  contro
 POST        /getAllTransportation                                         controllers.Application.getAllTransportation()
 POST        /getAllCompanyLogos                                           controllers.Application.getAllCompanyLogos()
 POST        /getJobPostInfo/:id/:isSupport                                controllers.Application.getJobPostInfo(id : Long, isSupport : Integer)
+
 # 3rd Party API
 # ~~~~~~~~~~~~~
 

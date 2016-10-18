@@ -298,10 +298,12 @@ function performSearch() {
 
     //locality
     var selectedLocality = $("#searchLocality").val();
+    searchLocality = [];
     if(selectedLocality != null){
         searchLocality = [];
         searchLocality.push(parseInt(selectedLocality[0]));
     }
+
 
     //jobrole
     if($("#searchJobRole").val() != null ){
@@ -455,8 +457,7 @@ function generateCandidateCards(candidateSearchResult) {
         //candidate name container
         var candidateCardRowColOneFont = document.createElement("font");
         candidateCardRowColOneFont.setAttribute("size", "5");
-        candidateCardRowColOneFont.style = "font-weight:600";
-        candidateCardRowColOneFont.textContent = value.candidate.candidateFirstName;
+        candidateCardRowColOneFont.textContent = value.candidate.candidateFullName;
         candidateCardRowColOne.appendChild(candidateCardRowColOneFont);
 
         var candidateCardRowColTwo = document.createElement("div");
@@ -467,8 +468,11 @@ function generateCandidateCards(candidateSearchResult) {
         //candidate last active container
         var candidateCardRowColTwoFont = document.createElement("font");
         candidateCardRowColTwoFont.setAttribute("size", "3");
-        candidateCardRowColTwoFont.style = "font-weight:600";
-        candidateCardRowColTwoFont.textContent = "Active: " + value.extraData.lastActive.lastActiveValueName;
+        if(value.extraData.lastActive != null){
+            candidateCardRowColTwoFont.textContent = "Active: " + value.extraData.lastActive.lastActiveValueName;
+        } else{
+            candidateCardRowColTwoFont.textContent = "Not Specified";
+        }
         candidateCardRowColTwo.appendChild(candidateCardRowColTwoFont);
 
         //end of candidateCardRow
@@ -780,7 +784,7 @@ function generateCandidateCards(candidateSearchResult) {
         var candidateUnlockFont = document.createElement("font");
         candidateUnlockFont.id = "candidate_" + value.candidate.candidateId;
         candidateUnlockFont.textContent = "Unlock Contact";
-        candidateUnlockFont.style = "font-weight: bold; font-size: 16px";
+        candidateUnlockFont.style = "font-weight: bold; font-size: 14px";
         unlockCandidateBtn.appendChild(candidateUnlockFont);
     });
 }
@@ -815,19 +819,22 @@ function sortByLastActive(val){
         for (var k = 0; k < (searchLength - 1); k++) {
             if(val == 1){
                 // latest active
-                if(candidateSearchResult[k].extraData.lastActive.lastActiveValueId > candidateSearchResult[k + 1].extraData.lastActive.lastActiveValueId){
-                    var tmp = candidateSearchResult[k];
-                    candidateSearchResult[k] = candidateSearchResult[k + 1];
-                    candidateSearchResult[k + 1] = tmp;
+                if(candidateSearchResult[k].extraData.lastActive != null){
+                    if(candidateSearchResult[k].extraData.lastActive.lastActiveValueId > candidateSearchResult[k + 1].extraData.lastActive.lastActiveValueId){
+                        var tmp = candidateSearchResult[k];
+                        candidateSearchResult[k] = candidateSearchResult[k + 1];
+                        candidateSearchResult[k + 1] = tmp;
+                    }
                 }
             } else{
                 //oldest active
-                if(candidateSearchResult[k].extraData.lastActive.lastActiveValueId < candidateSearchResult[k + 1].extraData.lastActive.lastActiveValueId){
-                    tmp = candidateSearchResult[k];
-                    candidateSearchResult[k] = candidateSearchResult[k + 1];
-                    candidateSearchResult[k + 1] = tmp;
+                if(candidateSearchResult[k].extraData.lastActive != null){
+                    if(candidateSearchResult[k].extraData.lastActive.lastActiveValueId < candidateSearchResult[k + 1].extraData.lastActive.lastActiveValueId){
+                        tmp = candidateSearchResult[k];
+                        candidateSearchResult[k] = candidateSearchResult[k + 1];
+                        candidateSearchResult[k + 1] = tmp;
+                    }
                 }
-
             }
         }
     }

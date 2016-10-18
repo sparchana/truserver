@@ -1,5 +1,6 @@
 package controllers;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.httpRequest.LoginRequest;
 import api.http.httpRequest.Recruiter.AddCreditRequest;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.SecuredUser;
+import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.OM.JobApplication;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
@@ -66,10 +68,12 @@ public class RecruiterController {
     public static Result checkRecruiterSession() {
         String sessionRecruiterId = session().get("recruiterId");
         if(sessionRecruiterId != null){
-            return ok("1");
-        } else{
-            return ok("0");
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", sessionRecruiterId).findUnique();
+            if(recruiterProfile != null){
+                return ok(toJson(recruiterProfile));
+            }
         }
+        return ok("0");
     }
 
     public static Result recruiterSignUp() {
@@ -283,5 +287,22 @@ public class RecruiterController {
     @Security.Authenticated(SecuredUser.class)
     public static Result recruiterJobPost(Long id) {
         return ok(views.html.Recruiter.recruiter_post_free_job.render());
+    }
+
+    public static Result getRecruiterJobPostInfo(long jpId) {
+        JobPost jobPost = JobPost.find.where().eq("jobPostId", jpId).findUnique();
+        if(jobPost != null){
+            if(session().get("recruiterId") != null){
+                RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+                if(recruiterProfile != null){
+                    if(jobPost.getRecruiterProfile() != null){
+                        if(jobPost.getRecruiterProfile().getRecruiterProfileId() == recruiterProfile.getRecruiterProfileId()){
+                            return ok(toJson(jobPost));
+                        }
+                    }
+                }
+            }
+        }
+        return ok("0");
     }
 }

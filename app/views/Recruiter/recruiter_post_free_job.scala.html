@@ -34,27 +34,26 @@
       <nav>
         <div class="container" style="width: 85%;">
           <div class="nav-wrapper">
-            <a href="#!" class="brand-logo">
+            <a href="#" class="brand-logo">
               <img id="navLogo" src="/assets/recruiter/img/trujobs-recruiter.png" style="height: 40px;
                 margin-top: -2%">
             </a>
             <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
-            <ul class="right hide-on-med-and-down">
-              <li><a href="/recruiter/home">Home</a></li>
-              <li><a href="/recruiter/candidateSearch">Search Candidate</a></li>
-              <li><a href="/recruiter/profile">Edit Profile</a></li>
-              <li><a onclick="logoutRecruiter()"><font style="color: #fff;
-                font-weight: 600">Logout</font>
-              </a>
-              </li>
-            </ul>
+              <ul class="right hide-on-med-and-down">
+                  <li><a href="/recruiter/home">Home</a></li>
+                  <li><a href="/recruiter/candidateSearch">Search Candidate</a></li>
+                  <li><a href="/recruiter/jobPost/0">Create Job</a></li>
+                  <li><a href="/recruiter/profile">Profile</a></li>
+                  <li><a onclick="logoutRecruiter()">Logout</a></li>
+              </ul>
           </div>
-          <ul class="side-nav" id="mobile-demo">
-            <li><a href="/recruiter/home">Home</a></li>
-            <li><a href="/recruiter/candidateSearch">Search Candidate</a></li>
-            <li><a href="/recruiter/profile">Edit Profile</a></li>
-            <li><a onclick="logoutRecruiter()">Logout</a></li>
-          </ul>
+            <ul class="side-nav" id="mobile-demo">
+                <li><a href="/recruiter/home">Home</a></li>
+                <li><a href="/recruiter/candidateSearch">Search Candidate</a></li>
+                <li><a href="/recruiter/jobPost/0">Create Job</a></li>
+                <li><a href="/recruiter/profile">Profile</a></li>
+                <li><a onclick="logoutRecruiter()">Logout</a></li>
+            </ul>
         </div>
       </nav>
     </div>
@@ -69,7 +68,7 @@
     <div class="container" style="margin-top:-48px">
       <div class="row">
         <div class="col s12" style="padding: 0">
-          <ul class="tabs">
+          <ul class="tabs" style="border-top-right-radius: 6px; border-top-left-radius: 6px">
             <li class="tab col s4"><a href="#jobDetails"><font size="3" style="font-weight: 600">Job Description</font></a></li>
             <li class="tab col s4"><a href="#jobRequirement"><font size="3" style="font-weight: 600">Job Requirement</font></a></li>
           </ul>
@@ -78,7 +77,7 @@
           <div class="container-fluid" style="padding: 0">
             <div class="row">
               <div class="col s12 m12" style="padding: 0">
-                <div class="card" style="margin: 0">
+                <div class="card" style="margin: 0; border-bottom-right-radius: 6px; border-bottom-left-radius: 6px">
                   <div class="card-content">
                     <div class="row">
                       <div class="col s12 l2">
@@ -104,9 +103,10 @@
                               displayDropdownOnFocus: true,
                               placeholder: "Job Role",
                               maxElements: 1,
+                              nbDropdownElements: 1000,
                               newElements: true,
                               onAddToken: function (value, text) {
-                                validateTokenVal(value, text);
+                                validateJobRoleTokenVal(value, text);
                               }
                             });
                         </script>
@@ -136,9 +136,10 @@
                               displayDropdownOnFocus: true,
                               placeholder: "Job Localities [max: 3]",
                               maxElements: 3,
+                              nbDropdownElements: 1000,
                               newElements: true,
                               onAddToken: function (value, text) {
-                                validateTokenVal(value, text);
+                                validateJobLocalityTokenVal(value, text);
                               }
                             });
                         </script>
@@ -170,9 +171,10 @@
                             $('#jobPostIncentives').tokenize({
                               displayDropdownOnFocus: true,
                               placeholder: "Specify Incentives ",
+                              nbDropdownElements: 1000,
                               newElements: true,
                               onAddToken: function (value, text) {
-                                validateTokenVal(value, text);
+                                validateIncentiveTokenVal(value, text);
                               }
                             });
                         </script>
@@ -193,10 +195,11 @@
                             $('#jobPostShift').tokenize({
                               displayDropdownOnFocus: true,
                               placeholder: "Work Shift",
+                              nbDropdownElements: 1000,
                               maxElements: 1,
                               newElements: true,
                               onAddToken: function (value, text) {
-                                validateTokenVal(value, text);
+                                validateShiftTokenVal(value, text);
                               }
                             });
                         </script>
@@ -213,9 +216,10 @@
                               displayDropdownOnFocus: true,
                               placeholder: "Start time",
                               maxElements: 1,
+                              nbDropdownElements: 1000,
                               newElements: true,
                               onAddToken: function (value, text) {
-                                validateTokenVal(value, text);
+                                validateStartTokenVal(value, text);
                               }
                             });
                         </script>
@@ -227,9 +231,10 @@
                               displayDropdownOnFocus: true,
                               placeholder: "End time",
                               maxElements: 1,
+                              nbDropdownElements: 1000,
                               newElements: true,
                               onAddToken: function (value, text) {
-                                validateTokenVal(value, text);
+                                validateEndTokenVal(value, text);
                               }
                             });
                         </script>
@@ -240,20 +245,20 @@
                         <label>Working Days :</label>
                       </div>
                       <div class="input-field col s9 l7" style="margin-left:-10px">
-                        <input type="checkbox" id="mon" />
-                        <label for="mon">Mon </label><span style="margin-left:10px"></span>
-                        <input type="checkbox" id="tue" />
-                        <label for="tue">Tue </label><span style="margin-left:10px"></span>
-                        <input type="checkbox" id="wed" />
-                        <label for="wed">Wed </label><span style="margin-left:10px"></span>
-                        <input type="checkbox" id="thu" />
-                        <label for="thu">Thr </label><span style="margin-left:10px"></span>
-                        <input type="checkbox" id="fri" />
-                        <label for="fri">Fri </label><span style="margin-left:10px"></span>
-                        <input type="checkbox" id="sat" />
-                        <label for="sat">Sat </label><span style="margin-left:10px"></span>
-                        <input type="checkbox" id="sun" />
-                        <label for="sun">Sun </label>
+                        <input type="checkbox" id="working_1" />
+                        <label for="working_1">Mon </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="working_2" />
+                        <label for="working_2">Tue </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="working_3" />
+                        <label for="working_3">Wed </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="working_4" />
+                        <label for="working_4">Thr </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="working_5" />
+                        <label for="working_5">Fri </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="working_6" />
+                        <label for="working_6">Sat </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="working_7" />
+                        <label for="working_7">Sun </label>
                       </div>
                     </div>
                     <div class="row" id="jobPostDetails">
@@ -293,16 +298,16 @@
                       </div>
                       <div class="input-field col s9 l7" style="padding: 0;">
                         <div class="col s4 l2" style="padding: 0;">
-                          <input class="with-gap" name="genderDetail" type="radio" id="male">
-                          <label>Male</label>
+                          <input name="jobPostGender" value="0" type="radio" id="male">
+                          <label for="male">Male</label>
                         </div>
                         <div class="col s4 l2" style="padding: 0">
-                          <input class="with-gap" name="genderDetail" type="radio" id="female">
-                          <label>Female</label>
+                          <input name="jobPostGender" value="1" type="radio" id="female">
+                          <label for="female">Female</label>
                         </div>
                         <div class="col s3 l2">
-                          <input class="with-gap" name="genderDetail" type="radio" id="any">
-                          <label>Any</label>
+                          <input name="jobPostGender" value="2" type="radio" id="any">
+                          <label for="any">Any</label>
                         </div>
                       </div>
                     </div>
@@ -325,9 +330,10 @@
                               displayDropdownOnFocus: true,
                               placeholder: "Minimum education",
                               maxElements: 1,
+                              nbDropdownElements: 1000,
                               newElements: true,
                               onAddToken: function (value, text) {
-                                validateTokenVal(value, text);
+                                validateEduTokenVal(value, text);
                               }
                             });
                         </script>
@@ -344,8 +350,9 @@
                               displayDropdownOnFocus: true,
                               placeholder: "Languages",
                               newElements: true,
+                              nbDropdownElements: 1000,
                               onAddToken: function (value, text) {
-                                validateTokenVal(value, text);
+                                validateLanguageTokenVal(value, text);
                               }
                             });
                         </script>
@@ -362,9 +369,10 @@
                               displayDropdownOnFocus: true,
                               placeholder: "Minimum experience",
                               maxElements: 1,
+                              nbDropdownElements: 1000,
                               newElements: true,
                               onAddToken: function (value, text) {
-                                validateTokenVal(value, text);
+                                validateExpTokenVal(value, text);
                               }
                             });
                         </script>
