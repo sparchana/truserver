@@ -189,4 +189,6 @@ public class ServerConstants {
     public static final String ACTIVE_LAST_1_MONTH = "Last one month";
     public static final String ACTIVE_LAST_2_MONTHS = "Last two months";
     public static final String ACTIVE_BEYOND_2_MONTHS = "Beyond two months";
+
+    public static final String DEFAULT_COMPANY_LOGO = "https://s3.amazonaws.com/trujobs.in/companyLogos/default_company_logo.png";
 }

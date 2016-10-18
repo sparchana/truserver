@@ -51,7 +51,7 @@
                 <div class="container" style="width: 85%;">
                     <div class="nav-wrapper">
                         <a href="#!" class="brand-logo">
-                            <img id="navLogo" src="/assets/recruiter/img/trujobs-recruiter.png" style="height: 40px;
+                            <img id="navLogo" src="/assets/recruiter/img/trujobs-recruiter.png" style="height: 32px;
                                 margin-top: -2%">
                         </a>
                         <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
@@ -89,13 +89,13 @@
         <div class="container-fluid back-banner-candidate">
             <div class="container" style="padding: 0;" id="searchBoxContainer">
                 <div class="row">
-                    <h5 style="font-weight:600; color: #fff; margin-top: 24px">Candidate Search</h5>
+                    <h6 style="font-weight:600; color: #fff; margin-top: 24px; font-size: 22px">Candidate Search</h6>
                 </div>
                 <div class="row" style="margin-top: -16px">
                     <div class="card col s12 l12" style="margin: 0;padding: 0">
-                        <div class="card-content col s12 l12" style="margin: 0;padding: 20px 1%">
+                        <div class="card-content col s12 l12" style="margin: 0;padding: 12px 1%">
                             <div class="col s12 l5" id="searchBox">
-                                <select id="searchJobRole" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
+                                <select id="searchJobRole" class="tokenCustomInput tokenize-sample"></select>
                                 <script type="text/javascript">
                                     $('#searchJobRole').tokenize({
                                         displayDropdownOnFocus: true,
@@ -121,7 +121,7 @@
                                 </script>
                             </div>
                             <div class="col s12 l2" style="margin-top: 4px">
-                                <a class="waves-effect waves-light ascentGreen lighten-1 btn right" data-toggle="collapse" onclick="performSearch()" data-target="#filterDetail"><font style="color: #fff;
+                                <a class="waves-effect waves-light ascentGreen lighten-1 btn right" id="searchBtn" data-toggle="collapse" onclick="performSearch()" data-target="#filterDetail"><font style="color: #fff;
                                     font-weight: 400"><b>Search</b></font>
                                 </a>
                             </div>
@@ -244,7 +244,7 @@
                                     <div class="row">
                                         <div class="col s8 l8" style="padding-right: 4px;">
                                             <center>
-                                                <div class="waves-effect waves-light ascentGreen lighten-1 btn" onclick="performSearch()" style="padding: 0 9px; width: 100%; display: inline-block">
+                                                <div class="waves-effect waves-light ascentGreen lighten-1 btn" id="filterBtn" onclick="performSearch()" style="padding: 0 9px; width: 100%; display: inline-block">
                                                     <font style="color: #fff;font-weight: 400; font-size: 12px"><b>
                                                         <center>
                                                             Apply Filter
@@ -350,8 +350,8 @@
                                 <p>Buy credits at ₹100/credit</p>
                                 <input style="width: 70%" placeholder="Enter amount (in ₹)" id="contactCreditAmount" onblur="calculateContactUnlockCredits()" type="number" class="validate">
                                 <div id="contactCreditsVal" style="color: #2ec866;  margin: -12px 0 8px 0">0 Contact credits</div>
-                                <a id="requestContactCredit" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="submitContactCredit()"><font style="color: #fff;
-                                    font-weight: 400"><b>Buy Contact Credits</b></font></a>
+                                <div style="width: 100%; font-size: 12px; padding: 0" id="requestContactCredit" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="submitContactCredit()"><font style="color: #fff;
+                                    font-weight: 400"><b>Buy Contact Credits</b></font></div>
                             </div>
                         </div>
                         <div class="col s6 l6">
@@ -362,8 +362,8 @@
                                 <p>Buy credits at ₹1000/credit</p>
                                 <input style="width: 70%" placeholder="Enter amount (in ₹)" id="interviewCreditAmount" onblur="calculateInterviewUnlockCredits()" type="number" class="validate">
                                 <div id="interviewCreditsVal" style="color: #2ec866; margin: -12px 0 8px 0">0 Interview credits</div>
-                                <a id="requestInterviewCredit" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="submitInterviewCredit()"><font style="color: #fff;
-                                    font-weight: 400"><b>Buy Interview Credits</b></font></a>
+                                <div style="width: 100%; font-size: 12px; padding: 0" id="requestInterviewCredit" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="submitInterviewCredit()"><font style="color: #fff;
+                                    font-weight: 400"><b>Buy Interview Credits</b></font></div>
                             </div>
                         </div>
                     </div>

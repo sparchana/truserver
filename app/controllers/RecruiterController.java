@@ -279,4 +279,10 @@ public class RecruiterController {
 
         return ok(toJson(RecruiterService.requestCreditForRecruiter(addCreditRequest)));
     }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result recruiterJobPost(Long id) {
+        return ok(views.html.Recruiter.recruiter_post_free_job.render());
+    }
+
 }

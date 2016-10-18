@@ -234,11 +234,13 @@ public class SmsUtil {
         }
 
         String msg = "Hi " + recruiterProfile.getRecruiterProfileName() + "! We have received your request for " + addCreditRequest.getNoOfCredits() + " " + cat
-                + ". Our business team will contact you within 24 hours! For more queries, call +91 9980293925 Thank you.";
+                + ". Our business team will contact you within 24 hours! For more queries, call +91 9980293925. Thank you.";
         sendSms(recruiterProfile.getRecruiterProfileMobile(), msg);
 
-        msg = "Hi team, recruiter " + recruiterProfile.getRecruiterProfileName() + " with mobile " + recruiterProfile.getRecruiterProfileMobile() + " has requested for " + addCreditRequest.getNoOfCredits() + " " + cat
-                + "Thank you.";
+        msg = "Hi team, recruiter: " + recruiterProfile.getRecruiterProfileName() + " with mobile " + recruiterProfile.getRecruiterProfileMobile() + " of company: " +
+                recruiterProfile.getCompany().getCompanyName() +  " has requested for " + addCreditRequest.getNoOfCredits() + " " + cat
+                + " credits. Amount = ₹" + addCreditRequest.getCreditAmount() + ". Thank You";
+
 
         sendSms(devTeamMobile.get("Sandy"), msg);
         sendSms(devTeamMobile.get("Adarsh"), msg);
