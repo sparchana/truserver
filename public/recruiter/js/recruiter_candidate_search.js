@@ -923,6 +923,7 @@ function closeCreditModal() {
 }
 
 function submitCredits() {
+    $("#successMsg").hide();
     var contactCreditStatus = 1;
     var interviewCreditStatus = 1;
 
@@ -979,6 +980,7 @@ function submitCredits() {
 function processDataAddCreditRequest(returnedData) {
     $("#requestCredits").removeClass("disabled");
     if(returnedData.status == 1){
+        $("#successMsg").show();
         notifySuccess("Thanks! We have received your request to buy more credits. Our business team will contact you within 24hrs")
     } else{
         notifyError("Something went wrong. Please try again later");
@@ -987,6 +989,7 @@ function processDataAddCreditRequest(returnedData) {
 
 
 function openCreditModal(){
+    $("#successMsg").hide();
     $("#modalBuyCredits").openModal();
 }
 

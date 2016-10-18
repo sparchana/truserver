@@ -78,6 +78,10 @@ function validateInteger(val) {
     return reg.test(val);
 }
 
+function validateLinkedin(url) {
+    return /(ftp|http|https):\/\/?(?:www\.)?linkedin.com(\w+:{0,1}\w*@)?(\S+)(:([0-9])+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/.test(url);
+}
+
 function validateOtp(otp) {
     if(otp == undefined){
         return 0;

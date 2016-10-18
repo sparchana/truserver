@@ -390,11 +390,6 @@
                       <form id="add_credits" class="form-horizontal" role="form">
                           <div class="line_up" id="signInPopup"><h4>Add Credits</h4></div>
                           <br>
-                          <h5 style="color: #0D47A1; font-weight: bold; display: inline-block">Select payment method: </h5>
-                          <select id="creditMode" class="selectDropdown" >
-                              <option value="0">Pre Paid</option>
-                              <option value="1">Post Paid</option>
-                          </select>
 
                           <h5 style="color: #0D47A1; font-weight: bold">Purchased Candidate Contact Unlock Credits?</h5>
                           <div class="row" style="margin-top: 8px">
@@ -414,23 +409,10 @@
                              Candidate contact unlock credit details::
                               <div class="row" style="margin-top: 8px">
                                   <div class="col-sm-5" style="margin-top: 4px">
-                                 Amount paid:
+                                 No. of contact credits:
                                   </div>
                                   <div class="col-sm-7">
-                                      <div style="display: inline-block;">₹</div>
-                                      <input style="width: 90%; display: inline-block" onblur="calculateContactUnlockCredits()" id="candidateContactCreditAmount" placeholder="Amount paid" type="number" class="form-control input-md">
-                                  </div>
-                              </div>
-                              <div class="row" style="margin-top: 8px">
-                                  <div class="col-sm-5" style="margin-top: 4px">
-                                 Unit price:
-                                  </div>
-                                  <div class="col-sm-7">
-                                      <div style="display: inline-block;">₹</div>
-                                      <input style="width: 90%; display: inline-block" onblur="calculateContactUnlockCredits()" id="candidateContactCreditUnitPrice" placeholder="Amount paid" type="number" class="form-control input-md">
-                                      <div id="contactCreditsVal" style="color: #00b0ff; margin: 4px 0 0 12px">
-                      No. of credits: 0
-                                      </div>
+                                      <input style="width: 90%; display: inline-block"  id="candidateContactCredits" placeholder="Contact credits" type="number" class="form-control input-md">
                                   </div>
                               </div>
                           </div>
@@ -454,21 +436,10 @@
                              Interview unlock credit details::
                               <div class="row" style="margin-top: 8px">
                                   <div class="col-sm-5" style="margin-top: 4px">
-                                 Amount paid:
+                                 No. of Interview credits:
                                   </div>
                                   <div class="col-sm-7">
-                                      <input id="interviewCreditAmount" onblur="calculateInterviewUnlockCredits()" placeholder="Amount paid" type="number" class="form-control input-md">
-                                  </div>
-                              </div>
-                              <div class="row" style="margin-top: 8px">
-                                  <div class="col-sm-5" style="margin-top: 4px">
-                                 Unit price:
-                                  </div>
-                                  <div class="col-sm-7">
-                                      <input id="interviewCreditUnitPrice" onblur="calculateInterviewUnlockCredits()" placeholder="Unit price" type="number" class="form-control input-md">
-                                      <div id="interviewCreditsVal" style="color: #00b0ff; margin: 4px 0 0 12px">
-                      No. of credits: 0
-                                      </div>
+                                      <input id="interviewCredits" placeholder="Interview credits" type="number" class="form-control input-md">
                                   </div>
                               </div>
                           </div>
