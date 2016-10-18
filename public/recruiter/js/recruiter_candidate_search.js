@@ -18,6 +18,7 @@ $(document).scroll(function(){
     }
 });
 
+
 $(document).ready(function(){
     checkRecruiterLogin();
     $('.button-collapse').sideNav({
@@ -26,19 +27,7 @@ $(document).ready(function(){
         closeOnClick: true
     });
 
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/getRecruiterProfileInfo",
-            data: false,
-            async: false,
-            contentType: false,
-            processData: false,
-            success: processDataRecruiterProfile
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
+    getRecruiterInfo();
 
     try {
         $.ajax({
@@ -138,6 +127,22 @@ $(document).ready(function(){
     $('#searchLocality').tokenize().tokenAdd("All Bangalore");
 
 });
+
+function getRecruiterInfo() {
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/getRecruiterProfileInfo",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataRecruiterProfile
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
 
 function processDataGetCreditCategory(returnedData) {
     contactCredtUnitPrice = returnedData[0].recruiterCreditUnitPrice;
@@ -287,10 +292,12 @@ function resetFilters() {
     $('input:radio').removeAttr('checked');
     $("#maxSalaryVal").html("Max Salary: Not specified");
     $("#distanceRadius").html("Within 10 kms");
+    $("#filterDistance").val(10);
+    $("#filterSalary").val(0)
 }
 
 function performSearch() {
-    var searchLocality = [];
+    var searchLocality;
     var searchJobRole = null;
     var searchExpFilter = "0";
     var searchGender = "-1";
@@ -877,11 +884,12 @@ function unlockContact(candidateId){
 function processDataUnlockCandidate(returnedData) {
     if(returnedData.status == 1){
         notifySuccess("Contact successfully unlocked");
-        $("#remainingContactCredits").html(parseInt($("#remainingContactCredits").html()) - 1);
+        getRecruiterInfo();
         $("#candidate_" + candidateIdVal).html(returnedData.candidateMobile);
         $("#unlock_candidate_" + returnedData.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 btn").addClass("contactUnlocked right").removeAttr('onclick');
     } else if(returnedData.status == 2){
         notifySuccess("You have already unlocked the candidate");
+        getRecruiterInfo();
         $("#unlock_candidate_" + returnedData.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 btn").addClass("contactUnlocked right").removeAttr('onclick');
         $("#candidate_" + candidateIdVal).html(returnedData.candidateMobile);
     } else if(returnedData.status == 3){
@@ -971,7 +979,7 @@ function submitCredits() {
 function processDataAddCreditRequest(returnedData) {
     $("#requestCredits").removeClass("disabled");
     if(returnedData.status == 1){
-        notifySuccess("Request submitted. Our business team will contact you within 24 hours")
+        notifySuccess("Thanks! We have received your request to buy more credits. Our business team will contact you within 24hrs")
     } else{
         notifyError("Something went wrong. Please try again later");
     }
