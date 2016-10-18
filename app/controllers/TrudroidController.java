@@ -709,7 +709,7 @@ public class TrudroidController {
         //getting other active (Hot Jobs) jobs from the above company
 
         //getting list of all the other jobs from Model
-        List<JobPost> similarJobs = JobPost.find.where().eq("jobPostIsHot", "1").eq("companyId", company.getCompanyId()).findList();
+        List<JobPost> similarJobs = JobPost.find.where().eq("jobPostIsHot", "1").ne("JobStatus", 1).eq("companyId", company.getCompanyId()).findList();
 
         //creating a new list of type proto which will contain all the other job being offered by a company
         List<JobPostObject> similarJobPostListToReturn = new ArrayList<>();

@@ -255,7 +255,8 @@ function saveJob() {
             jobPostExperienceId: 4,
             jobPostIsHot: 1,
             jobPostCompanyId: 3,
-            jobPostRecruiterId: 46
+            jobPostRecruiterId: 46,
+            jobPostStatusId: 1
         };
         $.ajax({
             type: "POST",

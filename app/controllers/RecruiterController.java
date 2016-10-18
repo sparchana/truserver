@@ -282,7 +282,7 @@ public class RecruiterController {
 
     @Security.Authenticated(SecuredUser.class)
     public static Result recruiterJobPost(Long id) {
-        return ok(views.html.Recruiter.job_post_details.render());
+        return ok(views.html.Recruiter.recruiter_post_free_job.render());
     }
 
 }
