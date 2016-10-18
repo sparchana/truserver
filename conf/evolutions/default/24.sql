@@ -18,7 +18,7 @@ create table pre_screen_result (
   pre_screen_result_uuid        varchar(255) not null,
   create_timestamp              timestamp default current_timestamp not null,
   attempt_count                 int null,
-  result_score                  double(2,2) null,
+  result_score                  DECIMAL(3,2) null,
   force_set                     tinyint(1) null,
   update_timestamp              timestamp null,
   job_post_workflow_id          bigint unsigned,

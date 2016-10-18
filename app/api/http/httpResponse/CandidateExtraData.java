@@ -7,7 +7,7 @@ public class CandidateExtraData {
     public String appliedOn;
     public String lastActive;
     public Integer assessmentAttemptId;
-    public Integer preScreenAttemptCount;
+    public Integer preScreenCallAttemptCount;
 
     public String getAppliedOn() {
         return appliedOn;
@@ -33,11 +33,11 @@ public class CandidateExtraData {
         this.assessmentAttemptId = assessmentAttemptId;
     }
 
-    public Integer getPreScreenAttemptCount() {
-        return preScreenAttemptCount;
+    public Integer getPreScreenCallAttemptCount() {
+        return preScreenCallAttemptCount;
     }
 
-    public void setPreScreenAttemptCount(Integer preScreenAttemptCount) {
-        this.preScreenAttemptCount = preScreenAttemptCount;
+    public void setPreScreenCallAttemptCount(Integer preScreenCallAttemptCount) {
+        this.preScreenCallAttemptCount = preScreenCallAttemptCount;
     }
 }

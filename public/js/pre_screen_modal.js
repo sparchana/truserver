@@ -343,30 +343,7 @@ function processPreScreenContent(returnedData) {
 }
 
 function processPostPreScreenResponse(response) {
-    $('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
-    if($('#messagePromptModal').hasClass('in')){
-        $("#customMsg").append(" & You have successfully completed assessment for this job.");
-    } else{
-        $("#customMsg").html(" You have completed assessment for this job.");
-    }
-    if (response.status == "ALL_ASSESSED"){
-        localStorage.setItem("assessed", "1");
-        $('.assessmentStatus').removeClass("indicatorBtnRed").addClass("indicatorBtnGreen");
-        $('.assessmentStatus b font').text("Complete");
-        $('#assessmentDivRow a').attr("title", "Completed !");
-        $("#messagePromptModal").modal("show");
-        if($('#ajp_'+response.jobRoleId) != null){
-            $('#ajp_'+response.jobRoleId).hide('slow', function(){ $('#ajp_'+response.jobRoleId).remove(); });
-        }
-    } else if (response == "OK"  || response.status == "SUCCESS" || response.status == "ALREADY_ASSESSED") {
-        $('#jr_'+response.jobRoleId+' .assessmentStatus').removeClass("indicatorBtnRed").addClass("indicatorBtnGreen");
-        $('#jr_'+response.jobRoleId+' .assessmentStatus b font').text("Complete");
-        $('#tt_'+response.jobRoleId+'_ic').attr("title", "Completed !");
-        $("#messagePromptModal").modal("show");
-        if($('#ajp_'+response.jobRoleId) != null){
-            $('#ajp_'+response.jobRoleId).hide('slow', function(){ $('#ajp_'+response.jobRoleId).remove(); });
-        }
-    }
+    console.log(response);
     return response;
 }
 

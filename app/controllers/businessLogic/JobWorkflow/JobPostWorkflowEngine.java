@@ -26,6 +26,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.avaje.ebean.Expr.eq;
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 
@@ -230,7 +231,7 @@ public class JobPostWorkflowEngine {
         List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find
                 .where()
                 .eq("job_post_id", jobPostId)
-                .eq("status_id", ServerConstants.JWF_STATUS_SELECTED)
+                .or(eq("status_id", ServerConstants.JWF_STATUS_SELECTED), eq("status_id", ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED))
                 .setDistinct(true)
                 .orderBy().desc("creation_timestamp").findList();
 
@@ -243,7 +244,17 @@ public class JobPostWorkflowEngine {
         for( JobPostWorkflow jpwf: jobPostWorkflowList) {
             candidateList.add(jpwf.getCandidate());
         }
+        // prep params for a jobPost
+        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
 
+        List<JobPostToLocality> jobPostToLocalityList = jobPost.getJobPostToLocalityList();
+        List<Long> localityIdList = new ArrayList<>();
+        for (JobPostToLocality jobPostToLocality: jobPostToLocalityList) {
+            localityIdList.add(jobPostToLocality.getLocality().getLocalityId());
+        }
+
+
+        candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList);
         Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique());
 
         for ( Candidate candidate: candidateList) {
@@ -398,18 +409,20 @@ public class JobPostWorkflowEngine {
                     break;
                 case ServerConstants.CATEGORY_ASSET:
                     // we don't capture candidate asset detail into asset object
+                    preScreenElement = new PreScreenPopulateResponse.PreScreenElement();
+                    preScreenElement.setPropertyTitle("Asset Owned");
+                    preScreenElement.jobPostElementList = new ArrayList<>();
+                    preScreenElement.candidateElementList = new ArrayList<>();
+
                     for (PreScreenRequirement preScreenRequirement : entry.getValue()) {
-                        preScreenElement = new PreScreenPopulateResponse.PreScreenElement();
-                        preScreenElement.setPropertyTitle("Asset Owned");
-                        preScreenElement.jobPostElementList = new ArrayList<>();
-
-                        preScreenElement.jobPostElementList.add(preScreenRequirement.getAsset());
-                        preScreenElement.isSingleEntity = false;
-                        preScreenElement.isMatching = true;
-                        preScreenElement.isMinReq = true;
-
-                        //populateResponse.elementList.add(preScreenElement);
+                        preScreenElement.jobPostElementList.add(preScreenRequirement.getAsset().getAssetTitle());
+                        preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
                     }
+                    preScreenElement.isSingleEntity = false;
+                    preScreenElement.isMatching = true;
+                    preScreenElement.isMinReq = true;
+
+                    populateResponse.elementList.add(preScreenElement);
                     break;
                 case ServerConstants.CATEGORY_PROFILE:
                     for (PreScreenRequirement preScreenRequirement: entry.getValue()) {
@@ -661,7 +674,9 @@ public class JobPostWorkflowEngine {
                 .findList();
 
         double score =  ((double) preScreenRequest.getPreScreenIdList().size()/(double) preScreenRequirementList.size());
-        preScreenResult.setResultScore(score);
+        Logger.info("score: " + score);
+
+        preScreenResult.setResultScore(Util.RoundTo2Decimals(score));
         //TODO force set flag will come here next
 
         preScreenResult.setJobPostWorkflow(jobPostWorkflowNew);
@@ -738,38 +753,43 @@ public class JobPostWorkflowEngine {
         if (jobPostLocalityIdList.size() > 0) {
             filteredCandidateList.addAll(candidateList);
             for (Candidate candidate : candidateList) {
+                int localityIncludeCount = 0;
 
                 // candidate home locality matches with the job post locality
-
+                Double candidateLat;
+                Double candidateLng;
                 StringBuilder matchedLocation = new StringBuilder();
                 if ((candidate.getLocality() == null || ! jobPostLocalityIdList.contains(candidate.getLocality().getLocalityId()))) {
-
                     if((candidate.getCandidateLocalityLat() != null && candidate.getCandidateLocalityLng()!= null)) {
-                        // is candidate within x km from any of the jobpost locality
-                        int localityIncludeCount = 0;
-                        for (Locality locality : jobPostLocalityList) {
-                            double distance = MatchingEngineService.getDistanceFromCenter(
-                                    locality.getLat(),
-                                    locality.getLng(),
-                                    candidate.getCandidateLocalityLat(),
-                                    candidate.getCandidateLocalityLng()
-                            );
-                            if (distance > ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS && candidate.getMatchedLocation() == null) {
-                                localityIncludeCount ++;
-                            } else {
-                                matchedLocation.append(locality.getLocalityName() + " ("+ Util.RoundTo1Decimals(distance)+" KM) " );
-                            }
-                        }
-                        if(localityIncludeCount == jobPostLocalityList.size()){
-                            // candidate is not within req distance from any jobPost latlng
-                            filteredCandidateList.remove(candidate);
-                        }
-
+                        candidateLat = candidate.getCandidateLocalityLat();
+                        candidateLng = candidate.getCandidateLocalityLng();
                     } else {
                         filteredCandidateList.remove(candidate);
+                        continue;
                     }
                 } else {
-                    matchedLocation.append(candidate.getLocality().getLocalityName());
+                    candidateLat = candidate.getLocality().getLat();
+                    candidateLng = candidate.getLocality().getLng();
+                }
+
+                for (Locality locality : jobPostLocalityList) {
+                    double distance = MatchingEngineService.getDistanceFromCenter(
+                            locality.getLat(),
+                            locality.getLng(),
+                            candidateLat,
+                            candidateLng
+                    );
+                    if (distance > ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS && candidate.getMatchedLocation() == null) {
+                        localityIncludeCount ++;
+                    } else {
+                        matchedLocation.append(locality.getLocalityName() + " ("+ Util.RoundTo1Decimals(distance)+" KM) " );
+                    }
+                }
+
+                if(localityIncludeCount == jobPostLocalityList.size()){
+                    // candidate is not within req distance from any jobPost latlng
+                    filteredCandidateList.remove(candidate);
+                    localityIncludeCount = 0;
                 }
                 candidate.setMatchedLocation(matchedLocation.toString());
             }
@@ -845,9 +865,33 @@ public class JobPostWorkflowEngine {
 //        for (Interaction interaction: interactionList) {
 //            lastActiveInteraction.put(interaction.getObjectAUUId(), interaction);
 //        }
-        Map<?, PreScreenResult> preScreenResultMap = PreScreenResult.find.where().setMapKey("jobPostWorkflow.candidate.candidateId").findMap();
-
         Logger.info("after interaction query: " + new Timestamp(System.currentTimeMillis()));
+
+
+        List<Interaction> allPreScreenCallAttemptInteractions = Interaction.find
+                .where()
+                .eq("interactionType", InteractionConstants.INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_ATTEMPTED)
+                .in("objectBUUId", candidateUUIdList)
+                .orderBy()
+                .desc("objectBUUId")
+                .findList();
+        Map<String, Integer> candidateWithPreScreenAttemptCountMap = new TreeMap<>();
+
+
+        for(Interaction interaction: allPreScreenCallAttemptInteractions){
+            String currentUUId = null;
+            Integer count = null;
+            if(currentUUId == null || !interaction.getObjectBUUId().equalsIgnoreCase(currentUUId)) {
+                currentUUId = interaction.getObjectBUUId();
+                count = candidateWithPreScreenAttemptCountMap.get(currentUUId);
+            }
+
+            if(count == null) {
+                count = 0;
+            }
+            count++;
+            candidateWithPreScreenAttemptCountMap.put(currentUUId, count);
+        }
 
         for (Candidate candidate: candidateList) {
             CandidateExtraData candidateExtraData = candidateExtraDataMap.get(candidate.getCandidateId());
@@ -867,8 +911,8 @@ public class JobPostWorkflowEngine {
                 // compute 'has attempted assessment' for this JobPost-JobRole, If yes then this contains assessmentId
                 candidateExtraData.setAssessmentAttemptId(assessmentMap.get(candidate.getCandidateId()));
 
-                if(preScreenResultMap != null && preScreenResultMap.size()>0){
-                    candidateExtraData.setPreScreenAttemptCount(preScreenResultMap.get(candidate.getCandidateId()).getAttemptCount());
+                if(candidateWithPreScreenAttemptCountMap != null && candidateWithPreScreenAttemptCountMap.size()>0){
+                    candidateExtraData.setPreScreenCallAttemptCount(candidateWithPreScreenAttemptCountMap.get(candidate.getCandidateUUId()));
                 }
                 // other intelligent scoring will come here
             }

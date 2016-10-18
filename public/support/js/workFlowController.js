@@ -621,6 +621,8 @@ $(function () {
     };
 
     app.fetchCandidateList = function () {
+        NProgress.start();
+
         var i;
         var modifiedLocality = $('#jobPostLocality').val().split(",");
         var modifiedLanguageIdList = $('#languageMultiSelect').val();
@@ -685,8 +687,8 @@ $(function () {
                 });
             } catch (exception) {
                 console.log("exception occured!!" + exception.stack);
+                NProgress.done();
             }
-            NProgress.done();
         }
     };
 
@@ -733,11 +735,23 @@ $(function () {
                     locality = newCandidate.candidate.locality.localityName;
                 }
 
+                var preScreenAttemptCount = function () {
+                    if (app.currentView == "pre_screen_view" && newCandidate.extraData.preScreenCallAttemptCount != null) {
+                        return newCandidate.extraData.preScreenCallAttemptCount
+                    } else {
+                        return "";
+                    }
+                };
                 var varColumn = function () {
                     if (app.currentView == "pre_screen_view") {
-                        return '<input type="submit" value="Call"  style="width:100px" onclick="callHandler(' + newCandidate.candidate.candidateMobile + ', ' + newCandidate.candidate.candidateId + ');" id="' + newCandidate.candidate.lead.leadId + '" class="btn btn-primary">'
+                        if(newCandidate.extraData.preScreenCallAttemptCount == null) {
+                            return '<input type="submit" value="Call"  style="width:100px" onclick="callHandler(' + newCandidate.candidate.candidateMobile + ', ' + newCandidate.candidate.candidateId + ');" id="' + newCandidate.candidate.lead.leadId + '" class="btn btn-primary">'
+                        } else {
+                            return '<input type="submit" value="Call Back"  style="width:100px" onclick="callHandler(' + newCandidate.candidate.candidateMobile + ', ' + newCandidate.candidate.candidateId + ');" id="' + newCandidate.candidate.lead.leadId + '" class="btn btn-default">'
+                        }
+
                     } else {
-                        return "NA";
+                        return "";
                     }
                 };
 
@@ -769,6 +783,7 @@ $(function () {
                     'isMinProfileComplete': getYesNo(newCandidate.candidate.isMinProfileComplete),
                     'experience': getExperience(newCandidate.candidate.candidateExpList),
                     'candidateId': newCandidate.candidate.candidateId,
+                    'preScreenAttempt': preScreenAttemptCount,
                     'varColumn': varColumn
                 })
             });
@@ -817,6 +832,7 @@ $(function () {
                     {"data": "isMinProfileComplete"},
                     {"data": "experience"},
                     {"data": "candidateId"},
+                    {"data": "preScreenAttempt"},
                     {"data": "varColumn"}
                 ],
                 "deferRender": true,

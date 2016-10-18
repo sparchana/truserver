@@ -29,7 +29,7 @@ public class PreScreenResult extends Model {
     @Column(name = "attempt_count", columnDefinition = "int null")
     private Integer attemptCount;
 
-    @Column(name = "result_score", columnDefinition = "double(2,2) null")
+    @Column(name = "result_score", columnDefinition = "decimal(3,2) null")
     private Double resultScore;
 
     @Column(name = "force_set", columnDefinition = "tinyint(1) null")
