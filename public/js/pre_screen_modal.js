@@ -87,12 +87,12 @@ function processPreScreenContent(returnedData) {
         // }
         var candidateId = returnedData.candidateId;
         var jobPostId = returnedData.jobPostId;
-        var preScreenBody = $('<div id="pre_screen_body"></div>');
-        var container = $('<div class="row" id="pre_screen_container_row"></div>');
+        var preScreenBody = $('<div id="pre_screen_body" class="mdl-grid"></div>');
+        var container = $('<div class="row mdl-cell mdl-cell--12-col" id="pre_screen_container_row"></div>');
         preScreenBody.append(container);
 
         var minReqTableContainer = $('<div id="minReqTable"></div>');
-        container.append('<h4>Min Requirement</h4>');
+        container.append('<h4 style="margin-top: 0">Min Requirement</h4>');
         container.append(minReqTableContainer);
 
         var otherReqTableContainer = $('<div id="otherReqTable"></div>');
@@ -101,9 +101,11 @@ function processPreScreenContent(returnedData) {
 
         // minReqTable
         var mainTable = document.createElement("table");
-        mainTable.className ="mdl-data-table mdl-js-data-table mdl-shadow--2dp";
+        mainTable.className ="mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--12-col";
+        mainTable.style="margin:0;border:none";
 
         var tHead = document.createElement("thead");
+        tHead.style="background-color:rgb(63,81,181)";
         mainTable.appendChild(tHead);
 
         var heading = document.createElement("tr");
@@ -114,19 +116,23 @@ function processPreScreenContent(returnedData) {
         heading.appendChild(title1);
 
         var title2 = document.createElement("th");
-        title2.textContent = "Job Post";
+        title2.textContent = "Job Post Info";
+        title2.style="color:#ffffff";
         heading.appendChild(title2);
 
         var title3 = document.createElement("th");
-        title3.textContent = "Candidate";
+        title3.style="color:#ffffff";
+        title3.textContent = "Candidate Info";
         heading.appendChild(title3);
 
         // is a match or not
         var isAMatch = document.createElement("th");
         isAMatch.textContent = "Match?";
+        isAMatch.style="color:#ffffff";
         heading.appendChild(isAMatch);
 
         var title4 = document.createElement("th");
+        title4.style="color:#ffffff";
         title4.textContent = "Is candidate Ready";
         heading.appendChild(title4);
 
@@ -137,9 +143,11 @@ function processPreScreenContent(returnedData) {
 
         //otherTable
         var otherTable = document.createElement("table");
-        otherTable.className ="mdl-data-table mdl-js-data-table mdl-shadow--2dp";
+        otherTable.className ="mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--12-col";
+        otherTable.style ="margin:0;border:none";
 
         var tHead = document.createElement("thead");
+        tHead.style="background-color:rgb(63,81,181)";
         otherTable.appendChild(tHead);
 
         var heading = document.createElement("tr");
@@ -150,19 +158,23 @@ function processPreScreenContent(returnedData) {
         heading.appendChild(title1);
 
         var title2 = document.createElement("th");
+        title2.style="color:#ffffff";
         title2.textContent = "Job Post";
         heading.appendChild(title2);
 
         var title3 = document.createElement("th");
+        title3.style="color:#ffffff";
         title3.textContent = "Candidate";
         heading.appendChild(title3);
 
         // is a match or not
         var isAMatch = document.createElement("th");
+        isAMatch.style="color:#ffffff";
         isAMatch.textContent = "Match?";
         heading.appendChild(isAMatch);
 
         var title4 = document.createElement("th");
+        title4.style="color:#ffffff";
         title4.textContent = "Is candidate Ready";
         heading.appendChild(title4);
 
@@ -279,11 +291,13 @@ function processPreScreenContent(returnedData) {
 
 
         var callYesNo = $('' +
-            '<h4 id="callConfirmation">Call Connected? :&nbsp; ' +
+            '<div class="row">'+
+            '<div class="col-sm-6">'+
+            '<h5 id="callConfirmation" style="margin:2px">Call Connected? :&nbsp; ' +
             '<input type="radio" name="callConnected" id="callYes" value="yes" onclick="onCallYes('+candidateId+', '+jobPostId+')">&nbsp;Yes&nbsp; ' +
             '<input type="radio" name="callConnected" id="callNo" value="no"  onclick="onCallNo('+candidateId+', '+jobPostId+')">&nbsp;No ' +
             '<div id="callNoClass" style="display: none;">' +
-            '<h5>Reason?:' +
+            '<h6>Reason?:' +
             '<select id="callResponse" class="selectDropdown" style="margin: 0 8px;" >' +
             '<option value="busy">Busy</option>' +
             '<option value="not_reachable">Not Reachable</option>' +
@@ -293,10 +307,17 @@ function processPreScreenContent(returnedData) {
             '<option value="third_person">Third Person</option>' +
             '<option value="others">Others</option>' +
             '</select>' +
-            '<button type="submit" id="responseSaveBtn"  class="btn btn-primary" onclick="saveAttempt('+candidateId+', '+jobPostId+')">Save</button>' +
-            '</h5>' +
+            '<button type="submit" id="responseSaveBtn"  class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" onclick="saveAttempt('+candidateId+', '+jobPostId+')">Save</button>' +
+            '</h6>' +
             '</div>' +
-            '</h4>');
+            '</h5>'+
+            '</div>'+
+            '<div class="col-sm-4" style="text-align: right">'+
+            '<h5 style="margin:2px">&nbsp;Force Set&nbsp;:&nbsp;'+
+            '<input type="checkbox" name="" id="pass" value="yes" onclick="">'+
+            '</h5>'+
+            '</div>'+
+            '</div>');
 
         bootbox.dialog({
             className: "pre-screen-modal",
@@ -309,7 +330,7 @@ function processPreScreenContent(returnedData) {
             },
             buttons: {
                 "Submit": {
-                    className: "btn-success btn-modal-submit",
+                    className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent",
                     callback: function() {
                         $('body').removeClass('open-modal');
                         if($("#pre_screen_body input[type='checkbox']:checked").size() > 0) {

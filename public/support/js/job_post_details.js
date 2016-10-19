@@ -187,7 +187,7 @@ function processDataGetAllLanguage(returnLanguage) {
     selectList.multiselect('dataprovider', data);
     selectList.multiselect('rebuild');
 }
-function processDataGetAllIdProof(returnedIdProofs) {
+function processDataGetIdProofs(returnedIdProofs) {
     var data = [];
 
     returnedIdProofs.forEach(function (idProof) {
@@ -207,7 +207,7 @@ function processDataGetAllIdProof(returnedIdProofs) {
     selectList.multiselect('rebuild');
 }
 
-function processDataGetAllAsset(returnedAssets) {
+function processDataGetAssets(returnedAssets) {
     var data = [];
 
     returnedAssets.forEach(function (asset) {
@@ -405,26 +405,26 @@ $(document).ready(function () {
     }
     try {
         $.ajax({
-            type: "POST",
-            url: "/getAllIdProof",
+            type: "GET",
+            url: "/support/api/getDocumentReqForJobRole/?job_post_id="+jobPostId,
             data: false,
             async: false,
             contentType: false,
             processData: false,
-            success: processDataGetAllIdProof
+            success: processDataGetIdProofs
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
     try {
         $.ajax({
-            type: "POST",
-            url: "/getAllAsset",
+            type: "GET",
+            url: "/support/api/getAssetReqForJobRole/?job_post_id="+jobPostId,
             data: false,
             async: false,
             contentType: false,
             processData: false,
-            success: processDataGetAllAsset
+            success: processDataGetAssets
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);

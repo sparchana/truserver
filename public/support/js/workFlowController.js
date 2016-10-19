@@ -6,7 +6,7 @@ var allLocalityArray = [];
 var allJobArray = [];
 var shouldAddFooter = true;
 var jobPostId;
-
+var gJobRoleId;
 
 function getLocality() {
     return allLocalityArray;
@@ -23,8 +23,6 @@ function getAppliedOn(data) {
         return "NA";
     }
 }
-
-
 function getJobPref(jobPrefList) {
     var jobString = [];
     try {
@@ -269,6 +267,8 @@ $(function () {
         jpEducationIdList: [],
         jpLanguageIdList: [],
         jpTableFormattedCandidateList: [],
+        jpDocumentIdList: [],
+        jpAssetIdList: [],
         jpCandidateList: [],
         jpTotalExpInMonths: null,
         tableContainer: $('#candidateResultTable'),
@@ -386,6 +386,73 @@ $(function () {
             });
         } catch (exception) {
             console.log("exception occured!!" + exception);
+        }
+
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/support/api/getDocumentReqForJobRole/?job_post_id="+jobPostId,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataGetIdProofs
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/support/api/getAssetReqForJobRole/?job_post_id="+jobPostId,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataGetAssets
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+
+        function processDataGetIdProofs(returnedIdProofs) {
+            var data = [];
+
+            returnedIdProofs.forEach(function (idProof) {
+                var opt = {
+                    label: idProof.idProofName, value: parseInt(idProof.idProofId)
+                };
+                data.push(opt);
+            });
+
+            var selectList = $('#documentMultiSelect');
+            selectList.multiselect({
+                includeSelectAllOption: true,
+                enableCaseInsensitiveFiltering: true,
+                maxHeight: 300
+            });
+            selectList.multiselect('dataprovider', data);
+            selectList.multiselect('rebuild');
+        }
+
+        function processDataGetAssets(returnedAssets) {
+            var data = [];
+
+            returnedAssets.forEach(function (asset) {
+                var opt = {
+                    label: asset.assetTitle, value: parseInt(asset.assetId)
+                };
+                data.push(opt);
+            });
+
+            var selectList = $('#assetMultiSelect');
+            selectList.multiselect({
+                includeSelectAllOption: true,
+                enableCaseInsensitiveFiltering: true,
+                maxHeight: 300
+            });
+            selectList.multiselect('dataprovider', data);
+            selectList.multiselect('rebuild');
         }
 
         function processDataCheckEducation(returnedEdu) {
@@ -513,7 +580,6 @@ $(function () {
 
     app.processParamsAndUpdateUI = function (returnedData) {
         if (returnedData != null) {
-
             app.populateJobPostCardUI(returnedData);
 
             app.jpId = returnedData.jobPostId;
@@ -531,6 +597,30 @@ $(function () {
 
             $("#genderSelect").val(app.jpGender);
             $("#genderSelect").multiselect('rebuild');
+
+            if (returnedData.jobPostDocumentRequirements != null) {
+                app.jpDocumentIdList = [];
+                var req = returnedData.jobPostDocumentRequirements;
+                req.forEach(function (documentRequirement) {
+                    if(documentRequirement != null){
+                        app.jpDocumentIdList.push(documentRequirement.idProof.idProofId);
+                    }
+                });
+                $("#documentMultiSelect").val(app.jpDocumentIdList);
+                $("#documentMultiSelect").multiselect('rebuild');
+            }
+            if (returnedData.jobPostAssetRequirements != null) {
+                app.jpAssetIdList = [];
+                var req = returnedData.jobPostAssetRequirements;
+                req.forEach(function (assetRequirement) {
+                    if(assetRequirement != null){
+                        app.jpAssetIdList.push(assetRequirement.asset.assetId);
+                    }
+                });
+                $("#assetMultiSelect").val(app.jpAssetIdList);
+                $("#assetMultiSelect").multiselect('rebuild');
+            }
+
 
             if (returnedData.jobPostExperience != null) {
                 app.jpExperienceIdList = [];
@@ -619,37 +709,64 @@ $(function () {
     };
 
     app.fetchCandidateList = function () {
+        if(!$("#matchBtn").is(":disabled")) {
+            $('#matchBtn').attr('disabled', true);
+            setTimeout(function () {
+                if($("#matchBtn").is(":disabled")) {
+                    app.notify("Something went wrong ! Please try again.", 'danger');
+                    $('#matchBtn').attr('disabled', false);
+                }
+                // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
+            }, 26000);
 
+        }
+
+        NProgress.start();
         var i;
         var modifiedLocality = $('#jobPostLocality').val().split(",");
         var modifiedLanguageIdList = $('#languageMultiSelect').val();
         var modifiedExpIdList = $('#experienceMultiSelect').val();
         var modifiedEduIdList = $('#educationMultiSelect').val();
+        var modifiedDocumentIdList = $('#documentMultiSelect').val();
+        var modifiedAssetIdList = $('#assetMultiSelect').val();
 
 
         // this also converts string data to integer and sends to server
-        app.jpLocalityIdList = [];
+        app.jpLanguageIdList = [];
         if (modifiedLanguageIdList != null) {
-            app.jpLanguageIdList = [];
             for (i = 0; i < modifiedLanguageIdList.length; i++) {
                 app.jpLanguageIdList.push(parseInt(modifiedLanguageIdList[i]));
             }
         }
+        app.jpLocalityIdList = [];
         if (modifiedLocality != null) {
             for (i = 0; i < modifiedLocality.length; i++) {
                 app.jpLocalityIdList.push(parseInt(modifiedLocality[i]));
             }
         }
+        app.jpExperienceIdList = [];
         if (modifiedExpIdList != null) {
-            app.jpExperienceIdList = [];
             for (i = 0; i < modifiedExpIdList.length; i++) {
                 app.jpExperienceIdList.push(parseInt(modifiedExpIdList[i]));
             }
         }
+        app.jpEducationIdList = [];
         if (modifiedEduIdList!= null) {
-            app.jpEducationIdList = [];
             for (i = 0; i < modifiedEduIdList.length; i++) {
                 app.jpEducationIdList.push(parseInt(modifiedEduIdList[i]));
+            }
+        }
+
+        app.jpDocumentIdList = [];
+        if (modifiedDocumentIdList!= null) {
+            for (i = 0; i < modifiedDocumentIdList.length; i++) {
+                app.jpDocumentIdList.push(parseInt(modifiedDocumentIdList[i]));
+            }
+        }
+        app.jpAssetIdList = [];
+        if (modifiedAssetIdList!= null) {
+            for (i = 0; i < modifiedAssetIdList.length; i++) {
+                app.jpAssetIdList.push(parseInt(modifiedAssetIdList[i]));
             }
         }
 
@@ -680,6 +797,8 @@ $(function () {
                 jobPostEducationIdList: app.jpEducationIdList,
                 jobPostLocalityIdList: app.jpLocalityIdList,
                 jobPostLanguageIdList: app.jpLanguageIdList,
+                jobPostDocumentList: app.jpDocumentIdList,
+                jobPostAssetList: app.jpAssetIdList,
                 distanceRadius: parseInt($('#radiusValue').text())
             };
 
@@ -687,7 +806,7 @@ $(function () {
                 $.ajax({
                     type: "POST",
                     url: app.url,
-                    async: false,
+                    async: true,
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(d),
                     success: app.updateMatchTable
@@ -720,10 +839,12 @@ $(function () {
             app.tableContainer.hide();
             app.notify("No Candidates !", 'danger');
             $('#moveSelectedBtn').attr('disabled', true);
+            $('#matchBtn').attr('disabled', false);
             NProgress.done();
             return;
         } else {
             $('#moveSelectedBtn').attr('disabled', false);
+            $('#matchBtn').attr('disabled', false);
         }
         var returnedDataArray = [];
         try {
@@ -749,7 +870,7 @@ $(function () {
                     } else {
                         jobApplicationMode = "NA";
                     }
-                    if(newCandidate.extraData.preScreenSelectionTimeStamp != null){
+                    if(newCandidate.extraData.preScreenSelectionTimeStamp != null) {
                         preScreenSelectionTimeStamp = getDateTime(newCandidate.extraData.preScreenSelectionTimeStamp);
                     }
                 }
@@ -759,7 +880,7 @@ $(function () {
                         if(newCandidate.extraData.preScreenCallAttemptCount == null) {
                             return "0";
                         } else {
-                            return newCandidate.extraData.preScreenCallAttemptCount;
+                            return '<a href="'+"/workflowInteraction/"+newCandidate.extraData.workflowUUId+'" id="'+newCandidate.extraData.workflowId+'" style="cursor:pointer;" target="_blank">'+newCandidate.extraData.preScreenCallAttemptCount+'</a>';
                         }
                     } else {
                         return "";
@@ -767,7 +888,11 @@ $(function () {
                 };
                 var varColumn = function () {
                     if (app.currentView == "pre_screen_view") {
-                        return '<input type="submit" value="Pre-Screen"  style="width:100px" onclick="callHandler(' + newCandidate.candidate.candidateMobile + ', ' + newCandidate.candidate.candidateId + ');" id="' + newCandidate.candidate.lead.leadId + '" class="btn btn-primary">'
+                        if(newCandidate.extraData.preScreenCallAttemptCount == null || newCandidate.extraData.preScreenCallAttemptCount == 0) {
+                            return '<input type="submit" value="Pre-Screen"  style="width:150px" onclick="callHandler(' + newCandidate.candidate.candidateMobile + ', ' + newCandidate.candidate.candidateId + ');" id="' + newCandidate.candidate.lead.leadId + '" class="btn btn-primary">'
+                        } else {
+                            return '<input type="submit" value="Pre-Screen Again"  style="width:150px" onclick="callHandler(' + newCandidate.candidate.candidateMobile + ', ' + newCandidate.candidate.candidateId + ');" id="' + newCandidate.candidate.lead.leadId + '" class="btn btn-default">'
+                        }
                     } else {
                         return "";
                     }
@@ -927,6 +1052,8 @@ $(function () {
     };
 
     app.submitSelectedCandidateList = function () {
+
+        $('#moveSelectedBtn').attr('disabled', true);
         NProgress.start();
         var d = {
             jobPostId: app.jpId,
@@ -949,13 +1076,15 @@ $(function () {
         console.log(response);
         if (response.status == "SUCCESS") {
             app.currentView = response.nextView;
-            app.notify(response.message + " Redirecting to " + response.nextView, 'success');
+            app.notify(response.message + " Please wait, Refreshing table", 'success');
             setTimeout(function () {
-                window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
+                app.fetchCandidateList();
+                // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
             }, 3000)
         } else {
             app.notify(response.message, 'danger');
         }
+        $('#moveSelectedBtn').attr('disabled', true);
     };
 
     // pre_screen methods
@@ -1009,15 +1138,23 @@ $(function () {
         NProgress.start();
         var jobPostTitle = returnedData.jobPostTitle;
         var jobPostCompany = returnedData.company.companyName;
-        var jobPostSalary = "Rs. "+returnedData.jobPostMinSalary + " - Rs. " + returnedData.jobPostMaxSalary;
+        var jobPostSalary = "Rs. "+returnedData.jobPostMinSalary;
+        if(returnedData.jobPostMaxSalary != 0) {
+            jobPostSalary +=" - Rs. " + returnedData.jobPostMaxSalary;
+        }
+        var jobRoleTitle = returnedData.jobRole.jobName;
+        var jobRoleId = returnedData.jobPostId;
 
-        app.renderJobCard(jobPostTitle, jobPostCompany, jobPostSalary);
+        app.renderJobCard(jobPostTitle, jobPostCompany, jobPostSalary, jobRoleTitle, jobRoleId);
     };
 
-    app.renderJobCard = function (jobPostTitle, jobPostCompany, jobPostSalary) {
+    app.renderJobCard = function (jobPostTitle, jobPostCompany, jobPostSalary, jobRoleTitle, jobRoleId) {
         $('#job_post_title').text(jobPostTitle);
         $('#job_post_company_title').text(jobPostCompany);
         $('#job_post_salary').text(jobPostSalary);
+        $('#job_role').text(jobRoleTitle);
+        $('#job_role_id').text("Job Details");
+        gJobRoleId = jobRoleId;
     };
 
     app.processSupportAgentData = function (returnedData) {
@@ -1061,10 +1198,13 @@ $(function () {
         $('#header_view_title').text("Pre Screen View");
         $('.navigation__link').removeClass("mdl-navigation__link--current");
         $('#pre_screen_view_drawer').removeClass("mdl-navigation__link--current").addClass("mdl-navigation__link--current");
-        app.getSupportAgent();
         app.initPreScreenView();
         app.initJobCard();
     } else {
         $('#header_view_title').text("Future View");
     }
 });
+
+function linkToDashboard() {
+    window.open('/jobPostDetails/'+gJobRoleId, '_blank');
+}
