@@ -88,17 +88,18 @@ function processPreScreenContent(returnedData) {
         var container = $('<div class="row"></div>');
         preScreenBody.append(container);
 
-        var minReqTableContainer = $('<div id="minReqTable"></div>');
+        var minReqTableContainer = $('<div id="minReqTable" class="mdl-grid"></div>');
         container.append('<h4>Min Requirement</h4>');
         container.append(minReqTableContainer);
 
-        var otherReqTableContainer = $('<div id="otherReqTable"></div>');
+        var otherReqTableContainer = $('<div id="otherReqTable" class="mdl-grid"></div>');
         container.append('<h4>Other Requirement</h4>');
         container.append(otherReqTableContainer);
 
         // minReqTable
         var mainTable = document.createElement("table");
-        mainTable.className ="mdl-data-table mdl-js-data-table mdl-shadow--2dp";
+        mainTable.className ="mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--12-col";
+        mainTable.style="margin:0";
 
         var tHead = document.createElement("thead");
         mainTable.appendChild(tHead);
@@ -134,7 +135,8 @@ function processPreScreenContent(returnedData) {
 
         //otherTable
         var otherTable = document.createElement("table");
-        otherTable.className ="mdl-data-table mdl-js-data-table mdl-shadow--2dp";
+        otherTable.className ="mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--12-col";
+        otherTable.style ="margin:0";
 
         var tHead = document.createElement("thead");
         otherTable.appendChild(tHead);
@@ -280,7 +282,7 @@ function processPreScreenContent(returnedData) {
             '<input type="radio" name="callConnected" id="callYes" value="yes" onclick="onCallYes('+candidateId+', '+jobPostId+')">&nbsp;Yes&nbsp; ' +
             '<input type="radio" name="callConnected" id="callNo" value="no"  onclick="onCallNo('+candidateId+', '+jobPostId+')">&nbsp;No ' +
             '<div id="callNoClass" style="display: none;">' +
-            '<h5>Reason?:' +
+            '<h6>Reason?:' +
             '<select id="callResponse" class="selectDropdown" style="margin: 0 8px;" >' +
             '<option value="busy">Busy</option>' +
             '<option value="not_reachable">Not Reachable</option>' +
@@ -290,8 +292,8 @@ function processPreScreenContent(returnedData) {
             '<option value="third_person">Third Person</option>' +
             '<option value="others">Others</option>' +
             '</select>' +
-            '<button type="submit" id="responseSaveBtn"  class="btn btn-primary" onclick="saveAttempt('+candidateId+', '+jobPostId+')">Save</button>' +
-            '</h5>' +
+            '<button type="submit" id="responseSaveBtn"  class="mdl-button mdl-js-button mdl-button--accent" onclick="saveAttempt('+candidateId+', '+jobPostId+')">Save</button>' +
+            '</h6>' +
             '</div>' +
             '</h4>');
 

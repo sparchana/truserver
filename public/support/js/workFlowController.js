@@ -23,8 +23,6 @@ function getAppliedOn(data) {
         return "NA";
     }
 }
-
-
 function getJobPref(jobPrefList) {
     var jobString = [];
     try {
