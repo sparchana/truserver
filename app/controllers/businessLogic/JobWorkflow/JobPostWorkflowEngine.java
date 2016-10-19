@@ -927,8 +927,16 @@ public class JobPostWorkflowEngine {
 
         // prep candidate->jobApplication mapping to reduce lookup time to O(1)
         Map<Long, String> jobApplicationMap = new HashMap<>();
+        Map<Long, String> jobApplicationModeMap = new HashMap<>();
         for (JobApplication jobApplication: allJobApplication) {
+            String jobApplicationMode;
             jobApplicationMap.put(jobApplication.getCandidate().getCandidateId(), sfd.format(jobApplication.getJobApplicationCreateTimeStamp()));
+            if(jobApplication.getPartner() == null) {
+                jobApplicationMode = "Self";
+            } else {
+                jobApplicationMode = String.valueOf(jobApplication.getPartner().getPartnerId());
+            }
+            jobApplicationModeMap.put(jobApplication.getCandidate().getCandidateId(), jobApplicationMode);
         }
 
         // prep candidate->jobApplication mapping to reduce lookup time to O(1)
@@ -970,6 +978,16 @@ public class JobPostWorkflowEngine {
 //        }
         Logger.info("after interaction query: " + new Timestamp(System.currentTimeMillis()));
 
+        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where()
+                .eq("status.statusId", ServerConstants.JWF_STATUS_SELECTED)
+                .isNotNull("candidate")
+                .in("candidate.candidateId", candidateIdList)
+                .findList();
+
+        Map<Long, Timestamp> candidateToPreScreenTSMap =  new HashMap<>();
+        for(JobPostWorkflow jobPostWorkflow : jobPostWorkflowList) {
+            candidateToPreScreenTSMap.put(jobPostWorkflow.getCandidate().getCandidateId(), jobPostWorkflow.getCreationTimestamp());
+        }
 
         List<Interaction> allPreScreenCallAttemptInteractions = Interaction.find
                 .where()
@@ -1012,6 +1030,15 @@ public class JobPostWorkflowEngine {
                     candidateExtraData.setPreScreenCallAttemptCount(candidateWithPreScreenAttemptCountMap.get(candidate.getCandidateUUId()));
                 }
                 // other intelligent scoring will come here
+
+                // Job Application Mode (Self/Partner).
+                if(jobApplicationModeMap != null && jobApplicationModeMap.size() > 0) {
+                    candidateExtraData.setJobApplicationMode(jobApplicationModeMap.get(candidate.getCandidateId()));
+                }
+                // 'Pre-screed selection timestamp'
+                if(candidateToPreScreenTSMap != null && candidateToPreScreenTSMap.size() > 0) {
+                    candidateExtraData.setPreScreenSelectionTimeStamp(candidateToPreScreenTSMap.get(candidate.getCandidateId()));
+                }
             }
 
             candidateExtraDataMap.put(candidate.getCandidateId(), candidateExtraData);

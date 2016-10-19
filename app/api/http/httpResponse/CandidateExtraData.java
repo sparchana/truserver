@@ -2,6 +2,8 @@ package api.http.httpResponse;
 
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 
+import java.sql.Timestamp;
+
 /**
  * Created by zero on 10/10/16.
  */
@@ -10,6 +12,8 @@ public class CandidateExtraData {
     public JobPostWorkflowEngine.LastActiveValue lastActive;
     public Integer assessmentAttemptId;
     public Integer preScreenCallAttemptCount;
+    public String jobApplicationMode;
+    public Timestamp preScreenSelectionTimeStamp;
 
     public String getAppliedOn() {
         return appliedOn;
@@ -41,5 +45,21 @@ public class CandidateExtraData {
 
     public void setPreScreenCallAttemptCount(Integer preScreenCallAttemptCount) {
         this.preScreenCallAttemptCount = preScreenCallAttemptCount;
+    }
+
+    public String getJobApplicationMode() {
+        return jobApplicationMode;
+    }
+
+    public void setJobApplicationMode(String jobApplicationMode) {
+        this.jobApplicationMode = jobApplicationMode;
+    }
+
+    public Timestamp getPreScreenSelectionTimeStamp() {
+        return preScreenSelectionTimeStamp;
+    }
+
+    public void setPreScreenSelectionTimeStamp(Timestamp preScreenSelectionTimeStamp) {
+        this.preScreenSelectionTimeStamp = preScreenSelectionTimeStamp;
     }
 }

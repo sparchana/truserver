@@ -747,6 +747,19 @@ $(function () {
                     locality = newCandidate.candidate.locality.localityName;
                 }
 
+                var jobApplicationMode ="";
+                var preScreenSelectionTimeStamp = "";
+                if (app.currentView == "pre_screen_view") {
+                    if(newCandidate.extraData.jobApplicationMode != null) {
+                        jobApplicationMode = newCandidate.extraData.jobApplicationMode;
+                    } else {
+                        jobApplicationMode = "NA";
+                    }
+                    if(newCandidate.extraData.preScreenSelectionTimeStamp != null){
+                        preScreenSelectionTimeStamp = getDateTime(newCandidate.extraData.preScreenSelectionTimeStamp);
+                    }
+                }
+
                 var preScreenAttemptCount = function () {
                     if (app.currentView == "pre_screen_view") {
                         if(newCandidate.extraData.preScreenCallAttemptCount == null) {
@@ -795,6 +808,8 @@ $(function () {
                     'experience': getExperience(newCandidate.candidate.candidateExpList),
                     'candidateId': newCandidate.candidate.candidateId,
                     'preScreenAttempt': preScreenAttemptCount,
+                    'jobApplicationMode': jobApplicationMode,
+                    'preScreenSelectionTS': preScreenSelectionTimeStamp,
                     'varColumn': varColumn
                 })
             });
@@ -844,6 +859,8 @@ $(function () {
                     {"data": "experience"},
                     {"data": "candidateId"},
                     {"data": "preScreenAttempt"},
+                    {"data": "jobApplicationMode"},
+                    {"data": "preScreenSelectionTS"},
                     {"data": "varColumn"}
                 ],
                 "deferRender": true,
