@@ -63,9 +63,15 @@ public class ServerConstants {
     public static final int OBJECT_TYPE_JOB_POST_VIEW= 7;
     public static final int OBJECT_TYPE_PARTNER= 8;
     public static final int OBJECT_TYPE_ASSESSMENT_ATTEMPT= 9;
+
+    public static final int JOB_STATUS_ACTIVE= 2;
+
     public static final int OBJECT_TYPE_PRESCREEN_ATTEMPT= 10;
     public static final int OBJECT_TYPE_JOB_POST_WORKFLOW= 11;
 
+    public static final int OBJECT_TYPE_NEW_JOB_POST= 12;
+    public static final int OBJECT_TYPE_RECRUITER_LEAD= 13;
+    public static final int OBJECT_TYPE_SUPPORT= 0;
 
     public static final boolean FOLLOW_UP_DEACTIVATE = false;
     public static final boolean FOLLOW_UP_ACTIVATE = true;
@@ -183,6 +189,7 @@ public class ServerConstants {
 
     /* Non Logged In Search Result UUID */
     public static final String TRU_DROID_NOT_LOGGED_UUID = "TRU-DROID-NOT-LOGGEDIN-UUID";
+    public static final String SUPPORT_DEFAULT_UUID = "SUPPORT-DEFAULT-UUID";
 
     /************************
      *  Scrapped Data Source

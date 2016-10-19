@@ -70,21 +70,26 @@ public class EmailUtil {
     }
 
     public static void sendRequestCreditEmail(RecruiterProfile recruiterProfile, AddCreditRequest addCreditRequest) throws EmailException {
-        String cat;
-        if(addCreditRequest.getCreditCategory() == ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK){
-            cat = "contact unlock";
+        Integer contactCredits = addCreditRequest.getNoOfContactCredits();
+        Integer interviewCredits = addCreditRequest.getNoOfInterviewCredits();
+
+        String creditMsg;
+        if(contactCredits == 0){
+            creditMsg = interviewCredits + " interview unlock credits";
+        } else if(interviewCredits == 0){
+            creditMsg = contactCredits + " contact unlock credits";
         } else{
-            cat = "interview unlock";
+            creditMsg = contactCredits + " contact unlock credits and " + interviewCredits + " interview unlock credits";
         }
 
-        String message = "Hi " + recruiterProfile.getRecruiterProfileName() + "! We have received your request for " + addCreditRequest.getNoOfCredits() + " " + cat
-                + " credits. Our business team will contact you within 24 hours! For more queries, call +91 9980293925. Thank you.";
+        String message = "Hi " + recruiterProfile.getRecruiterProfileName() + "! We have received your request for " + creditMsg
+                + ". Our business team will contact you within 24 hours! For more queries, call +91 9980293925. Thank you.";
 
-        sendEmail(recruiterProfile.getRecruiterProfileEmail(), message, "Trujobs.in : Your " + cat + " request is being processed");
+        sendEmail(recruiterProfile.getRecruiterProfileEmail(), message, "Trujobs.in : Your credit unlock request is being processed");
 
         message = "Hi team, recruiter: " + recruiterProfile.getRecruiterProfileName() + " with mobile " + recruiterProfile.getRecruiterProfileMobile() + " of company: " +
-                recruiterProfile.getCompany().getCompanyName() +  " has requested for " + addCreditRequest.getNoOfCredits() + " " + cat
-                + " credits. Amount = ₹" + addCreditRequest.getCreditAmount();
+                recruiterProfile.getCompany().getCompanyName() +  " has requested for " + creditMsg
+                + ". Thank You";
 
         sendEmail(devTeamEmail.get("Adarsh"), message, "Contact Unlock Credit Request");
         sendEmail(devTeamEmail.get("Archana"), message, "Contact Unlock Credit Request");
