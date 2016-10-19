@@ -1,6 +1,7 @@
 package models.entity.Static;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.CacheStrategy;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
@@ -13,6 +14,7 @@ import java.util.UUID;
 /**
  * Created by zero on 11/10/16.
  */
+@CacheStrategy
 @Entity(name = "job_role_to_document")
 @Table(name = "job_role_to_document")
 public class JobRoleToDocument extends Model {
@@ -20,9 +22,6 @@ public class JobRoleToDocument extends Model {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "job_role_to_document_id", columnDefinition = "bigint unsigned", unique = true)
     private long jobRoleToDocumentId;
-
-    @Column(name = "job_role_to_document_uuid", columnDefinition = "varchar(255)", nullable = false)
-    private String jobRoleToDocumentUUId; // UUID
 
     @ManyToOne
     @JsonManagedReference
@@ -39,17 +38,12 @@ public class JobRoleToDocument extends Model {
 
     public JobRoleToDocument(){
         this.creationTimestamp = new Timestamp(System.currentTimeMillis());
-        this.jobRoleToDocumentUUId = UUID.randomUUID().toString();
     }
 
     public static Finder<String, JobRoleToDocument> find = new Finder(JobRoleToDocument.class);
 
     public long getJobRoleToDocumentId() {
         return jobRoleToDocumentId;
-    }
-
-    public String getJobRoleToDocumentUUId() {
-        return jobRoleToDocumentUUId;
     }
 
     public JobRole getJobRole() {

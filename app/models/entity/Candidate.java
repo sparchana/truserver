@@ -197,6 +197,11 @@ public class Candidate extends Model {
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
     private List<RecruiterToCandidateUnlocked> recruiterToCandidateUnlockedList;
 
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
+    private List<CandidateAsset> candidateAssetList;
+
     public static Finder<String, Candidate> find = new Finder(Candidate.class);
 
     public Candidate() {
@@ -593,6 +598,14 @@ public class Candidate extends Model {
 
     public void setRecruiterToCandidateUnlockedList(List<RecruiterToCandidateUnlocked> recruiterToCandidateUnlockedList) {
         this.recruiterToCandidateUnlockedList = recruiterToCandidateUnlockedList;
+    }
+
+    public List<CandidateAsset> getCandidateAssetList() {
+        return candidateAssetList;
+    }
+
+    public void setCandidateAssetList(List<CandidateAsset> candidateAssetList) {
+        this.candidateAssetList = candidateAssetList;
     }
 }
 

@@ -32,7 +32,7 @@ public class JobPostWorkflow extends Model {
     private JobPost jobPost;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonManagedReference
     @JoinColumn(name = "candidate_id", referencedColumnName = "CandidateId")
     private Candidate candidate;
 
@@ -40,7 +40,7 @@ public class JobPostWorkflow extends Model {
     private Timestamp creationTimestamp;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonManagedReference
     @JoinColumn(name = "status_id", referencedColumnName = "status_id")
     private JobPostWorkflowStatus status;
 
