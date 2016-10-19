@@ -247,6 +247,9 @@ openPreScreenModal = function (mobile, candidateId) {
     getPreScreenContent(jobPostId, candidateId);
 };
 
+function showRadiusValue(value){
+    document.getElementById("radiusValue").innerHTML = value;
+}
 
 callHandler = function (mobile, candidateId) {
     console.log("agentMobileNumber:" + globalRecAgentNumber);
@@ -287,13 +290,13 @@ $(function () {
     var app = {
         jpId: null,
         jpJobRoleId: 0,
-        jpLocalityIdList: [],
         jpMinSalary: null,
         jpMaxSalary: null,
         jpMaxAge: null,
-        jpExperienceId: null,
         jpGender: null,
-        jpEducationId: null,
+        jpLocalityIdList: [],
+        jpExperienceIdList: [],
+        jpEducationIdList: [],
         jpLanguageIdList: [],
         jpTableFormattedCandidateList: [],
         jpCandidateList: [],
@@ -417,9 +420,7 @@ $(function () {
 
         function processDataCheckEducation(returnedEdu) {
             if (returnedEdu != null) {
-                var data = [
-                    {label: "None Selected", value: "0"}
-                ];
+                var data = [];
 
                 returnedEdu.forEach(function (education) {
                     var opt = {
@@ -428,9 +429,10 @@ $(function () {
                     data.push(opt);
                 });
 
-                var selectList = $('#educationSelect');
+                var selectList = $('#educationMultiSelect');
                 selectList.multiselect({
                     nonSelectedText: 'None Selected',
+                    includeSelectAllOption: true,
                     maxHeight: 300
                 });
                 selectList.multiselect('dataprovider', data);
@@ -482,9 +484,7 @@ $(function () {
         }
 
         function processDataCheckExperience(returnedExperience) {
-            var data = [
-                {label: "Select None", value: "0"}
-            ];
+            var data = [];
 
             returnedExperience.forEach(function (experience) {
                 var opt = {
@@ -493,9 +493,10 @@ $(function () {
                 data.push(opt);
             });
 
-            var selectList = $('#experienceSelect');
+            var selectList = $('#experienceMultiSelect');
             selectList.multiselect({
                 nonSelectedText: 'None Selected',
+                includeSelectAllOption: true,
                 maxHeight: 300
             });
             selectList.multiselect('dataprovider', data);
@@ -565,17 +566,21 @@ $(function () {
             $("#genderSelect").multiselect('rebuild');
 
             if (returnedData.jobPostExperience != null) {
-                app.jpExperienceId = returnedData.jobPostExperience.experienceId;
-                $("#experienceSelect").val(app.jpExperienceId);
-                $("#experienceSelect").multiselect('rebuild');
+                app.jpExperienceIdList = [];
+                console.log(returnedData.jobPostExperience.experienceId);
+                app.jpExperienceIdList.push(returnedData.jobPostExperience.experienceId);
+                $("#experienceMultiSelect").val(app.jpExperienceIdList);
+                $("#experienceMultiSelect").multiselect('rebuild');
             }
             if (returnedData.jobPostEducation != null) {
-                app.jpEducationId = returnedData.jobPostEducation.educationId;
-                $("#educationSelect").val(app.jpEducationId);
-                $("#educationSelect").multiselect('rebuild');
+                app.jpEducationIdList = [];
+                app.jpEducationIdList.push(returnedData.jobPostEducation.educationId);
+                $("#educationMultiSelect").val(app.jpEducationIdList);
+                $("#educationMultiSelect").multiselect('rebuild');
             }
-            if (returnedData.jobPostLanguageRequirement != null) {
-                var req = returnedData.jobPostLanguageRequirement;
+            console.log(returnedData.jobPostLanguageRequirements);
+            if (returnedData.jobPostLanguageRequirements != null) {
+                var req = returnedData.jobPostLanguageRequirements;
                 app.jpLanguageIdList = [];
                 req.forEach(function (languageRequirement) {
                     if (languageRequirement != null) {
@@ -652,6 +657,8 @@ $(function () {
         var i;
         var modifiedLocality = $('#jobPostLocality').val().split(",");
         var modifiedLanguageIdList = $('#languageMultiSelect').val();
+        var modifiedExpIdList = $('#experienceMultiSelect').val();
+        var modifiedEduIdList = $('#educationMultiSelect').val();
 
 
         // this also converts string data to integer and sends to server
@@ -667,14 +674,22 @@ $(function () {
                 app.jpLocalityIdList.push(parseInt(modifiedLocality[i]));
             }
         }
+        if (modifiedExpIdList != null) {
+            app.jpExperienceIdList = [];
+            for (i = 0; i < modifiedExpIdList.length; i++) {
+                app.jpExperienceIdList.push(parseInt(modifiedExpIdList[i]));
+            }
+        }
+        if (modifiedEduIdList!= null) {
+            app.jpEducationIdList = [];
+            for (i = 0; i < modifiedEduIdList.length; i++) {
+                app.jpEducationIdList.push(parseInt(modifiedEduIdList[i]));
+            }
+        }
 
         app.jpJobRoleId = null;
 
         app.jpJobRoleId = (parseInt($("#jobPostJobRole").val()));
-
-        app.jpExperienceId = $('#experienceSelect').val();
-
-        app.jpEducationId = $('#educationSelect').val();
 
         app.jpGender = $('#genderSelect').val();
 
@@ -693,12 +708,13 @@ $(function () {
                 maxAge: app.jpMaxAge,
                 minSalary: app.jpMinSalary,
                 maxSalary: app.jpMaxSalary,
-                experienceId: app.jpExperienceId,
                 gender: app.jpGender,
                 jobPostJobRoleId: app.jpJobRoleId,
-                jobPostEducationId: app.jpEducationId,
+                experienceIdList: app.jpExperienceIdList,
+                jobPostEducationIdList: app.jpEducationIdList,
                 jobPostLocalityIdList: app.jpLocalityIdList,
-                jobPostLanguageIdList: app.jpLanguageIdList
+                jobPostLanguageIdList: app.jpLanguageIdList,
+                distanceRadius: parseInt($('#radiusValue').text())
             };
 
             NProgress.start();
@@ -765,7 +781,7 @@ $(function () {
                     if (app.currentView == "pre_screen_view" && newCandidate.extraData.preScreenCallAttemptCount != null) {
                         return newCandidate.extraData.preScreenCallAttemptCount
                     } else {
-                        return "0";
+                        return "";
                     }
                 };
                 var varColumn = function () {

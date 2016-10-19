@@ -350,8 +350,8 @@ function performSearch() {
             maxSalary: parseInt($("#filterSalary").val()),
             experienceId: searchExpFilter,
             gender: searchGender,
-            jobPostJobRoleId: searchJobRole,
-            jobPostEducationId: searchEducation,
+            jobPostJobRoleIdList: searchJobRole,
+            jobPostEducationIdList: searchEducation,
             jobPostLocalityIdList: searchLocality,
             jobPostLanguageIdList: selectedLanguage,
             distanceRadius: parseFloat($("#filterDistance").val())
