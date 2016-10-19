@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.avaje.ebean.Expr.eq;
+import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 
 /**
@@ -39,7 +40,7 @@ public class JobPostWorkflowEngine {
      *  @param jobPostId  match candidates for this jobPost
      *  @param maxAge  max range criteria to be taken into consideration while matching
      *  @param gender  gender criteria to be taken into consideration while matching
-     *  @param experienceId experience duration to be taken into consideration while matching
+     *  @param experienceIdList experience duration to be taken into consideration while matching
      *  @param jobPostLocalityIdList  candidates to be matched within x Km of any of the provided locality
      *  @param languageIdList  candidate to be matched for any of this language. Output contains the
      *                       indication to show matching & non-matching language
@@ -51,19 +52,20 @@ public class JobPostWorkflowEngine {
                                                                         Long minSalary,
                                                                         Long maxSalary,
                                                                         Integer gender,
-                                                                        Integer experienceId,
+                                                                        List<Integer> experienceIdList,
                                                                         Long jobRoleId,
-                                                                        Integer educationId,
+                                                                        List<Integer> educationIdList,
                                                                         List<Long> jobPostLocalityIdList,
-                                                                        List<Integer> languageIdList)
+                                                                        List<Integer> languageIdList,
+                                                                        Double radius)
     {
         Map<Long, CandidateWorkflowData> matchedCandidateMap = new LinkedHashMap<>();
         int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
 
-        // geDurationFromExperience returns minExperience req. (in Months)
-        ExperienceValue experience = getDurationFromExperience(experienceId);
+        List<Integer> minExperienceList = new ArrayList<>();
+        List<Integer> maxExperienceList = new ArrayList<>();
 
         // get jobrolepref for candidate
 
@@ -88,24 +90,37 @@ public class JobPostWorkflowEngine {
         }
 
         // select candidate whose totalExperience falls under the req exp
-        if (experience != null) {
+        if (experienceIdList != null) {
+            // geDurationFromExperience returns minExperience req. (in Months)
+            int minima;
+            int maxima;
+            for (Integer experienceId : experienceIdList) {
+                ExperienceValue experience = getDurationFromExperience(experienceId);
+                minExperienceList.add(experience.minExperienceValue);
+                maxExperienceList.add(experience.maxExperienceValue);
+            }
+            Collections.sort(maxExperienceList, Collections.reverseOrder());
+            Collections.sort(minExperienceList);
 
-            if(experience.minExperienceValue == 0) {
+            minima = minExperienceList.get(0);
+            maxima = maxExperienceList.get(0);
+
+            if(minima == 0 && maxima == 0) {
                 query = query
                         .where()
                         .isNotNull("candidateTotalExperience")
-                        .eq("candidateTotalExperience", experience.minExperienceValue).query();
+                        .eq("candidateTotalExperience", minima).query();
             } else {
                 query = query
                         .where()
                         .isNotNull("candidateTotalExperience")
-                        .ge("candidateTotalExperience", experience.minExperienceValue).query();
+                        .ge("candidateTotalExperience", minima).query();
             }
-            if(experience.maxExperienceValue != 0) {
+            if(maxima != 0) {
                 query = query
                         .where()
                         .isNotNull("candidateTotalExperience")
-                        .le("candidateTotalExperience", experience.maxExperienceValue).query();
+                        .le("candidateTotalExperience", maxima).query();
             }
         }
 
@@ -148,11 +163,11 @@ public class JobPostWorkflowEngine {
         }
 
         // education match
-        if (educationId != null && educationId != 0) {
+        if (educationIdList != null && educationIdList.size()> 0) {
             query = query.select("*").fetch("candidateEducation")
                     .where()
                     .isNotNull("candidateEducation")
-                    .eq("candidateEducation.education.educationId", educationId)
+                    .in("candidateEducation.education.educationId", educationIdList)
                     .query();
         }
 
@@ -172,7 +187,7 @@ public class JobPostWorkflowEngine {
                     .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE)
                     .query();
 
-        List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList, null);
+        List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList, radius);
 
         Map<Long, CandidateExtraData> allFeature = computeExtraData(candidateList, jobPost);
 
@@ -209,7 +224,8 @@ public class JobPostWorkflowEngine {
                                                                                   Long jobRoleId,
                                                                                   Integer educationId,
                                                                                   List<Long> jobPostLocalityIdList,
-                                                                                  List<Integer> languageIdList, Double radius)
+                                                                                  List<Integer> languageIdList,
+                                                                                  Double radius)
     {
         Map<Long, CandidateWorkflowData> matchedCandidateMap = new LinkedHashMap<>();
 
@@ -259,6 +275,11 @@ public class JobPostWorkflowEngine {
 
         Integer educationId = jobPost.getJobPostEducation() != null ? jobPost.getJobPostEducation().getEducationId() : null;
 
+        List<Integer> experienceIdList = new ArrayList<>();
+        experienceIdList.add(experienceId);
+
+        List<Integer> educationIdList = new ArrayList<>();
+        educationIdList.add(educationId);
         List<JobPostToLocality> jobPostToLocalityList = jobPost.getJobPostToLocalityList();
         List<Long> localityIdList = new ArrayList<>();
         for (JobPostToLocality jobPostToLocality: jobPostToLocalityList) {
@@ -271,9 +292,8 @@ public class JobPostWorkflowEngine {
             languageIdList.add(requirement.getLanguage().getLanguageId());
         }
 
-        Logger.info(" maxAge : "+maxAge + " - " + " minSalary : "+minSalary + " - " + " maxSalary : "+maxSalary + " - " + " gender : "+gender + " - " + " experienceId : "+experienceId + " - " + " localityIdList : "+localityIdList + " - " + " languageIdList: "+languageIdList);
         // call master method
-        return getMatchingCandidate(jobPostId, maxAge, minSalary, maxSalary, gender, experienceId, jobRoleId, educationId, localityIdList, languageIdList);
+        return getMatchingCandidate(jobPostId, maxAge, minSalary, maxSalary, gender, experienceIdList, jobRoleId, educationIdList, localityIdList, languageIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS);
     }
 
     public static Map<Long, CandidateWorkflowData> getSelectedCandidates(Long jobPostId) {
@@ -304,7 +324,7 @@ public class JobPostWorkflowEngine {
         }
 
 
-        candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList, null);
+        candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS);
         Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique());
 
         for ( Candidate candidate: candidateList) {
@@ -603,7 +623,7 @@ public class JobPostWorkflowEngine {
                                         }
                                     }
                                     preScreenElement.jobPostElement = jobPostLocalityString.toString();
-                                    List<Candidate> candidateList = filterByLatLngOrHomeLocality(new ArrayList<>(Arrays.asList(candidate)), localityIdList, null);
+                                    List<Candidate> candidateList = filterByLatLngOrHomeLocality(new ArrayList<>(Arrays.asList(candidate)), localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS);
                                     if(candidateList.size()>0) preScreenElement.candidateElement = candidateList.get(0).getMatchedLocation();
                                     preScreenElement.isMinReq = false;
                                     preScreenElement.isMatching = true;
@@ -734,7 +754,6 @@ public class JobPostWorkflowEngine {
         }
 
         double score =  ((double) preScreenRequest.getPreScreenIdList().size()/(double) preScreenRequirementList.size());
-        Logger.info("score: " + score);
 
         preScreenResult.setResultScore(Util.RoundTo2Decimals(score));
         //TODO force set flag will come here next
@@ -905,8 +924,16 @@ public class JobPostWorkflowEngine {
 
         // prep candidate->jobApplication mapping to reduce lookup time to O(1)
         Map<Long, String> jobApplicationMap = new HashMap<>();
+        Map<Long, String> jobApplicationModeMap = new HashMap<>();
         for (JobApplication jobApplication: allJobApplication) {
+            String jobApplicationMode;
             jobApplicationMap.put(jobApplication.getCandidate().getCandidateId(), sfd.format(jobApplication.getJobApplicationCreateTimeStamp()));
+            if(jobApplication.getPartner() == null) {
+                jobApplicationMode = "Self";
+            } else {
+                jobApplicationMode = String.valueOf(jobApplication.getPartner().getPartnerId());
+            }
+            jobApplicationModeMap.put(jobApplication.getCandidate().getCandidateId(), jobApplicationMode);
         }
 
         // prep candidate->jobApplication mapping to reduce lookup time to O(1)
@@ -948,6 +975,16 @@ public class JobPostWorkflowEngine {
 //        }
         Logger.info("after interaction query: " + new Timestamp(System.currentTimeMillis()));
 
+        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where()
+                .eq("status.statusId", ServerConstants.JWF_STATUS_SELECTED)
+                .isNotNull("candidate")
+                .in("candidate.candidateId", candidateIdList)
+                .findList();
+
+        Map<Long, Timestamp> candidateToPreScreenTSMap =  new HashMap<>();
+        for(JobPostWorkflow jobPostWorkflow : jobPostWorkflowList) {
+            candidateToPreScreenTSMap.put(jobPostWorkflow.getCandidate().getCandidateId(), jobPostWorkflow.getCreationTimestamp());
+        }
 
         List<Interaction> allPreScreenCallAttemptInteractions = Interaction.find
                 .where()
@@ -990,6 +1027,15 @@ public class JobPostWorkflowEngine {
                     candidateExtraData.setPreScreenCallAttemptCount(candidateWithPreScreenAttemptCountMap.get(candidate.getCandidateUUId()));
                 }
                 // other intelligent scoring will come here
+
+                // Job Application Mode (Self/Partner).
+                if(jobApplicationModeMap != null && jobApplicationModeMap.size() > 0) {
+                    candidateExtraData.setJobApplicationMode(jobApplicationModeMap.get(candidate.getCandidateId()));
+                }
+                // 'Pre-screed selection timestamp'
+                if(candidateToPreScreenTSMap != null && candidateToPreScreenTSMap.size() > 0) {
+                    candidateExtraData.setPreScreenSelectionTimeStamp(candidateToPreScreenTSMap.get(candidate.getCandidateId()));
+                }
             }
 
             candidateExtraDataMap.put(candidate.getCandidateId(), candidateExtraData);
@@ -1172,12 +1218,9 @@ public class JobPostWorkflowEngine {
 
         String candidateListString = String.join("', '", candidateUUIdList);
 
-        Logger.info("before interaction query: " + new Timestamp(System.currentTimeMillis()));
         Map<String, Interaction> lastActiveInteraction= Ebean.find(Interaction.class)
                 .setRawSql(getRawSqlForInteraction(candidateListString))
                 .findMap("objectAUUId", String.class);
-
-        Logger.info("after interaction query: " + new Timestamp(System.currentTimeMillis()));
 
         for (Candidate candidate: candidateList) {
             CandidateExtraData candidateExtraData = candidateExtraDataMap.get(candidate.getCandidateId());
@@ -1209,8 +1252,6 @@ public class JobPostWorkflowEngine {
                 " (select max(creationtimestamp) from interaction where i.objectauuid = interaction.objectauuid) " +
                 " order by creationTimestamp desc ");
 
-
-        Logger.info(interactionQueryBuilder.toString());
 
         RawSql rawSql = RawSqlBuilder.parse(interactionQueryBuilder.toString())
                 .tableAliasMapping("i", "interaction")

@@ -45,7 +45,7 @@
                         </div>
                         <div class="col-sm-1" style="margin-top:8px"><font size="2">Experience :</font></div>
                         <div class="col-sm-3">
-                            <select id="experienceSelect"></select>
+                            <select id="experienceMultiSelect" multiple="multiple"></select>
                         </div>
                     </div>
 
@@ -57,7 +57,7 @@
                         </div>
                         <div class="col-sm-1" style="margin-top:8px"><font size="2">Education </font></div>
                         <div class="col-sm-3" id="educationSelectDiv">
-                            <select id="educationSelect"></select>
+                            <select id="educationMultiSelect" multiple="multiple"></select>
                         </div>
                         <div class="col-sm-1" style="margin-top:8px"><font size="2">Gender </font></div>
                         <div class="col-sm-3" id="genderSelectDiv">
@@ -68,6 +68,14 @@
                                 <option value="1">Female</option>
                             </select>
                         </div>
+                    </div>
+                    <div class="row" style="margin-top: 16px">
+                        <div class="col-sm-1" style="margin-top:8px"><font size="2">Radius (in KM) : </font></div>
+                        <div class="col-sm-3" style="margin-top:8px" id="languageMultiSelectDiv">
+                            <input class="mdl-slider mdl-js-slider" type="range" min="1" max="15" value="10" tabindex="1" oninput="showRadiusValue(this.value)" onchange="showRadiusValue(this.value)">
+
+                        </div>
+                        <div class="col-sm-1" style="margin-top:8px"><font size="2"><div id="radiusValue" style="display: inline-block">10</div> KM</div>
                     </div>
                     <br>
                     <div class="row" id="matchCandidateBtnBox">
@@ -111,6 +119,8 @@
                     <th>Candidate Id</th>
                     <th></th>
                     <th></th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tfoot>
@@ -142,6 +152,8 @@
                     <th>MinProfile?</th>
                     <th>Exp Detail</th>
                     <th>Candidate Id</th>
+                    <th></th>
+                    <th></th>
                     <th></th>
                     <th></th>
                 </tr>

@@ -1518,11 +1518,12 @@ public class Application extends Controller {
                     matchingCandidateRequest.getMinSalary(),
                     matchingCandidateRequest.getMaxSalary(),
                     matchingCandidateRequest.getGender(),
-                    matchingCandidateRequest.getExperienceId(),
+                    matchingCandidateRequest.getExperienceIdList(),
                     matchingCandidateRequest.getJobPostJobRoleId(),
-                    matchingCandidateRequest.getJobPostEducationId(),
+                    matchingCandidateRequest.getJobPostEducationIdList(),
                     matchingCandidateRequest.getJobPostLocalityIdList(),
-                    matchingCandidateRequest.getJobPostLanguageIdList())));
+                    matchingCandidateRequest.getJobPostLanguageIdList(),
+                    matchingCandidateRequest.getDistanceRadius())));
         }
         return badRequest();
     }

@@ -26,10 +26,13 @@ function onCallYes(candidateId, jobPostId) {
     console.log("connected: " + candidateId +" "+ jobPostId);
     $('#callNoClass').hide();
     $('.btn-success.btn-modal-submit').prop('disabled', false);
+    $('#pre_screen_body').show();
     updateCallAttempts(candidateId, jobPostId, "CONNECTED");
 }
 function onCallNo(candidateId, jobPostId) {
     $('#callNoClass').show();
+    $('#pre_screen_body').hide();
+    $('.btn-success.btn-modal-submit').prop('disabled', true);
 }
 
 function triggerPreScreenResponseSubmission(candidateId, jobPostId) {
@@ -85,7 +88,7 @@ function processPreScreenContent(returnedData) {
         var candidateId = returnedData.candidateId;
         var jobPostId = returnedData.jobPostId;
         var preScreenBody = $('<div id="pre_screen_body"></div>');
-        var container = $('<div class="row"></div>');
+        var container = $('<div class="row" id="pre_screen_container_row"></div>');
         preScreenBody.append(container);
 
         var minReqTableContainer = $('<div id="minReqTable" class="mdl-grid"></div>');
@@ -323,6 +326,7 @@ function processPreScreenContent(returnedData) {
             }
         });
         $('.btn-success.btn-modal-submit').prop('disabled', true);
+        $('#pre_screen_body').hide();
         $('body').removeClass('modal-open').removeClass('open-modal').addClass('open-modal');
     }
 }
