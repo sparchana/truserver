@@ -88,6 +88,7 @@ public class JobService {
 
         if(channelType == InteractionService.InteractionChannelType.SUPPORT){
             createdBy = session().get("sessionUsername");
+            objAUuid = ServerConstants.SUPPORT_DEFAULT_UUID;
             objAType = ServerConstants.OBJECT_TYPE_SUPPORT;
             channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
         } else{

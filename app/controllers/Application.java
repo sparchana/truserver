@@ -1312,7 +1312,7 @@ public class Application extends Controller {
                             jobPostIdList.add(Long.parseLong(jobPostId));
                         }
                     }
-                    List<JobPost> jobPostList = JobPost.find.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).in("jobPostId", jobPostIdList).findList();
+                    List<JobPost> jobPostList = JobPost.find.where().in("jobPostId", jobPostIdList).findList();
                     for (JobPost jobPost : jobPostList) {
                         if (!jobRoleIdList.contains(jobPost.getJobRole().getJobRoleId())){
                             jobRoleIdList.add(jobPost.getJobRole().getJobRoleId());
@@ -1545,7 +1545,7 @@ public class Application extends Controller {
 
     @Security.Authenticated(RecSecured.class)
     public static Result getJobPostMatchingParams(long jobPostId) {
-        return ok(toJson(JobPost.find.where().eq("jobPostId", jobPostId).eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).findUnique()));
+        return ok(toJson(JobPost.find.where().eq("jobPostId", jobPostId).findUnique()));
     }
 
     @Security.Authenticated(RecSecured.class)

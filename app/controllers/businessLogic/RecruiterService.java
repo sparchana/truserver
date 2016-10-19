@@ -32,8 +32,6 @@ import play.mvc.Result;
 
 import java.util.UUID;
 
-import static controllers.businessLogic.PartnerInteractionService.createInteractionForPartnerLogin;
-import static controllers.businessLogic.PartnerInteractionService.createInteractionForPartnerSignUp;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterProfileUpdate;
 import static models.util.Util.generateOtp;
 import static play.libs.Json.toJson;

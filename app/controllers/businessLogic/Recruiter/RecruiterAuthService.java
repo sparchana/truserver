@@ -6,17 +6,13 @@ import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.PartnerSignUpResponse;
 import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
 import models.entity.Recruiter.RecruiterAuth;
-import models.entity.Recruiter.RecruiterPayment;
 import models.entity.Recruiter.RecruiterProfile;
-import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.Recruiter.Static.RecruiterProfileStatus;
-import models.entity.RecruiterCreditHistory;
 import models.util.Util;
 import play.Logger;
 
 import java.util.UUID;
 
-import static controllers.businessLogic.PartnerInteractionService.createInteractionForPartnerAddPasswordViaWebsite;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterAddPasswordViaWebsite;
 import static play.mvc.Controller.session;
 
