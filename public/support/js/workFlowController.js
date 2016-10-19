@@ -6,7 +6,7 @@ var allLocalityArray = [];
 var allJobArray = [];
 var shouldAddFooter = true;
 var jobPostId;
-
+var gJobRoleId;
 
 function getLocality() {
     return allLocalityArray;
@@ -23,8 +23,6 @@ function getAppliedOn(data) {
         return "NA";
     }
 }
-
-
 function getJobPref(jobPrefList) {
     var jobString = [];
     try {
@@ -582,7 +580,6 @@ $(function () {
 
     app.processParamsAndUpdateUI = function (returnedData) {
         if (returnedData != null) {
-
             app.populateJobPostCardUI(returnedData);
 
             app.jpId = returnedData.jobPostId;
@@ -1145,14 +1142,19 @@ $(function () {
         if(returnedData.jobPostMaxSalary != 0) {
             jobPostSalary +=" - Rs. " + returnedData.jobPostMaxSalary;
         }
+        var jobRoleTitle = returnedData.jobRole.jobName;
+        var jobRoleId = returnedData.jobPostId;
 
-        app.renderJobCard(jobPostTitle, jobPostCompany, jobPostSalary);
+        app.renderJobCard(jobPostTitle, jobPostCompany, jobPostSalary, jobRoleTitle, jobRoleId);
     };
 
-    app.renderJobCard = function (jobPostTitle, jobPostCompany, jobPostSalary) {
+    app.renderJobCard = function (jobPostTitle, jobPostCompany, jobPostSalary, jobRoleTitle, jobRoleId) {
         $('#job_post_title').text(jobPostTitle);
         $('#job_post_company_title').text(jobPostCompany);
         $('#job_post_salary').text(jobPostSalary);
+        $('#job_role').text(jobRoleTitle);
+        $('#job_role_id').text("Job Details");
+        gJobRoleId = jobRoleId;
     };
 
     app.processSupportAgentData = function (returnedData) {
@@ -1202,3 +1204,7 @@ $(function () {
         $('#header_view_title').text("Future View");
     }
 });
+
+function linkToDashboard() {
+    window.open('/jobPostDetails/'+gJobRoleId, '_blank');
+}
