@@ -79,6 +79,7 @@ public class InteractionConstants {
     public static final int INTERACTION_TYPE_CANDIDATE_DEACTIVATED = 18;
     public static final int INTERACTION_TYPE_LEAD_STATUS_UPDATE = 19;
     public static final int INTERACTION_TYPE_CANDIDATE_ASSESSMENT_ATTEMPTED = 33;
+    public static final int INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_ATTEMPTED = 34;
 
     //partner interaction type
     public static final int INTERACTION_TYPE_PARTNER_TRIED_PASSWORD_RESET = 20;
@@ -126,6 +127,7 @@ public class InteractionConstants {
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_DEACTIVATED, "Candidate Deactivated");
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_LEAD_STATUS_UPDATE, "Lead Status Update");
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_ASSESSMENT_ATTEMPTED, "Candidate Assessment Attempted");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_ATTEMPTED, "Candidate Pre Screen Call Attempted");
 
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_PARTNER_TRIED_PASSWORD_RESET, "Tried to reset Password");
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_PARTNER_PASSWORD_RESET_SUCCESS, "Reset Password Successful");

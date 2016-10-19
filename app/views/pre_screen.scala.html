@@ -1,14 +1,8 @@
 @workflow{
     <div id="preScreenPane">
-        <div class="page-header text-center">
-            <h2>Pre Screen View</h2>
-        </div>
         <div id="preScreenError" style="text-align: center;
             color: red"><h5 id="preScreenErrorMsg"></h5></div>
-        <table id="candidateResultTable" class="table table-striped table-bordered" style="margin-top: 16px;
-            display: none;
-            table-layout: fixed;
-            overflow-x: scroll;" cellspacing="0" width="100%">
+        <table id="candidateResultTable" class="mdl-data-table mdl-js-data-table" style="margin-top: 16px;display: none;table-layout: fixed;overflow-x: scroll;" cellspacing="0" width="100%">
             <thead>
                 <tr>
                     <th>CLID</th>
@@ -38,6 +32,9 @@
                     <th>MinProfile?</th>
                     <th>Exp Detail</th>
                     <th>Candidate Id</th>
+                    <th>Pre Screen Attempt</th>
+                    <th>Job Application Mode (Self/Partner)</th>
+                    <th>Pre-screened selection timestamp</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -70,6 +67,9 @@
                     <th>MinProfile?</th>
                     <th>Exp Detail</th>
                     <th>Candidate Id</th>
+                    <th>Pre Screen Attempt</th>
+                    <th>Job Application Mode (Self/Partner)</th>
+                    <th>Pre-screened selection timestamp</th>
                     <th>Action</th>
                 </tr>
             </tfoot>
@@ -77,6 +77,10 @@
             </tbody>
         </table>
     </div>
+
+    <link rel="stylesheet" type="text/css" href="/assets/css/pre_screen_modal.css">
+    <script type="text/javascript" src="/assets/js/bootbox.min.js"></script>
+    <script type="text/javascript" src="/assets/js/pre_screen_modal.js"></script>
     <!--
     <div id="otherControls">
         <button type="submit" id="moveSelectedBtn" class="btn btn-success btn-lg">Move To Pre-Screen</button>

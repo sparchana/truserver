@@ -52,13 +52,13 @@ public class RecruiterProfile extends Model {
     @Column(name = "RecruiterAlternateMobile", columnDefinition = "varchar(13) null")
     private String recruiterAlternateMobile;
 
-    @Column(name = "RecruiterDesignation", columnDefinition = "varchar(50) null")
+    @Column(name = "RecruiterDesignation", columnDefinition = "varchar(150) null")
     private String recruiterDesignation;
 
-    @Column(name = "RecruiterLinkedinProfile", columnDefinition = "varchar(60) null")
+    @Column(name = "RecruiterLinkedinProfile", columnDefinition = "text null")
     private String recruiterLinkedinProfile;
 
-    @Column(name = "RecruiterOfficeAddress", columnDefinition = "varchar(500) null")
+    @Column(name = "RecruiterOfficeAddress", columnDefinition = "text null")
     private String recruiterOfficeAddress;
 
     @Column(name = "RecruiterEmailStatus", columnDefinition = "int signed not null default 0")

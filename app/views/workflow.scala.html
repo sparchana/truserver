@@ -6,12 +6,19 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <script src="/assets/support/js/jquery-1.12.0.min.js" type="text/javascript"></script>
+        <script src="/assets/common/js/material.js" type="text/javascript"></script>
 
         <link rel="stylesheet" href="/assets/build/support/sapp.min.css">
 
+        <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
             <!-- Include the plugin's CSS and JS: -->
         <link rel="stylesheet" href="/assets/support/css/bootstrap-multiselect.css" type="text/css"/>
         <link rel="stylesheet" href="/assets/support/css/select.dataTables.min.css" type="text/css"/>
+        <link rel="stylesheet" href="/assets/common/css/material.css" type="text/css"/>
+
+        <!-- mdl_import -->
+        <script src="/assets/common/js/material.js" type="text/javascript"></script>
+        <link rel="stylesheet" href="/assets/common/css/material.css" type="text/css"/>
 
         <style>
         tfoot input {
@@ -22,70 +29,74 @@
         #matchPane {
             margin: 1%;
         }
-
-        #otherControls #moveSelectedBtn {
-            margin: 16px;
-
-        }
-
-        #otherControls {
-            padding-right: 16px;
-            padding-left: 16px;
-            text-align: center;
-        }
-        a {
-            color: #5cb85c;
-        }
-        #matchPane  div.panel.panel-success  div.panel-heading{
-            background-color: #5cb85c;
-            color: white;
-        }
-        #matchBtn {
-            float: right;
-        }
-        tr th input{
-            width: 100%;
-        }
-        #candidateMatchResultTable tbody tr.selected{
-            background-color: #dff0d8;
-        }
-
-        #filterTable input {
-            margin: 10px;
-        }
         </style>
+        <link rel="stylesheet" href="/assets/support/css/workflow.css" type="text/css"/>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     </head>
     <body>
-        <nav class="navbar navbar-default">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="/showCompanyAndJob">Dashboard</a>
+        <div class="mdl-layout mdl-js-layout mdl-layout mdl-js-layout">
+            <header class="mdl-layout__header">
+                <div class="mdl-layout__header-row">
+                    <span id="header_view_title" class="mdl-layout__title">Title View</span>
+                    <div class="mdl-layout-spacer"></div>
+                    <nav class="mdl-navigation">
+                        <a class="mdl-navigation__link" href="/showCompanyAndJob">Dashboard</a>
+                        <a class="mdl-navigation__link" href="#">
+                            <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" id="logoutBtn">
+                                Logout
+                            </button>
+                        </a>
+                    </nav>
                 </div>
-                    <!-- Collect the nav links, forms, and other content for toggling -->
-                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="nav navbar-nav navbar-right">
-                        @*<li class="active"><a href="#">Dashboard<span class="sr-only">(current)</span></a></li>*@
-                        @*<li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Settings <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                        <li><a href="#">Future </a></li>
-                        <li><a href="#">Another action</a></li>
-                        <li><a href="#">Something else here</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">Separated link</a></li>
-                        <li role="separator" class="divider"></li>
-                        <li><a href="#">One more separated link</a></li>
-                        </ul>
-                        </li>*@
-                    </ul>
-                </div><!-- /.navbar-collapse -->
-            </div><!-- /.container-fluid -->
-        </nav>
-        @content
+            </header>
+            <div class="mdl-layout__drawer">
+                <div class="mdl-grid">
+                    <div class="mdl-cell--12-col" style="margin: 4% 0">
+                        <center ><img src="/assets/common/img/logo.gif" height="40px"></center>
+                    </div>
+                </div>
+                <nav class="mdl-navigation" style="padding-top:0">
+                    <a id="match_view_drawer" class="mdl-navigation__link" href="?view=match_view">Match View</a>
+                    <a id="pre_screen_view_drawer" class="mdl-navigation__link" href="?view=pre_screen_view">Pre-Screen View</a>
+                    @*<a id="assessment_view_drawer" class="mdl-navigation__link" href="#">ASSESSMENT VIEW</a>*@
+                    @*<a id="interview_view_drawer" class="mdl-navigation__link" href="#">INTERVIEW</a>*@
+                </nav>
+            </div>
+            <main class="mdl-layout__content" style="padding:1% 2%;background-color: #efefef">
+                <div class="mdl-card mdl-shadow--4dp">
+                    <div class="mdl-card__supporting-text">
+                        <div class="mdl-grid">
+                            <!-- Job Post Detail Card -->
+                            <div class="mdl-cell mdl-cell--4-col" id="job_post_title" style="padding-top:8px;padding-left:20px; font-size: 30px; font-weight: 500">
+                                Job Post Name
+                            </div>
+                            <div class="mdl-cell mdl-cell--4-col">
+                                <div style="display: inline-block;">
+                                    <div style="margin-left: 4px;color: rgb(63,81,181);font-size: 12px">Company</div>
+                                    <div id="job_post_company_title" style="margin-left: 4px;display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                            <div class="mdl-cell mdl-cell--4-col">
+                                    <div style="display: inline-block;">
+                                        <div style="margin-left: 4px;color: rgb(63,81,181);font-size: 12px">Salary</div>
+                                        <div id="job_post_salary" style="margin-left: 4px;
+                                            display: inline-block">Not Specified</div>
+                                    </div>
+                            </div><!-- Job Post Detail Card End-->
+                        </div>
+                    </div>
+                </div>
+                <div>@content</div>
+                    <!-- bottom notification snackbar -->
+                <div id="tru-snackbar" class="mdl-js-snackbar mdl-snackbar">
+                    <div class="mdl-snackbar__text"></div>
+                    <button class="mdl-snackbar__action" type="button"></button>
+                </div>
+            </main>
+        </div>
         <script type="text/javascript" src="/assets/build/support/sapp.min.js"></script>
         <script type="text/javascript" src="/assets/build/support/workFlowController.min.js"></script>
         <script type="text/javascript" src="/assets/support/js/bootstrap-multiselect.js"></script>
         <script type="text/javascript" src="/assets/support/js/dataTables.select.min.js"></script>
-
     </body>
 </html>

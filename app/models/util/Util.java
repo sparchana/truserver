@@ -70,4 +70,8 @@ public class Util {
         DecimalFormat df2 = new DecimalFormat("#.#");
         return Double.valueOf(df2.format(val));
     }
+    public static Double RoundTo2Decimals(Double val) {
+        DecimalFormat df2 = new DecimalFormat("##.##");
+        return Double.valueOf(df2.format(val));
+    }
 }
