@@ -481,7 +481,7 @@ function generateCandidateCards(candidateSearchResult) {
         candidateCardContent.appendChild(candidateCardRow);
 
         candidateCardRowColOne = document.createElement("div");
-        candidateCardRowColOne.className = "col s6 l4";
+        candidateCardRowColOne.className = "col s12 l4";
         candidateCardRowColOne.style = "margin-top: 4px";
         candidateCardRow.appendChild(candidateCardRowColOne);
 
@@ -515,7 +515,7 @@ function generateCandidateCards(candidateSearchResult) {
 
         /* second col */
         candidateCardRowColOne = document.createElement("div");
-        candidateCardRowColOne.className = "col s6 l4";
+        candidateCardRowColOne.className = "col s12 l4";
         candidateCardRowColOne.style = "margin-top: 4px";
         candidateCardRow.appendChild(candidateCardRowColOne);
 
@@ -553,7 +553,7 @@ function generateCandidateCards(candidateSearchResult) {
 
         /* second col */
         candidateCardRowColOne = document.createElement("div");
-        candidateCardRowColOne.className = "col s6 l4";
+        candidateCardRowColOne.className = "col s12 l4";
         candidateCardRowColOne.style = "margin-top: 4px";
         candidateCardRow.appendChild(candidateCardRowColOne);
 
@@ -601,7 +601,7 @@ function generateCandidateCards(candidateSearchResult) {
         candidateCardContent.appendChild(candidateCardRow);
 
         candidateCardRowColOne = document.createElement("div");
-        candidateCardRowColOne.className = "col s6 l4";
+        candidateCardRowColOne.className = "col s12 l4";
         candidateCardRowColOne.style = "margin-top: 4px";
         candidateCardRow.appendChild(candidateCardRowColOne);
 
@@ -636,7 +636,7 @@ function generateCandidateCards(candidateSearchResult) {
 
         /* second col */
         candidateCardRowColOne = document.createElement("div");
-        candidateCardRowColOne.className = "col s6 l4";
+        candidateCardRowColOne.className = "col s12 l4";
         candidateCardRowColOne.style = "margin-top: 4px";
         candidateCardRow.appendChild(candidateCardRowColOne);
 
@@ -683,7 +683,7 @@ function generateCandidateCards(candidateSearchResult) {
 
         /* second col */
         candidateCardRowColOne = document.createElement("div");
-        candidateCardRowColOne.className = "col s6 l4";
+        candidateCardRowColOne.className = "col s12 l4";
         candidateCardRowColOne.style = "margin-top: 4px";
         candidateCardRow.appendChild(candidateCardRowColOne);
 

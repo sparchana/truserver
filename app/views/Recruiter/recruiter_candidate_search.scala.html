@@ -73,7 +73,7 @@
             </nav>
         </div>
 
-        <div id="creditView">
+        <div id="creditView" class="hide-on-small-only">
             <span style="font-size: 18px; font-weight: bold">Credits Balance</span>
             <div style="margin: 4px">
                 <img src="/assets/recruiter/img/coin.svg" width="24px">
@@ -132,11 +132,155 @@
             </div>
         </div>
             <!--Search bar ends-->
+        @*<div class="fixed-action-btn hide-on-med-and-up" style="bottom: 45px; right: 24px;">
+            <a class="btn-floating btn-large red">
+                <i class="large material-icons">mode_edit</i>
+            </a>
+        </div>*@
             <!-- Details container -->
         <div class="container" style="padding: 0">
             <div class="row">
-                    <!-- Sort & Filter -->
+                    <!-- Sort & Filter Mobile -->
                 <div class="col s12 l3">
+                    <div class="card-content">
+                        <font size="4">Sort by</font>
+                    </div>
+
+                    <ul class="collapsible" data-collapsible="accordion">
+                        <li>
+                            <div class="collapsible-header"><img src="/assets/recruiter/img/rupee.svg" height="18px" style="margin: 0 18px 0 6px">
+                                Salary</div>
+                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
+                                <div>
+                                    <input name="sortBySalary" type="radio" value="0" id="sortByMinSalary" />
+                                    <label for="sortByMinSalary">Low to High</label>
+                                </div>
+                                <div>
+                                    <input name="sortBySalary" type="radio" value="1" id="sortByMaxSalary" />
+                                    <label for="sortByMaxSalary">High to Low</label>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="collapsible-header"><i class="material-icons">av_timer</i>
+                                Active</div>
+                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
+                                <div>
+                                    <input name="sortByActive" type="radio" value="1" id="latestActive" />
+                                    <label for="latestActive">Newest to oldest</label>
+                                </div>
+                                <div>
+                                    <input name="sortByActive" type="radio" value="0" id="oldestActive" />
+                                    <label for="oldestActive">Oldest to Newest</label>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <div>
+                        <div class="card-content">
+                            <font size="4">Filters</font>
+                        </div>
+                        <div class="card-content" style="padding: 0">
+                            <div class="row">
+                                <div class="col s12 l12">
+                                    <ul class="collapsible" data-collapsible="accordion">
+                                        <li>
+                                            <div class="collapsible-header"><i class="material-icons">perm_identity</i>
+                                                Gender</div>
+                                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
+                                                <div>
+                                                    <input name="filterGender" type="radio" value="0" id="gender_0" />
+                                                    <label for="gender_0">Male</label>
+                                                </div>
+                                                <div>
+                                                    <input name="filterGender" type="radio" value="1" id="gender_1" />
+                                                    <label for="gender_1">Female</label>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header"><i class="material-icons">trending_up</i>
+                                                Experience</div>
+                                            <div class="collapsible-body" id="experienceFilterDiv" style="padding: 8px 18px 8px 18px"></div>
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header"><i class="material-icons">place</i>
+                                                Distance</div>
+                                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
+                                                <div>
+                                                    <center>
+                                                        <div style="font-size: 14px; font-weight: 600;" id="distanceRadius">
+                                                            <b>Within 10kms</b>
+                                                        </div>
+                                                    </center>
+                                                </div>
+                                                <div class="range-field">
+                                                    <input type="range" id="filterDistance" min="0" max="30" value="10" onchange="updateSliderVal(this)" />
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header"><img src="/assets/recruiter/img/rupee.svg" height="18px" style="margin: 0 18px 0 6px">
+                                                Max Salary</div>
+                                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
+                                                <div>
+                                                    <center>
+                                                        <div style="font-size: 14px; font-weight: 600;" id="maxSalaryVal">
+                                                            <b>Max Salary: Not Specified</b>
+                                                        </div>
+                                                    </center>
+                                                </div>
+                                                <div class="range-field">
+                                                    <input type="range" id="filterSalary" value="0" min="0" max="40000" onchange="updateSalarySliderVal(this)" />
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header"><i class="material-icons">library_books</i>
+                                                Education</div>
+                                            <div class="collapsible-body" id="educationFilterDiv"  style="padding: 8px 18px 8px 18px"></div>
+
+                                        </li>
+                                        <li>
+                                            <div class="collapsible-header"><img src="/assets/recruiter/img/language.svg" height="18px" style="margin: 0 18px 0 6px">
+                                                Language</div>
+                                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px" id="languageFilterDiv"></div>
+                                        </li>
+                                    </ul>
+                                    <div class="row">
+                                        <div class="col s8 l8" style="padding-right: 4px;">
+                                            <center>
+                                                <div class="waves-effect waves-light ascentGreen lighten-1 btn" id="filterBtn" onclick="performSearch()" style="padding: 0 9px; width: 100%; display: inline-block">
+                                                    <font style="color: #fff;font-weight: 400; font-size: 12px"><b>
+                                                        <center>
+                                                            Apply Filter
+                                                        </center>
+                                                    </b></font>
+                                                </div>
+                                            </center>
+                                        </div>
+                                        <div class="col s4 l4" style="padding-left: 0; margin: 0">
+                                            <center>
+                                                <div class="waves-effect waves-light orange lighten-1 btn" onclick="resetFilters()" style="padding: 0 9px; width: 100%; display: inline-block">
+                                                    <font style="color: #fff;font-weight: 400; font-size: 12px"><b>
+                                                        <center>
+                                                            Reset
+                                                        </center>
+                                                    </b></font>
+                                                </div>
+                                            </center>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                    <!-- Sort & Filter -->
+
+                <div class="col s12 l3 hide-on-small-only">
                     <div class="card-content">
                         <font size="4">Sort by</font>
                     </div>
