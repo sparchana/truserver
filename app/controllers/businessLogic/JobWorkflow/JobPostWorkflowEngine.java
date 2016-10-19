@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.avaje.ebean.Expr.eq;
+import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 
 /**
