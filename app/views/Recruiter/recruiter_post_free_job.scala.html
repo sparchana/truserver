@@ -378,34 +378,46 @@
                         </script>
                       </div>
                     </div>
-@*
+
                     <div class="row" id="jobPostDetails">
                       <div class="input-field col s6 l4" style="margin-top: 18px">
-                        <label for="jobDescription">Should candidate have any specific documents ?</label>
+                        <label>Assets required ?</label>
                       </div>
                       <div class="input-field col s6 l4">
-                        <select multiple>
-                          <option value="" disabled selected>Choose your option</option>
-                          <option value="1">Option 1</option>
-                          <option value="2">Option 2</option>
-                          <option value="3">Option 3</option>
-                        </select>
+                        <select id="jobPostAsset" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
+                        <script type="text/javascript">
+                            $('#jobPostAsset').tokenize({
+                              displayDropdownOnFocus: true,
+                              placeholder: "Select assets",
+                              nbDropdownElements: 1000,
+                              newElements: true,
+                              onAddToken: function (value, text) {
+                                validateAssetTokenVal(value, text);
+                              }
+                            });
+                        </script>
                       </div>
                     </div>
+
                     <div class="row" id="jobPostDetails">
                       <div class="input-field col s6 l4" style="margin-top: 18px">
-                        <label for="jobDescription">Should candidate own :</label>
+                        <label>Documents required ?</label>
                       </div>
                       <div class="input-field col s6 l4">
-                        <select>
-                          <option value="" disabled selected>Choose your option</option>
-                          <option value="1">Option 1</option>
-                          <option value="2">Option 2</option>
-                          <option value="3">Option 3</option>
-                        </select>
+                        <select id="jobPostIdProof" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
+                        <script type="text/javascript">
+                            $('#jobPostIdProof').tokenize({
+                              displayDropdownOnFocus: true,
+                              placeholder: "Select Documents",
+                              nbDropdownElements: 1000,
+                              newElements: true,
+                              onAddToken: function (value, text) {
+                                  validateDocumentTokenVal(value, text);
+                              }
+                            });
+                        </script>
                       </div>
                     </div>
-*@
 
                     <div class="row" style="margin: 0">
                       <a class="waves-effect waves-light ascentGreen btn right" id="saveEdit" onclick="saveJob()"><font style="color: #fff;

@@ -40,7 +40,7 @@ public class JobService {
         String createdBy;
         String objAUuid = "";
         String objBUuid;
-        String result = "";
+        String result;
         Integer channel;
         Integer objAType;
         Integer interactionType;
@@ -176,6 +176,8 @@ public class JobService {
 
         newJobPost.setJobPostPartnerInterviewIncentive(addJobPostRequest.getPartnerInterviewIncentive());
         newJobPost.setJobPostPartnerJoiningIncentive(addJobPostRequest.getPartnerJoiningIncentive());
+
+        newJobPost.setJobPostToLocalityList(getJobPostLocality(jobPostLocalityList, newJobPost));
 
         newJobPost.setGender(addJobPostRequest.getJobPostGender());
         newJobPost.setJobPostLanguageRequirements(getJobPostLanguageRequirement(addJobPostRequest.getJobPostLanguage(), newJobPost));

@@ -70,14 +70,21 @@ function processDataGetAllLanguage(returnLanguage) {
     });
 }
 
-function processDataGetAllTimeSlots(returnedData) {
-    $('#interviewTimeSlot').html('');
-    returnedData.forEach(function(timeSlot) {
-        var id = timeSlot.interviewTimeSlotId;
-        var name = timeSlot.interviewTimeSlotName;
-        var item = {};
-        item ["id"] = id;
-        item ["name"] = name;
+function processDataGetAllIdProof(returnedIdProofs) {
+    returnedIdProofs.forEach(function (idProof) {
+        var id = idProof.idProofId;
+        var name = idProof.idProofName;
+        var option = $('<option value=' + id + '></option>').text(name);
+        $('#jobPostIdProof').append(option);
+    });
+}
+
+function processDataGetAllAsset(returnedAssets) {
+    returnedAssets.forEach(function (asset) {
+        var id = asset.assetId;
+        var name = asset.assetTitle;
+        var option = $('<option value=' + id + '></option>').text(name);
+        $('#jobPostAsset').append(option);
     });
 }
 
@@ -217,19 +224,6 @@ $(document).ready(function () {
     try {
         $.ajax({
             type: "POST",
-            url: "/getAllTimeSlots",
-            data: false,
-            async: false,
-            contentType: false,
-            processData: false,
-            success: processDataGetAllTimeSlots
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-    try {
-        $.ajax({
-            type: "POST",
             url: "/getAllLanguage",
             data: false,
             async: false,
@@ -240,6 +234,33 @@ $(document).ready(function () {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllIdProof",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetAllIdProof
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllAsset",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetAllAsset
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
 
     var i;
 
@@ -327,6 +348,9 @@ function saveJob() {
         }
     }
 
+    var jobPostDocument = $('#jobPostIdProof').val();
+    var jobPostAsset = $('#jobPostAsset').val();
+
     status = 1;
 
     if($("#jobPostTitle").val() == ""){
@@ -387,6 +411,13 @@ function saveJob() {
             notifyError("Please enter Job Post Gender Requirement");
             status = 0;
         }
+        if(jobPostAsset == null){
+            notifyError("Please enter Job Post assets required");
+            status = 0;
+        } else if(jobPostDocument == null){
+            notifyError("Please enter Job Post documents required");
+            status = 0;
+        }
     }
 
     if(status == 1){
@@ -400,9 +431,6 @@ function saveJob() {
                 workingDays += "0";
             }
         }
-
-/*        jobPostIncentives: $("#jobPostIncentives").val(),*/
-
 
         try {
             var d = {
@@ -430,8 +458,9 @@ function saveJob() {
                 partnerJoiningIncentive: 2000,
                 jobPostLanguage: jobPostLanguageList,
                 jobPostMaxAge: maxAge,
-                jobPostGender: jobPostGender
-
+                jobPostGender: jobPostGender,
+                jobPostDocument: jobPostDocument,
+                jobPostAsset: jobPostAsset
             };
             $.ajax({
                 type: "POST",
@@ -458,6 +487,7 @@ function processDataAddJobPost(returnedData) {
 
 
 function processDataForJobPost(returnedData) {
+    console.log(returnedData);
     if(returnedData != "0"){
         jpId = returnedData.jobPostId;
         if(returnedData.company != null ){
@@ -499,6 +529,7 @@ function processDataForJobPost(returnedData) {
             $('#jobPostJobRole').tokenize().tokenAdd(id, name);
         }
 
+        console.log(returnedData.jobPostToLocalityList);
         if(returnedData.jobPostToLocalityList != null){
             returnedData.jobPostToLocalityList.forEach(function (locality) {
                 var id = locality.locality.localityId;
@@ -554,6 +585,21 @@ function processDataForJobPost(returnedData) {
         if(returnedData.jobPostEducation != null ){
             $('#jobPostEducation').tokenize().tokenAdd(returnedData.jobPostEducation.educationId, returnedData.jobPostEducation.educationName);
         }
+        if(returnedData.jobPostAssetRequirements != null){
+            returnedData.jobPostAssetRequirements.forEach(function (assets) {
+                var id = assets.asset.assetId;
+                var name = assets.asset.assetTitle;
+                $('#jobPostAsset').tokenize().tokenAdd(id, name);
+            });
+        }
+        if(returnedData.jobPostDocumentRequirements != null){
+            returnedData.jobPostDocumentRequirements.forEach(function (document) {
+                var id = document.idProof.idProofId;
+                var name = document.idProof.idProofName;
+                $('#jobPostIdProof').tokenize().tokenAdd(id, name);
+            });
+        }
+
     } else{
         notifyError("Job details not available");
         setTimeout(function(){
@@ -618,6 +664,18 @@ function validateIncentiveTokenVal(val, text) {
     if(val.localeCompare(text) == 0){
         $('#jobPostIncentives').tokenize().tokenRemove(val);
         notifyError("Please select a valid incentive from the dropdown list");
+    }
+}
+function validateAssetTokenVal(val, text) {
+    if(val.localeCompare(text) == 0){
+        $('#jobPostAsset').tokenize().tokenRemove(val);
+        notifyError("Please select a valid asset from the dropdown list");
+    }
+}
+function validateDocumentTokenVal(val, text) {
+    if(val.localeCompare(text) == 0){
+        $('#jobPostIdProof').tokenize().tokenRemove(val);
+        notifyError("Please select a valid asset from the dropdown list");
     }
 }
 
