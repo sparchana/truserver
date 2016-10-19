@@ -160,16 +160,23 @@ public class JobPost extends Model {
     @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
     private List<InterviewDetails> interviewDetailsList;
 
-    @Column(name = "JobPostMinAge", columnDefinition = "int unsigned null")
-    private Integer jobPostMinAge;
-
     @Column(name = "JobPostMaxAge", columnDefinition = "int unsigned null")
     private Integer jobPostMaxAge;
 
     @JsonManagedReference
     @PrivateOwned
     @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
-    private List<JobPostLanguageRequirement> jobPostLanguageRequirement;
+    private List<JobPostLanguageRequirement> jobPostLanguageRequirements;
+
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
+    private List<JobPostAssetRequirement> jobPostAssetRequirements;
+
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
+    private List<JobPostDocumentRequirement> jobPostDocumentRequirements;
 
     public static Finder<String, JobPost> find = new Finder(JobPost.class);
 
@@ -214,9 +221,10 @@ public class JobPost extends Model {
         this.jobPostApplicationList = jobPost.jobPostApplicationList;
         this.gender = jobPost.gender;
         this.source = jobPost.source;
-        this.jobPostMinAge = jobPost.jobPostMinAge;
         this.jobPostMaxAge = jobPost.jobPostMaxAge;
-        this.jobPostLanguageRequirement = jobPost.jobPostLanguageRequirement;
+        this.jobPostLanguageRequirements = jobPost.jobPostLanguageRequirements;
+        this.jobPostDocumentRequirements = jobPost.jobPostDocumentRequirements;
+        this.jobPostAssetRequirements = jobPost.jobPostAssetRequirements;
     }
 
     public RecruiterProfile getRecruiterProfile() {
@@ -540,14 +548,6 @@ public class JobPost extends Model {
         return toS;
     }
 
-    public Integer getJobPostMinAge() {
-        return jobPostMinAge;
-    }
-
-    public void setJobPostMinAge(Integer jobPostMinAge) {
-        this.jobPostMinAge = jobPostMinAge;
-    }
-
     public Integer getJobPostMaxAge() {
         return jobPostMaxAge;
     }
@@ -556,11 +556,27 @@ public class JobPost extends Model {
         this.jobPostMaxAge = jobPostMaxAge;
     }
 
-    public List<JobPostLanguageRequirement> getJobPostLanguageRequirement() {
-        return jobPostLanguageRequirement;
+    public List<JobPostLanguageRequirement> getJobPostLanguageRequirements() {
+        return jobPostLanguageRequirements;
     }
 
-    public void setJobPostLanguageRequirement(List<JobPostLanguageRequirement> jobPostLanguageRequirement) {
-        this.jobPostLanguageRequirement = jobPostLanguageRequirement;
+    public void setJobPostLanguageRequirements(List<JobPostLanguageRequirement> jobPostLanguageRequirements) {
+        this.jobPostLanguageRequirements = jobPostLanguageRequirements;
+    }
+
+    public List<JobPostAssetRequirement> getJobPostAssetRequirements() {
+        return jobPostAssetRequirements;
+    }
+
+    public void setJobPostAssetRequirements(List<JobPostAssetRequirement> jobPostAssetRequirements) {
+        this.jobPostAssetRequirements = jobPostAssetRequirements;
+    }
+
+    public List<JobPostDocumentRequirement> getJobPostDocumentRequirements() {
+        return jobPostDocumentRequirements;
+    }
+
+    public void setJobPostDocumentRequirements(List<JobPostDocumentRequirement> jobPostDocumentRequirements) {
+        this.jobPostDocumentRequirements = jobPostDocumentRequirements;
     }
 }

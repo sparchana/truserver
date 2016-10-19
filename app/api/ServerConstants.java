@@ -63,12 +63,15 @@ public class ServerConstants {
     public static final int OBJECT_TYPE_JOB_POST_VIEW= 7;
     public static final int OBJECT_TYPE_PARTNER= 8;
     public static final int OBJECT_TYPE_ASSESSMENT_ATTEMPT= 9;
-    public static final int OBJECT_TYPE_NEW_JOB_POST= 10;
-    public static final int OBJECT_TYPE_RECRUTER_LEAD= 11;
-    public static final int OBJECT_TYPE_SUPPORT= 0;
 
     public static final int JOB_STATUS_ACTIVE= 2;
 
+    public static final int OBJECT_TYPE_PRESCREEN_ATTEMPT= 10;
+    public static final int OBJECT_TYPE_JOB_POST_WORKFLOW= 11;
+
+    public static final int OBJECT_TYPE_NEW_JOB_POST= 12;
+    public static final int OBJECT_TYPE_RECRUITER_LEAD= 13;
+    public static final int OBJECT_TYPE_SUPPORT= 0;
 
     public static final boolean FOLLOW_UP_DEACTIVATE = false;
     public static final boolean FOLLOW_UP_ACTIVATE = true;
@@ -125,7 +128,16 @@ public class ServerConstants {
 
     // JobPost Workflow status
     public static final int JWF_STATUS_SELECTED = 1;
-
+    public static final int JWF_STATUS_PRESCREEN_ATTEMPTED = 2;
+    public static final int JWF_STATUS_PRESCREEN_COMPLETED = 3;
+    // Requirements Table
+    public static final String PROFILE_REQUIREMENT_TABLE_AGE = "age";
+    public static final String PROFILE_REQUIREMENT_TABLE_EXPERIENCE = "experience";
+    public static final String PROFILE_REQUIREMENT_TABLE_EDUCATION = "education";
+    public static final String PROFILE_REQUIREMENT_TABLE_SALARY = "salary";
+    public static final String PROFILE_REQUIREMENT_TABLE_GENDER = "gender";
+    public static final String PROFILE_REQUIREMENT_TABLE_LOCATION = "locality";
+    public static final String PROFILE_REQUIREMENT_TABLE_WORKTIMINGS = "worktimings";
     public static Map<String, String> devTeamMobile;
     static {
         devTeamMobile = new HashMap<String, String>();
@@ -184,8 +196,20 @@ public class ServerConstants {
     public static int SOURCE_INTERNAL = 0;
     public static int SOURCE_BABAJOBS = 1;
 
+    // is_common status for asset, idPoof
+
+    public static final int IS_NOT_COMMON = 0;
+    public static final int IS_COMMON= 1;
+
+    // preScreening category
+    public static final int CATEGORY_DOCUMENT = 1;
+    public static final int CATEGORY_LANGUAGE = 2;
+    public static final int CATEGORY_ASSET = 3;
+    public static final int CATEGORY_PROFILE = 4;
     public static int RECRUITER_CATEGORY_CONTACT_UNLOCK = 1;
     public static int RECRUITER_CATEGORY_INTERVIEW_UNLOCK = 2;
+
+    // pre screen front end ui ids
 
     public static final String ACTIVE_WITHIN_24_HOURS = "Within 24 hrs";
     public static final String ACTIVE_LAST_3_DAYS = "Last 3 days";

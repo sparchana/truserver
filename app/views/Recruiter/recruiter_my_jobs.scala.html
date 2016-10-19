@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Recruiter Home | TruJobs - Post jobs and hire the right candidates</title>
+
+    <meta name="keywords" content="hire driver, hire fresher, hire candidate sites, job posting, hire sales candidate, hire beautician,
+        hire, hire receptionist, hire office admin, hire office assistant,
+        hire plumber, hire teacher, hire entry level candidate,
+        hire delivery boys, hire call center executives, hire BPO, hire kpo, hire hire hire , hire data entry candidate, hire back office canididate,
+        hire receptionist, hire beautician, hire experienced candidate, hire in Bangalore, hire cashier, hire entry level candidate, hire freshers,
+        hire plumber, hire electrician, hire accountants, hire in bangalore">
+
+    <link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+
+      <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
+    <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
+    <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_myjobs.css">
+
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/jquery.tokenize.css" />
+
+    <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
+
+    <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/jquery.tokenize.js"></script>
+
+
+    <meta name="theme-color" content="#000000">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  </head>
+  <body id="recruiterHome">
+    <div class="navbar-fixed">
+      <nav>
+        <div class="container" style="width: 85%;">
+          <div class="nav-wrapper">
+            <a href="#" class="brand-logo">
+              <img id="navLogo" src="/assets/recruiter/img/trujobs-recruiter.png" style="height: 32px;
+                margin-top: -2%">
+            </a>
+            <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+            <ul class="right hide-on-med-and-down">
+              <li><a href="/recruiter/home">Home</a></li>
+              <li><a href="/recruiter/candidateSearch">Search Candidate</a></li>
+              <li><a href="/recruiter/profile">Profile</a></li>
+              <li><a onclick="logoutRecruiter()" class="waves-effect waves-light ascentGreen lighten-1 btn"><font style="color: #fff; font-weight: 600">Logout</font></a></li>
+            </ul>
+          </div>
+          <ul class="side-nav" id="mobile-demo">
+            <li><a href="/recruiter/home">Home</a></li>
+            <li><a href="/recruiter/candidateSearch">Search Candidate</a></li>
+            <li><a href="/recruiter/profile">Profile</a></li>
+            <li><a onclick="logoutRecruiter()">Logout</a></li>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <div class="back-banner"></div>
+      <div style="display: flex;justify-content: center;align-items: center; margin-top: -360px">
+          <div class="container recruiterHomeMainCard" >
+              <h5>Recruiter home!</h5>
+              <a href="/recruiter/profile" id="editBtn" class="btn-floating btn-large waves-effect waves-light red" style="margin-top: -22px; float: right"><i class="material-icons">mode_edit</i></a>
+              <hr>
+
+              <div class="row">
+                  <div class="col s12 l3" style="display: flex;justify-content: center;align-items: center;">
+                      <div style="text-align: center">
+                          <img src="/assets/dashboard/img/userMale.svg" id="userImgRecruiter">
+                          <br>
+                          <div id="recName" style="font-size: 18px; font-weight: bold">Not Specified</div>
+                          <h6 id="recMobile" >Not Specified</h6>
+                      </div>
+                  </div>
+
+                  <div class="col s12 l9">
+                      <div class="row">
+                          <div class="col-sm-6" style="margin-top: 4px">
+                              <div style="display : inline-block; margin: 4px;">
+                                  <img src="/assets/recruiter/img/icons/envelope.svg" height="24px;" style="margin-top: -4px">
+                              </div>
+                              <div style="display: inline-block;">
+                                  <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Email</div>
+                                  <div id="recEmail" style="margin-left: 4px; display: inline-block">Not Specified</div>
+                              </div>
+                          </div>
+
+                          <div class="col-sm-6" style="margin-top: 4px">
+                              <div style="display : inline-block; margin: 4px;">
+                                  <img src="/assets/recruiter/img/icons/building.svg" height="24px;" style="margin-top: -4px">
+                              </div>
+                              <div style="display: inline-block; margin-top: 4px">
+                                  <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Company</div>
+                                  <div id="recCompany" style="margin-left: 4px; display: inline-block">Not Specified</div>
+                              </div>
+                          </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-sm-6" >
+                              <div style="display : inline-block; margin: 4px;">
+                                  <img src="/assets/recruiter/img/icons/telephone.svg" height="24px;" style="margin-top: -4px">
+                              </div>
+                              <div style="display: inline-block; margin-top: 4px" style="margin-top: 6px">
+                                  <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Landline</div>
+                                  <div id="recLandline" style="margin: 4px; display: inline-block">Not Specified</div>
+                              </div>
+                          </div>
+
+                          <div class="col-sm-6" >
+                              <div style="display : inline-block; margin: 4px;">
+                                  <img src="/assets/recruiter/img/icons/linkedin-logo.svg" height="24px;" style="margin-top: -4px">
+                              </div>
+                              <div style="display: inline-block; margin-top: 4px">
+                                  <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Linkedin Profile</div>
+                                  <div id="recLinkedin" style="margin: 4px; display: inline-block">Not Specified</div>
+                              </div>
+                          </div>
+                      </div>
+
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="container">
+      <div class="col s12 m12">
+          <div class="card">
+            <div class="card-content">
+
+            </div>
+          </div>
+      </div>
+      </div>
+    <!--Footer start-->
+    <footer class="page-footer" style="background-color: #424242;">
+      <div class="container">
+        <div class="row" style="margin: 0">
+          <div class="col l6 s12">
+            <h5 class="white-text">Hire in Bangalore</h5>
+            <p class="grey-text text-lighten-4">Connect With Us On<img src="/assets/recruiter/img/fbmain.svg" id="fbLogo" style="margin-left: 2%;
+              width: 6%"></p>
+          </div>
+          <div class="col l4 offset-l2 s12">
+            <h5 class="white-text">Get in touch</h5>
+            <ul>
+              <li><a class="grey-text text-lighten-3" href="#!">Write us at: info@@trujobs.in</a></li>
+              <li><a class="grey-text text-lighten-3" href="#!">Have queries? Talk to us at 8880007799</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="container-fluid">
+        <div class="row" style="margin: 0">
+          <img src="/assets/recruiter/img/skyline_small.svg" width="100%">
+        </div>
+      </div>
+      <div class="footer-copyright">
+        <div class="container">
+            © 2016 Trujobs.in | Bengaluru, India. All Right Reserved. Privacy Policy
+        </div>
+      </div>
+    </footer>
+  </body>
+
+  <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
+  <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+  <script type="text/javascript" src="/assets/recruiter/js/recruiter_home.js"></script>
+</html>

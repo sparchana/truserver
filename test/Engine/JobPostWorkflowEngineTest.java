@@ -45,7 +45,6 @@ public class JobPostWorkflowEngineTest {
     private JobPostWorkflowEngineTest.MethodType type;
     private JobPostWorkflowEngine jobPostWorkflowEngine;
     private Long jobPostId;
-    private int minAge;
     private int maxAge;
     private int gender;
 

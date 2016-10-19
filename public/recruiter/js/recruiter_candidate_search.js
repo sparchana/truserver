@@ -353,7 +353,6 @@ function performSearch() {
 
         NProgress.start();
         var d = {
-            minAge: "",
             maxAge: "",
             minSalary: 0,
             maxSalary: parseInt($("#filterSalary").val()),
@@ -402,37 +401,43 @@ function processDataMatchCandidate(returnedData) {
     NProgress.done();
     $("#searchBtn").removeClass("disabled");
     $("#filterBtn").removeClass("disabled");
-    var candidateCount = Object.keys(returnedData).length;
     $("#loadingIcon").hide();
+    if(returnedData != "0"){
+        var candidateCount = Object.keys(returnedData).length;
 
-    if(candidateCount > 0){
-        notifySuccess(candidateCount + " candidates found!");
-        $("#candidateResultContainer").html("");
+
+        if(candidateCount > 0){
+            notifySuccess(candidateCount + " candidates found!");
+            $("#candidateResultContainer").html("");
             candidateSearchResult = [];
-        $.each(returnedData, function (key, value) {
-            candidateSearchResult.push(value);
-        });
-
-        //render candidate cards with last active filter
-        $("#latestActive").attr('checked', true);
-        sortByLastActive(1);
-
-        try {
-            $.ajax({
-                type: "POST",
-                url: "/recruiter/api/getUnlockedCandidates/",
-                async: true,
-                contentType: false,
-                data: false,
-                success: processDataUnlockedCandidates
+            $.each(returnedData, function (key, value) {
+                candidateSearchResult.push(value);
             });
-        } catch (exception) {
-            console.log("exception occured!!" + exception.stack);
-        }
 
+            //render candidate cards with last active filter
+            $("#latestActive").attr('checked', true);
+            sortByLastActive(1);
+
+            try {
+                $.ajax({
+                    type: "POST",
+                    url: "/recruiter/api/getUnlockedCandidates/",
+                    async: true,
+                    contentType: false,
+                    data: false,
+                    success: processDataUnlockedCandidates
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception.stack);
+            }
+
+        } else{
+            $("#noCandidateDiv").show();
+            notifySuccess("No Candidates found!");
+        }
     } else{
         $("#noCandidateDiv").show();
-        notifySuccess("No Candidates found!");
+        notifySuccess("Something went wrong! Please try again later!");
     }
 }
 

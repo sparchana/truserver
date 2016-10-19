@@ -412,6 +412,22 @@ public class InteractionService {
                 channel
         );
         InteractionService.createInteraction(interaction);
+    }
 
+    public static void createInteractionForPreScreenAttempts(String objAuuId, String objBuuId,
+                                                             Integer interactionType, String interactionResult)
+    {
+        Interaction interaction = new Interaction(
+                objAuuId,
+                ServerConstants.OBJECT_TYPE_JOB_POST_WORKFLOW,
+                objBuuId,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                interactionType,
+                null,
+                interactionResult,
+                session().get("sessionUsername"),
+                INTERACTION_CHANNEL_SUPPORT_WEBSITE
+        );
+        InteractionService.createInteraction(interaction);
     }
 }

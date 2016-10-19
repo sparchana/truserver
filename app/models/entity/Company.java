@@ -29,19 +29,19 @@ public class Company extends Model {
     @Column(name = "CompanyUUId", columnDefinition = "varchar(255) not null")
     private String companyUUId;
 
-    @Column(name = "CompanyName", columnDefinition = "varchar(50) not null")
+    @Column(name = "CompanyName", columnDefinition = "text not null")
     private String companyName;
 
     @Column(name = "CompanyEmployeeCount", columnDefinition = "varchar(15) signed null")
     private String companyEmployeeCount;
 
-    @Column(name = "CompanyWebsite", columnDefinition = "varchar(30) null")
+    @Column(name = "CompanyWebsite", columnDefinition = "text null")
     private String companyWebsite;
 
-    @Column(name = "CompanyDescription", columnDefinition = "varchar(5000) null")
+    @Column(name = "CompanyDescription", columnDefinition = "text null")
     private String companyDescription;
 
-    @Column(name = "CompanyAddress", columnDefinition = "varchar(1000) null")
+    @Column(name = "CompanyAddress", columnDefinition = "text null")
     private String companyAddress;
 
     @Column(name = "Latitude", columnDefinition = "double(10,6) null")
@@ -53,7 +53,7 @@ public class Company extends Model {
     @Column(name = "CompanyPinCode", columnDefinition = "bigint signed null")
     private Long companyPinCode;
 
-    @Column(name = "CompanyLogo", columnDefinition = "varchar(80) null")
+    @Column(name = "CompanyLogo", columnDefinition = "text null")
     private String companyLogo;
 
     @Column(name = "CompanyCreateTimestamp", columnDefinition = "timestamp not null default current_timestamp")

@@ -5,6 +5,7 @@ var globalRecAgentNumber;
 var allLocalityArray = [];
 var allJobArray = [];
 var shouldAddFooter = true;
+var jobPostId;
 
 
 function getLocality() {
@@ -241,44 +242,17 @@ function getIdProof(idProofList) {
     return "NA";
 }
 
-openPreScreenModal = function (mobile) {
-    alert("will open pre screen modal in future for candidate_id : " + mobile);
+openPreScreenModal = function (mobile, candidateId) {
+    console.log("will open pre screen modal in future for candidate_id : " + mobile);
+    getPreScreenContent(jobPostId, candidateId);
 };
 
-callHandler = function (mobile, id) {
-    console.log("agentMobileNumber:" + globalRecAgentNumber);
-    if (typeof globalRecAgentNumber != 'undefined') {
-        console.log("Call Initiated for " + "+" + mobile + " by " + globalRecAgentNumber);
-        var s = {
-            api_key: "dae93473-50a6-11e5-bbe8-067cf20e9301",
-            agent_number: globalRecAgentNumber,
-            phone_number: "+" + mobile,
-            sr_number: "+918880007799"
-        };
+function showRadiusValue(value){
+    document.getElementById("radiusValue").innerHTML = value;
+}
 
-        try {
-            $.ajax({
-                url: "https://sr.knowlarity.com/vr/api/click2call/",
-                async: false,
-                type: "POST",
-                data: s,
-                contentType: "jsonp",
-                dataType: 'jsonp',
-                cache: !1,
-                success: function (returnedData) {
-                    console.log("KW Response : " + JSON.stringify(returnedData));
-                    openPreScreenModal(id);
-                },
-                error: function (error) {
-                    console.log("Response Error: " + JSON.stringify(error));
-                    openPreScreenModal(id);
-                }
-            });
-        } catch (exception) {
-        }
-    } else {
-        openPreScreenModal(id);
-    }
+callHandler = function (mobile, candidateId) {
+    openPreScreenModal(mobile, candidateId);
 };
 
 $(function () {
@@ -286,14 +260,13 @@ $(function () {
     var app = {
         jpId: null,
         jpJobRoleId: 0,
-        jpLocalityIdList: [],
         jpMinSalary: null,
         jpMaxSalary: null,
-        jpMinAge: null,
         jpMaxAge: null,
-        jpExperienceId: null,
         jpGender: null,
-        jpEducationId: null,
+        jpLocalityIdList: [],
+        jpExperienceIdList: [],
+        jpEducationIdList: [],
         jpLanguageIdList: [],
         jpTableFormattedCandidateList: [],
         jpCandidateList: [],
@@ -318,7 +291,11 @@ $(function () {
                 exit: 'animated lightSpeedOut'
             }
         }, {
-            type: type
+            type: type,
+            placement: {
+                from: "top",
+                align: "center"
+            }
         });
     };
 
@@ -330,6 +307,7 @@ $(function () {
     app.setJPId = function () {
         var pathElement = window.location.pathname.split('/');
         app.jpId = pathElement[pathElement.length - 2];
+        jobPostId = app.jpId;
     };
 
     app.init = function () {
@@ -412,9 +390,7 @@ $(function () {
 
         function processDataCheckEducation(returnedEdu) {
             if (returnedEdu != null) {
-                var data = [
-                    {label: "None Selected", value: "0"}
-                ];
+                var data = [];
 
                 returnedEdu.forEach(function (education) {
                     var opt = {
@@ -423,9 +399,10 @@ $(function () {
                     data.push(opt);
                 });
 
-                var selectList = $('#educationSelect');
+                var selectList = $('#educationMultiSelect');
                 selectList.multiselect({
                     nonSelectedText: 'None Selected',
+                    includeSelectAllOption: true,
                     maxHeight: 300
                 });
                 selectList.multiselect('dataprovider', data);
@@ -477,9 +454,7 @@ $(function () {
         }
 
         function processDataCheckExperience(returnedExperience) {
-            var data = [
-                {label: "Select None", value: "0"}
-            ];
+            var data = [];
 
             returnedExperience.forEach(function (experience) {
                 var opt = {
@@ -488,16 +463,16 @@ $(function () {
                 data.push(opt);
             });
 
-            var selectList = $('#experienceSelect');
+            var selectList = $('#experienceMultiSelect');
             selectList.multiselect({
                 nonSelectedText: 'None Selected',
+                includeSelectAllOption: true,
                 maxHeight: 300
             });
             selectList.multiselect('dataprovider', data);
             selectList.multiselect('rebuild');
         }
 
-        NProgress.done();
     };
 
     app.initParams = function () {
@@ -516,17 +491,33 @@ $(function () {
         } catch (exception) {
             console.log("exception occured!!" + exception.stack);
         }
-        NProgress.done();
+    };
+
+    app.initJobCard = function () {
+
+        NProgress.start();
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/getJobPostInfo/" + app.jpId + "/1",
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: app.populateJobPostCardUI
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception.stack);
+        }
     };
 
     app.processParamsAndUpdateUI = function (returnedData) {
         if (returnedData != null) {
+
+            app.populateJobPostCardUI(returnedData);
+
             app.jpId = returnedData.jobPostId;
             // gender, language, age
-            if (returnedData.jobPostMinAge != null) {
-                app.jpMinAge = returnedData.jobPostMinAge;
-                $("#minAge").val(app.jpMinAge);
-            }
             if (returnedData.jobPostMaxAge != null) {
                 app.jpMaxAge = returnedData.jobPostMaxAge;
                 $("#maxAge").val(app.jpMaxAge);
@@ -542,17 +533,21 @@ $(function () {
             $("#genderSelect").multiselect('rebuild');
 
             if (returnedData.jobPostExperience != null) {
-                app.jpExperienceId = returnedData.jobPostExperience.experienceId;
-                $("#experienceSelect").val(app.jpExperienceId);
-                $("#experienceSelect").multiselect('rebuild');
+                app.jpExperienceIdList = [];
+                console.log(returnedData.jobPostExperience.experienceId);
+                app.jpExperienceIdList.push(returnedData.jobPostExperience.experienceId);
+                $("#experienceMultiSelect").val(app.jpExperienceIdList);
+                $("#experienceMultiSelect").multiselect('rebuild');
             }
             if (returnedData.jobPostEducation != null) {
-                app.jpEducationId = returnedData.jobPostEducation.educationId;
-                $("#educationSelect").val(app.jpEducationId);
-                $("#educationSelect").multiselect('rebuild');
+                app.jpEducationIdList = [];
+                app.jpEducationIdList.push(returnedData.jobPostEducation.educationId);
+                $("#educationMultiSelect").val(app.jpEducationIdList);
+                $("#educationMultiSelect").multiselect('rebuild');
             }
-            if (returnedData.jobPostLanguageRequirement != null) {
-                var req = returnedData.jobPostLanguageRequirement;
+            console.log(returnedData.jobPostLanguageRequirements);
+            if (returnedData.jobPostLanguageRequirements != null) {
+                var req = returnedData.jobPostLanguageRequirements;
                 app.jpLanguageIdList = [];
                 req.forEach(function (languageRequirement) {
                     if (languageRequirement != null) {
@@ -624,9 +619,12 @@ $(function () {
     };
 
     app.fetchCandidateList = function () {
+
         var i;
         var modifiedLocality = $('#jobPostLocality').val().split(",");
         var modifiedLanguageIdList = $('#languageMultiSelect').val();
+        var modifiedExpIdList = $('#experienceMultiSelect').val();
+        var modifiedEduIdList = $('#educationMultiSelect').val();
 
 
         // this also converts string data to integer and sends to server
@@ -642,20 +640,27 @@ $(function () {
                 app.jpLocalityIdList.push(parseInt(modifiedLocality[i]));
             }
         }
+        if (modifiedExpIdList != null) {
+            app.jpExperienceIdList = [];
+            for (i = 0; i < modifiedExpIdList.length; i++) {
+                app.jpExperienceIdList.push(parseInt(modifiedExpIdList[i]));
+            }
+        }
+        if (modifiedEduIdList!= null) {
+            app.jpEducationIdList = [];
+            for (i = 0; i < modifiedEduIdList.length; i++) {
+                app.jpEducationIdList.push(parseInt(modifiedEduIdList[i]));
+            }
+        }
 
         app.jpJobRoleId = null;
 
         app.jpJobRoleId = (parseInt($("#jobPostJobRole").val()));
 
-        app.jpExperienceId = $('#experienceSelect').val();
-
-        app.jpEducationId = $('#educationSelect').val();
-
         app.jpGender = $('#genderSelect').val();
 
         app.jpMinSalary = $('#minSalary').val();
         app.jpMaxSalary = $('#maxSalary').val();
-        app.jpMinAge = $('#minAge').val();
         app.jpMaxAge = $('#maxAge').val();
 
         if (app.jpJobRoleId == null || app.jpLocalityIdList == null || app.jpLocalityIdList.length == 0) {
@@ -663,22 +668,21 @@ $(function () {
         }
 
         if (app.shouldSend) {
-
+            NProgress.start();
             var d = {
                 jobPostId: app.jpId,
-                minAge: app.jpMinAge,
                 maxAge: app.jpMaxAge,
                 minSalary: app.jpMinSalary,
                 maxSalary: app.jpMaxSalary,
-                experienceId: app.jpExperienceId,
                 gender: app.jpGender,
                 jobPostJobRoleId: app.jpJobRoleId,
-                jobPostEducationId: app.jpEducationId,
+                experienceIdList: app.jpExperienceIdList,
+                jobPostEducationIdList: app.jpEducationIdList,
                 jobPostLocalityIdList: app.jpLocalityIdList,
-                jobPostLanguageIdList: app.jpLanguageIdList
+                jobPostLanguageIdList: app.jpLanguageIdList,
+                distanceRadius: parseInt($('#radiusValue').text())
             };
 
-            NProgress.start();
             try {
                 $.ajax({
                     type: "POST",
@@ -691,7 +695,6 @@ $(function () {
             } catch (exception) {
                 console.log("exception occured!!" + exception.stack);
             }
-            NProgress.done();
         }
     };
 
@@ -716,8 +719,11 @@ $(function () {
             console.log("candiateList Empty");
             app.tableContainer.hide();
             app.notify("No Candidates !", 'danger');
+            $('#moveSelectedBtn').attr('disabled', true);
             NProgress.done();
             return;
+        } else {
+            $('#moveSelectedBtn').attr('disabled', false);
         }
         var returnedDataArray = [];
         try {
@@ -735,11 +741,35 @@ $(function () {
                     locality = newCandidate.candidate.locality.localityName;
                 }
 
+                var jobApplicationMode ="";
+                var preScreenSelectionTimeStamp = "";
+                if (app.currentView == "pre_screen_view") {
+                    if(newCandidate.extraData.jobApplicationMode != null) {
+                        jobApplicationMode = newCandidate.extraData.jobApplicationMode;
+                    } else {
+                        jobApplicationMode = "NA";
+                    }
+                    if(newCandidate.extraData.preScreenSelectionTimeStamp != null){
+                        preScreenSelectionTimeStamp = getDateTime(newCandidate.extraData.preScreenSelectionTimeStamp);
+                    }
+                }
+
+                var preScreenAttemptCount = function () {
+                    if (app.currentView == "pre_screen_view") {
+                        if(newCandidate.extraData.preScreenCallAttemptCount == null) {
+                            return "0";
+                        } else {
+                            return newCandidate.extraData.preScreenCallAttemptCount;
+                        }
+                    } else {
+                        return "";
+                    }
+                };
                 var varColumn = function () {
                     if (app.currentView == "pre_screen_view") {
-                        return '<input type="submit" value="Call"  style="width:100px" onclick="callHandler(' + newCandidate.candidate.candidateMobile + ', ' + newCandidate.candidate.candidateId + ');" id="' + newCandidate.candidate.lead.leadId + '" class="btn btn-primary">'
+                        return '<input type="submit" value="Pre-Screen"  style="width:100px" onclick="callHandler(' + newCandidate.candidate.candidateMobile + ', ' + newCandidate.candidate.candidateId + ');" id="' + newCandidate.candidate.lead.leadId + '" class="btn btn-primary">'
                     } else {
-                        return "NA";
+                        return "";
                     }
                 };
 
@@ -766,11 +796,14 @@ $(function () {
                     'candidateExperienceLetter': getYesNo(newCandidate.candidate.candidateExperienceLetter),
                     'candidateIdProofs': getIdProof(newCandidate.candidate.idProofReferenceList),
                     'candidateTimeShiftPref': timeShiftPref,
-                    'lastActive': (newCandidate.extraData.lastActive),
+                    'lastActive': (newCandidate.extraData.lastActive.lastActiveValueName),
                     'candidateCreateTimestamp': getDateTime(newCandidate.candidate.candidateCreateTimestamp),
                     'isMinProfileComplete': getYesNo(newCandidate.candidate.isMinProfileComplete),
                     'experience': getExperience(newCandidate.candidate.candidateExpList),
                     'candidateId': newCandidate.candidate.candidateId,
+                    'preScreenAttempt': preScreenAttemptCount,
+                    'jobApplicationMode': jobApplicationMode,
+                    'preScreenSelectionTS': preScreenSelectionTimeStamp,
                     'varColumn': varColumn
                 })
             });
@@ -819,6 +852,9 @@ $(function () {
                     {"data": "isMinProfileComplete"},
                     {"data": "experience"},
                     {"data": "candidateId"},
+                    {"data": "preScreenAttempt"},
+                    {"data": "jobApplicationMode"},
+                    {"data": "preScreenSelectionTS"},
                     {"data": "varColumn"}
                 ],
                 "deferRender": true,
@@ -849,7 +885,6 @@ $(function () {
             });
 
             /* Initialise datatables */
-            $.fn.dataTable.moment('dd/MM/YYYY HH:mm:ss');
 
             NProgress.done();
         } catch (exception) {
@@ -870,6 +905,11 @@ $(function () {
     };
 
     app.getSelectionFromTable = function () {
+        if(app.jpSelectedCandidateList == null || app.table == null){
+            app.notify("No Candidates found !", 'danger');
+
+            return;
+        }
         var selectedCandidateIds = app.table.rows({selected: true}).ids();
         var arrayLength = selectedCandidateIds.length;
         app.jpSelectedCandidateList = [];
@@ -903,8 +943,6 @@ $(function () {
         } catch (exception) {
             console.log("exception occured!!" + exception.stack);
         }
-        NProgress.done();
-
     };
 
     app.responseInterpreter = function (response) {
@@ -923,8 +961,6 @@ $(function () {
     // pre_screen methods
     app.initPreScreenView = function () {
         NProgress.start();
-        var d = {};
-
         try {
             $.ajax({
                 type: "POST",
@@ -969,6 +1005,20 @@ $(function () {
             console.log("exception occured!!" + exception);
         }
     };
+    app.populateJobPostCardUI = function (returnedData) {
+        NProgress.start();
+        var jobPostTitle = returnedData.jobPostTitle;
+        var jobPostCompany = returnedData.company.companyName;
+        var jobPostSalary = "Rs. "+returnedData.jobPostMinSalary + " - Rs. " + returnedData.jobPostMaxSalary;
+
+        app.renderJobCard(jobPostTitle, jobPostCompany, jobPostSalary);
+    };
+
+    app.renderJobCard = function (jobPostTitle, jobPostCompany, jobPostSalary) {
+        $('#job_post_title').text(jobPostTitle);
+        $('#job_post_company_title').text(jobPostCompany);
+        $('#job_post_salary').text(jobPostSalary);
+    };
 
     app.processSupportAgentData = function (returnedData) {
         var mobileNum = returnedData.agentMobileNumber;
@@ -989,6 +1039,9 @@ $(function () {
     app.setCurrentView();
 
     if (app.currentView == "match_view") {
+        $('#header_view_title').text("Match View");
+        $('.navigation__link').removeClass("mdl-navigation__link--current");
+        $('#match_view_drawer').removeClass("mdl-navigation__link--current").addClass("mdl-navigation__link--current");
 
         app.init();
         app.initParams();
@@ -1005,8 +1058,13 @@ $(function () {
         });
     }
     else if (app.currentView == "pre_screen_view") {
+        $('#header_view_title').text("Pre Screen View");
+        $('.navigation__link').removeClass("mdl-navigation__link--current");
+        $('#pre_screen_view_drawer').removeClass("mdl-navigation__link--current").addClass("mdl-navigation__link--current");
         app.getSupportAgent();
         app.initPreScreenView();
-
+        app.initJobCard();
+    } else {
+        $('#header_view_title').text("Future View");
     }
 });

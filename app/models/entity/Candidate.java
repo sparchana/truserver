@@ -19,9 +19,7 @@ import play.Logger;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by batcoder1 on 19/4/16.
@@ -193,7 +191,7 @@ public class Candidate extends Model {
     private List<JobPostWorkflow> jobPostWorkflowList;
 
     @Transient
-    private String matchedLocation;
+    private String matchedLocation = null;
 
     @JsonBackReference
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
@@ -395,7 +393,23 @@ public class Candidate extends Model {
     }
 
     public Integer getCandidateAge() {
-        return candidateAge;
+        if(this.candidateDOB != null){
+            Date current = new Date();
+            Date bday = new Date(this.getCandidateDOB().getTime());
+
+            final Calendar calender = new GregorianCalendar();
+            calender.set(Calendar.HOUR_OF_DAY, 0);
+            calender.set(Calendar.MINUTE, 0);
+            calender.set(Calendar.SECOND, 0);
+            calender.set(Calendar.MILLISECOND, 0);
+            calender.setTimeInMillis(current.getTime() - bday.getTime());
+
+            int age;
+            age = calender.get(Calendar.YEAR) - 1970;
+            age += (float) calender.get(Calendar.MONTH) / (float) 12;
+            this.candidateAge = age;
+        }
+        return this.candidateAge;
     }
 
     public Timestamp getCandidateCreateTimestamp() {

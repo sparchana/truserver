@@ -8,25 +8,18 @@ import java.util.List;
  * Created by zero on 7/10/16.
  */
 public class MatchingCandidateRequest extends WorkflowRequest{
-    public Integer minAge ;
     public Integer maxAge ;
     public Long minSalary ;
     public Long maxSalary ;
+    public List<Integer> experienceIdList ;
     public Integer experienceId ;
     public Integer gender ;
-    public Long jobPostJobRoleId ;
+    public Long jobPostJobRoleId;
+    public List<Integer> jobPostEducationIdList ;
     public Integer jobPostEducationId ;
     public List<Long> jobPostLocalityIdList ;
     public List<Integer> jobPostLanguageIdList ;
     public Double distanceRadius ;
-
-    public Integer getMinAge() {
-        return minAge;
-    }
-
-    public void setMinAge(Integer minAge) {
-        this.minAge = minAge;
-    }
 
     public Integer getMaxAge() {
         return maxAge;
@@ -52,14 +45,6 @@ public class MatchingCandidateRequest extends WorkflowRequest{
         this.maxSalary = maxSalary;
     }
 
-    public Integer getExperienceId() {
-        return experienceId;
-    }
-
-    public void setExperienceId(Integer experienceId) {
-        this.experienceId = experienceId;
-    }
-
     public Integer getGender() {
         return gender;
     }
@@ -74,14 +59,6 @@ public class MatchingCandidateRequest extends WorkflowRequest{
 
     public void setJobPostJobRoleId(Long jobPostJobRoleId) {
         this.jobPostJobRoleId = jobPostJobRoleId;
-    }
-
-    public Integer getJobPostEducationId() {
-        return jobPostEducationId;
-    }
-
-    public void setJobPostEducationId(Integer jobPostEducationId) {
-        this.jobPostEducationId = jobPostEducationId;
     }
 
     public List<Long> getJobPostLocalityIdList() {
@@ -106,6 +83,39 @@ public class MatchingCandidateRequest extends WorkflowRequest{
 
     public void setDistanceRadius(Double distanceRadius) {
         this.distanceRadius = distanceRadius;
+    }
+
+    public Integer getExperienceId() {
+        return experienceId;
+    }
+
+    public void setExperienceId(Integer experienceId) {
+        this.experienceId = experienceId;
+    }
+
+
+    public Integer getJobPostEducationId() {
+        return jobPostEducationId;
+    }
+
+    public void setJobPostEducationId(Integer jobPostEducationId) {
+        this.jobPostEducationId = jobPostEducationId;
+    }
+
+    public List<Integer> getExperienceIdList() {
+        return experienceIdList;
+    }
+
+    public void setExperienceIdList(List<Integer> experienceIdList) {
+        this.experienceIdList = experienceIdList;
+    }
+
+    public List<Integer> getJobPostEducationIdList() {
+        return jobPostEducationIdList;
+    }
+
+    public void setJobPostEducationIdList(List<Integer> jobPostEducationIdList) {
+        this.jobPostEducationIdList = jobPostEducationIdList;
     }
 }
 

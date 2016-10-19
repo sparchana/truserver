@@ -14,63 +14,53 @@
     <div id="searchError" style="text-align: center;
         color: red"><h5 id="searchErrorMsg"></h5></div>
     <div id="matchPane">
-        <div class="panel mdl-card mdl-shadow--4dp">
+        <div class="panel mdl-card mdl-shadow--4dp" style="overflow: visible !important;">
             <div class="panel-heading" id="match-pane-header" data-toggle="collapse" data-target="#matchPaneBody" onmouseover="" style="cursor: pointer;">
                 Match Options<span class="glyphicon glyphicon-menu-up pull-right"></span></div>
             <div class="panel-body collapse in" id="matchPaneBody">
-
                 <form id="candidateMatchForm">
                     <div class="row">
                         <div class="col-sm-1" style="margin-top:8px"><font size="2">Job Role :</font></div>
-                        <div class="col-sm-5">
+                        <div class="col-sm-3">
                             <input type="text" id="jobPostJobRole" >
                         </div>
                         <div class="col-sm-1" style="margin-top:8px"><font size="2">Locality:</font></div>
-                        <div class="col-sm-5">
+                        <div class="col-sm-3">
                             <input type="text" id="jobPostLocality" placeholder="Where do you want to work?">
                         </div>
-                    </div>
-
-                    <div class="row" style="margin-top: 16px">
-                        <div class="col-sm-1" style="margin-top:8px"><font size="2">Min Age:</font></div>
-                        <div class="col-sm-5">
-                            <input type="number" id="minAge" name="minAge" placeholder="Minimum Age?" min="0" max="80" class="form-control input-md">
-                        </div>
                         <div class="col-sm-1" style="margin-top:8px"><font size="2">Max Age:</font></div>
-                        <div class="col-sm-5">
+                        <div class="col-sm-3">
                             <input type="number" id="maxAge" name="maxAge" placeholder="Maximum Age?" min="0" max="70" class="form-control input-md">
                         </div>
                     </div>
 
                     <div class="row" style="margin-top: 16px">
                         <div class="col-sm-1" style="margin-top:8px"><font size="2">Min Salary:</font></div>
-                        <div class="col-sm-5">
+                        <div class="col-sm-3">
                             <input type="number" id="minSalary" name="minSalary" placeholder="Minimum Salary?" min="0" class="form-control input-md">
                         </div>
                         <div class="col-sm-1" style="margin-top:8px"><font size="2">Max Salary:</font></div>
-                        <div class="col-sm-5">
+                        <div class="col-sm-3">
                             <input type="number" id="maxSalary" name="maxSalary" placeholder="Maximum Salary?" min="0" class="form-control input-md">
                         </div>
+                        <div class="col-sm-1" style="margin-top:8px"><font size="2">Experience :</font></div>
+                        <div class="col-sm-3">
+                            <select id="experienceMultiSelect" multiple="multiple"></select>
+                        </div>
                     </div>
 
                     <div class="row" style="margin-top: 16px">
-                        <div class="col-sm-1" style="margin-top:8px"><font size="2">Experience :</font></div>
-                        <div class="col-sm-5">
-                            <select id="experienceSelect"></select>
-                        </div>
+
                         <div class="col-sm-1" style="margin-top:8px"><font size="2">Language</font></div>
-                        <div class="col-sm-5" id="languageMultiSelectDiv">
+                        <div class="col-sm-3" id="languageMultiSelectDiv">
                             <select id="languageMultiSelect" multiple="multiple"></select>
                         </div>
-                    </div>
-
-                    <div class="row" style="margin-top: 16px">
                         <div class="col-sm-1" style="margin-top:8px"><font size="2">Education </font></div>
-                        <div class="col-sm-5" id="educationSelectDiv">
-                            <select id="educationSelect"></select>
+                        <div class="col-sm-3" id="educationSelectDiv">
+                            <select id="educationMultiSelect" multiple="multiple"></select>
                         </div>
                         <div class="col-sm-1" style="margin-top:8px"><font size="2">Gender </font></div>
-                        <div class="col-sm-5" id="genderSelectDiv">
+                        <div class="col-sm-3" id="genderSelectDiv">
                             <select id="genderSelect">
                                 <option value="-1">None Selected</option>
                                 <option value="2">Any</option>
@@ -78,6 +68,14 @@
                                 <option value="1">Female</option>
                             </select>
                         </div>
+                    </div>
+                    <div class="row" style="margin-top: 16px">
+                        <div class="col-sm-1" style="margin-top:8px"><font size="2">Radius (in KM) : </font></div>
+                        <div class="col-sm-3" style="margin-top:8px" id="languageMultiSelectDiv">
+                            <input class="mdl-slider mdl-js-slider" type="range" min="1" max="15" value="10" tabindex="1" oninput="showRadiusValue(this.value)" onchange="showRadiusValue(this.value)">
+
+                        </div>
+                        <div class="col-sm-1" style="margin-top:8px"><font size="2"><div id="radiusValue" style="display: inline-block">10</div> KM</div>
                     </div>
                     <br>
                     <div class="row" id="matchCandidateBtnBox">
@@ -119,7 +117,10 @@
                     <th>MinProfile?</th>
                     <th>Exp Detail</th>
                     <th>Candidate Id</th>
-                    <th>Action</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tfoot>
@@ -151,7 +152,10 @@
                     <th>MinProfile?</th>
                     <th>Exp Detail</th>
                     <th>Candidate Id</th>
-                    <th>Action</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </tfoot>
             <tbody>

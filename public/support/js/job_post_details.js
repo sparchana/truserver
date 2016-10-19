@@ -187,6 +187,45 @@ function processDataGetAllLanguage(returnLanguage) {
     selectList.multiselect('dataprovider', data);
     selectList.multiselect('rebuild');
 }
+function processDataGetAllIdProof(returnedIdProofs) {
+    var data = [];
+
+    returnedIdProofs.forEach(function (idProof) {
+        var opt = {
+            label: idProof.idProofName, value: parseInt(idProof.idProofId)
+        };
+        data.push(opt);
+    });
+
+    var selectList = $('#jobPostDocument');
+    selectList.multiselect({
+        includeSelectAllOption: true,
+        enableCaseInsensitiveFiltering: true,
+        maxHeight: 300
+    });
+    selectList.multiselect('dataprovider', data);
+    selectList.multiselect('rebuild');
+}
+
+function processDataGetAllAsset(returnedAssets) {
+    var data = [];
+
+    returnedAssets.forEach(function (asset) {
+        var opt = {
+            label: asset.assetTitle, value: parseInt(asset.assetId)
+        };
+        data.push(opt);
+    });
+
+    var selectList = $('#jobPostAsset');
+    selectList.multiselect({
+        includeSelectAllOption: true,
+        enableCaseInsensitiveFiltering: true,
+        maxHeight: 300
+    });
+    selectList.multiselect('dataprovider', data);
+    selectList.multiselect('rebuild');
+}
 
 $(document).ready(function () {
     $('#jobPostRecruiter').append(defaultOption);
@@ -364,6 +403,32 @@ $(document).ready(function () {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllIdProof",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetAllIdProof
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllAsset",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetAllAsset
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
 
     try {
         $.ajax({
@@ -401,8 +466,10 @@ $(document).ready(function () {
 });
 
 function processDataGetCreditCategory(returnedData) {
-    $("#candidateContactCreditUnitPrice").val(returnedData[0].recruiterCreditUnitPrice);
-    $("#interviewCreditUnitPrice").val(returnedData[1].recruiterCreditUnitPrice);
+    if(returnedData!=null){
+        $("#candidateContactCreditUnitPrice").val(returnedData[0].recruiterCreditUnitPrice);
+        $("#interviewCreditUnitPrice").val(returnedData[1].recruiterCreditUnitPrice);
+    }
 }
 
 function processDataGetAllTimeSlots(returnedData) {
@@ -434,18 +501,15 @@ function processDataForJobPost(returnedData) {
     $("#jobPostDescription").val(returnedData.jobPostDescription);
 
     // gender, language, age
-    if (returnedData.jobPostMinAge != null) {
-        $("#jobPostMinAge").val(returnedData.jobPostMinAge);
-    }
     if (returnedData.jobPostMaxAge != null) {
         $("#jobPostMaxAge").val(returnedData.jobPostMaxAge);
     }
     if (returnedData.gender !=null) {
         $("#jobPostGender").val(returnedData.gender);
     }
-    if (returnedData.jobPostLanguageRequirement != null) {
+    if (returnedData.jobPostLanguageRequirements != null) {
         var arr = [];
-        var req = returnedData.jobPostLanguageRequirement;
+        var req = returnedData.jobPostLanguageRequirements;
         req.forEach(function (languageRequirement) {
             if(languageRequirement != null){
                 arr.push(languageRequirement.language.languageId);
@@ -453,6 +517,28 @@ function processDataForJobPost(returnedData) {
         });
         $("#jobPostLanguage").val(arr);
         $("#jobPostLanguage").multiselect('rebuild');
+    }
+    if (returnedData.jobPostDocumentRequirements != null) {
+        var arr = [];
+        var req = returnedData.jobPostDocumentRequirements;
+        req.forEach(function (documentRequirement) {
+            if(documentRequirement != null){
+                arr.push(documentRequirement.idProof.idProofId);
+            }
+        });
+        $("#jobPostDocument").val(arr);
+        $("#jobPostDocument").multiselect('rebuild');
+    }
+    if (returnedData.jobPostAssetRequirements != null) {
+        var arr = [];
+        var req = returnedData.jobPostAssetRequirements;
+        req.forEach(function (assetRequirement) {
+            if(assetRequirement != null){
+                arr.push(assetRequirement.asset.assetId);
+            }
+        });
+        $("#jobPostAsset").val(arr);
+        $("#jobPostAsset").multiselect('rebuild');
     }
 
 

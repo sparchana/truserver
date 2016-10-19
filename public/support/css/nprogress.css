@@ -1,10 +1,16 @@
-/* Make clicks pass-through */
+/*
+
+Make clicks pass-through
+  To change color:
+    you might wanna replace #FF4081
+
+*/
 #nprogress {
   pointer-events: none;
 }
 
 #nprogress .bar {
-  background: #29d;
+  background: #FF4081;
 
   position: fixed;
   z-index: 1031;
@@ -22,7 +28,7 @@
   right: 0px;
   width: 100px;
   height: 100%;
-  box-shadow: 0 0 10px #29d, 0 0 5px #29d;
+  box-shadow: 0 0 10px #FF4081, 0 0 5px #FF4081;
   opacity: 1.0;
 
   -webkit-transform: rotate(3deg) translate(0px, -4px);
@@ -45,8 +51,8 @@
   box-sizing: border-box;
 
   border: solid 2px transparent;
-  border-top-color: #29d;
-  border-left-color: #29d;
+  border-top-color: #FF4081;
+  border-left-color: #FF4081;
   border-radius: 50%;
 
   -webkit-animation: nprogress-spinner 400ms linear infinite;

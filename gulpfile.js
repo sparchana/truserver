@@ -34,11 +34,12 @@ paths = {
     css:  "./public/css/",
     js:   "./public/js/",
     supportCss: "./public/support/css/",
-    supportJs: "./public/support/js/"
+    supportJs: "./public/support/js/",
+    commonJs: "./public/common/js/",
 };
 
 jsOrder = {
-    bootstrap: paths.supportJs+"bootstrap.min.js",
+    bootstrap: paths.commonJs+"bootstrap.min.js",
     jquery: paths.supportJs+"jquery-1.12.0.min.js",
     jqDt: paths.supportJs+"jquery.dataTables.min.js",
     npProgress: paths.supportJs+"nprogress.js",

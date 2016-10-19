@@ -39,7 +39,6 @@ import static play.mvc.Controller.session;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.ok;
 import static play.mvc.Results.redirect;
-
 /**
  * Created by dodo on 4/10/16.
  */
@@ -257,7 +256,6 @@ public class RecruiterController {
             if(recruiterProfile != null){
                 if (matchingCandidateRequest != null) {
                     Map<Long, CandidateWorkflowData> candidateSearchMap = JobPostWorkflowEngine.getCandidateForRecruiterSearch(
-                            matchingCandidateRequest.getMinAge(),
                             matchingCandidateRequest.getMaxAge(),
                             matchingCandidateRequest.getMinSalary(),
                             matchingCandidateRequest.getMaxSalary(),
@@ -271,8 +269,7 @@ public class RecruiterController {
 
                     //computing interactionResult values
                     String result = "Search Candidate. Total Candidates found: " + candidateSearchMap.size() +
-                            ". Search parameters: Min age: " + matchingCandidateRequest.getMinAge()+
-                            ", Max age: " + matchingCandidateRequest.getMaxAge()+
+                            ". Search parameters: Max age: " + matchingCandidateRequest.getMaxAge()+
                             ", Min salary: " + matchingCandidateRequest.getMinSalary()+
                             ", Max salary: " + matchingCandidateRequest.getMaxSalary()+
                             ", Gender: " + matchingCandidateRequest.getGender()+
@@ -345,7 +342,7 @@ public class RecruiterController {
     @Security.Authenticated(SecuredUser.class)
     public static Result addJobPost() {
         JsonNode req = request().body().asJson();
-        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
+        Logger.info("Browser: " + request().getHeader("User-Agent") + "; Req JSON : " + req);
         AddJobPostRequest addJobPostRequest = new AddJobPostRequest();
         ObjectMapper newMapper = new ObjectMapper();
         newMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
@@ -355,5 +352,9 @@ public class RecruiterController {
             e.printStackTrace();
         }
         return ok(toJson(JobService.addJobPost(addJobPostRequest, InteractionService.InteractionChannelType.SELF)));
+    }
+
+    public static Result renderAllRecruiterJobPosts() {
+        return ok(views.html.Recruiter.recruiter_my_jobs.render());
     }
 }

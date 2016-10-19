@@ -277,28 +277,22 @@ $(function() {
 
         // checking age, location, gender
         var jobPostLanguage = $('#jobPostLanguage').val();
-        var minAge = $("#jobPostMinAge").val();
+        var jobPostDocument = $('#jobPostDocument').val();
+        var jobPostAsset = $('#jobPostAsset').val();
         var maxAge = $("#jobPostMaxAge").val();
         var jobPostGender = parseInt(document.getElementById("jobPostGender").value);
         if (status !=0 ){
-            if (minAge == 0 || !isValidAge(minAge)) {
-                $("#jobPostMinAge").removeClass('invalid').addClass('invalid');
-                notifyError("Please enter Job Post Min Age Requirement", 'danger');
-                status = 0;
-            }
-            if (!isValidAge(maxAge)) {
+            if (!isValidAge(maxAge) || maxAge < 18) {
                 $("#jobPostMaxAge").removeClass('invalid').addClass('invalid');
-                notifyError("Please enter Job Post Max Age Requirement", 'danger');
-                status = 0;
-            }
-            if(maxAge !=0 && minAge > maxAge) {
-                $("#jobPostMinAge").removeClass('invalid').addClass('invalid');
-                $("#jobPostMaxAge").removeClass('invalid').addClass('invalid');
-                notifyError("Incorrect Min/Max Age", 'danger');
+                if(maxAge < 18) {
+                    notifyError("Max Age should be greater than 18 years", 'danger');
+                } else {
+                    notifyError("Please enter Job Post Max Age Requirement", 'danger');
+                }
                 status = 0;
             }
             if (! jobPostLanguage && jobPostLanguage == null) {
-                var jobPostLanguageSelector = "#job_post_form div.col-sm-9  span div button";
+                var jobPostLanguageSelector = "#jdRequirementPanel div.panel-container span div button";
                 $(jobPostLanguageSelector).removeClass('invalid').addClass('invalid');
 
                 notifyError("Please enter Job Post Language Requirements", 'danger');
@@ -310,7 +304,7 @@ $(function() {
                 status = 0;
             }
             if(status == 0){
-                scrollTo("#jobPostGender");
+                scrollTo("#jdRequirementPanel");
             }
         }
         
@@ -412,7 +406,8 @@ $(function() {
                     jobPostInterviewDays: interviewDays,
                     interviewTimeSlot: slotArray,
                     jobPostLanguage: jobPostLanguage,
-                    jobPostMinAge: minAge,
+                    jobPostDocument: jobPostDocument,
+                    jobPostAsset: jobPostAsset,
                     jobPostMaxAge: maxAge,
                     jobPostGender: jobPostGender
 
