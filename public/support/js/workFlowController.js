@@ -712,7 +712,19 @@ $(function () {
     };
 
     app.fetchCandidateList = function () {
+        if(!$("#matchBtn").is(":disabled")) {
+            $('#matchBtn').attr('disabled', true);
+            setTimeout(function () {
+                if($("#matchBtn").is(":disabled")) {
+                    app.notify("Something went wrong ! Please try again.", 'danger');
+                    $('#matchBtn').attr('disabled', false);
+                }
+                // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
+            }, 26000);
 
+        }
+
+        NProgress.start();
         var i;
         var modifiedLocality = $('#jobPostLocality').val().split(",");
         var modifiedLanguageIdList = $('#languageMultiSelect').val();
@@ -797,7 +809,7 @@ $(function () {
                 $.ajax({
                     type: "POST",
                     url: app.url,
-                    async: false,
+                    async: true,
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(d),
                     success: app.updateMatchTable
@@ -830,10 +842,12 @@ $(function () {
             app.tableContainer.hide();
             app.notify("No Candidates !", 'danger');
             $('#moveSelectedBtn').attr('disabled', true);
+            $('#matchBtn').attr('disabled', false);
             NProgress.done();
             return;
         } else {
             $('#moveSelectedBtn').attr('disabled', false);
+            $('#matchBtn').attr('disabled', false);
         }
         var returnedDataArray = [];
         try {
@@ -859,7 +873,7 @@ $(function () {
                     } else {
                         jobApplicationMode = "NA";
                     }
-                    if(newCandidate.extraData.preScreenSelectionTimeStamp != null){
+                    if(newCandidate.extraData.preScreenSelectionTimeStamp != null) {
                         preScreenSelectionTimeStamp = getDateTime(newCandidate.extraData.preScreenSelectionTimeStamp);
                     }
                 }
@@ -1041,6 +1055,8 @@ $(function () {
     };
 
     app.submitSelectedCandidateList = function () {
+
+        $('#moveSelectedBtn').attr('disabled', true);
         NProgress.start();
         var d = {
             jobPostId: app.jpId,
@@ -1063,13 +1079,15 @@ $(function () {
         console.log(response);
         if (response.status == "SUCCESS") {
             app.currentView = response.nextView;
-            app.notify(response.message + " Please wait, Refreshing Page", 'success');
+            app.notify(response.message + " Please wait, Refreshing table", 'success');
             setTimeout(function () {
-                window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
+                app.fetchCandidateList();
+                // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
             }, 3000)
         } else {
             app.notify(response.message, 'danger');
         }
+        $('#moveSelectedBtn').attr('disabled', true);
     };
 
     // pre_screen methods

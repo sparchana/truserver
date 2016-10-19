@@ -1675,7 +1675,6 @@ public class Application extends Controller {
             return badRequest();
         }
 
-        Logger.info("uuid: "+job_post_workflow_uuid);
         List<Interaction> interactionList = Interaction.find
                 .where().eq("objectAUUId", job_post_workflow_uuid.trim())
                 .findList();
