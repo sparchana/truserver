@@ -78,4 +78,16 @@ public class RecruiterInteractionService {
         InteractionService.createInteraction(interaction);
     }
 
+    public static void createInteractionForRecruiterLead(String objectAUUId, String result, Integer interactionType) {
+        Interaction interaction = new Interaction(
+                objectAUUId,
+                ServerConstants.OBJECT_TYPE_RECRUTER_LEAD,
+                interactionType,
+                InteractionConstants.INTERACTION_NOTE_BLANK,
+                result,
+                INTERACTION_CREATED_SELF,
+                InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE
+        );
+        InteractionService.createInteraction(interaction);
+    }
 }

@@ -1,5 +1,6 @@
 package controllers.businessLogic.Recruiter;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
@@ -16,6 +17,7 @@ import javax.persistence.NonUniqueResultException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterLead;
 import static play.mvc.Controller.session;
 
 /**
@@ -69,6 +71,11 @@ public class RecruiterLeadService {
         List<Integer> jobRoleList = recruiterLeadRequest.getRecruiterJobRole();
         List<Integer> jobLocalityList = recruiterLeadRequest.getRecruiterJobLocality();
 
+        String objectAUUId;
+        String result;
+
+        Integer interactionType;
+
         RecruiterLead existingLead = isLeadExists(FormValidator.convertToIndianMobileFormat(recruiterLeadRequest.getRecruiterMobile()));
         if(existingLead == null) {
             RecruiterLead lead = new RecruiterLead();
@@ -85,6 +92,11 @@ public class RecruiterLeadService {
             }
 
             RecruiterLead.addLead(lead);
+
+            objectAUUId = lead.getRecruiterLeadUUId();
+            result = InteractionConstants.INTERACTION_RESULT_NEW_RECRUITER_LEAD_ADDED;
+            interactionType = InteractionConstants.INTERACTION_TYPE_RECRUITER_NEW_LEAD;
+
             Logger.info("Recruiter Lead added");
             recruiterLeadResponse.setStatus(RecruiterLeadResponse.STATUS_SUCCESS);
         } else {
@@ -109,8 +121,14 @@ public class RecruiterLeadService {
             }
 
             existingLead.update();
+
+            objectAUUId = existingLead.getRecruiterLeadUUId();
+            result = InteractionConstants.INTERACTION_RESULT_EXISTING_RECRUITER_MADE_CONTACT;
+            interactionType = InteractionConstants.INTERACTION_TYPE_RECRUITER_EXISTING_LEAD;
             recruiterLeadResponse.setStatus(RecruiterLeadResponse.STATUS_SUCCESS);
         }
+
+        createInteractionForRecruiterLead(objectAUUId, result, interactionType);
         SmsUtil.sendRecruiterLeadMsg(FormValidator.convertToIndianMobileFormat(recruiterLeadRequest.getRecruiterMobile()));
         return recruiterLeadResponse;
     }

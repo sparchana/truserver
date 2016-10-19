@@ -46,6 +46,8 @@ public class InteractionConstants {
     public static final String INTERACTION_RESULT_CANDIDATE_TRIED_TO_VERIFY = "Partner tried to verify a Candidate";
     public static final String INTERACTION_RESULT_NEW_JOB_CREATED = "New Job post created";
     public static final String INTERACTION_RESULT_EXISTING_JOB_POST_UPDATED = "Existing Job post updated";
+    public static final String INTERACTION_RESULT_NEW_RECRUITER_LEAD_ADDED = "New Recruiter Lead made contact";
+    public static final String INTERACTION_RESULT_EXISTING_RECRUITER_MADE_CONTACT = "Existing Recruiter Lead made contact";
 
     public static final String INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB = "Candidate applied to a job: ";
     public static final String INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB = "Candidate tried to apply to a job: ";
@@ -116,11 +118,12 @@ public class InteractionConstants {
     public static final int INTERACTION_TYPE_RECRUITER_SIGN_UP = 38;
     public static final int INTERACTION_TYPE_RECRUITER_PROFILE_UPDATE = 39;
     public static final int INTERACTION_TYPE_RECRUITER_NEW_LEAD = 40;
-    public static final int INTERACTION_TYPE_RECRUITER_PASSWORD_ADDED = 41;
-    public static final int INTERACTION_TYPE_RECRUITER_SEARCH_CANDIDATE = 42;
+    public static final int INTERACTION_TYPE_RECRUITER_EXISTING_LEAD = 41;
+    public static final int INTERACTION_TYPE_RECRUITER_PASSWORD_ADDED = 42;
+    public static final int INTERACTION_TYPE_RECRUITER_SEARCH_CANDIDATE = 43;
 
-    public static final int INTERACTION_TYPE_NEW_JOB_CREATED = 43;
-    public static final int INTERACTION_TYPE_EXISTING_JOB_UPDATED = 44;
+    public static final int INTERACTION_TYPE_NEW_JOB_CREATED = 44;
+    public static final int INTERACTION_TYPE_EXISTING_JOB_UPDATED = 45;
 
     public static final Map<Integer, String> INTERACTION_CHANNEL = new HashMap<>();
 
