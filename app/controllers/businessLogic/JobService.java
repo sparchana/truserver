@@ -189,7 +189,7 @@ public class JobService {
         List<JobPostDocumentRequirement> jobPostDocumentRequirementList = jobPost.getJobPostDocumentRequirements();
         List<JobPostAssetRequirement> jobPostAssetRequirementList = jobPost.getJobPostAssetRequirements();
 
-        List<PreScreenRequirement> preScreenRequirementList = PreScreenRequirement.find.where().eq("job_post_id", jobPost.getJobPostId()).findList();
+        List<PreScreenRequirement> preScreenRequirementList = PreScreenRequirement.find.where().eq("jobPost.jobPostId", jobPost.getJobPostId()).findList();
         Map<?, ProfileRequirement> profileRequirementMap = ProfileRequirement.find.where().setMapKey("profileRequirementTitle").findMap();
 
         Map<String, PreScreenRequirement> singleEntityMap= new HashMap<>();
@@ -229,7 +229,10 @@ public class JobService {
             preScreenRequirementAge.save();
         } else {
             PreScreenRequirement preScreenRequirementAge = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_AGE);
-            if(preScreenRequirementAge != null) preScreenRequirementAge.delete();
+            if(preScreenRequirementAge != null) {
+                deletePreScreenResponses(preScreenRequirementAge);
+                preScreenRequirementAge.delete();
+            }
         }
 
         if (jobPostExperience != null) {
@@ -243,7 +246,10 @@ public class JobService {
             preScreenRequirementExp.save();
         } else {
             PreScreenRequirement preScreenRequirementExp =  singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_EXPERIENCE);
-            if(preScreenRequirementExp != null) preScreenRequirementExp.delete();
+            if(preScreenRequirementExp != null){
+                deletePreScreenResponses(preScreenRequirementExp);
+                preScreenRequirementExp.delete();
+            }
         }
         if (jobPostEducation != null) {
             PreScreenRequirement preScreenRequirementEdu = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_EDUCATION);
@@ -256,7 +262,10 @@ public class JobService {
             preScreenRequirementEdu.save();
         } else {
             PreScreenRequirement preScreenRequirementEdu = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_EDUCATION);
-            if(preScreenRequirementEdu != null) preScreenRequirementEdu.delete();
+            if(preScreenRequirementEdu != null){
+                deletePreScreenResponses(preScreenRequirementEdu);
+                preScreenRequirementEdu.delete();
+            }
         }
 
 
@@ -282,6 +291,7 @@ public class JobService {
                 // TODO Simplify this method
                 for (Map.Entry<Integer, PreScreenRequirement> entry : map.entrySet()) {
                     if (!idList.contains(entry.getValue().getLanguage().getLanguageId())) {
+                        deletePreScreenResponses(entry.getValue());
                         entry.getValue().delete();
                     }
                 }
@@ -290,6 +300,7 @@ public class JobService {
             Map<Integer, PreScreenRequirement> map = multiEntityMap.get(ServerConstants.CATEGORY_LANGUAGE);
             if(map != null) {
                 for (Map.Entry<Integer, PreScreenRequirement> entry : map.entrySet()) {
+                    deletePreScreenResponses(entry.getValue());
                     entry.getValue().delete();
                 }
             }
@@ -316,6 +327,7 @@ public class JobService {
                 // TODO Simplify this method
                 for (Map.Entry<Integer, PreScreenRequirement> entry : map.entrySet()) {
                     if (!idList.contains(entry.getValue().getIdProof().getIdProofId())) {
+                        deletePreScreenResponses(entry.getValue());
                         entry.getValue().delete();
                     }
                 }
@@ -324,6 +336,7 @@ public class JobService {
             Map<Integer, PreScreenRequirement> map = multiEntityMap.get(ServerConstants.CATEGORY_DOCUMENT);
             if(map != null) {
                 for (Map.Entry<Integer, PreScreenRequirement> entry : map.entrySet()) {
+                    deletePreScreenResponses(entry.getValue());
                     entry.getValue().delete();
                 }
             }
@@ -350,6 +363,7 @@ public class JobService {
                 // TODO Simplify this method
                 for (Map.Entry<Integer, PreScreenRequirement> entry : map.entrySet()) {
                     if (!idList.contains(entry.getValue().getAsset().getAssetId())) {
+                        deletePreScreenResponses(entry.getValue());
                         entry.getValue().delete();
                     }
                 }
@@ -358,6 +372,7 @@ public class JobService {
             Map<Integer, PreScreenRequirement> map = multiEntityMap.get(ServerConstants.CATEGORY_ASSET);
             if(map != null) {
                 for (Map.Entry<Integer, PreScreenRequirement> entry : map.entrySet()) {
+                    deletePreScreenResponses(entry.getValue());
                     entry.getValue().delete();
                 }
             }
@@ -375,7 +390,10 @@ public class JobService {
             preScreenRequirementSalary.save();
         } else {
             PreScreenRequirement preScreenRequirementSalary = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_SALARY);
-            if(preScreenRequirementSalary != null) preScreenRequirementSalary.delete();
+            if(preScreenRequirementSalary != null) {
+                deletePreScreenResponses(preScreenRequirementSalary);
+                preScreenRequirementSalary.delete();
+            }
         }
 
         if ( jobPost.getGender() != null) {
@@ -389,7 +407,10 @@ public class JobService {
             preScreenRequirementGender.save();
         } else {
             PreScreenRequirement preScreenRequirementGender = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_GENDER);
-            if(preScreenRequirementGender != null) preScreenRequirementGender.delete();
+            if(preScreenRequirementGender != null) {
+                deletePreScreenResponses(preScreenRequirementGender);
+                preScreenRequirementGender.delete();
+            }
         }
 
         if ( jobPost.getJobPostToLocalityList() != null && jobPost.getJobPostToLocalityList().size()>0) {
@@ -403,7 +424,10 @@ public class JobService {
             preScreenRequirementLocation.save();
         } else {
             PreScreenRequirement preScreenRequirementLocation = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_LOCATION);
-            if(preScreenRequirementLocation != null) preScreenRequirementLocation.delete();
+            if(preScreenRequirementLocation != null){
+                deletePreScreenResponses(preScreenRequirementLocation);
+                preScreenRequirementLocation.delete();
+            }
         }
 
         if ( jobPost.getJobPostWorkingDays() != 0 && jobPost.getJobPostWorkingDays() != null && jobPost.getJobPostShift() != null) {
@@ -417,7 +441,19 @@ public class JobService {
             preScreenRequirementWorkTimings.save();
         } else {
             PreScreenRequirement preScreenRequirementWorkTimings = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_WORKTIMINGS);
-            if(preScreenRequirementWorkTimings != null) preScreenRequirementWorkTimings.delete();
+            if(preScreenRequirementWorkTimings != null){
+                deletePreScreenResponses(preScreenRequirementWorkTimings);
+                preScreenRequirementWorkTimings.delete();
+            }
+        }
+    }
+
+    private static void deletePreScreenResponses(PreScreenRequirement preScreenRequirement) {
+        List<PreScreenResponse> responseList = PreScreenResponse.find.where().eq("preScreenRequirement.preScreenRequirementId", preScreenRequirement.getPreScreenRequirementId()).findList();
+        if(responseList.size() > 0){
+            for(PreScreenResponse response : responseList ){
+                response.delete();
+            }
         }
     }
 

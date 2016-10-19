@@ -1611,4 +1611,55 @@ public class Application extends Controller {
         Logger.info(String.valueOf(toJson(preScreenRequest)));
         return ok(toJson(JobPostWorkflowEngine.savePreScreenResult(preScreenRequest)));
     }
+
+    public static Result getDocumentReqForJobRole(Long jobPostId, Long jobRoleId) {
+        if(jobPostId == null && jobRoleId == null) {
+            return badRequest();
+        }
+        if(jobRoleId == null) {
+            JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+            jobRoleId = jobPost.getJobRole().getJobRoleId();
+        }
+        List<IdProof> idProofList = new ArrayList<>();
+        List<IdProof> commonIdProofList = IdProof.find.setUseQueryCache(!isDevMode)
+                .where()
+                .eq("isCommon",ServerConstants.IS_COMMON)
+                .orderBy("idProofName")
+                .findList();
+        List<JobRoleToDocument> jobRoleToDocumentList= JobRoleToDocument.find.setUseQueryCache(!isDevMode)
+                .where().eq("jobRole.jobRoleId", jobRoleId).findList();
+        for(JobRoleToDocument jobRoleToDocument: jobRoleToDocumentList) {
+            idProofList.add(jobRoleToDocument.getIdProof());
+        }
+        idProofList.addAll(commonIdProofList);
+
+        Collections.sort(idProofList,  (o1, o2) -> o1.getIdProofName().compareTo(o2.getIdProofName()));
+        return ok(toJson(idProofList));
+    }
+
+    public static Result getAssetReqForJobRole(Long jobPostId, Long jobRoleId) {
+        if(jobPostId == null && jobRoleId == null) {
+            return badRequest();
+        }
+
+        if(jobRoleId == null) {
+            JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+            jobRoleId = jobPost.getJobRole().getJobRoleId();
+        }
+        List<Asset> assetList = new ArrayList<>();
+        List<Asset> commonAssetList = Asset.find.setUseQueryCache(!isDevMode)
+                .where()
+                .eq("isCommon", ServerConstants.IS_COMMON)
+                .orderBy("assetTitle")
+                .findList();
+        List<JobRoleToAsset> jobRoleToAssetList= JobRoleToAsset.find.setUseQueryCache(!isDevMode)
+                .where().eq("jobRole.jobRoleId", jobRoleId).findList();
+        for(JobRoleToAsset jobRoleToAsset: jobRoleToAssetList) {
+            assetList.add(jobRoleToAsset.getAsset());
+        }
+        assetList.addAll(commonAssetList);
+
+        Collections.sort(assetList,  (o1, o2) -> o1.getAssetTitle().compareTo(o2.getAssetTitle()));
+        return ok(toJson(assetList));
+    }
 }

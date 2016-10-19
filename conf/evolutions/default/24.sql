@@ -34,6 +34,8 @@ create index ix_pre_screen_response_pre_screen_requirement_id on pre_screen_resp
 alter table pre_screen_result add constraint fk_pre_screen_result_job_post_workflow_id foreign key (job_post_workflow_id) references job_post_workflow (job_post_workflow_id) on delete restrict on update restrict;
 create index ix_pre_screen_result_job_post_workflow_id on pre_screen_result (job_post_workflow_id);
 
+alter table job_role_to_asset drop column job_role_to_asset_uuid;
+alter table job_role_to_document drop column job_role_to_document_uuid;
 
 # --- !Downs
 
@@ -45,6 +47,9 @@ drop index ix_pre_screen_response_pre_screen_requirement_id on pre_screen_respon
 
 alter table pre_screen_result drop foreign key fk_pre_screen_result_job_post_workflow_id;
 drop index ix_pre_screen_result_job_post_workflow_id on pre_screen_result;
+
+alter table job_role_to_asset add column job_role_to_asset_uuid varchar(255) not null;
+alter table job_role_to_document add column job_role_to_document_uuid varchar(255) not null;
 
 drop table if exists pre_screen_response;
 

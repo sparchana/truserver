@@ -628,26 +628,26 @@ $(function () {
 
 
         // this also converts string data to integer and sends to server
-        app.jpLocalityIdList = [];
+        app.jpLanguageIdList = [];
         if (modifiedLanguageIdList != null) {
-            app.jpLanguageIdList = [];
             for (i = 0; i < modifiedLanguageIdList.length; i++) {
                 app.jpLanguageIdList.push(parseInt(modifiedLanguageIdList[i]));
             }
         }
+        app.jpLocalityIdList = [];
         if (modifiedLocality != null) {
             for (i = 0; i < modifiedLocality.length; i++) {
                 app.jpLocalityIdList.push(parseInt(modifiedLocality[i]));
             }
         }
+        app.jpExperienceIdList = [];
         if (modifiedExpIdList != null) {
-            app.jpExperienceIdList = [];
             for (i = 0; i < modifiedExpIdList.length; i++) {
                 app.jpExperienceIdList.push(parseInt(modifiedExpIdList[i]));
             }
         }
+        app.jpEducationIdList = [];
         if (modifiedEduIdList!= null) {
-            app.jpEducationIdList = [];
             for (i = 0; i < modifiedEduIdList.length; i++) {
                 app.jpEducationIdList.push(parseInt(modifiedEduIdList[i]));
             }
@@ -767,7 +767,11 @@ $(function () {
                 };
                 var varColumn = function () {
                     if (app.currentView == "pre_screen_view") {
-                        return '<input type="submit" value="Pre-Screen"  style="width:100px" onclick="callHandler(' + newCandidate.candidate.candidateMobile + ', ' + newCandidate.candidate.candidateId + ');" id="' + newCandidate.candidate.lead.leadId + '" class="btn btn-primary">'
+                        if(newCandidate.extraData.preScreenCallAttemptCount == null || newCandidate.extraData.preScreenCallAttemptCount == 0) {
+                            return '<input type="submit" value="Pre-Screen"  style="width:130px" onclick="callHandler(' + newCandidate.candidate.candidateMobile + ', ' + newCandidate.candidate.candidateId + ');" id="' + newCandidate.candidate.lead.leadId + '" class="btn btn-primary">'
+                        } else {
+                            return '<input type="submit" value="Pre-Screen Again"  style="width:130px" onclick="callHandler(' + newCandidate.candidate.candidateMobile + ', ' + newCandidate.candidate.candidateId + ');" id="' + newCandidate.candidate.lead.leadId + '" class="btn btn-default">'
+                        }
                     } else {
                         return "";
                     }
@@ -949,7 +953,7 @@ $(function () {
         console.log(response);
         if (response.status == "SUCCESS") {
             app.currentView = response.nextView;
-            app.notify(response.message + " Redirecting to " + response.nextView, 'success');
+            app.notify(response.message + " Please wait, Refreshing Page", 'success');
             setTimeout(function () {
                 window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
             }, 3000)
@@ -1009,7 +1013,10 @@ $(function () {
         NProgress.start();
         var jobPostTitle = returnedData.jobPostTitle;
         var jobPostCompany = returnedData.company.companyName;
-        var jobPostSalary = "Rs. "+returnedData.jobPostMinSalary + " - Rs. " + returnedData.jobPostMaxSalary;
+        var jobPostSalary = "Rs. "+returnedData.jobPostMinSalary;
+        if(returnedData.jobPostMaxSalary != 0) {
+            jobPostSalary +=" - Rs. " + returnedData.jobPostMaxSalary;
+        }
 
         app.renderJobCard(jobPostTitle, jobPostCompany, jobPostSalary);
     };
@@ -1061,7 +1068,6 @@ $(function () {
         $('#header_view_title').text("Pre Screen View");
         $('.navigation__link').removeClass("mdl-navigation__link--current");
         $('#pre_screen_view_drawer').removeClass("mdl-navigation__link--current").addClass("mdl-navigation__link--current");
-        app.getSupportAgent();
         app.initPreScreenView();
         app.initJobCard();
     } else {

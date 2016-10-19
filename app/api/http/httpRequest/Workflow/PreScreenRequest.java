@@ -8,6 +8,7 @@ import java.util.List;
 public class PreScreenRequest {
     public Long candidateId;
     public Long jobPostId;
+    public boolean forceSet;
     public List<Long> preScreenIdList;
 
     public Long getCandidateId() {
@@ -32,5 +33,13 @@ public class PreScreenRequest {
 
     public void setPreScreenIdList(List<Long> responseList) {
         this.preScreenIdList = responseList;
+    }
+
+    public boolean isForceSet() {
+        return forceSet;
+    }
+
+    public void setForceSet(boolean forceSet) {
+        this.forceSet = forceSet;
     }
 }

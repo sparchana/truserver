@@ -1,6 +1,7 @@
 package models.entity.Static;
 
 import com.avaje.ebean.Model;
+import com.avaje.ebean.annotation.CacheStrategy;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
@@ -10,7 +11,7 @@ import java.util.UUID;
 /**
  * Created by zero on 12/10/16.
  */
-
+@CacheStrategy
 @Entity(name = "job_role_to_asset")
 @Table(name = "job_role_to_asset")
 public class JobRoleToAsset extends Model {
@@ -18,9 +19,6 @@ public class JobRoleToAsset extends Model {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "job_role_to_asset_id", columnDefinition = "int unsigned", unique = true)
     private int jobRoleToAssetId;
-
-    @Column(name = "job_role_to_asset_uuid", columnDefinition = "varchar(255)", nullable = false)
-    private String jobRoleToAssetUUId; // UUID
 
     @ManyToOne
     @JsonManagedReference
@@ -40,15 +38,10 @@ public class JobRoleToAsset extends Model {
 
     public JobRoleToAsset() {
         this.creationTimestamp = new Timestamp(System.currentTimeMillis());
-        this.jobRoleToAssetUUId = UUID.randomUUID().toString();
     }
 
     public int getJobRoleToAssetId() {
         return jobRoleToAssetId;
-    }
-
-    public String getJobRoleToAssetUUId() {
-        return jobRoleToAssetUUId;
     }
 
     public JobRole getJobRole() {

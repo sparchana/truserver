@@ -114,11 +114,11 @@ function processPreScreenContent(returnedData) {
         heading.appendChild(title1);
 
         var title2 = document.createElement("th");
-        title2.textContent = "Job Post";
+        title2.textContent = "Job Post Info";
         heading.appendChild(title2);
 
         var title3 = document.createElement("th");
-        title3.textContent = "Candidate";
+        title3.textContent = "Candidate Info";
         heading.appendChild(title3);
 
         // is a match or not
