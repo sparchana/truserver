@@ -435,7 +435,7 @@ function saveJob() {
             };
             $.ajax({
                 type: "POST",
-                url: "/addJobPost",
+                url: "/recruiter/api/addJobPost",
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(d),
                 success: processDataAddJobPost

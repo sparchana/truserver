@@ -1,40 +1,38 @@
 package controllers;
 
-import api.InteractionConstants;
 import api.ServerConstants;
+import api.http.httpRequest.AddJobPostRequest;
 import api.http.httpRequest.LoginRequest;
 import api.http.httpRequest.Recruiter.AddCreditRequest;
 import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
+import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Recruiter.JobApplicationResponse;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.businessLogic.*;
 import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
+import controllers.businessLogic.Recruiter.RecruiterAuthService;
+import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import controllers.security.SecuredUser;
-import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.OM.JobApplication;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
-import models.entity.Static.Degree;
-import models.entity.Static.InterviewTimeSlot;
-import models.entity.Static.Locality;
-import models.util.EmailUtil;
-import org.apache.commons.mail.EmailException;
 import play.Logger;
 import play.mvc.Result;
 import play.mvc.Security;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterSearchCandidate;
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.request;
 import static play.mvc.Controller.session;
@@ -178,6 +176,21 @@ public class RecruiterController {
         return ok("0");
     }
 
+    @Security.Authenticated(SecuredUser.class)
+    public static Result addRecruiter() {
+        JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
+        RecruiterSignUpRequest recruiterSignUpRequest = new RecruiterSignUpRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            recruiterSignUpRequest = newMapper.readValue(req.toString(), RecruiterSignUpRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ok(toJson(RecruiterService.createRecruiterProfile(recruiterSignUpRequest, InteractionService.InteractionChannelType.SELF)));
+    }
+
+
     public static Result unlockCandidateContact(Long candidateId) {
         if(session().get("recruiterId") != null){
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
@@ -239,21 +252,44 @@ public class RecruiterController {
             e.printStackTrace();
         }
 
-        if (matchingCandidateRequest != null) {
-            return ok(toJson(JobPostWorkflowEngine.getCandidateForRecruiterSearch(
-                    matchingCandidateRequest.getMinAge(),
-                    matchingCandidateRequest.getMaxAge(),
-                    matchingCandidateRequest.getMinSalary(),
-                    matchingCandidateRequest.getMaxSalary(),
-                    matchingCandidateRequest.getGender(),
-                    matchingCandidateRequest.getExperienceId(),
-                    matchingCandidateRequest.getJobPostJobRoleId(),
-                    matchingCandidateRequest.getJobPostEducationId(),
-                    matchingCandidateRequest.getJobPostLocalityIdList(),
-                    matchingCandidateRequest.getJobPostLanguageIdList(),
-                    matchingCandidateRequest.getDistanceRadius())));
+        if(session().get("recruiterId") != null){
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+            if(recruiterProfile != null){
+                if (matchingCandidateRequest != null) {
+                    Map<Long, CandidateWorkflowData> candidateSearchMap = JobPostWorkflowEngine.getCandidateForRecruiterSearch(
+                            matchingCandidateRequest.getMinAge(),
+                            matchingCandidateRequest.getMaxAge(),
+                            matchingCandidateRequest.getMinSalary(),
+                            matchingCandidateRequest.getMaxSalary(),
+                            matchingCandidateRequest.getGender(),
+                            matchingCandidateRequest.getExperienceId(),
+                            matchingCandidateRequest.getJobPostJobRoleId(),
+                            matchingCandidateRequest.getJobPostEducationId(),
+                            matchingCandidateRequest.getJobPostLocalityIdList(),
+                            matchingCandidateRequest.getJobPostLanguageIdList(),
+                            matchingCandidateRequest.getDistanceRadius());
+
+                    //computing interactionResult values
+                    String result = "Search Candidate. Total Candidates found: " + candidateSearchMap.size() +
+                            ". Search parameters: Min age: " + matchingCandidateRequest.getMinAge()+
+                            ", Max age: " + matchingCandidateRequest.getMaxAge()+
+                            ", Min salary: " + matchingCandidateRequest.getMinSalary()+
+                            ", Max salary: " + matchingCandidateRequest.getMaxSalary()+
+                            ", Gender: " + matchingCandidateRequest.getGender()+
+                            ", Experience: " + matchingCandidateRequest.getExperienceId()+
+                            ", Job role: " + matchingCandidateRequest.getJobPostJobRoleId()+
+                            ", Education: " + matchingCandidateRequest.getJobPostEducationId()+
+                            ", Localities: " + matchingCandidateRequest.getJobPostLocalityIdList()+
+                            ", Languages: " + matchingCandidateRequest.getJobPostLanguageIdList()+
+                            ", Distance radius: " + matchingCandidateRequest.getDistanceRadius();
+
+                    //creating search candidate parameters
+                    createInteractionForRecruiterSearchCandidate(recruiterProfile.getRecruiterProfileUUId(), result);
+                    return ok(toJson(candidateSearchMap));
+                }
+            }
         }
-        return badRequest();
+        return ok("0");
     }
 
     @Security.Authenticated(SecuredUser.class)
@@ -304,5 +340,20 @@ public class RecruiterController {
             }
         }
         return ok("0");
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result addJobPost() {
+        JsonNode req = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
+        AddJobPostRequest addJobPostRequest = new AddJobPostRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        newMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        try {
+            addJobPostRequest = newMapper.readValue(req.toString(), AddJobPostRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return ok(toJson(JobService.addJobPost(addJobPostRequest, InteractionService.InteractionChannelType.SELF)));
     }
 }

@@ -137,12 +137,14 @@ POST        /getRecruiterCredits/:id                                      contro
 POST        /getAllCreditCategory                                         controllers.RecruiterController.getAllCreditCategory()
 POST        /recruiter/unlockCandidateContact/:id                         controllers.RecruiterController.unlockCandidateContact(id : Long)
 POST        /addRecruiterLead                                             controllers.RecruiterController.addWebsiteLead()
+POST        /updateRecruiterProfile                                       controllers.RecruiterController.addRecruiter()
 POST        /recruiterSignUp                                              controllers.RecruiterController.recruiterSignUp()
 POST        /addRecruiterPassword                                         controllers.RecruiterController.addPassword()
 POST        /recruiterLoginSubmit                                         controllers.RecruiterController.loginSubmit()
 POST        /recruiter/api/getMatchingCandidate/                          controllers.RecruiterController.getMatchingCandidate()
 POST        /recruiter/api/getUnlockedCandidates/                         controllers.RecruiterController.getUnlockedCandidates()
 POST        /recruiter/api/requestCredits/                                controllers.RecruiterController.requestCredits()
+POST        /recruiter/api/addJobPost                                     controllers.RecruiterController.addJobPost()
 POST        /getRecruiterJobPostInfo/:id                                  controllers.RecruiterController.getRecruiterJobPostInfo(id : Long)
 
 #new routes

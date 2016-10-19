@@ -1,4 +1,4 @@
-package controllers.businessLogic;
+package controllers.businessLogic.Recruiter;
 
 import api.ServerConstants;
 import api.http.FormValidator;
@@ -16,6 +16,8 @@ import play.Logger;
 
 import java.util.UUID;
 
+import static controllers.businessLogic.PartnerInteractionService.createInteractionForPartnerAddPasswordViaWebsite;
+import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterAddPasswordViaWebsite;
 import static play.mvc.Controller.session;
 
 /**
@@ -66,6 +68,8 @@ public class RecruiterAuthService {
                 /* adding session details */
                 addSession(auth, existingRecruiter);
 
+                //adding recruiter interaction
+                createInteractionForRecruiterAddPasswordViaWebsite(existingRecruiter.getRecruiterProfileUUId());
                 recruiterSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
                 try {

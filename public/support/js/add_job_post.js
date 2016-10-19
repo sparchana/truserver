@@ -374,6 +374,11 @@ $(function() {
                 slotArray.push(parseInt(slotId));
             }).get();
 
+            var jobStatusId = $("#jobPostStatus").val();
+            if(jobStatusId == ""){
+                jobStatusId = null;
+            }
+
             try {
                 var d = {
                     jobPostId: $("#jobPostId").val(),
@@ -398,7 +403,7 @@ $(function() {
                     jobPostShiftId: $("#jobPostWorkShift").val(),
                     jobPostPricingPlanId: $("#jobPostPricingPlan").val(),
                     jobPostEducationId: $("#jobPostEducation").val(),
-                    jobPostStatusId: $("#jobPostStatus").val(),
+                    jobPostStatusId: jobStatusId,
                     pricingPlanTypeId: 1,
                     jobPostExperienceId: $("#jobPostExperience").val(),
                     jobPostRecruiterId: recId,
@@ -426,24 +431,6 @@ $(function() {
 
     }); // end of submit
 }); // end of function
-
-function calculateContactUnlockCredits() {
-    if(validateContactUnlockCreditValues() == 1){
-        candidateContactCreditAmount = parseInt($("#candidateContactCreditAmount").val());
-        totalAmount += candidateContactCreditAmount;
-        candidateContactCreditUnitPrice = parseInt($("#candidateContactCreditUnitPrice").val());
-        $("#contactCreditsVal").html("No. of credits: " + parseInt(candidateContactCreditAmount / candidateContactCreditUnitPrice));
-    }
-}
-
-function calculateInterviewUnlockCredits() {
-    if(validateInterviewUnlockCreditValues() == 1){
-        interviewCreditAmount = parseInt($("#interviewCreditAmount").val());
-        totalAmount += interviewCreditAmount;
-        interviewCreditUnitPrice = parseInt($("#interviewCreditUnitPrice").val());
-        $("#interviewCreditsVal").html("No. of credits: " + parseInt(interviewCreditAmount / interviewCreditUnitPrice));
-    }
-}
 
 function validateContactUnlockCreditValues(){
     var statusCheck = 1;

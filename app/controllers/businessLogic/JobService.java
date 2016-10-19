@@ -23,6 +23,8 @@ import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.*;
 
+import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
+import static controllers.businessLogic.InteractionService.createInteractionForNewJobPost;
 import static play.mvc.Controller.session;
 import static play.mvc.Http.Context.current;
 
@@ -30,10 +32,19 @@ import static play.mvc.Http.Context.current;
  * Created by batcoder1 on 17/6/16.
  */
 public class JobService {
-    public static AddJobPostResponse addJobPost(AddJobPostRequest addJobPostRequest) {
+    public static AddJobPostResponse addJobPost(AddJobPostRequest addJobPostRequest, InteractionService.InteractionChannelType channelType) {
         AddJobPostResponse addJobPostResponse = new AddJobPostResponse();
         List<Integer> jobPostLocalityList = addJobPostRequest.getJobPostLocalities();
         /* checking if jobPost already exists or not */
+
+        String createdBy;
+        String objAUuid = "";
+        String objBUuid;
+        String result = "";
+        Integer channel;
+        Integer objAType;
+        Integer interactionType;
+
         JobPost existingJobPost = JobPost.find.where().eq("jobPostId", addJobPostRequest.getJobPostId()).findUnique();
         if(existingJobPost == null){
             Logger.info("Job post does not exists. Creating a new job Post");
@@ -44,6 +55,12 @@ public class JobService {
             newJobPost.save();
             addJobPostResponse.setJobPost(newJobPost);
             addJobPostResponse.setStatus(AddJobPostResponse.STATUS_SUCCESS);
+
+            objBUuid = newJobPost.getJobPostUUId();
+
+            result = InteractionConstants.INTERACTION_RESULT_NEW_JOB_CREATED;
+            interactionType = InteractionConstants.INTERACTION_TYPE_NEW_JOB_CREATED;
+
             Logger.info("JobPost with jobId: " + newJobPost.getJobPostId() + " and job title: " + newJobPost.getJobPostTitle() + " created successfully");
         } else{
             Logger.info("Job post already exists. Updating existing job Post");
@@ -53,8 +70,33 @@ public class JobService {
             existingJobPost.update();
             addJobPostResponse.setJobPost(existingJobPost);
             addJobPostResponse.setStatus(AddJobPostResponse.STATUS_UPDATE_SUCCESS);
+
+            objBUuid = existingJobPost.getJobPostUUId();
+
+            result = InteractionConstants.INTERACTION_RESULT_EXISTING_JOB_POST_UPDATED;
+            interactionType = InteractionConstants.INTERACTION_TYPE_EXISTING_JOB_UPDATED;
+
             Logger.info("JobPost with jobId: " + existingJobPost.getJobPostId() + " and job title: " + existingJobPost.getJobPostTitle() + " updated successfully");
         }
+
+        if(channelType == InteractionService.InteractionChannelType.SUPPORT){
+            createdBy = session().get("sessionUsername");
+            objAType = ServerConstants.OBJECT_TYPE_SUPPORT;
+            channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
+        } else{
+            createdBy = InteractionConstants.INTERACTION_CREATED_SELF;
+            objAType = ServerConstants.OBJECT_TYPE_RECRUTER;
+            channel = InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE;
+
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+            if(recruiterProfile != null){
+                objAUuid = recruiterProfile.getRecruiterProfileUUId();
+            }
+        }
+
+        //creating interaction
+        createInteractionForNewJobPost(objAUuid, objBUuid, objAType, interactionType, result, createdBy, channel);
+
         if(Play.isDev(Play.current()) == false){
             addJobPostResponse.setFormUrl(ServerConstants.PROD_GOOGLE_FORM_FOR_JOB_POSTS);
         } else{
@@ -104,64 +146,119 @@ public class JobService {
                                                  JobPost newJobPost,
                                                  List<Integer> jobPostLocalityList)
     {
-        newJobPost.setJobPostMinSalary(addJobPostRequest.getJobPostMinSalary());
-        newJobPost.setJobPostMaxSalary(addJobPostRequest.getJobPostMaxSalary());
-
-        newJobPost.setJobPostStartTime(addJobPostRequest.getJobPostStartTime());
-        newJobPost.setJobPostEndTime(addJobPostRequest.getJobPostEndTime());
-
-        newJobPost.setJobPostIsHot(addJobPostRequest.getJobPostIsHot());
-
-        newJobPost.setJobPostDescription(addJobPostRequest.getJobPostDescription());
-        newJobPost.setJobPostTitle(addJobPostRequest.getJobPostTitle());
-
-        newJobPost.setJobPostIncentives(addJobPostRequest.getJobPostIncentives());
-        newJobPost.setJobPostMinRequirement(addJobPostRequest.getJobPostMinRequirement());
-
-        newJobPost.setJobPostAddress(addJobPostRequest.getJobPostAddress());
-        newJobPost.setJobPostPinCode(addJobPostRequest.getJobPostPinCode());
-
-        newJobPost.setJobPostVacancies(addJobPostRequest.getJobPostVacancies());
-        newJobPost.setJobPostDescriptionAudio(addJobPostRequest.getJobPostDescriptionAudio());
-        newJobPost.setJobPostWorkFromHome(addJobPostRequest.getJobPostWorkFromHome());
-
-        newJobPost.setJobPostPartnerInterviewIncentive(addJobPostRequest.getPartnerInterviewIncentive());
-        newJobPost.setJobPostPartnerJoiningIncentive(addJobPostRequest.getPartnerJoiningIncentive());
-
-        newJobPost.setGender(addJobPostRequest.getJobPostGender());
-        newJobPost.setJobPostLanguageRequirement(getJobPostLanguageRequirement(addJobPostRequest.getJobPostLanguage(), newJobPost));
-        newJobPost.setJobPostMinAge(addJobPostRequest.getJobPostMinAge());
-        newJobPost.setJobPostMaxAge(addJobPostRequest.getJobPostMaxAge());
+        if(addJobPostRequest.getJobPostMinSalary() != null){
+            newJobPost.setJobPostMinSalary(addJobPostRequest.getJobPostMinSalary());
+        }
+        if(addJobPostRequest.getJobPostMaxSalary() != null){
+            newJobPost.setJobPostMaxSalary(addJobPostRequest.getJobPostMaxSalary());
+        }
+        if(addJobPostRequest.getJobPostStartTime() != null){
+            newJobPost.setJobPostStartTime(addJobPostRequest.getJobPostStartTime());
+        }
+        if(addJobPostRequest.getJobPostEndTime() != null){
+            newJobPost.setJobPostEndTime(addJobPostRequest.getJobPostEndTime());
+        }
+        if(addJobPostRequest.getJobPostIsHot() != null){
+            newJobPost.setJobPostIsHot(addJobPostRequest.getJobPostIsHot());
+        }
+        if(addJobPostRequest.getJobPostDescription() != null){
+            newJobPost.setJobPostDescription(addJobPostRequest.getJobPostDescription());
+        }
+        if(addJobPostRequest.getJobPostTitle() != null){
+            newJobPost.setJobPostTitle(addJobPostRequest.getJobPostTitle());
+        }
+        if(addJobPostRequest.getJobPostIncentives() != null){
+            newJobPost.setJobPostIncentives(addJobPostRequest.getJobPostIncentives());
+        }
+        if(addJobPostRequest.getJobPostMinRequirement() != null){
+            newJobPost.setJobPostMinRequirement(addJobPostRequest.getJobPostMinRequirement());
+        }
+        if(addJobPostRequest.getJobPostAddress() != null){
+            newJobPost.setJobPostAddress(addJobPostRequest.getJobPostAddress());
+        }
+        if(addJobPostRequest.getJobPostPinCode() != null){
+            newJobPost.setJobPostPinCode(addJobPostRequest.getJobPostPinCode());
+        }
+        if(addJobPostRequest.getJobPostVacancies() != null){
+            newJobPost.setJobPostVacancies(addJobPostRequest.getJobPostVacancies());
+        }
+        if(addJobPostRequest.getJobPostDescriptionAudio() != null){
+            newJobPost.setJobPostDescriptionAudio(addJobPostRequest.getJobPostDescriptionAudio());
+        }
+        if(addJobPostRequest.getJobPostWorkFromHome() != null){
+            newJobPost.setJobPostWorkFromHome(addJobPostRequest.getJobPostWorkFromHome());
+        }
+        if(addJobPostRequest.getPartnerInterviewIncentive() != null){
+            newJobPost.setJobPostPartnerInterviewIncentive(addJobPostRequest.getPartnerInterviewIncentive());
+        }
+        if(addJobPostRequest.getPartnerJoiningIncentive() != null){
+            newJobPost.setJobPostPartnerJoiningIncentive(addJobPostRequest.getPartnerJoiningIncentive());
+        }
+        if(addJobPostRequest.getJobPostGender() != null){
+            newJobPost.setGender(addJobPostRequest.getJobPostGender());
+        }
+        if(addJobPostRequest.getJobPostLanguage() != null){
+            newJobPost.setJobPostLanguageRequirement(getJobPostLanguageRequirement(addJobPostRequest.getJobPostLanguage(), newJobPost));
+        }
+        if(addJobPostRequest.getJobPostMinAge() != null){
+            newJobPost.setJobPostMinAge(addJobPostRequest.getJobPostMinAge());
+        }
+        if(addJobPostRequest.getJobPostMinAge() != null){
+            newJobPost.setJobPostMinAge(addJobPostRequest.getJobPostMinAge());
+        }
+        if(addJobPostRequest.getJobPostMaxAge() != null){
+            newJobPost.setJobPostMaxAge(addJobPostRequest.getJobPostMaxAge());
+        }
+        if(jobPostLocalityList != null){
+            newJobPost.setJobPostToLocalityList(getJobPostLocality(jobPostLocalityList, newJobPost));
+        }
 
         if (addJobPostRequest.getJobPostWorkingDays() != null) {
             Byte workingDayByte = Byte.parseByte(addJobPostRequest.getJobPostWorkingDays(), 2);
             newJobPost.setJobPostWorkingDays(workingDayByte);
         }
-        newJobPost.setJobPostToLocalityList(getJobPostLocality(jobPostLocalityList, newJobPost));
 
-        PricingPlanType pricingPlanType = PricingPlanType.find.where().eq("pricingPlanTypeId", addJobPostRequest.getJobPostPricingPlanId()).findUnique();
-        newJobPost.setPricingPlanType(pricingPlanType);
+        if (addJobPostRequest.getJobPostPricingPlanId() != null) {
+            PricingPlanType pricingPlanType = PricingPlanType.find.where().eq("pricingPlanTypeId", addJobPostRequest.getJobPostPricingPlanId()).findUnique();
+            newJobPost.setPricingPlanType(pricingPlanType);
+        }
 
-        JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", addJobPostRequest.getJobPostStatusId()).findUnique();
-        newJobPost.setJobPostStatus(jobStatus);
+        if (addJobPostRequest.getJobPostStatusId() != null) {
+            JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", addJobPostRequest.getJobPostStatusId()).findUnique();
+            newJobPost.setJobPostStatus(jobStatus);
+        } else{
+            JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", ServerConstants.JOB_STATUS_ACTIVE).findUnique();
+            newJobPost.setJobPostStatus(jobStatus);
+        }
 
-        JobRole jobRole = JobRole.find.where().eq("jobRoleId", addJobPostRequest.getJobPostJobRoleId()).findUnique();
-        newJobPost.setJobRole(jobRole);
+        if (addJobPostRequest.getJobPostJobRoleId() != null) {
+            JobRole jobRole = JobRole.find.where().eq("jobRoleId", addJobPostRequest.getJobPostJobRoleId()).findUnique();
+            newJobPost.setJobRole(jobRole);
+        }
 
-        Company company = Company.find.where().eq("companyId", addJobPostRequest.getJobPostCompanyId()).findUnique();
-        newJobPost.setCompany(company);
+        if (addJobPostRequest.getJobPostCompanyId() != null) {
+            Company company = Company.find.where().eq("companyId", addJobPostRequest.getJobPostCompanyId()).findUnique();
+            newJobPost.setCompany(company);
+        }
 
-        TimeShift timeShift = TimeShift.find.where().eq("timeShiftId", addJobPostRequest.getJobPostShiftId()).findUnique();
-        newJobPost.setJobPostShift(timeShift);
+        if (addJobPostRequest.getJobPostShiftId() != null) {
+            TimeShift timeShift = TimeShift.find.where().eq("timeShiftId", addJobPostRequest.getJobPostShiftId()).findUnique();
+            newJobPost.setJobPostShift(timeShift);
+        }
 
-        Experience experience = Experience.find.where().eq("experienceId", addJobPostRequest.getJobPostExperienceId()).findUnique();
-        newJobPost.setJobPostExperience(experience);
+        if (addJobPostRequest.getJobPostExperienceId() != null) {
+            Experience experience = Experience.find.where().eq("experienceId", addJobPostRequest.getJobPostExperienceId()).findUnique();
+            newJobPost.setJobPostExperience(experience);
+        }
 
-        Education education = Education.find.where().eq("educationId", addJobPostRequest.getJobPostEducationId()).findUnique();
-        newJobPost.setJobPostEducation(education);
-
-        RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", addJobPostRequest.getJobPostRecruiterId()).findUnique();
-        newJobPost.setRecruiterProfile(recruiterProfile);
+        if (addJobPostRequest.getJobPostEducationId() != null) {
+            Education education = Education.find.where().eq("educationId", addJobPostRequest.getJobPostEducationId()).findUnique();
+            newJobPost.setJobPostEducation(education);
+        }
+        if (addJobPostRequest.getJobPostRecruiterId() != null) {
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", addJobPostRequest.getJobPostRecruiterId()).findUnique();
+            newJobPost.setRecruiterProfile(recruiterProfile);
+        }
 
         return newJobPost;
     }

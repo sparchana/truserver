@@ -307,24 +307,6 @@ function notifyError(msg, type){
     });
 }
 
-function calculateContactUnlockCredits() {
-    if(validateContactUnlockCreditValues() == 1){
-        candidateContactCreditAmount = parseInt($("#candidateContactCreditAmount").val());
-        totalAmount += candidateContactCreditAmount;
-        candidateContactCreditUnitPrice = parseInt($("#candidateContactCreditUnitPrice").val());
-        $("#contactCreditsVal").html("No. of credits: " + parseInt(candidateContactCreditAmount / candidateContactCreditUnitPrice));
-    }
-}
-
-function calculateInterviewUnlockCredits() {
-    if(validateInterviewUnlockCreditValues() == 1){
-        interviewCreditAmount = parseInt($("#interviewCreditAmount").val());
-        totalAmount += interviewCreditAmount;
-        interviewCreditUnitPrice = parseInt($("#interviewCreditUnitPrice").val());
-        $("#interviewCreditsVal").html("No. of credits: " + parseInt(interviewCreditAmount / interviewCreditUnitPrice));
-    }
-}
-
 function validateContactUnlockCreditValues(){
     var statusCheck = 1;
     if($("#candidateContactCreditAmount").val() == ""){
