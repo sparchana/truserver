@@ -13,8 +13,6 @@ var contactCredits = 0;
 var candidateCreditTypeStatus = 1;
 var interviewCreditTypeStatus = 1;
 
-var paymentMode = 0;
-
 function getLocality() {
     return localityArray;
 }
@@ -52,7 +50,7 @@ function computeCreditValue() {
         if(validateContactUnlockCreditValues() == 1){
             candidateCreditTypeStatus = 1;
 
-            if(parseInt($("#candidateContactCredits").val()) > parseInt($("#recruiterContactCredits").html())){
+            if(parseInt($("#candidateContactCredits").val()) > parseInt($("#recruiterContactCredits").val())){
                 contactCredits = parseInt($("#candidateContactCredits").val());
                 $("#addCreditInfoDiv").show();
                 $("#contactUnlockCreditInfo").html("Adding " + contactCredits + " contact unlock credits ");
@@ -66,7 +64,7 @@ function computeCreditValue() {
         if(validateInterviewUnlockCreditValues() == 1){
             interviewCreditTypeStatus = 1;
 
-            if(parseInt($("#interviewCredits").val()) > parseInt($("#recruiterInterviewCredits").html())){
+            if(parseInt($("#interviewCredits").val()) > parseInt($("#recruiterInterviewCredits").val())){
                 interviewCredits = parseInt($("#interviewCredits").val());
                 $("#addCreditInfoDiv").show();
                 $("#interviewUnlockCreditInfo").html("Adding " + interviewCredits + " interview unlock credits ");
@@ -159,7 +157,6 @@ function saveRecruiter() {
 }
 
 function processDataAddRecruiter(returnedData) {
-    console.log(returnedData);
     if(returnedData.status == 4){
         alert("Recruiter Update Successful!");
         window.close();
@@ -188,6 +185,8 @@ function processDataForCompanyInfo(returnedData) {
         creditHistoryList.reverse();
         var contactCreditCount = 0;
         var interviewCreditCount = 0;
+        $("#recruiterContactCredits").val(0);
+        $("#recruiterInterviewCredits").val(0);
         creditHistoryList.forEach(function (creditHistory){
             if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
                 if(contactCreditCount == 0){
@@ -225,24 +224,6 @@ function notifyError(msg){
     },{
         type: 'danger'
     });
-}
-
-function calculateContactUnlockCredits() {
-    if(validateContactUnlockCreditValues() == 1){
-        candidateContactCreditAmount = parseInt($("#candidateContactCreditAmount").val());
-        totalAmount += candidateContactCreditAmount;
-        candidateContactCreditUnitPrice = parseInt($("#candidateContactCreditUnitPrice").val());
-        $("#contactCreditsVal").html("No. of credits: " + parseInt(candidateContactCreditAmount / candidateContactCreditUnitPrice));
-    }
-}
-
-function calculateInterviewUnlockCredits() {
-    if(validateInterviewUnlockCreditValues() == 1){
-        interviewCreditAmount = parseInt($("#interviewCreditAmount").val());
-        totalAmount += interviewCreditAmount;
-        interviewCreditUnitPrice = parseInt($("#interviewCreditUnitPrice").val());
-        $("#interviewCreditsVal").html("No. of credits: " + parseInt(interviewCreditAmount / interviewCreditUnitPrice));
-    }
 }
 
 function validateContactUnlockCreditValues(){

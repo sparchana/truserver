@@ -63,6 +63,10 @@ public class ServerConstants {
     public static final int OBJECT_TYPE_JOB_POST_VIEW= 7;
     public static final int OBJECT_TYPE_PARTNER= 8;
     public static final int OBJECT_TYPE_ASSESSMENT_ATTEMPT= 9;
+    public static final int OBJECT_TYPE_NEW_JOB_POST= 10;
+    public static final int OBJECT_TYPE_SUPPORT= 0;
+
+    public static final int JOB_STATUS_ACTIVE= 2;
 
 
     public static final boolean FOLLOW_UP_DEACTIVATE = false;

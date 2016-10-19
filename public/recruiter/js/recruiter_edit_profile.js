@@ -350,7 +350,7 @@ function processDataUpdateCompany(returnedData) {
 
         $.ajax({
             type: "POST",
-            url: "/addRecruiter",
+            url: "/updateRecruiterProfile",
             async: false,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(rec),

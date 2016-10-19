@@ -265,7 +265,7 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(JobService.addJobPost(addJobPostRequest)));
+        return ok(toJson(JobService.addJobPost(addJobPostRequest, InteractionService.InteractionChannelType.SUPPORT)));
     }
 
     public static Result addCompanyLogo() {
@@ -295,7 +295,7 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(RecruiterService.createRecruiterProfile(recruiterSignUpRequest)));
+        return ok(toJson(RecruiterService.createRecruiterProfile(recruiterSignUpRequest, InteractionService.InteractionChannelType.SUPPORT)));
     }
 
     @Security.Authenticated(SecuredUser.class)
@@ -834,11 +834,11 @@ public class Application extends Controller {
     }
 
     public static Result getAllNormalJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.where().ne("JobStatus", 1).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
+        List<JobPost> jobPosts = JobPost.find.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
         return ok(toJson(jobPosts));
     }
     public static Result getAllHotJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").ne("JobStatus", 1).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
+        List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
         return ok(toJson(jobPosts));
     }
 
@@ -1236,7 +1236,7 @@ public class Application extends Controller {
     }
 
     public static Result getJobRoleWiseJobPosts(String rolePara, Long idPara) {
-        List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).ne("JobStatus", 1).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
+        List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
         return ok(toJson(jobPostList));
     }
 
@@ -1306,7 +1306,7 @@ public class Application extends Controller {
                             jobPostIdList.add(Long.parseLong(jobPostId));
                         }
                     }
-                    List<JobPost> jobPostList = JobPost.find.where().ne("JobStatus", 1).in("jobPostId", jobPostIdList).findList();
+                    List<JobPost> jobPostList = JobPost.find.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).in("jobPostId", jobPostIdList).findList();
                     for (JobPost jobPost : jobPostList) {
                         if (!jobRoleIdList.contains(jobPost.getJobRole().getJobRoleId())){
                             jobRoleIdList.add(jobPost.getJobRole().getJobRoleId());
@@ -1539,7 +1539,7 @@ public class Application extends Controller {
 
     @Security.Authenticated(RecSecured.class)
     public static Result getJobPostMatchingParams(long jobPostId) {
-        return ok(toJson(JobPost.find.where().eq("jobPostId", jobPostId).ne("JobStatus", 1).findUnique()));
+        return ok(toJson(JobPost.find.where().eq("jobPostId", jobPostId).eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).findUnique()));
     }
 
     @Security.Authenticated(RecSecured.class)
