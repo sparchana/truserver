@@ -67,31 +67,43 @@
                     <div class="mdl-card__supporting-text">
                         <div class="mdl-grid">
                             <!-- Job Post Detail Card -->
-                            <div class="mdl-cell mdl-cell--4-col" id="job_post_title" style="padding-top:8px;padding-left:20px; font-size: 30px; font-weight: 500">
+                            <div class="mdl-cell mdl-cell--3-col" id="job_post_title" style="padding-top:8px;padding-left:20px; font-size: 22px; font-weight: 500">
                                 Job Post Name
                             </div>
-                            <div class="mdl-cell mdl-cell--4-col">
+                            <div class="mdl-cell mdl-cell--2-col">
                                 <div style="display: inline-block;">
                                     <div style="margin-left: 4px;color: rgb(63,81,181);font-size: 12px">Company</div>
                                     <div id="job_post_company_title" style="margin-left: 4px;display: inline-block">Not Specified</div>
                                 </div>
                             </div>
-                            <div class="mdl-cell mdl-cell--4-col">
+                            <div class="mdl-cell mdl-cell--2-col">
                                     <div style="display: inline-block;">
-                                        <div style="margin-left: 4px;color: rgb(63,81,181);font-size: 12px">Salary</div>
-                                        <div id="job_post_salary" style="margin-left: 4px;
+                                        <div style="margin-left: 4px;color: rgb(63,81,181);font-size: 12px">Job Role</div>
+                                        <div id="job_role" style="margin-left: 4px;
                                             display: inline-block">Not Specified</div>
                                     </div>
+                            </div>
+                            <div class="mdl-cell mdl-cell--2-col">
+                                <div style="display: inline-block;">
+                                    <div style="margin-left: 4px;color: rgb(63,81,181);font-size: 12px">Salary</div>
+                                    <div id="job_post_salary" style="margin-left: 4px;
+                                        display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                            <div class="mdl-layout-spacer"></div>
+                            <div class="mdl-cell mdl-cell--2-col">
+                                <a target="_blank"><button id="job_role_id" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" onclick="linkToDashboard()">Button
+                                </button></a>
                             </div><!-- Job Post Detail Card End-->
                         </div>
                     </div>
                 </div>
                 <div>@content</div>
                     <!-- bottom notification snackbar -->
-                <div id="tru-snackbar" class="mdl-js-snackbar mdl-snackbar">
+                @*<div id="tru-snackbar" class="mdl-js-snackbar mdl-snackbar">
                     <div class="mdl-snackbar__text"></div>
                     <button class="mdl-snackbar__action" type="button"></button>
-                </div>
+                </div>*@
             </main>
         </div>
         <script type="text/javascript" src="/assets/build/support/sapp.min.js"></script>

@@ -6,11 +6,16 @@
 }
 
 .pre-screen-modal .modal-body {
-    max-height: calc(100vh - 280px);
+    max-height: calc(100vh - 200px);
     overflow-y: auto;
+    background-color: rgb(243, 245, 244);
 }
 .pre-screen-modal .modal-content {
-    padding: 2%;
+    padding: 1%;
+    border-radius:1px;
+}
+.modal-body{
+    padding: 8px;
 }
 
 body.modal-open {
