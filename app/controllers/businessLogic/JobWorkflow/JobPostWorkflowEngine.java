@@ -104,8 +104,6 @@ public class JobPostWorkflowEngine {
             minima = minExperienceList.get(0);
             maxima = maxExperienceList.get(0);
 
-            Logger.info("minima: " + minima);
-            Logger.info("maxima: " + maxima);
             if(minima == 0 && maxima == 0) {
                 query = query
                         .where()
@@ -293,7 +291,6 @@ public class JobPostWorkflowEngine {
             languageIdList.add(requirement.getLanguage().getLanguageId());
         }
 
-        Logger.info(" maxAge : "+maxAge + " - " + " minSalary : "+minSalary + " - " + " maxSalary : "+maxSalary + " - " + " gender : "+gender + " - " + " experienceId : "+experienceId + " - " + " localityIdList : "+localityIdList + " - " + " languageIdList: "+languageIdList);
         // call master method
         return getMatchingCandidate(jobPostId, maxAge, minSalary, maxSalary, gender, experienceIdList, jobRoleId, educationIdList, localityIdList, languageIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS);
     }
@@ -756,7 +753,6 @@ public class JobPostWorkflowEngine {
         }
 
         double score =  ((double) preScreenRequest.getPreScreenIdList().size()/(double) preScreenRequirementList.size());
-        Logger.info("score: " + score);
 
         preScreenResult.setResultScore(Util.RoundTo2Decimals(score));
         //TODO force set flag will come here next
@@ -1221,12 +1217,9 @@ public class JobPostWorkflowEngine {
 
         String candidateListString = String.join("', '", candidateUUIdList);
 
-        Logger.info("before interaction query: " + new Timestamp(System.currentTimeMillis()));
         Map<String, Interaction> lastActiveInteraction= Ebean.find(Interaction.class)
                 .setRawSql(getRawSqlForInteraction(candidateListString))
                 .findMap("objectAUUId", String.class);
-
-        Logger.info("after interaction query: " + new Timestamp(System.currentTimeMillis()));
 
         for (Candidate candidate: candidateList) {
             CandidateExtraData candidateExtraData = candidateExtraDataMap.get(candidate.getCandidateId());
@@ -1258,8 +1251,6 @@ public class JobPostWorkflowEngine {
                 " (select max(creationtimestamp) from interaction where i.objectauuid = interaction.objectauuid) " +
                 " order by creationTimestamp desc ");
 
-
-        Logger.info(interactionQueryBuilder.toString());
 
         RawSql rawSql = RawSqlBuilder.parse(interactionQueryBuilder.toString())
                 .tableAliasMapping("i", "interaction")

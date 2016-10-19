@@ -473,7 +473,6 @@ $(function () {
             selectList.multiselect('rebuild');
         }
 
-        NProgress.done();
     };
 
     app.initParams = function () {
@@ -492,7 +491,6 @@ $(function () {
         } catch (exception) {
             console.log("exception occured!!" + exception.stack);
         }
-        NProgress.done();
     };
 
     app.initJobCard = function () {
@@ -511,7 +509,6 @@ $(function () {
         } catch (exception) {
             console.log("exception occured!!" + exception.stack);
         }
-        NProgress.done();
     };
 
     app.processParamsAndUpdateUI = function (returnedData) {
@@ -622,7 +619,6 @@ $(function () {
     };
 
     app.fetchCandidateList = function () {
-        NProgress.start();
 
         var i;
         var modifiedLocality = $('#jobPostLocality').val().split(",");
@@ -672,7 +668,7 @@ $(function () {
         }
 
         if (app.shouldSend) {
-
+            NProgress.start();
             var d = {
                 jobPostId: app.jpId,
                 maxAge: app.jpMaxAge,
@@ -687,7 +683,6 @@ $(function () {
                 distanceRadius: parseInt($('#radiusValue').text())
             };
 
-            NProgress.start();
             try {
                 $.ajax({
                     type: "POST",
@@ -699,7 +694,6 @@ $(function () {
                 });
             } catch (exception) {
                 console.log("exception occured!!" + exception.stack);
-                NProgress.done();
             }
         }
     };
@@ -949,8 +943,6 @@ $(function () {
         } catch (exception) {
             console.log("exception occured!!" + exception.stack);
         }
-        NProgress.done();
-
     };
 
     app.responseInterpreter = function (response) {
@@ -969,8 +961,6 @@ $(function () {
     // pre_screen methods
     app.initPreScreenView = function () {
         NProgress.start();
-        var d = {};
-
         try {
             $.ajax({
                 type: "POST",
@@ -1016,6 +1006,7 @@ $(function () {
         }
     };
     app.populateJobPostCardUI = function (returnedData) {
+        NProgress.start();
         var jobPostTitle = returnedData.jobPostTitle;
         var jobPostCompany = returnedData.company.companyName;
         var jobPostSalary = "Rs. "+returnedData.jobPostMinSalary + " - Rs. " + returnedData.jobPostMaxSalary;
@@ -1051,6 +1042,7 @@ $(function () {
         $('#header_view_title').text("Match View");
         $('.navigation__link').removeClass("mdl-navigation__link--current");
         $('#match_view_drawer').removeClass("mdl-navigation__link--current").addClass("mdl-navigation__link--current");
+
         app.init();
         app.initParams();
 
