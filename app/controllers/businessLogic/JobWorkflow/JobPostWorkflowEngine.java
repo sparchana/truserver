@@ -1043,9 +1043,9 @@ public class JobPostWorkflowEngine {
                 .in("candidate.candidateId", candidateIdList)
                 .findList();
 
-        Map<Long, Timestamp> candidateToPreScreenTSMap =  new HashMap<>();
+        Map<Long, JobPostWorkflow> candidateToJobPostWorkflowMap =  new HashMap<>();
         for(JobPostWorkflow jobPostWorkflow : jobPostWorkflowList) {
-            candidateToPreScreenTSMap.put(jobPostWorkflow.getCandidate().getCandidateId(), jobPostWorkflow.getCreationTimestamp());
+            candidateToJobPostWorkflowMap.put(jobPostWorkflow.getCandidate().getCandidateId(), jobPostWorkflow);
         }
 
         List<Interaction> allPreScreenCallAttemptInteractions = Interaction.find
@@ -1094,9 +1094,12 @@ public class JobPostWorkflowEngine {
                 if(jobApplicationModeMap != null && jobApplicationModeMap.size() > 0) {
                     candidateExtraData.setJobApplicationMode(jobApplicationModeMap.get(candidate.getCandidateId()));
                 }
-                // 'Pre-screed selection timestamp'
-                if(candidateToPreScreenTSMap != null && candidateToPreScreenTSMap.size() > 0) {
-                    candidateExtraData.setPreScreenSelectionTimeStamp(candidateToPreScreenTSMap.get(candidate.getCandidateId()));
+                // 'Pre-screed selection timestamp' along with jobPostWorkflowId, uuid
+                if(candidateToJobPostWorkflowMap != null && candidateToJobPostWorkflowMap.size() > 0) {
+                    JobPostWorkflow jobPostWorkflow = candidateToJobPostWorkflowMap.get(candidate.getCandidateId());
+                    candidateExtraData.setPreScreenSelectionTimeStamp(jobPostWorkflow.getCreationTimestamp());
+                    candidateExtraData.setWorkflowId(jobPostWorkflow.getJobPostWorkflowId());
+                    candidateExtraData.setWorkflowUUId(jobPostWorkflow.getJobPostWorkflowUUId());
                 }
             }
 

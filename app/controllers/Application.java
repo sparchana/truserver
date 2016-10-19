@@ -1664,4 +1664,38 @@ public class Application extends Controller {
         Collections.sort(assetList,  (o1, o2) -> o1.getAssetTitle().compareTo(o2.getAssetTitle()));
         return ok(toJson(assetList));
     }
+
+    public static Result renderWorkflowInteraction(String uuid) {
+        return ok(views.html.workflow_interaction.render());
+    }
+
+    public static Result getWorkflowInteraction(String job_post_workflow_uuid) {
+
+        if(job_post_workflow_uuid == null) {
+            return badRequest();
+        }
+
+        Logger.info("uuid: "+job_post_workflow_uuid);
+        List<Interaction> interactionList = Interaction.find
+                .where().eq("objectAUUId", job_post_workflow_uuid.trim())
+                .findList();
+
+        List<SupportInteractionResponse> responses = new ArrayList<>();
+
+        SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT);
+
+        for(Interaction interaction : interactionList){
+            SupportInteractionResponse response = new SupportInteractionResponse();
+            response.setUserInteractionTimestamp(sfd.format(interaction.getCreationTimestamp()));
+            response.setInteractionId(interaction.getId());
+            response.setUserNote(interaction.getNote());
+            response.setUserResults(interaction.getResult());
+            response.setUserCreatedBy(interaction.getCreatedBy());
+            response.setUserInteractionType(InteractionConstants.INTERACTION_TYPE_MAP.get(interaction.getInteractionType()));
+            response.setChannel(InteractionConstants.INTERACTION_CHANNEL.get(interaction.getInteractionChannel()));
+
+            responses.add(response);
+        }
+        return ok(toJson(responses));
+    }
 }

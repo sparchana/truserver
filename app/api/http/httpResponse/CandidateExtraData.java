@@ -14,6 +14,8 @@ public class CandidateExtraData {
     public Integer preScreenCallAttemptCount;
     public String jobApplicationMode;
     public Timestamp preScreenSelectionTimeStamp;
+    public String workflowUUId;
+    public Long workflowId;
 
     public String getAppliedOn() {
         return appliedOn;
@@ -61,5 +63,21 @@ public class CandidateExtraData {
 
     public void setPreScreenSelectionTimeStamp(Timestamp preScreenSelectionTimeStamp) {
         this.preScreenSelectionTimeStamp = preScreenSelectionTimeStamp;
+    }
+
+    public String getWorkflowUUId() {
+        return workflowUUId;
+    }
+
+    public void setWorkflowUUId(String workflowUUId) {
+        this.workflowUUId = workflowUUId;
+    }
+
+    public Long getWorkflowId() {
+        return workflowId;
+    }
+
+    public void setWorkflowId(Long workflowId) {
+        this.workflowId = workflowId;
     }
 }
