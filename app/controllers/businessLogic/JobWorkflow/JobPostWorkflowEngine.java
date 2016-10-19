@@ -298,36 +298,33 @@ public class JobPostWorkflowEngine {
 
     public static Map<Long, CandidateWorkflowData> getSelectedCandidates(Long jobPostId) {
 
-//        StringBuilder workFlowQueryBuilder = new StringBuilder("select distinct creation_timestamp, job_post_id, status_id from job_post_workflow i " +
-//                " where i.job_post_id " +
-//                " = ('"+jobPostId+"') " +
-//                " and (status_id = '" +ServerConstants.JWF_STATUS_SELECTED+ "' or status_id = '" +ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED+"') "+
-//                " and creation_timestamp = " +
-//                " (select max(creation_timestamp) from job_post_workflow where i.candidate_id = job_post_workflow.candidate_id) " +
-//                " order by creation_timestamp desc ");
-//
-//        Logger.info("rawSql"+workFlowQueryBuilder.toString());
-//
-//        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder.toString())
-//                .tableAliasMapping("i", "jobPostWorkflow")
-//                .columnMapping("creation_timestamp", "creationTimestamp")
-//                .columnMapping("job_post_id", "jobPost.jobPostId")
-//                .columnMapping("status_id", "status.statusId")
-//                .create();
-//
-//        List<JobPostWorkflow> jobPostWorkflowList = Ebean.find(JobPostWorkflow.class)
-//                .setRawSql(rawSql)
-//                .findList();
-//
-//        for(JobPostWorkflow jobPostWorkflow : jobPostWorkflowList) {
-//            Logger.info("jobPostWorkflow: " + jobPostWorkflow.getJobPostWorkflowId());
-//        }
+        StringBuilder workFlowQueryBuilder = new StringBuilder("select createdby, candidate_id, creation_timestamp, job_post_id, status_id from job_post_workflow i " +
+                " where i.job_post_id " +
+                " = ('"+jobPostId+"') " +
+                " and (status_id = '" +ServerConstants.JWF_STATUS_SELECTED+ "' or status_id = '" +ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED+"') "+
+                " and creation_timestamp = " +
+                " (select max(creation_timestamp) from job_post_workflow where i.candidate_id = job_post_workflow.candidate_id) " +
+                " order by creation_timestamp desc ");
 
-        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where()
-                .eq("jobPost.jobPostId", jobPostId)
-                .or(eq("status.statusId", ServerConstants.JWF_STATUS_SELECTED), eq("status.statusId", ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED))
-                .setDistinct(true)
-                .orderBy().desc("creation_timestamp").findList();
+        Logger.info("rawSql"+workFlowQueryBuilder.toString());
+
+        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder.toString())
+                .columnMapping("creation_timestamp", "creationTimestamp")
+                .columnMapping("job_post_id", "jobPost.jobPostId")
+                .columnMapping("status_id", "status.statusId")
+                .columnMapping("candidate_id", "candidate.candidateId")
+                .columnMapping("createdby", "createdBy")
+                .create();
+
+        List<JobPostWorkflow> jobPostWorkflowList = Ebean.find(JobPostWorkflow.class)
+                .setRawSql(rawSql)
+                .findList();
+
+//        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where()
+//                .eq("jobPost.jobPostId", jobPostId)
+//                .or(eq("status.statusId", ServerConstants.JWF_STATUS_SELECTED), eq("status.statusId", ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED))
+//                .setDistinct(true)
+//                .orderBy().desc("creation_timestamp").findList();
 
         List<Candidate> candidateList = new ArrayList<>();
 
