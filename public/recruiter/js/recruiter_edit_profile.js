@@ -259,6 +259,11 @@ function saveForm() {
             notifyError("Please enter a valid linkedin profile");
             recruiterStatus = 0;
         }
+    } else if($("#rec_company_website").val() != ""){
+        if(!validateWebsiteLink($("#rec_company_website").val())){
+            notifyError("Please enter a valid company website");
+            recruiterStatus = 0;
+        }
     }
 
     var logo;

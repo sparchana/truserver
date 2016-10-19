@@ -78,6 +78,11 @@ function validateInteger(val) {
     return reg.test(val);
 }
 
+function validateWebsiteLink(url) {
+    var re = /[a-z0-9-\.]+\.[a-z]{2,4}\/?([^\s<>\#%"\,\{\}\\|\\\^\[\]`]+)?$/;
+    return re.test(url);
+}
+
 function validateLinkedin(url) {
     return /(ftp|http|https):\/\/?(?:www\.)?linkedin.com(\w+:{0,1}\w*@)?(\S+)(:([0-9])+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/.test(url);
 }
