@@ -1,4 +1,4 @@
-package controllers.businessLogic;
+package controllers.businessLogic.Recruiter;
 
 import api.ServerConstants;
 import api.http.FormValidator;
@@ -6,16 +6,14 @@ import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.PartnerSignUpResponse;
 import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
 import models.entity.Recruiter.RecruiterAuth;
-import models.entity.Recruiter.RecruiterPayment;
 import models.entity.Recruiter.RecruiterProfile;
-import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.Recruiter.Static.RecruiterProfileStatus;
-import models.entity.RecruiterCreditHistory;
 import models.util.Util;
 import play.Logger;
 
 import java.util.UUID;
 
+import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterAddPasswordViaWebsite;
 import static play.mvc.Controller.session;
 
 /**
@@ -66,6 +64,8 @@ public class RecruiterAuthService {
                 /* adding session details */
                 addSession(auth, existingRecruiter);
 
+                //adding recruiter interaction
+                createInteractionForRecruiterAddPasswordViaWebsite(existingRecruiter.getRecruiterProfileUUId());
                 recruiterSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
 
                 try {

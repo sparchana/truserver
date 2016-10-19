@@ -397,6 +397,23 @@ public class InteractionService {
 
     }
 
+    public static void createInteractionForNewJobPost(String objAuuId, String objBuuId, Integer objectAType,
+                                                                        Integer interactionType, String interactionResult, String createdBy, Integer channel)
+    {
+        Interaction interaction = new Interaction(
+                objAuuId,
+                objectAType,
+                objBuuId,
+                ServerConstants.OBJECT_TYPE_NEW_JOB_POST,
+                interactionType,
+                null,
+                interactionResult,
+                createdBy,
+                channel
+        );
+        InteractionService.createInteraction(interaction);
+    }
+
     public static void createInteractionForPreScreenAttempts(String objAuuId, String objBuuId,
                                                              Integer interactionType, String interactionResult)
     {
@@ -412,6 +429,5 @@ public class InteractionService {
                 INTERACTION_CHANNEL_SUPPORT_WEBSITE
         );
         InteractionService.createInteraction(interaction);
-
     }
 }

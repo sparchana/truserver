@@ -246,7 +246,7 @@ public class PartnerService {
 
             // Initialize some basic interaction details
             String createdBy = InteractionConstants.INTERACTION_CREATED_SELF;
-            String interactionResult = InteractionConstants.INTERACTION_RESULT_PARTNER_INFO_UPDATED_SELF;
+                String interactionResult = InteractionConstants.INTERACTION_RESULT_PARTNER_INFO_UPDATED_SELF;
 
             String interactionNote;
 

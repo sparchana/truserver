@@ -53,6 +53,7 @@ public class MatchingEngineService {
             Logger.info("Matching JobPosts for: "+ jobRoleIds.toString()+" JobRoleIds");
             query = query.select("*").fetch("jobRole")
                     .where()
+                    .eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE)
                     .in("jobRole.jobRoleId", jobRoleIds)
                     .query();
         }

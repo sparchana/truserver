@@ -50,7 +50,7 @@
             <nav>
                 <div class="container" style="width: 85%;">
                     <div class="nav-wrapper">
-                        <a href="#!" class="brand-logo">
+                        <a href="#" class="brand-logo">
                             <img id="navLogo" src="/assets/recruiter/img/trujobs-recruiter.png" style="height: 32px;
                                 margin-top: -2%">
                         </a>
@@ -58,14 +58,15 @@
                         <ul class="right hide-on-med-and-down">
                             <li><a href="/recruiter/home">Home</a></li>
                             <li><a href="/recruiter/candidateSearch">Search Candidate</a></li>
+                            <li><a href="/recruiter/jobPost/0">Create Job</a></li>
                             <li><a href="/recruiter/profile">Profile</a></li>
-                            <li><a href="/recruiter/postFreeJobsRecruiter">Post Free Jobs</a></li>
                             <li><a onclick="logoutRecruiter()">Logout</a></li>
                         </ul>
                     </div>
                     <ul class="side-nav" id="mobile-demo">
                         <li><a href="/recruiter/home">Home</a></li>
                         <li><a href="/recruiter/candidateSearch">Search Candidate</a></li>
+                        <li><a href="/recruiter/jobPost/0">Create Job</a></li>
                         <li><a href="/recruiter/profile">Profile</a></li>
                         <li><a onclick="logoutRecruiter()">Logout</a></li>
                     </ul>
@@ -481,8 +482,9 @@
 
             <!-- Modal buy credit Structure -->
         <div id="modalBuyCredits" class="modal" style="background: transparent; box-shadow: none">
+            <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeCreditModal()"></div>
             <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
-                <center><font style="color: #fff"><h5>Credit Packs</h5></font></center>
+                <center><font style="color: #fff"><h5>Top up now and get access to more candidates!</h5></font></center>
             </div>
             <div style="background: #fff; padding: 24px">
                 <center>
@@ -490,28 +492,25 @@
                         <div class="col s6 l6">
                             <div class="packCol">
                                 <img src="/assets/recruiter/img/coin.svg" width="36px">
-                                <div style="display: block; font-size: 16px">Contact Unlock</div>
+                                <div style="display: block; font-size: 16px">Buy contact unlocks</div>
                                 <br>
                                 <p>Buy credits at ₹100/credit</p>
-                                <input style="width: 70%" placeholder="Enter amount (in ₹)" id="contactCreditAmount" onblur="calculateContactUnlockCredits()" type="number" class="validate">
-                                <div id="contactCreditsVal" style="color: #2ec866;  margin: -12px 0 8px 0">0 Contact credits</div>
-                                <div style="width: 100%; font-size: 12px; padding: 0" id="requestContactCredit" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="submitContactCredit()"><font style="color: #fff;
-                                    font-weight: 400"><b>Buy Contact Credits</b></font></div>
+                                <input style="width: 70%" placeholder="No. of Contact credits" id="contactCreditAmount" type="number" class="validate">
                             </div>
                         </div>
                         <div class="col s6 l6">
                             <div class="packCol">
                                 <img src="/assets/recruiter/img/coin.svg" width="36px">
-                                <div style="display: block; font-size: 16px">Interview Unlock</div>
+                                <div style="display: block; font-size: 16px">Buy interview unlocks</div>
                                 <br>
                                 <p>Buy credits at ₹1000/credit</p>
-                                <input style="width: 70%" placeholder="Enter amount (in ₹)" id="interviewCreditAmount" onblur="calculateInterviewUnlockCredits()" type="number" class="validate">
-                                <div id="interviewCreditsVal" style="color: #2ec866; margin: -12px 0 8px 0">0 Interview credits</div>
-                                <div style="width: 100%; font-size: 12px; padding: 0" id="requestInterviewCredit" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="submitInterviewCredit()"><font style="color: #fff;
-                                    font-weight: 400"><b>Buy Interview Credits</b></font></div>
+                                <input style="width: 70%" placeholder="No. of Interview credits" id="interviewCreditAmount" type="number" class="validate">
                             </div>
                         </div>
                     </div>
+                    <div style="width: 40%; font-size: 12px; padding: 0" id="requestCredits" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="submitCredits()"><font style="color: #fff;
+                        font-weight: 400"><b>Buy Contact Credits</b></font></div>
+                    <div style="margin: 8px; color: #0f9d58; display: none" id="successMsg">Thanks! We have received your request to buy more credits. Our business team will contact you within 24hrs</div>
                 </center>
             </div>
         </div>

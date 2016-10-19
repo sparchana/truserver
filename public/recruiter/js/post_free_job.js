@@ -2,6 +2,10 @@
  * Created by dodo on 18/10/16.
  */
 
+var jpId = 0;
+var jpCompanyId = 3;
+var jpRecruiterId = 46;
+
 function processDataCheckLocality(returnedData) {
     if (returnedData != null) {
         returnedData.forEach(function (locality) {
@@ -66,14 +70,21 @@ function processDataGetAllLanguage(returnLanguage) {
     });
 }
 
-function processDataGetAllTimeSlots(returnedData) {
-    $('#interviewTimeSlot').html('');
-    returnedData.forEach(function(timeSlot) {
-        var id = timeSlot.interviewTimeSlotId;
-        var name = timeSlot.interviewTimeSlotName;
-        var item = {};
-        item ["id"] = id;
-        item ["name"] = name;
+function processDataGetAllIdProof(returnedIdProofs) {
+    returnedIdProofs.forEach(function (idProof) {
+        var id = idProof.idProofId;
+        var name = idProof.idProofName;
+        var option = $('<option value=' + id + '></option>').text(name);
+        $('#jobPostIdProof').append(option);
+    });
+}
+
+function processDataGetAllAsset(returnedAssets) {
+    returnedAssets.forEach(function (asset) {
+        var id = asset.assetId;
+        var name = asset.assetTitle;
+        var option = $('<option value=' + id + '></option>').text(name);
+        $('#jobPostAsset').append(option);
     });
 }
 
@@ -94,15 +105,33 @@ function toJobRequirement(){
     $('body').scrollTop(0);
 }
 
-function validateTokenVal(val, text) {
-    if(val.localeCompare(text) == 0){
-        $('#jobPostExperience').tokenize().tokenRemove(val);
-        notifyError("Please select a valid location from the dropdown list");
+function checkRecruiterLogin() {
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/checkRecruiterSession",
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataRecruiterSession
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
     }
 }
 
+function processDataRecruiterSession(returnedData) {
+    if(returnedData == "0"){
+        logoutRecruiter();
+    } else{
+        jpRecruiterId = returnedData.recruiterProfileId;
+        jpCompanyId = returnedData.company.companyId;
+    }
+}
+
+
 $(document).ready(function () {
-/*
+    checkRecruiterLogin();
     var pathname = window.location.pathname; // Returns path only
     var jobPostIdUrl = pathname.split('/');
     var jobPostId = jobPostIdUrl[(jobPostIdUrl.length)-1];
@@ -110,7 +139,7 @@ $(document).ready(function () {
         try {
             $.ajax({
                 type: "POST",
-                url: "/getJobPostInfo/" + jobPostId + "/1",
+                url: "/getRecruiterJobPostInfo/" + jobPostId,
                 data: false,
                 contentType: false,
                 processData: false,
@@ -120,7 +149,6 @@ $(document).ready(function () {
             console.log("exception occured!!" + exception);
         }
     }
-*/
 
     /* ajax commands to fetch all localities and jobs*/
     try {
@@ -196,19 +224,6 @@ $(document).ready(function () {
     try {
         $.ajax({
             type: "POST",
-            url: "/getAllTimeSlots",
-            data: false,
-            async: false,
-            contentType: false,
-            processData: false,
-            success: processDataGetAllTimeSlots
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-    try {
-        $.ajax({
-            type: "POST",
             url: "/getAllLanguage",
             data: false,
             async: false,
@@ -219,6 +234,33 @@ $(document).ready(function () {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllIdProof",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetAllIdProof
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllAsset",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetAllAsset
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
 
     var i;
 
@@ -237,30 +279,96 @@ $(document).ready(function () {
 
 });
 
-
-/*parseInt(selectedLocality[0])*/
-
 function saveJob() {
-    var status = 1;
+    var status;
+
+    var vacancies = $("#jobPostVacancies").val();
+
+    var startTime = $("#jobPostStartTime").val();
+    var endTime = $("#jobPostEndTime").val();
 
     var minSalary = $("#jobPostMinSalary").val();
     var maxSalary = $("#jobPostMaxSalary").val();
 
-    if (minSalary != null) {
-        minSalary = parseInt(minSalary);
+    var jobLocalitySelected = $("#jobPostLocality").val();
+    var jobPostLanguage = $('#jobPostLanguage').val();
+    var jobPostWorkShift = $("#jobPostShift").val();
+    var jobPostEducation = $("#jobPostEducation").val();
+    var jobPostExperience = $("#jobPostExperience").val();
+
+    //experience conversion
+    if (jobPostExperience != null) {
+        jobPostExperience = parseInt(jobPostExperience);
     }
 
-    if (maxSalary != null) {
+    //education conversion
+    if (jobPostEducation != null) {
+        jobPostEducation = parseInt(jobPostEducation);
+    }
+
+    //work shift conversion
+    if (jobPostWorkShift != null) {
+        jobPostWorkShift = parseInt(jobPostWorkShift);
+    }
+
+    //vacancies conversion
+    if (vacancies != null && vacancies != "") {
+        vacancies = parseInt(vacancies);
+    }
+
+    // salary conversion
+    if (minSalary != null && minSalary != "") {
+        minSalary = parseInt(minSalary);
+    }
+    if (maxSalary != null && maxSalary != "") {
         maxSalary = parseInt(maxSalary);
     }
 
-    var jobPostLocalities = [];
+    //job post timing conversion
+    if (startTime != null) {
+        startTime = parseInt(startTime[0]);
+    }
+    if (endTime != null) {
+        endTime = parseInt(endTime[0]);
+    }
+
+    var preferredJobLocationList = [];
+    var jobPostLanguageList = [];
+
+    var k;
+    if(jobLocalitySelected != null){
+        for (k = 0; k < Object.keys(jobLocalitySelected).length; k++) {
+            preferredJobLocationList.push(parseInt(jobLocalitySelected[k]));
+        }
+    }
+
+    if(jobPostLanguage != null){
+        for (k = 0; k < Object.keys(jobPostLanguage).length; k++) {
+            jobPostLanguageList.push(parseInt(jobPostLanguage[k]));
+        }
+    }
+
+    var jobPostDocument = $('#jobPostIdProof').val();
+    var jobPostAsset = $('#jobPostAsset').val();
+
     status = 1;
-    var locality = $('#jobPostLocalities').val();
+
     if($("#jobPostTitle").val() == ""){
         notifyError("Please enter Job Post Title");
         status = 0;
-    } else if($("#jobPostMinSalary").val() == "0"){
+    } else if($("#jobPostJobRole").val() == null){
+        notifyError("Please enter job role");
+        status = 0;
+    } else if(vacancies == ""){
+        notifyError("Please enter no. of vacancies");
+        status = 0;
+    } else if(vacancies < 1){
+        notifyError("Please enter no. of vacancies");
+        status = 0;
+    } else if(jobLocalitySelected == null){
+        notifyError("Please enter job localities");
+        status = 0;
+    } else if(minSalary == ""){
         notifyError("Please enter Job Post Minimum salary");
         status = 0;
     } else if(isValidSalary(minSalary) == false){
@@ -272,15 +380,12 @@ function saveJob() {
     } else if(maxSalary != 0 && (maxSalary <= minSalary)){
         notifyError("Max salary should be greater than min salary");
         status = 0;
-    } else if($("#jobPostJobRole").val() == ""){
-        notifyError("Please enter job roles");
+    } else if($("input[name='jobPostGender']:checked").val() == null || $("input[name='jobPostGender']:checked").val() == undefined){
+        notifyError("Please specify gender");
         status = 0;
-    } else if($("#jobPostVacancies").val() == "" || $("#jobPostVacancies").val() == 0){
-        notifyError("Please enter no. of vacancies");
-        status = 0;
-    } else if($("#jobPostStartTime").val() != -1){
-        if($("#jobPostEndTime").val() != -1){
-            if(parseInt($("#jobPostStartTime").val()) >= parseInt($("#jobPostEndTime").val())){
+    } else if(startTime != null){
+        if(endTime != null){
+            if(startTime >= endTime){
                 notifyError("Start time cannot be more than end time");
                 status = 0;
             }
@@ -288,91 +393,37 @@ function saveJob() {
             notifyError("Please select job end time");
             status = 0;
         }
-    } else if(locality == ""){
-        notifyError("Please enter localities");
-        status = 0;
-    } else if($("#jobPostExperience").val() == ""){
+    } else if(jobPostExperience == null){
         notifyError("Please enter Job Post Experience required");
         status = 0;
     }
 
     // checking age, location, gender
-    var jobPostLanguage = $('#jobPostLanguage').val();
-    var minAge = $("#jobPostMinAge").val();
     var maxAge = $("#jobPostMaxAge").val();
-    var jobPostGender = parseInt(document.getElementById("jobPostGender").value);
-    if (status !=0 ){
-        if (minAge == 0 || !isValidAge(minAge)) {
-            $("#jobPostMinAge").removeClass('invalid').addClass('invalid');
-            notifyError("Please enter Job Post Min Age Requirement", 'danger');
-            status = 0;
-        }
+    var jobPostGender = parseInt($("input[name='jobPostGender']:checked").val());
+    if (status != 0 ){
         if (!isValidAge(maxAge)) {
             $("#jobPostMaxAge").removeClass('invalid').addClass('invalid');
-            notifyError("Please enter Job Post Max Age Requirement", 'danger');
-            status = 0;
-        }
-        if(maxAge !=0 && minAge > maxAge) {
-            $("#jobPostMinAge").removeClass('invalid').addClass('invalid');
-            $("#jobPostMaxAge").removeClass('invalid').addClass('invalid');
-            notifyError("Incorrect Min/Max Age", 'danger');
-            status = 0;
-        }
-        if (! jobPostLanguage && jobPostLanguage == null) {
-            var jobPostLanguageSelector = "#job_post_form div.col-sm-9  span div button";
-            $(jobPostLanguageSelector).removeClass('invalid').addClass('invalid');
-
-            notifyError("Please enter Job Post Language Requirements", 'danger');
+            notifyError("Please enter Job Post Max Age Requirement");
             status = 0;
         }
         if (jobPostGender == null || jobPostGender == -1) {
-            $("#jobPostGender").attr('style', "border-color: red;");
-            notifyError("Please enter Job Post Gender Requirement", 'danger');
+            notifyError("Please enter Job Post Gender Requirement");
             status = 0;
         }
-        if(status == 0){
-            scrollTo("#jobPostGender");
+        if(jobPostAsset == null){
+            notifyError("Please enter Job Post assets required");
+            status = 0;
+        } else if(jobPostDocument == null){
+            notifyError("Please enter Job Post documents required");
+            status = 0;
         }
-    }
-
-    //checking partner incentives
-    if (partnerInterviewIncentiveVal < 0) {
-        notifyError("Partner interview incentive cannot be negative", 'danger');
-        status = 0;
-    }
-    else if (partnerJoiningIncentiveVal < 0) {
-        notifyError("Partner joining incentive cannot be negative", 'danger');
-        status = 0;
-    } else if (partnerJoiningIncentiveVal < partnerInterviewIncentiveVal){
-        notifyError("Partner interview incentive cannot be greater than partner joining incentive", 'danger');
-        status = 0;
     }
 
     if(status == 1){
-        if($("#jobPostRecruiter").val() != "" && $("#jobPostRecruiter").val() != null && $("#jobPostRecruiter").val() != undefined){
-            recId = $("#jobPostRecruiter").val();
-        }
-        $("#jobPostExperience").addClass('selectDropdown').removeClass('selectDropdownInvalid');
         var i;
-        for(i=0;i<locality.length; i++){
-            jobPostLocalities.push(parseInt(locality[i]));
-        }
-        var jobPostIsHot = 0;
-        var jobPostWorkFromHome = 0;
-        if ($('#jobPostIsHot').is(":checked"))
-        {
-            jobPostIsHot = 1;
-        }
-        if ($('#jobPostWorkFromHome').is(":checked"))
-        {
-            jobPostWorkFromHome = 1;
-        }
-        var maxSalary = $("#jobPostMaxSalary").val();
-        if(maxSalary == 0 || maxSalary == undefined){
-            maxSalary = null;
-        }
-
         var workingDays = "";
+
         for(i=1;i<=7;i++){
             if($("#working_" + i).is(":checked")){
                 workingDays += "1";
@@ -381,61 +432,39 @@ function saveJob() {
             }
         }
 
-        var interviewDays = "";
-        for(i=1;i<=7;i++){
-            if($("#interview_day_" + i).is(":checked")){
-                interviewDays += "1";
-            } else{
-                interviewDays += "0";
-            }
-        }
-
-        $('#interviewTimeSlot input:checked').map(function() {
-            var slotId = this.value;
-            slotArray.push(parseInt(slotId));
-        }).get();
-
         try {
             var d = {
-                jobPostId: $("#jobPostId").val(),
-                jobPostMinSalary: $("#jobPostMinSalary").val(),
-                jobPostMaxSalary: $("#jobPostMaxSalary").val(),
-                jobPostStartTime: parseInt($("#jobPostStartTime").val()),
-                jobPostEndTime: parseInt($("#jobPostEndTime").val()),
+                jobPostId: jpId,
+                jobPostMinSalary: minSalary,
+                jobPostMaxSalary: maxSalary,
+                jobPostStartTime: startTime,
+                jobPostEndTime: endTime,
                 jobPostWorkingDays: workingDays,
-                jobPostIsHot: jobPostIsHot,
+                jobPostIsHot: 1,
                 jobPostDescription: $("#jobPostDescription").val(),
                 jobPostTitle: $("#jobPostTitle").val(),
-                jobPostIncentives: $("#jobPostIncentives").val(),
                 jobPostMinRequirement: $("#jobPostMinRequirement").val(),
-                jobPostAddress: $("#jobPostAddress").val(),
-                jobPostPinCode: $("#jobPostPinCode").val(),
-                jobPostVacancies: $("#jobPostVacancies").val(),
-                jobPostLocalities: jobPostLocalities,
-                jobPostJobRoleId: parseInt($("#jobPostJobRole").val()),
-                jobPostCompanyId: $("#jobPostCompany").val(),
-                jobPostDescriptionAudio: "",
-                jobPostWorkFromHome: jobPostWorkFromHome,
-                jobPostShiftId: $("#jobPostWorkShift").val(),
-                jobPostPricingPlanId: $("#jobPostPricingPlan").val(),
-                jobPostEducationId: $("#jobPostEducation").val(),
-                jobPostStatusId: $("#jobPostStatus").val(),
-                pricingPlanTypeId: 1,
-                jobPostExperienceId: $("#jobPostExperience").val(),
-                jobPostRecruiterId: recId,
-                partnerInterviewIncentive: $("#partnerInterviewIncentive").val(),
-                partnerJoiningIncentive: $("#partnerJoiningIncentive").val(),
-                jobPostInterviewDays: interviewDays,
-                interviewTimeSlot: slotArray,
-                jobPostLanguage: jobPostLanguage,
-                jobPostMinAge: minAge,
+                jobPostVacancies: vacancies,
+                jobPostLocalities: jobLocalitySelected,
+                jobPostJobRoleId: parseInt(($("#jobPostJobRole").val())[0]),
+                jobPostCompanyId: jpCompanyId,
+                jobPostShiftId: jobPostWorkShift,
+                jobPostPricingPlanId: 1,
+                jobPostEducationId: jobPostEducation,
+                jobPostStatusId: 1,
+                jobPostExperienceId: jobPostExperience,
+                jobPostRecruiterId: jpRecruiterId,
+                partnerInterviewIncentive: 400,
+                partnerJoiningIncentive: 2000,
+                jobPostLanguage: jobPostLanguageList,
                 jobPostMaxAge: maxAge,
-                jobPostGender: jobPostGender
-
+                jobPostGender: jobPostGender,
+                jobPostDocument: jobPostDocument,
+                jobPostAsset: jobPostAsset
             };
             $.ajax({
                 type: "POST",
-                url: "/addJobPost",
+                url: "/recruiter/api/addJobPost",
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(d),
                 success: processDataAddJobPost
@@ -447,207 +476,227 @@ function saveJob() {
 }
 
 function processDataAddJobPost(returnedData) {
-    console.log(returnedData);
+    if(returnedData.status == 1){
+        notifySuccess("Job post successfully created!");
+    } else if(returnedData.status == 2){
+        notifySuccess("Job post successfully updated!");
+    } else{
+        notifyError("Something went wrong. Please try again later!");
+    }
 }
 
 
 function processDataForJobPost(returnedData) {
-    $("#jobPostId").val(returnedData.jobPostId);
-    if(returnedData.company != null ){
-        $("#jobPostCompany").val(returnedData.company.companyId);
-    }
-
-    getRecruiters(returnedData.company.companyId);
-    if(returnedData.recruiterProfile != null){
-        $('#jobPostRecruiter').val(returnedData.recruiterProfile.recruiterProfileId);
-    }
-    $("#jobPostTitle").val(returnedData.jobPostTitle);
-
-    $("#jobPostDescription").val(returnedData.jobPostDescription);
-
-    // gender, language, age
-    if (returnedData.jobPostMinAge != null) {
-        $("#jobPostMinAge").val(returnedData.jobPostMinAge);
-    }
-    if (returnedData.jobPostMaxAge != null) {
-        $("#jobPostMaxAge").val(returnedData.jobPostMaxAge);
-    }
-    if (returnedData.gender !=null) {
-        $("#jobPostGender").val(returnedData.gender);
-    }
-    if (returnedData.jobPostLanguageRequirement != null) {
-        var arr = [];
-        var req = returnedData.jobPostLanguageRequirement;
-        req.forEach(function (languageRequirement) {
-            if(languageRequirement != null){
-                arr.push(languageRequirement.language.languageId);
-            }
-        });
-        $("#jobPostLanguage").val(arr);
-        $("#jobPostLanguage").multiselect('rebuild');
-    }
-
-
-    $("#jobPostMinSalary").val(returnedData.jobPostMinSalary);
-    $("#jobPostMaxSalary").val(returnedData.jobPostMaxSalary);
-
-    if(returnedData.jobRole != null){
-        var item = {};
-        item ["id"] = returnedData.jobRole.jobRoleId;
-        item ["name"] = returnedData.jobRole.jobName;
-        jobPostJobRole.push(item);
-    }
-    $("#jobPostJobRole").tokenInput(getJob(), {
-        theme: "facebook",
-        placeholder: "Job Role?",
-        hintText: "Start typing jobs (eg. Cook, Delivery boy..)",
-        minChars: 0,
-        tokenLimit: 1,
-        prePopulate: jobPostJobRole,
-        preventDuplicates: true
-    });
-
-    if(returnedData.jobPostToLocalityList != null){
-        returnedData.jobPostToLocalityList.forEach(function (locality) {
-            var item = {};
-            item ["id"] = locality.locality.localityId;
-            item ["name"] = locality.locality.localityName;
-            jobPostLocality.push(item);
-        });
-    }
-    if($("#jobPostLocalities").val() == ""){
-        $("#jobPostLocalities").tokenInput(getLocality(), {
-            theme: "facebook",
-            placeholder: "job Localities?",
-            hintText: "Start typing Area (eg. BTM Layout, Bellandur..)",
-            minChars: 0,
-            prePopulate: jobPostLocality,
-            preventDuplicates: true
-        });
-    }
-    if(returnedData.jobPostAddress != null ){
-        $("#jobPostAddress").val(returnedData.jobPostAddress);
-    }
-
-    if(returnedData.jobPostPinCode != null ){
-        $("#jobPostPinCode").val(returnedData.jobPostPinCode);
-    }
-
-    if(returnedData.jobPostIncentives != null ){
-        $("#jobPostIncentives").val(returnedData.jobPostIncentives);
-    }
-
-    if(returnedData.jobPostMinRequirement != null ){
-        $("#jobPostMinRequirement").val(returnedData.jobPostMinRequirement);
-    }
-
-    if(returnedData.jobPostStartTime != null ){
-        $("#jobPostStartTime").val(returnedData.jobPostStartTime);
-    }
-
-    if(returnedData.jobPostEndTime != null ){
-        $("#jobPostEndTime").val(returnedData.jobPostEndTime);
-    }
-
-    if(returnedData.jobPostWorkingDays != null){
-        var workingDays = returnedData.jobPostWorkingDays.toString(2);
-        var i;
-        /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
-        if(workingDays.length != 7){
-            var x = 7 - workingDays.length;
-            var modifiedWorkingDays = "";
-
-            for(i=0;i<x;i++){
-                modifiedWorkingDays += "0";
-            }
-            modifiedWorkingDays += workingDays;
-            workingDays = modifiedWorkingDays;
+    console.log(returnedData);
+    if(returnedData != "0"){
+        jpId = returnedData.jobPostId;
+        if(returnedData.company != null ){
+            jpCompanyId = returnedData.company.companyId;
         }
 
-        for(i=1; i<=7; i++){
-            if(workingDays[i-1] == 1){
-                $("#working_" + i).prop('checked', true);
+        $("#jobPostTitle").val(returnedData.jobPostTitle);
+
+        $("#jobPostDescription").val(returnedData.jobPostDescription);
+
+        // gender, language, age
+        if (returnedData.jobPostMaxAge != null) {
+            $("#jobPostMaxAge").val(returnedData.jobPostMaxAge);
+        }
+        if (returnedData.gender !=null) {
+            if(returnedData.gender == 0){
+                $("#male").attr('checked', true);
+            } else if(returnedData.gender == 1) {
+                $("#female").attr('checked', true);
             } else{
-                $("#working_" + i).prop('checked', false);
+                $("#any").attr('checked', true);
             }
         }
-    }
-
-    if(returnedData.jobPostIsHot != null ){
-        if(returnedData.jobPostIsHot == true){
-            $("#jobPostIsHot").prop('checked', true);
-        } else{
-            $("#jobPostIsHot").prop('checked', false);
+        if (returnedData.jobPostLanguageRequirement != null) {
+            var req = returnedData.jobPostLanguageRequirement;
+            req.forEach(function (languageRequirement) {
+                if(languageRequirement != null){
+                    $('#jobPostLanguage').tokenize().tokenAdd(languageRequirement.language.languageId, languageRequirement.language.languageName);
+                }
+            });
         }
-    }
 
-    if(returnedData.jobPostWorkFromHome != null ){
-        if(returnedData.jobPostWorkFromHome == true){
-            $("#jobPostWorkFromHome").prop('checked', true);
-        } else{
-            $("#jobPostWorkFromHome").prop('checked', false);
+        $("#jobPostMinSalary").val(returnedData.jobPostMinSalary);
+        $("#jobPostMaxSalary").val(returnedData.jobPostMaxSalary);
+
+        if(returnedData.jobRole != null){
+            var id = returnedData.jobRole.jobRoleId;
+            var name = returnedData.jobRole.jobName;
+            $('#jobPostJobRole').tokenize().tokenAdd(id, name);
         }
-    }
 
-    if(returnedData.jobPostVacancies != null ){
-        $("#jobPostVacancies").val(returnedData.jobPostVacancies);
-    }
+        console.log(returnedData.jobPostToLocalityList);
+        if(returnedData.jobPostToLocalityList != null){
+            returnedData.jobPostToLocalityList.forEach(function (locality) {
+                var id = locality.locality.localityId;
+                var name = locality.locality.localityName;
+                $('#jobPostLocality').tokenize().tokenAdd(id, name);
+            });
+        }
 
-    if(returnedData.pricingPlanType != null ){
-        $("#jobPostPricingPlan").val(returnedData.pricingPlanType.pricingPlanTypeId);
-    }
+        if(returnedData.jobPostStartTime != null ){
+            $('#jobPostStartTime').tokenize().tokenAdd(returnedData.jobPostStartTime, returnedData.jobPostStartTime + ":00 hrs");
+        }
 
-    if(returnedData.jobPostExperience != null ){
-        $("#jobPostExperience").val(returnedData.jobPostExperience.experienceId);
-    }
+        if(returnedData.jobPostEndTime != null ){
+            $('#jobPostEndTime').tokenize().tokenAdd(returnedData.jobPostEndTime, returnedData.jobPostEndTime + ":00 hrs");
+        }
 
-    if(returnedData.jobPostShift != null ){
-        $("#jobPostWorkShift").val(returnedData.jobPostShift.timeShiftId);
-    }
-
-    if(returnedData.jobPostEducation != null ){
-        $("#jobPostEducation").val(returnedData.jobPostEducation.educationId);
-    }
-
-    if(returnedData.jobPostStatus != null ){
-        $("#jobPostStatus").val(returnedData.jobPostStatus.jobStatusId);
-    }
-
-    if(Object.keys(returnedData.interviewDetailsList).length > 0){
-        var interviewDetailsList = returnedData.interviewDetailsList;
-        if(interviewDetailsList[0].interviewDays != null){
-            var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
-
+        if(returnedData.jobPostWorkingDays != null){
+            var workingDays = returnedData.jobPostWorkingDays.toString(2);
+            var i;
             /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
-            if(interviewDays.length != 7){
-                x = 7 - interviewDays.length;
-                var modifiedInterviewDays = "";
+            if(workingDays.length != 7){
+                var x = 7 - workingDays.length;
+                var modifiedWorkingDays = "";
 
                 for(i=0;i<x;i++){
-                    modifiedInterviewDays += "0";
+                    modifiedWorkingDays += "0";
                 }
-                modifiedInterviewDays += interviewDays;
-                interviewDays = modifiedInterviewDays;
+                modifiedWorkingDays += workingDays;
+                workingDays = modifiedWorkingDays;
             }
 
             for(i=1; i<=7; i++){
-                if(interviewDays[i-1] == 1){
-                    $("#interview_day_" + i).prop('checked', true);
+                if(workingDays[i-1] == 1){
+                    $("#working_" + i).prop('checked', true);
                 } else{
-                    $("#interview_day_" + i).prop('checked', false);
+                    $("#working_" + i).prop('checked', false);
                 }
             }
         }
 
-        //prefilling time slots
-        interviewDetailsList.forEach(function (timeSlot){
-            var slotBtn = $("#interviewSlot_" + timeSlot.interviewTimeSlot.interviewTimeSlotId);
-            slotBtn.prop('checked', true);
-            slotBtn.parent().addClass('active');
-        });
+        if(returnedData.jobPostVacancies != null ){
+            $("#jobPostVacancies").val(returnedData.jobPostVacancies);
+        }
+
+        if(returnedData.jobPostExperience != null ){
+            $('#jobPostExperience').tokenize().tokenAdd(returnedData.jobPostExperience.experienceId, returnedData.jobPostExperience.experienceType);
+        }
+
+        if(returnedData.jobPostShift != null ){
+            $('#jobPostShift').tokenize().tokenAdd(returnedData.jobPostShift.timeShiftId, returnedData.jobPostShift.timeShiftName);
+        }
+
+        if(returnedData.jobPostEducation != null ){
+            $('#jobPostEducation').tokenize().tokenAdd(returnedData.jobPostEducation.educationId, returnedData.jobPostEducation.educationName);
+        }
+        if(returnedData.jobPostAssetRequirements != null){
+            returnedData.jobPostAssetRequirements.forEach(function (assets) {
+                var id = assets.asset.assetId;
+                var name = assets.asset.assetTitle;
+                $('#jobPostAsset').tokenize().tokenAdd(id, name);
+            });
+        }
+        if(returnedData.jobPostDocumentRequirements != null){
+            returnedData.jobPostDocumentRequirements.forEach(function (document) {
+                var id = document.idProof.idProofId;
+                var name = document.idProof.idProofName;
+                $('#jobPostIdProof').tokenize().tokenAdd(id, name);
+            });
+        }
+
+    } else{
+        notifyError("Job details not available");
+        setTimeout(function(){
+            window.location = "/recruiter/home";
+        }, 2500);
     }
-    $("#partnerInterviewIncentive").val(returnedData.jobPostPartnerInterviewIncentive);
-    $("#partnerJoiningIncentive").val(returnedData.jobPostPartnerJoiningIncentive);
+
+}
+
+function validateJobRoleTokenVal(val, text) {
+    if(val.localeCompare(text) == 0){
+        $('#jobPostJobRole').tokenize().tokenRemove(val);
+        notifyError("Please select a valid job role from the dropdown list");
+    }
+}
+
+function validateJobLocalityTokenVal(val, text) {
+    if(val.localeCompare(text) == 0){
+        $('#jobPostLocality').tokenize().tokenRemove(val);
+        notifyError("Please select a valid location from the dropdown list");
+    }
+}
+
+function validateShiftTokenVal(val, text) {
+    if(val.localeCompare(text) == 0){
+        $('#jobPostShift').tokenize().tokenRemove(val);
+        notifyError("Please select a valid time shift from the dropdown list");
+    }
+}
+
+function validateStartTokenVal(val, text) {
+    if(val.localeCompare(text) == 0){
+        $('#jobPostStartTime').tokenize().tokenRemove(val);
+        notifyError("Please select a valid start time from the dropdown list");
+    }
+}
+function validateEndTokenVal(val, text) {
+    if(val.localeCompare(text) == 0){
+        $('#jobPostEndTime').tokenize().tokenRemove(val);
+        notifyError("Please select a valid end time from the dropdown list");
+    }
+}
+function validateEduTokenVal(val, text) {
+    if(val.localeCompare(text) == 0){
+        $('#jobPostEducation').tokenize().tokenRemove(val);
+        notifyError("Please select a valid education from the dropdown list");
+    }
+}
+function validateExpTokenVal(val, text) {
+    if(val.localeCompare(text) == 0){
+        $('#jobPostExperience').tokenize().tokenRemove(val);
+        notifyError("Please select a valid experience from the dropdown list");
+    }
+}
+function validateLanguageTokenVal(val, text) {
+    if(val.localeCompare(text) == 0){
+        $('#jobPostLanguage').tokenize().tokenRemove(val);
+        notifyError("Please select a valid language from the dropdown list");
+    }
+}
+function validateIncentiveTokenVal(val, text) {
+    if(val.localeCompare(text) == 0){
+        $('#jobPostIncentives').tokenize().tokenRemove(val);
+        notifyError("Please select a valid incentive from the dropdown list");
+    }
+}
+function validateAssetTokenVal(val, text) {
+    if(val.localeCompare(text) == 0){
+        $('#jobPostAsset').tokenize().tokenRemove(val);
+        notifyError("Please select a valid asset from the dropdown list");
+    }
+}
+function validateDocumentTokenVal(val, text) {
+    if(val.localeCompare(text) == 0){
+        $('#jobPostIdProof').tokenize().tokenRemove(val);
+        notifyError("Please select a valid asset from the dropdown list");
+    }
+}
+
+function logoutRecruiter() {
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/logoutRecruiter",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataLogoutRecruiter
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function processDataLogoutRecruiter() {
+    window.location = "/recruiter";
 }
 
 function notifyError(msg){

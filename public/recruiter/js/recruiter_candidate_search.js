@@ -18,6 +18,7 @@ $(document).scroll(function(){
     }
 });
 
+
 $(document).ready(function(){
     checkRecruiterLogin();
     $('.button-collapse').sideNav({
@@ -26,19 +27,7 @@ $(document).ready(function(){
         closeOnClick: true
     });
 
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/getRecruiterProfileInfo",
-            data: false,
-            async: false,
-            contentType: false,
-            processData: false,
-            success: processDataRecruiterProfile
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
+    getRecruiterInfo();
 
     try {
         $.ajax({
@@ -138,6 +127,22 @@ $(document).ready(function(){
     $('#searchLocality').tokenize().tokenAdd("All Bangalore");
 
 });
+
+function getRecruiterInfo() {
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/getRecruiterProfileInfo",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataRecruiterProfile
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
 
 function processDataGetCreditCategory(returnedData) {
     contactCredtUnitPrice = returnedData[0].recruiterCreditUnitPrice;
@@ -287,10 +292,12 @@ function resetFilters() {
     $('input:radio').removeAttr('checked');
     $("#maxSalaryVal").html("Max Salary: Not specified");
     $("#distanceRadius").html("Within 10 kms");
+    $("#filterDistance").val(10);
+    $("#filterSalary").val(0)
 }
 
 function performSearch() {
-    var searchLocality = [];
+    var searchLocality;
     var searchJobRole = null;
     var searchExpFilter = "0";
     var searchGender = "-1";
@@ -298,9 +305,12 @@ function performSearch() {
 
     //locality
     var selectedLocality = $("#searchLocality").val();
+    searchLocality = [];
     if(selectedLocality != null){
         searchLocality = [];
-        searchLocality.push(parseInt(selectedLocality[0]));
+        if(selectedLocality[0] != "All Bangalore"){
+            searchLocality.push(parseInt(selectedLocality[0]));
+        }
     }
 
     //jobrole
@@ -332,8 +342,6 @@ function performSearch() {
 
     if(searchJobRole == [] || searchJobRole == [null] || searchJobRole == null){
         notifyError("Please select a job role for search");
-    } else if(searchLocality.length == 0) {
-        notifyError("Please select a locality");
     } else {
         $("#searchBtn").addClass("disabled");
         $("#filterBtn").addClass("disabled");
@@ -393,37 +401,43 @@ function processDataMatchCandidate(returnedData) {
     NProgress.done();
     $("#searchBtn").removeClass("disabled");
     $("#filterBtn").removeClass("disabled");
-    var candidateCount = Object.keys(returnedData).length;
     $("#loadingIcon").hide();
+    if(returnedData != "0"){
+        var candidateCount = Object.keys(returnedData).length;
 
-    if(candidateCount > 0){
-        notifySuccess(candidateCount + " candidates found!");
-        $("#candidateResultContainer").html("");
+
+        if(candidateCount > 0){
+            notifySuccess(candidateCount + " candidates found!");
+            $("#candidateResultContainer").html("");
             candidateSearchResult = [];
-        $.each(returnedData, function (key, value) {
-            candidateSearchResult.push(value);
-        });
-
-        //render candidate cards with last active filter
-        $("#latestActive").attr('checked', true);
-        sortByLastActive(1);
-
-        try {
-            $.ajax({
-                type: "POST",
-                url: "/recruiter/api/getUnlockedCandidates/",
-                async: true,
-                contentType: false,
-                data: false,
-                success: processDataUnlockedCandidates
+            $.each(returnedData, function (key, value) {
+                candidateSearchResult.push(value);
             });
-        } catch (exception) {
-            console.log("exception occured!!" + exception.stack);
-        }
 
+            //render candidate cards with last active filter
+            $("#latestActive").attr('checked', true);
+            sortByLastActive(1);
+
+            try {
+                $.ajax({
+                    type: "POST",
+                    url: "/recruiter/api/getUnlockedCandidates/",
+                    async: true,
+                    contentType: false,
+                    data: false,
+                    success: processDataUnlockedCandidates
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception.stack);
+            }
+
+        } else{
+            $("#noCandidateDiv").show();
+            notifySuccess("No Candidates found!");
+        }
     } else{
         $("#noCandidateDiv").show();
-        notifySuccess("No Candidates found!");
+        notifySuccess("Something went wrong! Please try again later!");
     }
 }
 
@@ -454,8 +468,7 @@ function generateCandidateCards(candidateSearchResult) {
         //candidate name container
         var candidateCardRowColOneFont = document.createElement("font");
         candidateCardRowColOneFont.setAttribute("size", "5");
-        candidateCardRowColOneFont.style = "font-weight:600";
-        candidateCardRowColOneFont.textContent = value.candidate.candidateFirstName;
+        candidateCardRowColOneFont.textContent = value.candidate.candidateFullName;
         candidateCardRowColOne.appendChild(candidateCardRowColOneFont);
 
         var candidateCardRowColTwo = document.createElement("div");
@@ -466,8 +479,13 @@ function generateCandidateCards(candidateSearchResult) {
         //candidate last active container
         var candidateCardRowColTwoFont = document.createElement("font");
         candidateCardRowColTwoFont.setAttribute("size", "3");
-        candidateCardRowColTwoFont.style = "font-weight:600";
-        candidateCardRowColTwoFont.textContent = "Active: " + value.extraData.lastActive.lastActiveValueName;
+        if(value.extraData.lastActive != null){
+            if(value.extraData.lastActive.lastActiveValueName != null){
+                candidateCardRowColTwoFont.textContent = "Active: " + value.extraData.lastActive.lastActiveValueName;
+            }
+        } else{
+            candidateCardRowColTwoFont.textContent = "Not Specified";
+        }
         candidateCardRowColTwo.appendChild(candidateCardRowColTwoFont);
 
         //end of candidateCardRow
@@ -779,7 +797,7 @@ function generateCandidateCards(candidateSearchResult) {
         var candidateUnlockFont = document.createElement("font");
         candidateUnlockFont.id = "candidate_" + value.candidate.candidateId;
         candidateUnlockFont.textContent = "Unlock Contact";
-        candidateUnlockFont.style = "font-weight: bold; font-size: 16px";
+        candidateUnlockFont.style = "font-weight: bold; font-size: 14px";
         unlockCandidateBtn.appendChild(candidateUnlockFont);
     });
 }
@@ -790,18 +808,22 @@ function sortBySalary(val){
         for (var k = 0; k < (searchLength - 1); k++) {
             if(val == 1){
                 // max salary
-                if(candidateSearchResult[k].candidate.candidateLastWithdrawnSalary < candidateSearchResult[k + 1].candidate.candidateLastWithdrawnSalary){
-                    var tmp = candidateSearchResult[k];
-                    candidateSearchResult[k] = candidateSearchResult[k + 1];
-                    candidateSearchResult[k + 1] = tmp;
-                }
+                try{
+                    if(candidateSearchResult[k].candidate.candidateLastWithdrawnSalary < candidateSearchResult[k + 1].candidate.candidateLastWithdrawnSalary){
+                        var tmp = candidateSearchResult[k];
+                        candidateSearchResult[k] = candidateSearchResult[k + 1];
+                        candidateSearchResult[k + 1] = tmp;
+                    }
+                } catch (err){}
             } else{
                 //min salary
-                if(candidateSearchResult[k].candidate.candidateLastWithdrawnSalary > candidateSearchResult[k + 1].candidate.candidateLastWithdrawnSalary){
-                    tmp = candidateSearchResult[k];
-                    candidateSearchResult[k] = candidateSearchResult[k + 1];
-                    candidateSearchResult[k + 1] = tmp;
-                }
+                try{
+                    if(candidateSearchResult[k].candidate.candidateLastWithdrawnSalary > candidateSearchResult[k + 1].candidate.candidateLastWithdrawnSalary){
+                        var tmp = candidateSearchResult[k];
+                        candidateSearchResult[k] = candidateSearchResult[k + 1];
+                        candidateSearchResult[k + 1] = tmp;
+                    }
+                } catch (err){}
             }
         }
     }
@@ -814,19 +836,30 @@ function sortByLastActive(val){
         for (var k = 0; k < (searchLength - 1); k++) {
             if(val == 1){
                 // latest active
-                if(candidateSearchResult[k].extraData.lastActive.lastActiveValueId > candidateSearchResult[k + 1].extraData.lastActive.lastActiveValueId){
-                    var tmp = candidateSearchResult[k];
-                    candidateSearchResult[k] = candidateSearchResult[k + 1];
-                    candidateSearchResult[k + 1] = tmp;
+                if(candidateSearchResult[k].extraData.lastActive != null){
+                    try{
+                        if(candidateSearchResult[k].extraData.lastActive.lastActiveValueId != null && candidateSearchResult[k + 1].extraData.lastActive.lastActiveValueId != null){
+                            if(candidateSearchResult[k].extraData.lastActive.lastActiveValueId > candidateSearchResult[k + 1].extraData.lastActive.lastActiveValueId){
+                                var tmp = candidateSearchResult[k];
+                                candidateSearchResult[k] = candidateSearchResult[k + 1];
+                                candidateSearchResult[k + 1] = tmp;
+                            }
+                        }
+                    } catch (err){}
                 }
             } else{
                 //oldest active
-                if(candidateSearchResult[k].extraData.lastActive.lastActiveValueId < candidateSearchResult[k + 1].extraData.lastActive.lastActiveValueId){
-                    tmp = candidateSearchResult[k];
-                    candidateSearchResult[k] = candidateSearchResult[k + 1];
-                    candidateSearchResult[k + 1] = tmp;
+                if(candidateSearchResult[k].extraData.lastActive != null){
+                    try{
+                        if(candidateSearchResult[k].extraData.lastActive.lastActiveValueId != null && candidateSearchResult[k + 1].extraData.lastActive.lastActiveValueId != null){
+                            if(candidateSearchResult[k].extraData.lastActive.lastActiveValueId < candidateSearchResult[k + 1].extraData.lastActive.lastActiveValueId){
+                                var tmp = candidateSearchResult[k];
+                                candidateSearchResult[k] = candidateSearchResult[k + 1];
+                                candidateSearchResult[k + 1] = tmp;
+                            }
+                        }
+                    } catch (err){}
                 }
-
             }
         }
     }
@@ -856,11 +889,12 @@ function unlockContact(candidateId){
 function processDataUnlockCandidate(returnedData) {
     if(returnedData.status == 1){
         notifySuccess("Contact successfully unlocked");
-        $("#remainingContactCredits").html(parseInt($("#remainingContactCredits").html()) - 1);
+        getRecruiterInfo();
         $("#candidate_" + candidateIdVal).html(returnedData.candidateMobile);
         $("#unlock_candidate_" + returnedData.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 btn").addClass("contactUnlocked right").removeAttr('onclick');
     } else if(returnedData.status == 2){
         notifySuccess("You have already unlocked the candidate");
+        getRecruiterInfo();
         $("#unlock_candidate_" + returnedData.candidateId).removeClass("waves-effect waves-light ascentGreen lighten-1 btn").addClass("contactUnlocked right").removeAttr('onclick');
         $("#candidate_" + candidateIdVal).html(returnedData.candidateMobile);
     } else if(returnedData.status == 3){
@@ -889,99 +923,70 @@ function processDataLogoutRecruiter() {
     window.location = "/recruiter";
 }
 
-function calculateContactUnlockCredits() {
-    if($("#contactCreditAmount").val() != undefined && $("#contactCreditAmount").val() != null){
-        var contactCreditAmount = parseInt($("#contactCreditAmount").val());
-        if(contactCreditAmount > 0 && contactCreditAmount < 100000){
-            $("#contactCreditsVal").html("No. of credits: " + parseInt(contactCreditAmount / contactCredtUnitPrice));
-        } else{
-            notifyError("Please enter the amount greater than 0 and less than 10000");
-        }
-    } else{
-        notifyError("Please enter the amount");
-    }
+function closeCreditModal() {
+    $("#modalBuyCredits").closeModal();
 }
 
-function calculateInterviewUnlockCredits() {
-    if($("#interviewCreditAmount").val() != undefined && $("#interviewCreditAmount").val() != null){
-        var interviewCreditAmount = parseInt($("#interviewCreditAmount").val());
-        if(interviewCreditAmount > 0 && interviewCreditAmount < 100000){
-            $("#interviewCreditsVal").html("No. of credits: " + parseInt(interviewCreditAmount / interviewCredtUnitPrice));
-        } else{
-            notifyError("Please enter the amount greater than 0 and less than 10000");
-        }
-    } else{
-        notifyError("Please enter the amount");
+function submitCredits() {
+    $("#successMsg").hide();
+    var contactCreditStatus = 1;
+    var interviewCreditStatus = 1;
+
+    if($("#contactCreditAmount").val() == undefined || $("#contactCreditAmount").val() == null || $("#contactCreditAmount").val() == ""){
+        contactCreditStatus = 0;
     }
-}
+    if($("#interviewCreditAmount").val() == undefined || $("#interviewCreditAmount").val() == null || $("#interviewCreditAmount").val() == ""){
+        interviewCreditStatus = 0;
+    }
 
-function submitContactCredit() {
-    if($("#contactCreditAmount").val() != undefined && $("#contactCreditAmount").val() != null){
-        var interviewCreditAmount = parseInt($("#contactCreditAmount").val());
-        if(interviewCreditAmount > 0 && interviewCreditAmount < 100000){
-            try {
-                $("#requestContactCredit").addClass("disabled");
-                var d = {
-                    creditAmount: interviewCreditAmount,
-                    noOfCredits: parseInt(Number(interviewCreditAmount / contactCredtUnitPrice)),
-                    creditCategory: 1
-                };
+    if(interviewCreditStatus == 0 && contactCreditStatus == 0){
+        notifyError("Please specify no. of credits!");
+    } else{
+        contactCreditStatus = 1;
+        interviewCreditStatus = 1;
 
-                $.ajax({
-                    type: "POST",
-                    url: "/recruiter/api/requestCredits/",
-                    async: true,
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify(d),
-                    success: processDataAddCreditRequest
-                });
-            } catch (exception) {
-                console.log("exception occured!!" + exception.stack);
+        var contactCredits = 0;
+        var interviewCredits = 0;
+        if($("#contactCreditAmount").val() != ""){
+            contactCredits = parseInt($("#contactCreditAmount").val());
+            if(contactCredits < 1){
+                notifyError("Contact credits cannot be less than 1");
+                contactCreditStatus = 0;
             }
-        } else{
-            notifyError("Please enter the amount greater than 0 and less than 10000");
         }
-    } else{
-        notifyError("Please enter the amount");
-    }
-}
-
-function submitInterviewCredit() {
-    if($("#interviewCreditAmount").val() != undefined && $("#interviewCreditAmount").val() != null){
-        var interviewCreditAmount = parseInt($("#interviewCreditAmount").val());
-        if(interviewCreditAmount > 0 && interviewCreditAmount < 100000){
-            try {
-                $("#requestInterviewCredit").addClass("disabled");
-                var d = {
-                    creditAmount: interviewCreditAmount,
-                    noOfCredits: parseInt(Number(interviewCreditAmount / interviewCredtUnitPrice)),
-                    creditCategory: 2
-                };
-
-                $.ajax({
-                    type: "POST",
-                    url: "/recruiter/api/requestCredits/",
-                    async: true,
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify(d),
-                    success: processDataAddCreditRequest
-                });
-            } catch (exception) {
-                console.log("exception occured!!" + exception.stack);
+        if($("#interviewCreditAmount").val() != ""){
+            interviewCredits = parseInt($("#interviewCreditAmount").val());
+            if(interviewCredits < 1){
+                notifyError("Interview credits cannot be less than 1");
+                interviewCreditStatus = 0;
             }
-        } else{
-            notifyError("Please enter the amount greater than 0 and less than 10000");
         }
-    } else{
-        notifyError("Please enter the amount");
+
+        if(interviewCreditStatus != 0 && contactCreditStatus != 0){
+            $("#requestCredits").addClass("disabled");
+            var d = {
+                noOfContactCredits: contactCredits,
+                noOfInterviewCredits: interviewCredits
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "/recruiter/api/requestCredits/",
+                async: true,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: processDataAddCreditRequest
+            });
+        }
     }
 }
+
 
 function processDataAddCreditRequest(returnedData) {
-    $("#requestContactCredit").removeClass("disabled");
-    $("#requestInterviewCredit").removeClass("disabled");
+    $("#requestCredits").removeClass("disabled");
     if(returnedData.status == 1){
-        notifySuccess("Request submitted. Our business team will contact you within 24 hours")
+        $("#successMsg").show();
+        notifySuccess("Thanks! We have received your request to buy more credits. Our business team will contact you within 24hrs")
     } else{
         notifyError("Something went wrong. Please try again later");
     }
@@ -989,6 +994,7 @@ function processDataAddCreditRequest(returnedData) {
 
 
 function openCreditModal(){
+    $("#successMsg").hide();
     $("#modalBuyCredits").openModal();
 }
 

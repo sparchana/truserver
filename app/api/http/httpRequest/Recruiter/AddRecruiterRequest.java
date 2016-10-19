@@ -18,6 +18,8 @@ public class AddRecruiterRequest {
     private Integer recruiterInterviewCreditUnitPrice;
     private Integer recruiterContactCreditUnitPrice;
     private Integer recruiterCreditMode;
+    private Integer contactCredits;
+    private Integer interviewCredits;
 
     public String getRecruiterName() {
         return recruiterName;
@@ -129,5 +131,21 @@ public class AddRecruiterRequest {
 
     public void setRecruiterAlternateMobile(String recruiterAlternateMobile) {
         this.recruiterAlternateMobile = recruiterAlternateMobile;
+    }
+
+    public Integer getContactCredits() {
+        return contactCredits;
+    }
+
+    public void setContactCredits(Integer contactCredits) {
+        this.contactCredits = contactCredits;
+    }
+
+    public Integer getInterviewCredits() {
+        return interviewCredits;
+    }
+
+    public void setInterviewCredits(Integer interviewCredits) {
+        this.interviewCredits = interviewCredits;
     }
 }
