@@ -252,36 +252,6 @@ function showRadiusValue(value){
 }
 
 callHandler = function (mobile, candidateId) {
-    console.log("agentMobileNumber:" + globalRecAgentNumber);
-    if (typeof globalRecAgentNumber != 'undefined') {
-        console.log("Call Initiated for " + "+" + mobile + " by " + globalRecAgentNumber);
-        var s = {
-            api_key: "dae93473-50a6-11e5-bbe8-067cf20e9301",
-            agent_number: globalRecAgentNumber,
-            phone_number: "+" + mobile,
-            sr_number: "+918880007799"
-        };
-
-        try {
-            $.ajax({
-                url: "https://sr.knowlarity.com/vr/api/click2call/",
-                async: false,
-                type: "POST",
-                data: s,
-                contentType: "jsonp",
-                dataType: 'jsonp',
-                cache: !1,
-                success: function (returnedData) {
-                    console.log("KW Response : " + JSON.stringify(returnedData));
-                },
-                error: function (error) {
-                    console.log("Response Error: " + JSON.stringify(error));
-                }
-            });
-        } catch (exception) {
-            console.log("exception:" + exception.stack);
-        }
-    }
     openPreScreenModal(mobile, candidateId);
 };
 
@@ -778,20 +748,19 @@ $(function () {
                 }
 
                 var preScreenAttemptCount = function () {
-                    if (app.currentView == "pre_screen_view" && newCandidate.extraData.preScreenCallAttemptCount != null) {
-                        return newCandidate.extraData.preScreenCallAttemptCount
+                    if (app.currentView == "pre_screen_view") {
+                        if(newCandidate.extraData.preScreenCallAttemptCount == null) {
+                            return "0";
+                        } else {
+                            return newCandidate.extraData.preScreenCallAttemptCount;
+                        }
                     } else {
                         return "";
                     }
                 };
                 var varColumn = function () {
                     if (app.currentView == "pre_screen_view") {
-                        if(newCandidate.extraData.preScreenCallAttemptCount == null) {
-                            return '<input type="submit" value="Call"  style="width:100px" onclick="callHandler(' + newCandidate.candidate.candidateMobile + ', ' + newCandidate.candidate.candidateId + ');" id="' + newCandidate.candidate.lead.leadId + '" class="btn btn-primary">'
-                        } else {
-                            return '<input type="submit" value="Call Back"  style="width:100px" onclick="callHandler(' + newCandidate.candidate.candidateMobile + ', ' + newCandidate.candidate.candidateId + ');" id="' + newCandidate.candidate.lead.leadId + '" class="btn btn-default">'
-                        }
-
+                        return '<input type="submit" value="Pre-Screen"  style="width:100px" onclick="callHandler(' + newCandidate.candidate.candidateMobile + ', ' + newCandidate.candidate.candidateId + ');" id="' + newCandidate.candidate.lead.leadId + '" class="btn btn-primary">'
                     } else {
                         return "";
                     }
