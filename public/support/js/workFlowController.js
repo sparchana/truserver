@@ -269,6 +269,8 @@ $(function () {
         jpEducationIdList: [],
         jpLanguageIdList: [],
         jpTableFormattedCandidateList: [],
+        jpDocumentIdList: [],
+        jpAssetIdList: [],
         jpCandidateList: [],
         jpTotalExpInMonths: null,
         tableContainer: $('#candidateResultTable'),
@@ -386,6 +388,73 @@ $(function () {
             });
         } catch (exception) {
             console.log("exception occured!!" + exception);
+        }
+
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/support/api/getDocumentReqForJobRole/?job_post_id="+jobPostId,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataGetIdProofs
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/support/api/getAssetReqForJobRole/?job_post_id="+jobPostId,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataGetAssets
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+
+        function processDataGetIdProofs(returnedIdProofs) {
+            var data = [];
+
+            returnedIdProofs.forEach(function (idProof) {
+                var opt = {
+                    label: idProof.idProofName, value: parseInt(idProof.idProofId)
+                };
+                data.push(opt);
+            });
+
+            var selectList = $('#documentMultiSelect');
+            selectList.multiselect({
+                includeSelectAllOption: true,
+                enableCaseInsensitiveFiltering: true,
+                maxHeight: 300
+            });
+            selectList.multiselect('dataprovider', data);
+            selectList.multiselect('rebuild');
+        }
+
+        function processDataGetAssets(returnedAssets) {
+            var data = [];
+
+            returnedAssets.forEach(function (asset) {
+                var opt = {
+                    label: asset.assetTitle, value: parseInt(asset.assetId)
+                };
+                data.push(opt);
+            });
+
+            var selectList = $('#assetMultiSelect');
+            selectList.multiselect({
+                includeSelectAllOption: true,
+                enableCaseInsensitiveFiltering: true,
+                maxHeight: 300
+            });
+            selectList.multiselect('dataprovider', data);
+            selectList.multiselect('rebuild');
         }
 
         function processDataCheckEducation(returnedEdu) {
@@ -532,6 +601,30 @@ $(function () {
             $("#genderSelect").val(app.jpGender);
             $("#genderSelect").multiselect('rebuild');
 
+            if (returnedData.jobPostDocumentRequirements != null) {
+                app.jpDocumentIdList = [];
+                var req = returnedData.jobPostDocumentRequirements;
+                req.forEach(function (documentRequirement) {
+                    if(documentRequirement != null){
+                        app.jpDocumentIdList.push(documentRequirement.idProof.idProofId);
+                    }
+                });
+                $("#documentMultiSelect").val(app.jpDocumentIdList);
+                $("#documentMultiSelect").multiselect('rebuild');
+            }
+            if (returnedData.jobPostAssetRequirements != null) {
+                app.jpAssetIdList = [];
+                var req = returnedData.jobPostAssetRequirements;
+                req.forEach(function (assetRequirement) {
+                    if(assetRequirement != null){
+                        app.jpAssetIdList.push(assetRequirement.asset.assetId);
+                    }
+                });
+                $("#assetMultiSelect").val(app.jpAssetIdList);
+                $("#assetMultiSelect").multiselect('rebuild');
+            }
+
+
             if (returnedData.jobPostExperience != null) {
                 app.jpExperienceIdList = [];
                 console.log(returnedData.jobPostExperience.experienceId);
@@ -625,6 +718,8 @@ $(function () {
         var modifiedLanguageIdList = $('#languageMultiSelect').val();
         var modifiedExpIdList = $('#experienceMultiSelect').val();
         var modifiedEduIdList = $('#educationMultiSelect').val();
+        var modifiedDocumentIdList = $('#documentMultiSelect').val();
+        var modifiedAssetIdList = $('#assetMultiSelect').val();
 
 
         // this also converts string data to integer and sends to server
@@ -650,6 +745,19 @@ $(function () {
         if (modifiedEduIdList!= null) {
             for (i = 0; i < modifiedEduIdList.length; i++) {
                 app.jpEducationIdList.push(parseInt(modifiedEduIdList[i]));
+            }
+        }
+
+        app.jpDocumentIdList = [];
+        if (modifiedDocumentIdList!= null) {
+            for (i = 0; i < modifiedDocumentIdList.length; i++) {
+                app.jpDocumentIdList.push(parseInt(modifiedDocumentIdList[i]));
+            }
+        }
+        app.jpAssetIdList = [];
+        if (modifiedAssetIdList!= null) {
+            for (i = 0; i < modifiedAssetIdList.length; i++) {
+                app.jpAssetIdList.push(parseInt(modifiedAssetIdList[i]));
             }
         }
 
@@ -680,6 +788,8 @@ $(function () {
                 jobPostEducationIdList: app.jpEducationIdList,
                 jobPostLocalityIdList: app.jpLocalityIdList,
                 jobPostLanguageIdList: app.jpLanguageIdList,
+                jobPostDocumentList: app.jpDocumentIdList,
+                jobPostAssetList: app.jpAssetIdList,
                 distanceRadius: parseInt($('#radiusValue').text())
             };
 
@@ -768,9 +878,9 @@ $(function () {
                 var varColumn = function () {
                     if (app.currentView == "pre_screen_view") {
                         if(newCandidate.extraData.preScreenCallAttemptCount == null || newCandidate.extraData.preScreenCallAttemptCount == 0) {
-                            return '<input type="submit" value="Pre-Screen"  style="width:130px" onclick="callHandler(' + newCandidate.candidate.candidateMobile + ', ' + newCandidate.candidate.candidateId + ');" id="' + newCandidate.candidate.lead.leadId + '" class="btn btn-primary">'
+                            return '<input type="submit" value="Pre-Screen"  style="width:150px" onclick="callHandler(' + newCandidate.candidate.candidateMobile + ', ' + newCandidate.candidate.candidateId + ');" id="' + newCandidate.candidate.lead.leadId + '" class="btn btn-primary">'
                         } else {
-                            return '<input type="submit" value="Pre-Screen Again"  style="width:130px" onclick="callHandler(' + newCandidate.candidate.candidateMobile + ', ' + newCandidate.candidate.candidateId + ');" id="' + newCandidate.candidate.lead.leadId + '" class="btn btn-default">'
+                            return '<input type="submit" value="Pre-Screen Again"  style="width:150px" onclick="callHandler(' + newCandidate.candidate.candidateMobile + ', ' + newCandidate.candidate.candidateId + ');" id="' + newCandidate.candidate.lead.leadId + '" class="btn btn-default">'
                         }
                     } else {
                         return "";
