@@ -16,6 +16,7 @@ import models.entity.Interaction;
 import models.entity.JobPost;
 import models.entity.OM.*;
 import models.entity.Static.JobPostWorkflowStatus;
+import models.entity.Static.JobRoleToDocument;
 import models.entity.Static.Language;
 import models.entity.Static.Locality;
 import models.util.SmsUtil;
@@ -57,6 +58,8 @@ public class JobPostWorkflowEngine {
                                                                         List<Integer> educationIdList,
                                                                         List<Long> jobPostLocalityIdList,
                                                                         List<Integer> languageIdList,
+                                                                        List<Integer> jobPostDocumentIdList,
+                                                                        List<Integer> jobPostAssetIdList,
                                                                         Double radius)
     {
         Map<Long, CandidateWorkflowData> matchedCandidateMap = new LinkedHashMap<>();
@@ -90,37 +93,43 @@ public class JobPostWorkflowEngine {
         }
 
         // select candidate whose totalExperience falls under the req exp
-        if (experienceIdList != null) {
+        if (experienceIdList != null && experienceIdList.size()>0) {
             // geDurationFromExperience returns minExperience req. (in Months)
             int minima;
             int maxima;
             for (Integer experienceId : experienceIdList) {
                 ExperienceValue experience = getDurationFromExperience(experienceId);
-                minExperienceList.add(experience.minExperienceValue);
-                maxExperienceList.add(experience.maxExperienceValue);
+                if(experience != null){
+                    minExperienceList.add(experience.minExperienceValue);
+                    maxExperienceList.add(experience.maxExperienceValue);
+                } else {
+                    break;
+                }
             }
-            Collections.sort(maxExperienceList, Collections.reverseOrder());
-            Collections.sort(minExperienceList);
+            if(minExperienceList.size() > 0){
+                Collections.sort(maxExperienceList, Collections.reverseOrder());
+                Collections.sort(minExperienceList);
 
-            minima = minExperienceList.get(0);
-            maxima = maxExperienceList.get(0);
+                minima = minExperienceList.get(0);
+                maxima = maxExperienceList.get(0);
 
-            if(minima == 0 && maxima == 0) {
-                query = query
-                        .where()
-                        .isNotNull("candidateTotalExperience")
-                        .eq("candidateTotalExperience", minima).query();
-            } else {
-                query = query
-                        .where()
-                        .isNotNull("candidateTotalExperience")
-                        .ge("candidateTotalExperience", minima).query();
-            }
-            if(maxima != 0) {
-                query = query
-                        .where()
-                        .isNotNull("candidateTotalExperience")
-                        .le("candidateTotalExperience", maxima).query();
+                if(minima == 0 && maxima == 0) {
+                    query = query
+                            .where()
+                            .isNotNull("candidateTotalExperience")
+                            .eq("candidateTotalExperience", minima).query();
+                } else {
+                    query = query
+                            .where()
+                            .isNotNull("candidateTotalExperience")
+                            .ge("candidateTotalExperience", minima).query();
+                }
+                if(maxima != 0) {
+                    query = query
+                            .where()
+                            .isNotNull("candidateTotalExperience")
+                            .le("candidateTotalExperience", maxima).query();
+                }
             }
         }
 
@@ -168,6 +177,21 @@ public class JobPostWorkflowEngine {
                     .where()
                     .isNotNull("candidateEducation")
                     .in("candidateEducation.education.educationId", educationIdList)
+                    .query();
+        }
+
+        if(jobPostDocumentIdList != null && jobPostDocumentIdList.size() > 0) {
+            query = query.select("*").fetch("idProofReferenceList")
+                    .where()
+                    .isNotNull("idProofReferenceList")
+                    .in("idProofReferenceList.idProof.idProofId", jobPostDocumentIdList)
+                    .query();
+        }
+        if(jobPostAssetIdList != null && jobPostAssetIdList.size() > 0) {
+            query = query.select("*").fetch("candidateAssetList")
+                    .where()
+                    .isNotNull("candidateAssetList")
+                    .in("candidateAssetList.asset.assetId", jobPostAssetIdList)
                     .query();
         }
 
@@ -292,8 +316,18 @@ public class JobPostWorkflowEngine {
             languageIdList.add(requirement.getLanguage().getLanguageId());
         }
 
+        List<Integer> jobPostDocumentIdList = new ArrayList<>();
+        for(JobPostDocumentRequirement jobPostDocumentRequirement: jobPost.getJobPostDocumentRequirements()) {
+            jobPostDocumentIdList.add(jobPostDocumentRequirement.getIdProof().getIdProofId());
+        }
+
+        List<Integer> jobPostAssetIdList = new ArrayList<>();
+        for(JobPostAssetRequirement jobPostAssetRequirement: jobPost.getJobPostAssetRequirements()) {
+            jobPostAssetIdList.add(jobPostAssetRequirement.getAsset().getAssetId());
+        }
+
         // call master method
-        return getMatchingCandidate(jobPostId, maxAge, minSalary, maxSalary, gender, experienceIdList, jobRoleId, educationIdList, localityIdList, languageIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS);
+        return getMatchingCandidate(jobPostId, maxAge, minSalary, maxSalary, gender, experienceIdList, jobRoleId, educationIdList, localityIdList, languageIdList, jobPostDocumentIdList, jobPostAssetIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS);
     }
 
     public static Map<Long, CandidateWorkflowData> getSelectedCandidates(Long jobPostId) {
@@ -862,6 +896,7 @@ public class JobPostWorkflowEngine {
     private static List<Candidate> filterByLatLngOrHomeLocality(List<Candidate> candidateList, List<Long> jobPostLocalityIdList, Double distanceRadius, boolean shouldRemoveCandidate) {
         List<Candidate> filteredCandidateList = new ArrayList<>();
 
+        Logger.info("candidateList size before latlng filter: "+candidateList.size());
         if (jobPostLocalityIdList == null){
             return candidateList;
         }
@@ -920,6 +955,7 @@ public class JobPostWorkflowEngine {
                 candidate.setMatchedLocation(matchedLocation.toString());
             }
         }
+        Logger.info("candidateList size after latlng filter: "+filteredCandidateList.size());
 
         return filteredCandidateList;
     }
