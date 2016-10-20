@@ -448,6 +448,7 @@ function saveJob() {
                 jobPostLocalities: jobLocalitySelected,
                 jobPostJobRoleId: parseInt(($("#jobPostJobRole").val())[0]),
                 jobPostCompanyId: jpCompanyId,
+                jobPostIncentives: $("#jobPostIncentives").val(),
                 jobPostShiftId: jobPostWorkShift,
                 jobPostPricingPlanId: 1,
                 jobPostEducationId: jobPostEducation,
@@ -497,6 +498,8 @@ function processDataForJobPost(returnedData) {
         $("#jobPostTitle").val(returnedData.jobPostTitle);
 
         $("#jobPostDescription").val(returnedData.jobPostDescription);
+
+        $("#jobPostIncentives").val(returnedData.jobPostIncentives);
 
         // gender, language, age
         if (returnedData.jobPostMaxAge != null) {

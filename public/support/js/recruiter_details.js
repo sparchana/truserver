@@ -50,13 +50,13 @@ function computeCreditValue() {
         if(validateContactUnlockCreditValues() == 1){
             candidateCreditTypeStatus = 1;
 
-            if(parseInt($("#candidateContactCredits").val()) > parseInt($("#recruiterContactCredits").val())){
+            if(parseInt($("#candidateContactCredits").val()) < -(parseInt($("#recruiterContactCredits").val()))){
+                candidateCreditTypeStatus = 0;
+                notifyError("Contact credits should be greater")
+            } else{
                 contactCredits = parseInt($("#candidateContactCredits").val());
                 $("#addCreditInfoDiv").show();
                 $("#contactUnlockCreditInfo").html("Adding " + contactCredits + " contact unlock credits ");
-            } else{
-                candidateCreditTypeStatus = 0;
-                notifyError("Contact credits should be greater")
             }
         }
     }
@@ -64,13 +64,13 @@ function computeCreditValue() {
         if(validateInterviewUnlockCreditValues() == 1){
             interviewCreditTypeStatus = 1;
 
-            if(parseInt($("#interviewCredits").val()) > parseInt($("#recruiterInterviewCredits").val())){
+            if(parseInt($("#interviewCredits").val()) < -(parseInt($("#recruiterInterviewCredits").val()))){
+                interviewCreditTypeStatus = 0;
+                notifyError("Interview credits should be greater");
+            } else{
                 interviewCredits = parseInt($("#interviewCredits").val());
                 $("#addCreditInfoDiv").show();
                 $("#interviewUnlockCreditInfo").html("Adding " + interviewCredits + " interview unlock credits ");
-            } else{
-                interviewCreditTypeStatus = 0;
-                notifyError("Interview credits should be greater");
             }
         }
     }

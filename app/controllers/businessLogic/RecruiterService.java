@@ -32,7 +32,9 @@ import play.mvc.Result;
 
 import java.util.UUID;
 
+import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterCreditRequest;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterProfileUpdate;
+import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterUnlockCandidateContact;
 import static models.util.Util.generateOtp;
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
@@ -455,6 +457,11 @@ public class RecruiterService {
                         recruiterCreditHistory.save();
                         recruiterToCandidateUnlocked.save();
 
+                        //adding interaction
+                        String objAUuid = candidate.getCandidateUUId();
+                        String objBUuid = recruiterProfile.getRecruiterProfileUUId();
+                        createInteractionForRecruiterUnlockCandidateContact(objAUuid, objBUuid);
+
                         unlockContactResponse.setStatus(UnlockContactResponse.STATUS_SUCCESS);
                         unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
                         unlockContactResponse.setCandidateId(candidate.getCandidateId());
@@ -507,11 +514,22 @@ public class RecruiterService {
                 Logger.info("Sending credit request Sms");
                 SmsUtil.sendRequestCreditSms(recruiterProfile, addCreditRequest);
                 Logger.info("Sending credit request Email");
-                try {
-                    EmailUtil.sendRequestCreditEmail(recruiterProfile, addCreditRequest);
-                } catch (EmailException e) {
-                    e.printStackTrace();
-                }
+
+                //new thread
+                new Thread(() -> {
+                    try {
+                        EmailUtil.sendRequestCreditEmail(recruiterProfile, addCreditRequest);
+                    } catch (EmailException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+
+                //adding interaction
+                String result = InteractionConstants.INTERACTION_RESULT_RECRUITER_CREDIT_REQUEST + addCreditRequest.getNoOfContactCredits()
+                        + " contact credits and " + addCreditRequest.getNoOfInterviewCredits() + " interview credits";
+                createInteractionForRecruiterCreditRequest(recruiterProfile.getRecruiterProfileUUId(), result);
+                Logger.info("Interaction Saved");
+
                 addCreditResponse.setStatus(AddCreditResponse.STATUS_SUCCESS);
             } else{
                 addCreditResponse.setStatus(AddCreditResponse.STATUS_FAILURE);

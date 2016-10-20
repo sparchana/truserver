@@ -41,16 +41,16 @@
             <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
               <ul class="right hide-on-med-and-down">
                   <li><a href="/recruiter/home">Home</a></li>
-                  <li><a href="/recruiter/candidateSearch">Search Candidate</a></li>
-                  <li><a href="/recruiter/jobPost/0">Create Job</a></li>
+                  <li><a href="/recruiter/candidateSearch">Search Candidates</a></li>
+                  <li><a href="/recruiter/jobPost/0">Post Job</a></li>
                   <li><a href="/recruiter/profile">Profile</a></li>
                   <li><a onclick="logoutRecruiter()">Logout</a></li>
               </ul>
           </div>
             <ul class="side-nav" id="mobile-demo">
                 <li><a href="/recruiter/home">Home</a></li>
-                <li><a href="/recruiter/candidateSearch">Search Candidate</a></li>
-                <li><a href="/recruiter/jobPost/0">Create Job</a></li>
+                <li><a href="/recruiter/candidateSearch">Search Candidates</a></li>
+                <li><a href="/recruiter/jobPost/0">Post Job</a></li>
                 <li><a href="/recruiter/profile">Profile</a></li>
                 <li><a onclick="logoutRecruiter()">Logout</a></li>
             </ul>
@@ -166,18 +166,7 @@
                         <label>Incentives :</label>
                       </div>
                       <div class="input-field col s6 l4">
-                        <select id="jobPostIncentives" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
-                        <script type="text/javascript">
-                            $('#jobPostIncentives').tokenize({
-                              displayDropdownOnFocus: true,
-                              placeholder: "Specify Incentives ",
-                              nbDropdownElements: 1000,
-                              newElements: true,
-                              onAddToken: function (value, text) {
-                                validateIncentiveTokenVal(value, text);
-                              }
-                            });
-                        </script>
+                          <textarea id="jobPostIncentives" class="materialize-textarea" placeholder="Job incentives"></textarea>
                       </div>
                     </div>
                     <div class="row">
