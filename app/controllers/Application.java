@@ -1618,9 +1618,13 @@ public class Application extends Controller {
         if(jobPostId == null && jobRoleId == null) {
             return badRequest();
         }
-        if(jobRoleId == null) {
+        if(jobRoleId == null && jobPostId !=null && jobPostId != 0) {
             JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
             jobRoleId = jobPost.getJobRole().getJobRoleId();
+        }
+
+        if ((jobPostId != null && jobPostId == 0 )|| jobRoleId == 0){
+            return badRequest();
         }
         List<IdProof> idProofList = new ArrayList<>();
         List<IdProof> commonIdProofList = IdProof.find.setUseQueryCache(!isDevMode)
@@ -1644,9 +1648,13 @@ public class Application extends Controller {
             return badRequest();
         }
 
-        if(jobRoleId == null) {
+        if(jobRoleId == null && jobPostId !=null && jobPostId != 0) {
             JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
             jobRoleId = jobPost.getJobRole().getJobRoleId();
+        }
+
+        if ((jobPostId != null && jobPostId == 0 )|| jobRoleId == 0){
+            return badRequest();
         }
         List<Asset> assetList = new ArrayList<>();
         List<Asset> commonAssetList = Asset.find.setUseQueryCache(!isDevMode)

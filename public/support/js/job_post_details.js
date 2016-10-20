@@ -171,12 +171,16 @@ function processDataCheckJobStatus(returnedData) {
 
 function processDataGetAllLanguage(returnLanguage) {
     var data = [];
-
+    var arr=[];
+    var english = "English";
     returnLanguage.forEach(function (language) {
         var opt = {
             label: language.languageName, value: parseInt(language.languageId)
         };
         data.push(opt);
+        if(language.languageName.toUpperCase() === english.toUpperCase()){
+            arr.push(language.languageId);
+        }
     });
 
     var selectList = $('#jobPostLanguage');
@@ -185,6 +189,7 @@ function processDataGetAllLanguage(returnLanguage) {
         maxHeight: 300
     });
     selectList.multiselect('dataprovider', data);
+    selectList.val(arr);
     selectList.multiselect('rebuild');
 }
 function processDataGetIdProofs(returnedIdProofs) {
@@ -226,8 +231,49 @@ function processDataGetAssets(returnedAssets) {
     selectList.multiselect('dataprovider', data);
     selectList.multiselect('rebuild');
 }
+function generateDocument() {
+    var jobRoleId = parseInt($('#jobPostJobRole').val());
+    if(jobRoleId != 0){
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/support/api/getDocumentReqForJobRole/?job_role_id="+jobRoleId,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataGetIdProofs
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+}
+function generateAsset() {
+    var jobRoleId = parseInt($('#jobPostJobRole').val());
+    if(jobRoleId != 0){
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/support/api/getAssetReqForJobRole/?job_role_id="+jobRoleId,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataGetAssets
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+}
 
 $(document).ready(function () {
+    $('#jobPostJobRole').change(function () {
+        generateDocument();
+        generateAsset();
+    });
+
     $('#jobPostRecruiter').append(defaultOption);
     var pathname = window.location.pathname; // Returns path only
     var jobPostIdUrl = pathname.split('/');
@@ -403,31 +449,33 @@ $(document).ready(function () {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/support/api/getDocumentReqForJobRole/?job_post_id="+jobPostId,
-            data: false,
-            async: false,
-            contentType: false,
-            processData: false,
-            success: processDataGetIdProofs
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/support/api/getAssetReqForJobRole/?job_post_id="+jobPostId,
-            data: false,
-            async: false,
-            contentType: false,
-            processData: false,
-            success: processDataGetAssets
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
+    if(jobPostId != 0){
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/support/api/getDocumentReqForJobRole/?job_post_id="+jobPostId,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataGetIdProofs
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/support/api/getAssetReqForJobRole/?job_post_id="+jobPostId,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataGetAssets
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
     }
 
     try {
