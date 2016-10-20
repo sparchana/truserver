@@ -713,11 +713,13 @@ $(function () {
             $('#matchBtn').attr('disabled', true);
             setTimeout(function () {
                 if($("#matchBtn").is(":disabled")) {
-                    app.notify("Something went wrong ! Please try again.", 'danger');
+                    app.notify("Something went wrong ! Please wait. Reloading page..", 'danger');
+                    location.reload(true);
                     $('#matchBtn').attr('disabled', false);
+                    NProgress.done();
                 }
                 // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
-            }, 26000);
+            }, 60000);
 
         }
 
@@ -947,7 +949,6 @@ $(function () {
             app.table = $('table#' + app.tableContainerId).DataTable({
                 "data": returnedDataArray,
                 "order": [[22, "desc"]],
-                "scrollX": true,
                 "rowId": "candidateId",
                 "columns": [
                     {"data": "cLID"},
@@ -983,9 +984,9 @@ $(function () {
                     {"data": "varColumn"}
                 ],
                 "deferRender": true,
-                "scroller": true,
                 "scrollY": '48vh',
                 "scrollCollapse": true,
+                "scrollX": true,
                 "language": {
                     "emptyTable": "No data available"
                 },
@@ -1010,6 +1011,7 @@ $(function () {
             });
 
             /* Initialise datatables */
+            $.fn.dataTable.moment('dd/MM/YYYY HH:mm:ss');
 
             NProgress.done();
         } catch (exception) {
