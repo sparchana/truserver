@@ -69,8 +69,8 @@
       <div class="row">
         <div class="col s12" style="padding: 0">
           <ul class="tabs" style="border-top-right-radius: 6px; border-top-left-radius: 6px">
-            <li class="tab col s4"><a href="#jobDetails"><font size="3" style="font-weight: 600">Job Description</font></a></li>
-            <li class="tab col s4"><a href="#jobRequirement"><font size="3" style="font-weight: 600">Job Requirement</font></a></li>
+            <li class="tab col s4"><a href="#jobDetails" onclick="changeJobDescClass()"><font id="jobDescTabHead" class="activeTab" size="3" style="font-weight: 600">Job Description</font></a></li>
+            <li class="tab col s4"><a href="#jobRequirement" onclick="changeJobReqClass()"><font id="jobReqTabHead" size="3" style="font-weight: 600">Job Requirement</font></a></li>
           </ul>
         </div>
         <div id="jobDetails" class="col s12">
@@ -86,22 +86,22 @@
                     </div>
                     <div class="row" id="jobPostDetails">
                       <div class="input-field col s6 l4" style="margin-top: 20px">
-                        <label>Job Post Title :</label>
+                        <label>Job Title :<font color="red">*</font></label>
                       </div>
                       <div class="input-field col s6 l4">
-                        <input placeholder="Job Post Title" id="jobPostTitle" type="text" class="validate">
+                        <input placeholder="Job Title" id="jobPostTitle" type="text" class="validate">
                       </div>
                     </div>
                     <div class="row" id="jobPostDetails">
                       <div class="input-field col s6 l4" style="margin-top: 20px">
-                        <label>Job Role :</label>
+                        <label>Job Role: <font color="red">*</font></label>
                       </div>
                       <div class="input-field col s6 l4">
                         <select id="jobPostJobRole" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
                         <script type="text/javascript">
                             $('#jobPostJobRole').tokenize({
                               displayDropdownOnFocus: true,
-                              placeholder: "Job Role",
+                              placeholder: "Select a job role",
                               maxElements: 1,
                               nbDropdownElements: 1000,
                               newElements: true,
@@ -112,37 +112,32 @@
                         </script>
                       </div>
                     </div>
-                    <div class="row" id="jobPostDetails">
+                      <div class="row"id="jobPostDetails">
+                          <div class="input-field col s6 l4" style="margin-top: 20px">
+                              <label>Work Location(s): <font color="red">*</font></label>
+                          </div>
+                          <div class="input-field col s12 l4">
+                              <select id="jobPostLocality" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
+                              <script type="text/javascript">
+                            $('#jobPostLocality').tokenize({
+                                displayDropdownOnFocus: true,
+                                placeholder: "Select work locations",
+                                nbDropdownElements: 1000,
+                                newElements: true,
+                                onAddToken: function (value, text) {
+                                    validateJobLocalityTokenVal(value, text);
+                                }
+                            });
+                        </script>
+                          </div>
+                      </div>
+
+                      <div class="row" id="jobPostDetails">
                       <div class="input-field col s6 l4" style="margin-top: 20px">
-                        <label>No. of Job Post :</label>
+                        <label>No. of vacancies: <font color="red">*</font></label>
                       </div>
                       <div class="input-field col s6 l4">
                         <input placeholder="Vacancies" id="jobPostVacancies"  type="number" class="validate">
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col s12 l12">
-                        <font size="3" style="font-weight: bold">Location Details</font>
-                      </div>
-                    </div>
-                    <div class="row"id="jobPostDetails">
-                      <div class="input-field col s6 l4" style="margin-top: 20px">
-                        <label>Job Location :</label>
-                      </div>
-                      <div class="input-field col s12 l4">
-                        <select id="jobPostLocality" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
-                        <script type="text/javascript">
-                            $('#jobPostLocality').tokenize({
-                              displayDropdownOnFocus: true,
-                              placeholder: "Job Localities [max: 3]",
-                              maxElements: 3,
-                              nbDropdownElements: 1000,
-                              newElements: true,
-                              onAddToken: function (value, text) {
-                                validateJobLocalityTokenVal(value, text);
-                              }
-                            });
-                        </script>
                       </div>
                     </div>
                     <div class="row">
@@ -152,7 +147,7 @@
                     </div>
                     <div class="row"id="jobPostDetails">
                       <div class="input-field col s6 l4" style="margin-top: 20px">
-                        <label>Salary :</label>
+                        <label>Salary (per month): <font color="red">*</font></label>
                       </div>
                       <div class="input-field col s3 l2">
                         <input placeholder="Min Salary" id="jobPostMinSalary" maxlength="6" type="number" class="validate">
@@ -171,12 +166,12 @@
                     </div>
                     <div class="row">
                       <div class="col s12 l12">
-                        <font size="3" style="font-weight: bold">Work Timing Details</font>
+                        <font size="3" style="font-weight: bold">Shift Timing Details</font>
                       </div>
                     </div>
                     <div class="row"id="jobPostDetails">
                       <div class="input-field col s6 l4" style="margin-top: 20px">
-                        <label>Work Shift :</label>
+                        <label>Work Shift: <font color="red">*</font></label>
                       </div>
                       <div class="input-field col s6 l4">
                         <select id="jobPostShift" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
@@ -255,7 +250,7 @@
                         <label for="jobDescription">Job Description:</label>
                       </div>
                       <div class="input-field col s6 7">
-                        <textarea id="jobPostDescription" class="materialize-textarea" placeholder="Details About the Job Role"></textarea>
+                        <textarea id="jobPostDescription" class="materialize-textarea" placeholder="Please mention more details about your job"></textarea>
                       </div>
                     </div>
                       <!--Button-->
@@ -278,7 +273,7 @@
                   <div class="card-content">
                     <div class="row">
                       <div class="col s12 l12">
-                        <font size="3" style="font-weight: bold">Work Requirement</font>
+                        <font size="3" style="font-weight: bold">Job Requirements</font>
                       </div>
                     </div>
                     <div class="row" id="jobPostDetails" style="margin-bottom: 25px;">
@@ -295,17 +290,24 @@
                           <label for="female">Female</label>
                         </div>
                         <div class="col s3 l2">
-                          <input name="jobPostGender" value="2" type="radio" id="any">
+                          <input name="jobPostGender" value="2" type="radio" id="any" checked>
                           <label for="any">Any</label>
                         </div>
                       </div>
                     </div>
                     <div class="row" id="jobPostDetails">
                       <div class="input-field col s6 l4" style="margin-top: 18px">
-                        <label>Is there any age limitation for this job ?</label>
+                        <label>Is there any age limitation for this job?</label>
                       </div>
                       <div class="input-field col s6 l4">
-                        <input placeholder="Max Age" id="jobPostMaxAge" type="number" class="validate">
+                          <div class="col s4 l2" style="padding: 0;">
+                              <input name="jobPostAgeReq" value="1" type="radio" id="yes">
+                              <label for="yes">Yes</label>
+
+                              <input name="jobPostAgeReq" value="0" type="radio" id="no" checked>
+                              <label for="no">No</label>
+                          </div>
+                        <input placeholder="Max Age" id="jobPostMaxAge" style="display: none;" type="number" class="validate">
                       </div>
                     </div>
                     <div class="row" id="jobPostDetails">
@@ -328,7 +330,29 @@
                         </script>
                       </div>
                     </div>
-                    <div class="row" id="jobPostDetails">
+
+                      <div class="row" id="jobPostDetails">
+                          <div class="input-field col s6 l4" style="margin-top: 18px">
+                              <label>Should candidate have work experience ?</label>
+                          </div>
+                          <div class="input-field col s6 l4">
+                              <select id="jobPostExperience" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
+                              <script type="text/javascript">
+                            $('#jobPostExperience').tokenize({
+                                displayDropdownOnFocus: true,
+                                placeholder: "Minimum experience",
+                                maxElements: 1,
+                                nbDropdownElements: 1000,
+                                newElements: true,
+                                onAddToken: function (value, text) {
+                                    validateExpTokenVal(value, text);
+                                }
+                            });
+                        </script>
+                          </div>
+                      </div>
+
+                      <div class="row" id="jobPostDetails">
                       <div class="input-field col s6 l4" style="margin-top: 18px">
                         <label>Should candidate know any specific language(s) ?</label>
                       </div>
@@ -342,26 +366,6 @@
                               nbDropdownElements: 1000,
                               onAddToken: function (value, text) {
                                 validateLanguageTokenVal(value, text);
-                              }
-                            });
-                        </script>
-                      </div>
-                    </div>
-                    <div class="row" id="jobPostDetails">
-                      <div class="input-field col s6 l4" style="margin-top: 18px">
-                        <label>Should candidate have work experience ?</label>
-                      </div>
-                      <div class="input-field col s6 l4">
-                        <select id="jobPostExperience" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
-                        <script type="text/javascript">
-                            $('#jobPostExperience').tokenize({
-                              displayDropdownOnFocus: true,
-                              placeholder: "Minimum experience",
-                              maxElements: 1,
-                              nbDropdownElements: 1000,
-                              newElements: true,
-                              onAddToken: function (value, text) {
-                                validateExpTokenVal(value, text);
                               }
                             });
                         </script>
@@ -390,7 +394,7 @@
 
                     <div class="row" id="jobPostDetails">
                       <div class="input-field col s6 l4" style="margin-top: 18px">
-                        <label>Documents required ?</label>
+                        <label>Should the candidate have any specific document(s)?</label>
                       </div>
                       <div class="input-field col s6 l4">
                         <select id="jobPostIdProof" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>

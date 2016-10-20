@@ -71,6 +71,13 @@ function renderDashboard() {
                                 }
                                 return "Is not Hot";
                             },
+                            'jobStatus' : function(){
+                                if(jobPost.jobPostStatus != null) {
+                                    return jobPost.jobPostStatus.jobStatusName;
+                                } else{
+                                    return "Not Specified";
+                                }
+                            },
                             'match' : function () {
                                 return '<a href="'+"/support/workflow/"+jobPost.jobPostId+'/?view=match_view" style="cursor:pointer;" target="_blank"><button class="btn btn-success">Match</button></a>'
                             }
@@ -91,6 +98,7 @@ function renderDashboard() {
                 { "data": "jobRole" },
                 { "data": "jobExperience" },
                 { "data": "jobIsHot" },
+                { "data": "jobStatus" },
                 { "data": "match" }
             ],
             "order": [[0, "desc"]],
@@ -247,7 +255,7 @@ function getAllRecruiters() {
                 { "data": "recruiterContactCredit" },
                 { "data": "recruiterInterviewCredit" }
             ],
-            "order": [[2, "asc"]],
+            "order": [[0, "desc"]],
             "language": {
                 "emptyTable": "No data available"
             },

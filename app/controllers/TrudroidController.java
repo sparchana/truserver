@@ -1131,12 +1131,18 @@ public class TrudroidController {
         GetCandidateEducationProfileStaticResponse.Builder getCandidateEducationProfileStaticResponse = GetCandidateEducationProfileStaticResponse.newBuilder();
         try {
             //getting all the education levels form the model
+            List<Education> educationListToReturn = new ArrayList<>();
             List<Education> educationList = Education.find.all();
 
+            for(Education e : educationList){
+                if(e.getEducationId() != 6){ //excluding any
+                    educationListToReturn.add(e);
+                }
+            }
             //creating a list of EducationObject (proto) to get all the education levels
             List<EducationObject> educationObjectList = new ArrayList<>();
             EducationObject.Builder educationObjectBuilder = EducationObject.newBuilder();
-            for (Education education : educationList) {
+            for (Education education : educationListToReturn) {
                 educationObjectBuilder.setEducationId(education.getEducationId());
                 educationObjectBuilder.setEducationName(education.getEducationName());
                 educationObjectList.add(educationObjectBuilder.build());
