@@ -1094,9 +1094,11 @@ public class JobPostWorkflowEngine {
                 // 'Pre-screed selection timestamp' along with jobPostWorkflowId, uuid
                 if(candidateToJobPostWorkflowMap != null && candidateToJobPostWorkflowMap.size() > 0) {
                     JobPostWorkflow jobPostWorkflow = candidateToJobPostWorkflowMap.get(candidate.getCandidateId());
-                    candidateExtraData.setPreScreenSelectionTimeStamp(jobPostWorkflow.getCreationTimestamp());
-                    candidateExtraData.setWorkflowId(jobPostWorkflow.getJobPostWorkflowId());
-                    candidateExtraData.setWorkflowUUId(jobPostWorkflow.getJobPostWorkflowUUId());
+                    if(jobPostWorkflow!= null){
+                        candidateExtraData.setPreScreenSelectionTimeStamp(jobPostWorkflow.getCreationTimestamp());
+                        candidateExtraData.setWorkflowId(jobPostWorkflow.getJobPostWorkflowId());
+                        candidateExtraData.setWorkflowUUId(jobPostWorkflow.getJobPostWorkflowUUId());
+                    }
                 }
             }
 

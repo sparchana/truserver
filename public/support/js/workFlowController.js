@@ -717,7 +717,7 @@ $(function () {
                     $('#matchBtn').attr('disabled', false);
                 }
                 // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
-            }, 26000);
+            }, 30000);
 
         }
 
@@ -947,7 +947,6 @@ $(function () {
             app.table = $('table#' + app.tableContainerId).DataTable({
                 "data": returnedDataArray,
                 "order": [[22, "desc"]],
-                "scrollX": true,
                 "rowId": "candidateId",
                 "columns": [
                     {"data": "cLID"},
@@ -983,9 +982,8 @@ $(function () {
                     {"data": "varColumn"}
                 ],
                 "deferRender": true,
-                "scroller": true,
                 "scrollY": '48vh',
-                "scrollCollapse": true,
+                "scrollX": true,
                 "language": {
                     "emptyTable": "No data available"
                 },
@@ -1010,6 +1008,7 @@ $(function () {
             });
 
             /* Initialise datatables */
+            $.fn.dataTable.moment('dd/MM/YYYY HH:mm:ss');
 
             NProgress.done();
         } catch (exception) {
