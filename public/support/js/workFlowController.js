@@ -713,11 +713,13 @@ $(function () {
             $('#matchBtn').attr('disabled', true);
             setTimeout(function () {
                 if($("#matchBtn").is(":disabled")) {
-                    app.notify("Something went wrong ! Please try again.", 'danger');
+                    app.notify("Something went wrong ! Please wait. Reloading page..", 'danger');
+                    location.reload(true);
                     $('#matchBtn').attr('disabled', false);
+                    NProgress.done();
                 }
                 // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
-            }, 30000);
+            }, 60000);
 
         }
 
@@ -983,6 +985,7 @@ $(function () {
                 ],
                 "deferRender": true,
                 "scrollY": '48vh',
+                "scrollCollapse": true,
                 "scrollX": true,
                 "language": {
                     "emptyTable": "No data available"
