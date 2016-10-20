@@ -945,7 +945,7 @@ $(function () {
                     "style": 'multi'
                 };
                 order = [[22, "desc"]];
-            } if (app.currentView == "pre_screen_view") {
+            } else if (app.currentView == "pre_screen_view") {
                 select = false;
                 order = [[29, "desc"]];
             }
