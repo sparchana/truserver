@@ -221,6 +221,7 @@ function processDataEducation(returnedData) {
         mainDiv.appendChild(educationInput);
 
         var educationLabel = document.createElement("label");
+        educationLabel.style = "font-size: 14px";
         educationLabel.setAttribute("for", "edu_" + education.educationId);
         educationLabel.textContent = education.educationName;
         mainDiv.appendChild(educationLabel);
@@ -241,6 +242,7 @@ function processDataExperience(returnedData) {
         mainDiv.appendChild(experienceInput);
 
         var experienceLabel = document.createElement("label");
+        experienceLabel.style = "font-size: 14px";
         experienceLabel.setAttribute("for", "exp_" + experience.experienceId);
         experienceLabel.textContent = experience.experienceType;
         mainDiv.appendChild(experienceLabel);
@@ -261,6 +263,7 @@ function processDataLanguages(returnedData) {
         mainDiv.appendChild(languageInput);
 
         var languageLabel = document.createElement("label");
+        languageLabel.style = "font-size: 14px";
         languageLabel.setAttribute("for", "lang_" + language.languageId);
         languageLabel.textContent = language.languageName;
         mainDiv.appendChild(languageLabel);
