@@ -166,18 +166,7 @@
                         <label>Incentives :</label>
                       </div>
                       <div class="input-field col s6 l4">
-                        <select id="jobPostIncentives" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
-                        <script type="text/javascript">
-                            $('#jobPostIncentives').tokenize({
-                              displayDropdownOnFocus: true,
-                              placeholder: "Specify Incentives ",
-                              nbDropdownElements: 1000,
-                              newElements: true,
-                              onAddToken: function (value, text) {
-                                validateIncentiveTokenVal(value, text);
-                              }
-                            });
-                        </script>
+                          <textarea id="jobPostIncentives" class="materialize-textarea" placeholder="Job incentives"></textarea>
                       </div>
                     </div>
                     <div class="row">
