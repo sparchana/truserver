@@ -15,6 +15,8 @@ create index ix_candidate_asset_candidateid on candidate_asset (candidateid);
 alter table candidate_asset add constraint fk_candidate_asset_asset_id foreign key (asset_id) references asset (asset_id) on delete restrict on update restrict;
 create index ix_candidate_asset_asset_id on candidate_asset (asset_id);
 
+alter table pre_screen_result add column pre_screen_result_note text null;
+
 # --- !Downs
 
 alter table candidate_asset drop foreign key fk_candidate_asset_candidateid;
@@ -22,5 +24,7 @@ drop index ix_candidate_asset_candidateid on candidate_asset;
 
 alter table candidate_asset drop foreign key fk_candidate_asset_asset_id;
 drop index ix_candidate_asset_asset_id on candidate_asset;
+
+alter table pre_screen_result drop column pre_screen_result_note;
 
 drop table if exists candidate_asset;
