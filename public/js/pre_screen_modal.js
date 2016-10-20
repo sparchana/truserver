@@ -56,7 +56,8 @@ function triggerPreScreenResponseSubmission(candidateId, jobPostId) {
     var d = {
         candidateId: candidateId,
         jobPostId: jobPostId,
-        preScreenIdList: responseList
+        preScreenIdList: responseList,
+        forceSet: $('input:checkbox[id="pass"]:checked').val() == 99
     };
 
     try {
@@ -314,7 +315,7 @@ function processPreScreenContent(returnedData) {
             '</div>'+
             '<div class="col-sm-4" style="text-align: right">'+
             '<h5 style="margin:2px">&nbsp;Force Set&nbsp;:&nbsp;'+
-            '<input type="checkbox" name="" id="pass" value="yes" onclick="">'+
+            '<input type="checkbox" name="" id="pass" value="99" onclick="">'+
             '</h5>'+
             '</div>'+
             '</div>');
