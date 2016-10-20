@@ -129,7 +129,8 @@ public class ServerConstants {
     // JobPost Workflow status
     public static final int JWF_STATUS_SELECTED = 1;
     public static final int JWF_STATUS_PRESCREEN_ATTEMPTED = 2;
-    public static final int JWF_STATUS_PRESCREEN_COMPLETED = 3;
+    public static final int JWF_STATUS_PRESCREEN_FAILED = 3;
+    public static final int JWF_STATUS_PRESCREEN_COMPLETED = 4;
     // Requirements Table
     public static final String PROFILE_REQUIREMENT_TABLE_AGE = "age";
     public static final String PROFILE_REQUIREMENT_TABLE_EXPERIENCE = "experience";

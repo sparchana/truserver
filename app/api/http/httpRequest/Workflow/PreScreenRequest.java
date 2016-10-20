@@ -8,8 +8,9 @@ import java.util.List;
 public class PreScreenRequest {
     public Long candidateId;
     public Long jobPostId;
-    public boolean forceSet;
+    public Boolean pass;
     public List<Long> preScreenIdList;
+    public String preScreenNote;
 
     public Long getCandidateId() {
         return candidateId;
@@ -35,11 +36,19 @@ public class PreScreenRequest {
         this.preScreenIdList = responseList;
     }
 
-    public boolean isForceSet() {
-        return forceSet;
+    public Boolean isPass() {
+        return pass;
     }
 
-    public void setForceSet(boolean forceSet) {
-        this.forceSet = forceSet;
+    public void setPass(Boolean pass) {
+        this.pass = pass;
+    }
+
+    public String getPreScreenNote() {
+        return preScreenNote;
+    }
+
+    public void setPreScreenNote(String preScreenNote) {
+        this.preScreenNote = preScreenNote;
     }
 }

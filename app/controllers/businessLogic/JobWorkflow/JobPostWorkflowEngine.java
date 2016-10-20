@@ -725,13 +725,13 @@ public class JobPostWorkflowEngine {
             Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
 
             // fetch existing workflow old
-            JobPostWorkflow jobPostWorkflow = JobPostWorkflow.find.where()
+            JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
                     .eq("jobPost.jobPostId", jobPostId)
                     .eq("candidate.candidateId", candidateId)
                     .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
 
             // A value is for overriding leadStatus is also there in Lead Model setLeadStatus
-            if(candidate != null && jobPostWorkflow != null) {
+            if(candidate != null && jobPostWorkflowOld != null) {
 
                 // If call was connected just set the right interaction result
                 if (callStatus.equals("CONNECTED")) {
@@ -754,9 +754,16 @@ public class JobPostWorkflowEngine {
                     responseMsg = "OK";
                 }
 
+                // Setting the existing jobpostworkflow status to attempted
+                JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(candidate.getCandidateId(), jobPostId, jobPostWorkflowOld);
+
+                JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED).findUnique();
+                jobPostWorkflowNew.setStatus(status);
+                jobPostWorkflowNew.update();
+
                 // save the interaction
                 InteractionService.createInteractionForPreScreenAttempts(
-                        jobPostWorkflow.getJobPostWorkflowUUId(),
+                        jobPostWorkflowOld.getJobPostWorkflowUUId(),
                         candidate.getCandidateUUId(),
                         InteractionConstants.INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_ATTEMPTED,
                         interactionResult
@@ -813,22 +820,34 @@ public class JobPostWorkflowEngine {
             return "Error";
         }
 
+        if(preScreenRequest.getPreScreenNote() != null && !preScreenRequest.getPreScreenNote().trim().isEmpty()){
+            preScreenResult.setPreScreenResultNote(preScreenRequest.getPreScreenNote());
+        }
+
         double score =  ((double) preScreenRequest.getPreScreenIdList().size()/(double) preScreenRequirementList.size());
 
         preScreenResult.setResultScore(Util.RoundTo2Decimals(score));
-        preScreenResult.setForceSet(preScreenRequest.isForceSet());
+        preScreenResult.setForceSet(preScreenRequest.isPass());
 
         preScreenResult.setJobPostWorkflow(jobPostWorkflowNew);
         preScreenResult.save();
 
-        // check if the result was a 'pass', if so change the status of the corressponding workflow object
-        // to 'pre_screen_completed'
+        // support user can decide whether a candidate passed or failed pre-screen,
+        // score doesn't play any role in deciding as of now.
 
-        if(score == 1 || preScreenRequest.isForceSet()) {
-            JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED).findUnique();
+        if(preScreenRequest.isPass() != null){
+            JobPostWorkflowStatus status;
+            if(preScreenRequest.isPass()) {
+                status = JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED).findUnique();
+            } else {
+                status = JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_PRESCREEN_FAILED).findUnique();
+            }
             jobPostWorkflowNew.setStatus(status);
             jobPostWorkflowNew.update();
+        } else {
+            // here code will come to judge candidate pre screen response solely based on score
         }
+
 
         // Now lets save all the individual responses for this current pre screen attempt
         for (PreScreenRequirement preScreenRequirement : preScreenRequirementList) {
