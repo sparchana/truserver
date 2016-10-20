@@ -5,8 +5,6 @@
 var companyLocality = [];
 var localityArray = [];
 
-var totalAmount = 0;
-
 var interviewCredits = 0;
 var contactCredits = 0;
 
@@ -28,22 +26,21 @@ function processDataGetCompanies(returnedData) {
     });
 }
 
-$(document).ready(function() {
-    $('input[type=radio][name=interviewCreditType]').change(function() {
-        if (this.value == 1) {
-            $("#interviewCreditSection").show();
-        } else{
-            $("#interviewCreditSection").hide();
-        }
-    });
-    $('input[type=radio][name=candidateCreditType]').change(function() {
-        if (this.value == 1) {
-            $("#candidateCreditSection").show();
-        } else{
-            $("#candidateCreditSection").hide();
-        }
-    });
-});
+function contactType(val) {
+    if(val == 1){
+        $("#candidateCreditSection").show();
+    } else{
+        $("#candidateCreditSection").hide();
+    }
+}
+
+function interviewType(val) {
+    if(val == 1){
+        $("#interviewCreditSection").show();
+    } else{
+        $("#interviewCreditSection").hide();
+    }
+}
 
 function computeCreditValue() {
     if($('input:radio[name="candidateCreditType"]:checked').val() == 1){
@@ -124,7 +121,7 @@ $(function(){
             data: false,
             contentType: false,
             processData: false,
-            success: processDataForCompanyInfo
+            success: processDataForRecruiterInfo
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
@@ -165,7 +162,7 @@ function processDataAddRecruiter(returnedData) {
     }
 }
 
-function processDataForCompanyInfo(returnedData) {
+function processDataForRecruiterInfo(returnedData) {
     $("#recruiterName").val(returnedData.recruiterProfileName);
     $("#recruiterMobile").val(returnedData.recruiterProfileMobile);
     if(returnedData.recruiterProfileLandline != null ){
@@ -208,6 +205,35 @@ function processDataForCompanyInfo(returnedData) {
             }
         });
     }
+
+    //rendering datatable
+    var t = $('table#creditHistory').DataTable();
+
+    var list = returnedData.recruiterCreditHistoryList;
+    list.forEach(function (history) {
+        t.row.add( [
+            history.recruiterCreditHistoryId,
+            function() {
+                var returnedCreationDate = new Date(history.createTimestamp);
+                return new Date(returnedCreationDate).toLocaleDateString();
+            },
+            history.recruiterCreditsAvailable,
+            history.recruiterCreditsUsed,
+            function(){
+                if(history.recruiterCreditCategory != null){
+                    return history.recruiterCreditCategory.recruiterCreditType;
+                } else{
+                    return " Not Specified";
+                }
+            },
+            function () {
+                if(history.recruiterCreditsAddedBy != null){
+                    return history.recruiterCreditsAddedBy;
+                }
+
+            }
+        ] ).draw( false );
+    });
 }
 
 function closeCreditModal() {

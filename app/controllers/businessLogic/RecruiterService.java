@@ -319,6 +319,11 @@ public class RecruiterService {
             availableCredits = availableCredits + (addRecruiterRequest.getContactCredits());
             recruiterCreditHistory.setRecruiterCreditsAvailable(availableCredits);
             recruiterCreditHistory.setRecruiterCreditsUsed(usedCredits);
+            if(session().get("sessionUsername") != null){
+                recruiterCreditHistory.setRecruiterCreditsAddedBy(session().get("sessionUsername"));
+            } else{
+                recruiterCreditHistory.setRecruiterCreditsAddedBy(session().get("Not specified"));
+            }
 
             //saving the values
             recruiterCreditHistory.save();
@@ -375,6 +380,11 @@ public class RecruiterService {
             availableCredits = availableCredits + (addRecruiterRequest.getInterviewCredits());
             recruiterCreditHistory.setRecruiterCreditsAvailable(availableCredits);
             recruiterCreditHistory.setRecruiterCreditsUsed(usedCredits);
+            if(session().get("sessionUsername") != null){
+                recruiterCreditHistory.setRecruiterCreditsAddedBy(session().get("sessionUsername"));
+            } else{
+                recruiterCreditHistory.setRecruiterCreditsAddedBy(session().get("Not specified"));
+            }
 
             //saving the values
             recruiterCreditHistory.save();
@@ -452,6 +462,7 @@ public class RecruiterService {
 
                         recruiterToCandidateUnlocked.setRecruiterProfile(recruiterProfile);
                         recruiterToCandidateUnlocked.setCandidate(candidate);
+                        recruiterCreditHistory.setRecruiterCreditsAddedBy(ServerConstants.SELF_UNLOCKED_CANDIDATE_CONTACT);
 
                         //saving/updating all the rows
                         recruiterCreditHistory.save();
@@ -503,6 +514,11 @@ public class RecruiterService {
         recruiterCreditHistory.setRecruiterProfile(recruiterProfile);
         recruiterCreditHistory.setRecruiterCreditsAvailable(creditCount);
         recruiterCreditHistory.setRecruiterCreditsUsed(0);
+        if(session().get("sessionUsername") != null){
+            recruiterCreditHistory.setRecruiterCreditsAddedBy(session().get("sessionUsername"));
+        } else{
+            recruiterCreditHistory.setRecruiterCreditsAddedBy(session().get("Not specified"));
+        }
         recruiterCreditHistory.save();
     }
 
