@@ -1,33 +1,30 @@
-package controllers.businessLogic;
+package controllers.businessLogic.Recruiter;
 
+import api.InteractionConstants;
 import api.ServerConstants;
 import api.http.FormValidator;
-import api.http.httpRequest.Recruiter.AddCreditRequest;
 import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
-import api.http.httpResponse.Recruiter.AddCreditResponse;
 import api.http.httpResponse.Recruiter.RecruiterLeadResponse;
 import models.entity.Recruiter.OM.RecruiterLeadToJobRole;
 import models.entity.Recruiter.OM.RecruiterLeadToLocality;
 import models.entity.Recruiter.RecruiterLead;
-import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Static.JobRole;
 import models.entity.Static.Locality;
-import models.util.EmailUtil;
 import models.util.SmsUtil;
-import org.apache.commons.mail.EmailException;
 import play.Logger;
 
 import javax.persistence.NonUniqueResultException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterLead;
 import static play.mvc.Controller.session;
 
 /**
  * Created by dodo on 5/10/16.
  */
 public class RecruiterLeadService {
-    static RecruiterLead createOrUpdateConvertedRecruiterLead(String leadName, String leadMobile){
+    public static RecruiterLead createOrUpdateConvertedRecruiterLead(String leadName, String leadMobile){
         RecruiterLead existingLead = isLeadExists(leadMobile);
         if(existingLead == null){
             RecruiterLead lead = new RecruiterLead(
@@ -74,6 +71,11 @@ public class RecruiterLeadService {
         List<Integer> jobRoleList = recruiterLeadRequest.getRecruiterJobRole();
         List<Integer> jobLocalityList = recruiterLeadRequest.getRecruiterJobLocality();
 
+        String objectAUUId;
+        String result;
+
+        Integer interactionType;
+
         RecruiterLead existingLead = isLeadExists(FormValidator.convertToIndianMobileFormat(recruiterLeadRequest.getRecruiterMobile()));
         if(existingLead == null) {
             RecruiterLead lead = new RecruiterLead();
@@ -90,6 +92,11 @@ public class RecruiterLeadService {
             }
 
             RecruiterLead.addLead(lead);
+
+            objectAUUId = lead.getRecruiterLeadUUId();
+            result = InteractionConstants.INTERACTION_RESULT_NEW_RECRUITER_LEAD_ADDED;
+            interactionType = InteractionConstants.INTERACTION_TYPE_RECRUITER_NEW_LEAD;
+
             Logger.info("Recruiter Lead added");
             recruiterLeadResponse.setStatus(RecruiterLeadResponse.STATUS_SUCCESS);
         } else {
@@ -114,8 +121,14 @@ public class RecruiterLeadService {
             }
 
             existingLead.update();
+
+            objectAUUId = existingLead.getRecruiterLeadUUId();
+            result = InteractionConstants.INTERACTION_RESULT_EXISTING_RECRUITER_MADE_CONTACT;
+            interactionType = InteractionConstants.INTERACTION_TYPE_RECRUITER_EXISTING_LEAD;
             recruiterLeadResponse.setStatus(RecruiterLeadResponse.STATUS_SUCCESS);
         }
+
+        createInteractionForRecruiterLead(objectAUUId, result, interactionType);
         SmsUtil.sendRecruiterLeadMsg(FormValidator.convertToIndianMobileFormat(recruiterLeadRequest.getRecruiterMobile()));
         return recruiterLeadResponse;
     }

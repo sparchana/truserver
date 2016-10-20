@@ -130,7 +130,20 @@ div.Tokenize ul.TokensContainer li.TokenSearch input{
     border-bottom:1px solid #1d1d1d;
 }
 
+#topHeading{
+    font-weight: 600;
+    color: #fff;
+    margin-top: 114px;
+}
+
 @media screen and (max-width: 768px){
+    .back-banner-candidate {
+        margin-top: -16%;
+        padding-top: 7%;
+    }
+    #topHeading{
+        margin-top: 72px;
+    }
     #jobPostDetails{
         padding-left:2%;
     }

@@ -12,6 +12,7 @@ public class InteractionConstants {
     public static final String INTERACTION_RESULT_NEW_CANDIDATE_SUPPORT = "New Candidate Added by support";
     public static final String INTERACTION_RESULT_NEW_CANDIDATE_PARTNER = "New Candidate Added by partner";
     public static final String INTERACTION_RESULT_NEW_PARTNER = "New Partner Added";
+    public static final String INTERACTION_RESULT_NEW_RECRUITER = "New Recruiter Added";
     public static final String INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_PARTNER = "Candidate Info got updated by Partner";
     public static final String INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SYSTEM = "Candidate Info got updated by System";
     public static final String INTERACTION_RESULT_CANDIDATE_BASIC_PROFILE_INFO_UPDATED_SELF = "Candidate Self Updated Basic Profile Info";
@@ -20,11 +21,16 @@ public class InteractionConstants {
     public static final String INTERACTION_RESULT_CANDIDATE_EDUCATION_PROFILE_INFO_UPDATED_SELF = "Candidate Self Updated Education Profile Info";
     public static final String INTERACTION_RESULT_CANDIDATE_INFO_UPDATED_SELF = "Candidate Info got updated by Self";
     public static final String INTERACTION_RESULT_PARTNER_INFO_UPDATED_SELF = "Partner Info got updated by Self";
+    public static final String INTERACTION_RESULT_RECRUITER_INFO_UPDATED_SELF = "Recruiter info got updated by Self";
+    public static final String INTERACTION_RESULT_RECRUITER_INFO_UPDATED_SUPPORT = "Recruiter info got updated via support";
     public static final String INTERACTION_RESULT_SYSTEM_UPDATED_LEADTYPE = "System Updated LeadType to ";
     public static final String INTERACTION_RESULT_EXISTING_CANDIDATE_SIGNUP = "Existing Candidate Tried to Signup";
     public static final String INTERACTION_RESULT_EXISTING_CANDIDATE_VERIFICATION = "Existing Candidate trying to complete self signup";
     public static final String INTERACTION_RESULT_EXISTING_PARTNER_VERIFICATION = "Existing partner trying to complete self signup";
+    public static final String INTERACTION_RESULT_EXISTING_RECRUITER_VERIFICATION = "Existing recruiter trying to complete self signup";
     public static final String INTERACTION_RESULT_EXISTING_PARTNER_SIGNUP = "Existing partner Tried to Signup";
+    public static final String INTERACTION_RESULT_EXISTING_RECRUITER_SIGNUP = "Existing recruiter Tried to Signup";
+    public static final String INTERACTION_RESULT_RECRUITER_SIGNUP_VIA_SUPPORT = "New recruiter added via support";
     public static final String INTERACTION_RESULT_EXISTING_LEAD = "Existing lead made contact through website";
     public static final String INTERACTION_RESULT_CANDIDATE_FOLLOWED_UP_REQUEST = "Existing candidate requested for a follow up call on ";
     public static final String INTERACTION_RESULT_LEAD_FOLLOWED_UP_REQUEST = "Existing lead requested for a follow up call on ";
@@ -33,10 +39,18 @@ public class InteractionConstants {
     public static final String INTERACTION_RESULT_FIRST_INBOUND_CALL = "First Inbound Call";
     public static final String INTERACTION_RESULT_SELF_SIGNEDIN = "Candidate Self Signed In";
     public static final String INTERACTION_RESULT_PARTNER_SIGNEDIN = "Partner Self Signed In";
+    public static final String INTERACTION_RESULT_RECRUITER_SIGNEDIN = "Recruiter Self Signed In";
     public static final String INTERACTION_RESULT_CANDIDATE_DEACTIVATED= "Candidate Deactivated";
     public static final String INTERACTION_RESULT_CANDIDATE_ACTIVATED= "Candidate Activated";
     public static final String INTERACTION_RESULT_CANDIDATE_VERIFICATION_SUCCESS = "Candidate Successfully Verified";
+    public static final String INTERACTION_RESULT_RECRUITER_CONTACT_UNLOCK = "Recruiter unlocked a candidate";
+    public static final String INTERACTION_RESULT_RECRUITER_INTERVIEW_UNLOCK = "Recruiter unlocked an interview";
+    public static final String INTERACTION_RESULT_RECRUITER_CREDIT_REQUEST = "Recruiter requested for credits: ";
     public static final String INTERACTION_RESULT_CANDIDATE_TRIED_TO_VERIFY = "Partner tried to verify a Candidate";
+    public static final String INTERACTION_RESULT_NEW_JOB_CREATED = "New Job post created";
+    public static final String INTERACTION_RESULT_EXISTING_JOB_POST_UPDATED = "Existing Job post updated";
+    public static final String INTERACTION_RESULT_NEW_RECRUITER_LEAD_ADDED = "New Recruiter Lead made contact";
+    public static final String INTERACTION_RESULT_EXISTING_RECRUITER_MADE_CONTACT = "Existing Recruiter Lead made contact";
 
     public static final String INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB = "Candidate applied to a job: ";
     public static final String INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB = "Candidate tried to apply to a job: ";
@@ -54,6 +68,7 @@ public class InteractionConstants {
     public static final String INTERACTION_NOTE_DUMMY_PASSWORD_CREATED = "Candidate got Registered with Mandatory Info and dummy password by system";
     public static final String INTERACTION_NOTE_SELF_PASSWORD_CHANGED = "Candidate Self Updated Password";
     public static final String INTERACTION_NOTE_PARTNER_PASSWORD_CHANGED = "Partner Self Updated Password";
+    public static final String INTERACTION_NOTE_RECRUITER_PASSWORD_CHANGED = "Recruiter Self Updated Password";
     public static final String INTERACTION_NOTE_CREATED_BY_ERROR = "Session Username is null";
     public static final String INTERACTION_NOTE_BLANK = "";
 
@@ -97,6 +112,26 @@ public class InteractionConstants {
     public static final int INTERACTION_TYPE_EXISTING_CANDIDATE_TRIED_SIGNUP_AND_SIGNUP_NOT_ALLOWED = 30;
     public static final int INTERACTION_TYPE_EXISTING_PARTNER_TRIED_SIGNUP = 31;
     public static final int INTERACTION_TYPE_EXISTING_PARTNER_TRIED_SIGNUP_AND_SIGNUP_NOT_ALLOWED = 32;
+    public static final int INTERACTION_TYPE_EXISTING_RECRUITER_TRIED_SIGNUP = 33;
+    public static final int INTERACTION_TYPE_EXISTING_RECRUITER_TRIED_SIGNUP_AND_SIGNUP_NOT_ALLOWED = 34;
+
+    //recruiter interaction type
+    public static final int INTERACTION_TYPE_RECRUITER_TRIED_PASSWORD_RESET = 35;
+    public static final int INTERACTION_TYPE_RECRUITER_PASSWORD_RESET_SUCCESS = 36;
+    public static final int INTERACTION_TYPE_RECRUITER_LOG_IN = 37;
+    public static final int INTERACTION_TYPE_RECRUITER_SIGN_UP = 38;
+    public static final int INTERACTION_TYPE_RECRUITER_PROFILE_UPDATE = 39;
+    public static final int INTERACTION_TYPE_RECRUITER_NEW_LEAD = 40;
+    public static final int INTERACTION_TYPE_RECRUITER_EXISTING_LEAD = 41;
+    public static final int INTERACTION_TYPE_RECRUITER_PASSWORD_ADDED = 42;
+    public static final int INTERACTION_TYPE_RECRUITER_SEARCH_CANDIDATE = 43;
+    public static final int INTERACTION_TYPE_RECRUITER_CONTACT_UNLOCK = 44;
+    public static final int INTERACTION_TYPE_RECRUITER_INTERVIEW_UNLOCK = 45;
+    public static final int INTERACTION_TYPE_RECRUITER_CREDIT_REQUEST = 46;
+
+
+    public static final int INTERACTION_TYPE_NEW_JOB_CREATED = 47;
+    public static final int INTERACTION_TYPE_EXISTING_JOB_UPDATED = 48;
 
     public static final Map<Integer, String> INTERACTION_CHANNEL = new HashMap<>();
 
@@ -105,6 +140,7 @@ public class InteractionConstants {
     public static final int INTERACTION_CHANNEL_PARTNER_WEBSITE = 3;
     public static final int INTERACTION_CHANNEL_SUPPORT_WEBSITE = 4;
     public static final int INTERACTION_CHANNEL_KNOWLARITY = 5;
+    public static final int INTERACTION_CHANNEL_RECRUITER_WEBSITE = 6;
 
     static {
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_FOLLOWUP_CALL, "Follow Up Call");

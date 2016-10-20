@@ -237,6 +237,9 @@ function saveForm() {
     var companyStatus = 1;
     var recruiterName = validateName($("#rec_name").val());
 
+    var recruiterLandline = $("#rec_landline").val();
+    var recruiterPincode = $("#rec_company_pincode").val();
+
     //checking first name
     switch(recruiterName){
         case 0: alert("Recruiter's name contains number. Please Enter a valid name"); recruiterStatus=0; break;
@@ -245,11 +248,32 @@ function saveForm() {
         case 4: alert("Please enter recruiter's name"); recruiterStatus=0; break;
     }
 
+    if(!validateInteger(recruiterLandline)){
+        notifyError("Please enter a valid landline number");
+        recruiterStatus = 0;
+    } else if(!validateInteger(recruiterPincode)){
+        notifyError("Please enter a valid pincode number");
+        recruiterStatus = 0;
+    } else if($("#rec_linkedin").val() != ""){
+        if(!validateLinkedin($("#rec_linkedin").val())){
+            notifyError("Please enter a valid linkedin profile");
+            recruiterStatus = 0;
+        }
+    } else if($("#rec_company_website").val() != ""){
+        if(!validateWebsiteLink($("#rec_company_website").val())){
+            notifyError("Please enter a valid company website");
+            recruiterStatus = 0;
+        }
+    }
+
     var logo;
 
     if ($("#companyLogo").val() != "") {
         if((f.type).substring(0,1) != "i"){
             notifyError("Please select a valid image for logo");
+            companyStatus = 0;
+        } else if(parseInt(f.size/1024/1024) > 2){
+            notifyError("Please select a logo smaller than 2 MBs");
             companyStatus = 0;
         } else{
             logo = "https://s3.amazonaws.com/trujobs.in/companyLogos/" + f.name;
@@ -326,7 +350,7 @@ function processDataUpdateCompany(returnedData) {
 
         $.ajax({
             type: "POST",
-            url: "/addRecruiter",
+            url: "/updateRecruiterProfile",
             async: false,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(rec),

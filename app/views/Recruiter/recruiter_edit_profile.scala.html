@@ -42,15 +42,17 @@
                         <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
                         <ul class="right hide-on-med-and-down">
                             <li><a href="/recruiter/home">Home</a></li>
-                            <li><a href="/recruiter/candidateSearch">Search Candidate</a></li>
-                            <li><a href="/recruiter/profile">Profile</a></li>
-                            <li><a onclick="logoutRecruiter()" class="waves-effect waves-light ascentGreen lighten-1 btn"><font style="color: #fff; font-weight: 600">Logout</font></a></li>
+                            <li><a href="/recruiter/candidateSearch">Search Candidates</a></li>
+                            <li><a href="/recruiter/jobPost/0">Post Job</a></li>
+                            <li><a href="#">Profile</a></li>
+                            <li><a onclick="logoutRecruiter()">Logout</a></li>
                         </ul>
                     </div>
                     <ul class="side-nav" id="mobile-demo">
                         <li><a href="/recruiter/home">Home</a></li>
-                        <li><a href="/recruiter/candidateSearch">Search Candidate</a></li>
-                        <li><a href="/recruiter/profile">Profile</a></li>
+                        <li><a href="/recruiter/candidateSearch">Search Candidates</a></li>
+                        <li><a href="/recruiter/jobPost/0">Post Job</a></li>
+                        <li><a href="#">Profile</a></li>
                         <li><a onclick="logoutRecruiter()">Logout</a></li>
                     </ul>
                 </div>
@@ -95,7 +97,7 @@
                         <div class="row">
                             <div class="input-field col s12 l6">
                                 <i class="material-icons prefix"><img src="/assets/recruiter/img/icons/linkedin-black.svg" style="margin: -24px 0 0 6px" width="26px"></i>
-                                <input placeholder="Enter your Linkedin profile link" id="rec_linkedin" maxlength="56" type="text" class="validate">
+                                <input placeholder="eg: https://www.linkedin.com/in/profileName" id="rec_linkedin" maxlength="56" type="text" class="validate">
                                 <label for="rec_linkedin">Linkedin Profile</label>
                             </div>
                             <div class="input-field col s12 l6">
@@ -134,7 +136,7 @@
                         <div class="row">
                             <div class="input-field col s12 l6">
                                 <i class="material-icons prefix">location_on</i>
-                                <input placeholder="Company office pincode" id="rec_company_pincode" maxlength="number" type="text" class="validate">
+                                <input placeholder="Company office pincode" id="rec_company_pincode" maxlength="6" type="text" class="validate">
                                 <label for="rec_company_pincode">Pin Code</label>
                             </div>
                             <div class="input-field col s12 l6">

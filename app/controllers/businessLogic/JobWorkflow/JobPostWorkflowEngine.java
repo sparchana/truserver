@@ -900,10 +900,7 @@ public class JobPostWorkflowEngine {
         List<Candidate> filteredCandidateList = new ArrayList<>();
 
         Logger.info("candidateList size before latlng filter: "+candidateList.size());
-        if (jobPostLocalityIdList == null){
-            return candidateList;
-        }
-        if(candidateList == null || candidateList.size() == 0) {
+        if (jobPostLocalityIdList == null || jobPostLocalityIdList.isEmpty()){
             return candidateList;
         }
 

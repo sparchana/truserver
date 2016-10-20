@@ -4,31 +4,22 @@ package api.http.httpRequest.Recruiter;
  * Created by dodo on 17/10/16.
  */
 public class AddCreditRequest {
-    private Integer creditAmount;
-    private Integer noOfCredits;
-    private Integer creditCategory;
+    private Integer noOfContactCredits;
+    private Integer noOfInterviewCredits;
 
-    public Integer getCreditAmount() {
-        return creditAmount;
+    public Integer getNoOfContactCredits() {
+        return noOfContactCredits;
     }
 
-    public void setCreditAmount(Integer creditAmount) {
-        this.creditAmount = creditAmount;
+    public void setNoOfContactCredits(Integer noOfContactCredits) {
+        this.noOfContactCredits = noOfContactCredits;
     }
 
-    public Integer getNoOfCredits() {
-        return noOfCredits;
+    public Integer getNoOfInterviewCredits() {
+        return noOfInterviewCredits;
     }
 
-    public void setNoOfCredits(Integer noOfCredits) {
-        this.noOfCredits = noOfCredits;
-    }
-
-    public Integer getCreditCategory() {
-        return creditCategory;
-    }
-
-    public void setCreditCategory(Integer creditCategory) {
-        this.creditCategory = creditCategory;
+    public void setNoOfInterviewCredits(Integer noOfInterviewCredits) {
+        this.noOfInterviewCredits = noOfInterviewCredits;
     }
 }
