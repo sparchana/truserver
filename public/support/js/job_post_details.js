@@ -231,8 +231,49 @@ function processDataGetAssets(returnedAssets) {
     selectList.multiselect('dataprovider', data);
     selectList.multiselect('rebuild');
 }
+function generateDocument() {
+    var jobRoleId = parseInt($('#jobPostJobRole').val());
+    if(jobRoleId != 0){
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/support/api/getDocumentReqForJobRole/?job_role_id="+jobRoleId,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataGetIdProofs
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+}
+function generateAsset() {
+    var jobRoleId = parseInt($('#jobPostJobRole').val());
+    if(jobRoleId != 0){
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/support/api/getAssetReqForJobRole/?job_role_id="+jobRoleId,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataGetAssets
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+}
 
 $(document).ready(function () {
+    $('#jobPostJobRole').change(function () {
+        generateDocument();
+        generateAsset();
+    });
+
     $('#jobPostRecruiter').append(defaultOption);
     var pathname = window.location.pathname; // Returns path only
     var jobPostIdUrl = pathname.split('/');
