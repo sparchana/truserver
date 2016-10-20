@@ -18,7 +18,6 @@ $(document).scroll(function(){
     }
 });
 
-
 $(document).ready(function(){
     checkRecruiterLogin();
     $('.button-collapse').sideNav({
@@ -1004,4 +1003,32 @@ function notifyError(msg){
 
 function notifySuccess(msg){
     Materialize.toastSuccess(msg, 3000, 'rounded');
+}
+var countSort = 0 ;
+function showSort() {
+    countSort = countSort + 1;
+    if(countSort==1)
+    {
+        $('#sortMainBox').show();
+        $('#filterMainBox').hide();
+    }
+    if(countSort == 2){
+        $('#sortMainBox').hide();
+        $('#filterMainBox').hide();
+        countSort = 0;
+    }
+}
+var countFilter = 0;
+function showFilter() {
+    countFilter = countFilter + 1;
+    if(countFilter==1){
+        $('#sortMainBox').hide();
+        $('#filterMainBox').show();
+    }
+    if(countFilter==2){
+        $('#filterMainBox').hide();
+        $('#sortMainBox').hide();
+        countFilter = 0;
+    }
+
 }

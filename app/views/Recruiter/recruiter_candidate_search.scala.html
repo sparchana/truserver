@@ -74,7 +74,28 @@
             </nav>
         </div>
 
-        <div id="creditView" class="hide-on-small-only">
+        <div class="row hide-on-med-and-up" id="creditViewMobile">
+            <div class="col s12 ">
+                <div class="row" style="margin: 0;">
+                    <span style="font-size: 18px; font-weight: bold">Credits Balance</span>
+                    </div>
+                <div class="row" style="margin: 0;">
+                    <div class="col s4" style="padding: 0;">
+                            <img src="/assets/recruiter/img/coin.svg" width="12px" style="margin-top: -4px">
+                            <span>Contact: <b><div style="display: inline-block" id="remainingContactCredits">0</div></b></span>
+                    </div>
+                    <div class="col s4" style="padding: 0;">
+                            <img src="/assets/recruiter/img/coin.svg" width="12px" style="margin-top: -4px">
+                            <span>Interview: <b><div style="display: inline-block" id="remainingInterviewCredits">0</div></b></span>
+                    </div>
+                    <div class="col s4 right-align" id="creditModalBtn">
+                        <a class="waves-effect waves-light orange lighten-1 btn right" data-toggle="collapse" onclick="openCreditModal()"><font size="1" style="color: #fff;font-weight: 400"><b>Buy Credits</b></font></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="creditView" class="col s12 hide-on-small-only">
             <span style="font-size: 18px; font-weight: bold">Credits Balance</span>
             <div style="margin: 4px">
                 <img src="/assets/recruiter/img/coin.svg" width="24px">
@@ -133,20 +154,25 @@
             </div>
         </div>
             <!--Search bar ends-->
-        @*<div class="fixed-action-btn hide-on-med-and-up" style="bottom: 45px; right: 24px;">
-            <a class="btn-floating btn-large red">
-                <i class="large material-icons">mode_edit</i>
-            </a>
-        </div>*@
+        <div class="container-fluid hide-on-med-and-up" style="padding: 1%;">
+            <div class="row">
+                <div class="col s6">
+                    <div class="waves-effect waves-light btn" id="sortByMobileViewBtn" onclick="showSort()" style="padding: 0 9px; width: 100%;">Sort By</div>
+                </div>
+                <div class="col s6">
+                    <div class="waves-effect waves-light btn" id="filterMobileViewBtn" onclick="showFilter()" style="padding: 0 9px; width: 100%;">Filter</div>
+                </div>
+            </div>
+        </div>
             <!-- Details container -->
         <div class="container" style="padding: 0">
             <div class="row">
-                    <!-- Sort & Filter Mobile -->
+                <!-- Sort & Filter -->
                 <div class="col s12 l3">
-                    <div class="card-content">
+                    <div id="sortMainBox">
+                    <div class="card-content" id="sortMainBox">
                         <font size="4">Sort by</font>
                     </div>
-
                     <ul class="collapsible" data-collapsible="accordion">
                         <li>
                             <div class="collapsible-header"><img src="/assets/recruiter/img/rupee.svg" height="18px" style="margin: 0 18px 0 6px">
@@ -177,11 +203,13 @@
                             </div>
                         </li>
                     </ul>
+                    </div>
                     <div>
-                        <div class="card-content">
-                            <font size="4">Filters</font>
-                        </div>
-                        <div class="card-content" style="padding: 0">
+                        <div id="filterMainBox">
+                            <div class="card-content">
+                                <font size="4">Filters</font>
+                            </div>
+                            <div class="card-content" style="padding: 0">
                             <div class="row">
                                 <div class="col s12 l12">
                                     <ul class="collapsible" data-collapsible="accordion">
@@ -276,151 +304,13 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-
-                    <!-- Sort & Filter -->
-
-                <div class="col s12 l3 hide-on-small-only">
-                    <div class="card-content">
-                        <font size="4">Sort by</font>
-                    </div>
-
-                    <ul class="collapsible" data-collapsible="accordion">
-                        <li>
-                            <div class="collapsible-header"><img src="/assets/recruiter/img/rupee.svg" height="18px" style="margin: 0 18px 0 6px">
-                                Salary</div>
-                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
-                                <div>
-                                    <input name="sortBySalary" type="radio" value="0" id="sortByMinSalary" />
-                                    <label for="sortByMinSalary">Low to High</label>
-                                </div>
-                                <div>
-                                    <input name="sortBySalary" type="radio" value="1" id="sortByMaxSalary" />
-                                    <label for="sortByMaxSalary">High to Low</label>
-                                </div>
-                            </div>
-                        </li>
-                        <li>
-                            <div class="collapsible-header"><i class="material-icons">av_timer</i>
-                                Active</div>
-                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
-                                <div>
-                                    <input name="sortByActive" type="radio" value="1" id="latestActive" />
-                                    <label for="latestActive">Newest to oldest</label>
-                                </div>
-                                <div>
-                                    <input name="sortByActive" type="radio" value="0" id="oldestActive" />
-                                    <label for="oldestActive">Oldest to Newest</label>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                    <div>
-                        <div class="card-content">
-                            <font size="4">Filters</font>
-                        </div>
-                        <div class="card-content" style="padding: 0">
-                            <div class="row">
-                                <div class="col s12 l12">
-                                    <ul class="collapsible" data-collapsible="accordion">
-                                        <li>
-                                            <div class="collapsible-header"><i class="material-icons">perm_identity</i>
-                                                Gender</div>
-                                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
-                                                <div>
-                                                    <input name="filterGender" type="radio" value="0" id="gender_0" />
-                                                    <label for="gender_0">Male</label>
-                                                </div>
-                                                <div>
-                                                    <input name="filterGender" type="radio" value="1" id="gender_1" />
-                                                    <label for="gender_1">Female</label>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="collapsible-header"><i class="material-icons">trending_up</i>
-                                                Experience</div>
-                                            <div class="collapsible-body" id="experienceFilterDiv" style="padding: 8px 18px 8px 18px"></div>
-                                        </li>
-                                        <li>
-                                            <div class="collapsible-header"><i class="material-icons">place</i>
-                                                Distance</div>
-                                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
-                                                <div>
-                                                    <center>
-                                                        <div style="font-size: 14px; font-weight: 600;" id="distanceRadius">
-                                                            <b>Within 10kms</b>
-                                                        </div>
-                                                    </center>
-                                                </div>
-                                                <div class="range-field">
-                                                    <input type="range" id="filterDistance" min="0" max="30" value="10" onchange="updateSliderVal(this)" />
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="collapsible-header"><img src="/assets/recruiter/img/rupee.svg" height="18px" style="margin: 0 18px 0 6px">
-                                                Max Salary</div>
-                                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
-                                                <div>
-                                                    <center>
-                                                        <div style="font-size: 14px; font-weight: 600;" id="maxSalaryVal">
-                                                            <b>Max Salary: Not Specified</b>
-                                                        </div>
-                                                    </center>
-                                                </div>
-                                                <div class="range-field">
-                                                    <input type="range" id="filterSalary" value="0" min="0" max="40000" onchange="updateSalarySliderVal(this)" />
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="collapsible-header"><i class="material-icons">library_books</i>
-                                                Education</div>
-                                            <div class="collapsible-body" id="educationFilterDiv"  style="padding: 8px 18px 8px 18px"></div>
-
-                                        </li>
-                                        <li>
-                                            <div class="collapsible-header"><img src="/assets/recruiter/img/language.svg" height="18px" style="margin: 0 18px 0 6px">
-                                                Language</div>
-                                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px" id="languageFilterDiv"></div>
-                                        </li>
-                                    </ul>
-                                    <div class="row">
-                                        <div class="col s8 l8" style="padding-right: 4px;">
-                                            <center>
-                                                <div class="waves-effect waves-light ascentGreen lighten-1 btn" id="filterBtn" onclick="performSearch()" style="padding: 0 9px; width: 100%; display: inline-block">
-                                                    <font style="color: #fff;font-weight: 400; font-size: 12px"><b>
-                                                        <center>
-                                                            Apply Filter
-                                                        </center>
-                                                    </b></font>
-                                                </div>
-                                            </center>
-                                        </div>
-                                        <div class="col s4 l4" style="padding-left: 0; margin: 0">
-                                            <center>
-                                                <div class="waves-effect waves-light orange lighten-1 btn" onclick="resetFilters()" style="padding: 0 9px; width: 100%; display: inline-block">
-                                                    <font style="color: #fff;font-weight: 400; font-size: 12px"><b>
-                                                        <center>
-                                                            Reset
-                                                        </center>
-                                                    </b></font>
-                                                </div>
-                                            </center>
-                                        </div>
-                                    </div>
-
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
                     <!-- Candidate Details -->
                 <div class="col s12 l9">
                     <div id="candidateResultContainer"></div>
-                    <div id="searchJobPanel" style="padding: 120px 6% 0 6%">
+                    <div id="searchJobPanel">
                         <center>
                             <img src="/assets/recruiter/img/search_candidate.svg" width="96px">
                             <h5>Welcome to candidate search page.</h5>
@@ -486,35 +376,34 @@
             <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
                 <center><font style="color: #fff"><h5>Top up now and get access to more candidates!</h5></font></center>
             </div>
-            <div style="background: #fff; padding: 24px">
+            <div id="modalBuyCreditInnerBox">
                 <center>
                     <div class="row">
                         <div class="col s6 l6">
                             <div class="packCol">
-                                <img src="/assets/recruiter/img/coin.svg" width="36px">
-                                <div style="display: block; font-size: 16px">Buy contact unlocks</div>
+                                <img src="/assets/recruiter/img/coin.svg">
+                                <div>Buy contact unlocks</div>
                                 <br>
                                 <p>Buy credits at ₹100/credit</p>
-                                <input style="width: 70%" placeholder="No. of Contact credits" id="contactCreditAmount" type="number" class="validate">
+                                <input style="width: 100%" placeholder="No. of Contact credits" id="contactCreditAmount" type="number" class="validate">
                             </div>
                         </div>
                         <div class="col s6 l6">
                             <div class="packCol">
-                                <img src="/assets/recruiter/img/coin.svg" width="36px">
-                                <div style="display: block; font-size: 16px">Buy interview unlocks</div>
+                                <img src="/assets/recruiter/img/coin.svg">
+                                <div>Buy interview unlocks</div>
                                 <br>
                                 <p>Buy credits at ₹1000/credit</p>
-                                <input style="width: 70%" placeholder="No. of Interview credits" id="interviewCreditAmount" type="number" class="validate">
+                                <input style="width: 100%" placeholder="No. of Interview credits" id="interviewCreditAmount" type="number" class="validate">
                             </div>
                         </div>
                     </div>
-                    <div style="width: 40%; font-size: 12px; padding: 0" id="requestCredits" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="submitCredits()"><font style="color: #fff;
+                    <div id="requestCredits" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="submitCredits()"><font style="color: #fff;
                         font-weight: 400"><b>Buy Contact Credits</b></font></div>
                     <div style="margin: 8px; color: #0f9d58; display: none" id="successMsg">Thanks! We have received your request to buy more credits. Our business team will contact you within 24hrs</div>
                 </center>
             </div>
         </div>
-
     </body>
     <script>
         $(window).resize(function(){
