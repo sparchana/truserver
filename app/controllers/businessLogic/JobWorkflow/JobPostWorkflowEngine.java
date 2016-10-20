@@ -720,6 +720,7 @@ public class JobPostWorkflowEngine {
     public static String updatePreScreenAttempt(Long jobPostId, Long candidateId, String callStatus) {
         // Interaction for PreScreen Call Attempt
         String interactionResult;
+        String responseMsg;
 
             Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
 
@@ -735,6 +736,7 @@ public class JobPostWorkflowEngine {
                 // If call was connected just set the right interaction result
                 if (callStatus.equals("CONNECTED")) {
                     interactionResult = "Pre Screen Out Bound Call Successfully got connected";
+                    responseMsg = "call_success";
                 }
                 else {
                     // if call was not connected, set the interaction result and send an sms
@@ -749,6 +751,7 @@ public class JobPostWorkflowEngine {
 
                         SmsUtil.sendTryingToCallSms(candidate.getCandidateMobile());
                     }
+                    responseMsg = "OK";
                 }
 
                 // save the interaction
@@ -758,7 +761,7 @@ public class JobPostWorkflowEngine {
                         InteractionConstants.INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_ATTEMPTED,
                         interactionResult
                 );
-                return "OK";
+                return responseMsg;
             }
         return "NA";
     }

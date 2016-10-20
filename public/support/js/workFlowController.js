@@ -877,6 +877,7 @@ $(function () {
                     }
                 }
 
+
                 var preScreenAttemptCount = function () {
                     if (app.currentView == "pre_screen_view") {
                         if(newCandidate.extraData.preScreenCallAttemptCount == null) {
@@ -938,17 +939,24 @@ $(function () {
             app.tableContainer.show();
 
             var select;
+            var order;
             if (app.currentView == "match_view") {
                 select = {
                     "style": 'multi'
                 };
-            } else {
+                order = [[22, "desc"]];
+            } if (app.currentView == "pre_screen_view") {
+                select = false;
+                order = [[29, "desc"]];
+            }
+            else {
+                order = [[22, "desc"]];
                 select = false;
             }
 
             app.table = $('table#' + app.tableContainerId).DataTable({
                 "data": returnedDataArray,
-                "order": [[22, "desc"]],
+                "order": order,
                 "rowId": "candidateId",
                 "columns": [
                     {"data": "cLID"},
