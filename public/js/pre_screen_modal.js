@@ -342,8 +342,8 @@ function processPreScreenContent(returnedData) {
                             && $('input:checkbox[id="pass"]:checked').val() != 99 ) {
                             bootbox.alert({
                                 size: "small",
-                                title: "Error !",
-                                message: "Invalid Submission",
+                                title: "Invalid Submission !",
+                                message: "If you want to mark the candidate as  'completed_prescreening' irrespective of given criteria, select checkbox present next to submit button, in previous dialog.",
                                 callback: function(){ /* your callback code */ }
                             });
                             return false;
