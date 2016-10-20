@@ -5,9 +5,9 @@ import api.ServerConstants;
 import controllers.businessLogic.InteractionService;
 import models.entity.Interaction;
 
-import static api.InteractionConstants.INTERACTION_CHANNEL_PARTNER_WEBSITE;
-import static api.InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE;
-import static api.InteractionConstants.INTERACTION_CREATED_SELF;
+import static api.InteractionConstants.*;
+import static api.InteractionConstants.INTERACTION_NOTE_BLANK;
+import static api.InteractionConstants.INTERACTION_RESULT_CANDIDATE_VERIFICATION_SUCCESS;
 
 /**
  * Created by dodo on 19/10/16.
@@ -90,4 +90,33 @@ public class RecruiterInteractionService {
         );
         InteractionService.createInteraction(interaction);
     }
+
+    public static void createInteractionForRecruiterUnlockCandidateContact(String objAUUID, String objBUUID) {
+        Interaction interaction = new Interaction(
+                objAUUID,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                objBUUID,
+                ServerConstants.OBJECT_TYPE_RECRUTER,
+                INTERACTION_TYPE_RECRUITER_CONTACT_UNLOCK,
+                INTERACTION_NOTE_BLANK,
+                INTERACTION_RESULT_RECRUITER_CONTACT_UNLOCK,
+                INTERACTION_CREATED_SELF,
+                INTERACTION_CHANNEL_RECRUITER_WEBSITE
+        );
+        InteractionService.createInteraction(interaction);
+    }
+
+    public static void createInteractionForRecruiterCreditRequest(String uuId, String result){
+        Interaction interaction = new Interaction(
+                uuId,
+                ServerConstants.OBJECT_TYPE_RECRUTER,
+                InteractionConstants.INTERACTION_TYPE_RECRUITER_CREDIT_REQUEST,
+                InteractionConstants.INTERACTION_NOTE_BLANK,
+                result,
+                INTERACTION_CREATED_SELF,
+                InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE
+        );
+        InteractionService.createInteraction(interaction);
+    }
+
 }

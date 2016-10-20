@@ -43,6 +43,9 @@ public class InteractionConstants {
     public static final String INTERACTION_RESULT_CANDIDATE_DEACTIVATED= "Candidate Deactivated";
     public static final String INTERACTION_RESULT_CANDIDATE_ACTIVATED= "Candidate Activated";
     public static final String INTERACTION_RESULT_CANDIDATE_VERIFICATION_SUCCESS = "Candidate Successfully Verified";
+    public static final String INTERACTION_RESULT_RECRUITER_CONTACT_UNLOCK = "Recruiter unlocked a candidate";
+    public static final String INTERACTION_RESULT_RECRUITER_INTERVIEW_UNLOCK = "Recruiter unlocked an interview";
+    public static final String INTERACTION_RESULT_RECRUITER_CREDIT_REQUEST = "Recruiter requested for credits: ";
     public static final String INTERACTION_RESULT_CANDIDATE_TRIED_TO_VERIFY = "Partner tried to verify a Candidate";
     public static final String INTERACTION_RESULT_NEW_JOB_CREATED = "New Job post created";
     public static final String INTERACTION_RESULT_EXISTING_JOB_POST_UPDATED = "Existing Job post updated";
@@ -122,9 +125,13 @@ public class InteractionConstants {
     public static final int INTERACTION_TYPE_RECRUITER_EXISTING_LEAD = 41;
     public static final int INTERACTION_TYPE_RECRUITER_PASSWORD_ADDED = 42;
     public static final int INTERACTION_TYPE_RECRUITER_SEARCH_CANDIDATE = 43;
+    public static final int INTERACTION_TYPE_RECRUITER_CONTACT_UNLOCK = 44;
+    public static final int INTERACTION_TYPE_RECRUITER_INTERVIEW_UNLOCK = 45;
+    public static final int INTERACTION_TYPE_RECRUITER_CREDIT_REQUEST = 46;
 
-    public static final int INTERACTION_TYPE_NEW_JOB_CREATED = 44;
-    public static final int INTERACTION_TYPE_EXISTING_JOB_UPDATED = 45;
+
+    public static final int INTERACTION_TYPE_NEW_JOB_CREATED = 47;
+    public static final int INTERACTION_TYPE_EXISTING_JOB_UPDATED = 48;
 
     public static final Map<Integer, String> INTERACTION_CHANNEL = new HashMap<>();
 

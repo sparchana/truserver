@@ -57,16 +57,16 @@
                         <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
                         <ul class="right hide-on-med-and-down">
                             <li><a href="/recruiter/home">Home</a></li>
-                            <li><a href="/recruiter/candidateSearch">Search Candidate</a></li>
-                            <li><a href="/recruiter/jobPost/0">Create Job</a></li>
+                            <li><a href="/recruiter/candidateSearch">Search Candidates</a></li>
+                            <li><a href="/recruiter/jobPost/0">Post Job</a></li>
                             <li><a href="/recruiter/profile">Profile</a></li>
                             <li><a onclick="logoutRecruiter()">Logout</a></li>
                         </ul>
                     </div>
                     <ul class="side-nav" id="mobile-demo">
                         <li><a href="/recruiter/home">Home</a></li>
-                        <li><a href="/recruiter/candidateSearch">Search Candidate</a></li>
-                        <li><a href="/recruiter/jobPost/0">Create Job</a></li>
+                        <li><a href="/recruiter/candidateSearch">Search Candidates</a></li>
+                        <li><a href="/recruiter/jobPost/0">Post Job</a></li>
                         <li><a href="/recruiter/profile">Profile</a></li>
                         <li><a onclick="logoutRecruiter()">Logout</a></li>
                     </ul>
@@ -102,8 +102,12 @@
                                     $('#searchJobRole').tokenize({
                                         displayDropdownOnFocus: true,
                                         placeholder: "Job Role",
+                                        newElements: true,
                                         nbDropdownElements: 1000,
-                                        maxElements: 1
+                                        maxElements: 1,
+                                        onAddToken: function (value, text) {
+                                            validateJobRoleVal(value, text);
+                                        }
                                     });
                                 </script>
                             </div>
@@ -138,39 +142,30 @@
             <div class="row">
                     <!-- Sort & Filter -->
                 <div class="col s12 l3">
-                    <div class="card-content">
-                        <font size="4">Sort by</font>
-                    </div>
-
                     <ul class="collapsible" data-collapsible="accordion">
                         <li>
-                            <div class="collapsible-header"><img src="/assets/recruiter/img/rupee.svg" height="18px" style="margin: 0 18px 0 6px">
-                                Salary</div>
+                            <div class="collapsible-header active"><img src="/assets/recruiter/img/rupee.svg" height="18px" style="margin: 0 18px 0 6px">
+                                Sort by</div>
                             <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
                                 <div>
-                                    <input name="sortBySalary" type="radio" value="0" id="sortByMinSalary" />
-                                    <label for="sortByMinSalary">Low to High</label>
+                                    <input name="sortBy" type="radio" value="0" id="sortByMinSalary" />
+                                    <label for="sortByMinSalary">Salary(Low to High)</label>
                                 </div>
                                 <div>
-                                    <input name="sortBySalary" type="radio" value="1" id="sortByMaxSalary" />
-                                    <label for="sortByMaxSalary">High to Low</label>
+                                    <input name="sortBy" type="radio" value="1" id="sortByMaxSalary" />
+                                    <label for="sortByMaxSalary">Salary(High to Low)</label>
+                                </div>
+                                <div>
+                                    <input name="sortBy" type="radio" value="2" id="latestActive" />
+                                    <label for="latestActive">Last Active(Newest to oldest)</label>
+                                </div>
+                                <div>
+                                    <input name="sortBy" type="radio" value="3" id="oldestActive" />
+                                    <label for="oldestActive">Last Active(Oldest to Newest)</label>
                                 </div>
                             </div>
                         </li>
-                        <li>
-                            <div class="collapsible-header"><i class="material-icons">av_timer</i>
-                                Active</div>
-                            <div class="collapsible-body" style="padding: 8px 18px 8px 18px">
-                                <div>
-                                    <input name="sortByActive" type="radio" value="1" id="latestActive" />
-                                    <label for="latestActive">Newest to oldest</label>
-                                </div>
-                                <div>
-                                    <input name="sortByActive" type="radio" value="0" id="oldestActive" />
-                                    <label for="oldestActive">Oldest to Newest</label>
-                                </div>
-                            </div>
-                        </li>
+
                     </ul>
                     <div>
                         <div class="card-content">
@@ -365,7 +360,7 @@
                         </div>
                     </div>
                     <div style="width: 40%; font-size: 12px; padding: 0" id="requestCredits" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="submitCredits()"><font style="color: #fff;
-                        font-weight: 400"><b>Buy Contact Credits</b></font></div>
+                        font-weight: 400"><b>Buy Credits Now!</b></font></div>
                     <div style="margin: 8px; color: #0f9d58; display: none" id="successMsg">Thanks! We have received your request to buy more credits. Our business team will contact you within 24hrs</div>
                 </center>
             </div>
