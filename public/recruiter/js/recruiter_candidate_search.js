@@ -120,9 +120,6 @@ $(document).ready(function(){
         }
     });
 
-    $('#searchLocality').tokenize().tokenAdd("All Bangalore");
-    $('#searchJobRole').tokenize().tokenAdd(1, "Accountant");
-
     $("#searchBtn").addClass("disabled");
     $("#filterBtn").addClass("disabled");
 
@@ -308,7 +305,7 @@ function validateJobRoleVal(val, text) {
 }
 
 function processDataCheckLocality(returnedData) {
-    var option = $('<option id=""></option>').text("All Bangalore");
+    var option = $('<option value="0"></option>').text("All Bangalore");
     $('#searchLocality').append(option);
     returnedData.forEach(function(locality) {
         var id = locality.localityId;
@@ -316,6 +313,7 @@ function processDataCheckLocality(returnedData) {
         option = $('<option value=' + id + '></option>').text(name);
         $('#searchLocality').append(option);
      });
+    $('#searchLocality').tokenize().tokenAdd("0", "All Bangalore");
 }
 
 function processDataCheckJobs(returnedData) {
@@ -326,6 +324,7 @@ function processDataCheckJobs(returnedData) {
         option = $('<option value=' + id + '></option>').text(name);
         $('#searchJobRole').append(option);
     });
+    $('#searchJobRole').tokenize().tokenAdd("1", "Accountant");
 }
 
 function resetFilters() {
@@ -349,8 +348,10 @@ function performSearch() {
     searchLocality = [];
     if(selectedLocality != null){
         searchLocality = [];
-        if(selectedLocality[0] != "All Bangalore"){
+        if(selectedLocality[0] != 0){
             searchLocality.push(parseInt(selectedLocality[0]));
+        } else{
+            searchLocality = null;
         }
     }
 
@@ -380,9 +381,10 @@ function performSearch() {
         selectedLanguage.push(parseInt($(this).attr('value')));
     });
 
-
     if(searchJobRole == [] || searchJobRole == [null] || searchJobRole == null){
         notifyError("Please select a job role for search");
+    } else if(searchLocality != null && Object.keys(searchLocality).length == 0) {
+        notifyError("Please select a locality for search");
     } else {
         $("#searchBtn").addClass("disabled");
         $("#filterBtn").addClass("disabled");
