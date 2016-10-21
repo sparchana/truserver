@@ -901,6 +901,76 @@ public class JobPostWorkflowEngine {
         return "OK";
     }
 
+    public static Map<Long, CandidateWorkflowData> getPreScreenedPassFailCandidates(Long jobPostId, Boolean isPass) {
+        String statusSql;
+        if(isPass == null ){
+            // show all
+            statusSql = " and (status_id = '" +ServerConstants.JWF_STATUS_PRESCREEN_FAILED+ "' or status_id = '" +ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED+"') ";
+        } else if(isPass) {
+            statusSql = " and (status_id = '" +ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED+"') ";
+        } else {
+            statusSql = " and (status_id = '" +ServerConstants.JWF_STATUS_PRESCREEN_FAILED+ "') ";
+        }
+        StringBuilder workFlowQueryBuilder = new StringBuilder("select createdby, candidate_id, creation_timestamp, job_post_id, status_id from job_post_workflow i " +
+                " where i.job_post_id " +
+                " = ('"+jobPostId+"') " +
+                statusSql+
+                " and creation_timestamp = " +
+                " (select max(creation_timestamp) from job_post_workflow where i.candidate_id = job_post_workflow.candidate_id) " +
+                " order by creation_timestamp desc ");
+
+        Logger.info("rawSql"+workFlowQueryBuilder.toString());
+
+        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder.toString())
+                .columnMapping("creation_timestamp", "creationTimestamp")
+                .columnMapping("job_post_id", "jobPost.jobPostId")
+                .columnMapping("status_id", "status.statusId")
+                .columnMapping("candidate_id", "candidate.candidateId")
+                .columnMapping("createdby", "createdBy")
+                .create();
+
+        List<JobPostWorkflow> jobPostWorkflowList = Ebean.find(JobPostWorkflow.class)
+                .setRawSql(rawSql)
+                .findList();
+
+//        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where()
+//                .eq("jobPost.jobPostId", jobPostId)
+//                .or(eq("status.statusId", ServerConstants.JWF_STATUS_SELECTED), eq("status.statusId", ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED))
+//                .setDistinct(true)
+//                .orderBy().desc("creation_timestamp").findList();
+
+        List<Candidate> candidateList = new ArrayList<>();
+
+        Map<Long, CandidateWorkflowData> selectedCandidateMap = new LinkedHashMap<>();
+
+        // until view is not available over this table, this loop get the distinct candidate who
+        // got selected for a job post recently
+        for( JobPostWorkflow jpwf: jobPostWorkflowList) {
+            candidateList.add(jpwf.getCandidate());
+        }
+        // prep params for a jobPost
+        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+
+        List<JobPostToLocality> jobPostToLocalityList = jobPost.getJobPostToLocalityList();
+        List<Long> localityIdList = new ArrayList<>();
+        for (JobPostToLocality jobPostToLocality: jobPostToLocalityList) {
+            localityIdList.add(jobPostToLocality.getLocality().getLocalityId());
+        }
+
+
+        candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, false);
+        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique());
+
+        for ( Candidate candidate: candidateList) {
+            CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
+            candidateWorkflowData.setCandidate(candidate);
+            candidateWorkflowData.setExtraData(candidateExtraDataMap.get(candidate.getCandidateId()));
+            selectedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
+        }
+
+        return selectedCandidateMap;
+    }
+
     public static class LastActiveValue{
         public Integer lastActiveValueId;
         public String lastActiveValueName;
@@ -1148,7 +1218,7 @@ public class JobPostWorkflowEngine {
                 if(jobApplicationModeMap != null && jobApplicationModeMap.size() > 0) {
                     candidateExtraData.setJobApplicationMode(jobApplicationModeMap.get(candidate.getCandidateId()));
                 }
-                // 'Pre-screed selection timestamp' along with jobPostWorkflowId, uuid
+                // 'Pre-screen selection timestamp' along with jobPostWorkflowId, uuid
                 if(candidateToJobPostWorkflowMap != null && candidateToJobPostWorkflowMap.size() > 0) {
                     JobPostWorkflow jobPostWorkflow = candidateToJobPostWorkflowMap.get(candidate.getCandidateId());
                     if(jobPostWorkflow!= null){

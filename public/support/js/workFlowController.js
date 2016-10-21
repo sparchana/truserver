@@ -865,6 +865,7 @@ $(function () {
                 }
 
                 var jobApplicationMode ="";
+
                 var preScreenSelectionTimeStamp = "";
                 if (app.currentView == "pre_screen_view") {
                     if(newCandidate.extraData.jobApplicationMode != null) {
@@ -938,20 +939,17 @@ $(function () {
 
             app.tableContainer.show();
 
-            var select;
-            var order;
+            // instantiated with default values
+            var select = false;
+            var order = [[22, "asc"]];
             if (app.currentView == "match_view") {
                 select = {
                     "style": 'multi'
                 };
-                order = [[22, "desc"]];
             } else if (app.currentView == "pre_screen_view") {
-                select = false;
                 order = [[29, "desc"]];
-            }
-            else {
-                order = [[22, "desc"]];
-                select = false;
+            } else if (app.currentView == "pre_screen_completed_view"){
+            } else {
             }
 
             app.table = $('table#' + app.tableContainerId).DataTable({
@@ -1033,7 +1031,7 @@ $(function () {
         if (shouldAddFooter) {
             $('#' + app.tableContainerId + ' tfoot th').each(function () {
                 var title = $(this).text();
-                $(this).html('<input type="text" name="' + title + '"  id="' + title + '" placeholder="' + title + '" />');
+                    $(this).html('<input type="text" name="' + title + '"  id="' + title + '" placeholder="' + title + '" />');
             });
             shouldAddFooter = false;
         }
@@ -1144,6 +1142,22 @@ $(function () {
             console.log("exception occured!!" + exception);
         }
     };
+
+    app.fetchPreScreenedCandidate = function () {
+        NProgress.start();
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/support/api/getPreScreenedCandidate/?jpId=" + app.jpId+"&isPass=" + $("input[id='is_pass_switch']:checked").val() == "on",
+                data: false,
+                contentType: false,
+                processData: false,
+                success: app.updatePreScreenTable
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception.stack);
+        }
+    };
     app.populateJobPostCardUI = function (returnedData) {
         NProgress.start();
         var jobPostTitle = returnedData.jobPostTitle;
@@ -1210,6 +1224,10 @@ $(function () {
         $('#pre_screen_view_drawer').removeClass("mdl-navigation__link--current").addClass("mdl-navigation__link--current");
         app.initPreScreenView();
         app.initJobCard();
+    } else if (app.currentView == "pre_screen_completed_view") {
+        app.fetchPreScreenedCandidate();
+        app.initJobCard();
+        $('#header_view_title').text("Pre-Screen Completed View");
     } else {
         $('#header_view_title').text("Future View");
     }

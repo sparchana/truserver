@@ -16,6 +16,7 @@ public class CandidateExtraData {
     public Timestamp preScreenSelectionTimeStamp;
     public String workflowUUId;
     public Long workflowId;
+    public String workflowStatus;
 
     public String getAppliedOn() {
         return appliedOn;
@@ -79,5 +80,13 @@ public class CandidateExtraData {
 
     public void setWorkflowId(Long workflowId) {
         this.workflowId = workflowId;
+    }
+
+    public String getWorkflowStatus() {
+        return workflowStatus;
+    }
+
+    public void setWorkflowStatus(String workflowStatus) {
+        this.workflowStatus = workflowStatus;
     }
 }
