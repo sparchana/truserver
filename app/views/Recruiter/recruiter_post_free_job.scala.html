@@ -166,7 +166,7 @@
                     </div>
                     <div class="row">
                       <div class="col s12 l12">
-                        <font size="3" style="font-weight: bold">Shift Timing Details</font>
+                        <font size="3" style="font-weight: bold">Work Timing Details</font>
                       </div>
                     </div>
                     <div class="row"id="jobPostDetails">
@@ -178,7 +178,7 @@
                         <script type="text/javascript">
                             $('#jobPostShift').tokenize({
                               displayDropdownOnFocus: true,
-                              placeholder: "Work Shift",
+                              placeholder: "Shift Timing",
                               nbDropdownElements: 1000,
                               maxElements: 1,
                               newElements: true,
@@ -312,14 +312,14 @@
                     </div>
                     <div class="row" id="jobPostDetails">
                       <div class="input-field col s6 l4" style="margin-top: 18px">
-                        <label>Mention minimum Education Qualification :</label>
+                        <label>Should the candidate have any minimum education qualification?</label>
                       </div>
                       <div class="input-field col s6 l4">
                         <select id="jobPostEducation" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
                         <script type="text/javascript">
                             $('#jobPostEducation').tokenize({
                               displayDropdownOnFocus: true,
-                              placeholder: "Minimum education",
+                              placeholder: "Select Minimum education",
                               maxElements: 1,
                               nbDropdownElements: 1000,
                               newElements: true,
@@ -333,14 +333,14 @@
 
                       <div class="row" id="jobPostDetails">
                           <div class="input-field col s6 l4" style="margin-top: 18px">
-                              <label>Should candidate have work experience ?</label>
+                              <label>Should candidate have any minimum work experience ?</label>
                           </div>
                           <div class="input-field col s6 l4">
                               <select id="jobPostExperience" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
                               <script type="text/javascript">
                             $('#jobPostExperience').tokenize({
                                 displayDropdownOnFocus: true,
-                                placeholder: "Minimum experience",
+                                placeholder: "Select minimum experience",
                                 maxElements: 1,
                                 nbDropdownElements: 1000,
                                 newElements: true,
@@ -361,7 +361,7 @@
                         <script type="text/javascript">
                             $('#jobPostLanguage').tokenize({
                               displayDropdownOnFocus: true,
-                              placeholder: "Languages",
+                              placeholder: "Select Language(s)",
                               newElements: true,
                               nbDropdownElements: 1000,
                               onAddToken: function (value, text) {
@@ -374,7 +374,7 @@
 
                     <div class="row" id="jobPostDetails">
                       <div class="input-field col s6 l4" style="margin-top: 18px">
-                        <label>Assets required ?</label>
+                        <label>Should the candidate own any of the following?</label>
                       </div>
                       <div class="input-field col s6 l4">
                         <select id="jobPostAsset" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>

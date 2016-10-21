@@ -69,8 +69,8 @@ function processDataGetAllLanguage(returnLanguage) {
         $('#jobPostLanguage').append(option);
     });
 }
-
-function processDataGetAllIdProof(returnedIdProofs) {
+function processDataGetIdProofs(returnedIdProofs) {
+    $('#jobPostIdProof').tokenize().clear();
     returnedIdProofs.forEach(function (idProof) {
         var id = idProof.idProofId;
         var name = idProof.idProofName;
@@ -79,7 +79,8 @@ function processDataGetAllIdProof(returnedIdProofs) {
     });
 }
 
-function processDataGetAllAsset(returnedAssets) {
+function processDataGetAssets(returnedAssets) {
+    $('#jobPostAsset').tokenize().clear();
     returnedAssets.forEach(function (asset) {
         var id = asset.assetId;
         var name = asset.assetTitle;
@@ -166,19 +167,19 @@ function toJobRequirement(){
         notifyError("Please enter no. of vacancies");
         status = 0;
     } else if(vacancies < 1){
-        notifyError("Please enter no. of vacancies");
+        notifyError("Please enter valid number for no. of vacancies");
         status = 0;
     } else if(minSalary == ""){
-        notifyError("Please enter Job Post Minimum salary");
+        notifyError("Please mention minimum salary");
         status = 0;
     } else if(isValidSalary(minSalary) == false){
-        notifyError("Please enter valid min salary");
+        notifyError("Please enter valid minimum salary");
         status = 0;
     } else if(maxSalary != 0 && (isValidSalary(maxSalary) == false)){
-        notifyError("Please enter valid max salary");
+        notifyError("Please enter valid maximum salary");
         status = 0;
     } else if(maxSalary != 0 && (maxSalary <= minSalary)){
-        notifyError("Max salary should be greater than min salary");
+        notifyError("Maximum salary should be greater than minimum salary");
         status = 0;
     } else if($("input[name='jobPostGender']:checked").val() == null || $("input[name='jobPostGender']:checked").val() == undefined){
         notifyError("Please specify gender");
@@ -337,33 +338,6 @@ $(document).ready(function () {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getAllIdProof",
-            data: false,
-            async: false,
-            contentType: false,
-            processData: false,
-            success: processDataGetAllIdProof
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getAllAsset",
-            data: false,
-            async: false,
-            contentType: false,
-            processData: false,
-            success: processDataGetAllAsset
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-
 
     var i;
 
@@ -732,11 +706,51 @@ function processDataForJobPost(returnedData) {
     }
 
 }
+function generateDocument() {
+    var jobRoleId = parseInt(($("#jobPostJobRole").val())[0]);
+    if(jobRoleId != 0){
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/support/api/getDocumentReqForJobRole/?job_role_id="+jobRoleId,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataGetIdProofs
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+}
+function generateAsset() {
+    var jobRoleId = parseInt(($("#jobPostJobRole").val())[0]);
+    if(jobRoleId != 0){
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/support/api/getAssetReqForJobRole/?job_role_id="+jobRoleId,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataGetAssets
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+}
+
 
 function validateJobRoleTokenVal(val, text) {
     if(val.localeCompare(text) == 0){
         $('#jobPostJobRole').tokenize().tokenRemove(val);
         notifyError("Please select a valid job role from the dropdown list");
+    } else{
+        generateDocument();
+        generateAsset();
     }
 }
 
