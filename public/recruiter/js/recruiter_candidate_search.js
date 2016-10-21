@@ -107,23 +107,55 @@ $(document).ready(function(){
     }
 
 
-    $('input[type=radio][name=sortBySalary]').change(function() {
+    $('input[type=radio][name=sortBy]').change(function() {
         if (this.value == 0) {
             sortBySalary(this.value);
         } else if (this.value == 1) {
             sortBySalary(this.value);
-        }
-    });
-
-    $('input[type=radio][name=sortByActive]').change(function() {
-        if (this.value == 0) {
-            sortByLastActive(this.value);
-        } else if (this.value == 1) {
-            sortByLastActive(this.value);
+        } else if (this.value == 2) {
+            sortByLastActive(1);
+        } else if (this.value == 3) {
+            sortByLastActive(0);
         }
     });
 
     $('#searchLocality').tokenize().tokenAdd("All Bangalore");
+    $('#searchJobRole').tokenize().tokenAdd(1, "Accountant");
+
+    $("#searchBtn").addClass("disabled");
+    $("#filterBtn").addClass("disabled");
+
+    $("#candidateResultContainer").html("");
+    $("#searchJobPanel").hide();
+    $("#noCandidateDiv").hide();
+    $("#loadingIcon").show();
+
+    NProgress.start();
+    var d = {
+        maxAge: "",
+        minSalary: 0,
+        maxSalary: 0,
+        experienceId: 0,
+        gender: 0,
+        jobPostJobRoleId: 1,
+        jobPostEducationId: 0,
+        jobPostLocalityIdList: null,
+        jobPostLanguageIdList: [],
+        distanceRadius: 10
+    };
+
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/recruiter/api/getMatchingCandidate/",
+            async: true,
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(d),
+            success: processDataMatchCandidate
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception.stack);
+    }
 
 });
 
@@ -188,6 +220,7 @@ function processDataEducation(returnedData) {
         mainDiv.appendChild(educationInput);
 
         var educationLabel = document.createElement("label");
+        educationLabel.style = "font-size: 14px";
         educationLabel.setAttribute("for", "edu_" + education.educationId);
         educationLabel.textContent = education.educationName;
         mainDiv.appendChild(educationLabel);
@@ -208,6 +241,7 @@ function processDataExperience(returnedData) {
         mainDiv.appendChild(experienceInput);
 
         var experienceLabel = document.createElement("label");
+        experienceLabel.style = "font-size: 14px";
         experienceLabel.setAttribute("for", "exp_" + experience.experienceId);
         experienceLabel.textContent = experience.experienceType;
         mainDiv.appendChild(experienceLabel);
@@ -228,6 +262,7 @@ function processDataLanguages(returnedData) {
         mainDiv.appendChild(languageInput);
 
         var languageLabel = document.createElement("label");
+        languageLabel.style = "font-size: 14px";
         languageLabel.setAttribute("for", "lang_" + language.languageId);
         languageLabel.textContent = language.languageName;
         mainDiv.appendChild(languageLabel);
@@ -262,6 +297,12 @@ function validateLocationVal(val, text) {
             $('#searchLocality').tokenize().tokenRemove(val);
             notifyError("Please select a valid location from the dropdown list");
         }
+    }
+}
+function validateJobRoleVal(val, text) {
+    if(val.localeCompare(text) == 0){
+        $('#searchJobRole').tokenize().tokenRemove(val);
+        notifyError("Please select a valid job role from the dropdown list");
     }
 }
 

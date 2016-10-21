@@ -129,7 +129,8 @@ public class ServerConstants {
     // JobPost Workflow status
     public static final int JWF_STATUS_SELECTED = 1;
     public static final int JWF_STATUS_PRESCREEN_ATTEMPTED = 2;
-    public static final int JWF_STATUS_PRESCREEN_COMPLETED = 3;
+    public static final int JWF_STATUS_PRESCREEN_FAILED = 3;
+    public static final int JWF_STATUS_PRESCREEN_COMPLETED = 4;
     // Requirements Table
     public static final String PROFILE_REQUIREMENT_TABLE_AGE = "age";
     public static final String PROFILE_REQUIREMENT_TABLE_EXPERIENCE = "experience";
@@ -190,6 +191,8 @@ public class ServerConstants {
     /* Non Logged In Search Result UUID */
     public static final String TRU_DROID_NOT_LOGGED_UUID = "TRU-DROID-NOT-LOGGEDIN-UUID";
     public static final String SUPPORT_DEFAULT_UUID = "SUPPORT-DEFAULT-UUID";
+
+    public static final String SELF_UNLOCKED_CANDIDATE_CONTACT = "Self unlocked contact";
 
     /************************
      *  Scrapped Data Source

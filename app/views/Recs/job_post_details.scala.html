@@ -163,7 +163,6 @@
                                         <option value="1">Female</option>
                                         <option value="2">Any</option>
                                     </select>
-                                    <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
                                 </div>
                             </div>
 
@@ -208,7 +207,6 @@
                                 </div>
                             </div>
 
-
                             <div class="row">
                                 <div class="col-sm-3"><h5>Total Vacancies:<font color="red">*</font></h5></div>
                                 <div class="col-sm-9">
@@ -216,6 +214,14 @@
                                         display: inline-block" placeholder="Total Vacancies" type="number" class="form-control input-md">
                                 </div>
                             </div>
+
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Job Post Incentives:</h5></div>
+                                <div class="col-sm-9">
+                                    <textarea rows="4" cols="80" id="jobPostIncentives" class="form-control input-md" maxlength="5000"></textarea>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 
@@ -227,8 +233,7 @@
                             <div class="row" style="padding: 6px 0;">
                                 <div class="col-sm-3"><h5>Max Age: <font color="red">*</font></h5></div>
                                 <div class="col-sm-9">
-                                    <input id="jobPostMaxAge" value="0" max="70" style="width: 15%" placeholder="Max Age" type="number" class="form-control input-md">
-                                    <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                                    <input id="jobPostMaxAge" value="30" max="70" style="width: 15%" placeholder="Max Age" type="number" class="form-control input-md">
                                 </div>
                             </div>
 
@@ -252,7 +257,6 @@
                                 <div class="col-sm-3"><h5>Language Req: <font color="red">*</font></h5></div>
                                 <div class="col-sm-4">
                                     <select id="jobPostLanguage" multiple="multiple" class="selectDropdown"></select>
-                                    <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
                                 </div>
                             </div>
 
@@ -364,6 +368,7 @@
                         </div>
                     </div>
 
+
                     <br>
                     <div class="panel panel-danger" id="jdPartnerIncentivePanel" style="margin: 1% 0;">
                         <div class="panel-heading" style="cursor: pointer;">Partner Incentive Information</div>
@@ -392,13 +397,6 @@
                     <div class="panel panel-success" id="jdOtherPanel" style="margin: 1% 0;">
                         <div class="panel-heading" style="cursor: pointer;">Other Detail Panel</div>
                         <div class="panel-container" style="padding: 1%;">
-                            <div class="row">
-                                <div class="col-sm-3"><h5>Job Post Incentives:</h5></div>
-                                <div class="col-sm-9">
-                                    <textarea rows="4" cols="80" id="jobPostIncentives" class="form-control input-md" maxlength="5000"></textarea>
-                                </div>
-                            </div>
-
                             <div class="row">
                                 <div class="col-sm-3"><h5>Is this a Hot Job?</h5></div>
                                 <div class="col-sm-9">

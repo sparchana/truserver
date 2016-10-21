@@ -10,7 +10,16 @@ function updateCallAttempts(cId, jpId, status) {
         url: base_url +"?candidateId="+cId+"&jobPostId="+jpId+"&callStatus="+status,
         processData: false,
         success: function (returnedData) {
-            console.log("updateCallAttempt: " + returnedData);
+            if(returnedData == "OK"){
+                notifyError("Call response saved successfully. Refreshing..", 'success');
+                setTimeout(function () {
+                    location.reload();
+                    // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
+                }, 2000);
+                bootbox.hideAll();
+            } else if(returnedData == "NA") {
+                notifyError("Error while saving call response.", 'success');
+            }
         }
     });
     NProgress.done();
@@ -25,17 +34,25 @@ function saveAttempt(candidateId, jobPostId) {
 function onCallYes(candidateId, jobPostId) {
     console.log("connected: " + candidateId +" "+ jobPostId);
     $('#callNoClass').hide();
-    $('.btn-success.btn-modal-submit').prop('disabled', false);
     $('#pre_screen_body').show();
     updateCallAttempts(candidateId, jobPostId, "CONNECTED");
+    activateSubmit();
+}
+
+function activateSubmit() {
+    if($('input:radio[name="verdict"]:checked').val() != null
+    && $('input:radio[name="callConnected"]:checked').val() == "yes"){
+        $('.btn.modal-submit').prop('disabled', false);
+    }
 }
 function onCallNo(candidateId, jobPostId) {
     $('#callNoClass').show();
     $('#pre_screen_body').hide();
-    $('.btn-success.btn-modal-submit').prop('disabled', true);
+    $('.btn.modal-submit').prop('disabled', true);
 }
 
 function triggerPreScreenResponseSubmission(candidateId, jobPostId) {
+
     var allSelectedValues = $("#pre_screen_body input[type='checkbox']:checked");
     var responseList = [];
     var len = allSelectedValues.size();
@@ -52,23 +69,32 @@ function triggerPreScreenResponseSubmission(candidateId, jobPostId) {
             responseList.push(parseInt(ids[1]));
         }
     }
+    var status = false;
+    // we shall remove this null check for passing null to db in candidate self prescreen view
+    if($('input:radio[name="verdict"]:checked').val() != null){
+        status = true;
+    }
 
-    var d = {
-        candidateId: candidateId,
-        jobPostId: jobPostId,
-        preScreenIdList: responseList
-    };
+    if(status){
+        var d = {
+            candidateId: candidateId,
+            jobPostId: jobPostId,
+            preScreenIdList: responseList,
+            pass: $('input:radio[name="verdict"]:checked').val() == 1,
+            preScreenNote: $('#pre_screen_note').val()
+        };
 
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/submitPreScreen",
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(d),
-            success: processPostPreScreenResponse
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/submitPreScreen",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: processPostPreScreenResponse
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
     }
 }
 
@@ -183,6 +209,19 @@ function processPreScreenContent(returnedData) {
 
         otherReqTableContainer.append(otherTable);
 
+        var noteContainer = document.createElement("div");
+        noteContainer.className = "form-group";
+        var textarea = document.createElement("textarea");
+        textarea.className = "form-control";
+        textarea.rows = "5";
+        textarea.type = "text";
+        textarea.id = "pre_screen_note";
+        var label = document.createElement("label");
+        label.for= "pre_screen_note";
+        label.textContent = "Note";
+        noteContainer.appendChild(label);
+        noteContainer.appendChild(textarea);
+        container.append(noteContainer);
 
         var elementList = returnedData.elementList;
         elementList.forEach(function (rowData) {
@@ -312,14 +351,9 @@ function processPreScreenContent(returnedData) {
             '</div>' +
             '</h5>'+
             '</div>'+
-            '<div class="col-sm-4" style="text-align: right">'+
-            '<h5 style="margin:2px">&nbsp;Force Set&nbsp;:&nbsp;'+
-            '<input type="checkbox" name="" id="pass" value="yes" onclick="">'+
-            '</h5>'+
-            '</div>'+
             '</div>');
 
-        bootbox.dialog({
+        var dialog = bootbox.dialog({
             className: "pre-screen-modal",
             title: callYesNo,
             message: preScreenBody,
@@ -330,29 +364,62 @@ function processPreScreenContent(returnedData) {
             },
             buttons: {
                 "Submit": {
-                    className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent",
-                    callback: function() {
-                        $('body').removeClass('open-modal');
-                        if($("#pre_screen_body input[type='checkbox']:checked").size() > 0) {
-                            console.log("final prescreen submission triggered");
+                    className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent modal-submit",
+                    callback: function () {
+                        if($("#pre_screen_body input[type='checkbox']:checked").size() == 0
+                            && $('input:radio[name="verdict"]:checked').val() == null) {
+                            bootbox.alert({
+                                size: "small",
+                                title: "Invalid Submission !",
+                                message: "If you want to mark the candidate as  'completed_prescreening' irrespective of given criteria, select checkbox present next to submit button, in previous dialog.",
+                                callback: function(){ /* your callback code */ }
+                            });
+                            return false;
+                        } else {
+                            $('body').removeClass('open-modal');
+                            //if($("#pre_screen_body input[type='checkbox']:checked").size() > 0) {}
                             triggerPreScreenResponseSubmission(candidateId, jobPostId);
+                            console.log("final prescreen submission triggered");
+                            return true;
                         }
                     }
                 }
-            },
-            callback: function(result) {
-                console.log(result);
             }
         });
-        $('.btn-success.btn-modal-submit').prop('disabled', true);
-        $('#pre_screen_body').hide();
-        $('body').removeClass('modal-open').removeClass('open-modal').addClass('open-modal');
+        dialog.init(function(){
+            var forceSetContainer = $('.modal-footer');
+            var forceSetDiv = $('' +
+                '<div class="col-xs-11" style="text-align: left">'+
+                '<h5 style="margin:2px; font-size: 12px;">' +
+                '<div style="display:inline-block; margin: 0 1px;text-align: left; color: #b9151b">*</div>'+
+                'Did the candidate pass pre-screen?&nbsp;:&nbsp;'+
+                '<div style="display: inline-block; vertical-align: middle; margin: 0px;">' +
+                '<input type="radio" name="verdict" id="pass" value="1" style="margin: 0 2px" onclick="activateSubmit()">Yes' +
+                '<input type="radio" name="verdict" id="fail" value="0" style="margin: 0 2px" onclick="activateSubmit()">No' +
+                '</div>'+
+                '</h5>'+
+                '</div>'
+            );
+            forceSetContainer.prepend(forceSetDiv);
+
+            $('.btn.modal-submit').prop('disabled', true);
+            $('#pre_screen_body').hide();
+            $('body').removeClass('modal-open').removeClass('open-modal').addClass('open-modal');
+        });
     }
 }
 
 function processPostPreScreenResponse(response) {
     console.log(response);
-    return response;
+    if(response == "OK"){
+        notifyError("Submitted successfully. Refreshing ..", 'success');
+        setTimeout(function () {
+            location.reload();
+            // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
+        }, 2000);
+    } else {
+        notifyError("Error! Something Went wrong please try again.", 'danger')
+    }
 }
 
 function getPreScreenContent(jobPostId, candidateId) {
@@ -398,3 +465,18 @@ function pushToSnackbar(msg) {
     snackbarContainer.MaterialSnackbar.showSnackbar(data);
 
 }
+function notifyError(msg, type) {
+    $.notify({
+        message: msg,
+        animate: {
+            enter: 'animated lightSpeedIn',
+            exit: 'animated lightSpeedOut'
+        }
+    }, {
+        type: type,
+        placement: {
+            from: "top",
+            align: "center"
+        }
+    });
+};

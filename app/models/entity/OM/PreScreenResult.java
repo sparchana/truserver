@@ -43,6 +43,9 @@ public class PreScreenResult extends Model {
     @JoinColumn(name = "job_post_workflow_id", referencedColumnName = "job_post_workflow_id")
     private JobPostWorkflow jobPostWorkflow;
 
+    @Column(name = "pre_screen_result_note", columnDefinition = "text null")
+    private String preScreenResultNote;
+
     /*@JsonManagedReference
     @PrivateOwned
     @OneToMany(mappedBy = "preScreenResult", cascade = CascadeType.ALL)
@@ -115,4 +118,12 @@ public class PreScreenResult extends Model {
     public void setPreScreenResponseList(List<PreScreenResponse> preScreenResponseList) {
         this.preScreenResponseList = preScreenResponseList;
     }*/
+
+    public String getPreScreenResultNote() {
+        return preScreenResultNote;
+    }
+
+    public void setPreScreenResultNote(String preScreenResultNote) {
+        this.preScreenResultNote = preScreenResultNote;
+    }
 }

@@ -713,11 +713,13 @@ $(function () {
             $('#matchBtn').attr('disabled', true);
             setTimeout(function () {
                 if($("#matchBtn").is(":disabled")) {
-                    app.notify("Something went wrong ! Please try again.", 'danger');
+                    app.notify("Something went wrong ! Please wait. Reloading page..", 'danger');
+                    location.reload(true);
                     $('#matchBtn').attr('disabled', false);
+                    NProgress.done();
                 }
                 // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
-            }, 26000);
+            }, 60000);
 
         }
 
@@ -875,6 +877,7 @@ $(function () {
                     }
                 }
 
+
                 var preScreenAttemptCount = function () {
                     if (app.currentView == "pre_screen_view") {
                         if(newCandidate.extraData.preScreenCallAttemptCount == null) {
@@ -936,18 +939,24 @@ $(function () {
             app.tableContainer.show();
 
             var select;
+            var order;
             if (app.currentView == "match_view") {
                 select = {
                     "style": 'multi'
                 };
-            } else {
+                order = [[22, "desc"]];
+            } else if (app.currentView == "pre_screen_view") {
+                select = false;
+                order = [[29, "desc"]];
+            }
+            else {
+                order = [[22, "desc"]];
                 select = false;
             }
 
             app.table = $('table#' + app.tableContainerId).DataTable({
                 "data": returnedDataArray,
-                "order": [[22, "desc"]],
-                "scrollX": true,
+                "order": order,
                 "rowId": "candidateId",
                 "columns": [
                     {"data": "cLID"},
@@ -983,9 +992,9 @@ $(function () {
                     {"data": "varColumn"}
                 ],
                 "deferRender": true,
-                "scroller": true,
                 "scrollY": '48vh',
                 "scrollCollapse": true,
+                "scrollX": true,
                 "language": {
                     "emptyTable": "No data available"
                 },
@@ -1010,6 +1019,7 @@ $(function () {
             });
 
             /* Initialise datatables */
+            $.fn.dataTable.moment('dd/MM/YYYY HH:mm:ss');
 
             NProgress.done();
         } catch (exception) {
