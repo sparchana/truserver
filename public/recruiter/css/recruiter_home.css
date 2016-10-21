@@ -304,15 +304,38 @@ footer.page-footer .footer-copyright{
 body#recruiterHome{
     background: #f8f6ed;
 }
-
+.recruiterHomeNoBackBox{
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.12);
+    display: block;
+    padding: 2% 0;
+    background: #fff;
+    border-radius: 4px;
+}
+.recruiterHomeMessgeBox{
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.12);
+    display: block;
+    margin-top: 2%;
+    margin-bottom:50px;
+    background: #fff;
+    border-radius: 4px;
+}
+.recruiterHomeHighlightCard{
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.12);
+    height: auto;
+    display: block;
+    margin-top: 2%;
+    margin-bottom: 2%;
+    background: #fff;
+    border-radius: 4px;
+}
 .recruiterHomeMainCard{
     box-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.12);
     height: auto;
     display: block;
-    margin-top: 8%;
+    margin-top: 6%;
+    margin-bottom: 2%;
     background: #fff;
     border-radius: 4px;
-    padding: 2%;
 }
 
 #userImgRecruiter{
