@@ -1267,16 +1267,19 @@ public class JobPostWorkflowEngine {
         return experienceValue;
     }
 
+    // this methods take the old jobpost uuid and set the new jobpost uuid to old jobpost uuid.
     private static JobPostWorkflow saveNewJobPostWorkflow(Long candidateId, Long jobPostId, JobPostWorkflow jobPostWorkflowOld) {
         JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED).findUnique();
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
         Candidate candidate = Candidate.find.where().in("candidateId", candidateId).findUnique();
+        String toBePreservedUUId = jobPostWorkflowOld.getJobPostWorkflowUUId();
 
         // check if status is already selected or pre_screen_attempted, throw error if not
         if (jobPostWorkflowOld.getStatus().getStatusId() == ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED
                 || jobPostWorkflowOld.getStatus().getStatusId() == ServerConstants.JWF_STATUS_SELECTED) {
             // save new workflow with status pre_screen_attempted, later this obj status will change to pre_screen_completed
             jobPostWorkflowOld = new JobPostWorkflow();
+            jobPostWorkflowOld.setJobPostWorkflowUUId(toBePreservedUUId);
             jobPostWorkflowOld.setJobPost(jobPost);
             jobPostWorkflowOld.setCandidate(candidate);
             jobPostWorkflowOld.setCreatedBy(session().get("sessionUsername"));
