@@ -6,10 +6,13 @@
             padding-left: 20px;
             font-size: 22px;
             font-weight: 500";>
-            <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="is_pass_switch" style="margin-left: 50%;">
-                <input type="checkbox" id="is_pass_switch" class="mdl-switch__input" checked>
+            <label id="trigger" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="is_pass">
+                <input type="checkbox" id="is_pass" class="mdl-switch__input" checked>
                 <span class="mdl-switch__label"></span>
             </label>
+            <div class="mdl-tooltip" data-mdl-for="trigger">
+                ON to see all candidates who <strong>passed</strong>. OFF to see all candidated who <strong>failed </strong>
+            </div>
         </div>
     </div>
     <div id="preScreenCompletedPane">

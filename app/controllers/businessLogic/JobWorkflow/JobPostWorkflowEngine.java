@@ -901,12 +901,9 @@ public class JobPostWorkflowEngine {
         return "OK";
     }
 
-    public static Map<Long, CandidateWorkflowData> getPreScreenedPassFailCandidates(Long jobPostId, Boolean isPass) {
+    public static Map<Long, CandidateWorkflowData> getPreScreenedPassFailCandidates(Long jobPostId, boolean isPass) {
         String statusSql;
-        if(isPass == null ){
-            // show all
-            statusSql = " and (status_id = '" +ServerConstants.JWF_STATUS_PRESCREEN_FAILED+ "' or status_id = '" +ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED+"') ";
-        } else if(isPass) {
+        if(isPass) {
             statusSql = " and (status_id = '" +ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED+"') ";
         } else {
             statusSql = " and (status_id = '" +ServerConstants.JWF_STATUS_PRESCREEN_FAILED+ "') ";

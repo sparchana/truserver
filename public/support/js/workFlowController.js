@@ -1145,10 +1145,21 @@ $(function () {
 
     app.fetchPreScreenedCandidate = function () {
         NProgress.start();
+        var base_url = "/support/api/getPreScreenedCandidate/?jpId=" + app.jpId;
+        var showOnlyPass;
+        if ($("input[id='is_pass']:checked").val() == "on") {
+            app.notify("Fetching all 'pre-screened-completed' candidate list. Please wait..", "warning");
+            showOnlyPass = true;
+        } else {
+            app.notify("Fetching all 'pre-screened-failed' candidate list. Please wait..", "warning");
+            showOnlyPass= false;
+        }
+        base_url += "&isPass="+showOnlyPass;
+
         try {
             $.ajax({
                 type: "POST",
-                url: "/support/api/getPreScreenedCandidate/?jpId=" + app.jpId+"&isPass=" + $("input[id='is_pass_switch']:checked").val() == "on",
+                url: base_url,
                 data: false,
                 contentType: false,
                 processData: false,
@@ -1158,6 +1169,7 @@ $(function () {
             console.log("exception occured!!" + exception.stack);
         }
     };
+
     app.populateJobPostCardUI = function (returnedData) {
         NProgress.start();
         var jobPostTitle = returnedData.jobPostTitle;
@@ -1227,6 +1239,9 @@ $(function () {
     } else if (app.currentView == "pre_screen_completed_view") {
         app.fetchPreScreenedCandidate();
         app.initJobCard();
+        document.getElementById('is_pass').addEventListener("click", function () {
+            app.fetchPreScreenedCandidate();
+        });
         $('#header_view_title').text("Pre-Screen Completed View");
     } else {
         $('#header_view_title').text("Future View");

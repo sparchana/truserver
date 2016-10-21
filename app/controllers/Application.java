@@ -1536,7 +1536,7 @@ public class Application extends Controller {
             return badRequest();
         }
 
-        switch (view) {
+        switch (view.trim()) {
             case "match_view":
                 return ok(views.html.match_candidate.render());
             case "pre_screen_view":
