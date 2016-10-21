@@ -69,8 +69,8 @@ function processDataGetAllLanguage(returnLanguage) {
         $('#jobPostLanguage').append(option);
     });
 }
-
-function processDataGetAllIdProof(returnedIdProofs) {
+function processDataGetIdProofs(returnedIdProofs) {
+    $('#jobPostIdProof').tokenize().clear();
     returnedIdProofs.forEach(function (idProof) {
         var id = idProof.idProofId;
         var name = idProof.idProofName;
@@ -79,7 +79,8 @@ function processDataGetAllIdProof(returnedIdProofs) {
     });
 }
 
-function processDataGetAllAsset(returnedAssets) {
+function processDataGetAssets(returnedAssets) {
+    $('#jobPostAsset').tokenize().clear();
     returnedAssets.forEach(function (asset) {
         var id = asset.assetId;
         var name = asset.assetTitle;
@@ -88,6 +89,15 @@ function processDataGetAllAsset(returnedAssets) {
     });
 }
 
+function changeJobDescClass() {
+    $("font#jobReqTabHead").removeClass("activeTab");
+    $("font#jobDescTabHead").addClass("activeTab");
+}
+
+function changeJobReqClass() {
+    $("font#jobReqTabHead").addClass("activeTab");
+    $("font#jobDescTabHead").removeClass("activeTab");
+}
 $(document).scroll(function(){
     if ($(this).scrollTop() > 80) {
         $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
@@ -97,12 +107,106 @@ $(document).scroll(function(){
     }
 });
 function toJobDetail(){
+    $("font#jobReqTabHead").removeClass("activeTab");
+    $("font#jobDescTabHead").addClass("activeTab");
+
     $('ul.tabs').tabs('select_tab', 'jobDetails');
     $('body').scrollTop(0);
 }
 function toJobRequirement(){
-    $('ul.tabs').tabs('select_tab', 'jobRequirement');
-    $('body').scrollTop(0);
+    var status = 1;
+
+    var vacancies = $("#jobPostVacancies").val();
+
+    var minSalary = $("#jobPostMinSalary").val();
+    var maxSalary = $("#jobPostMaxSalary").val();
+
+    var jobLocalitySelected = $("#jobPostLocality").val();
+    var jobPostWorkShift = $("#jobPostShift").val();
+
+    //work shift conversion
+    if (jobPostWorkShift != null) {
+        jobPostWorkShift = parseInt(jobPostWorkShift);
+    }
+
+    //vacancies conversion
+    if (vacancies != null && vacancies != "") {
+        vacancies = parseInt(vacancies);
+    }
+
+    // salary conversion
+    if (minSalary != null && minSalary != "") {
+        minSalary = parseInt(minSalary);
+    }
+    if (maxSalary != null && maxSalary != "") {
+        maxSalary = parseInt(maxSalary);
+    }
+
+    var preferredJobLocationList = [];
+
+    var k;
+    if(jobLocalitySelected != null){
+        for (k = 0; k < Object.keys(jobLocalitySelected).length; k++) {
+            preferredJobLocationList.push(parseInt(jobLocalitySelected[k]));
+        }
+    }
+
+    var startTime = $("#jobPostStartTime").val();
+    var endTime = $("#jobPostEndTime").val();
+
+    if($("#jobPostTitle").val() == ""){
+        notifyError("Please enter Job Post Title");
+        status = 0;
+    } else if($("#jobPostJobRole").val() == null){
+        notifyError("Please enter job role");
+        status = 0;
+    } else if(jobLocalitySelected == null){
+        notifyError("Please enter job localities");
+        status = 0;
+    } else if(vacancies == ""){
+        notifyError("Please enter no. of vacancies");
+        status = 0;
+    } else if(vacancies < 1){
+        notifyError("Please enter valid number for no. of vacancies");
+        status = 0;
+    } else if(minSalary == ""){
+        notifyError("Please mention minimum salary");
+        status = 0;
+    } else if(isValidSalary(minSalary) == false){
+        notifyError("Please enter valid minimum salary");
+        status = 0;
+    } else if(maxSalary != 0 && (isValidSalary(maxSalary) == false)){
+        notifyError("Please enter valid maximum salary");
+        status = 0;
+    } else if(maxSalary != 0 && (maxSalary <= minSalary)){
+        notifyError("Maximum salary should be greater than minimum salary");
+        status = 0;
+    } else if($("input[name='jobPostGender']:checked").val() == null || $("input[name='jobPostGender']:checked").val() == undefined){
+        notifyError("Please specify gender");
+        status = 0;
+    } else if(startTime != null){
+        if(endTime != null){
+            if(startTime >= endTime){
+                notifyError("Start time cannot be more than end time");
+                status = 0;
+            }
+        } else{
+            notifyError("Please select job end time");
+            status = 0;
+        }
+    } else if(jobPostWorkShift == null){
+        notifyError("Please specify work shift");
+        status = 0;
+    }
+
+    if(status == 1){
+        $("font#jobReqTabHead").addClass("activeTab");
+        $("font#jobDescTabHead").removeClass("activeTab");
+
+        $('ul.tabs').tabs('select_tab', 'jobRequirement');
+        $('body').scrollTop(0);
+    }
+
 }
 
 function checkRecruiterLogin() {
@@ -234,33 +338,6 @@ $(document).ready(function () {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getAllIdProof",
-            data: false,
-            async: false,
-            contentType: false,
-            processData: false,
-            success: processDataGetAllIdProof
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getAllAsset",
-            data: false,
-            async: false,
-            contentType: false,
-            processData: false,
-            success: processDataGetAllAsset
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-
 
     var i;
 
@@ -276,6 +353,18 @@ $(document).ready(function () {
         option.textContent = i + ":00 hrs";
         $('#jobPostEndTime').append(option);
     }
+
+    $('input[type=radio][name=jobPostAgeReq]').change(function() {
+        if (this.value == 1) {
+            notifySuccess("Please specify maximum age required");
+            $("#jobPostMaxAge").show();
+        } else{
+            $("#jobPostMaxAge").hide();
+        }
+    });
+
+    $('#jobPostExperience').tokenize().tokenAdd(5, "Any");
+    $('#jobPostEducation').tokenize().tokenAdd(6, "Any");
 
 });
 
@@ -400,22 +489,22 @@ function saveJob() {
 
     // checking age, location, gender
     var maxAge = $("#jobPostMaxAge").val();
+    var jobPostAgeReq = parseInt($("input[name='jobPostAgeReq']:checked").val());
     var jobPostGender = parseInt($("input[name='jobPostGender']:checked").val());
     if (status != 0 ){
-        if (!isValidAge(maxAge)) {
-            $("#jobPostMaxAge").removeClass('invalid').addClass('invalid');
-            notifyError("Please enter Job Post Max Age Requirement");
-            status = 0;
+        if(jobPostAgeReq == 1){
+            if(maxAge == ""){
+                notifyError("Please enter Job Post Max Age Requirement");
+                status = 0;
+            } else if (!isValidAge(maxAge)) {
+                $("#jobPostMaxAge").removeClass('invalid').addClass('invalid');
+                notifyError("Please enter Job Post Max Age Requirement");
+                status = 0;
+            }
         }
+
         if (jobPostGender == null || jobPostGender == -1) {
             notifyError("Please enter Job Post Gender Requirement");
-            status = 0;
-        }
-        if(jobPostAsset == null){
-            notifyError("Please enter Job Post assets required");
-            status = 0;
-        } else if(jobPostDocument == null){
-            notifyError("Please enter Job Post documents required");
             status = 0;
         }
     }
@@ -478,9 +567,15 @@ function saveJob() {
 
 function processDataAddJobPost(returnedData) {
     if(returnedData.status == 1){
-        notifySuccess("Job post successfully created!");
+        notifySuccess("Excellent! We have received your job details. You will receive a notification once the job is made live!");
+        setTimeout(function(){
+            window.location = "/recruiter/home";
+        }, 2500);
     } else if(returnedData.status == 2){
         notifySuccess("Job post successfully updated!");
+        setTimeout(function(){
+            window.location = "/recruiter/home";
+        }, 2500);
     } else{
         notifyError("Something went wrong. Please try again later!");
     }
@@ -611,11 +706,51 @@ function processDataForJobPost(returnedData) {
     }
 
 }
+function generateDocument() {
+    var jobRoleId = parseInt(($("#jobPostJobRole").val())[0]);
+    if(jobRoleId != 0){
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/support/api/getDocumentReqForJobRole/?job_role_id="+jobRoleId,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataGetIdProofs
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+}
+function generateAsset() {
+    var jobRoleId = parseInt(($("#jobPostJobRole").val())[0]);
+    if(jobRoleId != 0){
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/support/api/getAssetReqForJobRole/?job_role_id="+jobRoleId,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataGetAssets
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+}
+
 
 function validateJobRoleTokenVal(val, text) {
     if(val.localeCompare(text) == 0){
         $('#jobPostJobRole').tokenize().tokenRemove(val);
         notifyError("Please select a valid job role from the dropdown list");
+    } else{
+        generateDocument();
+        generateAsset();
     }
 }
 

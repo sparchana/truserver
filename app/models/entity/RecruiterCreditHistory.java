@@ -34,6 +34,9 @@ public class RecruiterCreditHistory extends Model {
     @Column(name = "create_timestamp", columnDefinition = "timestamp not null default current_timestamp")
     private Timestamp createTimestamp;
 
+    @Column(name = "recruiter_credits_added_by", columnDefinition = "varchar(50) not null")
+    private String recruiterCreditsAddedBy;
+
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "RecruiterProfileId", referencedColumnName = "RecruiterProfileId")
@@ -106,5 +109,13 @@ public class RecruiterCreditHistory extends Model {
 
     public void setRecruiterCreditHistoryUuid(String recruiterCreditHistoryUuid) {
         this.recruiterCreditHistoryUuid = recruiterCreditHistoryUuid;
+    }
+
+    public String getRecruiterCreditsAddedBy() {
+        return recruiterCreditsAddedBy;
+    }
+
+    public void setRecruiterCreditsAddedBy(String recruiterCreditsAddedBy) {
+        this.recruiterCreditsAddedBy = recruiterCreditsAddedBy;
     }
 }
