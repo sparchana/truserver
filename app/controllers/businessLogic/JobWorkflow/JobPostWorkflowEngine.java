@@ -393,6 +393,7 @@ public class JobPostWorkflowEngine {
     }
 
     public static WorkflowResponse saveSelectedCandidates(SelectedCandidateRequest request) {
+        String interactionResult = InteractionConstants.INTERACTION_RESULT_INTERACTION_TYPE_CANDIDATE_SELECTED_FOR_PRESCREEN;
         WorkflowResponse response = new WorkflowResponse();
         List<Candidate> selectedCandidateList = Candidate.find.where().in("candidateId", request.getSelectedCandidateIdList()).findList();
 
@@ -432,6 +433,19 @@ public class JobPostWorkflowEngine {
                 response.setMessage("Selection completed successfully.");
                 // not redirecting user to next page.
                 response.setNextView("match_view");
+
+                interactionResult += jobPostWorkflow.getJobPost().getJobPostId() + ": " + jobPostWorkflow.getJobPost().getJobRole().getJobName();
+                // chances are the scrapped data may not have proper company.
+                if(jobPostWorkflow.getJobPost().getCompany() != null) {
+                    interactionResult+="@" + jobPostWorkflow.getJobPost().getCompany().getCompanyName();
+                }
+                // save the interaction
+                InteractionService.createInteractionForPreScreenAttempts(
+                        jobPostWorkflow.getJobPostWorkflowUUId(),
+                        candidate.getCandidateUUId(),
+                        InteractionConstants.INTERACTION_TYPE_CANDIDATE_SELECTED_FOR_PRESCREEN,
+                        interactionResult
+                );
             } else {
                 Logger.error("Error! Candidate already exists in another status");
                 // TODO handle this case as error in response as well
@@ -835,12 +849,20 @@ public class JobPostWorkflowEngine {
         // support user can decide whether a candidate passed or failed pre-screen,
         // score doesn't play any role in deciding as of now.
 
+        String interactionResult = "";
+        Integer interactionType = null;
         if(preScreenRequest.isPass() != null){
             JobPostWorkflowStatus status;
             if(preScreenRequest.isPass()) {
+                // passed
                 status = JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED).findUnique();
+                interactionResult = InteractionConstants.INTERACTION_RESULT_INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_PASSED;
+                interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_PASSED;
             } else {
+                // failed
                 status = JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_PRESCREEN_FAILED).findUnique();
+                interactionResult = InteractionConstants.INTERACTION_RESULT_INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_FAILED;
+                interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_FAILED;
             }
             jobPostWorkflowNew.setStatus(status);
             jobPostWorkflowNew.update();
@@ -848,6 +870,19 @@ public class JobPostWorkflowEngine {
             // here code will come to judge candidate pre screen response solely based on score
         }
 
+        // prep interaction
+        interactionResult += jobPostWorkflowNew.getJobPost().getJobPostId() + ": " + jobPostWorkflowNew.getJobPost().getJobRole().getJobName();
+        // chances are the scrapped data may not have proper company.
+        if(jobPostWorkflowNew.getJobPost().getCompany() != null) {
+            interactionResult+="@" + jobPostWorkflowNew.getJobPost().getCompany().getCompanyName();
+        }
+        // save interaction
+        InteractionService.createInteractionForPreScreenAttempts(
+                jobPostWorkflowNew.getJobPostWorkflowUUId(),
+                jobPostWorkflowNew.getCandidate().getCandidateUUId(),
+                interactionType,
+                interactionResult
+        );
 
         // Now lets save all the individual responses for this current pre screen attempt
         for (PreScreenRequirement preScreenRequirement : preScreenRequirementList) {
