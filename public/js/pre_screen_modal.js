@@ -34,9 +34,16 @@ function saveAttempt(candidateId, jobPostId) {
 function onCallYes(candidateId, jobPostId) {
     console.log("connected: " + candidateId +" "+ jobPostId);
     $('#callNoClass').hide();
-    $('.btn.modal-submit').prop('disabled', false);
     $('#pre_screen_body').show();
     updateCallAttempts(candidateId, jobPostId, "CONNECTED");
+    activateSubmit();
+}
+
+function activateSubmit() {
+    if($('input:radio[name="verdict"]:checked').val() != null
+    && $('input:radio[name="callConnected"]:checked').val() == "yes"){
+        $('.btn.modal-submit').prop('disabled', false);
+    }
 }
 function onCallNo(candidateId, jobPostId) {
     $('#callNoClass').show();
@@ -62,24 +69,32 @@ function triggerPreScreenResponseSubmission(candidateId, jobPostId) {
             responseList.push(parseInt(ids[1]));
         }
     }
+    var status = false;
+    // we shall remove this null check for passing null to db in candidate self prescreen view
+    if($('input:radio[name="verdict"]:checked').val() != null){
+        status = true;
+    }
 
-    var d = {
-        candidateId: candidateId,
-        jobPostId: jobPostId,
-        preScreenIdList: responseList,
-        forceSet: $('input:checkbox[id="pass"]:checked').val() == 99
-    };
+    if(status){
+        var d = {
+            candidateId: candidateId,
+            jobPostId: jobPostId,
+            preScreenIdList: responseList,
+            pass: $('input:radio[name="verdict"]:checked').val() == 1,
+            preScreenNote: $('#pre_screen_note').val()
+        };
 
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/submitPreScreen",
-            contentType: "application/json; charset=utf-8",
-            data: JSON.stringify(d),
-            success: processPostPreScreenResponse
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/submitPreScreen",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: processPostPreScreenResponse
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
     }
 }
 
@@ -194,6 +209,19 @@ function processPreScreenContent(returnedData) {
 
         otherReqTableContainer.append(otherTable);
 
+        var noteContainer = document.createElement("div");
+        noteContainer.className = "form-group";
+        var textarea = document.createElement("textarea");
+        textarea.className = "form-control";
+        textarea.rows = "5";
+        textarea.type = "text";
+        textarea.id = "pre_screen_note";
+        var label = document.createElement("label");
+        label.for= "pre_screen_note";
+        label.textContent = "Note";
+        noteContainer.appendChild(label);
+        noteContainer.appendChild(textarea);
+        container.append(noteContainer);
 
         var elementList = returnedData.elementList;
         elementList.forEach(function (rowData) {
@@ -339,7 +367,7 @@ function processPreScreenContent(returnedData) {
                     className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent modal-submit",
                     callback: function () {
                         if($("#pre_screen_body input[type='checkbox']:checked").size() == 0
-                            && $('input:checkbox[id="pass"]:checked').val() != 99 ) {
+                            && $('input:radio[name="verdict"]:checked').val() == null) {
                             bootbox.alert({
                                 size: "small",
                                 title: "Invalid Submission !",
@@ -362,11 +390,14 @@ function processPreScreenContent(returnedData) {
             var forceSetContainer = $('.modal-footer');
             var forceSetDiv = $('' +
                 '<div class="col-xs-11" style="text-align: left">'+
-                '<h6 style="margin:2px; font-size: 12px;">' +
+                '<h5 style="margin:2px; font-size: 12px;">' +
                 '<div style="display:inline-block; margin: 0 1px;text-align: left; color: #b9151b">*</div>'+
-                'If you want to mark the candidate as "completed_pre_screening" irrespective of above criteria, check this option&nbsp;:&nbsp;'+
-                '<div style="display: inline-block; vertical-align: middle; margin: 0px;"><input type="checkbox" name="" id="pass" value="99"></div>'+
-                '</h6>'+
+                'Did the candidate pass pre-screen?&nbsp;:&nbsp;'+
+                '<div style="display: inline-block; vertical-align: middle; margin: 0px;">' +
+                '<input type="radio" name="verdict" id="pass" value="1" style="margin: 0 2px" onclick="activateSubmit()">Yes' +
+                '<input type="radio" name="verdict" id="fail" value="0" style="margin: 0 2px" onclick="activateSubmit()">No' +
+                '</div>'+
+                '</h5>'+
                 '</div>'
             );
             forceSetContainer.prepend(forceSetDiv);
