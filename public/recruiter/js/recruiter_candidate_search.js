@@ -669,7 +669,7 @@ function generateCandidateCards(candidateSearchResult) {
         var iconImg = document.createElement("img");
         iconImg.src = "/assets/recruiter/img/icons/locality.svg";
         iconImg.style = "margin-top: -4px";
-        iconImg.setAttribute('height', '24px');
+        iconImg.setAttribute('height', '16px');
         inlineBlockDiv.appendChild(iconImg);
 
         inlineBlockDiv = document.createElement("div");
@@ -703,7 +703,7 @@ function generateCandidateCards(candidateSearchResult) {
         iconImg = document.createElement("img");
         iconImg.src = "/assets/recruiter/img/icons/gender.svg";
         iconImg.style = "margin-top: -4px";
-        iconImg.setAttribute('height', '24px');
+        iconImg.setAttribute('height', '16px');
         inlineBlockDiv.appendChild(iconImg);
 
         inlineBlockDiv = document.createElement("div");
@@ -741,7 +741,7 @@ function generateCandidateCards(candidateSearchResult) {
         iconImg = document.createElement("img");
         iconImg.src = "/assets/recruiter/img/icons/age.svg";
         iconImg.style = "margin-top: -4px";
-        iconImg.setAttribute('height', '24px');
+        iconImg.setAttribute('height', '16px');
         inlineBlockDiv.appendChild(iconImg);
 
         inlineBlockDiv = document.createElement("div");
@@ -789,7 +789,7 @@ function generateCandidateCards(candidateSearchResult) {
         iconImg = document.createElement("img");
         iconImg.src = "/assets/recruiter/img/icons/education.svg";
         iconImg.style = "margin-top: -4px";
-        iconImg.setAttribute('height', '24px');
+        iconImg.setAttribute('height', '16px');
         inlineBlockDiv.appendChild(iconImg);
 
         inlineBlockDiv = document.createElement("div");
@@ -842,7 +842,7 @@ function generateCandidateCards(candidateSearchResult) {
         iconImg = document.createElement("img");
         iconImg.src = "/assets/recruiter/img/icons/exp.svg";
         iconImg.style = "margin-top: -4px";
-        iconImg.setAttribute('height', '24px');
+        iconImg.setAttribute('height', '16px');
         inlineBlockDiv.appendChild(iconImg);
 
         inlineBlockDiv = document.createElement("div");
@@ -889,7 +889,7 @@ function generateCandidateCards(candidateSearchResult) {
         iconImg = document.createElement("img");
         iconImg.src = "/assets/recruiter/img/icons/salary.svg";
         iconImg.style = "margin-top: -4px";
-        iconImg.setAttribute('height', '24px');
+        iconImg.setAttribute('height', '16px');
         inlineBlockDiv.appendChild(iconImg);
 
         inlineBlockDiv = document.createElement("div");
@@ -938,7 +938,7 @@ function generateCandidateCards(candidateSearchResult) {
         iconImg = document.createElement("img");
         iconImg.src = "/assets/recruiter/img/icons/language.svg";
         iconImg.style = "margin-top: -4px";
-        iconImg.setAttribute('height', '24px');
+        iconImg.setAttribute('height', '16px');
         inlineBlockDiv.appendChild(iconImg);
 
         inlineBlockDiv = document.createElement("div");
@@ -978,7 +978,7 @@ function generateCandidateCards(candidateSearchResult) {
         iconImg = document.createElement("img");
         iconImg.src = "/assets/recruiter/img/icons/skills.svg";
         iconImg.style = "margin-top: -4px";
-        iconImg.setAttribute('height', '24px');
+        iconImg.setAttribute('height', '16px');
         inlineBlockDiv.appendChild(iconImg);
 
         inlineBlockDiv = document.createElement("div");
@@ -1040,7 +1040,7 @@ function generateCandidateCards(candidateSearchResult) {
         iconImg = document.createElement("img");
         iconImg.src = "/assets/recruiter/img/icons/document.svg";
         iconImg.style = "margin-top: -4px";
-        iconImg.setAttribute('height', '24px');
+        iconImg.setAttribute('height', '16px');
         inlineBlockDiv.appendChild(iconImg);
 
         inlineBlockDiv = document.createElement("div");

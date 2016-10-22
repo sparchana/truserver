@@ -14,6 +14,7 @@ import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.OM.*;
 import models.entity.Static.*;
+import models.util.EmailUtil;
 import models.util.SmsUtil;
 import org.apache.commons.mail.EmailException;
 import play.Logger;
@@ -92,11 +93,15 @@ public class JobService {
                     //trigger SMS to recruiter
                     sendSuccessJobPostToRecruiter(existingJobPost.getRecruiterProfile(), existingJobPost);
                     //send email to recruiter
-                    try {
-                        sendSuccessJobPostEmailToRecruiter(existingJobPost.getRecruiterProfile(), existingJobPost);
-                    } catch (EmailException e) {
-                        e.printStackTrace();
-                    }
+                    //new thread
+                    JobPost finalExistingJobPost = existingJobPost;
+                    new Thread(() -> {
+                        try {
+                            sendSuccessJobPostEmailToRecruiter(finalExistingJobPost.getRecruiterProfile(), finalExistingJobPost);
+                        } catch (EmailException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
                 }
             }
 

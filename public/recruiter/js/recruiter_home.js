@@ -32,7 +32,7 @@ $(window).resize(function(){
 });
 
 $(document).scroll(function(){
-    if ($(this).scrollTop() > 80) {
+    if ($(this).scrollTop() > 40) {
         $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
     }
     else{
@@ -42,11 +42,6 @@ $(document).scroll(function(){
 
 $(document).ready(function(){
     checkRecruiterLogin();
-    $('.button-collapse').sideNav({
-        menuWidth: 240,
-        edge: 'left',
-        closeOnClick: true
-    });
     var width = $(window).width();
     if(width < 780){
         $("#editBtn").removeClass("btn-large").addClass("btn-small");

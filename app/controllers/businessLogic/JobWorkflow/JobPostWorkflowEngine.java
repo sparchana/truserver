@@ -1120,7 +1120,7 @@ public class JobPostWorkflowEngine {
         clusterLabel.put(1, ServerConstants.ACTIVE_WITHIN_24_HOURS);
         clusterLabel.put(2, ServerConstants.ACTIVE_LAST_3_DAYS);
         clusterLabel.put(3, ServerConstants.ACTIVE_LAST_7_DAYS);
-        clusterLabel.put(4, ServerConstants.ACTIVE_LAST_12_DAYS);
+        clusterLabel.put(4, ServerConstants.ACTIVE_LAST_14_DAYS);
         clusterLabel.put(5, ServerConstants.ACTIVE_LAST_1_MONTH);
         clusterLabel.put(6, ServerConstants.ACTIVE_LAST_2_MONTHS);
         clusterLabel.put(7, ServerConstants.ACTIVE_BEYOND_2_MONTHS);

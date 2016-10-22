@@ -334,7 +334,7 @@ body#recruiterHome{
 .recruiterHomeNoBackBox{
     box-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.12);
     display: block;
-    padding: 2% 0;
+    padding: 12px;
     background: #fff;
     border-radius: 4px;
 }

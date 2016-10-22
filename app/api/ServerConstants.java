@@ -225,7 +225,7 @@ public class ServerConstants {
     public static final String ACTIVE_WITHIN_24_HOURS = "Within 24 hrs";
     public static final String ACTIVE_LAST_3_DAYS = "Last 3 days";
     public static final String ACTIVE_LAST_7_DAYS = "Last 7 days";
-    public static final String ACTIVE_LAST_12_DAYS = "Last 12 days";
+    public static final String ACTIVE_LAST_14_DAYS = "Last 14 days";
     public static final String ACTIVE_LAST_1_MONTH = "Last one month";
     public static final String ACTIVE_LAST_2_MONTHS = "Last two months";
     public static final String ACTIVE_BEYOND_2_MONTHS = "Beyond two months";

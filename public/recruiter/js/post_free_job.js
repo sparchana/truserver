@@ -193,7 +193,7 @@ function toJobRequirement(){
     } else if(isValidSalary(minSalary) == false){
         notifyError("Please enter valid minimum salary");
         status = 0;
-    } else if(minSalary > 10000){
+    } else if(minSalary > 100000){
         notifyError("Please enter minimum salary less tha 99,999");
         status = 0;
     } else if(maxSalary != 0 && (isValidSalary(maxSalary) == false)){
@@ -596,12 +596,12 @@ function processDataAddJobPost(returnedData) {
     if(returnedData.status == 1){
         notifySuccess("Excellent! We have received your job details. You will receive a notification once the job is made live!");
         setTimeout(function(){
-            window.location = "/recruiter/home";
+            window.location = "/recruiter/allRecruiterJobPosts";
         }, 2500);
     } else if(returnedData.status == 2){
         notifySuccess("Job post successfully updated!");
         setTimeout(function(){
-            window.location = "/recruiter/home";
+            window.location = "/recruiter/allRecruiterJobPosts";
         }, 2500);
     } else{
         notifyError("Something went wrong. Please try again later!");
@@ -610,7 +610,6 @@ function processDataAddJobPost(returnedData) {
 
 
 function processDataForJobPost(returnedData) {
-    console.log(returnedData);
     if(returnedData != "0"){
         jpId = returnedData.jobPostId;
         if(returnedData.company != null ){
@@ -654,7 +653,6 @@ function processDataForJobPost(returnedData) {
             $('#jobPostJobRole').tokenize().tokenAdd(id, name);
         }
 
-        console.log(returnedData.jobPostToLocalityList);
         if(returnedData.jobPostToLocalityList != null){
             returnedData.jobPostToLocalityList.forEach(function (locality) {
                 var id = locality.locality.localityId;

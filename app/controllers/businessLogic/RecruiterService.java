@@ -339,7 +339,7 @@ public class RecruiterService {
             if(session().get("sessionUsername") != null){
                 recruiterCreditHistory.setRecruiterCreditsAddedBy(session().get("sessionUsername"));
             } else{
-                recruiterCreditHistory.setRecruiterCreditsAddedBy(session().get("Not specified"));
+                recruiterCreditHistory.setRecruiterCreditsAddedBy("Not specified");
             }
 
             //saving the values
@@ -400,7 +400,7 @@ public class RecruiterService {
             if(session().get("sessionUsername") != null){
                 recruiterCreditHistory.setRecruiterCreditsAddedBy(session().get("sessionUsername"));
             } else{
-                recruiterCreditHistory.setRecruiterCreditsAddedBy(session().get("Not specified"));
+                recruiterCreditHistory.setRecruiterCreditsAddedBy("Not specified");
             }
 
             //saving the values
@@ -534,7 +534,7 @@ public class RecruiterService {
         if(session().get("sessionUsername") != null){
             recruiterCreditHistory.setRecruiterCreditsAddedBy(session().get("sessionUsername"));
         } else{
-            recruiterCreditHistory.setRecruiterCreditsAddedBy(session().get("Not specified"));
+            recruiterCreditHistory.setRecruiterCreditsAddedBy("Not specified");
         }
         recruiterCreditHistory.save();
     }
