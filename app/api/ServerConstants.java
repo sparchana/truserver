@@ -64,6 +64,7 @@ public class ServerConstants {
     public static final int OBJECT_TYPE_PARTNER= 8;
     public static final int OBJECT_TYPE_ASSESSMENT_ATTEMPT= 9;
 
+    public static final int JOB_STATUS_NEW= 1;
     public static final int JOB_STATUS_ACTIVE= 2;
 
     public static final int OBJECT_TYPE_PRESCREEN_ATTEMPT= 10;

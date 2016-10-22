@@ -248,12 +248,16 @@ function saveForm() {
         case 4: alert("Please enter recruiter's name"); recruiterStatus=0; break;
     }
 
-    if(!validateInteger(recruiterLandline)){
-        notifyError("Please enter a valid landline number");
-        recruiterStatus = 0;
-    } else if(!validateInteger(recruiterPincode)){
-        notifyError("Please enter a valid pincode number");
-        recruiterStatus = 0;
+    if(recruiterLandline != ""){
+        if(!validateInteger(recruiterLandline)){
+            notifyError("Please enter a valid landline number");
+            recruiterStatus = 0;
+        }
+    } else if(recruiterPincode != ""){
+        if(!validateInteger(recruiterPincode)){
+            notifyError("Please enter a valid pincode number");
+            recruiterStatus = 0;
+        }
     } else if($("#rec_linkedin").val() != ""){
         if(!validateLinkedin($("#rec_linkedin").val())){
             notifyError("Please enter a valid linkedin profile");
@@ -282,6 +286,12 @@ function saveForm() {
     } else {
         companyStatus = 1;
         logo = $("#rec_company_old_logo").val();
+    }
+
+    var recruiterEmail = $("#rec_email").val();
+    if(!validateEmail(recruiterEmail)){
+        notifyError("Enter a valid email");
+        companyStatus = 0;
     }
 
 

@@ -22,6 +22,8 @@ public class MatchingCandidateRequest extends WorkflowRequest{
     public List<Integer> jobPostDocumentList ;
     public List<Integer> jobPostAssetList ;
     public Double distanceRadius ;
+    public Integer initialValue;
+    public Integer sortBy; //1-> latest active, 2-> High to low salary 3-> low to high salary
 
     public Integer getMaxAge() {
         return maxAge;
@@ -134,6 +136,22 @@ public class MatchingCandidateRequest extends WorkflowRequest{
 
     public void setJobPostAssetList(List<Integer> jobPostAssetList) {
         this.jobPostAssetList = jobPostAssetList;
+    }
+
+    public Integer getInitialValue() {
+        return initialValue;
+    }
+
+    public void setInitialValue(Integer initialValue) {
+        this.initialValue = initialValue;
+    }
+
+    public Integer getSortBy() {
+        return sortBy;
+    }
+
+    public void setSortBy(Integer sortBy) {
+        this.sortBy = sortBy;
     }
 }
 

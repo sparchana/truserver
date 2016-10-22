@@ -73,20 +73,43 @@
                 </div>
             </nav>
         </div>
+        <div class="row hide-on-med-and-up" id="creditViewMobile">
+            <div class="col s12 ">
+                <div class="row" style="margin: 0;">
+                    <span style="font-size: 18px; font-weight: bold">Credits Balance</span>
+                    </div>
+                <div class="row" style="margin: 0;">
+                    <div class="col s4" style="padding: 0;">
+                            <img src="/assets/recruiter/img/coin.svg" width="12px" style="margin-top: -4px">
+                            <span>Contact: <b><div style="display: inline-block" id="remainingContactCredits">0</div></b></span>
+                    </div>
+                    <div class="col s4" style="padding: 0;">
+                            <img src="/assets/recruiter/img/coin.svg" width="12px" style="margin-top: -4px">
+                            <span>Interview: <b><div style="display: inline-block" id="remainingInterviewCredits">0</div></b></span>
+                    </div>
+                    <div class="col s4 right-align" id="creditModalBtn">
+                        <a class="waves-effect waves-light orange lighten-1 btn right" data-toggle="collapse" onclick="openCreditModal()"><font size="1" style="color: #fff;font-weight: 400"><b>Buy Credits</b></font></a>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <div id="creditView">
+        <div id="creditView" class="col s12 hide-on-small-only">
             <span style="font-size: 18px; font-weight: bold">Credits Balance</span>
             <div style="margin: 4px">
                 <img src="/assets/recruiter/img/coin.svg" width="24px">
-                <span>Contact Unlock: <b><div style="display: inline-block" id="remainingContactCredits">0</div></b></span>
+                <span>Contact Unlock: <b><div style="display: inline-block" id="remainingContactCreditsMobile">0</div></b></span>
             </div>
             <div style="margin: 4px">
                 <img src="/assets/recruiter/img/coin.svg" width="24px">
-                <span>Interview Unlock: <b><div style="display: inline-block" id="remainingInterviewCredits">0</div></b></span>
+                <span>Interview Unlock: <b><div style="display: inline-block" id="remainingInterviewCreditsMobile">0</div></b></span>
             </div>
             <a class="waves-effect waves-light orange lighten-1 btn right" data-toggle="collapse" onclick="openCreditModal()"><font style="color: #fff;
                 font-weight: 400"><b>Buy Credits</b></font></a>
         </div>
+
+        <img src="/assets/recruiter/img/icons/top.svg" width="48px" id="fixedButton" style="display: none;" onclick="scrollToTop()"/>
+
         <!--Search bar start-->
         <div class="container-fluid back-banner-candidate">
             <div class="container" style="padding: 0;" id="searchBoxContainer">
@@ -137,11 +160,25 @@
             </div>
         </div>
             <!--Search bar ends-->
+        <div class="container-fluid hide-on-med-and-up" style="padding: 1%;">
+            <div class="row">
+                <div class="col s6">
+                    <div class="waves-effect waves-light btn" id="sortByMobileViewBtn" onclick="showSort()" style="padding: 0 9px; width: 100%;">Sort By</div>
+                </div>
+                <div class="col s6">
+                    <div class="waves-effect waves-light btn" id="filterMobileViewBtn" onclick="showFilter()" style="padding: 0 9px; width: 100%;">Filter</div>
+                </div>
+            </div>
+        </div>
             <!-- Details container -->
         <div class="container" style="padding: 0">
             <div class="row">
-                    <!-- Sort & Filter -->
+                <!-- Sort & Filter -->
                 <div class="col s12 l3">
+                    <div id="sortMainBox">
+                    <div class="card-content">
+                        <font size="4">Sort by</font>
+                    </div>
                     <ul class="collapsible" data-collapsible="accordion">
                         <li>
                             <div class="collapsible-header active"><i class="material-icons">repeat</i>
@@ -159,19 +196,16 @@
                                     <input name="sortBy" type="radio" value="2" id="latestActive" />
                                     <label style="font-size: 14px" for="latestActive">Last Active (Newest to oldest)</label>
                                 </div>
-                                <div>
-                                    <input name="sortBy" type="radio" value="3" id="oldestActive" />
-                                    <label style="font-size: 14px" for="oldestActive">Last Active (Oldest to Newest)</label>
-                                </div>
                             </div>
                         </li>
-
                     </ul>
+                    </div>
                     <div>
-                        <div class="card-content">
-                            <font size="4">Filters</font>
-                        </div>
-                        <div class="card-content" style="padding: 0">
+                        <div id="filterMainBox">
+                            <div class="card-content">
+                                <font size="4">Filters</font>
+                            </div>
+                            <div class="card-content" style="padding: 0">
                             <div class="row">
                                 <div class="col s12 l12">
                                     <ul class="collapsible" data-collapsible="accordion">
@@ -266,12 +300,13 @@
                                 </div>
                             </div>
                         </div>
+                        </div>
                     </div>
                 </div>
                     <!-- Candidate Details -->
                 <div class="col s12 l9">
                     <div id="candidateResultContainer"></div>
-                    <div id="searchJobPanel" style="padding: 120px 6% 0 6%">
+                    <div id="searchJobPanel">
                         <center>
                             <img src="/assets/recruiter/img/search_candidate.svg" width="96px">
                             <h5>Welcome to candidate search page.</h5>
@@ -292,6 +327,13 @@
                             <img src="/assets/recruiter/img/empty_box.svg" width="96px">
                             <h5>No Candidates found!</h5>
                             <h6>Looks like there are no candidates matching your search. Please edit search/filter options and try again</h6>
+                        </center>
+                    </div>
+                    <div id="endOfResultsDiv" style="padding: 20px 6% 0 6%; display: none">
+                        <center>
+                            <img src="/assets/recruiter/img/empty_box.svg" width="96px">
+                            <h5>That's all we have for now!</h5>
+                            <h6>Showing all the candidates according to your filter preferences</h6>
                         </center>
                     </div>
 
@@ -337,35 +379,32 @@
             <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
                 <center><font style="color: #fff"><h5>Top up now and get access to more candidates!</h5></font></center>
             </div>
-            <div style="background: #fff; padding: 24px">
+            <div id="modalBuyCreditInnerBox">
                 <center>
                     <div class="row">
                         <div class="col s6 l6">
                             <div class="packCol">
-                                <img src="/assets/recruiter/img/coin.svg" width="36px">
-                                <div style="display: block; font-size: 16px">Buy contact unlocks</div>
+                                <img src="/assets/recruiter/img/coin.svg">
+                                <div>Buy contact unlocks</div>
                                 <br>
-                                <p>Buy credits at ₹100/credit</p>
-                                <input style="width: 70%" placeholder="No. of Contact credits" id="contactCreditAmount" type="number" class="validate">
+                                <input style="width: 100%" placeholder="No. of Contact credits" id="contactCreditAmount" type="number" class="validate">
                             </div>
                         </div>
                         <div class="col s6 l6">
                             <div class="packCol">
-                                <img src="/assets/recruiter/img/coin.svg" width="36px">
-                                <div style="display: block; font-size: 16px">Buy interview unlocks</div>
+                                <img src="/assets/recruiter/img/coin.svg">
+                                <div>Buy interview unlocks</div>
                                 <br>
-                                <p>Buy credits at ₹1000/credit</p>
-                                <input style="width: 70%" placeholder="No. of Interview credits" id="interviewCreditAmount" type="number" class="validate">
+                                <input style="width: 100%" placeholder="No. of Interview credits" id="interviewCreditAmount" type="number" class="validate">
                             </div>
                         </div>
                     </div>
-                    <div style="width: 40%; font-size: 12px; padding: 0" id="requestCredits" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="submitCredits()"><font style="color: #fff;
+                    <div id="requestCredits" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="submitCredits()"><font style="color: #fff;
                         font-weight: 400"><b>Buy Credits Now!</b></font></div>
                     <div style="margin: 8px; color: #0f9d58; display: none" id="successMsg">Thanks! We have received your request to buy more credits. Our business team will contact you within 24hrs</div>
                 </center>
             </div>
         </div>
-
     </body>
     <script>
         $(window).resize(function(){

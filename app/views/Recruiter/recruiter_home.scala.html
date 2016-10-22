@@ -60,7 +60,7 @@
         <div class="back-banner"></div>
         <div style="display: flex;justify-content: center;align-items: center; margin-top: -360px">
             <div class="container recruiterHomeMainCard" >
-                <h5>Recruiter home!</h5>
+                <h5>Welcome!</h5>
                 <a href="/recruiter/profile" id="editBtn" class="btn-floating btn-large waves-effect waves-light red" style="margin-top: -22px; float: right"><i class="material-icons">mode_edit</i></a>
                 <hr>
 
@@ -85,28 +85,6 @@
                                     <div id="recEmail" style="margin-left: 4px; display: inline-block">Not Specified</div>
                                 </div>
                             </div>
-
-                            <div class="col-sm-6" style="margin-top: 4px">
-                                <div style="display : inline-block; margin: 4px;">
-                                    <img src="/assets/recruiter/img/icons/building.svg" height="24px;" style="margin-top: -4px">
-                                </div>
-                                <div style="display: inline-block; margin-top: 4px">
-                                    <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Company</div>
-                                    <div id="recCompany" style="margin-left: 4px; display: inline-block">Not Specified</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-6" >
-                                <div style="display : inline-block; margin: 4px;">
-                                    <img src="/assets/recruiter/img/icons/telephone.svg" height="24px;" style="margin-top: -4px">
-                                </div>
-                                <div style="display: inline-block; margin-top: 4px" style="margin-top: 6px">
-                                    <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Landline</div>
-                                    <div id="recLandline" style="margin: 4px; display: inline-block">Not Specified</div>
-                                </div>
-                            </div>
-
                             <div class="col-sm-6" >
                                 <div style="display : inline-block; margin: 4px;">
                                     <img src="/assets/recruiter/img/icons/linkedin-logo.svg" height="24px;" style="margin-top: -4px">
@@ -117,16 +95,75 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-sm-6" style="margin-top: 4px">
+                                <div style="display : inline-block; margin: 4px;">
+                                    <img src="/assets/recruiter/img/icons/building.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block; margin-top: 4px">
+                                    <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Company</div>
+                                    <div id="recCompany" style="margin-left: 4px; display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                            <div class="col-sm-6" >
+                                <div style="display : inline-block; margin: 4px;">
+                                    <img src="/assets/recruiter/img/icons/internet.svg" height="24px;" style="margin-top: -4px">
+                                </div>
+                                <div style="display: inline-block; margin-top: 4px" style="margin-top: 6px">
+                                    <div style="margin-left: 4px; color : #9f9f9f; font-size: 11px">Company Website</div>
+                                    <div id="recCompanyWebsite" style="margin: 4px; display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                        </div>
 
                     </div>
                 </div>
             </div>
         </div>
 
-        <div style="margin-top: -6%">
-            <div class="container recruiterHomeMainCard" >
-                <div class="row" style="text-align: center">
-                    <h5>Highlights</h5>
+        <div class="container recruiterHomeMessgeBox">
+            <div class="row" style="text-align: right;margin:0">
+                <div class="col l3" style="padding: 24px;">
+                    <img src="/assets/recruiter/img/green/card.svg" width="52px">
+                </div>
+                <div class="col l8" style="text-align: left; margin-top: 36px; display: none" id="hasCredit">
+                   <font size="4">Awesome! You have <b id="contactCreditCount">0</b> contact unlock credits! <a href="/recruiter/candidateSearch"><span id="startNoDiv"> Post your job </span></a>and start contacting candidates <a href="/recruiter/candidateSearch"><span id="startNoDiv"> now!</span></a></font>
+                </div>
+
+                <div class="col l8" style="text-align: left; margin-top: 36px; display: none" id="hasNoCredit">
+                    <font size="4">
+                        You are two clicks away from getting access to thousands of verified candidates!<span id="startNoDiv" onclick="openCreditModal()">Buy credits!</span>
+                        <br><a href="/recruiter/candidateSearch"><span id="startNoDiv"> Post your job </span></a>and start contacting candidates <a href="/recruiter/candidateSearch"><span id="startNoDiv"> now!</span></a>
+                    </font>
+                </div>
+            </div>
+        </div>
+
+        <div class="container recruiterHomeNoBackBox"style="text-align: center;margin-bottom:12px">
+            <h5>How it works</h5>
+            <center><div class="materialDash"></div></center>
+            <div class="row" style="margin-top: 2%">
+                <div class="input-field col s4 l4">
+                    <img src="/assets/recruiter/img/green/profile.svg" width="34px">
+                    <br>
+                    <center style="margin-top: 12px;"><h6>Signup and post your job for free!</h6></center>
+                </div>
+                <div class="input-field col s4 l4">
+                    <img src="/assets/recruiter/img/green/search.svg" width="34px">
+                    <br>
+                    <center style="margin-top: 12px;"><h6>Search through 25000+ verified candidate profiles</h6></center>
+                </div>
+                <div class="input-field col s4 l4">
+                    <img src="/assets/recruiter/img/green/interview.svg" width="34px">
+                    <br>
+                    <center style="margin-top: 12px;"><h6> Upgrade your plan to contact candidates and schedule interviews</h6></center>
+                </div>
+            </div>
+        </div>
+
+        <div class="container recruiterHomeHighlightCard" >
+                <div class="row" style="text-align: center;margin: 0">
+                    <h5 style="padding:1%">Highlights</h5>
                     <center><div class="materialDash"></div></center>
                     <div class="col l6 s6" style="padding: 2%;">
                         <div class="row">
@@ -153,9 +190,41 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Modal buy credit Structure -->
+        <div id="modalBuyCredits" class="modal" style="background: transparent; box-shadow: none">
+            <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeCreditModal()"></div>
+            <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
+                <center><font style="color: #fff"><h5>Top up now and get access to more candidates!</h5></font></center>
+            </div>
+            <div id="openCreditModal" style="background: #fff; padding: 12px">
+                <center>
+                    <div class="row">
+                        <div class="col s6 l6">
+                            <div class="packCol">
+                                <img src="/assets/recruiter/img/coin.svg">
+                                <div>Buy contact unlocks</div>
+                                <br>
+                                <input style="width: 100%" placeholder="No. of Contact credits" id="contactCreditAmount" type="number" class="validate">
+                            </div>
+                        </div>
+                        <div class="col s6 l6">
+                            <div class="packCol">
+                                <img src="/assets/recruiter/img/coin.svg">
+                                <div>Buy interview unlocks</div>
+                                <br>
+                                <input style="width: 100%" placeholder="No. of Interview credits" id="interviewCreditAmount" type="number" class="validate">
+                            </div>
+                        </div>
+                    </div>
+                    <div id="requestCredits" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="submitCredits()"><font style="color: #fff;
+                        font-weight: 400"><b>Buy Credits Now!</b></font></div>
+                    <div style="margin: 8px; color: #0f9d58; display: none" id="successMsg">Thanks! We have received your request to buy more credits. Our business team will contact you within 24hrs</div>
+                </center>
+            </div>
         </div>
 
-        <!--Footer start-->
+            <!--Footer start-->
         <footer class="page-footer" style="background-color: #424242;">
             <div class="container">
                 <div class="row" style="margin: 0">

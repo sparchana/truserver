@@ -2,6 +2,7 @@ package models.util;
 
 import api.ServerConstants;
 import api.http.httpRequest.Recruiter.AddCreditRequest;
+import models.entity.JobPost;
 import models.entity.Recruiter.RecruiterProfile;
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.commons.mail.DefaultAuthenticator;
@@ -97,4 +98,12 @@ public class EmailUtil {
         sendEmail(devTeamEmail.get("Avishek"), message, "Contact Unlock Credit Request");
         sendEmail(devTeamEmail.get("Sandy"), message, "Contact Unlock Credit Request");
     }
+
+    public static void sendSuccessJobPostEmailToRecruiter(RecruiterProfile recruiterProfile, JobPost jobPost) throws EmailException {
+        String message = "Hi " + recruiterProfile.getRecruiterProfileName() + "! Your job post: " + jobPost.getJobPostTitle()
+                + " has been verified and posted successfully on www.trujobs.in. Log in at www.trujobs.in/recruiter to track job applications";
+
+        sendEmail(recruiterProfile.getRecruiterProfileEmail(), message, "Trujobs.in : Job posted successfully");
+    }
+
 }

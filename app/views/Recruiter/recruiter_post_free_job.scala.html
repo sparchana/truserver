@@ -105,6 +105,10 @@
                               maxElements: 1,
                               nbDropdownElements: 1000,
                               newElements: true,
+                              onRemoveToken: function () {
+                                $("#documentSection").hide();
+                                $("#assetSection").hide();
+                              },
                               onAddToken: function (value, text) {
                                 validateJobRoleTokenVal(value, text);
                               }
@@ -295,20 +299,26 @@
                         </div>
                       </div>
                     </div>
-                    <div class="row" id="jobPostDetails">
-                      <div class="input-field col s6 l4" style="margin-top: 18px">
+                    <div class="row" id="jobPostDetails" style="margin-top: -16px">
+                      <div class="input-field col s6 l4" >
                         <label>Is there any age limitation for this job?</label>
                       </div>
-                      <div class="input-field col s6 l4">
-                          <div class="col s4 l2" style="padding: 0;">
-                              <input name="jobPostAgeReq" value="1" type="radio" id="yes">
-                              <label for="yes">Yes</label>
+                      <div class="input-field col s9 l7" style="margin-top:12px; padding: 0;">
+                        <div class="col s4 l2" style="padding: 0;">
+                          <input name="jobPostAgeReq" value="1" type="radio" id="yes">
+                          <label for="yes">Yes</label>
+                        </div>
+                        <div class="col s4 l2" style="padding: 0">
+                          <input name="jobPostAgeReq" value="0" type="radio" id="no" checked>
+                          <label for="no">No</label>
+                        </div>
 
-                              <input name="jobPostAgeReq" value="0" type="radio" id="no" checked>
-                              <label for="no">No</label>
-                          </div>
-                        <input placeholder="Max Age" id="jobPostMaxAge" style="display: none;" type="number" class="validate">
+                        <div class="input-field col s6 l4" style="margin-top: 0px;">
+                          <input placeholder="Specify max age limitation" id="jobPostMaxAge" style="display: none;" type="number" class="validate">
+                        </div>
+
                       </div>
+
                     </div>
                     <div class="row" id="jobPostDetails">
                       <div class="input-field col s6 l4" style="margin-top: 18px">
@@ -319,7 +329,7 @@
                         <script type="text/javascript">
                             $('#jobPostEducation').tokenize({
                               displayDropdownOnFocus: true,
-                              placeholder: "Select Minimum education",
+                              placeholder: "Select minimum education",
                               maxElements: 1,
                               nbDropdownElements: 1000,
                               newElements: true,
@@ -372,16 +382,17 @@
                       </div>
                     </div>
 
-                    <div class="row" id="jobPostDetails">
-                      <div class="input-field col s6 l4" style="margin-top: 18px">
-                        <label>Should the candidate own any of the following?</label>
-                      </div>
-                      <div class="input-field col s6 l4">
-                        <select id="jobPostAsset" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
-                        <script type="text/javascript">
+                    <div id="assetSection" style="display: none">
+                      <div class="row" id="jobPostDetails">
+                        <div class="input-field col s6 l4" style="margin-top: 18px">
+                          <label>Should the candidate own any of the following?</label>
+                        </div>
+                        <div class="input-field col s6 l4">
+                          <select id="jobPostAsset" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
+                          <script type="text/javascript">
                             $('#jobPostAsset').tokenize({
                               displayDropdownOnFocus: true,
-                              placeholder: "Select assets",
+                              placeholder: "Select ownership",
                               nbDropdownElements: 1000,
                               newElements: true,
                               onAddToken: function (value, text) {
@@ -389,26 +400,29 @@
                               }
                             });
                         </script>
+                        </div>
                       </div>
                     </div>
 
-                    <div class="row" id="jobPostDetails">
-                      <div class="input-field col s6 l4" style="margin-top: 18px">
-                        <label>Should the candidate have any specific document(s)?</label>
-                      </div>
-                      <div class="input-field col s6 l4">
-                        <select id="jobPostIdProof" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
-                        <script type="text/javascript">
+                    <div id="documentSection" style="display: none">
+                      <div class="row" id="jobPostDetails">
+                        <div class="input-field col s6 l4" style="margin-top: 18px">
+                          <label>Should the candidate have any specific document(s)?</label>
+                        </div>
+                        <div class="input-field col s6 l4">
+                          <select id="jobPostIdProof" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
+                          <script type="text/javascript">
                             $('#jobPostIdProof').tokenize({
                               displayDropdownOnFocus: true,
-                              placeholder: "Select Documents",
+                              placeholder: "Select documents",
                               nbDropdownElements: 1000,
                               newElements: true,
                               onAddToken: function (value, text) {
-                                  validateDocumentTokenVal(value, text);
+                                validateDocumentTokenVal(value, text);
                               }
                             });
                         </script>
+                        </div>
                       </div>
                     </div>
 
