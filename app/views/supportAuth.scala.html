@@ -10,7 +10,7 @@
             <form class="form-signin"  method="post" action="@controllers.routes.Application.auth()">
                 <h2 class="form-signin-heading">Trujobs Login</h2>
                 <label for="adminid" class="sr-only">User Name</label>
-                <input type="text" id="adminid" name="adminid" class="form-control" placeholder="User Name" required autofocus>
+                <input type="text" maxlength="10" id="adminid" name="adminid" class="form-control" placeholder="User Name" required autofocus>
                 <label for="adminpass" class="sr-only">Password</label>
                 <input type="password" name="adminpass"  class="form-control" placeholder="Password" required>
                 <div class="checkbox">

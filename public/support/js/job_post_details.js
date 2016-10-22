@@ -17,6 +17,15 @@ function getJob() {
     return jobArray;
 }
 
+function processDataCheckRecruiterCredits(returnedData) {
+    if(returnedData == '1'){
+        notifyError("The recruiter has credits for a paid job");
+    } else{
+        notifyError("This job cannot be paid job. The recruiter don't have enough credits for a paid job");
+        $("#jobPostPricingPlan").val(1);
+    }
+}
+
 function getRecruiters(selectedCompanyId) {
     try {
         $.ajax({
@@ -30,6 +39,27 @@ function getRecruiters(selectedCompanyId) {
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
+    }
+}
+
+function checkRecruiterCredits(recruiterId) {
+    if((recruiterId != null || recruiterId != "-1") && $("#jobPostPricingPlan").val() == 2){
+        notifyError("Checking if the job can be converted in a paid job or not!");
+        if(recruiterId > 0){
+            try {
+                $.ajax({
+                    type: "POST",
+                    url: "/getRecruiterCredits/" + recruiterId,
+                    data: false,
+                    async: false,
+                    contentType: false,
+                    processData: false,
+                    success: processDataCheckRecruiterCredits
+                });
+            } catch (exception) {
+                console.log("exception occured!!" + exception);
+            }
+        }
     }
 }
 
@@ -60,7 +90,7 @@ function processDataCheckJobs(returnedData) {
 function processDataCheckRecruiters(returnedData) {
     $('#jobPostRecruiter').html('');
     if (returnedData != null) {
-        var defaultOption = $('<option value=""></option>').text("Select a Recruiter");
+        var defaultOption = $('<option value="-1"></option>').text("Select a Recruiter");
         $('#jobPostRecruiter').append(defaultOption);
         returnedData.forEach(function (recruiter) {
             var id = recruiter.recruiterProfileId;
@@ -139,7 +169,111 @@ function processDataCheckJobStatus(returnedData) {
     });
 }
 
+function processDataGetAllLanguage(returnLanguage) {
+    var data = [];
+    var arr=[];
+    var english = "English";
+    returnLanguage.forEach(function (language) {
+        var opt = {
+            label: language.languageName, value: parseInt(language.languageId)
+        };
+        data.push(opt);
+        if(language.languageName.toUpperCase() === english.toUpperCase()){
+            arr.push(language.languageId);
+        }
+    });
+
+    var selectList = $('#jobPostLanguage');
+    selectList.multiselect({
+        includeSelectAllOption: true,
+        maxHeight: 300
+    });
+    selectList.multiselect('dataprovider', data);
+    selectList.val(arr);
+    selectList.multiselect('rebuild');
+}
+function processDataGetIdProofs(returnedIdProofs) {
+    var data = [];
+
+    returnedIdProofs.forEach(function (idProof) {
+        var opt = {
+            label: idProof.idProofName, value: parseInt(idProof.idProofId)
+        };
+        data.push(opt);
+    });
+
+    var selectList = $('#jobPostDocument');
+    selectList.multiselect({
+        includeSelectAllOption: true,
+        enableCaseInsensitiveFiltering: true,
+        maxHeight: 300
+    });
+    selectList.multiselect('dataprovider', data);
+    selectList.multiselect('rebuild');
+}
+
+function processDataGetAssets(returnedAssets) {
+    var data = [];
+
+    returnedAssets.forEach(function (asset) {
+        var opt = {
+            label: asset.assetTitle, value: parseInt(asset.assetId)
+        };
+        data.push(opt);
+    });
+
+    var selectList = $('#jobPostAsset');
+    selectList.multiselect({
+        includeSelectAllOption: true,
+        enableCaseInsensitiveFiltering: true,
+        maxHeight: 300
+    });
+    selectList.multiselect('dataprovider', data);
+    selectList.multiselect('rebuild');
+}
+function generateDocument() {
+    var jobRoleId = parseInt($('#jobPostJobRole').val());
+    if(jobRoleId != 0){
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/support/api/getDocumentReqForJobRole/?job_role_id="+jobRoleId,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataGetIdProofs
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+}
+function generateAsset() {
+    var jobRoleId = parseInt($('#jobPostJobRole').val());
+    if(jobRoleId != 0){
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/support/api/getAssetReqForJobRole/?job_role_id="+jobRoleId,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataGetAssets
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+}
+
 $(document).ready(function () {
+    $('#jobPostJobRole').change(function () {
+        generateDocument();
+        generateAsset();
+    });
+
     $('#jobPostRecruiter').append(defaultOption);
     var pathname = window.location.pathname; // Returns path only
     var jobPostIdUrl = pathname.split('/');
@@ -302,7 +436,61 @@ $(document).ready(function () {
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllLanguage",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetAllLanguage
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+    if(jobPostId != 0){
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/support/api/getDocumentReqForJobRole/?job_post_id="+jobPostId,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataGetIdProofs
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+        try {
+            $.ajax({
+                type: "GET",
+                url: "/support/api/getAssetReqForJobRole/?job_post_id="+jobPostId,
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataGetAssets
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
 
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllCreditCategory",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetCreditCategory
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
 
     var i;
     var defaultOption = $('<option value="-1"></option>').text("Select Job start time");
@@ -324,6 +512,13 @@ $(document).ready(function () {
     }
     
 });
+
+function processDataGetCreditCategory(returnedData) {
+    if(returnedData!=null){
+        $("#candidateContactCreditUnitPrice").val(returnedData[0].recruiterCreditUnitPrice);
+        $("#interviewCreditUnitPrice").val(returnedData[1].recruiterCreditUnitPrice);
+    }
+}
 
 function processDataGetAllTimeSlots(returnedData) {
     $('#interviewTimeSlot').html('');
@@ -352,6 +547,49 @@ function processDataForJobPost(returnedData) {
     $("#jobPostTitle").val(returnedData.jobPostTitle);
 
     $("#jobPostDescription").val(returnedData.jobPostDescription);
+
+    // gender, language, age
+    if (returnedData.jobPostMaxAge != null) {
+        $("#jobPostMaxAge").val(returnedData.jobPostMaxAge);
+    }
+    if (returnedData.gender !=null) {
+        $("#jobPostGender").val(returnedData.gender);
+    }
+    if (returnedData.jobPostLanguageRequirements != null) {
+        var arr = [];
+        var req = returnedData.jobPostLanguageRequirements;
+        req.forEach(function (languageRequirement) {
+            if(languageRequirement != null){
+                arr.push(languageRequirement.language.languageId);
+            }
+        });
+        $("#jobPostLanguage").val(arr);
+        $("#jobPostLanguage").multiselect('rebuild');
+    }
+    if (returnedData.jobPostDocumentRequirements != null) {
+        var arr = [];
+        var req = returnedData.jobPostDocumentRequirements;
+        req.forEach(function (documentRequirement) {
+            if(documentRequirement != null){
+                arr.push(documentRequirement.idProof.idProofId);
+            }
+        });
+        $("#jobPostDocument").val(arr);
+        $("#jobPostDocument").multiselect('rebuild');
+    }
+    if (returnedData.jobPostAssetRequirements != null) {
+        var arr = [];
+        var req = returnedData.jobPostAssetRequirements;
+        req.forEach(function (assetRequirement) {
+            if(assetRequirement != null){
+                arr.push(assetRequirement.asset.assetId);
+            }
+        });
+        $("#jobPostAsset").val(arr);
+        $("#jobPostAsset").multiselect('rebuild');
+    }
+
+
     $("#jobPostMinSalary").val(returnedData.jobPostMinSalary);
     $("#jobPostMaxSalary").val(returnedData.jobPostMaxSalary);
 

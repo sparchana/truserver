@@ -10,10 +10,13 @@ import api.http.httpResponse.AddJobPostResponse;
 import api.http.httpResponse.ApplyJobResponse;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Model;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.OM.*;
 import models.entity.Static.*;
+import models.util.EmailUtil;
 import models.util.SmsUtil;
+import org.apache.commons.mail.EmailException;
 import play.Logger;
 import play.api.Play;
 
@@ -22,6 +25,11 @@ import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.*;
 
+import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
+import static controllers.businessLogic.InteractionService.createInteractionForNewJobPost;
+import static models.util.EmailUtil.sendSuccessJobPostEmailToRecruiter;
+import static models.util.SmsUtil.sendRecruiterFreeJobPostingSms;
+import static models.util.SmsUtil.sendSuccessJobPostToRecruiter;
 import static play.mvc.Controller.session;
 import static play.mvc.Http.Context.current;
 
@@ -29,10 +37,19 @@ import static play.mvc.Http.Context.current;
  * Created by batcoder1 on 17/6/16.
  */
 public class JobService {
-    public static AddJobPostResponse addJobPost(AddJobPostRequest addJobPostRequest) {
+    public static AddJobPostResponse addJobPost(AddJobPostRequest addJobPostRequest, InteractionService.InteractionChannelType channelType) {
         AddJobPostResponse addJobPostResponse = new AddJobPostResponse();
         List<Integer> jobPostLocalityList = addJobPostRequest.getJobPostLocalities();
         /* checking if jobPost already exists or not */
+
+        String createdBy;
+        String objAUuid = "";
+        String objBUuid;
+        String result;
+        Integer channel;
+        Integer objAType;
+        Integer interactionType;
+
         JobPost existingJobPost = JobPost.find.where().eq("jobPostId", addJobPostRequest.getJobPostId()).findUnique();
         if(existingJobPost == null){
             Logger.info("Job post does not exists. Creating a new job Post");
@@ -41,19 +58,89 @@ public class JobService {
 
             createInterviewDetails(addJobPostRequest, newJobPost);
             newJobPost.save();
+
+            saveOrUpdatePreScreenRequirements(newJobPost);
+
             addJobPostResponse.setJobPost(newJobPost);
             addJobPostResponse.setStatus(AddJobPostResponse.STATUS_SUCCESS);
+
+            objBUuid = newJobPost.getJobPostUUId();
+
+            result = InteractionConstants.INTERACTION_RESULT_NEW_JOB_CREATED;
+            interactionType = InteractionConstants.INTERACTION_TYPE_NEW_JOB_CREATED;
+
+            if(channelType == InteractionService.InteractionChannelType.SELF){
+                RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+                if(recruiterProfile != null){
+                    sendRecruiterFreeJobPostingSms(recruiterProfile.getRecruiterProfileMobile(), recruiterProfile.getRecruiterProfileName());
+                }
+
+            }
             Logger.info("JobPost with jobId: " + newJobPost.getJobPostId() + " and job title: " + newJobPost.getJobPostTitle() + " created successfully");
         } else{
             Logger.info("Job post already exists. Updating existing job Post");
+            Integer previousStatus = 0;
+            if(existingJobPost.getJobPostStatus() != null){
+                previousStatus = existingJobPost.getJobPostStatus().getJobStatusId();
+            }
             existingJobPost = getAndSetJobPostValues(addJobPostRequest, existingJobPost, jobPostLocalityList);
+
+            //trigger sms and mail when a job post is made 'Active' from 'New'
+            if(addJobPostRequest.getJobPostStatusId() != null){
+                if(addJobPostRequest.getJobPostStatusId() == ServerConstants.JOB_STATUS_ACTIVE
+                        && previousStatus == ServerConstants.JOB_STATUS_NEW){
+                    Logger.info("Notifying recruiter about the job");
+                    //trigger SMS to recruiter
+                    sendSuccessJobPostToRecruiter(existingJobPost.getRecruiterProfile(), existingJobPost);
+                    //send email to recruiter
+                    //new thread
+                    JobPost finalExistingJobPost = existingJobPost;
+                    new Thread(() -> {
+                        try {
+                            sendSuccessJobPostEmailToRecruiter(finalExistingJobPost.getRecruiterProfile(), finalExistingJobPost);
+                        } catch (EmailException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                }
+            }
+
             resetInterviewDetails(addJobPostRequest, existingJobPost);
             createInterviewDetails(addJobPostRequest, existingJobPost);
             existingJobPost.update();
+
+            saveOrUpdatePreScreenRequirements(existingJobPost);
+
             addJobPostResponse.setJobPost(existingJobPost);
             addJobPostResponse.setStatus(AddJobPostResponse.STATUS_UPDATE_SUCCESS);
+
+            objBUuid = existingJobPost.getJobPostUUId();
+
+            result = InteractionConstants.INTERACTION_RESULT_EXISTING_JOB_POST_UPDATED;
+            interactionType = InteractionConstants.INTERACTION_TYPE_EXISTING_JOB_UPDATED;
+
             Logger.info("JobPost with jobId: " + existingJobPost.getJobPostId() + " and job title: " + existingJobPost.getJobPostTitle() + " updated successfully");
         }
+
+        if(channelType == InteractionService.InteractionChannelType.SUPPORT){
+            createdBy = session().get("sessionUsername");
+            objAUuid = ServerConstants.SUPPORT_DEFAULT_UUID;
+            objAType = ServerConstants.OBJECT_TYPE_SUPPORT;
+            channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
+        } else{
+            createdBy = InteractionConstants.INTERACTION_CREATED_SELF;
+            objAType = ServerConstants.OBJECT_TYPE_RECRUTER;
+            channel = InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE;
+
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+            if(recruiterProfile != null){
+                objAUuid = recruiterProfile.getRecruiterProfileUUId();
+            }
+        }
+
+        //creating interaction
+        createInteractionForNewJobPost(objAUuid, objBUuid, objAType, interactionType, result, createdBy, channel);
+
         if(Play.isDev(Play.current()) == false){
             addJobPostResponse.setFormUrl(ServerConstants.PROD_GOOGLE_FORM_FOR_JOB_POSTS);
         } else{
@@ -127,37 +214,389 @@ public class JobService {
         newJobPost.setJobPostPartnerInterviewIncentive(addJobPostRequest.getPartnerInterviewIncentive());
         newJobPost.setJobPostPartnerJoiningIncentive(addJobPostRequest.getPartnerJoiningIncentive());
 
+        newJobPost.setJobPostToLocalityList(getJobPostLocality(jobPostLocalityList, newJobPost));
+
+        newJobPost.setGender(addJobPostRequest.getJobPostGender());
+        newJobPost.setJobPostLanguageRequirements(getJobPostLanguageRequirement(addJobPostRequest.getJobPostLanguage(), newJobPost));
+        newJobPost.setJobPostAssetRequirements(getJobPostAssetRequirement(addJobPostRequest.getJobPostAsset(), newJobPost));
+        newJobPost.setJobPostDocumentRequirements(getJobPostDocumentRequirement(addJobPostRequest.getJobPostDocument(), newJobPost));
+
+        newJobPost.setJobPostMaxAge(addJobPostRequest.getJobPostMaxAge());
+
         if (addJobPostRequest.getJobPostWorkingDays() != null) {
             Byte workingDayByte = Byte.parseByte(addJobPostRequest.getJobPostWorkingDays(), 2);
             newJobPost.setJobPostWorkingDays(workingDayByte);
         }
-        newJobPost.setJobPostToLocalityList(getJobPostLocality(jobPostLocalityList, newJobPost));
 
-        PricingPlanType pricingPlanType = PricingPlanType.find.where().eq("pricingPlanTypeId", addJobPostRequest.getJobPostPricingPlanId()).findUnique();
-        newJobPost.setPricingPlanType(pricingPlanType);
+        if (addJobPostRequest.getJobPostPricingPlanId() != null) {
+            PricingPlanType pricingPlanType = PricingPlanType.find.where().eq("pricingPlanTypeId", addJobPostRequest.getJobPostPricingPlanId()).findUnique();
+            newJobPost.setPricingPlanType(pricingPlanType);
+        }
 
-        JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", addJobPostRequest.getJobPostStatusId()).findUnique();
-        newJobPost.setJobPostStatus(jobStatus);
+        if (addJobPostRequest.getJobPostStatusId() != null) {
+            JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", addJobPostRequest.getJobPostStatusId()).findUnique();
+            newJobPost.setJobPostStatus(jobStatus);
+        } else{
+            JobStatus jobStatus = JobStatus.find.where().eq("jobStatusId", ServerConstants.JOB_STATUS_ACTIVE).findUnique();
+            newJobPost.setJobPostStatus(jobStatus);
+        }
 
-        JobRole jobRole = JobRole.find.where().eq("jobRoleId", addJobPostRequest.getJobPostJobRoleId()).findUnique();
-        newJobPost.setJobRole(jobRole);
+        if (addJobPostRequest.getJobPostJobRoleId() != null) {
+            JobRole jobRole = JobRole.find.where().eq("jobRoleId", addJobPostRequest.getJobPostJobRoleId()).findUnique();
+            newJobPost.setJobRole(jobRole);
+        }
 
-        Company company = Company.find.where().eq("companyId", addJobPostRequest.getJobPostCompanyId()).findUnique();
-        newJobPost.setCompany(company);
+        if (addJobPostRequest.getJobPostCompanyId() != null) {
+            Company company = Company.find.where().eq("companyId", addJobPostRequest.getJobPostCompanyId()).findUnique();
+            newJobPost.setCompany(company);
+        }
 
-        TimeShift timeShift = TimeShift.find.where().eq("timeShiftId", addJobPostRequest.getJobPostShiftId()).findUnique();
-        newJobPost.setJobPostShift(timeShift);
+        if (addJobPostRequest.getJobPostShiftId() != null) {
+            TimeShift timeShift = TimeShift.find.where().eq("timeShiftId", addJobPostRequest.getJobPostShiftId()).findUnique();
+            newJobPost.setJobPostShift(timeShift);
+        }
 
-        Experience experience = Experience.find.where().eq("experienceId", addJobPostRequest.getJobPostExperienceId()).findUnique();
-        newJobPost.setJobPostExperience(experience);
+        if (addJobPostRequest.getJobPostExperienceId() != null) {
+            Experience experience = Experience.find.where().eq("experienceId", addJobPostRequest.getJobPostExperienceId()).findUnique();
+            newJobPost.setJobPostExperience(experience);
+        }
 
-        Education education = Education.find.where().eq("educationId", addJobPostRequest.getJobPostEducationId()).findUnique();
-        newJobPost.setJobPostEducation(education);
-
-        RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", addJobPostRequest.getJobPostRecruiterId()).findUnique();
-        newJobPost.setRecruiterProfile(recruiterProfile);
+        if (addJobPostRequest.getJobPostEducationId() != null) {
+            Education education = Education.find.where().eq("educationId", addJobPostRequest.getJobPostEducationId()).findUnique();
+            newJobPost.setJobPostEducation(education);
+        }
+        if (addJobPostRequest.getJobPostRecruiterId() != null) {
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", addJobPostRequest.getJobPostRecruiterId()).findUnique();
+            newJobPost.setRecruiterProfile(recruiterProfile);
+        }
 
         return newJobPost;
+    }
+
+    private static void saveOrUpdatePreScreenRequirements(JobPost jobPost) {
+        if (jobPost == null) {
+            return;
+        }
+
+        // TODO find a simpler approach *****
+
+        Integer jobPostMaxAge = jobPost.getJobPostMaxAge();
+        Experience jobPostExperience = jobPost.getJobPostExperience();
+        Education jobPostEducation = jobPost.getJobPostEducation();
+        List<JobPostLanguageRequirement> jobPostLanguageRequirementList = jobPost.getJobPostLanguageRequirements();
+        List<JobPostDocumentRequirement> jobPostDocumentRequirementList = jobPost.getJobPostDocumentRequirements();
+        List<JobPostAssetRequirement> jobPostAssetRequirementList = jobPost.getJobPostAssetRequirements();
+
+        List<PreScreenRequirement> preScreenRequirementList = PreScreenRequirement.find.where().eq("jobPost.jobPostId", jobPost.getJobPostId()).findList();
+        Map<?, ProfileRequirement> profileRequirementMap = ProfileRequirement.find.where().setMapKey("profileRequirementTitle").findMap();
+
+        Map<String, PreScreenRequirement> singleEntityMap= new HashMap<>();
+        Map<Integer, Map<Integer, PreScreenRequirement>> multiEntityMap = new HashMap<>();
+
+        if(preScreenRequirementList.size() > 0 ) {
+            for (PreScreenRequirement ps: preScreenRequirementList) {
+                if( ps.getCategory() != ServerConstants.CATEGORY_PROFILE) {
+                    // categories like docs, lang, asset will come here
+                    Map<Integer, PreScreenRequirement> psMap = multiEntityMap.get(ps.getCategory());
+                    if(psMap == null) {
+                        psMap = new HashMap<>();
+                    }
+                    if(ps.getCategory() == ServerConstants.CATEGORY_DOCUMENT) {
+                        psMap.put(ps.getIdProof().getIdProofId(), ps);
+                    } else if (ps.getCategory() == ServerConstants.CATEGORY_LANGUAGE) {
+                        psMap.put(ps.getLanguage().getLanguageId(), ps);
+                    } else if (ps.getCategory() == ServerConstants.CATEGORY_ASSET) {
+                        psMap.put(ps.getAsset().getAssetId(), ps);
+                    }
+                    multiEntityMap.put(ps.getCategory(), psMap);
+                } else {
+                    // categories with single entry per jobPost will accumulate here
+                    singleEntityMap.put(ps.getProfileRequirement().getProfileRequirementTitle(), ps);
+                }
+            }
+        }
+
+        if(jobPostMaxAge != null) {
+            PreScreenRequirement preScreenRequirementAge = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_AGE);
+            if (preScreenRequirementAge == null) {
+                preScreenRequirementAge = new PreScreenRequirement();
+                preScreenRequirementAge.setCategory(ServerConstants.CATEGORY_PROFILE);
+                preScreenRequirementAge.setJobPost(jobPost);
+            }
+            preScreenRequirementAge.setProfileRequirement(profileRequirementMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_AGE));
+            preScreenRequirementAge.save();
+        } else {
+            PreScreenRequirement preScreenRequirementAge = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_AGE);
+            if(preScreenRequirementAge != null) {
+                deletePreScreenResponses(preScreenRequirementAge);
+                preScreenRequirementAge.delete();
+            }
+        }
+
+        if (jobPostExperience != null) {
+            PreScreenRequirement preScreenRequirementExp =  singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_EXPERIENCE);
+            if (preScreenRequirementExp == null) {
+                preScreenRequirementExp = new PreScreenRequirement();
+                preScreenRequirementExp.setCategory(ServerConstants.CATEGORY_PROFILE);
+                preScreenRequirementExp.setJobPost(jobPost);
+            }
+            preScreenRequirementExp.setProfileRequirement(profileRequirementMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_EXPERIENCE));
+            preScreenRequirementExp.save();
+        } else {
+            PreScreenRequirement preScreenRequirementExp =  singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_EXPERIENCE);
+            if(preScreenRequirementExp != null){
+                deletePreScreenResponses(preScreenRequirementExp);
+                preScreenRequirementExp.delete();
+            }
+        }
+        if (jobPostEducation != null) {
+            PreScreenRequirement preScreenRequirementEdu = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_EDUCATION);
+            if (preScreenRequirementEdu == null) {
+                preScreenRequirementEdu = new PreScreenRequirement();
+                preScreenRequirementEdu.setCategory(ServerConstants.CATEGORY_PROFILE);
+                preScreenRequirementEdu.setJobPost(jobPost);
+            }
+            preScreenRequirementEdu.setProfileRequirement(profileRequirementMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_EDUCATION));
+            preScreenRequirementEdu.save();
+        } else {
+            PreScreenRequirement preScreenRequirementEdu = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_EDUCATION);
+            if(preScreenRequirementEdu != null){
+                deletePreScreenResponses(preScreenRequirementEdu);
+                preScreenRequirementEdu.delete();
+            }
+        }
+
+        if(jobPostLanguageRequirementList != null && jobPostLanguageRequirementList.size() > 0) {
+            Map<Integer, PreScreenRequirement> map = multiEntityMap.get(ServerConstants.CATEGORY_LANGUAGE);
+            List<Integer> idList = new ArrayList<>();
+            for (JobPostLanguageRequirement languageRequirement: jobPostLanguageRequirementList) {
+                idList.add(languageRequirement.getLanguage().getLanguageId());
+
+                PreScreenRequirement preScreenRequirementLanguage = null;
+                if(map != null) {
+                    preScreenRequirementLanguage = map.get(languageRequirement.getLanguage().getLanguageId());
+                }
+                if(preScreenRequirementLanguage == null) {
+                    preScreenRequirementLanguage = new PreScreenRequirement();
+                    preScreenRequirementLanguage.setJobPost(jobPost);
+                    preScreenRequirementLanguage.setCategory(ServerConstants.CATEGORY_LANGUAGE);
+                }
+                preScreenRequirementLanguage.setLanguage(languageRequirement.getLanguage());
+                preScreenRequirementLanguage.save();
+            }
+            if (map != null) {
+                // TODO Simplify this method
+                for (Map.Entry<Integer, PreScreenRequirement> entry : map.entrySet()) {
+                    if (!idList.contains(entry.getValue().getLanguage().getLanguageId())) {
+                        deletePreScreenResponses(entry.getValue());
+                        entry.getValue().delete();
+                    }
+                }
+            }
+        } else {
+            Map<Integer, PreScreenRequirement> map = multiEntityMap.get(ServerConstants.CATEGORY_LANGUAGE);
+            if(map != null) {
+                for (Map.Entry<Integer, PreScreenRequirement> entry : map.entrySet()) {
+                    deletePreScreenResponses(entry.getValue());
+                    entry.getValue().delete();
+                }
+            }
+        }
+
+        if(jobPostDocumentRequirementList != null && jobPostDocumentRequirementList.size() > 0) {
+            Map<Integer, PreScreenRequirement> map = multiEntityMap.get(ServerConstants.CATEGORY_DOCUMENT);
+            List<Integer> idList = new ArrayList<>();
+            for ( JobPostDocumentRequirement jobPostDocumentRequirement: jobPostDocumentRequirementList) {
+                PreScreenRequirement preScreenRequirementDocument = null;
+                idList.add(jobPostDocumentRequirement.getIdProof().getIdProofId());
+                if(map != null) {
+                    preScreenRequirementDocument = map.get(jobPostDocumentRequirement.getIdProof().getIdProofId());
+                }
+                if(preScreenRequirementDocument == null) {
+                    preScreenRequirementDocument = new PreScreenRequirement();
+                    preScreenRequirementDocument.setCategory(ServerConstants.CATEGORY_DOCUMENT);
+                    preScreenRequirementDocument.setJobPost(jobPost);
+                }
+                preScreenRequirementDocument.setIdProof(jobPostDocumentRequirement.getIdProof());
+                preScreenRequirementDocument.save();
+            }
+            if (map != null) {
+                // TODO Simplify this method
+                for (Map.Entry<Integer, PreScreenRequirement> entry : map.entrySet()) {
+                    if (!idList.contains(entry.getValue().getIdProof().getIdProofId())) {
+                        deletePreScreenResponses(entry.getValue());
+                        entry.getValue().delete();
+                    }
+                }
+            }
+        } else {
+            Map<Integer, PreScreenRequirement> map = multiEntityMap.get(ServerConstants.CATEGORY_DOCUMENT);
+            if(map != null) {
+                for (Map.Entry<Integer, PreScreenRequirement> entry : map.entrySet()) {
+                    deletePreScreenResponses(entry.getValue());
+                    entry.getValue().delete();
+                }
+            }
+        }
+
+        if (jobPostAssetRequirementList != null && jobPostAssetRequirementList.size() > 0) {
+            Map<Integer, PreScreenRequirement> map = multiEntityMap.get(ServerConstants.CATEGORY_ASSET);
+            List<Integer> idList = new ArrayList<>();
+            for ( JobPostAssetRequirement jobPostAssetRequirement: jobPostAssetRequirementList) {
+                PreScreenRequirement preScreenRequirementAsset = null;
+                idList.add(jobPostAssetRequirement.getAsset().getAssetId());
+                if (map != null) {
+                    preScreenRequirementAsset = map.get(jobPostAssetRequirement.getAsset().getAssetId());
+                }
+                if (preScreenRequirementAsset == null) {
+                    preScreenRequirementAsset = new PreScreenRequirement();
+                    preScreenRequirementAsset.setCategory(ServerConstants.CATEGORY_ASSET);
+                    preScreenRequirementAsset.setJobPost(jobPost);
+                }
+                preScreenRequirementAsset.setAsset(jobPostAssetRequirement.getAsset());
+                preScreenRequirementAsset.save();
+            }
+            if (map != null) {
+                // TODO Simplify this method
+                for (Map.Entry<Integer, PreScreenRequirement> entry : map.entrySet()) {
+                    if (!idList.contains(entry.getValue().getAsset().getAssetId())) {
+                        deletePreScreenResponses(entry.getValue());
+                        entry.getValue().delete();
+                    }
+                }
+            }
+        } else {
+            Map<Integer, PreScreenRequirement> map = multiEntityMap.get(ServerConstants.CATEGORY_ASSET);
+            if(map != null) {
+                for (Map.Entry<Integer, PreScreenRequirement> entry : map.entrySet()) {
+                    deletePreScreenResponses(entry.getValue());
+                    entry.getValue().delete();
+                }
+            }
+        }
+
+        // common entities
+        if ( jobPost.getJobPostMinSalary() != null) {
+            PreScreenRequirement preScreenRequirementSalary = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_SALARY);
+            if (preScreenRequirementSalary == null) {
+                preScreenRequirementSalary = new PreScreenRequirement();
+                preScreenRequirementSalary.setCategory(ServerConstants.CATEGORY_PROFILE);
+                preScreenRequirementSalary.setJobPost(jobPost);
+            }
+            preScreenRequirementSalary.setProfileRequirement(profileRequirementMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_SALARY));
+            preScreenRequirementSalary.save();
+        } else {
+            PreScreenRequirement preScreenRequirementSalary = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_SALARY);
+            if(preScreenRequirementSalary != null) {
+                deletePreScreenResponses(preScreenRequirementSalary);
+                preScreenRequirementSalary.delete();
+            }
+        }
+
+        if ( jobPost.getGender() != null) {
+            PreScreenRequirement preScreenRequirementGender = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_GENDER);
+            if (preScreenRequirementGender == null) {
+                preScreenRequirementGender = new PreScreenRequirement();
+                preScreenRequirementGender.setCategory(ServerConstants.CATEGORY_PROFILE);
+                preScreenRequirementGender.setJobPost(jobPost);
+            }
+            preScreenRequirementGender.setProfileRequirement(profileRequirementMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_GENDER));
+            preScreenRequirementGender.save();
+        } else {
+            PreScreenRequirement preScreenRequirementGender = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_GENDER);
+            if(preScreenRequirementGender != null) {
+                deletePreScreenResponses(preScreenRequirementGender);
+                preScreenRequirementGender.delete();
+            }
+        }
+
+        if ( jobPost.getJobPostToLocalityList() != null && jobPost.getJobPostToLocalityList().size()>0) {
+            PreScreenRequirement preScreenRequirementLocation = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_LOCATION);
+            if (preScreenRequirementLocation == null) {
+                preScreenRequirementLocation = new PreScreenRequirement();
+                preScreenRequirementLocation.setCategory(ServerConstants.CATEGORY_PROFILE);
+                preScreenRequirementLocation.setJobPost(jobPost);
+            }
+            preScreenRequirementLocation.setProfileRequirement(profileRequirementMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_LOCATION));
+            preScreenRequirementLocation.save();
+        } else {
+            PreScreenRequirement preScreenRequirementLocation = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_LOCATION);
+            if(preScreenRequirementLocation != null){
+                deletePreScreenResponses(preScreenRequirementLocation);
+                preScreenRequirementLocation.delete();
+            }
+        }
+
+        if (jobPost.getJobPostShift() != null) {
+            PreScreenRequirement preScreenRequirementWorkTimings = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_WORKTIMINGS);
+            if (preScreenRequirementWorkTimings == null) {
+                preScreenRequirementWorkTimings = new PreScreenRequirement();
+                preScreenRequirementWorkTimings.setCategory(ServerConstants.CATEGORY_PROFILE);
+                preScreenRequirementWorkTimings.setJobPost(jobPost);
+            }
+            preScreenRequirementWorkTimings.setProfileRequirement(profileRequirementMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_WORKTIMINGS));
+            preScreenRequirementWorkTimings.save();
+        } else {
+            PreScreenRequirement preScreenRequirementWorkTimings = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_WORKTIMINGS);
+            if(preScreenRequirementWorkTimings != null){
+                deletePreScreenResponses(preScreenRequirementWorkTimings);
+                preScreenRequirementWorkTimings.delete();
+            }
+        }
+    }
+
+    private static void deletePreScreenResponses(PreScreenRequirement preScreenRequirement) {
+        List<PreScreenResponse> responseList = PreScreenResponse.find.where().eq("preScreenRequirement.preScreenRequirementId", preScreenRequirement.getPreScreenRequirementId()).findList();
+        if(responseList.size() > 0){
+            for(PreScreenResponse response : responseList ){
+                response.delete();
+            }
+        }
+    }
+
+    private static List<JobPostLanguageRequirement> getJobPostLanguageRequirement(List<Long> jobPostLanguageList, JobPost newJobPost) {
+
+        List<JobPostLanguageRequirement> languageRequirementList = new ArrayList<>();
+        List<Language> languageList = Language.find.where().in("LanguageId", jobPostLanguageList).findList();
+        for(Language language: languageList){
+            JobPostLanguageRequirement jobPostLanguageRequirement = new JobPostLanguageRequirement();
+            jobPostLanguageRequirement.setLanguage(language);
+            jobPostLanguageRequirement.setJobPost(newJobPost);
+            languageRequirementList.add(jobPostLanguageRequirement);
+        }
+        return languageRequirementList;
+    }
+
+    private static List<JobPostDocumentRequirement> getJobPostDocumentRequirement(List<Long> jobPostDocumentList, JobPost newJobPost) {
+
+        List<JobPostDocumentRequirement> jobPostDocumentRequirementList = new ArrayList<>();
+        if(jobPostDocumentList == null || jobPostDocumentList.size() == 0) {
+            return jobPostDocumentRequirementList;
+        }
+        List<IdProof> idProofList = IdProof.find.where().in("IdProofId", jobPostDocumentList).findList();
+        for(IdProof idProof: idProofList){
+            JobPostDocumentRequirement jobPostDocumentRequirement = new JobPostDocumentRequirement();
+            jobPostDocumentRequirement.setIdProof(idProof);
+            jobPostDocumentRequirement.setJobPost(newJobPost);
+            jobPostDocumentRequirementList.add(jobPostDocumentRequirement);
+        }
+        return jobPostDocumentRequirementList;
+    }
+
+    private static List<JobPostAssetRequirement> getJobPostAssetRequirement(List<Long> jobPostAssetList, JobPost newJobPost) {
+
+        List<JobPostAssetRequirement> jobPostAssetRequirementList = new ArrayList<>();
+        if(jobPostAssetList == null || jobPostAssetList.size() == 0) {
+            return jobPostAssetRequirementList;
+        }
+        List<Asset> assetList = Asset.find.where().in("asset_id", jobPostAssetList).findList();
+        for(Asset asset: assetList){
+            JobPostAssetRequirement jobPostAssetRequirement = new JobPostAssetRequirement();
+            jobPostAssetRequirement.setAsset(asset);
+            jobPostAssetRequirement.setJobPost(newJobPost);
+            jobPostAssetRequirementList.add(jobPostAssetRequirement);
+        }
+        return jobPostAssetRequirementList;
     }
 
     public static ApplyJobResponse applyJob(ApplyJobRequest applyJobRequest,
@@ -235,9 +674,32 @@ public class JobService {
                     Logger.info("candidate: " + existingCandidate.getCandidateFirstName() + " with mobile: " + existingCandidate.getCandidateMobile() + " applied to the jobPost of JobPostId:" + existingJobPost.getJobPostId());
 
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_SUCCESS);
+
                 } else{
                     applyJobResponse.setStatus(ApplyJobResponse.STATUS_EXISTS);
                     Logger.info("candidate: " + existingCandidate.getCandidateFirstName() + " with mobile: " + existingCandidate.getCandidateMobile() + " already applied to jobPost with jobId:" + existingJobPost.getJobPostId());
+                }
+
+                // also create entry in jobPostWorkflow table
+                JobPostWorkflow jobPostWorkflow = JobPostWorkflow.find
+                        .where()
+                        .eq("candidate_id", existingCandidate.getCandidateId())
+                        .eq("job_post_id", existingJobPost.getJobPostId()).setMaxRows(1).findUnique();
+
+                if (jobPostWorkflow == null) {
+                    jobPostWorkflow = new JobPostWorkflow();
+                    jobPostWorkflow.setCandidate(existingCandidate);
+                    jobPostWorkflow.setJobPost(existingJobPost);
+                    jobPostWorkflow.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_SELECTED).findUnique());
+
+                    if(channelType == InteractionService.InteractionChannelType.SELF ||
+                            channelType == InteractionService.InteractionChannelType.SELF_ANDROID ){
+                        jobPostWorkflow.setCreatedBy(channelType.toString());
+                    } else {
+                        // partner, support, recruiter
+                        jobPostWorkflow.setCreatedBy(session().get("sessionUsername"));
+                    }
+                    jobPostWorkflow.save();
                 }
             }
         } else{

@@ -1,0 +1,327 @@
+body{
+    font-family:Lato;
+}
+nav{
+    background: transparent;
+    box-shadow: 0 0 0 0;
+    transition: 0.2s;
+}
+.navbar-fixed{
+    position: absolute;
+    z-index:9999;
+    box-shadow: none;
+}
+.customParallaxContainer{
+    width: 120%;
+    position: absolute;
+}
+::-webkit-input-placeholder {
+    color: #8e8e8e;
+    font-size: 14px;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+    color: #8e8e8e;
+    font-size: 14px;
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+    color: #8e8e8e;
+    font-size: 14px;
+}
+
+:-ms-input-placeholder {
+    color: #8e8e8e;
+    font-size: 14px;
+}
+
+.select-wrapper input.select-dropdown{
+    color: #b1b1b1;
+}
+::-webkit-scrollbar
+{
+    width: 6px;  /* for vertical scrollbars */
+    height: 6px; /* for horizontal scrollbars */
+}
+
+::-webkit-scrollbar-track
+{
+    background: rgba(255, 255, 255, 1);
+}
+
+::-webkit-scrollbar-thumb
+{
+    background: rgb(84, 85, 99);
+}
+nav{
+    background: transparent;
+    box-shadow: 0 0 0 0;
+    transition: 0.2s;
+}
+.navbar-fixed{
+    position: absolute;
+    z-index:9999;
+    box-shadow: none;
+}
+body{
+    background-color: rgba(241, 241, 241, 0.96)
+}
+.navbar-fixed{
+    position: relative;
+    z-index: 9999;
+}
+#searchbar{
+    background: #b4acac;
+}
+[type="radio"]:not(:checked) + label, [type="radio"]:checked + label{
+    font-size: 16px;
+    font-weight: 200;
+    color:#000000;
+}
+#filterDetail{
+    padding: 0;
+}
+#search{
+    padding:0 4%;
+    margin-left: 0;
+}
+#searchBox > input[type=text] {
+    margin: 0;
+    padding-left: 2%;
+}
+.back-banner-candidate{
+    margin-top: -5%;
+    background: #348F50; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to left, #348F50 , #56B4D3); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to left, #348F50 , #56B4D3); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background-repeat: no-repeat;
+    margin-bottom: 1%;
+}
+#searchBoxContainer{
+    margin-top: 5%;
+}
+
+.contactUnlocked{
+    padding: 12px;
+    border-radius: 4px;
+    border: 2px solid #2ec866;
+    color: #2ec866;
+    margin: 8px;
+}
+
+#creditView{
+    z-index: 9999;
+    color: white;
+    position: fixed;
+    border-radius: 4px;
+    background: rgba(41, 36, 37, 0.85);
+    padding: 16px;
+    bottom: 24px;
+    right: 24px;
+}
+
+/* job loading spinner */
+
+#loadingSpinner {
+    box-sizing: border-box;
+    stroke: #2ec866;
+    stroke-width: 3px;
+    -webkit-transform-origin: 50%;
+    transform-origin: 50%;
+    -webkit-animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
+    animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
+}
+
+.packCol{
+    border-radius: 8px;
+    border: 1px dashed #dbdace;
+    padding: 16px;
+}
+
+@media screen and (max-width: 720px) {
+    .back-banner-candidate {
+        margin-top: -16%;
+        padding-top: 7%;
+    }
+}
+@-webkit-keyframes rotate {
+    from {
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+    to {
+        -webkit-transform: rotate(450deg);
+        transform: rotate(450deg);
+    }
+}
+
+@keyframes rotate {
+    from {
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+    to {
+        -webkit-transform: rotate(450deg);
+        transform: rotate(450deg);
+    }
+}
+
+@-webkit-keyframes line {
+    0% {
+        stroke-dasharray: 2, 85.964;
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+    50% {
+        stroke-dasharray: 65.973, 21.9911;
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dasharray: 2, 85.964;
+        stroke-dashoffset: -65.973;
+        -webkit-transform: rotate(90deg);
+        transform: rotate(90deg);
+    }
+}
+
+@keyframes line {
+    0% {
+        stroke-dasharray: 2, 85.964;
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+    }
+    50% {
+        stroke-dasharray: 65.973, 21.9911;
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dasharray: 2, 85.964;
+        stroke-dashoffset: -65.973;
+        -webkit-transform: rotate(90deg);
+        transform: rotate(90deg);
+    }
+}
+#modalBuyCreditInnerBox{
+    background: #fff;
+    padding: 24px;
+}
+.packCol  img{
+    width: 36px;
+}
+#creditModalBtn .btn{
+    height: 25px;
+    line-height: 8px;
+    padding: 8px;
+    margin-top:-5px;
+
+}
+#requestCredits{
+    width: 40%;
+    font-size: 12px;
+    padding: 0;
+}
+.packCol  div{
+    text-align: center;
+    display: block;
+    font-size: 16px;
+    width: 100%;
+}
+.packCol  p{
+    text-align: center;
+    display: block;
+    font-size: 14px;
+}
+#searchJobPanel{
+    padding: 120px 6% 0 6%;
+}
+#sortByMobileViewBtn{
+    color: #000;
+    background-color: #fff;
+    width: 100%;
+}
+#filterMobileViewBtn{
+    color: #000;
+    background-color: #fff;
+    width: 100%;
+}
+#sortMainBox{
+    display: block;
+}
+#filterMainBox{
+    display: block;
+}
+
+#fixedButton {
+    z-index: 999;
+    margin: 24px;
+    border-radius: 50%;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    cursor: pointer;
+}
+
+@media screen and (max-width: 600px){
+    #fixedButton {
+        z-index: 999;
+        margin: 24px 24px 72px 24px;
+        border-radius: 50%;
+        position: fixed;
+        bottom: 0px;
+        left: 0px;
+    }
+
+    #creditViewMobile{
+        width: 100%;
+        z-index: 9999;
+        color: white;
+        position: fixed;
+        border-radius: 0;
+        background: rgba(41, 36, 37, 0.85);
+        padding: 5px 5px 10px 5px;
+        bottom:0;
+        margin: 0;
+    }
+    #modalBuyCredits{
+        margin-top: 10px;
+    }
+    #creditModalBtn .btn{
+        height: 25px;
+        line-height: 8px;
+        padding: 8px;
+        margin-top:-5px;
+
+    }
+    #requestCredits{
+        width: 100%;
+        font-size: 12px;
+        padding: 0;
+    }
+    #modalBuyCreditInnerBox{
+        background: #fff;
+        padding:5px;
+    }
+    .packCol img{
+        width: 15px;
+    }
+    .packCol  p{
+        text-align: center;
+        display: block;
+        font-size: 10px;
+    }
+    .packCol  div{
+        display: block;
+        font-size: 12px;
+        width: 100%;
+    }
+    #sortMainBox{
+        display: none;
+    }
+    #filterMainBox{
+        display: none;
+    }
+    #searchJobPanel{
+        padding: 2% 6% 0 6%;
+    }
+
+}

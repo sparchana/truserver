@@ -17,6 +17,12 @@ function validateMobile(mobile) {
     }
 }
 
+function toTitleCase(str) {
+    return str.replace(/\w\S*/g, function(txt){
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+}
+
 function rupeeFormatSalary(sal){
     if(sal != null){
         sal = sal.toString();
@@ -73,6 +79,20 @@ function validateEmail(email) {
     return re.test(email);
 }
 
+function validateInteger(val) {
+    var reg = /^\d+$/;
+    return reg.test(val);
+}
+
+function validateWebsiteLink(url) {
+    var re = /[a-z0-9-\.]+\.[a-z]{2,4}\/?([^\s<>\#%"\,\{\}\\|\\\^\[\]`]+)?$/;
+    return re.test(url);
+}
+
+function validateLinkedin(url) {
+    return /(ftp|http|https):\/\/?(?:www\.)?linkedin.com(\w+:{0,1}\w*@)?(\S+)(:([0-9])+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/.test(url);
+}
+
 function validateOtp(otp) {
     if(otp == undefined){
         return 0;
@@ -91,4 +111,7 @@ function validateOtp(otp) {
 
 function isValidSalary(salary){
     return !/[~`!#$%\^&*.+=\-\[\]\\';,/{}|\\":<>\?]/g.test(salary);
+}
+function isValidAge(age){
+    return !/[~`!#$%\^&*.+=\-\[\]\\';,/{}|\\":<>\?]/g.test(age);
 }

@@ -20,7 +20,6 @@ function processDataResetCheckUser(returnedData) {
 }
 
 function processDataPostReset(returnedData) {
-    console.log("returedData :" + returnedData.status);
     if(returnedData.status == 1) {
         localStorage.setItem("mobile", "+91" + candidateMobile);
         localStorage.setItem("name", returnedData.candidateFirstName);

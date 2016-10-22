@@ -64,6 +64,15 @@ public class ServerConstants {
     public static final int OBJECT_TYPE_PARTNER= 8;
     public static final int OBJECT_TYPE_ASSESSMENT_ATTEMPT= 9;
 
+    public static final int JOB_STATUS_NEW= 1;
+    public static final int JOB_STATUS_ACTIVE= 2;
+
+    public static final int OBJECT_TYPE_PRESCREEN_ATTEMPT= 10;
+    public static final int OBJECT_TYPE_JOB_POST_WORKFLOW= 11;
+
+    public static final int OBJECT_TYPE_NEW_JOB_POST= 12;
+    public static final int OBJECT_TYPE_RECRUITER_LEAD= 13;
+    public static final int OBJECT_TYPE_SUPPORT= 0;
 
     public static final boolean FOLLOW_UP_DEACTIVATE = false;
     public static final boolean FOLLOW_UP_ACTIVATE = true;
@@ -98,6 +107,7 @@ public class ServerConstants {
     public static final String SDF_FORMAT = "yyyy-MM-dd hh:mm:ss a";
     public static final String SDF_FORMAT_FOLLOWUP = "d MMM hh:mm a";
     public static final String SDF_FORMAT_ENTRY = "yyyy-MM-dd hh:mm:ss";
+    public static final String SDF_FORMAT_HH = "yyyy-MM-dd HH:mm:ss";
     public static final String SDF_FORMAT_YYYYMMDD = "yyyy-MM-dd";
 
     public static final String PROD_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/1NIGQC5jmSDuQaGUF0Jw1UG-Dz_3huFtZf9Bo7ncPl4g/formResponse";
@@ -115,7 +125,28 @@ public class ServerConstants {
     public static final int SHEET_MAIN = 1;
     public static final int SHEET_SCRAPPED = 2;
 
+    public static final int RECRUITER_FIRST_TIME = 1;
+
+    // JobPost Workflow status
+    public static final int JWF_STATUS_SELECTED = 1;
+    public static final int JWF_STATUS_PRESCREEN_ATTEMPTED = 2;
+    public static final int JWF_STATUS_PRESCREEN_FAILED = 3;
+    public static final int JWF_STATUS_PRESCREEN_COMPLETED = 4;
+    // Requirements Table
+    public static final String PROFILE_REQUIREMENT_TABLE_AGE = "age";
+    public static final String PROFILE_REQUIREMENT_TABLE_EXPERIENCE = "experience";
+    public static final String PROFILE_REQUIREMENT_TABLE_EDUCATION = "education";
+    public static final String PROFILE_REQUIREMENT_TABLE_SALARY = "salary";
+    public static final String PROFILE_REQUIREMENT_TABLE_GENDER = "gender";
+    public static final String PROFILE_REQUIREMENT_TABLE_LOCATION = "locality";
+    public static final String PROFILE_REQUIREMENT_TABLE_WORKTIMINGS = "worktimings";
     public static Map<String, String> devTeamMobile;
+
+    // rec sorting keys
+    public static Integer REC_SORT_LASTEST_ACTIVE = 1;
+    public static Integer REC_SORT_SALARY_H_TO_L = 2;
+    public static Integer REC_SORT_SALARY_L_TO_H = 3;
+
     static {
         devTeamMobile = new HashMap<String, String>();
         devTeamMobile.put("Archana", "+918197222248");
@@ -123,6 +154,16 @@ public class ServerConstants {
         devTeamMobile.put("Chillu", "+919035164363");
         devTeamMobile.put("Adarsh", "+918971739586");
         devTeamMobile.put("Sandy", "+919019672209");
+    }
+
+    public static Map<String, String> devTeamEmail;
+    static {
+        devTeamEmail = new HashMap<String, String>();
+        devTeamEmail.put("Archana", "archana@trujobs.in");
+        devTeamEmail.put("Avishek", "avishek@trujobs.in");
+        devTeamEmail.put("recruiter_support", "recruitersupport@trujobs.in");
+        devTeamEmail.put("Adarsh", "adarsh.raj@trujobs.in");
+        devTeamEmail.put("Sandy", "sandeep.kumar@trujobs.in");
     }
 
     public static final Double DEFAULT_MATCHING_ENGINE_RADIUS = 10.0; // In Kilometers
@@ -156,10 +197,38 @@ public class ServerConstants {
 
     /* Non Logged In Search Result UUID */
     public static final String TRU_DROID_NOT_LOGGED_UUID = "TRU-DROID-NOT-LOGGEDIN-UUID";
+    public static final String SUPPORT_DEFAULT_UUID = "SUPPORT-DEFAULT-UUID";
+
+    public static final String SELF_UNLOCKED_CANDIDATE_CONTACT = "Self unlocked contact";
 
     /************************
      *  Scrapped Data Source
      ************************/
     public static int SOURCE_INTERNAL = 0;
     public static int SOURCE_BABAJOBS = 1;
+
+    // is_common status for asset, idPoof
+
+    public static final int IS_NOT_COMMON = 0;
+    public static final int IS_COMMON= 1;
+
+    // preScreening category
+    public static final int CATEGORY_DOCUMENT = 1;
+    public static final int CATEGORY_LANGUAGE = 2;
+    public static final int CATEGORY_ASSET = 3;
+    public static final int CATEGORY_PROFILE = 4;
+    public static int RECRUITER_CATEGORY_CONTACT_UNLOCK = 1;
+    public static int RECRUITER_CATEGORY_INTERVIEW_UNLOCK = 2;
+
+    // pre screen front end ui ids
+
+    public static final String ACTIVE_WITHIN_24_HOURS = "Within 24 hrs";
+    public static final String ACTIVE_LAST_3_DAYS = "Last 3 days";
+    public static final String ACTIVE_LAST_7_DAYS = "Last 7 days";
+    public static final String ACTIVE_LAST_14_DAYS = "Last 14 days";
+    public static final String ACTIVE_LAST_1_MONTH = "Last one month";
+    public static final String ACTIVE_LAST_2_MONTHS = "Last two months";
+    public static final String ACTIVE_BEYOND_2_MONTHS = "Beyond two months";
+
+    public static final String DEFAULT_COMPANY_LOGO = "https://s3.amazonaws.com/trujobs.in/companyLogos/default_company_logo.png";
 }

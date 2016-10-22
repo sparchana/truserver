@@ -5,6 +5,9 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
+import api.http.httpRequest.Workflow.MatchingCandidateRequest;
+import api.http.httpRequest.Workflow.PreScreenRequest;
+import api.http.httpRequest.Workflow.SelectedCandidateRequest;
 import api.http.httpResponse.*;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
@@ -13,10 +16,13 @@ import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import controllers.AnalyticsLogic.GlobalAnalyticsService;
 import controllers.AnalyticsLogic.JobRelevancyEngine;
 import controllers.businessLogic.*;
 import controllers.businessLogic.Assessment.AssessmentService;
+import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.*;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.Intelligence.RelatedJobRole;
 import models.entity.OM.*;
@@ -53,8 +59,11 @@ public class Application extends Controller {
         * */
         if(sessionId != null){
             String partnerId = session().get("partnerId");
+            String recruiterId = session().get("recruiterId");
             if(partnerId != null){
                 return redirect("/partner/home");
+            } else if(recruiterId != null){
+                return redirect("/recruiter/home");
             } else {
                 return redirect("/dashboard");
             }
@@ -245,7 +254,7 @@ public class Application extends Controller {
         return ok(toJson(JobService.applyJob(applyJobRequest, InteractionService.InteractionChannelType.SELF)));
     }
 
-    @Security.Authenticated(RecSecured.class)
+    @Security.Authenticated(SecuredUser.class)
     public static Result addJobPost() {
         JsonNode req = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
@@ -257,7 +266,7 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(JobService.addJobPost(addJobPostRequest)));
+        return ok(toJson(JobService.addJobPost(addJobPostRequest, InteractionService.InteractionChannelType.SUPPORT)));
     }
 
     public static Result addCompanyLogo() {
@@ -276,7 +285,7 @@ public class Application extends Controller {
         }
     }
 
-    @Security.Authenticated(RecSecured.class)
+    @Security.Authenticated(SecuredUser.class)
     public static Result addRecruiter() {
         JsonNode req = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
@@ -287,10 +296,10 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return ok(toJson(RecruiterService.createRecruiterProfile(recruiterSignUpRequest)));
+        return ok(toJson(RecruiterService.createRecruiterProfile(recruiterSignUpRequest, InteractionService.InteractionChannelType.SUPPORT)));
     }
 
-    @Security.Authenticated(RecSecured.class)
+    @Security.Authenticated(SecuredUser.class)
     public static Result addCompany() {
         JsonNode req = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + req );
@@ -826,11 +835,11 @@ public class Application extends Controller {
     }
 
     public static Result getAllNormalJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.where().orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
+        List<JobPost> jobPosts = JobPost.find.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
         return ok(toJson(jobPosts));
     }
     public static Result getAllHotJobPosts() {
-        List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
+        List<JobPost> jobPosts = JobPost.find.where().eq("jobPostIsHot", "1").eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
         return ok(toJson(jobPosts));
     }
 
@@ -901,6 +910,11 @@ public class Application extends Controller {
         return ok(toJson(degreeList));
     }
 
+    public static Result getAllAsset() {
+        List<Asset> assets = Asset.find.setUseQueryCache(!isDevMode).orderBy("asset_title").findList();
+        return ok(toJson(assets));
+    }
+
     @Security.Authenticated(RecSecured.class)
     public static Result getAllCompany() {
         List<Company> companyList = Company.find.where()
@@ -921,7 +935,7 @@ public class Application extends Controller {
         return ok(toJson(pricingPlanTypeList));
     }
 
-    @Security.Authenticated(RecSecured.class)
+    @Security.Authenticated(SecuredUser.class)
     public static Result getAllExperience() {
         List<Experience> experienceList = Experience.find.setUseQueryCache(!isDevMode).findList();
         return ok(toJson(experienceList));
@@ -933,7 +947,7 @@ public class Application extends Controller {
         return ok(toJson(companyStatusList));
     }
 
-    @Security.Authenticated(RecSecured.class)
+    @Security.Authenticated(SecuredUser.class)
     public static Result getAllCompanyType() {
         List<CompanyType> companyTypeList = CompanyType.find.findList();
         return ok(toJson(companyTypeList));
@@ -1228,7 +1242,7 @@ public class Application extends Controller {
     }
 
     public static Result getJobRoleWiseJobPosts(String rolePara, Long idPara) {
-        List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
+        List<JobPost> jobPostList = JobPost.find.where().eq("jobRole.jobRoleId",idPara).eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).orderBy().asc("source").orderBy().desc("jobPostUpdateTimestamp").findList();
         return ok(toJson(jobPostList));
     }
 
@@ -1408,7 +1422,7 @@ public class Application extends Controller {
         return ok("ok");
     }
 
-    @Security.Authenticated(RecSecured.class)
+    @Security.Authenticated(SecuredUser.class)
     public static Result getAllTimeSlots(){
         List<InterviewTimeSlot> interviewTimeSlotList = InterviewTimeSlot.find.findList();
         return ok(toJson(interviewTimeSlotList));
@@ -1417,6 +1431,11 @@ public class Application extends Controller {
     @Security.Authenticated(SuperAdminSecured.class)
     public static Result updateAllRelevantJobCategories() {
         return ok(toJson(JobRelevancyEngine.updateAllRelevantJobCategories()));
+    }
+
+    @Security.Authenticated(SuperAdminSecured.class)
+    public static Result updateAllActivityScores() {
+        return ok(toJson(GlobalAnalyticsService.computeActivityScore()));
     }
 
     @Security.Authenticated(SuperAdminSecured.class)
@@ -1471,5 +1490,225 @@ public class Application extends Controller {
             }
         }
         return ok(toJson(relevantJobs));
+    }
+
+    @Security.Authenticated(RecSecured.class)
+    public static Result getMatchingCandidate() {
+        JsonNode matchingCandidateRequestJson = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + matchingCandidateRequestJson);
+        if(matchingCandidateRequestJson == null){
+            return badRequest();
+        }
+        MatchingCandidateRequest matchingCandidateRequest= new MatchingCandidateRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+
+        // since jsonReq has single/multiple values in array
+        newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+
+        try {
+            matchingCandidateRequest = newMapper.readValue(matchingCandidateRequestJson.toString(), MatchingCandidateRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (matchingCandidateRequest != null) {
+            return ok(toJson(JobPostWorkflowEngine.getMatchingCandidate(
+                    matchingCandidateRequest.getJobPostId(),
+                    matchingCandidateRequest.getMaxAge(),
+                    matchingCandidateRequest.getMinSalary(),
+                    matchingCandidateRequest.getMaxSalary(),
+                    matchingCandidateRequest.getGender(),
+                    matchingCandidateRequest.getExperienceIdList(),
+                    matchingCandidateRequest.getJobPostJobRoleId(),
+                    matchingCandidateRequest.getJobPostEducationIdList(),
+                    matchingCandidateRequest.getJobPostLocalityIdList(),
+                    matchingCandidateRequest.getJobPostLanguageIdList(),
+                    matchingCandidateRequest.getJobPostDocumentList(),
+                    matchingCandidateRequest.getJobPostAssetList(),
+                    matchingCandidateRequest.getDistanceRadius())));
+        }
+        return badRequest();
+    }
+
+    @Security.Authenticated(RecSecured.class)
+    public static Result renderWorkflow(Long jobPostId, String view) {
+        if(view == null) {
+            return badRequest();
+        }
+
+        switch (view.trim()) {
+            case "match_view":
+                return ok(views.html.match_candidate.render());
+            case "pre_screen_view":
+                return ok(views.html.pre_screen.render());
+            case "pre_screen_completed_view":
+                return ok(views.html.pre_screen_completed.render());
+        }
+        return badRequest();
+    }
+
+    @Security.Authenticated(RecSecured.class)
+    public static Result getJobPostMatchingParams(long jobPostId) {
+        return ok(toJson(JobPost.find.where().eq("jobPostId", jobPostId).findUnique()));
+    }
+
+    @Security.Authenticated(RecSecured.class)
+    public static Result saveSelectedCandidate() {
+        JsonNode selectedCandidateIdsJson = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + selectedCandidateIdsJson);
+        if(selectedCandidateIdsJson == null){
+            return badRequest();
+        }
+        SelectedCandidateRequest selectedCandidateRequest= new SelectedCandidateRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+
+        // since jsonReq has single/multiple values in array
+        newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+
+        try {
+            selectedCandidateRequest = newMapper.readValue(selectedCandidateIdsJson.toString(), SelectedCandidateRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ok(toJson(JobPostWorkflowEngine.saveSelectedCandidates(selectedCandidateRequest)));
+    }
+
+    public static Result getSelectedCandidate(Long jobPostId) {
+
+        return ok(toJson(JobPostWorkflowEngine.getSelectedCandidates(jobPostId)));
+    }
+
+    public static Result testMatchingCandidate(Long jpId) {
+       return ok(toJson(JobPostWorkflowEngine.getMatchingCandidate(jpId)));
+    }
+
+    public static Result getJobPostVsCandidate(Long candidateId, Long jobPostId) {
+        if (candidateId == 0L || jobPostId == 0L) {
+            return badRequest();
+        }
+
+        return ok(toJson(JobPostWorkflowEngine.getJobPostVsCandidate(jobPostId, candidateId)));
+    }
+
+    public static Result updatePreScreenAttempt(Long candidateId, Long jobPostId, String callStatus) {
+        if (candidateId == 0L || jobPostId == 0L) {
+            return badRequest();
+        }
+
+        return ok(toJson(JobPostWorkflowEngine.updatePreScreenAttempt(jobPostId, candidateId, callStatus)));
+    }
+
+    public static Result submitPreScreen() {
+        JsonNode preScreenRequestJson = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + preScreenRequestJson);
+        if(preScreenRequestJson == null){
+            return badRequest();
+        }
+        PreScreenRequest preScreenRequest= new PreScreenRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            preScreenRequest = newMapper.readValue(preScreenRequestJson.toString(), PreScreenRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Logger.info(String.valueOf(toJson(preScreenRequest)));
+        return ok(toJson(JobPostWorkflowEngine.savePreScreenResult(preScreenRequest)));
+    }
+
+    public static Result getDocumentReqForJobRole(Long jobPostId, Long jobRoleId) {
+        if(jobPostId == null && jobRoleId == null) {
+            return badRequest();
+        }
+        if(jobRoleId == null && jobPostId !=null && jobPostId != 0) {
+            JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+            jobRoleId = jobPost.getJobRole().getJobRoleId();
+        }
+
+        if ((jobPostId != null && jobPostId == 0 )|| jobRoleId == 0){
+            return badRequest();
+        }
+        List<IdProof> idProofList = new ArrayList<>();
+        List<IdProof> commonIdProofList = IdProof.find.setUseQueryCache(!isDevMode)
+                .where()
+                .eq("isCommon",ServerConstants.IS_COMMON)
+                .orderBy("idProofName")
+                .findList();
+        List<JobRoleToDocument> jobRoleToDocumentList= JobRoleToDocument.find.setUseQueryCache(!isDevMode)
+                .where().eq("jobRole.jobRoleId", jobRoleId).findList();
+        for(JobRoleToDocument jobRoleToDocument: jobRoleToDocumentList) {
+            idProofList.add(jobRoleToDocument.getIdProof());
+        }
+        idProofList.addAll(commonIdProofList);
+
+        Collections.sort(idProofList,  (o1, o2) -> o1.getIdProofName().compareTo(o2.getIdProofName()));
+        return ok(toJson(idProofList));
+    }
+
+    public static Result getAssetReqForJobRole(Long jobPostId, Long jobRoleId) {
+        if(jobPostId == null && jobRoleId == null) {
+            return badRequest();
+        }
+
+        if(jobRoleId == null && jobPostId !=null && jobPostId != 0) {
+            JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+            jobRoleId = jobPost.getJobRole().getJobRoleId();
+        }
+
+        if ((jobPostId != null && jobPostId == 0 )|| jobRoleId == 0){
+            return badRequest();
+        }
+        List<Asset> assetList = new ArrayList<>();
+        List<Asset> commonAssetList = Asset.find.setUseQueryCache(!isDevMode)
+                .where()
+                .eq("isCommon", ServerConstants.IS_COMMON)
+                .orderBy("assetTitle")
+                .findList();
+        List<JobRoleToAsset> jobRoleToAssetList= JobRoleToAsset.find.setUseQueryCache(!isDevMode)
+                .where().eq("jobRole.jobRoleId", jobRoleId).findList();
+        for(JobRoleToAsset jobRoleToAsset: jobRoleToAssetList) {
+            assetList.add(jobRoleToAsset.getAsset());
+        }
+        assetList.addAll(commonAssetList);
+
+        Collections.sort(assetList,  (o1, o2) -> o1.getAssetTitle().compareTo(o2.getAssetTitle()));
+        return ok(toJson(assetList));
+    }
+
+    public static Result renderWorkflowInteraction(String uuid) {
+        return ok(views.html.workflow_interaction.render());
+    }
+
+    public static Result getWorkflowInteraction(String job_post_workflow_uuid) {
+
+        if(job_post_workflow_uuid == null) {
+            return badRequest();
+        }
+
+        List<Interaction> interactionList = Interaction.find
+                .where().eq("objectAUUId", job_post_workflow_uuid.trim())
+                .findList();
+
+        List<SupportInteractionResponse> responses = new ArrayList<>();
+
+        SimpleDateFormat sfd = new SimpleDateFormat(ServerConstants.SDF_FORMAT);
+
+        for(Interaction interaction : interactionList){
+            SupportInteractionResponse response = new SupportInteractionResponse();
+            response.setUserInteractionTimestamp(sfd.format(interaction.getCreationTimestamp()));
+            response.setInteractionId(interaction.getId());
+            response.setUserNote(interaction.getNote());
+            response.setUserResults(interaction.getResult());
+            response.setUserCreatedBy(interaction.getCreatedBy());
+            response.setUserInteractionType(InteractionConstants.INTERACTION_TYPE_MAP.get(interaction.getInteractionType()));
+            response.setChannel(InteractionConstants.INTERACTION_CHANNEL.get(interaction.getInteractionChannel()));
+
+            responses.add(response);
+        }
+        return ok(toJson(responses));
+    }
+
+    public static Result getPreScreenedCandidate(Long jobPostId, Boolean isPass) {
+        return ok(toJson(JobPostWorkflowEngine.getPreScreenedPassFailCandidates(jobPostId, isPass)));
     }
 }

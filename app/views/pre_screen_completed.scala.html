@@ -1,0 +1,112 @@
+@workflow{
+
+    <div class="mdl-grid">
+            <!-- Job Post Detail Card -->
+        <div class="mdl-cell mdl-cell--12-col" style="padding-top: 8px;
+            padding-left: 20px;
+            font-size: 22px;
+            font-weight: 500";>
+            <label id="trigger" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="is_pass">
+                <input type="checkbox" id="is_pass" class="mdl-switch__input" checked>
+                <span class="mdl-switch__label"></span>
+            </label>
+            <div class="mdl-tooltip" data-mdl-for="trigger">
+                ON to see all candidates who <strong>passed</strong>. OFF to see all candidated who <strong>failed </strong>
+            </div>
+        </div>
+    </div>
+    <div id="preScreenCompletedPane">
+        <div id="preScreenCompletedError" style="text-align: center;
+            color: red"><h5 id="preScreenCompletedErrorMsg"></h5></div>
+
+        <table id="candidateResultTable" class="mdl-data-table mdl-js-data-table" style="margin-top: 16px;display: none;table-layout: fixed;overflow-x: scroll;" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>CLID</th>
+                    <th>Candidate Name</th>
+                    <th>Mobile</th>
+                    <th>JobRole Pref</th>
+                    <th>Locality Pref</th>
+                    <th>Home Location</th>
+                    <th>Matched Job Locality (Distance)</th>
+                    <th>Age</th>
+                    <th>Exp (Year)</th>
+                    <th>isEmployed?</th>
+                    <th>Current/Lastdrawn Salary</th>
+                    <th>Language Known</th>
+                    <th>Education</th>
+                    <th>Degree</th>
+                    <th>Has Completed?</th>
+                    <th>Skills</th>
+                    <th>Gender</th>
+                    <th>Past Company</th>
+                    <th>isAssessed?</th>
+                    <th>Job Applied on</th>
+                    <th>No. of JobApp?</th>
+                    <th>Job Application Mode (Self/Partner)</th>
+                    <th>Experience/Relieving Letter</th>
+                    <th>ID-Proofs</th>
+                    <th>TimeShift Pref</th>
+                    <th>Last Active</th>
+                    <th>Created On</th>
+                    <th>MinProfile?</th>
+                    <th>Exp Detail</th>
+                    <th>Candidate Id</th>
+                    <th>Interaction History</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th>CLID</th>
+                    <th>Candidate Name</th>
+                    <th>Mobile</th>
+                    <th>JobRole Pref</th>
+                    <th>Locality Pref</th>
+                    <th>Home Location</th>
+                    <th>Matched Locality</th>
+                    <th>Age</th>
+                    <th>Exp (Year)</th>
+                    <th>isEmployed?</th>
+                    <th>Matched Job Locality (Distance)</th>
+                    <th>Language Known</th>
+                    <th>Education</th>
+                    <th>Degree</th>
+                    <th>Has Completed?</th>
+                    <th>Skills</th>
+                    <th>Gender</th>
+                    <th>Past Company</th>
+                    <th>isAssessed?</th>
+                    <th>Job Applied on</th>
+                    <th>No. of JobApp?</th>
+                    <th>Job Application Mode (Self/Partner)</th>
+                    <th>Experience/Relieving Letter</th>
+                    <th>ID-Proofs</th>
+                    <th>TimeShift Pref</th>
+                    <th>Last Active</th>
+                    <th>Created On</th>
+                    <th>MinProfile?</th>
+                    <th>Exp Detail</th>
+                    <th>Candidate Id</th>
+                    <th>Interaction History</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </tfoot>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <link rel="stylesheet" type="text/css" href="/assets/css/pre_screen_modal.css">
+    @*<script type="text/javascript" src="/assets/js/bootbox.min.js"></script>*@
+    @*<script type="text/javascript" src="/assets/js/pre_screen_modal.js"></script>*@
+        <!--
+    <div id="otherControls">
+        <button type="submit" id="moveSelectedBtn" class="btn btn-success btn-lg">Move To Pre-Screen</button>
+    </div>
+    -->
+}

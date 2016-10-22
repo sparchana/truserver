@@ -124,4 +124,22 @@ $(function(){
         console.log("exception occured!!" + exception);
     }
 
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllCreditCategory",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetCreditCategory
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
 });
+
+function processDataGetCreditCategory(returnedData) {
+    $("#candidateContactCreditUnitPrice").val(returnedData[0].recruiterCreditUnitPrice);
+    $("#interviewCreditUnitPrice").val(returnedData[1].recruiterCreditUnitPrice);
+}

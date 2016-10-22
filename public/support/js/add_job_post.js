@@ -4,6 +4,11 @@
 
 var recId = 0;
 
+var totalAmount = 0;
+
+var contactCredits = 0;
+var interviewCredits = 0;
+
 function processDataAddJobPost(returnedData) {
     if(returnedData.status == 1){
         var jobPostLocalities = "";
@@ -53,43 +58,94 @@ function processDataAddJobPost(returnedData) {
         } catch (exception) {
             console.log("exception occured!!" + exception);
         }
-        alert("Job Post Created Successfully");
-        window.close();
+        notifyError("Job Post Created Successfully. Closing this window...", 'success');
+        setTimeout(function(){ window.close()}, 2000);
     } else{
-        alert("Job Post Updated Successfully");
-        window.close();
+        notifyError("Job Post Updated Successfully. Closing this window...", 'success');
+        setTimeout(function(){window.close()}, 2000);
     }
 }
 
 function processDataAddRecruiterAndUpdateRecId(returnedData) {
     recId = returnedData.recruiterId;
 }
+function scrollTo(selector) {
+    $('html, body').animate({
+        scrollTop: $(selector).offset().top
+    }, 1000);
+}
+
+function notifyError(msg, type){
+    $.notify({
+        message: msg,
+        animate: {
+            enter: 'animated lightSpeedIn',
+            exit: 'animated lightSpeedOut'
+        }
+    },{
+        type: type
+    });
+}
+
+function computeCreditValue() {
+    if($('input:radio[name="candidateCreditType"]:checked').val() == 1){
+        if(validateContactUnlockCreditValues() == 1){
+            candidateCreditTypeStatus = 1;
+            contactCredits = parseInt($("#candidateContactCredits").val());
+            $("#addCreditInfoDiv").show();
+            $("#contactUnlockCreditInfo").html("Adding " + contactCredits + " contact unlock credits ");
+        }
+    }
+    if($('input:radio[name="interviewCreditType"]:checked').val() == 1){
+        if(validateInterviewUnlockCreditValues() == 1){
+            interviewCreditTypeStatus = 1;
+            interviewCredits = parseInt($("#interviewCredits").val());
+            $("#addCreditInfoDiv").show();
+            $("#interviewUnlockCreditInfo").html("Adding " + interviewCredits + " interview unlock credits ");
+        }
+    }
+
+    if(interviewCreditTypeStatus == 1 && candidateCreditTypeStatus == 1){
+        $("#creditModal").modal("hide");
+    }
+}
+
+
+function closeCreditModal() {
+    $("#creditModal").modal("hide");
+}
 
 // job_post_form ajax script
 $(function() {
     $("#job_post_form").submit(function(eventObj) {
         eventObj.preventDefault();
-        if($("#jobPostRecruiter").val() == "" && $("#recruiterSection").is(':visible') == true){
+        if(($("#jobPostRecruiter").val() == "" || $("#jobPostRecruiter").val() == "-1" || $("#jobPostRecruiter").val() == null) && $("#recruiterSection").is(':visible') == true){
             var status = 1;
             var recruiterName = validateName($("#recruiterName").val());
             var recruiterMobile = validateMobile($("#recruiterMobile").val());
+
             //checking first name
             switch(recruiterName){
-                case 0: alert("First name contains number. Please Enter a valid First Name"); status=0; break;
-                case 2: alert("First Name cannot be blank spaces. Enter a valid first name"); status=0; break;
-                case 3: alert("First name contains special symbols. Enter a valid first name"); status=0; break;
-                case 4: alert("Please enter your first name"); status=0; break;
+                case 0: notifyError("First name contains number. Please Enter a valid First Name", 'danger');
+                    status=0; break;
+                case 2: notifyError("First Name cannot be blank spaces. Enter a valid first name", 'danger');
+                    status=0; break;
+                case 3: notifyError("First name contains special symbols. Enter a valid first name", 'danger');
+                    status=0; break;
+                case 4: notifyError("Please enter your first name", 'danger');
+                    status=0; break;
             }
             if(recruiterMobile == 0){
-                alert("Enter a valid mobile number");
+                notifyError("Enter a valid mobile number", 'danger');
                 status=0;
             } else if(recruiterMobile == 1){
-                alert("Enter 10 digit mobile number");
+                notifyError("Enter 10 digit mobile number", 'danger');
                 status=0;
             } else if(recruiterMobile == "") {
-                alert("Please Enter recruiter Contact");
+                notifyError("Please Enter recruiter Contact", 'danger');
                 status=0;
             }
+
             if(status == 1){
                 try{
                     var rec = {
@@ -97,7 +153,9 @@ $(function() {
                         recruiterMobile: $("#recruiterMobile").val(),
                         recruiterLandline: $("#recruiterLandline").val(),
                         recruiterEmail: $("#recruiterEmail").val(),
-                        recruiterCompany: $("#jobPostCompany").val()
+                        recruiterCompany: $("#jobPostCompany").val(),
+                        contactCredits: contactCredits,
+                        interviewCredits: interviewCredits
                     };
                 } catch (exception) {
                     console.log("exception occured!!" + exception);
@@ -144,94 +202,127 @@ $(function() {
         status = 1;
         var locality = $('#jobPostLocalities').val().split(",");
         if($("#jobPostCompany").val() == ""){
-            alert("Please enter Job Post Company");
+            notifyError("Please enter Job Post Company", 'danger');
             $("#jobPostCompany").addClass('selectDropdownInvalid').removeClass('selectDropdown');
             status = 0;
         } else if($("#jobPostRecruiter").val() == "" && recId == 0){
-            alert("Please select a recruiter");
+            notifyError("Please select a recruiter", 'danger');
             $("#jobPostCompany").addClass('selectDropdown').removeClass('selectDropdownInvalid');
             $("#jobPostRecruiter").addClass('selectDropdownInvalid').removeClass('selectDropdown');
             status = 0;
         } else if($("#jobPostTitle").val() == ""){
             $("#jobPostRecruiter").addClass('selectDropdown').removeClass('selectDropdownInvalid');
-            alert("Please enter Job Post Title");
+            notifyError("Please enter Job Post Title", 'danger');
             $("#jobPostTitle").addClass('invalid');
             status = 0;
         } else if($("#jobPostMinSalary").val() == "0"){
-            alert("Please enter Job Post Minimum salary");
+            notifyError("Please enter Job Post Minimum salary", 'danger');
             $("#jobPostTitle").removeClass('invalid');
             $("#jobPostMinSalary").addClass('invalid');
             status = 0;
         } else if(isValidSalary(minSalary) == false){
-            alert("Please enter valid min salary");
+            notifyError("Please enter valid min salary", 'danger');
             $("#jobPostMinSalary").removeClass('invalid');
             $("#jobPostMinSalary").addClass('invalid');
             status = 0;
         } else if(maxSalary != 0 && (isValidSalary(maxSalary) == false)){
-            alert("Please enter valid max salary");
+            notifyError("Please enter valid max salary", 'danger');
             $("#jobPostMinSalary").removeClass('invalid');
             $("#jobPostMaxSalary").addClass('invalid');
             status = 0;
         } else if(maxSalary != 0 && (maxSalary <= minSalary)){
-            alert("Max salary should be greated than min salary");
+            notifyError("Max salary should be greated than min salary", 'danger');
             $("#jobPostMaxSalary").removeClass('invalid');
             $("#jobPostMaxSalary").addClass('invalid');
             status = 0;
         } else if($("#jobPostJobRole").val() == ""){
             $("#jobPostMinSalary").removeClass('invalid');
-            alert("Please enter job roles");
+            notifyError("Please enter job roles", 'danger');
             $("#jobPostJobRole").addClass('invalid');
             status = 0;
         } else if($("#jobPostVacancies").val() == "" || $("#jobPostVacancies").val() == 0){
-            alert("Please enter no. of vacancies");
+            notifyError("Please enter no. of vacancies", 'danger');
             $("#jobPostJobRole").removeClass('invalid');
             $("#jobPostVacancies").addClass('invalid');
             status = 0;
         } else if($("#jobPostStartTime").val() != -1){
             if($("#jobPostEndTime").val() != -1){
                 if(parseInt($("#jobPostStartTime").val()) >= parseInt($("#jobPostEndTime").val())){
-                    alert("Start time cannot be more than end time");
+                    notifyError("Start time cannot be more than end time", 'danger');
                     status = 0;
                 }
             } else{
-                alert("Please select job end time");
+                notifyError("Please select job end time", 'danger');
                 status = 0;
             }
         } else if(locality == ""){
             $("#jobPostVacancies").removeClass('invalid');
             $("#jobPostLocalities").addClass('invalid');
-            alert("Please enter localities");
+            notifyError("Please enter localities", 'danger');
             status = 0;
         } else if($("#jobPostExperience").val() == ""){
             $("#jobPostLocalities").removeClass('invalid');
             $("#jobPostExperience").addClass('selectDropdownInvalid').removeClass('selectDropdown');
-            alert("Please enter Job Post Experience required");
+            notifyError("Please enter Job Post Experience required", 'danger');
             status = 0;
         }
         if(interviewDayCount > 0 && timeSlotCount == 0){
             $("#jobPostExperience").removeClass('invalid');
-            alert("Please select interview time slot");
+            notifyError("Please select interview time slot", 'danger');
             status = 0;
         } else if(timeSlotCount > 0 && interviewDayCount == 0){
-            alert("Please select interview days");
+            notifyError("Please select interview days", 'danger');
             status = 0;
         }
 
+        // checking age, location, gender
+        var jobPostLanguage = $('#jobPostLanguage').val();
+        var jobPostDocument = $('#jobPostDocument').val();
+        var jobPostAsset = $('#jobPostAsset').val();
+        var maxAge = $("#jobPostMaxAge").val();
+        var jobPostGender = parseInt(document.getElementById("jobPostGender").value);
+        if (status !=0 ){
+            if (!isValidAge(maxAge) || maxAge < 18) {
+                $("#jobPostMaxAge").removeClass('invalid').addClass('invalid');
+                if(maxAge < 18) {
+                    notifyError("Max Age should be greater than 18 years", 'danger');
+                } else {
+                    notifyError("Please enter Job Post Max Age Requirement", 'danger');
+                }
+                status = 0;
+            }
+            if (! jobPostLanguage && jobPostLanguage == null) {
+                var jobPostLanguageSelector = "#jdRequirementPanel div.panel-container span div button";
+                $(jobPostLanguageSelector).removeClass('invalid').addClass('invalid');
+
+                notifyError("Please enter Job Post Language Requirements", 'danger');
+                status = 0;
+            }
+            if (jobPostGender == null || jobPostGender == -1) {
+                $("#jobPostGender").attr('style', "border-color: red;");
+                notifyError("Please enter Job Post Gender Requirement", 'danger');
+                status = 0;
+            }
+            if(status == 0){
+                scrollTo("#jdRequirementPanel");
+            }
+        }
+        
         //checking partner incentives
         if (partnerInterviewIncentiveVal < 0) {
-            alert("Partner interview incentive cannot be negative");
+            notifyError("Partner interview incentive cannot be negative", 'danger');
             status = 0;
         }
         else if (partnerJoiningIncentiveVal < 0) {
-            alert("Partner joining incentive cannot be negative");
+            notifyError("Partner joining incentive cannot be negative", 'danger');
             status = 0;
         } else if (partnerJoiningIncentiveVal < partnerInterviewIncentiveVal){
-            alert("Partner interview incentive cannot be greater than partner joining incentive");
+            notifyError("Partner interview incentive cannot be greater than partner joining incentive", 'danger');
             status = 0;
         }
 
         if(status == 1){
-            if($("#jobPostRecruiter").val() != ""){
+            if($("#jobPostRecruiter").val() != "" && $("#jobPostRecruiter").val() != null && $("#jobPostRecruiter").val() != undefined){
                 recId = $("#jobPostRecruiter").val();
             }
             $("#jobPostExperience").addClass('selectDropdown').removeClass('selectDropdownInvalid');
@@ -277,6 +368,11 @@ $(function() {
                 slotArray.push(parseInt(slotId));
             }).get();
 
+            var jobStatusId = $("#jobPostStatus").val();
+            if(jobStatusId == ""){
+                jobStatusId = null;
+            }
+
             try {
                 var d = {
                     jobPostId: $("#jobPostId").val(),
@@ -301,14 +397,20 @@ $(function() {
                     jobPostShiftId: $("#jobPostWorkShift").val(),
                     jobPostPricingPlanId: $("#jobPostPricingPlan").val(),
                     jobPostEducationId: $("#jobPostEducation").val(),
-                    jobPostStatusId: $("#jobPostStatus").val(),
+                    jobPostStatusId: jobStatusId,
                     pricingPlanTypeId: 1,
                     jobPostExperienceId: $("#jobPostExperience").val(),
                     jobPostRecruiterId: recId,
                     partnerInterviewIncentive: $("#partnerInterviewIncentive").val(),
                     partnerJoiningIncentive: $("#partnerJoiningIncentive").val(),
                     jobPostInterviewDays: interviewDays,
-                    interviewTimeSlot: slotArray
+                    interviewTimeSlot: slotArray,
+                    jobPostLanguage: jobPostLanguage,
+                    jobPostDocument: jobPostDocument,
+                    jobPostAsset: jobPostAsset,
+                    jobPostMaxAge: maxAge,
+                    jobPostGender: jobPostGender
+
                 };
                 $.ajax({
                     type: "POST",
@@ -324,3 +426,84 @@ $(function() {
 
     }); // end of submit
 }); // end of function
+
+function validateContactUnlockCreditValues(){
+    var statusCheck = 1;
+    if($("#candidateContactCreditAmount").val() == ""){
+        statusCheck = 0;
+        candidateCreditTypeStatus = 0;
+        notifyError("Please enter the amount paid by the candidate for candidate contact unlock credits!");
+    } else if($("#candidateContactCreditUnitPrice").val() == ""){
+        statusCheck = 0;
+        candidateCreditTypeStatus = 0;
+        notifyError("Please enter the candidate contact unlock credit unit price!");
+    } else if(!isValidSalary($("#candidateContactCreditAmount").val())){
+        statusCheck = 0;
+        candidateCreditTypeStatus = 0;
+        notifyError("Please enter a valid contact unlock credit amount!");
+    } else if(!isValidSalary($("#candidateContactCreditUnitPrice").val())){
+        statusCheck = 0;
+        candidateCreditTypeStatus = 0;
+        notifyError("Please enter a valid contact unlock credit unit price!");
+    } else if(parseInt($("#candidateContactCreditAmount").val()) < 0){
+        statusCheck = 0;
+        candidateCreditTypeStatus = 0;
+        notifyError("Contact unlock amount price cannot be negative!");
+    } else if(parseInt($("#candidateContactCreditUnitPrice").val()) < 0){
+        statusCheck = 0;
+        candidateCreditTypeStatus = 0;
+        notifyError("Contact unlock unit price cannot be negative!");
+    } else if(parseInt($("#candidateContactCreditUnitPrice").val()) > parseInt($("#candidateContactCreditAmount").val())){
+        statusCheck = 0;
+        candidateCreditTypeStatus = 0;
+        notifyError("Contact unlock credit amount should be greater than its credit unit price!");
+    }
+    return statusCheck;
+}
+
+function validateInterviewUnlockCreditValues(){
+    var statusCheck = 1;
+    if($("#interviewCreditAmount").val() == ""){
+        statusCheck = 0;
+        interviewCreditTypeStatus = 0;
+        notifyError("Please enter the amount paid by the candidate for interview unlock credits!");
+    } else if($("#interviewCreditUnitPrice").val() == ""){
+        statusCheck = 0;
+        interviewCreditTypeStatus = 0;
+        notifyError("Please enter the interview unlock credit unit price!");
+    } else if(!isValidSalary($("#interviewCreditAmount").val())){
+        statusCheck = 0;
+        interviewCreditTypeStatus = 0;
+        notifyError("Please enter a valid interview unlock credit amount!");
+    } else if(!isValidSalary($("#interviewCreditUnitPrice").val())){
+        statusCheck = 0;
+        interviewCreditTypeStatus = 0;
+        notifyError("Please enter a valid interview unlock credit unit price!");
+    } else if(parseInt($("#interviewCreditAmount").val()) < 0){
+        statusCheck = 0;
+        candidateCreditTypeStatus = 0;
+        notifyError("Interview unlock amount price cannot be negative!");
+    } else if(parseInt($("#interviewCreditUnitPrice").val()) < 0){
+        statusCheck = 0;
+        candidateCreditTypeStatus = 0;
+        notifyError("Interview unlock unit price cannot be negative!");
+    } else if(parseInt($("#interviewCreditUnitPrice").val()) > parseInt($("#interviewCreditAmount").val())){
+        statusCheck = 0;
+        interviewCreditTypeStatus = 0;
+        notifyError("Interview unlock credit amount should be greater than its credit unit price!");
+    }
+    return statusCheck;
+}
+
+function notifyError(msg){
+    $.notify({
+        message: msg,
+        animate: {
+            enter: 'animated lightSpeedIn',
+            exit: 'animated lightSpeedOut'
+        }
+    },{
+        type: 'danger'
+    });
+}
+

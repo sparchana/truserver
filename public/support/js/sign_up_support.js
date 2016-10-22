@@ -687,14 +687,16 @@ function processDataCheckLeadSource(returnedData) {
 
 function processDataCheckEducation(returnedData) {
     returnedData.forEach(function (education) {
-        var id = education.educationId;
-        var name = education.educationName;
-        var item = {};
-        item ["id"] = id;
-        item ["name"] = name;
-        var option = '<label class="btn btn-custom-check" style=\"width: 124px\"><input type="radio" name="highestEducation" id=\"highestEducation' + id + '\" value=\"' + id + '\">' + name + '</label>';
-        $('#candidateHighestEducation').append(option);
-        educationArray.push(item);
+        if(education.educationId != 6){
+            var id = education.educationId;
+            var name = education.educationName;
+            var item = {};
+            item ["id"] = id;
+            item ["name"] = name;
+            var option = '<label class="btn btn-custom-check" style=\"width: 124px\"><input type="radio" name="highestEducation" id=\"highestEducation' + id + '\" value=\"' + id + '\">' + name + '</label>';
+            $('#candidateHighestEducation').append(option);
+            educationArray.push(item);
+        }
     });
 }
 

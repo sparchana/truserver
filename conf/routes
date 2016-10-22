@@ -35,6 +35,14 @@ GET         /updateLeadStatus/:leadId/:leadStatus/:res                    contro
 GET         /support/administrator/alphaRequest/:mobile                   controllers.Application.removeDuplicateLeadOrCandidate(mobile: String)
 GET         /support/administrator/uploadCSV                              controllers.Application.uploadCSV()
 GET         /support/ifExists/:mobile                                     controllers.Application.ifExists(mobile: String)
+GET         /support/api/getJobPostMatchingParams/:jobPostId              controllers.Application.getJobPostMatchingParams(jobPostId: Long)
+GET         /support/workflow/:jobPostId/                                 controllers.Application.renderWorkflow(jobPostId: Long, view: String ?= null)
+GET         /support/api/getJobPostVsCandidate/                           controllers.Application.getJobPostVsCandidate(candidateId: java.lang.Long ?= null,  jobPostId: java.lang.Long ?= null)
+GET         /support/api/updatePreScreenAttempt/                          controllers.Application.updatePreScreenAttempt(candidateId: java.lang.Long ?= null,  jobPostId: java.lang.Long ?= null, callStatus: String ?= null)
+GET         /support/api/getDocumentReqForJobRole/                        controllers.Application.getDocumentReqForJobRole(job_post_id: java.lang.Long ?= null, job_role_id: java.lang.Long ?= null)
+GET         /support/api/getAssetReqForJobRole/                           controllers.Application.getAssetReqForJobRole(job_post_id: java.lang.Long ?= null, job_role_id: java.lang.Long ?= null)
+GET         /support/api/getWorkflowInteraction/                          controllers.Application.getWorkflowInteraction(job_post_workflow_uuid: String ?= null)
+GET         /workflowInteraction/:uuid                                    controllers.Application.renderWorkflowInteraction(uuid: String)
 
 POST        /addCompany                                                   controllers.Application.addCompany()
 POST        /addCompanyLogo                                               controllers.Application.addCompanyLogo()
@@ -56,6 +64,10 @@ POST        /getSearchCandidateResult                                     contro
 POST        /processCsv                                                   controllers.Application.processcsv()
 POST        /signUpSupport                                                controllers.Application.signUpSupport()
 POST        /getAllDeactivationReason                                     controllers.Application.getAllDeactivationReason()
+POST        /support/api/getMatchingCandidate/                            controllers.Application.getMatchingCandidate()
+POST        /support/api/saveSelectedCandidate/                           controllers.Application.saveSelectedCandidate()
+POST        /support/api/getSelectedCandidate/:jpId                       controllers.Application.getSelectedCandidate(jpId: Long)
+POST        /support/api/getPreScreenedCandidate/                         controllers.Application.getPreScreenedCandidate(jpId: java.lang.Long?= null, isPass: java.lang.Boolean?= null)
 
 # user dashboard
 # ~~~~~~~~~~~~~~
@@ -83,6 +95,7 @@ POST        /findUserAndSendOtp                                           contro
 POST        /loginSubmit                                                  controllers.Application.loginSubmit()
 POST        /signUp                                                       controllers.Application.signUp()
 POST        /submitAssessment                                             controllers.Application.submitAssessment()
+POST        /submitPreScreen                                              controllers.Application.submitPreScreen()
 
 # partner routes
 #~~~~~~~~~~~~~~~~~~~~
@@ -117,14 +130,35 @@ POST        /checkPartnerCandidate/:id                                    contro
 
 # recruiter routes
 #~~~~~~~~~~~~~~~~~~~~
-GET         /recruiter                                                    controllers.RecruiterController.recruiterHome()
+GET         /recruiter                                                    controllers.RecruiterController.recruiterIndex()
+GET         /recruiter/home                                               controllers.RecruiterController.recruiterHome()
+GET         /recruiter/jobPost/:id                                        controllers.RecruiterController.recruiterJobPost(id : Long)
 GET         /logoutRecruiter                                              controllers.RecruiterController.logoutRecruiter()
 GET         /checkRecruiterSession                                        controllers.RecruiterController.checkRecruiterSession()
+GET         /getRecruiterProfileInfo                                      controllers.RecruiterController.getRecruiterProfileInfo()
+GET         /recruiter/profile                                            controllers.RecruiterController.recruiterEditProfile()
+GET         /recruiter/candidateSearch                                    controllers.RecruiterController.recruiterCandidateSearch()
+GET         /recruiter/allRecruiterJobPosts                               controllers.RecruiterController.renderAllRecruiterJobPosts
+GET         /recruiter/unlockedCandidates                                 controllers.RecruiterController.renderAllUnlockedCandidates
+GET         /recruiter/jobApplicants/:id                                  controllers.RecruiterController.renderAllApplications(id : Long)
+GET         /recruiterNavbar                                              controllers.RecruiterController.recruiterNavbar()
 
+POST        /getAllJobApplicants/:id                                      controllers.RecruiterController.getAllJobApplicants(id : Long)
+POST        /getAllRecruiterJobPosts                                      controllers.RecruiterController.getAllRecruiterJobPosts
+POST        /getRecruiterCredits/:id                                      controllers.RecruiterController.getRecruiterCredits(id : Long)
+POST        /getAllCreditCategory                                         controllers.RecruiterController.getAllCreditCategory()
+POST        /recruiter/unlockCandidateContact/:id                         controllers.RecruiterController.unlockCandidateContact(id : Long)
+POST        /findRecruiterAndSendOtp                                      controllers.RecruiterController.findRecruiterAndSendOtp()
 POST        /addRecruiterLead                                             controllers.RecruiterController.addWebsiteLead()
+POST        /updateRecruiterProfile                                       controllers.RecruiterController.addRecruiter()
 POST        /recruiterSignUp                                              controllers.RecruiterController.recruiterSignUp()
 POST        /addRecruiterPassword                                         controllers.RecruiterController.addPassword()
 POST        /recruiterLoginSubmit                                         controllers.RecruiterController.loginSubmit()
+POST        /recruiter/api/getMatchingCandidate/                          controllers.RecruiterController.getMatchingCandidate()
+POST        /recruiter/api/getUnlockedCandidates/                         controllers.RecruiterController.getUnlockedCandidates()
+POST        /recruiter/api/requestCredits/                                controllers.RecruiterController.requestCredits()
+POST        /recruiter/api/addJobPost                                     controllers.RecruiterController.addJobPost()
+POST        /getRecruiterJobPostInfo/:id                                  controllers.RecruiterController.getRecruiterJobPostInfo(id : Long)
 
 #new routes
 #~~~~~~~~~~~~~~~~~~~~
@@ -160,7 +194,9 @@ POST        /getAllLocality                                               contro
 POST        /getAllShift                                                  controllers.Application.getAllShift()
 POST        /getAllTransportation                                         controllers.Application.getAllTransportation()
 POST        /getAllCompanyLogos                                           controllers.Application.getAllCompanyLogos()
+POST        /getAllAsset                                                  controllers.Application.getAllAsset()
 POST        /getJobPostInfo/:id/:isSupport                                controllers.Application.getJobPostInfo(id : Long, isSupport : Integer)
+
 # 3rd Party API
 # ~~~~~~~~~~~~~
 
@@ -196,6 +232,7 @@ POST        /mGetLocalityForLatLngOrPlaceId                               contro
 # Test API
 # ~~~~~~~~~~~~~
 GET         /resolveLatLng/:latlng                                        controllers.TrudroidController.mResolveLatLng(latlng: String)
+GET        /support/api/testMatchingCandidate/:jpId                       controllers.Application.testMatchingCandidate(jpId: Long)
 
 # Scrap API
 # ~~~~~~~~~~~~~
@@ -221,6 +258,7 @@ POST        /api/deactiveToActive                                         contro
 
 ## Compute API
 GET         /api/compute/updateAllRelevantJobCategories                    controllers.Application.updateAllRelevantJobCategories()
+POST        /api/compute/updateAllActivityScores                           controllers.Application.updateAllActivityScores()
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /robots.txt                                                   controllers.Assets.at(path="/public", file="robots.txt")

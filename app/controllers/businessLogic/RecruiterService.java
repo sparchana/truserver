@@ -1,30 +1,45 @@
 package controllers.businessLogic;
 
 import api.InteractionConstants;
+import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.AddCompanyRequest;
+import api.http.httpRequest.Recruiter.AddCreditRequest;
 import api.http.httpRequest.Recruiter.AddRecruiterRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpResponse.AddCompanyResponse;
-import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
+import api.http.httpResponse.Recruiter.AddCreditResponse;
 import api.http.httpResponse.Recruiter.AddRecruiterResponse;
 import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
+import api.http.httpResponse.Recruiter.UnlockContactResponse;
+import api.http.httpResponse.ResetPasswordResponse;
+import controllers.businessLogic.Recruiter.RecruiterAuthService;
+import controllers.businessLogic.Recruiter.RecruiterInteractionService;
+import controllers.businessLogic.Recruiter.RecruiterLeadService;
+import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
+import models.entity.Recruiter.RecruiterAuth;
+import models.entity.Recruiter.RecruiterLead;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
-import models.entity.Static.Locality;
-import models.entity.Static.RecruiterStatus;
+import models.entity.Recruiter.Static.RecruiterCreditCategory;
+import models.entity.Recruiter.Static.RecruiterStatus;
+import models.util.EmailUtil;
 import models.util.SmsUtil;
 import models.util.Util;
+import org.apache.commons.mail.EmailException;
 import play.Logger;
+import play.mvc.Result;
 
-import javax.persistence.NonUniqueResultException;
-import java.util.List;
 import java.util.UUID;
 
-import static controllers.businessLogic.PartnerInteractionService.createInteractionForPartnerLogin;
+import static controllers.businessLogic.PartnerInteractionService.createInteractionForPartnerTriedToResetPassword;
+import static controllers.businessLogic.Recruiter.RecruiterInteractionService.*;
+import static models.util.SmsUtil.sendWelcomeSmsFromRecruiter;
 import static models.util.Util.generateOtp;
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
+import static play.mvc.Results.ok;
 
 /**
  * Created by batcoder1 on 7/7/16.
@@ -37,6 +52,20 @@ public class RecruiterService {
             return recruiterProfile;
         }
         return null;
+    }
+
+    private static void createAndSaveDummyAuthFor(RecruiterProfile recruiterProfile) {
+        // create dummy auth
+        RecruiterAuth authToken = new RecruiterAuth(); // constructor instantiate createtimestamp, updatetimestamp, sessionid, authpasswordsalt
+        String dummyPassword = String.valueOf(Util.randomLong());
+        authToken.setRecruiterAuthStatus(ServerConstants.RECRUITER_STATUS_NOT_VERIFIED);
+        authToken.setRecruiterId(recruiterProfile.getRecruiterProfileId());
+        authToken.setPasswordMd5(Util.md5(dummyPassword + authToken.getPasswordSalt()));
+        authToken.save();
+
+        sendWelcomeSmsFromRecruiter(recruiterProfile.getRecruiterProfileName(), recruiterProfile.getRecruiterProfileMobile(), dummyPassword);
+        Logger.info("Dummy auth created + otp triggered + auth saved for recruiter " + recruiterProfile.getRecruiterProfileMobile());
+
     }
 
     public static LoginResponse login(String loginMobile, String loginPassword){
@@ -62,17 +91,22 @@ public class RecruiterService {
                     loginResponse.setAuthSessionId(recruiterAuth.getAuthSessionId());
                     loginResponse.setSessionExpiryInMilliSecond(recruiterAuth.getAuthSessionIdExpiryMillis());
 
+                    loginResponse.setIsCandidateVerified(recruiterAuth.getRecruiterAuthStatus());
+
                     /* adding session details */
                     RecruiterAuthService.addSession(recruiterAuth, existingRecruiter);
                     String sessionId = session().get("sessionId");
                     recruiterAuth.update();
+
+                    //adding login interaction
+                    RecruiterInteractionService.createInteractionForRecruiterLogin(existingRecruiter.getRecruiterProfileUUId());
                     Logger.info("Login Successful");
                 } else {
-                    loginResponse.setStatus(loginResponse.STATUS_WRONG_PASSWORD);
+                    loginResponse.setStatus(LoginResponse.STATUS_WRONG_PASSWORD);
                     Logger.info("Incorrect Password");
                 }
             } else {
-                loginResponse.setStatus(loginResponse.STATUS_NO_USER);
+                loginResponse.setStatus(LoginResponse.STATUS_NO_USER);
                 Logger.info("No User");
             }
         }
@@ -87,6 +121,9 @@ public class RecruiterService {
         Logger.info("Checking for mobile number: " + FormValidator.convertToIndianMobileFormat(recruiterSignUpRequest.getRecruiterMobile()));
         RecruiterProfile recruiterProfile = isRecruiterExists(FormValidator.convertToIndianMobileFormat(recruiterSignUpRequest.getRecruiterMobile()));
 
+        String result = "";
+        String objectAUUId = "";
+        Integer interactionType;
         recruiterSignUpResponse.setRecruiterMobile(recruiterSignUpRequest.getRecruiterMobile());
         if(recruiterProfile == null){
             //checking if company exists or not
@@ -95,6 +132,7 @@ public class RecruiterService {
                 AddCompanyResponse addCompanyResponse;
                 AddCompanyRequest addCompanyRequest = new AddCompanyRequest();
                 addCompanyRequest.setCompanyName(recruiterSignUpRequest.getRecruiterCompanyName());
+                addCompanyRequest.setCompanyLogo(ServerConstants.DEFAULT_COMPANY_LOGO);
                 addCompanyRequest.setCompanyStatus(1);
                 addCompanyResponse = CompanyService.addCompany(addCompanyRequest);
 
@@ -122,6 +160,13 @@ public class RecruiterService {
 
             newRecruiter.save();
 
+            //assigning 5 free contact unlock credits for the recruiter
+            addContactCredit(newRecruiter, 5);
+
+            interactionType = InteractionConstants.INTERACTION_TYPE_RECRUITER_SIGN_UP;
+            result = InteractionConstants.INTERACTION_RESULT_NEW_RECRUITER;
+            objectAUUId = newRecruiter.getRecruiterProfileUUId();
+
             recruiterSignUpResponse.setStatus(AddRecruiterResponse.STATUS_SUCCESS);
             recruiterSignUpResponse.setRecruiterId(newRecruiter.getRecruiterProfileId());
             Logger.info("Recruiter successfully saved");
@@ -131,24 +176,37 @@ public class RecruiterService {
             if(auth == null ) {
                 Logger.info("recruiter auth doesn't exists for this recruiter");
                 getAndSetRecruiterValues(recruiterSignUpRequest, recruiterProfile, null);
+
                 recruiterSignUpResponse.setStatus(AddRecruiterResponse.STATUS_SUCCESS);
                 recruiterSignUpResponse.setRecruiterId(recruiterProfile.getRecruiterProfileId());
                 recruiterSignUpResponse.setRecruiterMobile(recruiterProfile.getRecruiterProfileMobile());
 
-                triggerOtp(newRecruiter, recruiterSignUpResponse);
+                triggerOtp(recruiterProfile, recruiterSignUpResponse);
+
+                interactionType = InteractionConstants.INTERACTION_TYPE_EXISTING_RECRUITER_TRIED_SIGNUP;
+                result = InteractionConstants.INTERACTION_RESULT_EXISTING_RECRUITER_VERIFICATION;
+                objectAUUId = recruiterProfile.getRecruiterProfileUUId();
             } else{
                 Logger.info("Recruiter Already exists");
+                interactionType = InteractionConstants.INTERACTION_TYPE_EXISTING_RECRUITER_TRIED_SIGNUP_AND_SIGNUP_NOT_ALLOWED;
+                result = InteractionConstants.INTERACTION_RESULT_EXISTING_RECRUITER_SIGNUP;
                 recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.STATUS_EXISTS);
             }
             recruiterProfile.update();
         }
 
+        //creating interaction
+        Logger.info("Creating signup interaction for recruiter");
+        String createdBy = InteractionConstants.INTERACTION_CREATED_SELF;
+        RecruiterInteractionService.createInteractionForRecruiterSignUp(objectAUUId, result, interactionType, createdBy);
 
         return recruiterSignUpResponse;
     }
 
-    public static AddRecruiterResponse createRecruiterProfile(RecruiterSignUpRequest recruiterSignUpRequest) {
+    public static AddRecruiterResponse createRecruiterProfile(RecruiterSignUpRequest recruiterSignUpRequest, InteractionService.InteractionChannelType channelType) {
         AddRecruiterResponse addRecruiterResponse = new AddRecruiterResponse();
+        String result = "";
+        Integer interactionType;
         Company existingCompany = Company.find.where().eq("companyId", recruiterSignUpRequest.getRecruiterCompany()).findUnique();
         if(existingCompany != null){
             RecruiterProfile existingRecruiter = isRecruiterExists(FormValidator.convertToIndianMobileFormat(recruiterSignUpRequest.getRecruiterMobile()));
@@ -170,11 +228,25 @@ public class RecruiterService {
 
                 newRecruiter.save();
 
+                //assigning 5 free contact unlock credits for the recruiter
+                addContactCredit(newRecruiter, 5);
+
+                //setting all the credit values
+                setCreditHistoryValues(newRecruiter, recruiterSignUpRequest);
+
                 addRecruiterResponse.setStatus(AddRecruiterResponse.STATUS_SUCCESS);
                 addRecruiterResponse.setRecruiterId(newRecruiter.getRecruiterProfileId());
 
                 RecruiterSignUpResponse recruiterSignUpResponse = new RecruiterSignUpResponse();
-//                triggerOtp(newRecruiter, recruiterSignUpResponse);
+                createAndSaveDummyAuthFor(newRecruiter);
+
+                result = InteractionConstants.INTERACTION_RESULT_RECRUITER_SIGNUP_VIA_SUPPORT;
+                interactionType = InteractionConstants.INTERACTION_TYPE_RECRUITER_SIGN_UP;
+
+                //creating interaction
+                Logger.info("Creating signup interaction for recruiter");
+                String createdBy = session().get("sessionUsername");
+                RecruiterInteractionService.createInteractionForRecruiterSignUp(newRecruiter.getRecruiterProfileUUId(), result, interactionType, createdBy);
                 Logger.info("Recruiter successfully saved");
             } else{
                 existingRecruiter = getAndSetRecruiterValues(recruiterSignUpRequest, existingRecruiter, existingCompany);
@@ -191,6 +263,18 @@ public class RecruiterService {
                 existingRecruiter.setRecruiterLead(lead);
 
                 existingRecruiter.update();
+
+                //setting all the credit values
+                setCreditHistoryValues(existingRecruiter, recruiterSignUpRequest);
+
+                if(channelType == InteractionService.InteractionChannelType.SELF){
+                    result = InteractionConstants.INTERACTION_RESULT_RECRUITER_INFO_UPDATED_SELF;
+                } else{
+                    result = InteractionConstants.INTERACTION_RESULT_RECRUITER_INFO_UPDATED_SUPPORT;
+                }
+                //adding interaction
+                createInteractionForRecruiterProfileUpdate(existingRecruiter.getRecruiterProfileUUId(), result, channelType);
+
                 addRecruiterResponse.setRecruiterId(existingRecruiter.getRecruiterProfileId());
                 addRecruiterResponse.setStatus(AddRecruiterResponse.STATUS_UPDATE);
                 Logger.info("Recruiter already exists. Updated The recruiter");
@@ -202,7 +286,130 @@ public class RecruiterService {
         return addRecruiterResponse;
     }
 
-    public static RecruiterProfile getAndSetRecruiterValues(AddRecruiterRequest addRecruiterRequest, RecruiterProfile newRecruiter, Company existingCompany){
+    private static void setCreditHistoryValues(RecruiterProfile existingRecruiter, RecruiterSignUpRequest addRecruiterRequest) {
+        //setting values for candidate contact unlock credits
+        if(addRecruiterRequest.getContactCredits() != null && addRecruiterRequest.getContactCredits() != 0){
+            //has candidate contact unlock credit, hence make an entry in recruiterPayment table
+//            RecruiterPayment recruiterPayment = new RecruiterPayment();
+            RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
+
+            //setting creditCategory
+            RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where()
+                    .eq("recruiter_credit_category_id", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK)
+                    .findUnique();
+
+            if(recruiterCreditCategory != null){
+                //recruiterPayment.setRecruiterCreditCategory(recruiterCreditCategory);
+                recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
+            }
+
+            //setting recruiter profile
+            //recruiterPayment.setRecruiterProfile(existingRecruiter);
+            recruiterCreditHistory.setRecruiterProfile(existingRecruiter);
+
+            //setting credit amount in rupees
+            //recruiterPayment.setRecruiterPaymentAmount(addRecruiterRequest.getRecruiterContactCreditAmount());
+
+            //setting credit unit price
+            //if(addRecruiterRequest.getRecruiterContactCreditUnitPrice() != null && addRecruiterRequest.getRecruiterContactCreditUnitPrice() != 0){
+            //    recruiterPayment.setRecruiterCreditUnitPrice(addRecruiterRequest.getRecruiterContactCreditUnitPrice());
+            //}
+            //setting credit mode (pre pay, post pay)
+            //if(addRecruiterRequest.getRecruiterCreditMode() != null){
+            //    recruiterPayment.setRecruiterPaymentMode(addRecruiterRequest.getRecruiterCreditMode());
+            //}
+            //computing total credits with respect to unit price
+            Integer availableCredits = 0;
+            Integer usedCredits = 0;
+            RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
+                    .eq("RecruiterProfileId", existingRecruiter.getRecruiterProfileId())
+                    .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK)
+                    .setMaxRows(1)
+                    .orderBy("create_timestamp desc")
+                    .findUnique();
+
+            if(recruiterCreditHistoryLatest != null){
+                availableCredits = recruiterCreditHistoryLatest.getRecruiterCreditsAvailable();
+                usedCredits = recruiterCreditHistoryLatest.getRecruiterCreditsUsed();
+            }
+
+            availableCredits = availableCredits + (addRecruiterRequest.getContactCredits());
+            recruiterCreditHistory.setRecruiterCreditsAvailable(availableCredits);
+            recruiterCreditHistory.setRecruiterCreditsUsed(usedCredits);
+            if(session().get("sessionUsername") != null){
+                recruiterCreditHistory.setRecruiterCreditsAddedBy(session().get("sessionUsername"));
+            } else{
+                recruiterCreditHistory.setRecruiterCreditsAddedBy("Not specified");
+            }
+
+            //saving the values
+            recruiterCreditHistory.save();
+//            recruiterPayment.save();
+        }
+        //setting values for interview unlock credits
+        if(addRecruiterRequest.getInterviewCredits() != null && addRecruiterRequest.getInterviewCredits() != 0){
+            //has interview unlock credit, hence make an entry in recruiterPayment table
+            //RecruiterPayment recruiterPayment = new RecruiterPayment();
+            RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
+
+            //setting creditCategory
+            RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where()
+                    .eq("recruiter_credit_category_id", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
+                    .findUnique();
+
+            if(recruiterCreditCategory != null){
+                //recruiterPayment.setRecruiterCreditCategory(recruiterCreditCategory);
+                recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
+            }
+
+            //setting recruiter profile
+            //recruiterPayment.setRecruiterProfile(existingRecruiter);
+            recruiterCreditHistory.setRecruiterProfile(existingRecruiter);
+
+            //setting credit amount in rupees
+            //recruiterPayment.setRecruiterPaymentAmount(addRecruiterRequest.getRecruiterInterviewCreditAmount());
+
+            //setting credit unit price
+            //if(addRecruiterRequest.getRecruiterInterviewCreditUnitPrice() != null && addRecruiterRequest.getRecruiterInterviewCreditUnitPrice() != 0){
+            //    recruiterPayment.setRecruiterCreditUnitPrice(addRecruiterRequest.getRecruiterInterviewCreditUnitPrice());
+            //}
+
+            //setting credit mode (pre pay, post pay)
+            //if(addRecruiterRequest.getRecruiterCreditMode() != null){
+            //    recruiterPayment.setRecruiterPaymentMode(addRecruiterRequest.getRecruiterCreditMode());
+            //}
+
+            //computing total credits with respect to unit price
+            Integer availableCredits = 0;
+            Integer usedCredits = 0;
+            RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
+                    .eq("RecruiterProfileId", existingRecruiter.getRecruiterProfileId())
+                    .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
+                    .setMaxRows(1)
+                    .orderBy("create_timestamp desc")
+                    .findUnique();
+
+            if(recruiterCreditHistoryLatest != null){
+                availableCredits = recruiterCreditHistoryLatest.getRecruiterCreditsAvailable();
+                usedCredits = recruiterCreditHistoryLatest.getRecruiterCreditsUsed();
+            }
+
+            availableCredits = availableCredits + (addRecruiterRequest.getInterviewCredits());
+            recruiterCreditHistory.setRecruiterCreditsAvailable(availableCredits);
+            recruiterCreditHistory.setRecruiterCreditsUsed(usedCredits);
+            if(session().get("sessionUsername") != null){
+                recruiterCreditHistory.setRecruiterCreditsAddedBy(session().get("sessionUsername"));
+            } else{
+                recruiterCreditHistory.setRecruiterCreditsAddedBy("Not specified");
+            }
+
+            //saving the values
+            recruiterCreditHistory.save();
+            //recruiterPayment.save();
+        }
+    }
+
+    private static RecruiterProfile getAndSetRecruiterValues(AddRecruiterRequest addRecruiterRequest, RecruiterProfile newRecruiter, Company existingCompany){
         if(existingCompany != null){
             newRecruiter.setRecCompany(existingCompany);
         }
@@ -217,6 +424,12 @@ public class RecruiterService {
         if(addRecruiterRequest.getRecruiterEmail() != null){
             newRecruiter.setRecruiterProfileEmail(addRecruiterRequest.getRecruiterEmail());
         }
+        if(addRecruiterRequest.getRecruiterAlternateMobile() != null){
+            newRecruiter.setRecruiterAlternateMobile(addRecruiterRequest.getRecruiterAlternateMobile());
+        }
+        if(addRecruiterRequest.getRecruiterLinkedinProfile() != null){
+            newRecruiter.setRecruiterLinkedinProfile(addRecruiterRequest.getRecruiterLinkedinProfile());
+        }
         return newRecruiter;
     }
 
@@ -226,5 +439,166 @@ public class RecruiterService {
 
         recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.getStatusSuccess());
         recruiterSignUpResponse.setOtp(randomPIN);
+    }
+
+    public static Result unlockCandidate(RecruiterProfile recruiterProfile, Long candidateId) {
+        UnlockContactResponse unlockContactResponse = new UnlockContactResponse();
+        Candidate candidate = Candidate.find.where().eq("CandidateId", candidateId).findUnique();
+        if(candidate != null){
+            RecruiterToCandidateUnlocked existingUnlockedCandidate = RecruiterToCandidateUnlocked.find.where()
+                    .eq("recruiterProfileId", recruiterProfile.getRecruiterProfileId())
+                    .eq("CandidateId", candidate.getCandidateId())
+                    .findUnique();
+
+            if(existingUnlockedCandidate == null){
+                // this candidate has not been unlocked by the recruiter, hence unlock it
+                Logger.info("Recruiter with mobile no: " + recruiterProfile.getRecruiterProfileMobile() + " is unlocking candidate with mobile: " + candidate.getCandidateMobile());
+
+                //making an entry in recruiter credit history table
+                RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
+                recruiterCreditHistory.setRecruiterProfile(recruiterProfile);
+
+                RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where().eq("recruiter_credit_category_id", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK).findUnique();
+                if(recruiterCreditCategory != null){
+                    recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
+                }
+
+                RecruiterCreditHistory recruiterCreditHistoryLatest = RecruiterCreditHistory.find.where()
+                        .eq("RecruiterProfileId", recruiterProfile.getRecruiterProfileId())
+                        .eq("RecruiterCreditCategory", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK)
+                        .setMaxRows(1)
+                        .orderBy("create_timestamp desc")
+                        .findUnique();
+
+                if(recruiterCreditHistoryLatest != null){
+                    if(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() > 0){
+                        recruiterCreditHistory.setRecruiterCreditsAvailable(recruiterCreditHistoryLatest.getRecruiterCreditsAvailable() - 1);
+                        recruiterCreditHistory.setRecruiterCreditsUsed(recruiterCreditHistoryLatest.getRecruiterCreditsUsed() + 1);
+                        //adding a entry in recruiterToCandidateUnblock table
+                        RecruiterToCandidateUnlocked recruiterToCandidateUnlocked = new RecruiterToCandidateUnlocked();
+
+                        recruiterToCandidateUnlocked.setRecruiterProfile(recruiterProfile);
+                        recruiterToCandidateUnlocked.setCandidate(candidate);
+                        recruiterCreditHistory.setRecruiterCreditsAddedBy(ServerConstants.SELF_UNLOCKED_CANDIDATE_CONTACT);
+
+                        //saving/updating all the rows
+                        recruiterCreditHistory.save();
+                        recruiterToCandidateUnlocked.save();
+
+                        //adding interaction
+                        String objAUuid = candidate.getCandidateUUId();
+                        String objBUuid = recruiterProfile.getRecruiterProfileUUId();
+                        createInteractionForRecruiterUnlockCandidateContact(objAUuid, objBUuid);
+
+                        unlockContactResponse.setStatus(UnlockContactResponse.STATUS_SUCCESS);
+                        unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
+                        unlockContactResponse.setCandidateId(candidate.getCandidateId());
+                        return ok(toJson(unlockContactResponse));
+                    } else {
+                        unlockContactResponse.setStatus(UnlockContactResponse.STATUS_NO_CREDITS);
+                        unlockContactResponse.setCandidateMobile(null);
+                        unlockContactResponse.setCandidateId(null);
+                        return ok(toJson(unlockContactResponse));
+                    }
+                } else{
+                    unlockContactResponse.setStatus(UnlockContactResponse.STATUS_NO_CREDITS);
+                    unlockContactResponse.setCandidateMobile(null);
+                    unlockContactResponse.setCandidateId(null);
+                    return ok(toJson(unlockContactResponse));
+                }
+            } else{
+                unlockContactResponse.setStatus(UnlockContactResponse.STATUS_ALREADY_UNLOCKED);
+                unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
+                unlockContactResponse.setCandidateId(candidate.getCandidateId());
+                return ok(toJson(unlockContactResponse));
+            }
+        }
+        Logger.info("Recruiter with mobile no: " + recruiterProfile.getRecruiterProfileMobile() + " does not have credits to unlock candidate");
+        unlockContactResponse.setStatus(UnlockContactResponse.STATUS_FAILURE);
+        unlockContactResponse.setCandidateMobile(null);
+        unlockContactResponse.setCandidateId(null);
+        return ok(toJson(unlockContactResponse));
+    }
+
+    private static void addContactCredit(RecruiterProfile recruiterProfile, Integer creditCount){
+        //new recruiter hence giving 5 free contact unlock credits
+        RecruiterCreditHistory recruiterCreditHistory = new RecruiterCreditHistory();
+
+        RecruiterCreditCategory recruiterCreditCategory = RecruiterCreditCategory.find.where().eq("recruiter_credit_category_id", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK).findUnique();
+        if(recruiterCreditCategory != null){
+            recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
+        }
+        recruiterCreditHistory.setRecruiterProfile(recruiterProfile);
+        recruiterCreditHistory.setRecruiterCreditsAvailable(creditCount);
+        recruiterCreditHistory.setRecruiterCreditsUsed(0);
+        if(session().get("sessionUsername") != null){
+            recruiterCreditHistory.setRecruiterCreditsAddedBy(session().get("sessionUsername"));
+        } else{
+            recruiterCreditHistory.setRecruiterCreditsAddedBy("Not specified");
+        }
+        recruiterCreditHistory.save();
+    }
+
+    public static AddCreditResponse requestCreditForRecruiter(AddCreditRequest addCreditRequest){
+        AddCreditResponse addCreditResponse = new AddCreditResponse();
+        if(session().get("recruiterId") != null){
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("recruiterProfileId", session().get("recruiterId")).findUnique();
+            if(recruiterProfile != null){
+                Logger.info("Sending credit request Sms");
+                SmsUtil.sendRequestCreditSms(recruiterProfile, addCreditRequest);
+                Logger.info("Sending credit request Email");
+
+                //new thread
+                new Thread(() -> {
+                    try {
+                        EmailUtil.sendRequestCreditEmail(recruiterProfile, addCreditRequest);
+                    } catch (EmailException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+
+                //adding interaction
+                String result = InteractionConstants.INTERACTION_RESULT_RECRUITER_CREDIT_REQUEST + addCreditRequest.getNoOfContactCredits()
+                        + " contact credits and " + addCreditRequest.getNoOfInterviewCredits() + " interview credits";
+                createInteractionForRecruiterCreditRequest(recruiterProfile.getRecruiterProfileUUId(), result);
+                Logger.info("Interaction Saved");
+
+                addCreditResponse.setStatus(AddCreditResponse.STATUS_SUCCESS);
+            } else{
+                addCreditResponse.setStatus(AddCreditResponse.STATUS_FAILURE);
+            }
+        } else{
+            addCreditResponse.setStatus(AddCreditResponse.STATUS_FAILURE);
+        }
+        return addCreditResponse;
+    }
+
+    public static ResetPasswordResponse findRecruiterAndSendOtp(String mobile) {
+        ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
+        RecruiterProfile existingRecruiter = isRecruiterExists(mobile);
+        if(existingRecruiter != null){
+            Logger.info("Recruiter Exists");
+            RecruiterAuth existingAuth = RecruiterAuth.find.where().eq("recruiter_id", existingRecruiter.getRecruiterProfileId()).findUnique();
+            if(existingAuth == null){
+                resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
+                Logger.info("reset password not allowed as Auth don't exists");
+            } else {
+                int randomPIN = generateOtp();
+                existingRecruiter.update();
+                SmsUtil.sendResetPasswordOTPSmsToRecruiter(randomPIN, existingRecruiter.getRecruiterProfileMobile());
+
+                String interactionResult = InteractionConstants.INTERACTION_RESULT_RECRUITER_TRIED_TO_RESET_PASSWORD;
+                String objAUUID = "";
+                objAUUID = existingRecruiter.getRecruiterProfileUUId();
+                createInteractionForRecruiterTriedToResetPassword(objAUUID, interactionResult);
+
+                resetPasswordResponse.setOtp(randomPIN);
+                resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);
+            }
+        } else{
+            resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
+            Logger.info("reset password not allowed as password don't exists");
+        }
+        return resetPasswordResponse;
     }
 }

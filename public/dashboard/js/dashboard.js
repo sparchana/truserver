@@ -423,16 +423,17 @@ function processDataCheckDegree(returnedData) {
 
 function processDataCheckEducation(returnedData) {
     $('#candidateHighestEducation').html('');
-    returnedData.forEach(function(education)
-    {
-        var id = education.educationId;
-        var name = education.educationName;
-        var item = {};
-        item ["id"] = id;
-        item ["name"] = name;
-        var option ='<label class="btn btn-custom-check educationBtn" onchange="checkInstitute()"><input type="radio" name="highestEducation" id=\"highestEducation' + id + '\" value=\"' + id + '\">' + name + '</label>';
-        $('#candidateHighestEducation').append(option);
-        educationArray.push(item);
+    returnedData.forEach(function(education) {
+        if(education.educationId != 6){
+            var id = education.educationId;
+            var name = education.educationName;
+            var item = {};
+            item ["id"] = id;
+            item ["name"] = name;
+            var option ='<label class="btn btn-custom-check educationBtn" onchange="checkInstitute()"><input type="radio" name="highestEducation" id=\"highestEducation' + id + '\" value=\"' + id + '\">' + name + '</label>';
+            $('#candidateHighestEducation').append(option);
+            educationArray.push(item);
+        }
     });
 }
 
@@ -451,6 +452,7 @@ function checkInstitute() {
 /* Prefill the data */
 
 function processDataAndFillAllFields(returnedData) {
+    console.log(returnedData);
     candidateInformation = returnedData;
     $("#jobCount").html(Object.keys(candidateInformation.jobApplicationList).length);
 

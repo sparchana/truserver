@@ -50,9 +50,10 @@
 }
 
 div.Tokenize ul.TokensContainer li.TokenSearch input{
-    height: auto;
-    width: auto;
+    height: 10%;
+    width: 100%;
     box-shadow: none;
+    border-bottom:1px solid #1d1d1d;
 }
 
 input::-webkit-outer-spin-button,
@@ -63,9 +64,7 @@ input::-webkit-inner-spin-button {
 }
 body{
     font-family:Lato;
-    background-color: #fafafa;
 }
-
 nav{
     background: transparent;
     box-shadow: 0 0 0 0;
@@ -96,6 +95,7 @@ nav{
     height: 80%;
     width: 100%;
     padding: 4%;
+    cursor: default;
 }
 
 .custom-parallax-container{
@@ -119,6 +119,16 @@ nav{
     text-align: left;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
     background: rgba(0, 0, 0, 0.5);
+}
+nav{
+    background: transparent;
+    box-shadow: 0 0 0 0;
+    transition: 0.2s;
+}
+.navbar-fixed{
+    position: absolute;
+    z-index:9999;
+    box-shadow: none;
 }
 
 input:not([type]):focus:not([readonly]),
@@ -162,9 +172,7 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
     padding: 1%;
     margin: 0;
     background-color: #fff;
-
 }
-
 #sectionTwo{
     height: 200px;
 }
@@ -211,22 +219,34 @@ textarea.materialize-textarea:focus:not([readonly]) + label {
 }
 #modalSignUp{
     overflow: hidden;
-    width: 45%;
+    width: 40%;
+    margin-top: 0;
+}
+#modalLogIn{
+    overflow: hidden;
+    width: 40%;
     margin-top: 0;
 }
 #modalLeftBox{
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
     background-color: rgb(55, 71, 79);
     height: 100vh;
 }
 #inputContainerModalSignup{
     text-align: center;
-    padding: 2%;
 }
 #inputContainerModalSignup >.input-field > input{
-    margin: 0;
+    margin:0 0 2% 0;
+}
+#SignSubmitUpBtn{
+    margin:4% 0;
+    width: 100%;
 }
 #modalRightBox{
-    margin-top:10%;
+    margin-top:6%;
+    padding: 0 4%;
     text-align: center;
 }
 footer.page-footer .footer-copyright{
@@ -245,6 +265,12 @@ footer.page-footer .footer-copyright{
     background: #eceeeb;
     margin: 3%;
 }
+.materialDashSignUp{
+    height: 1px;
+    width: 25%;
+    background: #eceeeb;
+    margin: 3%;
+}
 #fbLogo:hover{
     cursor:pointer;
     content:url(/assets/recruiter/img/fb.svg);
@@ -256,11 +282,126 @@ footer.page-footer .footer-copyright{
     box-shadow: none;
     background: transparent;
 }
-
+#modalLogIn{
+    color:#000;
+    margin-top:0;
+    width:30%;
+    box-shadow: none;
+    background: transparent;
+}
+#modalOtp{
+    color:#000;
+    margin-top:0;
+    width:30%;
+    box-shadow: none;
+    background: transparent;
+}
 #mobileNumber{
     color: #000;
 }
+
+/* recruiter home css */
+body#recruiterHome{
+    background: #f8f6ed;
+}
+
+.packCol{
+    border-radius: 8px;
+    border: 1px dashed #dbdace;
+    padding: 16px;
+}
+
+.packCol  img{
+    width: 36px;
+}
+
+.packCol  div{
+    text-align: center;
+    display: block;
+    font-size: 16px;
+    width: 100%;
+}
+.packCol  p{
+    text-align: center;
+    display: block;
+    font-size: 14px;
+}
+
+#startNoDiv:hover{
+    color: #117ec4;
+    text-underline: none;
+}
+.recruiterHomeNoBackBox{
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.12);
+    display: block;
+    padding: 12px;
+    background: #fff;
+    border-radius: 4px;
+}
+.recruiterHomeMessgeBox{
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.12);
+    display: block;
+    margin-bottom: 16px;
+    background: #fff;
+    border-radius: 4px;
+}
+.recruiterHomeHighlightCard{
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.12);
+    height: auto;
+    display: block;
+    margin-top: 2%;
+    margin-bottom: 2%;
+    background: #fff;
+    border-radius: 4px;
+}
+.recruiterHomeMainCard{
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.12);
+    height: auto;
+    display: block;
+    margin-top: 6%;
+    padding-top: 24px;
+    margin-bottom: 16px;
+    background: #fff;
+    border-radius: 4px;
+}
+
+#userImgRecruiter{
+    border: 2px solid #c7c7c7;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+}
+
+.back-banner{
+    height: 380px;
+    background: #348F50; /* fallback for old browsers */
+    background: -webkit-linear-gradient(to left, #348F50 , #56B4D3); /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to left, #348F50 , #56B4D3); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background-repeat: no-repeat;
+}
+input[type=text]:disabled{
+    color: rgb(169, 169, 169);
+}
+
 @media screen and (max-width: 768px) {
+
+    .packCol img{
+        width: 15px;
+    }
+    .packCol  p{
+        text-align: center;
+        display: block;
+        font-size: 10px;
+    }
+    .packCol  div{
+        display: block;
+        font-size: 12px;
+        width: 100%;
+    }
+    .recruiterHomeMainCard {
+        margin-top: 16%;
+        padding: 4%;
+    }
     #mobileNumber{
         color: #fff;
     }
@@ -304,5 +445,22 @@ footer.page-footer .footer-copyright{
         margin-top: 11%;
         content:url("/assets/common/img/logo-main.gif");
     }
+    #modalSignUp{
+        overflow: scroll;
+        width: 90%;
+        margin-top: 0;
+    }
+    #modalLogIn{
+        width: 90%;
+        margin-top: 20px;
+    }
+    .side-nav a:hover{
+        color: #2ec866;
+    }
+    #modalOtp{
+        width: 90%;
+        margin-top:20px;
+    }
+
 }
 

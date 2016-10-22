@@ -6,6 +6,7 @@ import com.avaje.ebean.annotation.PrivateOwned;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.OM.*;
 import models.entity.Static.*;
 
@@ -159,6 +160,24 @@ public class JobPost extends Model {
     @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
     private List<InterviewDetails> interviewDetailsList;
 
+    @Column(name = "JobPostMaxAge", columnDefinition = "int unsigned null")
+    private Integer jobPostMaxAge;
+
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
+    private List<JobPostLanguageRequirement> jobPostLanguageRequirements;
+
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
+    private List<JobPostAssetRequirement> jobPostAssetRequirements;
+
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
+    private List<JobPostDocumentRequirement> jobPostDocumentRequirements;
+
     public static Finder<String, JobPost> find = new Finder(JobPost.class);
 
     public JobPost() {
@@ -202,6 +221,10 @@ public class JobPost extends Model {
         this.jobPostApplicationList = jobPost.jobPostApplicationList;
         this.gender = jobPost.gender;
         this.source = jobPost.source;
+        this.jobPostMaxAge = jobPost.jobPostMaxAge;
+        this.jobPostLanguageRequirements = jobPost.jobPostLanguageRequirements;
+        this.jobPostDocumentRequirements = jobPost.jobPostDocumentRequirements;
+        this.jobPostAssetRequirements = jobPost.jobPostAssetRequirements;
     }
 
     public RecruiterProfile getRecruiterProfile() {
@@ -523,5 +546,37 @@ public class JobPost extends Model {
                 + "|" + exp + "|" + edu + "|" + getGender()
                 + "|" + getJobPostCreateTimestamp() + "|" + getSource();
         return toS;
+    }
+
+    public Integer getJobPostMaxAge() {
+        return jobPostMaxAge;
+    }
+
+    public void setJobPostMaxAge(Integer jobPostMaxAge) {
+        this.jobPostMaxAge = jobPostMaxAge;
+    }
+
+    public List<JobPostLanguageRequirement> getJobPostLanguageRequirements() {
+        return jobPostLanguageRequirements;
+    }
+
+    public void setJobPostLanguageRequirements(List<JobPostLanguageRequirement> jobPostLanguageRequirements) {
+        this.jobPostLanguageRequirements = jobPostLanguageRequirements;
+    }
+
+    public List<JobPostAssetRequirement> getJobPostAssetRequirements() {
+        return jobPostAssetRequirements;
+    }
+
+    public void setJobPostAssetRequirements(List<JobPostAssetRequirement> jobPostAssetRequirements) {
+        this.jobPostAssetRequirements = jobPostAssetRequirements;
+    }
+
+    public List<JobPostDocumentRequirement> getJobPostDocumentRequirements() {
+        return jobPostDocumentRequirements;
+    }
+
+    public void setJobPostDocumentRequirements(List<JobPostDocumentRequirement> jobPostDocumentRequirements) {
+        this.jobPostDocumentRequirements = jobPostDocumentRequirements;
     }
 }

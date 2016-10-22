@@ -34,11 +34,12 @@ paths = {
     css:  "./public/css/",
     js:   "./public/js/",
     supportCss: "./public/support/css/",
-    supportJs: "./public/support/js/"
+    supportJs: "./public/support/js/",
+    commonJs: "./public/common/js/",
 };
 
 jsOrder = {
-    bootstrap: paths.supportJs+"bootstrap.min.js",
+    bootstrap: paths.commonJs+"bootstrap.min.js",
     jquery: paths.supportJs+"jquery-1.12.0.min.js",
     jqDt: paths.supportJs+"jquery.dataTables.min.js",
     npProgress: paths.supportJs+"nprogress.js",
@@ -52,7 +53,8 @@ jsOrder = {
     datetimeMomentJs: paths.supportJs+"datetime-moment.js",
     jqueryUi: paths.supportJs+"jquery-ui.js",
     bsNotify: paths.supportJs+"bootstrap-notify.min.js",
-    searchController: paths.supportJs+"searchController.js"
+    searchController: paths.supportJs+"searchController.js",
+    workFlowController: paths.supportJs+"workFlowController.js"
 };
 
 cssOrder = {
@@ -103,7 +105,7 @@ gulp.task('styles', function() {
 
 // JS concat, strip debugging and minify
 gulp.task('supportScripts', function() {
-    gulp.src([jsOrder.bootstrap, jsOrder.jquery, jsOrder.jqDt, jsOrder.npProgress, jsOrder.tokenInput, jsOrder.btnDt, jsOrder.btnFlash, jsOrder.jsZip, jsOrder.vfsFonts, jsOrder.btnHtml5, jsOrder.momentJs, jsOrder.datetimeMomentJs, jsOrder.jqueryUi, jsOrder.bsNotify, jsOrder.searchController])
+    gulp.src([jsOrder.bootstrap, jsOrder.jquery, jsOrder.jqDt, jsOrder.npProgress, jsOrder.tokenInput, jsOrder.btnDt, jsOrder.btnFlash, jsOrder.jsZip, jsOrder.vfsFonts, jsOrder.btnHtml5, jsOrder.momentJs, jsOrder.datetimeMomentJs, jsOrder.jqueryUi, jsOrder.bsNotify])
         .pipe(concat('sapp.min.js'))
         .pipe(gulpif(argv.prod, uglify(), beautify()))
         .pipe(gulpif(argv.prod, stripDebug()))
@@ -135,8 +137,26 @@ gulp.task('datatableBundleStyle', function() {
         .pipe(gulp.dest('./public/build/support/'));
 });
 
+// individual JS minify
+gulp.task('searchControllerScript', function() {
+    gulp.src([jsOrder.searchController])
+        .pipe(concat('searchController.min.js'))
+        .pipe(gulpif(argv.prod, uglify(), beautify()))
+        .pipe(gulpif(argv.prod, stripDebug()))
+        .pipe(gulp.dest('./public/build/support/'));
+});
+// individual JS minify
+gulp.task('workFlowControllerScript', function() {
+    gulp.src([jsOrder.workFlowController])
+        .pipe(concat('workFlowController.min.js'))
+        .pipe(gulpif(argv.prod, uglify(), beautify()))
+        .pipe(gulpif(argv.prod, stripDebug()))
+        .pipe(gulp.dest('./public/build/support/'));
+});
+
 // default gulp task
-gulp.task('default', ['clean', 'scripts', 'styles', 'supportScripts', 'supportStyles', 'datatableBundleScript', 'datatableBundleStyle'], function() {
+gulp.task('default', ['clean', 'scripts', 'styles', 'supportScripts', 'supportStyles', 'datatableBundleScript',
+    'datatableBundleStyle', 'searchControllerScript', 'workFlowControllerScript'], function() {
     // watch for CSS changes
     gulp.watch(paths.css+'*.css', function() {
         gulp.run('styles');
@@ -160,6 +180,14 @@ gulp.task('default', ['clean', 'scripts', 'styles', 'supportScripts', 'supportSt
     // watch for datatable bundle js changes
     gulp.watch(paths.supportJs+'*.js', function() {
         gulp.run('datatableBundleScript');
+    });
+    // watch for searchController solo js changes
+    gulp.watch(paths.supportJs+'*.js', function() {
+        gulp.run('searchControllerScript');
+    });
+    // watch for workFlowControllerScript solo js changes
+    gulp.watch(paths.supportJs+'*.js', function() {
+        gulp.run('workFlowControllerScript');
     });
 });
 

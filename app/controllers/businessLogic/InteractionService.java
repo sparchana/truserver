@@ -396,4 +396,39 @@ public class InteractionService {
         InteractionService.createInteraction(interaction);
 
     }
+
+    public static void createInteractionForNewJobPost(String objAuuId, String objBuuId, Integer objectAType,
+                                                                        Integer interactionType, String interactionResult, String createdBy, Integer channel)
+    {
+        Interaction interaction = new Interaction(
+                objAuuId,
+                objectAType,
+                objBuuId,
+                ServerConstants.OBJECT_TYPE_NEW_JOB_POST,
+                interactionType,
+                null,
+                interactionResult,
+                createdBy,
+                channel
+        );
+        InteractionService.createInteraction(interaction);
+    }
+
+    /* Workflow Interaction */
+    public static void createWorkflowInteraction(String objAuuId, String objBuuId,
+                                                 Integer interactionType,String notes, String interactionResult)
+    {
+        Interaction interaction = new Interaction(
+                objAuuId,
+                ServerConstants.OBJECT_TYPE_JOB_POST_WORKFLOW,
+                objBuuId,
+                ServerConstants.OBJECT_TYPE_CANDIDATE,
+                interactionType,
+                notes,
+                interactionResult,
+                session().get("sessionUsername"),
+                INTERACTION_CHANNEL_SUPPORT_WEBSITE
+        );
+        InteractionService.createInteraction(interaction);
+    }
 }

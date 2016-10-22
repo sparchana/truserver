@@ -43,4 +43,4 @@ public String getUsername(Http.Context ctx)
 public Result onUnauthorized(Http.Context ctx) {
         return redirect(controllers.routes.Application.supportAuth());
         }
-        }
+}

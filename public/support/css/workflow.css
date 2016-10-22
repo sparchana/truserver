@@ -1,0 +1,88 @@
+.demo-layout-transparent .mdl-layout__header,
+.demo-layout-transparent .mdl-layout__drawer-button {
+    /* This background is dark, so we set text to white. Use 87% black instead if
+       your background is light. */
+    color: #000;
+}
+#logoutBtn{
+    background:#ffffff;
+}
+body{
+    font-family: 'Roboto','Helvetica','Arial',sans-serif!important;
+}
+.mdl-navigation a{
+    text-decoration:none;
+}
+.mdl-layout__drawer .mdl-navigation .mdl-navigation__link:hover {
+    background-color: rgb(191, 190, 188);
+}
+.mdl-layout__drawer .mdl-navigation .mdl-navigation__link--current {
+    background-color:rgb(63,81,181);
+    color: rgb(255,255,255);
+}
+.mdl-cell--12-col, .mdl-cell--12-col-desktop.mdl-cell--12-col-desktop{
+    width: 100%;
+}
+.mdl-layout__header-row{
+  height: 50px;
+}
+.mdl-layout__header{
+    min-height: 50px;
+}
+.mdl-layout__drawer-button{
+    line-height:42px;
+}
+#matchCandidateBtnBox{
+    margin-right: 0;
+    text-align: right;
+}
+.mdl-button{
+    text-transform: none;
+}
+.buttons-html5{
+    background-color: #eaf555;
+}
+#otherControls{
+    text-align: center;
+    margin-bottom: 5%;
+}
+.panel{
+    border:0;
+}
+.panel-heading{
+    background-color: rgb(63,81,181);
+    color: #ffffff;
+}
+
+.mdl-card {
+    width: 100%;
+    min-height: auto;
+}
+.mdl-card__supporting-text{
+    padding: 0;
+    width: 100%;
+    min-height: auto;
+}
+input[type=checkbox], input[type=radio]{
+ border:2px solid  #000;
+}
+@media screen and(min-width:768px){
+    #matchCandidateBtnBox{
+        text-align: center;
+    }
+}
+
+#candidateResultTable_wrapper table thead tr th{
+    color: rgb(255, 255, 255);
+}
+#candidateResultTable_wrapper table thead tr{
+    background-color: rgb(63,81,181);
+}
+
+.mdl-data-table th{
+    text-align: left !important;
+}
+.mdl-data-table td{
+    text-align: left !important;
+    padding-left: 17px !important;
+}

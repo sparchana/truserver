@@ -13,6 +13,13 @@ function getJob(){
     return jobArray;
 }
 
+function resetPassword() {
+    $("#loginModalHeading").html("Reset Password");
+    $('#loginModal').hide();
+    $('#form_forgot_password').show();
+}
+
+
 ///Scroll
 $(document).scroll(function(){
     if ($(this).scrollTop() > 80) {
@@ -22,7 +29,7 @@ $(document).scroll(function(){
         $('nav').css({"background": "transparent"});
     }
 });
-$(document).on('scroll', function() {
+$(document).scroll(function() {
     if($(this).scrollTop()>=$('#companyHiringBox').position().top){
         $("#candidateStats").css("opacity","1");
         $("#jobRolesStats").css("opacity","1");
@@ -60,7 +67,11 @@ function processDataCheckJobs(returnedData) {
 ///modal
 $(document).ready(function(){
     $('select').material_select();
-    $(".button-collapse").sideNav();
+    $('.button-collapse').sideNav({
+            menuWidth: 240,
+            edge: 'left',
+            closeOnClick: true
+    });
     $('.parallax').parallax();
     $('.modal-trigger').leanModal({dismissible: true});
 
