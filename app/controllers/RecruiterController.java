@@ -4,7 +4,6 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.AddJobPostRequest;
 import api.http.httpRequest.LoginRequest;
-import api.http.httpRequest.PartnerSignUpRequest;
 import api.http.httpRequest.Recruiter.AddCreditRequest;
 import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
@@ -20,7 +19,6 @@ import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import controllers.security.SecuredUser;
-import models.entity.Auth;
 import models.entity.JobPost;
 import models.entity.OM.JobApplication;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
@@ -33,10 +31,7 @@ import play.mvc.Result;
 import play.mvc.Security;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterSearchCandidate;
 import static play.libs.Json.toJson;
@@ -263,7 +258,7 @@ public class RecruiterController {
             e.printStackTrace();
         }
 
-        if(session().get("recruiterId") != null){
+        if(session().get("recruiterId") != null) {
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
             if(recruiterProfile != null){
                 if (matchingCandidateRequest != null) {
@@ -308,77 +303,28 @@ public class RecruiterController {
                         listToBeReturned.add(candidateWorkflowData);
                     }
 
-                    // sort
-                    for(int i = 0; i< listToBeReturned.size(); i++){
-                        for(int j = 0; j< listToBeReturned.size() - 1; j++) {
-                            if(matchingCandidateRequest.getSortBy() == 1){
-                                if (listToBeReturned.get(j).getExtraData().getLastActive() != null) {
-                                    try{
-                                        if (listToBeReturned.get(j).getExtraData().getLastActive().lastActiveValueId > listToBeReturned.get(j + 1).getExtraData().getLastActive().lastActiveValueId) {
-                                            CandidateWorkflowData tmp = new CandidateWorkflowData();
-                                            tmp.setCandidate(listToBeReturned.get(j).getCandidate());
-                                            tmp.setExtraData(listToBeReturned.get(j).getExtraData());
-
-                                            listToBeReturned.get(j).setCandidate(listToBeReturned.get(j + 1).getCandidate());
-                                            listToBeReturned.get(j).setExtraData(listToBeReturned.get(j + 1).getExtraData());
-
-                                            listToBeReturned.get(j + 1).setCandidate(tmp.getCandidate());
-                                            listToBeReturned.get(j + 1).setExtraData(tmp.getExtraData());
-                                        }
-                                    } catch (Exception e){}
-                                } else{
-                                    listToBeReturned.remove(j);
-                                }
-                            } else if(matchingCandidateRequest.getSortBy() == 2){
-                                if (listToBeReturned.get(j).getCandidate().getCandidateLastWithdrawnSalary() != null) {
-                                    try{
-                                        if (listToBeReturned.get(j).getCandidate().getCandidateLastWithdrawnSalary() < listToBeReturned.get(j + 1).getCandidate().getCandidateLastWithdrawnSalary()) {
-                                            CandidateWorkflowData tmp = new CandidateWorkflowData();
-                                            tmp.setCandidate(listToBeReturned.get(j).getCandidate());
-                                            tmp.setExtraData(listToBeReturned.get(j).getExtraData());
-
-                                            listToBeReturned.get(j).setCandidate(listToBeReturned.get(j + 1).getCandidate());
-                                            listToBeReturned.get(j).setExtraData(listToBeReturned.get(j + 1).getExtraData());
-
-                                            listToBeReturned.get(j + 1).setCandidate(tmp.getCandidate());
-                                            listToBeReturned.get(j + 1).setExtraData(tmp.getExtraData());
-                                        }
-                                    } catch (Exception ignored){}
-                                } else{
-                                    listToBeReturned.remove(j);
-                                }
-                            } else if(matchingCandidateRequest.getSortBy() == 3){
-                                if (listToBeReturned.get(j).getCandidate().getCandidateLastWithdrawnSalary() != null
-                                        && listToBeReturned.get(j + 1).getCandidate().getCandidateLastWithdrawnSalary() != null) {
-                                    try{
-                                        if (listToBeReturned.get(j).getCandidate().getCandidateLastWithdrawnSalary() > listToBeReturned.get(j + 1).getCandidate().getCandidateLastWithdrawnSalary()) {
-                                            CandidateWorkflowData tmp = new CandidateWorkflowData();
-                                            tmp.setCandidate(listToBeReturned.get(j).getCandidate());
-                                            tmp.setExtraData(listToBeReturned.get(j).getExtraData());
-
-                                            listToBeReturned.get(j).setCandidate(listToBeReturned.get(j + 1).getCandidate());
-                                            listToBeReturned.get(j).setExtraData(listToBeReturned.get(j + 1).getExtraData());
-
-                                            listToBeReturned.get(j + 1).setCandidate(tmp.getCandidate());
-                                            listToBeReturned.get(j + 1).setExtraData(tmp.getExtraData());
-                                        }
-                                    } catch (Exception ignored){}
-                                } else{
-                                    if(listToBeReturned.get(j).getCandidate().getCandidateLastWithdrawnSalary() != null){
-                                        listToBeReturned.remove(j);
-                                    } else{
-                                        listToBeReturned.remove(j + 1);
-                                    }
-                                }
-                            }
-
-                        }
+                    // sort by last active
+                    // TODO move 1,2,3 to server constant
+                    if (matchingCandidateRequest.getSortBy() == ServerConstants.REC_SORT_LASTEST_ACTIVE) {
+                        // last active, latest on top
+//                        Collections.sort(listToBeReturned,  (o1, o2) -> o2.getExtraData().getLastActive().lastActiveValueId.compareTo(o1.getExtraData().getLastActive().lastActiveValueId));
+                        Collections.sort(listToBeReturned,  new LastActiveComparator());
+                    } else if (matchingCandidateRequest.getSortBy() == ServerConstants.REC_SORT_SALARY_H_TO_L) {
+                        // candidate lw salary H->L
+//                        Collections.sort(listToBeReturned,  (o1, o2) -> o2.getCandidate().getCandidateLastWithdrawnSalary().compareTo(o1.getCandidate().getCandidateLastWithdrawnSalary()));
+                        Collections.sort(listToBeReturned,  new SalaryComparatorHtoL());
+                    } else if (matchingCandidateRequest.getSortBy() == ServerConstants.REC_SORT_SALARY_L_TO_H) {
+                        // candidate lw salary L->H
+//                        Collections.sort(listToBeReturned,  (o1, o2) -> o1.getCandidate().getCandidateLastWithdrawnSalary().compareTo(o2.getCandidate().getCandidateLastWithdrawnSalary()));
+                        Collections.sort(listToBeReturned,  new SalaryComparatorLtoH());
                     }
 
                     //getting limited results
                     for (CandidateWorkflowData val : listToBeReturned) {
                         if(count >= matchingCandidateRequest.getInitialValue()){
                             if(count < (matchingCandidateRequest.getInitialValue()+10) ){
+                                val.getCandidate().setCandidateMobile("");
+                                val.getCandidate().setCandidateEmail("");
                                 finalListToBeReturned.add(val);
                             }
                         }
@@ -478,4 +424,47 @@ public class RecruiterController {
         return ok(toJson(RecruiterService.findRecruiterAndSendOtp(FormValidator.convertToIndianMobileFormat(recruiterMobile))));
 
     }
+
+    // sorting helper methods
+    private static class LastActiveComparator implements Comparator<CandidateWorkflowData> {
+
+        @Override
+        public int compare(CandidateWorkflowData o1, CandidateWorkflowData o2) {
+            if (o1.getExtraData().getLastActive() == null) {
+                return (o2.getCandidate().getCandidateLastWithdrawnSalary() == null) ? 0 : 1;
+            }
+            if (o2.getExtraData().getLastActive() == null) {
+                return -1;
+            }
+            return o1.getExtraData().getLastActive().lastActiveValueId.compareTo(o2.getExtraData().getLastActive().lastActiveValueId);
+
+        }
+    }
+    private static class SalaryComparatorHtoL implements Comparator<CandidateWorkflowData> {
+
+        @Override
+        public int compare(CandidateWorkflowData o1, CandidateWorkflowData o2) {
+            if (o1.getCandidate().getCandidateLastWithdrawnSalary() == null) {
+                return (o2.getCandidate().getCandidateLastWithdrawnSalary() == null) ? 0 : 1;
+            }
+            if (o2.getCandidate().getCandidateLastWithdrawnSalary() == null) {
+                return -1;
+            }
+            return o2.getCandidate().getCandidateLastWithdrawnSalary().compareTo(o1.getCandidate().getCandidateLastWithdrawnSalary());
+        }
+    }
+    private static class SalaryComparatorLtoH implements Comparator<CandidateWorkflowData> {
+
+        @Override
+        public int compare(CandidateWorkflowData o1, CandidateWorkflowData o2) {
+            if (o1.getCandidate().getCandidateLastWithdrawnSalary() == null) {
+                return (o2.getCandidate().getCandidateLastWithdrawnSalary() == null) ? 0 : 1;
+            }
+            if (o2.getCandidate().getCandidateLastWithdrawnSalary() == null) {
+                return -1;
+            }
+            return o1.getCandidate().getCandidateLastWithdrawnSalary().compareTo(o2.getCandidate().getCandidateLastWithdrawnSalary());
+        }
+    }
+
 }

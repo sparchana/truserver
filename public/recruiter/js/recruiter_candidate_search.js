@@ -908,6 +908,8 @@ function generateCandidateCards(candidateSearchResult) {
                 if(value.candidate.candidateTotalExperience != null){
                     if(value.candidate.candidateTotalExperience == 0){
                         candidateLastWithdrawnSalaryVal.textContent = " - (Fresher)";
+                    } else {
+                        candidateLastWithdrawnSalaryVal.textContent = "Not Specified";
                     }
                 } else{
                     candidateLastWithdrawnSalaryVal.textContent = "Not Specified";

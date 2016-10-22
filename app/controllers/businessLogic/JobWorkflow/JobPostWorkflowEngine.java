@@ -16,7 +16,6 @@ import models.entity.Interaction;
 import models.entity.JobPost;
 import models.entity.OM.*;
 import models.entity.Static.JobPostWorkflowStatus;
-import models.entity.Static.JobRoleToDocument;
 import models.entity.Static.Language;
 import models.entity.Static.Locality;
 import models.util.SmsUtil;
@@ -27,8 +26,6 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.avaje.ebean.Expr.eq;
-import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 
 /**
@@ -488,6 +485,11 @@ public class JobPostWorkflowEngine {
         // prep params for a jobPost
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
 
+        if(jobPost == null) {
+            Logger.error("JobPostId: " + jobPostId + " does not exists");
+            return selectedCandidateMap;
+        }
+
         List<JobPostToLocality> jobPostToLocalityList = jobPost.getJobPostToLocalityList();
         List<Long> localityIdList = new ArrayList<>();
         for (JobPostToLocality jobPostToLocality: jobPostToLocalityList) {
@@ -509,7 +511,7 @@ public class JobPostWorkflowEngine {
     }
 
     public static WorkflowResponse saveSelectedCandidates(SelectedCandidateRequest request) {
-        String interactionResult = InteractionConstants.INTERACTION_RESULT_INTERACTION_TYPE_CANDIDATE_SELECTED_FOR_PRESCREEN;
+        String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_SELECTED_FOR_PRESCREEN;
         WorkflowResponse response = new WorkflowResponse();
         List<Candidate> selectedCandidateList = Candidate.find.where().in("candidateId", request.getSelectedCandidateIdList()).findList();
 
@@ -556,10 +558,11 @@ public class JobPostWorkflowEngine {
                     interactionResult+="@" + jobPostWorkflow.getJobPost().getCompany().getCompanyName();
                 }
                 // save the interaction
-                InteractionService.createInteractionForPreScreenAttempts(
+                InteractionService.createWorkflowInteraction(
                         jobPostWorkflow.getJobPostWorkflowUUId(),
                         candidate.getCandidateUUId(),
                         InteractionConstants.INTERACTION_TYPE_CANDIDATE_SELECTED_FOR_PRESCREEN,
+                        null,
                         interactionResult
                 );
             } else {
@@ -774,7 +777,10 @@ public class JobPostWorkflowEngine {
                                     preScreenElement.setPropertyTitle("Salary");
 
                                     preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
-                                    preScreenElement.jobPostElement = ("Rs."+jobPost.getJobPostMinSalary() + " - Rs."+jobPost.getJobPostMaxSalary());
+                                    preScreenElement.jobPostElement = ("Rs."+jobPost.getJobPostMinSalary());
+                                    if(jobPost.getJobPostMaxSalary() != null && jobPost.getJobPostMaxSalary() != 0) {
+                                        preScreenElement.jobPostElement = " - Rs."+jobPost.getJobPostMaxSalary();
+                                    }
                                     if (candidate.getCandidateLastWithdrawnSalary() != null) {
                                         preScreenElement.candidateElement = (candidate.getCandidateLastWithdrawnSalary());
                                         if (candidate.getCandidateLastWithdrawnSalary() > jobPost.getJobPostMinSalary()) {
@@ -827,6 +833,21 @@ public class JobPostWorkflowEngine {
 
                                     preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
                                     preScreenElement.jobPostElement = jobPost.getJobPostShift().getTimeShiftName();
+                                    String time = "";
+                                    if(jobPost.getJobPostStartTime() != null && jobPost.getJobPostEndTime() != null) {
+                                        int startTime = jobPost.getJobPostStartTime();
+                                        int endTime = jobPost.getJobPostEndTime();
+                                        time = startTime + " AM ";
+                                        if(startTime > 12) {
+                                            startTime = startTime - 12;
+                                            time = startTime + " PM ";
+                                        }
+                                        if (endTime > 12) {
+                                            endTime = endTime - 12;
+                                            time += "- " + endTime + " PM ";
+                                        }
+                                        preScreenElement.jobPostElement += " ( " +time+ ") ";
+                                    }
                                     if (candidate.getTimeShiftPreference() != null) {
                                         preScreenElement.candidateElement = candidate.getTimeShiftPreference().getTimeShift().getTimeShiftName();
                                         if (jobPost.getJobPostShift().getTimeShiftId() != candidate.getTimeShiftPreference().getTimeShift().getTimeShiftId()) {
@@ -894,10 +915,11 @@ public class JobPostWorkflowEngine {
                 jobPostWorkflowNew.update();
 
                 // save the interaction
-                InteractionService.createInteractionForPreScreenAttempts(
+                InteractionService.createWorkflowInteraction(
                         jobPostWorkflowOld.getJobPostWorkflowUUId(),
                         candidate.getCandidateUUId(),
                         InteractionConstants.INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_ATTEMPTED,
+                        null,
                         interactionResult
                 );
                 return responseMsg;
@@ -974,12 +996,12 @@ public class JobPostWorkflowEngine {
             if(preScreenRequest.isPass()) {
                 // passed
                 status = JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED).findUnique();
-                interactionResult = InteractionConstants.INTERACTION_RESULT_INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_PASSED;
+                interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_PRE_SCREEN_PASSED;
                 interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_PASSED;
             } else {
                 // failed
                 status = JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_PRESCREEN_FAILED).findUnique();
-                interactionResult = InteractionConstants.INTERACTION_RESULT_INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_FAILED;
+                interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_PRE_SCREEN_FAILED;
                 interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_FAILED;
             }
             jobPostWorkflowNew.setStatus(status);
@@ -995,10 +1017,11 @@ public class JobPostWorkflowEngine {
             interactionResult+="@" + jobPostWorkflowNew.getJobPost().getCompany().getCompanyName();
         }
         // save interaction
-        InteractionService.createInteractionForPreScreenAttempts(
+        InteractionService.createWorkflowInteraction(
                 jobPostWorkflowNew.getJobPostWorkflowUUId(),
                 jobPostWorkflowNew.getCandidate().getCandidateUUId(),
                 interactionType,
+                preScreenResult.getPreScreenResultNote(),
                 interactionResult
         );
 
