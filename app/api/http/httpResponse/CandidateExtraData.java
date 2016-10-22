@@ -17,6 +17,7 @@ public class CandidateExtraData {
     public String workflowUUId;
     public Long workflowId;
     public String workflowStatus;
+    public String createdBy;
 
     public String getAppliedOn() {
         return appliedOn;
@@ -88,5 +89,13 @@ public class CandidateExtraData {
 
     public void setWorkflowStatus(String workflowStatus) {
         this.workflowStatus = workflowStatus;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 }

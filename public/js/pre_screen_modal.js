@@ -185,12 +185,12 @@ function processPreScreenContent(returnedData) {
 
         var title2 = document.createElement("th");
         title2.style="color:#ffffff";
-        title2.textContent = "Job Post";
+        title2.textContent =  "Job Post Info";
         heading.appendChild(title2);
 
         var title3 = document.createElement("th");
         title3.style="color:#ffffff";
-        title3.textContent = "Candidate";
+        title3.textContent = "Candidate Info";
         heading.appendChild(title3);
 
         // is a match or not
@@ -209,22 +209,53 @@ function processPreScreenContent(returnedData) {
 
         otherReqTableContainer.append(otherTable);
 
+        var splitDiv = $('<div class="row"></div>');
+
         var noteContainer = document.createElement("div");
-        noteContainer.className = "form-group";
+        noteContainer.className = "col-xs-6 form-group";
         var textarea = document.createElement("textarea");
         textarea.className = "form-control";
         textarea.rows = "5";
         textarea.type = "text";
         textarea.id = "pre_screen_note";
+
+        var minReqContainer = document.createElement("div");
+        minReqContainer.className = "col-xs-6 form-group";
+        var minReqTextArea = document.createElement("textarea");
+        minReqTextArea.className = "form-control";
+        minReqTextArea.rows = "5";
+        minReqTextArea.type = "text";
+        minReqTextArea.id = "job_post_min_req";
+        minReqTextArea.disabled = true;
+
+        var data ;
+        if(returnedData.jobPostMinReq != null && returnedData.jobPostMinReq != "") {
+            data = returnedData.jobPostMinReq;
+        } else {
+            data = "NA"
+        }
+        minReqTextArea.textContent = data;
+
+        var label = document.createElement("label");
+        label.for= "job_post_min_req";
+        label.textContent = "Job Post Min Req";
+        minReqContainer.appendChild(label);
+        minReqContainer.appendChild(minReqTextArea);
+        splitDiv.append(minReqContainer);
+
+
         var label = document.createElement("label");
         label.for= "pre_screen_note";
         label.textContent = "Note";
         noteContainer.appendChild(label);
         noteContainer.appendChild(textarea);
-        container.append(noteContainer);
+        splitDiv.append(noteContainer);
+        container.append(splitDiv);
+
 
         var elementList = returnedData.elementList;
         elementList.forEach(function (rowData) {
+            console.log("ptitle:"+ rowData.propertyTitle);
             if(rowData!=null){
                 if(rowData.isMinReq) {
                     var bodyContentBox = document.createElement("tr");

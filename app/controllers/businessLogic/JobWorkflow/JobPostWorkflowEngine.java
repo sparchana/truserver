@@ -482,6 +482,8 @@ public class JobPostWorkflowEngine {
         // constructor for this class make all default flag as true, we will mark it false wherever its not satisfied
         populateResponse.jobPostId = jobPostId;
         populateResponse.candidateId = candidateId;
+        Logger.info("minReq :" + jobPost.getJobPostMinRequirement());
+        populateResponse.setJobPostMinReq(jobPost.getJobPostMinRequirement());
 
         PreScreenPopulateResponse.PreScreenElement preScreenElement;
 
@@ -576,7 +578,7 @@ public class JobPostWorkflowEngine {
                             if (preScreenRequirement.getProfileRequirement().getProfileRequirementTitle().equalsIgnoreCase("age")) {
                                 if (jobPost.getJobPostMaxAge() != null && jobPost.getJobPostMaxAge() > 0) {
                                     preScreenElement = new PreScreenPopulateResponse.PreScreenElement();
-                                    preScreenElement.setPropertyTitle("Age");
+                                    preScreenElement.setPropertyTitle("Max Age");
                                     preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
                                     preScreenElement.jobPostElement = (jobPost.getJobPostMaxAge());
                                     if(candidate.getCandidateAge() != null &&  candidate.getCandidateAge() > 0) {
@@ -1222,6 +1224,7 @@ public class JobPostWorkflowEngine {
                         candidateExtraData.setPreScreenSelectionTimeStamp(jobPostWorkflow.getCreationTimestamp());
                         candidateExtraData.setWorkflowId(jobPostWorkflow.getJobPostWorkflowId());
                         candidateExtraData.setWorkflowUUId(jobPostWorkflow.getJobPostWorkflowUUId());
+                        candidateExtraData.setCreatedBy(jobPostWorkflow.getCreatedBy());
                     }
                 }
             }
