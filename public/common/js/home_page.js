@@ -236,7 +236,7 @@ function processDataAllJobPosts(returnedData) {
                 //!* get all localities of the jobPost *!/
                 var jobLocality = jobPost.jobPostToLocalityList;
                 var localities = "";
-                var allLocalities = ""
+                var allLocalities = "";
                 var loopCount = 0;
 
                 if(jobPost.source != null && jobPost.source > 0 && !isDividerPresent){

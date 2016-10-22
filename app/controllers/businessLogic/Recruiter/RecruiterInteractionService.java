@@ -119,4 +119,17 @@ public class RecruiterInteractionService {
         InteractionService.createInteraction(interaction);
     }
 
+    public static void createInteractionForRecruiterTriedToResetPassword(String objectAUUId, String result){
+        Interaction interaction = new Interaction(
+                objectAUUId,
+                ServerConstants.OBJECT_TYPE_RECRUTER,
+                InteractionConstants.INTERACTION_TYPE_RECRUITER_TRIED_PASSWORD_RESET,
+                InteractionConstants.INTERACTION_NOTE_BLANK,
+                result,
+                INTERACTION_CREATED_SELF,
+                InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE
+        );
+        InteractionService.createInteraction(interaction);
+    }
+
 }

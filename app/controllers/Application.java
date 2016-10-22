@@ -1536,11 +1536,13 @@ public class Application extends Controller {
             return badRequest();
         }
 
-        switch (view) {
+        switch (view.trim()) {
             case "match_view":
                 return ok(views.html.match_candidate.render());
             case "pre_screen_view":
                 return ok(views.html.pre_screen.render());
+            case "pre_screen_completed_view":
+                return ok(views.html.pre_screen_completed.render());
         }
         return badRequest();
     }
@@ -1704,5 +1706,9 @@ public class Application extends Controller {
             responses.add(response);
         }
         return ok(toJson(responses));
+    }
+
+    public static Result getPreScreenedCandidate(Long jobPostId, Boolean isPass) {
+        return ok(toJson(JobPostWorkflowEngine.getPreScreenedPassFailCandidates(jobPostId, isPass)));
     }
 }

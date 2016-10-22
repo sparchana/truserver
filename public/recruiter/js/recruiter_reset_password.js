@@ -1,37 +1,50 @@
 /**
- * Created by batcoder1 on 28/4/16.
+ * Created by dodo on 22/10/16.
  */
 
-var returnedOtp;
-var candidateMobile;
+var recruiterMobile;
+
 function processDataResetCheckUser(returnedData) {
     if(returnedData.status == 1) {
         returnedOtp = returnedData.otp;
         document.getElementById("helpText").innerHTML = "Enter OTP sent on " + $('#resetPasswordMobile').val();
         $('#form_password_reset_otp').show();
         $('#form_forgot_password').hide();
+        $('#loginModal').hide();
         $('#noUserLogin').hide();
     }
 
     else {
         document.getElementById("resetCheckUserBtn").disabled = false;
-        $('#noUserLogin').show();
+        notifyError("Recruiter does not exists! please signup");
     }
 }
 
 function processDataPostReset(returnedData) {
-    if(returnedData.status == 1) {
-        localStorage.setItem("mobile", "+91" + candidateMobile);
-        localStorage.setItem("name", returnedData.candidateFirstName);
-        window.location = "/partner/home";
-    } else if(returnedData.status == 2){
-        document.getElementById("resetNewPasswordBtn").disabled = false;
-        $('#incorrectMsg').show();
-        $('#errorMsg').hide();
-    } else {
-        document.getElementById("resetNewPasswordBtn").disabled = false;
-        $('#incorrectMsg').hide();
-        $('#errorMsg').show();
+    console.log(returnedData);
+    if(returnedData.status == 1){
+        window.location = "/recruiter/home";
+    } else{
+        notifyError("Something went wrong. Please try again later");
+    }
+}
+
+function requestOtp(phone) {
+    recruiterMobile = phone;
+    document.getElementById("resetCheckUserBtn").disabled = true;
+    try {
+        var s = {
+            resetPasswordMobile : phone
+        };
+        $.ajax({
+            type: "POST",
+            url: "/findRecruiterAndSendOtp",
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(s),
+            success: processDataResetCheckUser
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
     }
 }
 
@@ -42,37 +55,22 @@ $(function() {
         var phone = $('#resetPasswordMobile').val();
         var phoneRes = validateMobile(phone);
         if(phoneRes == 0){ // invalid mobile
-            alert("Enter a valid mobile number");
+            notifyError("Enter a valid mobile number");
         }
         else if(phoneRes == 1){ // mobile no. less than 1 digits
-            alert("Enter 10 digit mobile number");
+            notifyError("Enter 10 digit mobile number");
         }
         else{
-            candidateMobile = phone;
-            document.getElementById("resetCheckUserBtn").disabled = true;
-            try {
-                var s = {
-                    resetPasswordMobile : phone
-                };
-                $.ajax({
-                    type: "POST",
-                    url: "/findPartnerAndSendOtp",
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify(s),
-                    success: processDataResetCheckUser
-                });
-            } catch (exception) {
-                console.log("exception occured!!" + exception);
-            }
+            requestOtp(phone);
         }
     }); // end of submit
 
     $("#form_password_reset_otp").submit(function(eventObj) {
         eventObj.preventDefault();
-        var userOtp = $('#partnerForgotOtp').val();
+        var userOtp = $('#recruiterForgotOtp').val();
 
         if(validateOtp(userOtp) == 0){
-            alert("Please enter a valid 4 digit otp!");
+            notifyError("Please enter a valid 4 digit otp!");
         } else{
             if(userOtp == returnedOtp){
                 $('#form_password_reset_otp').hide();
@@ -80,33 +78,30 @@ $(function() {
                 $('#wrongOtp').hide();
             }
             else {
-                $('#wrongOtp').show();
+                notifyError("Incorrect OTP")
             }
         }
     }); // end of submit
 
     $("#form_password_reset_new").submit(function(eventObj) {
         eventObj.preventDefault();
-        var userPwd = $('#partnerNewPassword').val();
+        var userPwd = $('#recruiterNewPassword').val();
         var passwordCheck = validatePassword(userPwd);
         if(passwordCheck == 0){
-            alert("Please set min 6 chars for password");
+            notifyError("Please set min 6 chars for password");
         } else if(passwordCheck == 1){
-            alert("Password cannot have blank spaces. Enter a valid password");
+            notifyError("Password cannot have blank spaces. Enter a valid password");
         }
         else{
             document.getElementById("resetNewPasswordBtn").disabled = true;
             try {
-                var phone = candidateMobile;
-                var password = userPwd;
-                console.log("phone: " + phone);
                 var s = {
-                    partnerPassword : password,
-                    partnerAuthMobile : phone,
+                    recruiterAuthMobile : recruiterMobile,
+                    recruiterPassword : userPwd
                 };
                 $.ajax({
                     type: "POST",
-                    url: "/addPartnerPassword",
+                    url: "/addRecruiterPassword",
                     contentType: "application/json; charset=utf-8",
                     data: JSON.stringify(s),
                     success: processDataPostReset
@@ -117,4 +112,3 @@ $(function() {
         }
     }); // end of submit
 }); // end of function
-

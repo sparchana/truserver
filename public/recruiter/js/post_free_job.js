@@ -70,23 +70,41 @@ function processDataGetAllLanguage(returnLanguage) {
     });
 }
 function processDataGetIdProofs(returnedIdProofs) {
+    $('#jobPostIdProof')
+        .find('option')
+        .remove();
     $('#jobPostIdProof').tokenize().clear();
-    returnedIdProofs.forEach(function (idProof) {
-        var id = idProof.idProofId;
-        var name = idProof.idProofName;
-        var option = $('<option value=' + id + '></option>').text(name);
-        $('#jobPostIdProof').append(option);
-    });
+    if(Object.keys(returnedIdProofs).length == 0){
+        $("#documentSection").hide();
+    } else{
+        $("#documentSection").show();
+        returnedIdProofs.forEach(function (idProof) {
+            var id = idProof.idProofId;
+            var name = idProof.idProofName;
+            var option = $('<option value=' + id + '></option>').text(name);
+            $('#jobPostIdProof').append(option);
+        });
+
+    }
 }
 
 function processDataGetAssets(returnedAssets) {
     $('#jobPostAsset').tokenize().clear();
-    returnedAssets.forEach(function (asset) {
-        var id = asset.assetId;
-        var name = asset.assetTitle;
-        var option = $('<option value=' + id + '></option>').text(name);
-        $('#jobPostAsset').append(option);
-    });
+    $('#jobPostAsset')
+        .find('option')
+        .remove();
+    if(Object.keys(returnedAssets).length == 0){
+        $("#assetSection").hide();
+    } else{
+        $("#assetSection").show();
+        returnedAssets.forEach(function (asset) {
+            var id = asset.assetId;
+            var name = asset.assetTitle;
+            var option = $('<option value=' + id + '></option>').text(name);
+            $('#jobPostAsset').append(option);
+        });
+
+    }
 }
 
 function changeJobDescClass() {
@@ -175,6 +193,9 @@ function toJobRequirement(){
     } else if(isValidSalary(minSalary) == false){
         notifyError("Please enter valid minimum salary");
         status = 0;
+    } else if(minSalary > 10000){
+        notifyError("Please enter minimum salary less tha 99,999");
+        status = 0;
     } else if(maxSalary != 0 && (isValidSalary(maxSalary) == false)){
         notifyError("Please enter valid maximum salary");
         status = 0;
@@ -186,7 +207,7 @@ function toJobRequirement(){
         status = 0;
     } else if(startTime != null){
         if(endTime != null){
-            if(startTime >= endTime){
+            if(parseInt(startTime) >= parseInt(endTime)){
                 notifyError("Start time cannot be more than end time");
                 status = 0;
             }
@@ -455,7 +476,7 @@ function saveJob() {
         notifyError("Please enter no. of vacancies");
         status = 0;
     } else if(jobLocalitySelected == null){
-        notifyError("Please enter job localities");
+        notifyError("Please enter work locations");
         status = 0;
     } else if(minSalary == ""){
         notifyError("Please enter Job Post Minimum salary");
@@ -483,7 +504,10 @@ function saveJob() {
             status = 0;
         }
     } else if(jobPostExperience == null){
-        notifyError("Please enter Job Post Experience required");
+        notifyError("Please select min experience");
+        status = 0;
+    } else if($('#jobPostEducation').val() == null){
+        notifyError("Please select min education");
         status = 0;
     }
 
@@ -494,11 +518,14 @@ function saveJob() {
     if (status != 0 ){
         if(jobPostAgeReq == 1){
             if(maxAge == ""){
-                notifyError("Please enter Job Post Max Age Requirement");
+                notifyError("Specify max age limitation");
                 status = 0;
             } else if (!isValidAge(maxAge)) {
                 $("#jobPostMaxAge").removeClass('invalid').addClass('invalid');
-                notifyError("Please enter Job Post Max Age Requirement");
+                notifyError("Specify max age limitation");
+                status = 0;
+            } else if(maxAge < 18 || maxAge > 65){
+                notifyError("Max age cannot be less than 18 and greater than 65");
                 status = 0;
             }
         }

@@ -54,6 +54,10 @@ public class JobPostWorkflow extends Model {
 
     public static Model.Finder<String, JobPostWorkflow> find = new Model.Finder(JobPostWorkflow.class);
 
+    public void setJobPostWorkflowUUId(String jobPostWorkflowUUId) {
+        this.jobPostWorkflowUUId = jobPostWorkflowUUId;
+    }
+
     public long getJobPostWorkflowId() {
         return jobPostWorkflowId;
     }

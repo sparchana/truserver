@@ -56,7 +56,9 @@ public class InteractionConstants {
     public static final String INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB = "Candidate tried to apply to a job: ";
     public static final String INTERACTION_RESULT_CANDIDATE_TRIED_TO_RESET_PASSWORD = "Candidate tried to reset password";
     public static final String INTERACTION_RESULT_PARTNER_TRIED_TO_RESET_PASSWORD = "Partner tried to reset password";
+    public static final String INTERACTION_RESULT_RECRUITER_TRIED_TO_RESET_PASSWORD = "Recruiter tried to reset password";
     public static final String INTERACTION_RESULT_CANDIDATE_RESET_PASSWORD_SUCCESS = "Candidate reset password done";
+    public static final String INTERACTION_RESULT_RECRUITER_RESET_PASSWORD_SUCCESS = "Recruiter reset password done";
     public static final String INTERACTION_RESULT_PARTNER_RESET_PASSWORD_SUCCESS = "Partner reset password done";
     public static final String INTERACTION_RESULT_PARTNER_APPLIED_TO_JOB = "Partner on behalf of the candidate applied to a job: ";
     public static final String INTERACTION_CREATED_SELF = "Self";
@@ -71,6 +73,11 @@ public class InteractionConstants {
     public static final String INTERACTION_NOTE_RECRUITER_PASSWORD_CHANGED = "Recruiter Self Updated Password";
     public static final String INTERACTION_NOTE_CREATED_BY_ERROR = "Session Username is null";
     public static final String INTERACTION_NOTE_BLANK = "";
+
+
+    public static final String INTERACTION_RESULT_INTERACTION_TYPE_CANDIDATE_SELECTED_FOR_PRESCREEN = "Candidate has been selected for pre_screening for job_post_id-";
+    public static final String INTERACTION_RESULT_INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_FAILED = "Candidate has failed pre_screening for job_post_id-";
+    public static final String INTERACTION_RESULT_INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_PASSED = "Candidate has passed pre_screening for job_post_id-";
 
     public static final Map<Integer, String> INTERACTION_TYPE_MAP = new HashMap<>();
 
@@ -94,7 +101,6 @@ public class InteractionConstants {
     public static final int INTERACTION_TYPE_CANDIDATE_DEACTIVATED = 18;
     public static final int INTERACTION_TYPE_LEAD_STATUS_UPDATE = 19;
     public static final int INTERACTION_TYPE_CANDIDATE_ASSESSMENT_ATTEMPTED = 33;
-    public static final int INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_ATTEMPTED = 34;
 
     //partner interaction type
     public static final int INTERACTION_TYPE_PARTNER_TRIED_PASSWORD_RESET = 20;
@@ -112,7 +118,7 @@ public class InteractionConstants {
     public static final int INTERACTION_TYPE_EXISTING_CANDIDATE_TRIED_SIGNUP_AND_SIGNUP_NOT_ALLOWED = 30;
     public static final int INTERACTION_TYPE_EXISTING_PARTNER_TRIED_SIGNUP = 31;
     public static final int INTERACTION_TYPE_EXISTING_PARTNER_TRIED_SIGNUP_AND_SIGNUP_NOT_ALLOWED = 32;
-    public static final int INTERACTION_TYPE_EXISTING_RECRUITER_TRIED_SIGNUP = 33;
+    public static final int INTERACTION_TYPE_EXISTING_RECRUITER_TRIED_SIGNUP = 49;
     public static final int INTERACTION_TYPE_EXISTING_RECRUITER_TRIED_SIGNUP_AND_SIGNUP_NOT_ALLOWED = 34;
 
     //recruiter interaction type
@@ -132,6 +138,12 @@ public class InteractionConstants {
 
     public static final int INTERACTION_TYPE_NEW_JOB_CREATED = 47;
     public static final int INTERACTION_TYPE_EXISTING_JOB_UPDATED = 48;
+
+
+    public static final int INTERACTION_TYPE_CANDIDATE_SELECTED_FOR_PRESCREEN = 50;
+    public static final int INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_ATTEMPTED = 51;
+    public static final int INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_FAILED = 52;
+    public static final int INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_PASSED = 53;
 
     public static final Map<Integer, String> INTERACTION_CHANNEL = new HashMap<>();
 
@@ -163,6 +175,7 @@ public class InteractionConstants {
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_DEACTIVATED, "Candidate Deactivated");
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_LEAD_STATUS_UPDATE, "Lead Status Update");
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_ASSESSMENT_ATTEMPTED, "Candidate Assessment Attempted");
+
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_ATTEMPTED, "Candidate Pre Screen Call Attempted");
 
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_PARTNER_TRIED_PASSWORD_RESET, "Tried to reset Password");

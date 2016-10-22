@@ -304,6 +304,33 @@ footer.page-footer .footer-copyright{
 body#recruiterHome{
     background: #f8f6ed;
 }
+
+.packCol{
+    border-radius: 8px;
+    border: 1px dashed #dbdace;
+    padding: 16px;
+}
+
+.packCol  img{
+    width: 36px;
+}
+
+.packCol  div{
+    text-align: center;
+    display: block;
+    font-size: 16px;
+    width: 100%;
+}
+.packCol  p{
+    text-align: center;
+    display: block;
+    font-size: 14px;
+}
+
+#startNoDiv:hover{
+    color: #117ec4;
+    text-underline: none;
+}
 .recruiterHomeNoBackBox{
     box-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.12);
     display: block;
@@ -314,8 +341,7 @@ body#recruiterHome{
 .recruiterHomeMessgeBox{
     box-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.12);
     display: block;
-    margin-top: 2%;
-    margin-bottom:50px;
+    margin-bottom: 16px;
     background: #fff;
     border-radius: 4px;
 }
@@ -333,7 +359,8 @@ body#recruiterHome{
     height: auto;
     display: block;
     margin-top: 6%;
-    margin-bottom: 2%;
+    padding-top: 24px;
+    margin-bottom: 16px;
     background: #fff;
     border-radius: 4px;
 }
@@ -357,6 +384,20 @@ input[type=text]:disabled{
 }
 
 @media screen and (max-width: 768px) {
+
+    .packCol img{
+        width: 15px;
+    }
+    .packCol  p{
+        text-align: center;
+        display: block;
+        font-size: 10px;
+    }
+    .packCol  div{
+        display: block;
+        font-size: 12px;
+        width: 100%;
+    }
     .recruiterHomeMainCard {
         margin-top: 16%;
         padding: 4%;

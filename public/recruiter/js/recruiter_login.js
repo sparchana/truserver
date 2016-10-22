@@ -2,15 +2,22 @@
  * Created by dodo on 11/10/16.
  */
 
+var recruiterMobile;
 function processDataLogin(returnedData) {
     if(returnedData.status == 1){
-        window.location = "/recruiter/home";
-        notifySuccess("Login successful");
+        if(returnedData.isCandidateVerified == 0){ //recruiter has not been verified
+            requestOtp(recruiterMobile)
+        } else{
+            window.location = "/recruiter/home";
+            notifySuccess("Login successful");
+        }
+
     } else if(returnedData.status == 2){
         notifyError("Looks like something went wrong. Please try again later");
     } else if(returnedData.status == 3){
         notifyError("Recruiter does not exists");
     } else if(returnedData.status == 4){
+        $("#loginSubmitBtn").removeClass("disabled");
         notifyError("Incorrect login credentials");
     }
 }
@@ -46,6 +53,7 @@ $(function() {
                 candidateLoginMobile: mobile,
                 candidateLoginPassword: password
             };
+            recruiterMobile = mobile;
             $.ajax({
                 type: "POST",
                 url: "/recruiterLoginSubmit",

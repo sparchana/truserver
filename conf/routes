@@ -67,6 +67,7 @@ POST        /getAllDeactivationReason                                     contro
 POST        /support/api/getMatchingCandidate/                            controllers.Application.getMatchingCandidate()
 POST        /support/api/saveSelectedCandidate/                           controllers.Application.saveSelectedCandidate()
 POST        /support/api/getSelectedCandidate/:jpId                       controllers.Application.getSelectedCandidate(jpId: Long)
+POST        /support/api/getPreScreenedCandidate/                         controllers.Application.getPreScreenedCandidate(jpId: java.lang.Long?= null, isPass: java.lang.Boolean?= null)
 
 # user dashboard
 # ~~~~~~~~~~~~~~
@@ -144,6 +145,7 @@ GET         /recruiter/allRecruiterJobPosts                               contro
 POST        /getRecruiterCredits/:id                                      controllers.RecruiterController.getRecruiterCredits(id : Long)
 POST        /getAllCreditCategory                                         controllers.RecruiterController.getAllCreditCategory()
 POST        /recruiter/unlockCandidateContact/:id                         controllers.RecruiterController.unlockCandidateContact(id : Long)
+POST        /findRecruiterAndSendOtp                                      controllers.RecruiterController.findRecruiterAndSendOtp()
 POST        /addRecruiterLead                                             controllers.RecruiterController.addWebsiteLead()
 POST        /updateRecruiterProfile                                       controllers.RecruiterController.addRecruiter()
 POST        /recruiterSignUp                                              controllers.RecruiterController.recruiterSignUp()
