@@ -169,7 +169,7 @@ public class JobPostWorkflowEngine {
         }
 
         // education match
-        if (educationIdList != null && educationIdList.size()> 0) {
+        if (educationIdList != null && educationIdList.size()> 0 && !educationIdList.contains(ServerConstants.EDUCATION_TYPE_ANY)) {
             query = query.select("*").fetch("candidateEducation")
                     .where()
                     .isNotNull("candidateEducation")
@@ -356,7 +356,7 @@ public class JobPostWorkflowEngine {
         }
 
         // education match
-        if (educationIdList != null && educationIdList.size()> 0) {
+        if (educationIdList != null && educationIdList.size()> 0 && !educationIdList.contains(ServerConstants.EDUCATION_TYPE_ANY)) {
             query = query.select("*").fetch("candidateEducation")
                     .where()
                     .isNotNull("candidateEducation")
