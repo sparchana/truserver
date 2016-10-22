@@ -214,26 +214,36 @@ public class RecruiterController {
     }
 
     public static Result getAllJobApplicants(long jobPostId) {
-        JobPost jobPost = JobPost.find.where().eq("JobPostId", jobPostId).findUnique();
+        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
         if(jobPost != null){
-            List<JobApplication> jobApplicationList = JobApplication.find.where().eq("JobPostId", jobPostId).findList();
-            List<JobApplicationResponse> jobApplicationResponseList = new ArrayList<>();
-            for(JobApplication jobApplication: jobApplicationList){
-                JobApplicationResponse jobApplicationResponse = new JobApplicationResponse();
+            if(session().get("recruiterId") != null){
+                RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+                if(recruiterProfile != null){
+                    if(jobPost.getRecruiterProfile() != null){
+                        if(jobPost.getRecruiterProfile().getRecruiterProfileId() == recruiterProfile.getRecruiterProfileId()){
+                            List<JobApplication> jobApplicationList = JobApplication.find.where().eq("JobPostId", jobPostId).findList();
+                            List<JobApplicationResponse> jobApplicationResponseList = new ArrayList<>();
+                            for(JobApplication jobApplication: jobApplicationList){
+                                JobApplicationResponse jobApplicationResponse = new JobApplicationResponse();
 
-                jobApplicationResponse.setCandidate(jobApplication.getCandidate());
-                jobApplicationResponse.setJobApplicationId(jobApplication.getJobApplicationId());
-                jobApplicationResponse.setJobApplicationCreatingTimeStamp(String.valueOf(jobApplication.getJobApplicationCreateTimeStamp()));
-                jobApplicationResponse.setPreScreenLocation(jobApplication.getLocality());
-                jobApplicationResponse.setPreScreenLocation(jobApplication.getLocality());
-                jobApplicationResponse.setInterviewTimeSlot(jobApplication.getInterviewTimeSlot());
-                jobApplicationResponse.setScheduledInterviewDate(jobApplication.getScheduledInterviewDate());
+                                jobApplicationResponse.setCandidate(jobApplication.getCandidate());
+                                jobApplicationResponse.setJobApplicationId(jobApplication.getJobApplicationId());
+                                jobApplicationResponse.setJobApplicationCreatingTimeStamp(String.valueOf(jobApplication.getJobApplicationCreateTimeStamp()));
+                                jobApplicationResponse.setPreScreenLocation(jobApplication.getLocality());
+                                jobApplicationResponse.setPreScreenLocation(jobApplication.getLocality());
+                                jobApplicationResponse.setInterviewTimeSlot(jobApplication.getInterviewTimeSlot());
+                                jobApplicationResponse.setScheduledInterviewDate(jobApplication.getScheduledInterviewDate());
 
-                jobApplicationResponseList.add(jobApplicationResponse);
+                                jobApplicationResponseList.add(jobApplicationResponse);
+                            }
+
+                            return ok(toJson(jobApplicationResponseList));
+                        }
+                    }
+                }
             }
-
-            return ok(toJson(jobApplicationResponseList));
         }
+
         return ok("0");
     }
 

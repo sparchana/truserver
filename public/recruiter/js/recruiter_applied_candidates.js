@@ -44,7 +44,6 @@ function processDataUnlockedCandidates(returnedData) {
 }
 
 function processDataForJobApplications(returnedData) {
-    console.log(returnedData);
     var parent = $("#candidateContainer");
     if(returnedData != "0"){
         returnedData.forEach(function (value){
@@ -554,21 +553,22 @@ function processDataForJobApplications(returnedData) {
             unlockCandidateBtn.appendChild(candidateUnlockFont);
         });
         $('.tooltipped').tooltip({delay: 50});
-    }
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/recruiter/api/getUnlockedCandidates/",
+                async: true,
+                contentType: false,
+                data: false,
+                success: processDataUnlockedCandidates
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception.stack);
+        }
 
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/recruiter/api/getUnlockedCandidates/",
-            async: true,
-            contentType: false,
-            data: false,
-            success: processDataUnlockedCandidates
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception.stack);
+    } else{
+        logoutRecruiter();
     }
-
 }
 
 function unlockContact(candidateId){

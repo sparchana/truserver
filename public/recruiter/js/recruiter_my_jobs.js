@@ -117,9 +117,6 @@ function processDataGenerateJobPostView(returnedData) {
 
             var applicantBtn = document.createElement('a');
             applicantBtn.style = "font-weight:600;text-decoration:none";
-            applicantBtn.onclick = function () {
-                openAppliedCandidate(jobPost.jobPostId);
-            };
             colApplicant.appendChild(applicantBtn);
 
             var colJobStatus = document.createElement("div");
@@ -173,6 +170,11 @@ function processDataGenerateJobPostView(returnedData) {
                         }
                         else{
                             applicantBtn.className = 'btn-floating btn-small waves-effect waves-light red accent-3';
+                        }
+                        if(Object.keys(data).length > 0){
+                            applicantBtn.onclick = function () {
+                                openAppliedCandidate(jobPost.jobPostId);
+                            };
                         }
                     }
                 });
