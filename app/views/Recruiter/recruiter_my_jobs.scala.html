@@ -41,17 +41,24 @@
     <div class="container" style="color:#ffffff;margin-top:-68px">
       <center><h4>Your Posted Jobs</h4></center>
     </div>
-      <div class="container-fluid">
+    <div id="noJobs" style="padding: 120px 6% 120px 6%; display: none">
+      <center>
+        <img src="/assets/recruiter/img/empty_box.svg" width="116px">
+        <h5>No Jobs Found!</h5>
+        <h6>Looks like you have not posted any job yet. <a href="/recruiter/jobPost/0">Post now</a> and contact thousands of verified candidates!</h6>
+      </center>
+    </div>
+      <div class="container-fluid" id="jobTable">
         <div class="card" id="myJobPost">
-            <div class="row" id='headerForData'>
+            <div class="row hide-on-med-and-down" id='headerForData'>
               <div class="col l1" id="colHeadDataTable">
                 <font>Date Posted</font>
               </div>
               <div class="col l2" id="colHeadDataTable">
-                <font>Posted Job Title</font>
+                <font>Job Title</font>
               </div>
               <div class="col l2" id="colHeadDataTable">
-                <font>Location</font>
+                <font>Location(s)</font>
               </div>
               <div class="col l2" id="colHeadDataTable">
                 <font>Salary</font>
@@ -60,7 +67,7 @@
                 <font>Work Shift</font>
               </div>
               <div class="col l1" id="colHeadDataTable">
-                <font>No. of Applicant</font>
+                <font>Applications <span style="font-size: 12px">(click to view)</span></font>
               </div>
               <div class="col l1" id="colHeadDataTable">
                 <font>Status</font>
@@ -86,8 +93,8 @@
           <div class="col l4 offset-l2 s12">
             <h5 class="white-text">Get in touch</h5>
             <ul>
-              <li><a class="grey-text text-lighten-3" href="#!">Write us at: info@@trujobs.in</a></li>
-              <li><a class="grey-text text-lighten-3" href="#!">Have queries? Talk to us at 8880007799</a></li>
+              <li><a class="grey-text text-lighten-3" href="#">Write us at: info@@trujobs.in</a></li>
+              <li><a class="grey-text text-lighten-3" href="#">Have queries? Talk to us at 8880007799</a></li>
             </ul>
           </div>
         </div>

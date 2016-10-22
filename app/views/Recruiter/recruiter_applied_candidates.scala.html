@@ -81,6 +81,40 @@
               font-weight: 400"><b>Buy Credits</b></font></a>
       </div>
 
+          <!-- Modal buy credit Structure -->
+      <div id="modalBuyCredits" class="modal" style="background: transparent; box-shadow: none">
+          <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeCreditModal()"></div>
+          <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
+              <center><font style="color: #fff"><h5>Top up now and get access to more candidates!</h5></font></center>
+          </div>
+          <div id="modalBuyCreditInnerBox">
+              <center>
+                  <div class="row">
+                      <div class="col s6 l6">
+                          <div class="packCol">
+                              <img src="/assets/recruiter/img/coin.svg">
+                              <div>Buy contact unlocks</div>
+                              <br>
+                              <input style="width: 100%" placeholder="No. of Contact credits" id="contactCreditAmount" type="number" class="validate">
+                          </div>
+                      </div>
+                      <div class="col s6 l6">
+                          <div class="packCol">
+                              <img src="/assets/recruiter/img/coin.svg">
+                              <div>Buy interview unlocks</div>
+                              <br>
+                              <input style="width: 100%" placeholder="No. of Interview credits" id="interviewCreditAmount" type="number" class="validate">
+                          </div>
+                      </div>
+                  </div>
+                  <div id="requestCredits" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="submitCredits()"><font style="color: #fff;
+                      font-weight: 400"><b>Buy Credits Now!</b></font></div>
+                  <div style="margin: 8px; color: #0f9d58; display: none" id="successMsg">Thanks! We have received your request to buy more credits. Our business team will contact you within 24hrs</div>
+              </center>
+          </div>
+      </div>
+
+
       <!--Footer start-->
     <footer class="page-footer" style="background-color: #424242;">
       <div class="container">
