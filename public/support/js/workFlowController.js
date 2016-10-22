@@ -885,14 +885,14 @@ $(function () {
                 }
 
                 var jobApplicationMode ="";
+                if(newCandidate.extraData.jobApplicationMode != null) {
+                    jobApplicationMode = newCandidate.extraData.jobApplicationMode;
+                } else {
+                    jobApplicationMode = "NA";
+                }
 
                 var preScreenSelectionTimeStamp = "";
                 if (app.currentView == "pre_screen_view") {
-                    if(newCandidate.extraData.jobApplicationMode != null) {
-                        jobApplicationMode = newCandidate.extraData.jobApplicationMode;
-                    } else {
-                        jobApplicationMode = "NA";
-                    }
                     if(newCandidate.extraData.preScreenSelectionTimeStamp != null) {
                         preScreenSelectionTimeStamp = getDateTime(newCandidate.extraData.preScreenSelectionTimeStamp);
                     }
@@ -900,7 +900,7 @@ $(function () {
 
 
                 var preScreenAttemptCount = function () {
-                    if (app.currentView == "pre_screen_view") {
+                    if (app.currentView == "pre_screen_view" || app.currentView == "pre_screen_completed_view") {
                         if(newCandidate.extraData.preScreenCallAttemptCount == null) {
                             return "0";
                         } else {
@@ -955,6 +955,7 @@ $(function () {
                     'candidateIsAssessmentComplete': getYesNo(newCandidate.extraData.assessmentAttemptId),
                     'jobAppliedOn': getAppliedOn(newCandidate.extraData.appliedOn),
                     'noOfJobApplication': newCandidate.candidate.jobApplicationList.length,
+                    'jobApplicationMode': jobApplicationMode,
                     'candidateExperienceLetter': getYesNo(newCandidate.candidate.candidateExperienceLetter),
                     'candidateIdProofs': getIdProof(newCandidate.candidate.idProofReferenceList),
                     'candidateTimeShiftPref': timeShiftPref,
@@ -964,7 +965,6 @@ $(function () {
                     'experience': getExperience(newCandidate.candidate.candidateExpList),
                     'candidateId': newCandidate.candidate.candidateId,
                     'preScreenAttempt': preScreenAttemptCount,
-                    'jobApplicationMode': jobApplicationMode,
                     'preScreenSelectionTS': preScreenSelectionTimeStamp,
                     'preScreenCreatedBy': createdBy,
                     'varColumn': varColumn
@@ -1012,6 +1012,7 @@ $(function () {
                     {"data": "candidateIsAssessmentComplete"},
                     {"data": "jobAppliedOn"},
                     {"data": "noOfJobApplication"},
+                    {"data": "jobApplicationMode"},
                     {"data": "candidateExperienceLetter"},
                     {"data": "candidateIdProofs"},
                     {"data": "candidateTimeShiftPref"},
@@ -1021,7 +1022,6 @@ $(function () {
                     {"data": "experience"},
                     {"data": "candidateId"},
                     {"data": "preScreenAttempt"},
-                    {"data": "jobApplicationMode"},
                     {"data": "preScreenSelectionTS"},
                     {"data": "preScreenCreatedBy"},
                     {"data": "varColumn"}

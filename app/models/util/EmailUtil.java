@@ -25,29 +25,30 @@ import static api.ServerConstants.devTeamMobile;
  */
 public class EmailUtil {
 
-/*
-        String message = "<center>\n" +
-                "            <div style=\"text-align: center; width: 60%; background: #f9f9f9\">\n" +
+    private static String mailHeader = "<center>\n" +
+                "            <div style=\"text-align: center; width: 90%; background: #f9f9f9\">\n" +
                 "                <img src='https://s3.amazonaws.com/trujobs.in/companyLogos/trujobs.png'>\n" +
-                "                <br>\n" +
-                "                <h3>Welcome to TruJobs.in</h3>\n" +
-                "                <hr style=\"background: #00c853\">\n" +
-                "                <p style=\"padding: 24px\">\n" +
-                "                Hi Recruiter! Welcome to trujobs. some text\n" +
-                "                    Hi Recruiter! Welcome to trujobs. some text\n" +
-                "                    Hi Recruiter! Welcome to trujobs. some text\n" +
-                "                    Hi Recruiter! Welcome to trujobs. some text\n" +
-                "                    Hi Recruiter! Welcome to trujobs. some text\n" +
-                "                    Hi Recruiter! Welcome to trujobs. some text\n" +
-                "                    Hi Recruiter! Welcome to trujobs. some text\n" +
-                "                    Hi Recruiter! Welcome to trujobs. some text\n" +
-                "                </p>\n" +
-                "                <div style=\"background: #434145; padding: 12px\">\n" +
-                "                Footer text\n" +
-                "                </div>\n" +
-                "            </div>\n" +
-                "        </center>\n";
-*/
+                "                <h3>Greetings from TruJobs.in!</h3>\n" +
+                "                <hr style=\"background: #ffffff\">\n" + "<br>";
+
+    private static String messageDivStart = "<div style=\" display: inline-block; text-align: left; font-color: #000000; " +
+            " letter-spacing: 1.5px; "+
+            " line-height: 20px; padding-left: 4%; padding-right: 4%; width: 70%; background: #ffffff\">";
+
+    private static String mailHello = "Hello ";
+
+    private static String mailThankYou = "<br> <br> Thank You, <br> Team TruJobs <br> www.trujobs.in <br><br><br>";
+
+    private static String messageDivEnd = "</div>";
+
+    private static  String mailFooter = "<div style=\" display: inline-block; text-align: center; width: 70%\">" +
+            " <br><br> \n" +
+            "  <a href=\"https://www.linkedin.com/company/trujobs\" target=\"_blank\">\n" +
+            " <img src='https://s3.amazonaws.com/trujobs.in/companyLogos/linkedin-circle.png' height=\"30px\" width=\"30px\"> </a>\n" +
+            " <a href=\"https://www.facebook.com/trujobs\" target=\"_blank\">\n" +
+            " <img src='https://s3.amazonaws.com/trujobs.in/companyLogos/facebook-circle.png' height=\"30px\" width=\"30px\"> </a>\n" +
+            " <br><br><br> </div> </center>\n";
+
 
     public static void sendEmail(String to, String message, String subject) throws EmailException {
         boolean isDevMode = play.api.Play.isDev(play.api.Play.current()) || play.api.Play.isTest(play.api.Play.current());
@@ -67,7 +68,6 @@ public class EmailUtil {
         } else {
             email.send();
         }
-
     }
 
     public static void sendRequestCreditEmail(RecruiterProfile recruiterProfile, AddCreditRequest addCreditRequest) throws EmailException {
@@ -75,18 +75,21 @@ public class EmailUtil {
         Integer interviewCredits = addCreditRequest.getNoOfInterviewCredits();
 
         String creditMsg;
-        if(contactCredits == 0){
+        if (contactCredits == 0) {
             creditMsg = interviewCredits + " interview unlock credits";
         } else if(interviewCredits == 0){
             creditMsg = contactCredits + " contact unlock credits";
-        } else{
+        } else {
             creditMsg = contactCredits + " contact unlock credits and " + interviewCredits + " interview unlock credits";
         }
 
-        String message = "Hi " + recruiterProfile.getRecruiterProfileName() + "! We have received your request for " + creditMsg
-                + ". Our business team will contact you within 24 hours! For more queries, call +91 9980293925. Thank you.";
+        String message = mailHeader + messageDivStart + mailHello + recruiterProfile.getRecruiterProfileName() + "!<br><br>"
+                + "We have received your request for " + creditMsg
+                + ". Our business team will contact you within 24 hours! <br><br> For more queries, call +91 9980293925."
+                + mailThankYou +  messageDivEnd + mailFooter;
 
-        sendEmail(recruiterProfile.getRecruiterProfileEmail(), message, "Trujobs.in : Your credit unlock request is being processed");
+        sendEmail(recruiterProfile.getRecruiterProfileEmail(), message,
+                "Trujobs.in : Your credit unlock request is being processed");
 
         message = "Hi team, recruiter: " + recruiterProfile.getRecruiterProfileName() + " with mobile " + recruiterProfile.getRecruiterProfileMobile() + " of company: " +
                 recruiterProfile.getCompany().getCompanyName() +  " has requested for " + creditMsg
@@ -100,10 +103,14 @@ public class EmailUtil {
     }
 
     public static void sendSuccessJobPostEmailToRecruiter(RecruiterProfile recruiterProfile, JobPost jobPost) throws EmailException {
-        String message = "Hi " + recruiterProfile.getRecruiterProfileName() + "! Your job post: " + jobPost.getJobPostTitle()
-                + " has been verified and posted successfully on www.trujobs.in. Log in at www.trujobs.in/recruiter to track job applications";
 
-        sendEmail(recruiterProfile.getRecruiterProfileEmail(), message, "Trujobs.in : Job posted successfully");
+        String message = mailHeader + messageDivStart + mailHello + recruiterProfile.getRecruiterProfileName() + "!<br><br>"
+                + "Your job post: '" + jobPost.getJobPostTitle() + "'"
+                + " has been approved and made live on www.trujobs.in. Log in at www.trujobs.in/recruiter to track job applications.<br><br>"
+                + " Happy hiring!"
+                + mailThankYou +  messageDivEnd + mailFooter;
+
+        sendEmail(recruiterProfile.getRecruiterProfileEmail(), message, "Trujobs.in : Your job is now live on www.trujobs.in!");
     }
 
 }

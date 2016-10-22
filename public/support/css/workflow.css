@@ -71,3 +71,18 @@ input[type=checkbox], input[type=radio]{
         text-align: center;
     }
 }
+
+#candidateResultTable_wrapper table thead tr th{
+    color: rgb(255, 255, 255);
+}
+#candidateResultTable_wrapper table thead tr{
+    background-color: rgb(63,81,181);
+}
+
+.mdl-data-table th{
+    text-align: left !important;
+}
+.mdl-data-table td{
+    text-align: left !important;
+    padding-left: 17px !important;
+}

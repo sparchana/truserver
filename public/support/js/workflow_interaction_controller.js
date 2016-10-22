@@ -1,7 +1,18 @@
 
 function processDataForSupportInteraction(returnedData) {
     var t = $('table#interactionHistory').DataTable({
-        "order": [[ 1, "desc" ]]
+        "order": [[ 1, "desc" ]],
+        "deferRender": true,
+        "scrollY": '48vh',
+        "scrollCollapse": true,
+        "scrollX": true,"language": {
+            "emptyTable": "No data available"
+        },
+        "destroy": true,
+        "dom": 'Bfrtip',
+        "buttons": [
+            'copy', 'csv', 'excel'
+        ]
     });
     if(returnedData == null) {
         console.log("error");
@@ -13,6 +24,7 @@ function processDataForSupportInteraction(returnedData) {
                 interaction.userInteractionTimestamp,
                 interaction.interactionId,
                 interaction.userInteractionType,
+                interaction.userNote,
                 interaction.userResults,
                 interaction.userCreatedBy,
                 interaction.channel
