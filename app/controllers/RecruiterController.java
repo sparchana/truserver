@@ -29,6 +29,7 @@ import play.mvc.Security;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -260,9 +261,9 @@ public class RecruiterController {
                             matchingCandidateRequest.getMinSalary(),
                             matchingCandidateRequest.getMaxSalary(),
                             matchingCandidateRequest.getGender(),
-                            matchingCandidateRequest.getExperienceId(),
+                            matchingCandidateRequest.getExperienceIdList(),
                             matchingCandidateRequest.getJobPostJobRoleId(),
-                            matchingCandidateRequest.getJobPostEducationId(),
+                            matchingCandidateRequest.getJobPostEducationIdList(),
                             matchingCandidateRequest.getJobPostLocalityIdList(),
                             matchingCandidateRequest.getJobPostLanguageIdList(),
                             matchingCandidateRequest.getDistanceRadius());
@@ -280,9 +281,103 @@ public class RecruiterController {
                             ", Languages: " + matchingCandidateRequest.getJobPostLanguageIdList()+
                             ", Distance radius: " + matchingCandidateRequest.getDistanceRadius();
 
-                    //creating search candidate parameters
-                    createInteractionForRecruiterSearchCandidate(recruiterProfile.getRecruiterProfileUUId(), result);
-                    return ok(toJson(candidateSearchMap));
+                    if(matchingCandidateRequest.getInitialValue() == 0){
+                        //creating search candidate parameters
+                        createInteractionForRecruiterSearchCandidate(recruiterProfile.getRecruiterProfileUUId(), result);
+                    }
+
+                    List<CandidateWorkflowData> listToBeReturned = new ArrayList<>();
+                    List<CandidateWorkflowData> finalListToBeReturned = new ArrayList<>();
+
+                    Integer count = 0;
+                    for (Map.Entry<Long, CandidateWorkflowData> val : candidateSearchMap.entrySet()) {
+                        CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
+                        candidateWorkflowData.setCandidate(val.getValue().getCandidate());
+                        candidateWorkflowData.setExtraData(val.getValue().getExtraData());
+                        listToBeReturned.add(candidateWorkflowData);
+                    }
+
+                    // sort
+                    for(int i = 0; i< listToBeReturned.size(); i++){
+                        for(int j = 0; j< listToBeReturned.size() - 1; j++) {
+                            if(matchingCandidateRequest.getSortBy() == 1){
+                                if (listToBeReturned.get(j).getExtraData().getLastActive() != null) {
+                                    try{
+                                        if (listToBeReturned.get(j).getExtraData().getLastActive().lastActiveValueId > listToBeReturned.get(j + 1).getExtraData().getLastActive().lastActiveValueId) {
+                                            CandidateWorkflowData tmp = new CandidateWorkflowData();
+                                            tmp.setCandidate(listToBeReturned.get(j).getCandidate());
+                                            tmp.setExtraData(listToBeReturned.get(j).getExtraData());
+
+                                            listToBeReturned.get(j).setCandidate(listToBeReturned.get(j + 1).getCandidate());
+                                            listToBeReturned.get(j).setExtraData(listToBeReturned.get(j + 1).getExtraData());
+
+                                            listToBeReturned.get(j + 1).setCandidate(tmp.getCandidate());
+                                            listToBeReturned.get(j + 1).setExtraData(tmp.getExtraData());
+                                        }
+                                    } catch (Exception e){}
+                                } else{
+                                    listToBeReturned.remove(j);
+                                }
+                            } else if(matchingCandidateRequest.getSortBy() == 2){
+                                if (listToBeReturned.get(j).getCandidate().getCandidateLastWithdrawnSalary() != null) {
+                                    try{
+                                        if (listToBeReturned.get(j).getCandidate().getCandidateLastWithdrawnSalary() < listToBeReturned.get(j + 1).getCandidate().getCandidateLastWithdrawnSalary()) {
+                                            CandidateWorkflowData tmp = new CandidateWorkflowData();
+                                            tmp.setCandidate(listToBeReturned.get(j).getCandidate());
+                                            tmp.setExtraData(listToBeReturned.get(j).getExtraData());
+
+                                            listToBeReturned.get(j).setCandidate(listToBeReturned.get(j + 1).getCandidate());
+                                            listToBeReturned.get(j).setExtraData(listToBeReturned.get(j + 1).getExtraData());
+
+                                            listToBeReturned.get(j + 1).setCandidate(tmp.getCandidate());
+                                            listToBeReturned.get(j + 1).setExtraData(tmp.getExtraData());
+                                        }
+                                    } catch (Exception ignored){}
+                                } else{
+                                    listToBeReturned.remove(j);
+                                }
+                            } else if(matchingCandidateRequest.getSortBy() == 3){
+                                if (listToBeReturned.get(j).getCandidate().getCandidateLastWithdrawnSalary() != null
+                                        && listToBeReturned.get(j + 1).getCandidate().getCandidateLastWithdrawnSalary() != null) {
+                                    try{
+                                        if (listToBeReturned.get(j).getCandidate().getCandidateLastWithdrawnSalary() > listToBeReturned.get(j + 1).getCandidate().getCandidateLastWithdrawnSalary()) {
+                                            CandidateWorkflowData tmp = new CandidateWorkflowData();
+                                            tmp.setCandidate(listToBeReturned.get(j).getCandidate());
+                                            tmp.setExtraData(listToBeReturned.get(j).getExtraData());
+
+                                            listToBeReturned.get(j).setCandidate(listToBeReturned.get(j + 1).getCandidate());
+                                            listToBeReturned.get(j).setExtraData(listToBeReturned.get(j + 1).getExtraData());
+
+                                            listToBeReturned.get(j + 1).setCandidate(tmp.getCandidate());
+                                            listToBeReturned.get(j + 1).setExtraData(tmp.getExtraData());
+                                        }
+                                    } catch (Exception ignored){}
+                                } else{
+                                    if(listToBeReturned.get(j).getCandidate().getCandidateLastWithdrawnSalary() != null){
+                                        listToBeReturned.remove(j);
+                                    } else{
+                                        listToBeReturned.remove(j + 1);
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+
+                    //getting limited results
+                    for (CandidateWorkflowData val : listToBeReturned) {
+                        if(count >= matchingCandidateRequest.getInitialValue()){
+                            if(count < (matchingCandidateRequest.getInitialValue()+10) ){
+                                finalListToBeReturned.add(val);
+                            }
+                        }
+                        count ++;
+                        if(count == (matchingCandidateRequest.getInitialValue() + 10)){
+                            break;
+                        }
+                    }
+
+                    return ok(toJson(finalListToBeReturned));
                 }
             }
         }

@@ -224,7 +224,6 @@ public class SmsUtil {
         String msg = "Welcome to www.Trujobs.in! Thank you for getting in touch with us. Our business team will contact you within 24 hours!";
         sendSms(mobile, msg);
     }
-
     public static void sendRequestCreditSms(RecruiterProfile recruiterProfile, AddCreditRequest addCreditRequest) {
         Integer contactCredits = addCreditRequest.getNoOfContactCredits();
         Integer interviewCredits = addCreditRequest.getNoOfInterviewCredits();
@@ -249,5 +248,11 @@ public class SmsUtil {
         sendSms(devTeamMobile.get("Sandy"), msg);
         sendSms(devTeamMobile.get("Adarsh"), msg);
         sendSms(devTeamMobile.get("Archana"), msg);
+    }
+
+    public static void sendRecruiterFreeJobPostingSms(String mobile, String name) {
+        String msg = "Hi " + name + ", Thanks for posting your job on TruJobs! We are working on your job post request and you will " +
+                "receive a notification once the job is made live. For any queries please call +919980293925. Thank you!";
+        sendSms(mobile, msg);
     }
 }

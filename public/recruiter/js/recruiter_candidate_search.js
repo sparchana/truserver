@@ -5,9 +5,29 @@
 var candidateIdVal;
 var localityArray = [];
 var candidateSearchResult = [];
+var candidateSearchResultAll = [];
 
-var contactCredtUnitPrice;
-var interviewCredtUnitPrice;
+var contactCreditUnitPrice;
+var interviewCreditUnitPrice;
+
+//global variables for lazy load
+var maxAge = "";
+var minSalary = 0;
+var maxSalary = 0;
+var experienceIdList = [];
+var gender = -1;
+var jobPostJobRoleId = 1;
+var jobPostEducationIdList = [];
+var jobPostLocalityIdList = null;
+var jobPostLanguageIdList = [];
+var distanceRadius = 10;
+
+var counter = 0;
+
+var sortByVal = 1;
+
+var endOfResult = false;
+var blockApiTrigger = false;
 
 $(document).scroll(function(){
     if ($(this).scrollTop() > 20) {
@@ -16,8 +36,49 @@ $(document).scroll(function(){
     else{
         $('nav').css({"background": "transparent"});
     }
+
+    if($(window).scrollTop() + $(window).height() == $(document).height()) {
+        if(!endOfResult && !blockApiTrigger){ //trigger if the search results are still there in server
+            blockApiTrigger = true;
+            $("#endOfResultsDiv").hide();
+            $("#loadingIcon").show();
+            counter = counter +10;
+
+            requestServerSearchCall(sortByVal);
+        }
+    }
 });
 
+function requestServerSearchCall(sortBy) {
+    var d = {
+        maxAge: maxAge,
+        minSalary: minSalary,
+        maxSalary: maxSalary,
+        experienceIdList: experienceIdList,
+        gender: gender,
+        jobPostJobRoleId: jobPostJobRoleId,
+        jobPostEducationIdList: jobPostEducationIdList,
+        jobPostLocalityIdList: jobPostLocalityIdList,
+        jobPostLanguageIdList: jobPostLanguageIdList,
+        distanceRadius: distanceRadius,
+        initialValue: counter,
+        sortBy: sortBy
+    };
+
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/recruiter/api/getMatchingCandidate/",
+            async: true,
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(d),
+            success: processDataMatchCandidate
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception.stack);
+    }
+
+}
 
 $(document).ready(function(){
     checkRecruiterLogin();
@@ -126,20 +187,24 @@ $(document).ready(function(){
     $("#candidateResultContainer").html("");
     $("#searchJobPanel").hide();
     $("#noCandidateDiv").hide();
+    $("#endOfResultsDiv").hide();
     $("#loadingIcon").show();
 
+    counter = 0;
     NProgress.start();
     var d = {
         maxAge: "",
         minSalary: 0,
         maxSalary: 0,
-        experienceId: 0,
-        gender: 0,
+        experienceIdList: [],
+        gender: "-1",
         jobPostJobRoleId: 1,
-        jobPostEducationId: 0,
+        jobPostEducationIdList: [],
         jobPostLocalityIdList: null,
         jobPostLanguageIdList: [],
-        distanceRadius: 10
+        distanceRadius: 10,
+        initialValue: 0,
+        sortBy: 1
     };
 
     try {
@@ -154,7 +219,6 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception.stack);
     }
-
 });
 
 function getRecruiterInfo() {
@@ -174,8 +238,8 @@ function getRecruiterInfo() {
 }
 
 function processDataGetCreditCategory(returnedData) {
-    contactCredtUnitPrice = returnedData[0].recruiterCreditUnitPrice;
-    interviewCredtUnitPrice = returnedData[1].recruiterCreditUnitPrice;
+    contactCreditUnitPrice = returnedData[0].recruiterCreditUnitPrice;
+    interviewCreditUnitPrice = returnedData[1].recruiterCreditUnitPrice;
 }
 
 
@@ -211,7 +275,7 @@ function processDataEducation(returnedData) {
         parent.append(mainDiv);
 
         var educationInput = document.createElement("input");
-        educationInput.type = "radio";
+        educationInput.type = "checkbox";
         educationInput.name = "filterEducation";
         educationInput.id = "edu_" + education.educationId;
         educationInput.setAttribute("value", education.educationId);
@@ -232,7 +296,7 @@ function processDataExperience(returnedData) {
         parent.append(mainDiv);
 
         var experienceInput = document.createElement("input");
-        experienceInput.type = "radio";
+        experienceInput.type = "checkbox";
         experienceInput.name = "filterExperience";
         experienceInput.id = "exp_" + experience.experienceId;
         experienceInput.setAttribute("value", experience.experienceId);
@@ -333,15 +397,30 @@ function resetFilters() {
     $("#maxSalaryVal").html("Max Salary: Not specified");
     $("#distanceRadius").html("Within 10 kms");
     $("#filterDistance").val(10);
-    $("#filterSalary").val(0)
+    $("#filterSalary").val(0);
+
+    //resetting global variables
+    maxAge = "";
+    minSalary = 0;
+    maxSalary = 0;
+    experienceIdList = [];
+    gender = "-1";
+    jobPostEducationIdList = [];
+    jobPostLanguageIdList = [];
+    distanceRadius = 10;
+    counter = 0;
+
+    document.getElementById('latestActive').checked = true;
+    $("#candidateResultContainer").html("");
+    $("#endOfResultsDiv").hide();
+    $("#loadingIcon").show();
+    requestServerSearchCall(1);
 }
 
 function performSearch() {
     var searchLocality;
     var searchJobRole = null;
-    var searchExpFilter = "0";
     var searchGender = "-1";
-    var searchEducation = "0";
 
     //locality
     var selectedLocality = $("#searchLocality").val();
@@ -360,20 +439,22 @@ function performSearch() {
         searchJobRole = parseInt($("#searchJobRole").val());
     }
 
-    //experience filter
-    if($("input[name='filterExperience']:checked").val() != null || $("input[name='filterExperience']:checked").val() != undefined){
-        searchExpFilter = $("input[name='filterExperience']:checked").val();
-    }
-
     //gender filter
     if($("input[name='filterGender']:checked").val() != null || $("input[name='filterGender']:checked").val() != undefined){
         searchGender = $("input[name='filterGender']:checked").val();
     }
 
     //education filter
-    if($("input[name='filterEducation']:checked").val() != null || $("input[name='filterEducation']:checked").val() != undefined){
-        searchEducation = $("input[name='filterEducation']:checked").val();
-    }
+    var selectedEducation = [];
+    $('#educationFilterDiv input:checked').each(function() {
+        selectedEducation.push(parseInt($(this).attr('value')));
+    });
+
+    //experience filter
+    var selectedExperience = [];
+    $('#experienceFilterDiv input:checked').each(function() {
+        selectedExperience.push(parseInt($(this).attr('value')));
+    });
 
     //language filter
     var selectedLanguage = [];
@@ -392,21 +473,40 @@ function performSearch() {
         $("#candidateResultContainer").html("");
         $("#searchJobPanel").hide();
         $("#noCandidateDiv").hide();
+        $("#endOfResultsDiv").hide();
         $("#loadingIcon").show();
+
+        counter = 0;
+        candidateSearchResultAll = [];
+        sortByVal
 
         NProgress.start();
         var d = {
             maxAge: "",
             minSalary: 0,
             maxSalary: parseInt($("#filterSalary").val()),
-            experienceId: searchExpFilter,
+            experienceIdList: selectedExperience,
             gender: searchGender,
             jobPostJobRoleId: searchJobRole,
-            jobPostEducationId: searchEducation,
+            jobPostEducationIdList: selectedEducation,
             jobPostLocalityIdList: searchLocality,
             jobPostLanguageIdList: selectedLanguage,
-            distanceRadius: parseFloat($("#filterDistance").val())
+            distanceRadius: parseFloat($("#filterDistance").val()),
+            initialValue: counter,
+            sortBy: sortByVal
         };
+
+        //setting global variables
+        maxAge = "";
+        minSalary = 0;
+        maxSalary = parseInt($("#filterSalary").val());
+        experienceIdList = selectedExperience;
+        gender = searchGender;
+        jobPostJobRoleId = searchJobRole;
+        jobPostEducationIdList = selectedEducation;
+        jobPostLocalityIdList = searchLocality;
+        jobPostLanguageIdList = selectedLanguage;
+        distanceRadius = parseFloat($("#filterDistance").val());
 
         try {
             $.ajax({
@@ -428,7 +528,7 @@ function updateSliderVal(distanceSlider) {
 }
 
 function updateSalarySliderVal(maxSalarySelected) {
-    $("#maxSalaryVal").html("Max Salary: ₹" + parseFloat(maxSalarySelected.value));
+    $("#maxSalaryVal").html("Max Salary: ₹" + rupeeFormatSalary(parseFloat(maxSalarySelected.value)));
 }
 
 function processDataUnlockedCandidates(returnedData) {
@@ -442,24 +542,28 @@ function processDataUnlockedCandidates(returnedData) {
 
 function processDataMatchCandidate(returnedData) {
     NProgress.done();
+    blockApiTrigger = false;
     $("#searchBtn").removeClass("disabled");
     $("#filterBtn").removeClass("disabled");
     $("#loadingIcon").hide();
     if(returnedData != "0"){
         var candidateCount = Object.keys(returnedData).length;
-
-
         if(candidateCount > 0){
-            notifySuccess(candidateCount + " candidates found!");
-            $("#candidateResultContainer").html("");
+            if(candidateCount < 10){
+                endOfResult = true;
+                $("#endOfResultsDiv").show();
+            }
+
             candidateSearchResult = [];
             $.each(returnedData, function (key, value) {
                 candidateSearchResult.push(value);
+                candidateSearchResultAll.push(value);
             });
 
             //render candidate cards with last active filter
             $("#latestActive").attr('checked', true);
-            sortByLastActive(1);
+
+            generateCandidateCards(candidateSearchResult);
 
             try {
                 $.ajax({
@@ -476,7 +580,7 @@ function processDataMatchCandidate(returnedData) {
 
         } else{
             $("#noCandidateDiv").show();
-            notifySuccess("No Candidates found!");
+/*            notifySuccess("No Candidates found!");*/
         }
     } else{
         $("#noCandidateDiv").show();
@@ -485,7 +589,6 @@ function processDataMatchCandidate(returnedData) {
 }
 
 function generateCandidateCards(candidateSearchResult) {
-    $("#candidateResultContainer").html("");
     var parent = $("#candidateResultContainer");
 
     candidateSearchResult.forEach(function (value){
@@ -511,7 +614,7 @@ function generateCandidateCards(candidateSearchResult) {
         //candidate name container
         var candidateCardRowColOneFont = document.createElement("font");
         candidateCardRowColOneFont.setAttribute("size", "5");
-        candidateCardRowColOneFont.textContent = value.candidate.candidateFullName;
+        candidateCardRowColOneFont.textContent = toTitleCase(value.candidate.candidateFullName);
         candidateCardRowColOne.appendChild(candidateCardRowColOneFont);
 
         var candidateCardRowColTwo = document.createElement("div");
@@ -690,7 +793,25 @@ function generateCandidateCards(candidateSearchResult) {
         candidateEducationVal.textContent = "Not Specified";
         if(value.candidate.candidateEducation){
             if(value.candidate.candidateEducation.education != null){
-                candidateEducationVal.textContent = value.candidate.candidateEducation.education.educationName;
+                if(candidateEducationVal.textContent = value.candidate.candidateEducation.education.educationId > 3){
+                    var eduVal = value.candidate.candidateEducation.education.educationName;
+                    if(value.candidate.candidateEducation.degree != null){
+                        eduVal = eduVal + " (" + value.candidate.candidateEducation.degree.degreeName;
+                        if(value.candidate.candidateEducation.candidateEducationCompletionStatus != null){
+                            if(value.candidate.candidateEducation.candidateEducationCompletionStatus == 1){
+                                eduVal = eduVal + ", Completed)";
+                            } else{
+                                eduVal = eduVal + ", Incomplete)";
+                            }
+                        } else{
+                            eduVal = eduVal + ", Not specified)";
+                        }
+                    }
+                    candidateEducationVal.textContent = eduVal;
+                } else{
+                    candidateEducationVal.textContent = value.candidate.candidateEducation.education.educationName;
+                }
+
             }
         }
         inlineBlockDiv.appendChild(candidateEducationVal);
@@ -771,9 +892,9 @@ function generateCandidateCards(candidateSearchResult) {
         candidateLastWithdrawnSalaryVal.style = "margin-left: 4px";
         if(value.candidate.candidateLastWithdrawnSalary != null){
             if(value.candidate.candidateLastWithdrawnSalary == 0){
-                candidateLastWithdrawnSalaryVal.textContent = "Fresher";
+                candidateLastWithdrawnSalaryVal.textContent = "Not Specified";
             } else{
-                candidateLastWithdrawnSalaryVal.textContent = "₹" + value.candidate.candidateLastWithdrawnSalary;
+                candidateLastWithdrawnSalaryVal.textContent = "₹" + rupeeFormatSalary(value.candidate.candidateLastWithdrawnSalary);
             }
         } else{
             candidateLastWithdrawnSalaryVal.textContent = "Not Specified";
@@ -785,7 +906,7 @@ function generateCandidateCards(candidateSearchResult) {
         candidateCardContent.appendChild(candidateCardRow);
 
         candidateCardRowColOne = document.createElement("div");
-        candidateCardRowColOne.className = "col s12 l12";
+        candidateCardRowColOne.className = "col s12 l4";
         candidateCardRowColOne.style = "margin-top: 4px";
         candidateCardRow.appendChild(candidateCardRowColOne);
 
@@ -823,11 +944,95 @@ function generateCandidateCards(candidateSearchResult) {
         }
         inlineBlockDiv.appendChild(candidateLanguageVal);
 
+        //skills
+        candidateCardRowColTwo = document.createElement("div");
+        candidateCardRowColTwo.className = "col s12 l4";
+        candidateCardRowColTwo.style = "margin-top: 4px";
+        candidateCardRow.appendChild(candidateCardRowColTwo);
+
+        inlineBlockDiv = document.createElement("div");
+        inlineBlockDiv.style = "display: inline-block; margin: 4px;";
+        candidateCardRowColTwo.appendChild(inlineBlockDiv);
+
+        iconImg = document.createElement("img");
+        iconImg.src = "/assets/recruiter/img/icons/skills.svg";
+        iconImg.style = "margin-top: -4px";
+        iconImg.setAttribute('height', '24px');
+        inlineBlockDiv.appendChild(iconImg);
+
+        inlineBlockDiv = document.createElement("div");
+        inlineBlockDiv.style = "display: inline-block;";
+        candidateCardRowColTwo.appendChild(inlineBlockDiv);
+
+        innerInlineBlockDiv = document.createElement("div");
+        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
+        innerInlineBlockDiv.textContent = "Skills(s)";
+        inlineBlockDiv.appendChild(innerInlineBlockDiv);
+
+        var candidateSkillVal = document.createElement("div");
+        candidateSkillVal.style = "margin-left: 4px";
+        var skillList = value.candidate.candidateSkillList;
+        var skillListCount = Object.keys(skillList).length;
+        if(skillListCount > 0){
+            var skillVal = "";
+            skillList.forEach(function (skill){
+                if(skill.candidateSkillResponse){
+                    skillVal += skill.skill.skillName + ", ";
+                }
+            });
+            candidateSkillVal.textContent = skillVal.substring(0, skillVal.length - 2);
+        } else{
+            candidateSkillVal.textContent = "Not specified";
+        }
+        inlineBlockDiv.appendChild(candidateSkillVal);
+
+        //documents
+        var candidateCardRowColThree = document.createElement("div");
+        candidateCardRowColThree.className = "col s12 l4";
+        candidateCardRowColThree.style = "margin-top: 4px";
+        candidateCardRow.appendChild(candidateCardRowColThree);
+
+        inlineBlockDiv = document.createElement("div");
+        inlineBlockDiv.style = "display: inline-block; margin: 4px;";
+        candidateCardRowColThree.appendChild(inlineBlockDiv);
+
+        iconImg = document.createElement("img");
+        iconImg.src = "/assets/recruiter/img/icons/document.svg";
+        iconImg.style = "margin-top: -4px";
+        iconImg.setAttribute('height', '24px');
+        inlineBlockDiv.appendChild(iconImg);
+
+        inlineBlockDiv = document.createElement("div");
+        inlineBlockDiv.style = "display: inline-block;";
+        candidateCardRowColThree.appendChild(inlineBlockDiv);
+
+        innerInlineBlockDiv = document.createElement("div");
+        innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
+        innerInlineBlockDiv.textContent = "Documents(s)";
+        inlineBlockDiv.appendChild(innerInlineBlockDiv);
+
+        var candidateDocumentVal = document.createElement("div");
+        candidateSkillVal.style = "margin-left: 4px";
+        var documentList = value.candidate.idProofReferenceList;
+        var documentListCount = Object.keys(documentList).length;
+        if(documentListCount > 0){
+            var documentVal = "";
+            documentList.forEach(function (document){
+                if(document.idProof != null){
+                    documentVal += document.idProof.idProofName + ", ";
+                }
+            });
+            candidateDocumentVal.textContent = documentVal.substring(0, documentVal.length - 2);
+        } else{
+            candidateDocumentVal.textContent = "Not specified";
+        }
+        inlineBlockDiv.appendChild(candidateDocumentVal);
         var unlockDivRow = document.createElement("div");
         unlockDivRow.className = "row";
         unlockDivRow.style = "margin: 2%; padding: 1%; text-align: right; color: #fff";
         candidateCardContent.appendChild(unlockDivRow);
 
+        //unlock candidate div
         var unlockCandidateBtn = document.createElement("div");
         unlockCandidateBtn.id = "unlock_candidate_" + value.candidate.candidateId;
         unlockCandidateBtn.onclick = function () {
@@ -846,67 +1051,29 @@ function generateCandidateCards(candidateSearchResult) {
 }
 
 function sortBySalary(val){
-    var searchLength = Object.keys(candidateSearchResult).length;
-    for (var i = 0; i < searchLength; i++) {
-        for (var k = 0; k < (searchLength - 1); k++) {
-            if(val == 1){
-                // max salary
-                try{
-                    if(candidateSearchResult[k].candidate.candidateLastWithdrawnSalary < candidateSearchResult[k + 1].candidate.candidateLastWithdrawnSalary){
-                        var tmp = candidateSearchResult[k];
-                        candidateSearchResult[k] = candidateSearchResult[k + 1];
-                        candidateSearchResult[k + 1] = tmp;
-                    }
-                } catch (err){}
-            } else{
-                //min salary
-                try{
-                    if(candidateSearchResult[k].candidate.candidateLastWithdrawnSalary > candidateSearchResult[k + 1].candidate.candidateLastWithdrawnSalary){
-                        var tmp = candidateSearchResult[k];
-                        candidateSearchResult[k] = candidateSearchResult[k + 1];
-                        candidateSearchResult[k + 1] = tmp;
-                    }
-                } catch (err){}
-            }
-        }
+    counter = 0;
+    $("#endOfResultsDiv").hide();
+    $("#loadingIcon").show();
+    if(val == 1){
+        sortByVal = 2;
+        requestServerSearchCall(2);
+    } else{
+        sortByVal = 3;
+        requestServerSearchCall(3);
     }
-    generateCandidateCards(candidateSearchResult);
+    $("#candidateResultContainer").html("");
 }
 
 function sortByLastActive(val){
-    var searchLength = Object.keys(candidateSearchResult).length;
-    for (var i = 0; i < searchLength; i++) {
-        for (var k = 0; k < (searchLength - 1); k++) {
-            if(val == 1){
-                // latest active
-                if(candidateSearchResult[k].extraData.lastActive != null){
-                    try{
-                        if(candidateSearchResult[k].extraData.lastActive.lastActiveValueId != null && candidateSearchResult[k + 1].extraData.lastActive.lastActiveValueId != null){
-                            if(candidateSearchResult[k].extraData.lastActive.lastActiveValueId > candidateSearchResult[k + 1].extraData.lastActive.lastActiveValueId){
-                                var tmp = candidateSearchResult[k];
-                                candidateSearchResult[k] = candidateSearchResult[k + 1];
-                                candidateSearchResult[k + 1] = tmp;
-                            }
-                        }
-                    } catch (err){}
-                }
-            } else{
-                //oldest active
-                if(candidateSearchResult[k].extraData.lastActive != null){
-                    try{
-                        if(candidateSearchResult[k].extraData.lastActive.lastActiveValueId != null && candidateSearchResult[k + 1].extraData.lastActive.lastActiveValueId != null){
-                            if(candidateSearchResult[k].extraData.lastActive.lastActiveValueId < candidateSearchResult[k + 1].extraData.lastActive.lastActiveValueId){
-                                var tmp = candidateSearchResult[k];
-                                candidateSearchResult[k] = candidateSearchResult[k + 1];
-                                candidateSearchResult[k + 1] = tmp;
-                            }
-                        }
-                    } catch (err){}
-                }
-            }
-        }
+    counter = 0;
+    $("#endOfResultsDiv").hide();
+    $("#loadingIcon").show();
+    if(val == 1){
+        sortByVal = 1;
+        requestServerSearchCall(1);
     }
-    generateCandidateCards(candidateSearchResult);
+    $("#candidateResultContainer").html("");
+    generateCandidateCards(candidateSearchResultAll);
 }
 
 function unlockContact(candidateId){

@@ -25,6 +25,7 @@ import java.util.*;
 
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static controllers.businessLogic.InteractionService.createInteractionForNewJobPost;
+import static models.util.SmsUtil.sendRecruiterFreeJobPostingSms;
 import static play.mvc.Controller.session;
 import static play.mvc.Http.Context.current;
 
@@ -64,6 +65,13 @@ public class JobService {
             result = InteractionConstants.INTERACTION_RESULT_NEW_JOB_CREATED;
             interactionType = InteractionConstants.INTERACTION_TYPE_NEW_JOB_CREATED;
 
+            if(channelType == InteractionService.InteractionChannelType.SELF){
+                RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+                if(recruiterProfile != null){
+                    sendRecruiterFreeJobPostingSms(recruiterProfile.getRecruiterProfileMobile(), recruiterProfile.getRecruiterProfileName());
+                }
+
+            }
             Logger.info("JobPost with jobId: " + newJobPost.getJobPostId() + " and job title: " + newJobPost.getJobPostTitle() + " created successfully");
         } else{
             Logger.info("Job post already exists. Updating existing job Post");

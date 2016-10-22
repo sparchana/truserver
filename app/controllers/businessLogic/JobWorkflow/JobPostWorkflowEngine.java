@@ -233,7 +233,7 @@ public class JobPostWorkflowEngine {
      *
      *  @param maxAge  max range criteria to be taken into consideration while matching
      *  @param gender  gender criteria to be taken into consideration while matching
-     *  @param experienceId experience duration to be taken into consideration while matching
+     *  @param experienceIdList experience duration to be taken into consideration while matching
      *  @param jobPostLocalityIdList  candidates to be matched within x Km of any of the provided locality
      *  @param languageIdList  candidate to be matched for any of this language. Output contains the
      *                       indication to show matching & non-matching language
@@ -244,22 +244,138 @@ public class JobPostWorkflowEngine {
                                                                                   Long minSalary,
                                                                                   Long maxSalary,
                                                                                   Integer gender,
-                                                                                  Integer experienceId,
+                                                                                  List<Integer> experienceIdList,
                                                                                   Long jobRoleId,
-                                                                                  Integer educationId,
+                                                                                  List<Integer> educationIdList,
                                                                                   List<Long> jobPostLocalityIdList,
                                                                                   List<Integer> languageIdList,
                                                                                   Double radius)
     {
-        Map<Long, CandidateWorkflowData> matchedCandidateMap = new LinkedHashMap<>();
+        List<Integer> minExperienceList = new ArrayList<>();
+        List<Integer> maxExperienceList = new ArrayList<>();
 
-        // geDurationFromExperience returns minExperience req. (in Months)
-        ExperienceValue experience = getDurationFromExperience(experienceId);
+
+        Map<Long, CandidateWorkflowData> matchedCandidateMap = new LinkedHashMap<>();
 
         Query<Candidate> query = Candidate.find.query();
 
-        //query candidate query with the filter params
-        query = getFilteredQuery(maxAge, minSalary, maxSalary,gender, jobRoleId, educationId, languageIdList, experience);
+        // select candidate whose totalExperience falls under the req exp
+        if (experienceIdList != null && experienceIdList.size()>0) {
+            // geDurationFromExperience returns minExperience req. (in Months)
+            int minima;
+            int maxima;
+            for (Integer experienceId : experienceIdList) {
+                ExperienceValue experience = getDurationFromExperience(experienceId);
+                if(experience != null){
+                    minExperienceList.add(experience.minExperienceValue);
+                    maxExperienceList.add(experience.maxExperienceValue);
+                } else {
+                    break;
+                }
+            }
+            if(minExperienceList.size() > 0){
+                Collections.sort(maxExperienceList, Collections.reverseOrder());
+                Collections.sort(minExperienceList);
+
+                minima = minExperienceList.get(0);
+                maxima = maxExperienceList.get(0);
+
+                if(minima == 0 && maxima == 0) {
+                    query = query
+                            .where()
+                            .isNotNull("candidateTotalExperience")
+                            .eq("candidateTotalExperience", minima).query();
+                } else {
+                    query = query
+                            .where()
+                            .isNotNull("candidateTotalExperience")
+                            .ge("candidateTotalExperience", minima).query();
+                }
+                if(maxima != 0) {
+                    query = query
+                            .where()
+                            .isNotNull("candidateTotalExperience")
+                            .le("candidateTotalExperience", maxima).query();
+                }
+            }
+        }
+
+        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
+
+        // problem: all age is null/0 and dob is also null
+        // select candidate falling under the specified age req
+        if (maxAge != null && maxAge !=0 ) {
+            int startYear = currentYear - maxAge;
+            query = query
+                    .where()
+                    .isNotNull("candidateDOB")
+                    .ge("candidateDOB", startYear + "-01-01").query();
+        }
+
+        // select candidate based on specific gender req, else pass
+        if (gender != null && gender>=0 && gender != ServerConstants.GENDER_ANY) {
+            query = query
+                    .where()
+                    .isNotNull("candidateGender")
+                    .eq("candidateGender", gender).query();
+        }
+
+        // select candidate w.r.t candidateLastWithdrawnSalary
+        if (maxSalary != null && maxSalary != 0){
+            query =  query
+                    .where()
+                    .isNotNull("candidateLastWithdrawnSalary")
+                    .le("candidateLastWithdrawnSalary", maxSalary)
+                    .query();
+        } else if (minSalary != null && minSalary != 0) {
+            query =  query
+                    .where()
+                    .isNotNull("candidateLastWithdrawnSalary")
+                    .le("candidateLastWithdrawnSalary", minSalary)
+                    .query();
+        }
+        // select candidate w.r.t language
+        if (languageIdList != null && languageIdList.size() > 0) {
+            query =  query.select("*").fetch("languageKnownList")
+                    .where()
+                    .in("languageKnownList.language.languageId", languageIdList)
+                    .query();
+        }
+
+        /*// select candidate whose LatLng/HomeLocality in within (X) KM of jobPost LatLng
+        if (localityIdList != null && localityIdList.size() > 0) {
+            query =  query.select("*").fetch("locality")
+                    .where()
+                    .in("locality.localityId", localityIdList)
+                    .query();
+        }*/
+
+        // jobpref-jobrole match with jobpost-jobrole
+        if (jobRoleId != null) {
+            query = query.select("*").fetch("jobPreferencesList")
+                    .where()
+                    .in("jobPreferencesList.jobRole.jobRoleId", jobRoleId)
+                    .query();
+        }
+
+        // education match
+        if (educationIdList != null && educationIdList.size()> 0) {
+            query = query.select("*").fetch("candidateEducation")
+                    .where()
+                    .isNotNull("candidateEducation")
+                    .in("candidateEducation.education.educationId", educationIdList)
+                    .query();
+        }
+
+        // should be an active candidate
+        query = query.select("*").fetch("candidateprofilestatus")
+                .where()
+                .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE)
+                .query();
+
+
+/*        //query candidate query with the filter params
+        query = getFilteredQuery(maxAge, minSalary, maxSalary,gender, jobRoleId, educationId, languageIdList, experience);*/
 
         List<Candidate> candidateList = filterByLatLngOrHomeLocality(query.findList(), jobPostLocalityIdList, radius, true);
 
@@ -1188,105 +1304,7 @@ public class JobPostWorkflowEngine {
     }
 
 
-    private static Query<Candidate> getFilteredQuery(Integer maxAge, Long minSalary, Long maxSalary, Integer gender, Long jobRoleId, Integer educationId, List<Integer> languageIdList, ExperienceValue experience) {
-        Query<Candidate> query = Candidate.find.query();
-        int currentYear = Calendar.getInstance().get(Calendar.YEAR);
 
-        // problem: all age is null/0 and dob is also null
-        // select candidate falling under the specified age req
-        if (maxAge != null && maxAge !=0 ) {
-            int startYear = currentYear - maxAge;
-            query = query
-                    .where()
-                    .isNotNull("candidateDOB")
-                    .ge("candidateDOB", startYear + "-01-01").query();
-        }
-
-        // select candidate based on specific gender req, else pass
-        if (gender != null && gender>=0 && gender != ServerConstants.GENDER_ANY) {
-            query = query
-                    .where()
-                    .isNotNull("candidateGender")
-                    .eq("candidateGender", gender).query();
-        }
-
-        // select candidate whose totalExperience falls under the req exp
-        if (experience != null) {
-
-            if(experience.minExperienceValue == 0) {
-                query = query
-                        .where()
-                        .isNotNull("candidateTotalExperience")
-                        .eq("candidateTotalExperience", experience.minExperienceValue).query();
-            } else {
-                query = query
-                        .where()
-                        .isNotNull("candidateTotalExperience")
-                        .ge("candidateTotalExperience", experience.minExperienceValue).query();
-            }
-            if(experience.maxExperienceValue != 0) {
-                query = query
-                        .where()
-                        .isNotNull("candidateTotalExperience")
-                        .le("candidateTotalExperience", experience.maxExperienceValue).query();
-            }
-        }
-
-        // select candidate w.r.t candidateLastWithdrawnSalary
-        if (maxSalary != null && maxSalary != 0){
-            query =  query
-                    .where()
-                    .isNotNull("candidateLastWithdrawnSalary")
-                    .le("candidateLastWithdrawnSalary", maxSalary)
-                    .query();
-        } else if (minSalary != null && minSalary != 0) {
-            query =  query
-                    .where()
-                    .isNotNull("candidateLastWithdrawnSalary")
-                    .le("candidateLastWithdrawnSalary", minSalary)
-                    .query();
-        }
-        // select candidate w.r.t language
-        if (languageIdList != null && languageIdList.size() > 0) {
-            query =  query.select("*").fetch("languageKnownList")
-                    .where()
-                    .in("languageKnownList.language.languageId", languageIdList)
-                    .query();
-        }
-
-        /*// select candidate whose LatLng/HomeLocality in within (X) KM of jobPost LatLng
-        if (localityIdList != null && localityIdList.size() > 0) {
-            query =  query.select("*").fetch("locality")
-                    .where()
-                    .in("locality.localityId", localityIdList)
-                    .query();
-        }*/
-
-        // jobpref-jobrole match with jobpost-jobrole
-        if (jobRoleId != null) {
-            query = query.select("*").fetch("jobPreferencesList")
-                    .where()
-                    .in("jobPreferencesList.jobRole.jobRoleId", jobRoleId)
-                    .query();
-        }
-
-        // education match
-        if (educationId != null && educationId != 0) {
-            query = query.select("*").fetch("candidateEducation")
-                    .where()
-                    .isNotNull("candidateEducation")
-                    .eq("candidateEducation.education.educationId", educationId)
-                    .query();
-        }
-
-        // should be an active candidate
-        query = query.select("*").fetch("candidateprofilestatus")
-                .where()
-                .eq("candidateprofilestatus.profileStatusId", ServerConstants.CANDIDATE_STATE_ACTIVE)
-                .query();
-
-        return query;
-    }
 
     private static Map<Long, CandidateExtraData> computeExtraDataForRecruiterSearchResult(List<Candidate> candidateList) {
 
