@@ -258,7 +258,7 @@ public class RecruiterController {
             e.printStackTrace();
         }
 
-        if(session().get("recruiterId") != null){
+        if(session().get("recruiterId") != null) {
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
             if(recruiterProfile != null){
                 if (matchingCandidateRequest != null) {
@@ -323,6 +323,8 @@ public class RecruiterController {
                     for (CandidateWorkflowData val : listToBeReturned) {
                         if(count >= matchingCandidateRequest.getInitialValue()){
                             if(count < (matchingCandidateRequest.getInitialValue()+10) ){
+                                val.getCandidate().setCandidateMobile("");
+                                val.getCandidate().setCandidateEmail("");
                                 finalListToBeReturned.add(val);
                             }
                         }
