@@ -338,7 +338,6 @@ public class JobService {
             }
         }
 
-
         if(jobPostLanguageRequirementList != null && jobPostLanguageRequirementList.size() > 0) {
             Map<Integer, PreScreenRequirement> map = multiEntityMap.get(ServerConstants.CATEGORY_LANGUAGE);
             List<Integer> idList = new ArrayList<>();
@@ -500,7 +499,7 @@ public class JobService {
             }
         }
 
-        if ( jobPost.getJobPostWorkingDays() != 0 && jobPost.getJobPostWorkingDays() != null && jobPost.getJobPostShift() != null) {
+        if (jobPost.getJobPostShift() != null) {
             PreScreenRequirement preScreenRequirementWorkTimings = singleEntityMap.get(ServerConstants.PROFILE_REQUIREMENT_TABLE_WORKTIMINGS);
             if (preScreenRequirementWorkTimings == null) {
                 preScreenRequirementWorkTimings = new PreScreenRequirement();

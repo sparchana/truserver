@@ -1,7 +1,23 @@
 @workflow{
-    <div id="preScreenPane">
-        <div id="preScreenError" style="text-align: center;
-            color: red"><h5 id="preScreenErrorMsg"></h5></div>
+
+    <div class="mdl-grid">
+            <!-- Job Post Detail Card -->
+        <div class="mdl-cell mdl-cell--12-col" style="padding-top: 8px;
+            padding-left: 20px;
+            font-size: 22px;
+            font-weight: 500";>
+            <label id="trigger" class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="is_pass">
+                <input type="checkbox" id="is_pass" class="mdl-switch__input" checked>
+                <span class="mdl-switch__label"></span>
+            </label>
+            <div class="mdl-tooltip" data-mdl-for="trigger">
+                ON to see all candidates who <strong>passed</strong>. OFF to see all candidated who <strong>failed </strong>
+            </div>
+        </div>
+    </div>
+    <div id="preScreenCompletedPane">
+        <div id="preScreenCompletedError" style="text-align: center;
+            color: red"><h5 id="preScreenCompletedErrorMsg"></h5></div>
 
         <table id="candidateResultTable" class="mdl-data-table mdl-js-data-table" style="margin-top: 16px;display: none;table-layout: fixed;overflow-x: scroll;" cellspacing="0" width="100%">
             <thead>
@@ -35,11 +51,11 @@
                     <th>MinProfile?</th>
                     <th>Exp Detail</th>
                     <th>Candidate Id</th>
-                    <th>Pre Screen Attempt</th>
-                    <th>Job Application Mode (Self/Partner)</th>
-                    <th>Pre-Screen selected timestamp</th>
-                    <th>Created By</th>
-                    <th>Action</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
             <tfoot>
@@ -73,11 +89,11 @@
                     <th>MinProfile?</th>
                     <th>Exp Detail</th>
                     <th>Candidate Id</th>
-                    <th>Pre Screen Attempt</th>
-                    <th>Job Application Mode (Self/Partner)</th>
-                    <th>Pre-Screen selected timestamp</th>
-                    <th>Created By</th>
-                    <th>Action</th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
                 </tr>
             </tfoot>
             <tbody>
@@ -86,9 +102,9 @@
     </div>
 
     <link rel="stylesheet" type="text/css" href="/assets/css/pre_screen_modal.css">
-    <script type="text/javascript" src="/assets/js/bootbox.min.js"></script>
-    <script type="text/javascript" src="/assets/js/pre_screen_modal.js"></script>
-    <!--
+    @*<script type="text/javascript" src="/assets/js/bootbox.min.js"></script>*@
+    @*<script type="text/javascript" src="/assets/js/pre_screen_modal.js"></script>*@
+        <!--
     <div id="otherControls">
         <button type="submit" id="moveSelectedBtn" class="btn btn-success btn-lg">Move To Pre-Screen</button>
     </div>

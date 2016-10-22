@@ -56,6 +56,7 @@
                 <nav class="mdl-navigation" style="padding-top:0">
                     <a id="match_view_drawer" class="mdl-navigation__link" href="?view=match_view">Match View</a>
                     <a id="pre_screen_view_drawer" class="mdl-navigation__link" href="?view=pre_screen_view">Pre-Screen View</a>
+                    <a id="pre_screen_completed_view_drawer" class="mdl-navigation__link" href="?view=pre_screen_completed_view">Pre-Screen Completed View</a>
                     @*<a id="assessment_view_drawer" class="mdl-navigation__link" href="#">ASSESSMENT VIEW</a>*@
                     @*<a id="interview_view_drawer" class="mdl-navigation__link" href="#">INTERVIEW</a>*@
                 </nav>
@@ -65,7 +66,7 @@
                     <div class="mdl-card__supporting-text">
                         <div class="mdl-grid">
                             <!-- Job Post Detail Card -->
-                            <div class="mdl-cell mdl-cell--3-col" id="job_post_title" style="padding-top:8px;padding-left:20px; font-size: 22px; font-weight: 500">
+                            <div class="mdl-cell mdl-cell--2-col" id="job_post_title" style="padding-top:8px;padding-left:20px; font-size: 22px; font-weight: 500">
                                 Job Post Name
                             </div>
                             <div class="mdl-cell mdl-cell--2-col">
@@ -81,15 +82,37 @@
                                             display: inline-block">Not Specified</div>
                                     </div>
                             </div>
-                            <div class="mdl-cell mdl-cell--2-col">
+                            <div class="mdl-cell mdl-cell--1-col">
                                 <div style="display: inline-block;">
                                     <div style="margin-left: 4px;color: rgb(63,81,181);font-size: 12px">Salary</div>
                                     <div id="job_post_salary" style="margin-left: 4px;
                                         display: inline-block">Not Specified</div>
                                 </div>
                             </div>
-                            <div class="mdl-layout-spacer"></div>
+
                             <div class="mdl-cell mdl-cell--2-col">
+                                <div style="display: inline-block;">
+                                    <div style="margin-left: 4px;color: rgb(63,81,181);font-size: 12px">Locality</div>
+                                    <div id="job_post_locality" style="margin-left: 4px;
+                                        display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                            <div class="mdl-cell mdl-cell--1-col">
+                                <div style="display: inline-block;">
+                                    <div style="margin-left: 4px;color: rgb(63,81,181);font-size: 12px">Education</div>
+                                    <div id="job_post_education" style="margin-left: 4px;
+                                        display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                            <div class="mdl-cell mdl-cell--1-col">
+                                <div style="display: inline-block;">
+                                    <div style="margin-left: 4px;color: rgb(63,81,181);font-size: 12px">Experience</div>
+                                    <div id="job_post_experience" style="margin-left: 4px;
+                                        display: inline-block">Not Specified</div>
+                                </div>
+                            </div>
+                            <div class="mdl-layout-spacer"></div>
+                            <div class="mdl-cell mdl-cell--1-col">
                                 <button id="job_role_id" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent" onclick="linkToDashboard()">Button
                                 </button>
                             </div><!-- Job Post Detail Card End-->

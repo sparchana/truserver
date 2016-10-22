@@ -67,6 +67,7 @@ POST        /getAllDeactivationReason                                     contro
 POST        /support/api/getMatchingCandidate/                            controllers.Application.getMatchingCandidate()
 POST        /support/api/saveSelectedCandidate/                           controllers.Application.saveSelectedCandidate()
 POST        /support/api/getSelectedCandidate/:jpId                       controllers.Application.getSelectedCandidate(jpId: Long)
+POST        /support/api/getPreScreenedCandidate/                         controllers.Application.getPreScreenedCandidate(jpId: java.lang.Long?= null, isPass: java.lang.Boolean?= null)
 
 # user dashboard
 # ~~~~~~~~~~~~~~
