@@ -393,6 +393,7 @@ public class JobPostWorkflowEngine {
     }
 
     public static WorkflowResponse saveSelectedCandidates(SelectedCandidateRequest request) {
+        String interactionResult = InteractionConstants.INTERACTION_RESULT_INTERACTION_TYPE_CANDIDATE_SELECTED_FOR_PRESCREEN;
         WorkflowResponse response = new WorkflowResponse();
         List<Candidate> selectedCandidateList = Candidate.find.where().in("candidateId", request.getSelectedCandidateIdList()).findList();
 
@@ -432,6 +433,19 @@ public class JobPostWorkflowEngine {
                 response.setMessage("Selection completed successfully.");
                 // not redirecting user to next page.
                 response.setNextView("match_view");
+
+                interactionResult += jobPostWorkflow.getJobPost().getJobPostId() + ": " + jobPostWorkflow.getJobPost().getJobRole().getJobName();
+                // chances are the scrapped data may not have proper company.
+                if(jobPostWorkflow.getJobPost().getCompany() != null) {
+                    interactionResult+="@" + jobPostWorkflow.getJobPost().getCompany().getCompanyName();
+                }
+                // save the interaction
+                InteractionService.createInteractionForPreScreenAttempts(
+                        jobPostWorkflow.getJobPostWorkflowUUId(),
+                        candidate.getCandidateUUId(),
+                        InteractionConstants.INTERACTION_TYPE_CANDIDATE_SELECTED_FOR_PRESCREEN,
+                        interactionResult
+                );
             } else {
                 Logger.error("Error! Candidate already exists in another status");
                 // TODO handle this case as error in response as well
@@ -468,6 +482,8 @@ public class JobPostWorkflowEngine {
         // constructor for this class make all default flag as true, we will mark it false wherever its not satisfied
         populateResponse.jobPostId = jobPostId;
         populateResponse.candidateId = candidateId;
+        Logger.info("minReq :" + jobPost.getJobPostMinRequirement());
+        populateResponse.setJobPostMinReq(jobPost.getJobPostMinRequirement());
 
         PreScreenPopulateResponse.PreScreenElement preScreenElement;
 
@@ -562,7 +578,7 @@ public class JobPostWorkflowEngine {
                             if (preScreenRequirement.getProfileRequirement().getProfileRequirementTitle().equalsIgnoreCase("age")) {
                                 if (jobPost.getJobPostMaxAge() != null && jobPost.getJobPostMaxAge() > 0) {
                                     preScreenElement = new PreScreenPopulateResponse.PreScreenElement();
-                                    preScreenElement.setPropertyTitle("Age");
+                                    preScreenElement.setPropertyTitle("Max Age");
                                     preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
                                     preScreenElement.jobPostElement = (jobPost.getJobPostMaxAge());
                                     if(candidate.getCandidateAge() != null &&  candidate.getCandidateAge() > 0) {
@@ -835,12 +851,20 @@ public class JobPostWorkflowEngine {
         // support user can decide whether a candidate passed or failed pre-screen,
         // score doesn't play any role in deciding as of now.
 
+        String interactionResult = "";
+        Integer interactionType = null;
         if(preScreenRequest.isPass() != null){
             JobPostWorkflowStatus status;
             if(preScreenRequest.isPass()) {
+                // passed
                 status = JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED).findUnique();
+                interactionResult = InteractionConstants.INTERACTION_RESULT_INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_PASSED;
+                interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_PASSED;
             } else {
+                // failed
                 status = JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_PRESCREEN_FAILED).findUnique();
+                interactionResult = InteractionConstants.INTERACTION_RESULT_INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_FAILED;
+                interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_FAILED;
             }
             jobPostWorkflowNew.setStatus(status);
             jobPostWorkflowNew.update();
@@ -848,6 +872,19 @@ public class JobPostWorkflowEngine {
             // here code will come to judge candidate pre screen response solely based on score
         }
 
+        // prep interaction
+        interactionResult += jobPostWorkflowNew.getJobPost().getJobPostId() + ": " + jobPostWorkflowNew.getJobPost().getJobRole().getJobName();
+        // chances are the scrapped data may not have proper company.
+        if(jobPostWorkflowNew.getJobPost().getCompany() != null) {
+            interactionResult+="@" + jobPostWorkflowNew.getJobPost().getCompany().getCompanyName();
+        }
+        // save interaction
+        InteractionService.createInteractionForPreScreenAttempts(
+                jobPostWorkflowNew.getJobPostWorkflowUUId(),
+                jobPostWorkflowNew.getCandidate().getCandidateUUId(),
+                interactionType,
+                interactionResult
+        );
 
         // Now lets save all the individual responses for this current pre screen attempt
         for (PreScreenRequirement preScreenRequirement : preScreenRequirementList) {
@@ -864,6 +901,73 @@ public class JobPostWorkflowEngine {
             preScreenResponse.save();
         }
         return "OK";
+    }
+
+    public static Map<Long, CandidateWorkflowData> getPreScreenedPassFailCandidates(Long jobPostId, boolean isPass) {
+        String statusSql;
+        if(isPass) {
+            statusSql = " and (status_id = '" +ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED+"') ";
+        } else {
+            statusSql = " and (status_id = '" +ServerConstants.JWF_STATUS_PRESCREEN_FAILED+ "') ";
+        }
+        StringBuilder workFlowQueryBuilder = new StringBuilder("select createdby, candidate_id, creation_timestamp, job_post_id, status_id from job_post_workflow i " +
+                " where i.job_post_id " +
+                " = ('"+jobPostId+"') " +
+                statusSql+
+                " and creation_timestamp = " +
+                " (select max(creation_timestamp) from job_post_workflow where i.candidate_id = job_post_workflow.candidate_id) " +
+                " order by creation_timestamp desc ");
+
+        Logger.info("rawSql"+workFlowQueryBuilder.toString());
+
+        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder.toString())
+                .columnMapping("creation_timestamp", "creationTimestamp")
+                .columnMapping("job_post_id", "jobPost.jobPostId")
+                .columnMapping("status_id", "status.statusId")
+                .columnMapping("candidate_id", "candidate.candidateId")
+                .columnMapping("createdby", "createdBy")
+                .create();
+
+        List<JobPostWorkflow> jobPostWorkflowList = Ebean.find(JobPostWorkflow.class)
+                .setRawSql(rawSql)
+                .findList();
+
+//        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where()
+//                .eq("jobPost.jobPostId", jobPostId)
+//                .or(eq("status.statusId", ServerConstants.JWF_STATUS_SELECTED), eq("status.statusId", ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED))
+//                .setDistinct(true)
+//                .orderBy().desc("creation_timestamp").findList();
+
+        List<Candidate> candidateList = new ArrayList<>();
+
+        Map<Long, CandidateWorkflowData> selectedCandidateMap = new LinkedHashMap<>();
+
+        // until view is not available over this table, this loop get the distinct candidate who
+        // got selected for a job post recently
+        for( JobPostWorkflow jpwf: jobPostWorkflowList) {
+            candidateList.add(jpwf.getCandidate());
+        }
+        // prep params for a jobPost
+        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+
+        List<JobPostToLocality> jobPostToLocalityList = jobPost.getJobPostToLocalityList();
+        List<Long> localityIdList = new ArrayList<>();
+        for (JobPostToLocality jobPostToLocality: jobPostToLocalityList) {
+            localityIdList.add(jobPostToLocality.getLocality().getLocalityId());
+        }
+
+
+        candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, false);
+        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique());
+
+        for ( Candidate candidate: candidateList) {
+            CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
+            candidateWorkflowData.setCandidate(candidate);
+            candidateWorkflowData.setExtraData(candidateExtraDataMap.get(candidate.getCandidateId()));
+            selectedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
+        }
+
+        return selectedCandidateMap;
     }
 
     public static class LastActiveValue{
@@ -1113,13 +1217,14 @@ public class JobPostWorkflowEngine {
                 if(jobApplicationModeMap != null && jobApplicationModeMap.size() > 0) {
                     candidateExtraData.setJobApplicationMode(jobApplicationModeMap.get(candidate.getCandidateId()));
                 }
-                // 'Pre-screed selection timestamp' along with jobPostWorkflowId, uuid
+                // 'Pre-screen selection timestamp' along with jobPostWorkflowId, uuid
                 if(candidateToJobPostWorkflowMap != null && candidateToJobPostWorkflowMap.size() > 0) {
                     JobPostWorkflow jobPostWorkflow = candidateToJobPostWorkflowMap.get(candidate.getCandidateId());
                     if(jobPostWorkflow!= null){
                         candidateExtraData.setPreScreenSelectionTimeStamp(jobPostWorkflow.getCreationTimestamp());
                         candidateExtraData.setWorkflowId(jobPostWorkflow.getJobPostWorkflowId());
                         candidateExtraData.setWorkflowUUId(jobPostWorkflow.getJobPostWorkflowUUId());
+                        candidateExtraData.setCreatedBy(jobPostWorkflow.getCreatedBy());
                     }
                 }
             }
@@ -1165,16 +1270,19 @@ public class JobPostWorkflowEngine {
         return experienceValue;
     }
 
+    // this methods take the old jobpost uuid and set the new jobpost uuid to old jobpost uuid.
     private static JobPostWorkflow saveNewJobPostWorkflow(Long candidateId, Long jobPostId, JobPostWorkflow jobPostWorkflowOld) {
         JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED).findUnique();
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
         Candidate candidate = Candidate.find.where().in("candidateId", candidateId).findUnique();
+        String toBePreservedUUId = jobPostWorkflowOld.getJobPostWorkflowUUId();
 
         // check if status is already selected or pre_screen_attempted, throw error if not
         if (jobPostWorkflowOld.getStatus().getStatusId() == ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED
                 || jobPostWorkflowOld.getStatus().getStatusId() == ServerConstants.JWF_STATUS_SELECTED) {
             // save new workflow with status pre_screen_attempted, later this obj status will change to pre_screen_completed
             jobPostWorkflowOld = new JobPostWorkflow();
+            jobPostWorkflowOld.setJobPostWorkflowUUId(toBePreservedUUId);
             jobPostWorkflowOld.setJobPost(jobPost);
             jobPostWorkflowOld.setCandidate(candidate);
             jobPostWorkflowOld.setCreatedBy(session().get("sessionUsername"));

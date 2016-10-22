@@ -92,6 +92,7 @@ public class PreScreenPopulateResponse {
     public String preScreenTitleMsg;
     public List<PreScreenElement> elementList;
     public Status status;
+    public String jobPostMinReq;
 
     public PreScreenPopulateResponse(){
         this.elementList = new ArrayList<>();
@@ -111,5 +112,13 @@ public class PreScreenPopulateResponse {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public String getJobPostMinReq() {
+        return jobPostMinReq;
+    }
+
+    public void setJobPostMinReq(String jobPostMinReq) {
+        this.jobPostMinReq = jobPostMinReq;
     }
 }
