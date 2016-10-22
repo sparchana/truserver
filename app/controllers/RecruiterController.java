@@ -463,6 +463,9 @@ public class RecruiterController {
     public static Result renderAllRecruiterJobPosts() {
         return ok(views.html.Recruiter.recruiter_my_jobs.render());
     }
+    public static Result recruiterNavbar() {
+        return ok(views.html.Recruiter.recruiter_navbar.render());
+    }
 
     public static Result findRecruiterAndSendOtp() {
         JsonNode req = request().body().asJson();

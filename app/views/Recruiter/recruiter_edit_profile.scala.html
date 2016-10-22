@@ -31,34 +31,10 @@
 
     </head>
     <body id="recruiterHome">
-        <div class="navbar-fixed">
-            <nav>
-                <div class="container" style="width: 85%;">
-                    <div class="nav-wrapper">
-                        <a href="#" class="brand-logo">
-                            <img id="navLogo" src="/assets/recruiter/img/trujobs-recruiter.png" style="height: 32px;
-                                margin-top: -2%">
-                        </a>
-                        <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
-                        <ul class="right hide-on-med-and-down">
-                            <li><a href="/recruiter/home">Home</a></li>
-                            <li><a href="/recruiter/candidateSearch">Search Candidates</a></li>
-                            <li><a href="/recruiter/jobPost/0">Post Job</a></li>
-                            <li><a href="#">Profile</a></li>
-                            <li><a onclick="logoutRecruiter()">Logout</a></li>
-                        </ul>
-                    </div>
-                    <ul class="side-nav" id="mobile-demo">
-                        <li><a href="/recruiter/home">Home</a></li>
-                        <li><a href="/recruiter/candidateSearch">Search Candidates</a></li>
-                        <li><a href="/recruiter/jobPost/0">Post Job</a></li>
-                        <li><a href="#">Profile</a></li>
-                        <li><a onclick="logoutRecruiter()">Logout</a></li>
-                    </ul>
-                </div>
-            </nav>
-        </div>
-
+        <div class="recruiter_navbar"></div>
+        <script>
+            $('.recruiter_navbar').load('/recruiterNavbar');
+        </script>
         <div class="back-banner"></div>
         <div style="display: flex;
             justify-content: center;
