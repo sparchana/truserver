@@ -485,4 +485,8 @@ public class RecruiterController {
     public static Result renderAllApplications(long id) {
         return ok(views.html.Recruiter.recruiter_applied_candidates.render());
     }
+
+    public static Result renderAllUnlockedCandidates() {
+        return ok(views.html.Recruiter.recruiter_unlocked_candidate.render());
+    }
 }
