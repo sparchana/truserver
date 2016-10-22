@@ -201,3 +201,127 @@ body{
         transform: rotate(90deg);
     }
 }
+#modalBuyCreditInnerBox{
+    background: #fff;
+    padding: 24px;
+}
+.packCol  img{
+    width: 36px;
+}
+#creditModalBtn .btn{
+    height: 25px;
+    line-height: 8px;
+    padding: 8px;
+    margin-top:-5px;
+
+}
+#requestCredits{
+    width: 40%;
+    font-size: 12px;
+    padding: 0;
+}
+.packCol  div{
+    text-align: center;
+    display: block;
+    font-size: 16px;
+    width: 100%;
+}
+.packCol  p{
+    text-align: center;
+    display: block;
+    font-size: 14px;
+}
+#searchJobPanel{
+    padding: 120px 6% 0 6%;
+}
+#sortByMobileViewBtn{
+    color: #000;
+    background-color: #fff;
+    width: 100%;
+}
+#filterMobileViewBtn{
+    color: #000;
+    background-color: #fff;
+    width: 100%;
+}
+#sortMainBox{
+    display: block;
+}
+#filterMainBox{
+    display: block;
+}
+
+#fixedButton {
+    z-index: 999;
+    margin: 24px;
+    border-radius: 50%;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    cursor: pointer;
+}
+
+@media screen and (max-width: 600px){
+    #fixedButton {
+        z-index: 999;
+        margin: 24px 24px 72px 24px;
+        border-radius: 50%;
+        position: fixed;
+        bottom: 0px;
+        left: 0px;
+    }
+
+    #creditViewMobile{
+        width: 100%;
+        z-index: 9999;
+        color: white;
+        position: fixed;
+        border-radius: 0;
+        background: rgba(41, 36, 37, 0.85);
+        padding: 5px 5px 10px 5px;
+        bottom:0;
+        margin: 0;
+    }
+    #modalBuyCredits{
+        margin-top: 10px;
+    }
+    #creditModalBtn .btn{
+        height: 25px;
+        line-height: 8px;
+        padding: 8px;
+        margin-top:-5px;
+
+    }
+    #requestCredits{
+        width: 100%;
+        font-size: 12px;
+        padding: 0;
+    }
+    #modalBuyCreditInnerBox{
+        background: #fff;
+        padding:5px;
+    }
+    .packCol img{
+        width: 15px;
+    }
+    .packCol  p{
+        text-align: center;
+        display: block;
+        font-size: 10px;
+    }
+    .packCol  div{
+        display: block;
+        font-size: 12px;
+        width: 100%;
+    }
+    #sortMainBox{
+        display: none;
+    }
+    #filterMainBox{
+        display: none;
+    }
+    #searchJobPanel{
+        padding: 2% 6% 0 6%;
+    }
+
+}

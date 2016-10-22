@@ -32,9 +32,13 @@ var blockApiTrigger = false;
 $(document).scroll(function(){
     if ($(this).scrollTop() > 20) {
         $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
-    }
-    else{
+    } else{
         $('nav').css({"background": "transparent"});
+    }
+    if ($(this).scrollTop() > 500) {
+        $("#fixedButton").show();
+    } else{
+        $("#fixedButton").hide();
     }
 
     if($(window).scrollTop() + $(window).height() == $(document).height()) {
@@ -78,6 +82,10 @@ function requestServerSearchCall(sortBy) {
         console.log("exception occured!!" + exception.stack);
     }
 
+}
+
+function scrollToTop() {
+    $('body').scrollTop(0);
 }
 
 $(document).ready(function(){
@@ -252,12 +260,14 @@ function processDataRecruiterProfile(returnedData) {
         if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 1){
             if(contactCreditCount == 0){
                 $("#remainingContactCredits").html(creditHistory.recruiterCreditsAvailable);
+                $("#remainingContactCreditsMobile").html(creditHistory.recruiterCreditsAvailable);
                 contactCreditCount = 1;
             }
         } else{
             if(interviewCreditCount == 0){
                 if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 2){
                     $("#remainingInterviewCredits").html(creditHistory.recruiterCreditsAvailable);
+                    $("#remainingInterviewCreditsMobile").html(creditHistory.recruiterCreditsAvailable);
                     interviewCreditCount = 1;
                 }
             }
@@ -409,6 +419,9 @@ function resetFilters() {
     jobPostLanguageIdList = [];
     distanceRadius = 10;
     counter = 0;
+
+    blockApiTrigger = false;
+    endOfResult = false;
 
     document.getElementById('latestActive').checked = true;
     $("#candidateResultContainer").html("");
@@ -1214,4 +1227,32 @@ function notifyError(msg){
 
 function notifySuccess(msg){
     Materialize.toastSuccess(msg, 3000, 'rounded');
+}
+var countSort = 0 ;
+function showSort() {
+    countSort = countSort + 1;
+    if(countSort==1)
+    {
+        $('#sortMainBox').show();
+        $('#filterMainBox').hide();
+    }
+    if(countSort == 2){
+        $('#sortMainBox').hide();
+        $('#filterMainBox').hide();
+        countSort = 0;
+    }
+}
+var countFilter = 0;
+function showFilter() {
+    countFilter = countFilter + 1;
+    if(countFilter==1){
+        $('#sortMainBox').hide();
+        $('#filterMainBox').show();
+    }
+    if(countFilter==2){
+        $('#filterMainBox').hide();
+        $('#sortMainBox').hide();
+        countFilter = 0;
+    }
+
 }
