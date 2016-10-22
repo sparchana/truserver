@@ -26,6 +26,7 @@ import java.util.*;
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static controllers.businessLogic.InteractionService.createInteractionForNewJobPost;
 import static models.util.SmsUtil.sendRecruiterFreeJobPostingSms;
+import static models.util.SmsUtil.sendSuccessJobPostToRecruiter;
 import static play.mvc.Controller.session;
 import static play.mvc.Http.Context.current;
 
@@ -76,6 +77,20 @@ public class JobService {
         } else{
             Logger.info("Job post already exists. Updating existing job Post");
             existingJobPost = getAndSetJobPostValues(addJobPostRequest, existingJobPost, jobPostLocalityList);
+
+            //trigger sms and mail when a job post is made 'Active' from 'New'
+            if(existingJobPost.getJobPostStatus() != null){
+                if(existingJobPost.getJobPostStatus().getJobStatusId() == ServerConstants.JOB_STATUS_NEW){
+                    if(addJobPostRequest.getJobPostStatusId() != null){
+                        if(addJobPostRequest.getJobPostStatusId() == ServerConstants.JOB_STATUS_ACTIVE){
+                            //trigger SMS to recruiter
+                            sendSuccessJobPostToRecruiter(existingJobPost.getRecruiterProfile(), existingJobPost);
+                            //send email to recruiter
+                        }
+                    }
+
+                }
+            }
 
             resetInterviewDetails(addJobPostRequest, existingJobPost);
             createInterviewDetails(addJobPostRequest, existingJobPost);

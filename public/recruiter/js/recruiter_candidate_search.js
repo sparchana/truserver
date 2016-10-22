@@ -905,7 +905,13 @@ function generateCandidateCards(candidateSearchResult) {
         candidateLastWithdrawnSalaryVal.style = "margin-left: 4px";
         if(value.candidate.candidateLastWithdrawnSalary != null){
             if(value.candidate.candidateLastWithdrawnSalary == 0){
-                candidateLastWithdrawnSalaryVal.textContent = "Not Specified";
+                if(value.candidate.candidateTotalExperience != null){
+                    if(value.candidate.candidateTotalExperience == 0){
+                        candidateLastWithdrawnSalaryVal.textContent = " - (Fresher)";
+                    }
+                } else{
+                    candidateLastWithdrawnSalaryVal.textContent = "Not Specified";
+                }
             } else{
                 candidateLastWithdrawnSalaryVal.textContent = "₹" + rupeeFormatSalary(value.candidate.candidateLastWithdrawnSalary);
             }
@@ -984,13 +990,22 @@ function generateCandidateCards(candidateSearchResult) {
 
         var candidateSkillVal = document.createElement("div");
         candidateSkillVal.style = "margin-left: 4px";
+        candidateSkillVal.id = "skill_" + value.candidate.candidateId;
         var skillList = value.candidate.candidateSkillList;
         var skillListCount = Object.keys(skillList).length;
         if(skillListCount > 0){
             var skillVal = "";
+            var allSkillVal = "";
+            var count = 0;
             skillList.forEach(function (skill){
-                if(skill.candidateSkillResponse){
-                    skillVal += skill.skill.skillName + ", ";
+                count = count + 1;
+                if(count < 4){
+                    if(skill.candidateSkillResponse){
+                        skillVal += skill.skill.skillName + ", ";
+                        allSkillVal += skill.skill.skillName + ", ";
+                    }
+                } else{
+                    allSkillVal += skill.skill.skillName + ", ";
                 }
             });
             candidateSkillVal.textContent = skillVal.substring(0, skillVal.length - 2);
@@ -998,6 +1013,17 @@ function generateCandidateCards(candidateSearchResult) {
             candidateSkillVal.textContent = "Not specified";
         }
         inlineBlockDiv.appendChild(candidateSkillVal);
+
+        if(skillListCount > 3){
+            var toolTip = document.createElement("a");
+            toolTip.className = "tooltipped";
+            toolTip.style = "cursor: pointer; text-decoration: none";
+            toolTip.setAttribute("data-postiton", "top");
+            toolTip.setAttribute("data-delay", "50");
+            toolTip.setAttribute("data-tooltip", allSkillVal.substring(0, allSkillVal.length - 2));
+            toolTip.textContent = ", more";
+            candidateSkillVal.appendChild(toolTip);
+        }
 
         //documents
         var candidateCardRowColThree = document.createElement("div");
@@ -1025,14 +1051,25 @@ function generateCandidateCards(candidateSearchResult) {
         inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
         var candidateDocumentVal = document.createElement("div");
-        candidateSkillVal.style = "margin-left: 4px";
+        candidateDocumentVal.style = "margin-left: 4px";
+        candidateDocumentVal.id = "document_" + value.candidate.candidateId;
+
         var documentList = value.candidate.idProofReferenceList;
         var documentListCount = Object.keys(documentList).length;
+
         if(documentListCount > 0){
+            var allDocumentVal = "";
             var documentVal = "";
+            var count = 0;
             documentList.forEach(function (document){
-                if(document.idProof != null){
-                    documentVal += document.idProof.idProofName + ", ";
+                count = count +1;
+                if(count < 4){
+                    if(document.idProof != null){
+                        documentVal += document.idProof.idProofName + ", ";
+                        allDocumentVal += document.idProof.idProofName + ", ";
+                    }
+                } else{
+                    allDocumentVal += document.idProof.idProofName + ", ";
                 }
             });
             candidateDocumentVal.textContent = documentVal.substring(0, documentVal.length - 2);
@@ -1040,6 +1077,19 @@ function generateCandidateCards(candidateSearchResult) {
             candidateDocumentVal.textContent = "Not specified";
         }
         inlineBlockDiv.appendChild(candidateDocumentVal);
+
+        if(documentListCount > 3){
+            var toolTip = document.createElement("a");
+            toolTip.className = "tooltipped";
+            toolTip.style = "cursor: pointer; text-decoration: none";
+            toolTip.setAttribute("data-postiton", "top");
+            toolTip.setAttribute("data-delay", "50");
+            toolTip.setAttribute("data-tooltip", allDocumentVal.substring(0, allDocumentVal.length - 2));
+            toolTip.textContent = ", more";
+            candidateSkillVal.appendChild(toolTip);
+        }
+
+
         var unlockDivRow = document.createElement("div");
         unlockDivRow.className = "row";
         unlockDivRow.style = "margin: 2%; padding: 1%; text-align: right; color: #fff";
@@ -1061,6 +1111,8 @@ function generateCandidateCards(candidateSearchResult) {
         candidateUnlockFont.style = "font-weight: bold; font-size: 14px";
         unlockCandidateBtn.appendChild(candidateUnlockFont);
     });
+    $('.tooltipped').tooltip({delay: 50});
+
 }
 
 function sortBySalary(val){

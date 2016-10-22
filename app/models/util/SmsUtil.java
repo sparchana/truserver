@@ -3,6 +3,7 @@ package models.util;
 import api.ServerConstants;
 import api.http.httpRequest.Recruiter.AddCreditRequest;
 import controllers.businessLogic.InteractionService;
+import models.entity.JobPost;
 import models.entity.Recruiter.RecruiterProfile;
 import play.Logger;
 import play.Play;
@@ -259,7 +260,7 @@ public class SmsUtil {
     public static void sendWelcomeSmsFromRecruiter(String name, String mobile, String password)
     {
         String msg = "Hi " + name + ", Welcome to www.Trujobs.in! Your login details are Username: "
-                + mobile.substring(3, 13) + " and password: " + password + ". Log on to trujobs.in/recruiter to create and post jobs!!";
+                + mobile.substring(3, 13) + " and password: " + password + ". Log on to trujobs.in/recruiter to access 25000+ verified candidate profiles!!!";
 
         sendSms(mobile, msg);
     }
@@ -267,6 +268,11 @@ public class SmsUtil {
     public static void sendResetPasswordOTPSmsToRecruiter(int otp, String mobile) {
         String msg = "Use OTP " + otp + " to reset your password. Welcome to www.Trujobs.in!";
         sendSms(mobile, msg);
+    }
+
+    public static void sendSuccessJobPostToRecruiter(RecruiterProfile recruiterProfile, JobPost jobPost) {
+        String msg = "Hi " + recruiterProfile.getRecruiterProfileName() + ", your job post: " + jobPost.getJobPostTitle() + " has been verified and successfully posted on www.trujobs.in.!";
+        sendSms(recruiterProfile.getRecruiterProfileMobile(), msg);
     }
 
 }
