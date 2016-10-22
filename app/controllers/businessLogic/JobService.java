@@ -15,6 +15,7 @@ import models.entity.*;
 import models.entity.OM.*;
 import models.entity.Static.*;
 import models.util.SmsUtil;
+import org.apache.commons.mail.EmailException;
 import play.Logger;
 import play.api.Play;
 
@@ -25,6 +26,7 @@ import java.util.*;
 
 import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static controllers.businessLogic.InteractionService.createInteractionForNewJobPost;
+import static models.util.EmailUtil.sendSuccessJobPostEmailToRecruiter;
 import static models.util.SmsUtil.sendRecruiterFreeJobPostingSms;
 import static models.util.SmsUtil.sendSuccessJobPostToRecruiter;
 import static play.mvc.Controller.session;
@@ -76,19 +78,25 @@ public class JobService {
             Logger.info("JobPost with jobId: " + newJobPost.getJobPostId() + " and job title: " + newJobPost.getJobPostTitle() + " created successfully");
         } else{
             Logger.info("Job post already exists. Updating existing job Post");
+            Integer previousStatus = 0;
+            if(existingJobPost.getJobPostStatus() != null){
+                previousStatus = existingJobPost.getJobPostStatus().getJobStatusId();
+            }
             existingJobPost = getAndSetJobPostValues(addJobPostRequest, existingJobPost, jobPostLocalityList);
 
             //trigger sms and mail when a job post is made 'Active' from 'New'
-            if(existingJobPost.getJobPostStatus() != null){
-                if(existingJobPost.getJobPostStatus().getJobStatusId() == ServerConstants.JOB_STATUS_NEW){
-                    if(addJobPostRequest.getJobPostStatusId() != null){
-                        if(addJobPostRequest.getJobPostStatusId() == ServerConstants.JOB_STATUS_ACTIVE){
-                            //trigger SMS to recruiter
-                            sendSuccessJobPostToRecruiter(existingJobPost.getRecruiterProfile(), existingJobPost);
-                            //send email to recruiter
-                        }
+            if(addJobPostRequest.getJobPostStatusId() != null){
+                if(addJobPostRequest.getJobPostStatusId() == ServerConstants.JOB_STATUS_ACTIVE
+                        && previousStatus == ServerConstants.JOB_STATUS_NEW){
+                    Logger.info("Notifying recruiter about the job");
+                    //trigger SMS to recruiter
+                    sendSuccessJobPostToRecruiter(existingJobPost.getRecruiterProfile(), existingJobPost);
+                    //send email to recruiter
+                    try {
+                        sendSuccessJobPostEmailToRecruiter(existingJobPost.getRecruiterProfile(), existingJobPost);
+                    } catch (EmailException e) {
+                        e.printStackTrace();
                     }
-
                 }
             }
 

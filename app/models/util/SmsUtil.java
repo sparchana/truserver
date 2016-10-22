@@ -271,7 +271,8 @@ public class SmsUtil {
     }
 
     public static void sendSuccessJobPostToRecruiter(RecruiterProfile recruiterProfile, JobPost jobPost) {
-        String msg = "Hi " + recruiterProfile.getRecruiterProfileName() + ", your job post: " + jobPost.getJobPostTitle() + " has been verified and successfully posted on www.trujobs.in.!";
+        String msg = "Hi " + recruiterProfile.getRecruiterProfileName() + ", your job post: " + jobPost.getJobPostTitle() + " has been verified and successfully posted on www.trujobs.in.!" +
+                " Log in at www.trujobs.in/recruiter to track job applications";
         sendSms(recruiterProfile.getRecruiterProfileMobile(), msg);
     }
 
