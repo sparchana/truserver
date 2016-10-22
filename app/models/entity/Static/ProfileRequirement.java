@@ -17,9 +17,6 @@ public class ProfileRequirement extends Model {
     @Column(name = "profile_requirement_id", columnDefinition = "bigint unsigned", unique = true)
     private long profileRequirementId;
 
-    @Column(name = "profile_requirement_uuid", columnDefinition = "varchar(255)", nullable = false)
-    private String profileRequirementUUId = ""; // UUID
-
     @Column(name = "creation_timestamp", columnDefinition = "timestamp default current_timestamp", nullable = false)
     private Timestamp creationTimestamp;
 
@@ -38,14 +35,6 @@ public class ProfileRequirement extends Model {
 
     public void setProfileRequirementId(long profileRequirementId) {
         this.profileRequirementId = profileRequirementId;
-    }
-
-    public String getProfileRequirementUUId() {
-        return profileRequirementUUId;
-    }
-
-    public void setProfileRequirementUUId(String profileRequirementUUId) {
-        this.profileRequirementUUId = profileRequirementUUId;
     }
 
     public Timestamp getCreationTimestamp() {
