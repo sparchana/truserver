@@ -15,7 +15,7 @@ function processDataAddJobPost(returnedData) {
         var jobPostSalary = "";
         var localities = returnedData.jobPost.jobPostToLocalityList;
         localities.forEach(function (locality) {
-           jobPostLocalities += locality.locality.localityName + ", ";
+            jobPostLocalities += locality.locality.localityName + ", ";
         });
 
         if(returnedData.jobPost.jobPostMaxSalary == 0){
