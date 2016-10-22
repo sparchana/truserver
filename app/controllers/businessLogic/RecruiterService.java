@@ -35,6 +35,7 @@ import java.util.UUID;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterCreditRequest;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterProfileUpdate;
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterUnlockCandidateContact;
+import static models.util.SmsUtil.sendWelcomeSmsFromRecruiter;
 import static models.util.Util.generateOtp;
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
@@ -51,6 +52,20 @@ public class RecruiterService {
             return recruiterProfile;
         }
         return null;
+    }
+
+    private static void createAndSaveDummyAuthFor(RecruiterProfile recruiterProfile) {
+        // create dummy auth
+        RecruiterAuth authToken = new RecruiterAuth(); // constructor instantiate createtimestamp, updatetimestamp, sessionid, authpasswordsalt
+        String dummyPassword = String.valueOf(Util.randomLong());
+        authToken.setRecruiterAuthStatus(ServerConstants.RECRUITER_STATUS_NOT_VERIFIED);
+        authToken.setRecruiterId(recruiterProfile.getRecruiterProfileId());
+        authToken.setPasswordMd5(Util.md5(dummyPassword + authToken.getPasswordSalt()));
+        authToken.save();
+
+        sendWelcomeSmsFromRecruiter(recruiterProfile.getRecruiterProfileName(), recruiterProfile.getRecruiterProfileMobile(), dummyPassword);
+        Logger.info("Dummy auth created + otp triggered + auth saved for recruiter " + recruiterProfile.getRecruiterProfileMobile());
+
     }
 
     public static LoginResponse login(String loginMobile, String loginPassword){
@@ -221,7 +236,7 @@ public class RecruiterService {
                 addRecruiterResponse.setRecruiterId(newRecruiter.getRecruiterProfileId());
 
                 RecruiterSignUpResponse recruiterSignUpResponse = new RecruiterSignUpResponse();
-//                triggerOtp(newRecruiter, recruiterSignUpResponse);
+                createAndSaveDummyAuthFor(newRecruiter);
 
                 result = InteractionConstants.INTERACTION_RESULT_RECRUITER_SIGNUP_VIA_SUPPORT;
                 interactionType = InteractionConstants.INTERACTION_TYPE_RECRUITER_SIGN_UP;

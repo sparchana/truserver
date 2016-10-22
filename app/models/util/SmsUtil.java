@@ -255,4 +255,13 @@ public class SmsUtil {
                 "receive a notification once the job is made live. For any queries please call +919980293925. Thank you!";
         sendSms(mobile, msg);
     }
+
+    public static void sendWelcomeSmsFromRecruiter(String name, String mobile, String password)
+    {
+        String msg = "Hi " + name + ", Welcome to www.Trujobs.in! Your login details are Username: "
+                + mobile.substring(3, 13) + " and password: " + password + ". Log on to trujobs.in/recruiter to create and post jobs!!";
+
+        sendSms(mobile, msg);
+    }
+
 }
