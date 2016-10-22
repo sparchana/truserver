@@ -73,9 +73,9 @@ public class InteractionConstants {
     public static final String INTERACTION_NOTE_BLANK = "";
 
 
-    public static final String INTERACTION_RESULT_INTERACTION_TYPE_CANDIDATE_SELECTED_FOR_PRESCREEN = "Candidate has been selected for pre_screening for job_post_id-";
-    public static final String INTERACTION_RESULT_INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_FAILED = "Candidate has failed pre_screening for job_post_id-";
-    public static final String INTERACTION_RESULT_INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_PASSED = "Candidate has passed pre_screening for job_post_id-";
+    public static final String INTERACTION_RESULT_CANDIDATE_SELECTED_FOR_PRESCREEN = "Candidate has been selected for pre_screening for job_post_id-";
+    public static final String INTERACTION_RESULT_CANDIDATE_PRE_SCREEN_FAILED = "Candidate has failed pre_screening for job_post_id-";
+    public static final String INTERACTION_RESULT_CANDIDATE_PRE_SCREEN_PASSED = "Candidate has passed pre_screening for job_post_id-";
 
     public static final Map<Integer, String> INTERACTION_TYPE_MAP = new HashMap<>();
 
@@ -175,6 +175,9 @@ public class InteractionConstants {
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_ASSESSMENT_ATTEMPTED, "Candidate Assessment Attempted");
 
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_ATTEMPTED, "Candidate Pre Screen Call Attempted");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_SELECTED_FOR_PRESCREEN, "Candidate Selected for Pre Screening");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_PASSED, "Candidate Pre Screen Passed");
+        INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_FAILED, "Candidate Pre Screen Failed");
 
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_PARTNER_TRIED_PASSWORD_RESET, "Tried to reset Password");
         INTERACTION_TYPE_MAP.put(INTERACTION_TYPE_PARTNER_PASSWORD_RESET_SUCCESS, "Reset Password Successful");

@@ -415,8 +415,8 @@ public class InteractionService {
     }
 
     /* Workflow Interaction */
-    public static void createInteractionForPreScreenAttempts(String objAuuId, String objBuuId,
-                                                             Integer interactionType, String interactionResult)
+    public static void createWorkflowInteraction(String objAuuId, String objBuuId,
+                                                 Integer interactionType,String notes, String interactionResult)
     {
         Interaction interaction = new Interaction(
                 objAuuId,
@@ -424,42 +424,7 @@ public class InteractionService {
                 objBuuId,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,
                 interactionType,
-                null,
-                interactionResult,
-                session().get("sessionUsername"),
-                INTERACTION_CHANNEL_SUPPORT_WEBSITE
-        );
-        InteractionService.createInteraction(interaction);
-    }
-
-
-    public static void createInteractionForPreScreenPassOrFail(String objAuuId, String objBuuId,
-                                                             Integer interactionType, String interactionResult)
-    {
-        Interaction interaction = new Interaction(
-                objAuuId,
-                ServerConstants.OBJECT_TYPE_JOB_POST_WORKFLOW,
-                objBuuId,
-                ServerConstants.OBJECT_TYPE_CANDIDATE,
-                interactionType,
-                null,
-                interactionResult,
-                session().get("sessionUsername"),
-                INTERACTION_CHANNEL_SUPPORT_WEBSITE
-        );
-        InteractionService.createInteraction(interaction);
-    }
-
-    public static void createInteractionForSelectedForPreScreen(String objAuuId, String objBuuId,
-                                                               Integer interactionType, String interactionResult)
-    {
-        Interaction interaction = new Interaction(
-                objAuuId,
-                ServerConstants.OBJECT_TYPE_JOB_POST_WORKFLOW,
-                objBuuId,
-                ServerConstants.OBJECT_TYPE_CANDIDATE,
-                interactionType,
-                null,
+                notes,
                 interactionResult,
                 session().get("sessionUsername"),
                 INTERACTION_CHANNEL_SUPPORT_WEBSITE
