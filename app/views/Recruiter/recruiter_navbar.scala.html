@@ -1,0 +1,57 @@
+<script>
+        $('.dropdown-button').dropdown({
+              inDuration: 300,
+              outDuration: 225,
+              constrain_width: false, // Does not change width of dropdown to that of the activator
+              gutter: 0, // Spacing from edge
+              alignment: 'left' // Displays dropdown with edge aligned to the left of button
+            }
+    );
+</script>
+<div class="navbar-fixed">
+  <nav>
+    <div class="container" style="width: 85%;">
+      <div class="nav-wrapper">
+        <a href="#" class="brand-logo">
+          <img id="navLogo" src="/assets/recruiter/img/trujobs-recruiter.png" style="height: 32px;
+            margin-top: -2%">
+        </a>
+        <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
+        <ul class="right hide-on-med-and-down">
+          <li><a href="/recruiter/home">Home</a></li>
+          <li><a href="/recruiter/profile">Profile</a></li>
+          <li><a class="dropdown-button" data-hover="true" data-beloworigin="true" data-activates="jobDropDown">Jobs</a>
+            <ul id="jobDropDown" class="dropdown-content">
+              <li><a href="/recruiter/jobPost/0">Post Job</a></li>
+              <li><a href="/recruiter/allRecruiterJobPosts">View My Jobs</a></li>
+            </ul>
+          </li>
+          <li><a class="dropdown-button" data-hover="true" data-beloworigin="true" data-activates="candidateDropDown">Candidates</a>
+            <ul id="candidateDropDown" class="dropdown-content">
+              <li><a href="/recruiter/candidateSearch">Search Candidate</a></li>
+              <li><a href="#!">View Unlock Candidates</a></li>
+            </ul>
+          </li>
+          <li><a onclick="logoutRecruiter()">Logout</a></li>
+        </ul>
+      </div>
+      <ul class="side-nav" id="mobile-demo">
+        <li><a href="/recruiter/home">Home</a></li>
+        <li><a href="/recruiter/profile">Profile</a></li>
+        <li><a class="dropdown-button" data-hover="true" data-beloworigin="true" data-activates="jobDropDownMobile">Jobs</a>
+          <ul id="jobDropDownMobile" class="dropdown-content">
+            <li><a href="/recruiter/jobPost/0">Post Job</a></li>
+            <li><a href="/recruiter/allRecruiterJobPosts">View My Jobs</a></li>
+          </ul>
+        </li>
+        <li><a class="dropdown-button" data-hover="true" data-beloworigin="true" data-activates="candidateDropDownMobile">Candidates</a>
+          <ul id="candidateDropDownMobile" class="dropdown-content">
+            <li><a href="/recruiter/candidateSearch">Search Candidate</a></li>
+            <li><a href="#!">View Unlock Candidates</a></li>
+          </ul>
+        </li>
+        <li><a onclick="logoutRecruiter()">Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+</div>
