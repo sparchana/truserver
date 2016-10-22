@@ -173,12 +173,12 @@ public class ServerConstants {
     public static final int EXPERIENCE_TYPE_ANY_ID = 5;
 
     // Job Post DB Constants
-    public static final int EDUCATION_TYPE_ANY = 0; // not in db
     public static final int EDUCATION_TYPE_LT_10TH_ID = 1;
     public static final int EDUCATION_TYPE_10TH_PASS_ID = 2;
     public static final int EDUCATION_TYPE_12TH_PASS_ID = 3;
     public static final int EDUCATION_TYPE_UG = 4;
     public static final int EDUCATION_TYPE_PG = 5;
+    public static final int EDUCATION_TYPE_ANY = 6;
 
     // MatchingEngine Sort Type
     public static final int SORT_BY_NEARBY = 1;
