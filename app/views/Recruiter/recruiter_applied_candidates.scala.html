@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8">
-    <title>Recruiter Home | TruJobs - Post jobs and hire the right candidates</title>
+    <title>Job Applications | TruJobs - Post jobs and hire the right candidates</title>
 
     <meta name="keywords" content="hire driver, hire fresher, hire candidate sites, job posting, hire sales candidate, hire beautician,
         hire, hire receptionist, hire office admin, hire office assistant,
@@ -17,16 +17,14 @@
     <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/assets/common/css/materialize.css">
     <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_home.css">
+    <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_candidate_search.css">
     <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/recruiter_myjobs.css">
 
     <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="/assets/recruiter/css/jquery.tokenize.css" />
 
     <link rel="icon" type="image/png" href="/assets/common/img/icon.png">
 
     <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
-    <script type="text/javascript" src="/assets/recruiter/js/jquery.tokenize.js"></script>
-
 
     <meta name="theme-color" content="#000000">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -59,43 +57,52 @@
     </div>
 
     <div class="back-banner-recruiter"></div>
-    <div class="container" style="color:#ffffff;margin-top:-68px">
-      <center><h4>Your Posted Jobs</h4></center>
-    </div>
-      <div class="container-fluid">
-        <div class="card">
-            <div class="row" id='headerForData'>
-              <div class="col l1" id="colHeadDataTable">
-                <font>Date Posted</font>
-              </div>
-              <div class="col l2" id="colHeadDataTable">
-                <font>Posted Job Title</font>
-              </div>
-              <div class="col l2" id="colHeadDataTable">
-                <font>Location</font>
-              </div>
-              <div class="col l2" id="colHeadDataTable">
-                <font>Salary</font>
-              </div>
-              <div class="col l2" id="colHeadDataTable">
-                <font>Work Shift</font>
-              </div>
-              <div class="col l1" id="colHeadDataTable">
-                <font>No. of Applicant</font>
-              </div>
-              <div class="col l1" id="colHeadDataTable">
-                <font>Status</font>
-              </div>
-              <div class="col l1" id="">
-                <font>View/Edit</font>
-              </div>
-            </div>
-            <div class="myJobsRecruiter">
 
-            </div>
-        </div>
+    <div class="container" style="color:#ffffff;">
+      <h4 style="color: black">Applied Candidates</h4>
+    </div>
+
+    <div class="container">
+      <div id="candidateContainer">
       </div>
-    <!--Footer start-->
+    </div>
+
+      <div class="row hide-on-med-and-up" id="creditViewMobile">
+          <div class="col s12 ">
+              <div class="row" style="margin: 0;">
+                  <span style="font-size: 18px; font-weight: bold">Credits Balance</span>
+              </div>
+              <div class="row" style="margin: 0;">
+                  <div class="col s4" style="padding: 0;">
+                      <img src="/assets/recruiter/img/coin.svg" width="12px" style="margin-top: -4px">
+                      <span>Contact: <b><div style="display: inline-block" id="remainingContactCredits">0</div></b></span>
+                  </div>
+                  <div class="col s4" style="padding: 0;">
+                      <img src="/assets/recruiter/img/coin.svg" width="12px" style="margin-top: -4px">
+                      <span>Interview: <b><div style="display: inline-block" id="remainingInterviewCredits">0</div></b></span>
+                  </div>
+                  <div class="col s4 right-align" id="creditModalBtn">
+                      <a class="waves-effect waves-light orange lighten-1 btn right" data-toggle="collapse" onclick="openCreditModal()"><font size="1" style="color: #fff;font-weight: 400"><b>Buy Credits</b></font></a>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <div id="creditView" class="col s12 hide-on-small-only">
+          <span style="font-size: 18px; font-weight: bold">Credits Balance</span>
+          <div style="margin: 4px">
+              <img src="/assets/recruiter/img/coin.svg" width="24px">
+              <span>Contact Unlock: <b><div style="display: inline-block" id="remainingContactCreditsMobile">0</div></b></span>
+          </div>
+          <div style="margin: 4px">
+              <img src="/assets/recruiter/img/coin.svg" width="24px">
+              <span>Interview Unlock: <b><div style="display: inline-block" id="remainingInterviewCreditsMobile">0</div></b></span>
+          </div>
+          <a class="waves-effect waves-light orange lighten-1 btn right" data-toggle="collapse" onclick="openCreditModal()"><font style="color: #fff;
+              font-weight: 400"><b>Buy Credits</b></font></a>
+      </div>
+
+      <!--Footer start-->
     <footer class="page-footer" style="background-color: #424242;">
       <div class="container">
         <div class="row" style="margin: 0">
@@ -129,5 +136,5 @@
   <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
   <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
   <script type="text/javascript" src="/assets/common/js/validation.js"></script>
-  <script type="text/javascript" src="/assets/recruiter/js/recruiter_my_jobs.js"></script>
+  <script type="text/javascript" src="/assets/recruiter/js/recruiter_applied_candidates.js"></script>
 </html>

@@ -610,7 +610,6 @@ function processDataAddJobPost(returnedData) {
 
 
 function processDataForJobPost(returnedData) {
-    console.log(returnedData);
     if(returnedData != "0"){
         jpId = returnedData.jobPostId;
         if(returnedData.company != null ){
@@ -654,7 +653,6 @@ function processDataForJobPost(returnedData) {
             $('#jobPostJobRole').tokenize().tokenAdd(id, name);
         }
 
-        console.log(returnedData.jobPostToLocalityList);
         if(returnedData.jobPostToLocalityList != null){
             returnedData.jobPostToLocalityList.forEach(function (locality) {
                 var id = locality.locality.localityId;

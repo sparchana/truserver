@@ -139,6 +139,7 @@ GET         /getRecruiterProfileInfo                                      contro
 GET         /recruiter/profile                                            controllers.RecruiterController.recruiterEditProfile()
 GET         /recruiter/candidateSearch                                    controllers.RecruiterController.recruiterCandidateSearch()
 GET         /recruiter/allRecruiterJobPosts                               controllers.RecruiterController.renderAllRecruiterJobPosts
+GET         /recruiter/jobApplicants/:id                                  controllers.RecruiterController.renderAllApplications(id : Long)
 
 POST        /getAllJobApplicants/:id                                      controllers.RecruiterController.getAllJobApplicants(id : Long)
 POST        /getAllRecruiterJobPosts                                      controllers.RecruiterController.getAllRecruiterJobPosts

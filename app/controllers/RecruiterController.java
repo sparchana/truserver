@@ -478,4 +478,8 @@ public class RecruiterController {
         return ok(toJson(RecruiterService.findRecruiterAndSendOtp(FormValidator.convertToIndianMobileFormat(recruiterMobile))));
 
     }
+
+    public static Result renderAllApplications(long id) {
+        return ok(views.html.Recruiter.recruiter_applied_candidates.render());
+    }
 }
