@@ -138,10 +138,10 @@ GET         /checkRecruiterSession                                        contro
 GET         /getRecruiterProfileInfo                                      controllers.RecruiterController.getRecruiterProfileInfo()
 GET         /recruiter/profile                                            controllers.RecruiterController.recruiterEditProfile()
 GET         /recruiter/candidateSearch                                    controllers.RecruiterController.recruiterCandidateSearch()
+GET         /recruiter/allRecruiterJobPosts                               controllers.RecruiterController.renderAllRecruiterJobPosts
 
 POST        /getAllJobApplicants/:id                                      controllers.RecruiterController.getAllJobApplicants(id : Long)
 POST        /getAllRecruiterJobPosts                                      controllers.RecruiterController.getAllRecruiterJobPosts
-GET         /recruiter/allRecruiterJobPosts                               controllers.RecruiterController.renderAllRecruiterJobPosts
 POST        /getRecruiterCredits/:id                                      controllers.RecruiterController.getRecruiterCredits(id : Long)
 POST        /getAllCreditCategory                                         controllers.RecruiterController.getAllCreditCategory()
 POST        /recruiter/unlockCandidateContact/:id                         controllers.RecruiterController.unlockCandidateContact(id : Long)
