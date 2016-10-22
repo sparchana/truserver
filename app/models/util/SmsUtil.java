@@ -264,4 +264,9 @@ public class SmsUtil {
         sendSms(mobile, msg);
     }
 
+    public static void sendResetPasswordOTPSmsToRecruiter(int otp, String mobile) {
+        String msg = "Use OTP " + otp + " to reset your password. Welcome to www.Trujobs.in!";
+        sendSms(mobile, msg);
+    }
+
 }

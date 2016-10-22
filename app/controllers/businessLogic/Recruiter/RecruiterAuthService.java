@@ -50,6 +50,8 @@ public class RecruiterAuthService {
 
                 /* adding session details */
                 addSession(recruiterAuth, existingRecruiter);
+                recruiterAuth.setRecruiterAuthStatus(ServerConstants.RECRUITER_STATUS_VERIFIED);
+                recruiterAuth.update();
                 recruiterSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_SUCCESS);
                 recruiterSignUpResponse.setRecruiterMobile(existingRecruiter.getRecruiterProfileMobile());
             } else {

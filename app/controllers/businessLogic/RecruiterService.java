@@ -13,6 +13,7 @@ import api.http.httpResponse.Recruiter.AddCreditResponse;
 import api.http.httpResponse.Recruiter.AddRecruiterResponse;
 import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
 import api.http.httpResponse.Recruiter.UnlockContactResponse;
+import api.http.httpResponse.ResetPasswordResponse;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterInteractionService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
@@ -32,9 +33,8 @@ import play.mvc.Result;
 
 import java.util.UUID;
 
-import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterCreditRequest;
-import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterProfileUpdate;
-import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterUnlockCandidateContact;
+import static controllers.businessLogic.PartnerInteractionService.createInteractionForPartnerTriedToResetPassword;
+import static controllers.businessLogic.Recruiter.RecruiterInteractionService.*;
 import static models.util.SmsUtil.sendWelcomeSmsFromRecruiter;
 import static models.util.Util.generateOtp;
 import static play.libs.Json.toJson;
@@ -90,6 +90,8 @@ public class RecruiterService {
 
                     loginResponse.setAuthSessionId(recruiterAuth.getAuthSessionId());
                     loginResponse.setSessionExpiryInMilliSecond(recruiterAuth.getAuthSessionIdExpiryMillis());
+
+                    loginResponse.setIsCandidateVerified(recruiterAuth.getRecruiterAuthStatus());
 
                     /* adding session details */
                     RecruiterAuthService.addSession(recruiterAuth, existingRecruiter);
@@ -569,5 +571,34 @@ public class RecruiterService {
             addCreditResponse.setStatus(AddCreditResponse.STATUS_FAILURE);
         }
         return addCreditResponse;
+    }
+
+    public static ResetPasswordResponse findRecruiterAndSendOtp(String mobile) {
+        ResetPasswordResponse resetPasswordResponse = new ResetPasswordResponse();
+        RecruiterProfile existingRecruiter = isRecruiterExists(mobile);
+        if(existingRecruiter != null){
+            Logger.info("Recruiter Exists");
+            RecruiterAuth existingAuth = RecruiterAuth.find.where().eq("recruiter_id", existingRecruiter.getRecruiterProfileId()).findUnique();
+            if(existingAuth == null){
+                resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
+                Logger.info("reset password not allowed as Auth don't exists");
+            } else {
+                int randomPIN = generateOtp();
+                existingRecruiter.update();
+                SmsUtil.sendResetPasswordOTPSmsToRecruiter(randomPIN, existingRecruiter.getRecruiterProfileMobile());
+
+                String interactionResult = InteractionConstants.INTERACTION_RESULT_RECRUITER_TRIED_TO_RESET_PASSWORD;
+                String objAUUID = "";
+                objAUUID = existingRecruiter.getRecruiterProfileUUId();
+                createInteractionForRecruiterTriedToResetPassword(objAUUID, interactionResult);
+
+                resetPasswordResponse.setOtp(randomPIN);
+                resetPasswordResponse.setStatus(LoginResponse.STATUS_SUCCESS);
+            }
+        } else{
+            resetPasswordResponse.setStatus(LoginResponse.STATUS_NO_USER);
+            Logger.info("reset password not allowed as password don't exists");
+        }
+        return resetPasswordResponse;
     }
 }

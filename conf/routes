@@ -145,6 +145,7 @@ GET         /recruiter/allRecruiterJobPosts                               contro
 POST        /getRecruiterCredits/:id                                      controllers.RecruiterController.getRecruiterCredits(id : Long)
 POST        /getAllCreditCategory                                         controllers.RecruiterController.getAllCreditCategory()
 POST        /recruiter/unlockCandidateContact/:id                         controllers.RecruiterController.unlockCandidateContact(id : Long)
+POST        /findRecruiterAndSendOtp                                      controllers.RecruiterController.findRecruiterAndSendOtp()
 POST        /addRecruiterLead                                             controllers.RecruiterController.addWebsiteLead()
 POST        /updateRecruiterProfile                                       controllers.RecruiterController.addRecruiter()
 POST        /recruiterSignUp                                              controllers.RecruiterController.recruiterSignUp()

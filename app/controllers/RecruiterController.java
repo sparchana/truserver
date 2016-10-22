@@ -1,11 +1,14 @@
 package controllers;
 
 import api.ServerConstants;
+import api.http.FormValidator;
 import api.http.httpRequest.AddJobPostRequest;
 import api.http.httpRequest.LoginRequest;
+import api.http.httpRequest.PartnerSignUpRequest;
 import api.http.httpRequest.Recruiter.AddCreditRequest;
 import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
+import api.http.httpRequest.ResetPasswordResquest;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Recruiter.JobApplicationResponse;
@@ -17,9 +20,11 @@ import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import controllers.security.SecuredUser;
+import models.entity.Auth;
 import models.entity.JobPost;
 import models.entity.OM.JobApplication;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
+import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
@@ -68,7 +73,12 @@ public class RecruiterController {
         if(sessionRecruiterId != null){
             RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", sessionRecruiterId).findUnique();
             if(recruiterProfile != null){
-                return ok(toJson(recruiterProfile));
+                RecruiterAuth recruiterAuth = RecruiterAuth.find.where().eq("recruiter_id", recruiterProfile.getRecruiterProfileId()).findUnique();
+                if(recruiterAuth != null){
+                    if(recruiterAuth.getRecruiterAuthStatus() == 1){
+                        return ok(toJson(recruiterProfile));
+                    }
+                }
             }
         }
         return ok("0");
@@ -87,6 +97,7 @@ public class RecruiterController {
 
         return ok(toJson(RecruiterService.recruiterSignUp(recruiterSignUpRequest)));
     }
+
 
     public static Result addPassword() {
         JsonNode req = request().body().asJson();
@@ -451,5 +462,20 @@ public class RecruiterController {
 
     public static Result renderAllRecruiterJobPosts() {
         return ok(views.html.Recruiter.recruiter_my_jobs.render());
+    }
+
+    public static Result findRecruiterAndSendOtp() {
+        JsonNode req = request().body().asJson();
+        ResetPasswordResquest resetPasswordResquest = new ResetPasswordResquest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            resetPasswordResquest = newMapper.readValue(req.toString(), ResetPasswordResquest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String recruiterMobile = resetPasswordResquest.getResetPasswordMobile();
+
+        return ok(toJson(RecruiterService.findRecruiterAndSendOtp(FormValidator.convertToIndianMobileFormat(recruiterMobile))));
+
     }
 }

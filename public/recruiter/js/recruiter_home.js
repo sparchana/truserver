@@ -94,7 +94,6 @@ function processDataRecruiterProfile(returnedData) {
     if (returnedData == '0') {
         logoutRecruiter();
     } else{
-        console.log(returnedData);
         $("#recName").html(returnedData.recruiterProfileName);
         $("#recMobile").html(returnedData.recruiterProfileMobile);
         if(returnedData.recCompany != null)
