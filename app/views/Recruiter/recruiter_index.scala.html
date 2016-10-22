@@ -59,7 +59,7 @@
                     <div class="col l8" id="modalRightBox">
                         <font style="font-size: 22px">Sign Up With TruJobs</font>
                         <center><div class="materialDashSignUp"></div></center>
-                        <font style="font-size: 14px;">Please fill the details for Signing Up with TruJobs</font>
+                        <font style="font-size: 14px;">Signup and get access to 25000+ verified candidate profiles</font>
                         <form>
                         <div class="row" id="inputContainerModalSignup">
                             <div class="input-field col s12">
@@ -88,6 +88,7 @@
                 <form id="verifyOtpForm" style="background: #fff; padding: 4%">
                     <div class="row">
                         <div class="col l12">
+                            <font style="font-size: 14px;">We have sent a 4-digit OTP to your mobile number. Please enter it here</font>
                             <div class="input-field col s12 l12">
                                 <input type="text" id="rec_otp" style="margin-bottom:4px; border-bottom: 1px solid rgba(158, 158, 158, 0.32)" maxlength="4" placeholder="OTP">
                             </div>
@@ -105,6 +106,7 @@
                     <form id="savePasswordForm" style="background: #fff; padding: 4%">
                         <div class="row">
                             <div class="col l12">
+                                <font style="font-size: 14px;">Set your new password. Must be atleast 6 characters in length</font>
                                 <div class="input-field col s12 l12">
                                     <input type="password" id="rec_password" style="margin-bottom:4px; border-bottom: 1px solid rgba(158, 158, 158, 0.32)" maxlength="10" placeholder="Enter Password" class="validate">
                                 </div>
@@ -120,7 +122,7 @@
         <!-- Modal LogIn Structure -->
         <div id="modalLogIn" class="modal">
             <div style="background: rgba(0, 0, 0, 0.75); padding: 8%">
-                <center><font style="font-size: 22px; color: #fff">Log In</font></center>
+                <center><font style="font-size: 22px; color: #fff" id="loginModalHeading">Log In</font></center>
             </div>
             <form id="loginModal" style="background: #fff; padding: 4%">
                 <div class="row">
@@ -132,13 +134,48 @@
                             <input type="password" id="password" style="margin-bottom:4px; border-bottom: 1px solid rgba(158, 158, 158, 0.32)"  placeholder="Password">
                         </div>
                         <div class="input-field col s12">
-                            <button id="loginSubmitBtn" type="submit" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">LogIn</font></button>
                             <p><font style="font-size: 14px;">New User? <span onclick="openSignUpModal()" style="cursor: pointer; color: #2ec866; font-weight:600;">Sign Up</span></font></p>
+                            <p><font style="font-size: 14px;">Forgot password? <span onclick="resetPassword()" style="cursor: pointer; color: #2ec866; font-weight:600;">Reset Now</span></font></p>
                         </div>
+                        <button id="loginSubmitBtn" type="submit" class="waves-effect waves-light ascentGreen lighten-1 btn right"><font style="color: #fff">LogIn</font></button>
 
                     </div>
                 </div>
             </form>
+
+            <form id="form_forgot_password" style="display: none; background: #fff; padding: 4%">
+                <center>
+                    <h6>Enter your mobile No</h6>
+                    <div class="form-group">
+                        <input style="width: 70%;" id="resetPasswordMobile" placeholder="Mobile No. (eg: 8880007799)" class="form-control input-md" pattern="[7-9]{1}[0-9]{9}" type="text" maxlength="10" required>
+                        <button id="resetCheckUserBtn" type="submit" class="waves-effect waves-light ascentGreen lighten-1 btn"><font style="color: #fff">Submit</font></button>
+                    </div>
+                </center>
+            </form>
+
+            <form id="form_password_reset_otp" style="display: none; background: #fff; padding: 4%" >
+                <div align="center">
+                    <h6 id="helpText"></h6>
+
+                    <div class="form-group">
+                        <input style="width: 80%;" id="recruiterForgotOtp" type="number" minlength="1000" maxlength="9999" placeholder="Enter OTP: (eg: 9876)" class="form-control input-md" required>
+                        <button  type="submit" class="waves-effect waves-light ascentGreen lighten-1 btn"><font style="color: #fff">Verify OTP</font></button>
+                    </div>
+                </div>
+            </form>
+
+            <form id="form_password_reset_new" style="display: none; background: #fff; padding: 4%">
+                <div align="center">
+                    <h6>Enter New Password</h6>
+
+                    <div class="form-group">
+                        <input style="width: 80%;" id="recruiterNewPassword" type="password" placeholder="Enter new Password" class="form-control input-md" required>
+                        <button id="resetNewPasswordBtn" type="submit" class="waves-effect waves-light ascentGreen lighten-1 btn"><font style="color: #fff">Reset Password</font></button>
+                    </div>
+                </div>
+            </form>
+
+
         </div>
 
         <div class="parallax-container custom-parallax-container">
@@ -173,19 +210,19 @@
                     <center><div class="materialDash"></div></center>
                     <div class="row">
                         <div class="input-field col s4 l4">
-                            <img src="/assets/recruiter/img/green/phone-call.svg" width="32px">
+                            <img src="/assets/recruiter/img/green/profile.svg" width="32px">
                             <br>
-                            <center style="margin-top: 12px;"><h6 style="color: #fff">Call 9980293925 to specify your requirements</h6></center>
+                            <center style="margin-top: 12px;"><h6 style="color: #fff">Signup and post your job for free!</h6></center>
                         </div>
                         <div class="input-field col s4 l4">
-                            <img src="/assets/recruiter/img/green/calendar.svg" width="32px">
+                            <img src="/assets/recruiter/img/green/search.svg" width="32px">
                             <br>
-                            <center style="margin-top: 12px;"><h6 style="color: #fff">We will schedule interviews for you with prescreened candidates</h6></center>
+                            <center style="margin-top: 12px;"><h6 style="color: #fff">Search through 25000+ verified candidate profiles</h6></center>
                         </div>
                         <div class="input-field col s4 l4">
                             <img src="/assets/recruiter/img/green/interview.svg" width="32px">
                             <br>
-                            <center style="margin-top: 12px;"><h6 style="color: #fff">Conduct interviews and make offers!</h6></center>
+                            <center style="margin-top: 12px;"><h6 style="color: #fff"> Upgrade your plan to contact candidates and schedule interviews</h6></center>
                         </div>
                     </div>
                 </div>
@@ -471,6 +508,7 @@
     <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="/assets/common/js/materialize.js"></script>
     <script type="text/javascript" src="/assets/common/js/validation.js"></script>
+    <script type="text/javascript" src="/assets/recruiter/js/recruiter_reset_password.js"></script>
     <script type="text/javascript" src="/assets/recruiter/js/recruiter_page.js"></script>
     <script type="text/javascript" src="/assets/recruiter/js/typist.js"></script>
     <script type="text/javascript" src="/assets/recruiter/js/recruiter_signup.js"></script>

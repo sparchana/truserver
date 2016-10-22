@@ -13,6 +13,13 @@ function getJob(){
     return jobArray;
 }
 
+function resetPassword() {
+    $("#loginModalHeading").html("Reset Password");
+    $('#loginModal').hide();
+    $('#form_forgot_password').show();
+}
+
+
 ///Scroll
 $(document).scroll(function(){
     if ($(this).scrollTop() > 80) {

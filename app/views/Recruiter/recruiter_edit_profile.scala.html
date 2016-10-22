@@ -74,7 +74,7 @@
                             <div class="input-field col s12 l6">
                                 <i class="material-icons prefix">account_circle</i>
                                 <input placeholder="Enter your name" id="rec_name" maxlength="35" type="text" class="validate">
-                                <label for="rec_name">Name</label>
+                                <label for="rec_name">Name<font color="red">*</font></label>
                             </div>
                             <div class="input-field col s12 l6">
                                 <i class="material-icons prefix">phone</i>
@@ -86,7 +86,7 @@
                             <div class="input-field col s12 l6">
                                 <i class="material-icons prefix">email</i>
                                 <input placeholder="Enter your email" id="rec_email" type="text" maxlength="36" class="validate">
-                                <label for="rec_email">Email</label>
+                                <label for="rec_email">Email<font color="red">*</font></label>
                             </div>
                             <div class="input-field col s12 l6">
                                 <i class="material-icons prefix">dialpad</i>
@@ -114,71 +114,16 @@
                         <div class="row">
                             <div class="input-field col s12 l6">
                                 <i class="material-icons prefix">business</i>
-                                <input placeholder="Company Name" id="rec_company_name" maxlength="35" type="text" class="validate">
-                                <label for="rec_name">Name</label>
-                            </div>
-                            <div class="input-field col s12 l6">
-                                <i class="material-icons prefix">location_on</i>
-                                <select id="rec_company_locality" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
-                                <script type="text/javascript">
-                                    $('#rec_company_locality').tokenize({
-                                        displayDropdownOnFocus: true,
-                                        placeholder: "Enter company locality",
-                                        maxElements: 1,
-                                        newElements: true,
-                                        onAddToken: function (value, text) {
-                                            validateCompanyLocationVal(value, text);
-                                        }
-                                    });
-                                </script>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s12 l6">
-                                <i class="material-icons prefix">location_on</i>
-                                <input placeholder="Company office pincode" id="rec_company_pincode" maxlength="6" type="text" class="validate">
-                                <label for="rec_company_pincode">Pin Code</label>
+                                <input placeholder="Enter your company name" id="rec_company_name" maxlength="35" type="text" class="validate">
+                                <label for="rec_name">Name<font color="red">*</font></label>
                             </div>
                             <div class="input-field col s12 l6">
                                 <i class="material-icons prefix">web</i>
-                                <input placeholder="Enter website" id="rec_company_website" type="text" maxlength="25" class="validate">
+                                <input placeholder="Enter your company's website" id="rec_company_website" type="text" maxlength="25" class="validate">
                                 <label for="rec_company_website">Website</label>
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s12 l12">
-                                <i class="material-icons prefix">reorder</i>
-                                <textarea placeholder="Tell us about your company" id="rec_company_desc" class="materialize-textarea"></textarea>
-                                <label for="rec_company_desc">Company Description</label>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s12 l6">
-                                <i class="material-icons prefix">reorder</i>
-                                <textarea placeholder="Company office address" id="rec_company_address" class="materialize-textarea"></textarea>
-                                <label for="rec_company_address">Company Address</label>
-                            </div>
-                            <div class="input-field col s12 l6">
-                                <input style="display: none" id="rec_company_old_logo" type="text" class="form-control input-md" >
-                                <img id="rec_company_logo_old" width="90px">
-                                <div class="file-field input-field">
-                                    <div class="btn">
-                                        <span>Upload Company Logo</span>
-                                        <input type="file" id="companyLogo" onchange="readURL(this)" accept='image/*'>
-                                    </div>
-                                    <div class="file-path-wrapper">
-                                        <input class="file-path validate" type="text">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="input-field col s12 l6">
-                                <i class="material-icons prefix">supervisor_account</i>
-                                <input placeholder="No. of Employees" id="rec_company_employees" type="text" maxlength="15" class="validate">
-                                <label for="rec_company_employees">Total Employee count</label>
-                            </div>
                             <div class="input-field col s12 l6">
                                 <i class="material-icons prefix">settings_input_composite</i>
                                 <select id="rec_company_type" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
@@ -201,6 +146,69 @@
                                     border-bottom: 1px solid rgba(101, 99, 99, 0.64);
                                 }
                                 </style>
+                            </div>
+
+                            <div class="input-field col s12 l6">
+                                <i class="material-icons prefix">supervisor_account</i>
+                                <input placeholder="No. of Employees" id="rec_company_employees" type="text" maxlength="15" class="validate">
+                                <label for="rec_company_employees">Total Employee count</label>
+
+                            </div>
+                        </div>
+
+                        <br>
+                        <div class="row">
+                            <div class="input-field col s12 l6">
+                                <i class="material-icons prefix">location_on</i>
+                                <select id="rec_company_locality" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
+                                <script type="text/javascript">
+                                    $('#rec_company_locality').tokenize({
+                                        displayDropdownOnFocus: true,
+                                        placeholder: "Enter your office locality",
+                                        maxElements: 1,
+                                        newElements: true,
+                                        onAddToken: function (value, text) {
+                                            validateCompanyLocationVal(value, text);
+                                        }
+                                    });
+                                </script>
+                            </div>
+
+                            <div class="input-field col s12 l6">
+                                <i class="material-icons prefix">location_on</i>
+                                <input placeholder="Enter your office pincode" id="rec_company_pincode" maxlength="6" type="text" class="validate">
+                                <label for="rec_company_pincode">Pin Code</label>
+                            </div>
+                        </div>
+
+                        <br>
+                        <div class="row">
+                            <div class="input-field col s12 l6">
+                                <i class="material-icons prefix">reorder</i>
+                                <textarea placeholder="Company office address" id="rec_company_address" class="materialize-textarea"></textarea>
+                                <label for="rec_company_address">Company Address</label>
+                            </div>
+
+                            <div class="input-field col s12 l6">
+                                <i class="material-icons prefix">reorder</i>
+                                <textarea placeholder="Tell us about your company" id="rec_company_desc" class="materialize-textarea"></textarea>
+                                <label for="rec_company_desc">Company Description</label>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="input-field col s12 l6">
+                                <input style="display: none" id="rec_company_old_logo" type="text" class="form-control input-md" >
+                                <img id="rec_company_logo_old" width="120px">
+                                <div class="file-field input-field">
+                                    <div class="btn">
+                                        <span>Upload Company Logo</span>
+                                        <input type="file" id="companyLogo" onchange="readURL(this)" accept='image/*'>
+                                    </div>
+                                    <div class="file-path-wrapper">
+                                        <input class="file-path validate" type="text">
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
