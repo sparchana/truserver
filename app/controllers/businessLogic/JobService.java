@@ -49,59 +49,56 @@ public class JobService {
         Integer channel;
         Integer objAType;
         Integer interactionType;
+        boolean isSendJobActivationAlert = false;
 
         JobPost existingJobPost = JobPost.find.where().eq("jobPostId", addJobPostRequest.getJobPostId()).findUnique();
         if(existingJobPost == null){
             Logger.info("Job post does not exists. Creating a new job Post");
-            JobPost newJobPost = new JobPost();
-            newJobPost = getAndSetJobPostValues(addJobPostRequest, newJobPost, jobPostLocalityList);
+            existingJobPost = new JobPost();
+            existingJobPost = getAndSetJobPostValues(addJobPostRequest, existingJobPost, jobPostLocalityList);
 
-            createInterviewDetails(addJobPostRequest, newJobPost);
-            newJobPost.save();
+            createInterviewDetails(addJobPostRequest, existingJobPost);
+            existingJobPost.save();
 
-            saveOrUpdatePreScreenRequirements(newJobPost);
+            saveOrUpdatePreScreenRequirements(existingJobPost);
 
-            addJobPostResponse.setJobPost(newJobPost);
+            addJobPostResponse.setJobPost(existingJobPost);
             addJobPostResponse.setStatus(AddJobPostResponse.STATUS_SUCCESS);
 
-            objBUuid = newJobPost.getJobPostUUId();
+            if (existingJobPost.getJobPostStatus().getJobStatusId() == ServerConstants.JOB_STATUS_ACTIVE) {
+                isSendJobActivationAlert = true;
+            }
+
+            objBUuid = existingJobPost.getJobPostUUId();
 
             result = InteractionConstants.INTERACTION_RESULT_NEW_JOB_CREATED;
             interactionType = InteractionConstants.INTERACTION_TYPE_NEW_JOB_CREATED;
 
             if(channelType == InteractionService.InteractionChannelType.SELF){
-                RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+                RecruiterProfile recruiterProfile =
+                        RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
                 if(recruiterProfile != null){
-                    sendRecruiterFreeJobPostingSms(recruiterProfile.getRecruiterProfileMobile(), recruiterProfile.getRecruiterProfileName());
+                    sendRecruiterFreeJobPostingSms(recruiterProfile.getRecruiterProfileMobile(),
+                            recruiterProfile.getRecruiterProfileName());
                 }
 
             }
-            Logger.info("JobPost with jobId: " + newJobPost.getJobPostId() + " and job title: " + newJobPost.getJobPostTitle() + " created successfully");
-        } else{
+            Logger.info("JobPost with jobId: " + existingJobPost.getJobPostId() + " and job title: " + existingJobPost.getJobPostTitle() + " created successfully");
+        } else {
             Logger.info("Job post already exists. Updating existing job Post");
             Integer previousStatus = 0;
             if(existingJobPost.getJobPostStatus() != null){
                 previousStatus = existingJobPost.getJobPostStatus().getJobStatusId();
             }
+
             existingJobPost = getAndSetJobPostValues(addJobPostRequest, existingJobPost, jobPostLocalityList);
 
             //trigger sms and mail when a job post is made 'Active' from 'New'
             if(addJobPostRequest.getJobPostStatusId() != null){
                 if(addJobPostRequest.getJobPostStatusId() == ServerConstants.JOB_STATUS_ACTIVE
-                        && previousStatus == ServerConstants.JOB_STATUS_NEW){
-                    Logger.info("Notifying recruiter about the job");
-                    //trigger SMS to recruiter
-                    sendSuccessJobPostToRecruiter(existingJobPost.getRecruiterProfile(), existingJobPost);
-                    //send email to recruiter
-                    //new thread
-                    JobPost finalExistingJobPost = existingJobPost;
-                    new Thread(() -> {
-                        try {
-                            sendSuccessJobPostEmailToRecruiter(finalExistingJobPost.getRecruiterProfile(), finalExistingJobPost);
-                        } catch (EmailException e) {
-                            e.printStackTrace();
-                        }
-                    }).start();
+                        && previousStatus == ServerConstants.JOB_STATUS_NEW)
+                {
+                    isSendJobActivationAlert = true;
                 }
             }
 
@@ -120,6 +117,22 @@ public class JobService {
             interactionType = InteractionConstants.INTERACTION_TYPE_EXISTING_JOB_UPDATED;
 
             Logger.info("JobPost with jobId: " + existingJobPost.getJobPostId() + " and job title: " + existingJobPost.getJobPostTitle() + " updated successfully");
+        }
+
+        if (isSendJobActivationAlert) {
+            Logger.info("Notifying recruiter about the job");
+            //trigger SMS to recruiter
+            sendSuccessJobPostToRecruiter(existingJobPost.getRecruiterProfile(), existingJobPost);
+            //send email to recruiter
+            //new thread
+            JobPost finalExistingJobPost = existingJobPost;
+            new Thread(() -> {
+                try {
+                    sendSuccessJobPostEmailToRecruiter(finalExistingJobPost.getRecruiterProfile(), finalExistingJobPost);
+                } catch (EmailException e) {
+                    e.printStackTrace();
+                }
+            }).start();
         }
 
         if(channelType == InteractionService.InteractionChannelType.SUPPORT){

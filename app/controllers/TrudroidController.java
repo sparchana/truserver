@@ -280,8 +280,20 @@ public class TrudroidController {
             jobPostBuilder.setJobPostTitle(jobPost.getJobPostTitle());
             jobPostBuilder.setJobPostCompanyName(jobPost.getCompany().getCompanyName());
             jobPostBuilder.setJobPostMinSalary(jobPost.getJobPostMinSalary());
-            jobPostBuilder.setJobPostMaxSalary(jobPost.getJobPostMaxSalary());
-            if(jobPost.getJobPostVacancies() != null) jobPostBuilder.setVacancies(jobPost.getJobPostVacancies());
+
+            // TODO: Temporary hack to set null value to zero in the response object.
+            // Android app is right now handling only != 0 check and not null check
+            // Once apk change is made, we need to change this code.
+            if (jobPost.getJobPostMaxSalary() != null) {
+                jobPostBuilder.setJobPostMaxSalary(jobPost.getJobPostMaxSalary());
+            }
+            else {
+                jobPostBuilder.setJobPostMaxSalary(0);
+            }
+
+            if (jobPost.getJobPostVacancies() != null) {
+                jobPostBuilder.setVacancies(jobPost.getJobPostVacancies());
+            }
 
             if (jobPost.getJobRole() != null) {
                 jobPostBuilder.setJobRole(jobPost.getJobRole().getJobName());
