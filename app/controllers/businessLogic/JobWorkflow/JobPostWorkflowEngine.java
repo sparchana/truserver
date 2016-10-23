@@ -720,7 +720,7 @@ public class JobPostWorkflowEngine {
                                     preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
                                     ExperienceValue jobPostMinMaxExp = getDurationFromExperience(jobPost.getJobPostExperience().getExperienceId());
                                     preScreenElement.jobPostElement=(jobPost.getJobPostExperience().getExperienceType());
-                                    if(candidate.getCandidateTotalExperience() != null) {
+                                    if(candidate.getCandidateTotalExperience() != null && jobPostMinMaxExp != null) {
                                         double totalExpInYrs= ((double)candidate.getCandidateTotalExperience())/12;
                                         preScreenElement.candidateElement = (Util.RoundTo2Decimals(totalExpInYrs)+ " Yrs");
 
