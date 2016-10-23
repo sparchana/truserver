@@ -310,6 +310,8 @@ public class JobSearchService {
 
         query = query.where().eq("source", source).query();
 
+        query = query.where().eq("JobStatus", ServerConstants.JOB_STATUS_ACTIVE).query();
+
         // filter params
         if (filterParams != null) {
             if (filterParams.getSalary() != null && filterParams.getSalary() != JobFilterRequest.Salary.ANY_SALARY) {
