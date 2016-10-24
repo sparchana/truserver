@@ -2,6 +2,8 @@
  * Created by batcoder1 on 6/7/16.
  */
 
+var shouldAddFooter = true;
+
 $(function(){
     NProgress.start();
     if ( $.fn.dataTable.isDataTable( 'table#jobTable' ) ) {
@@ -31,6 +33,8 @@ function renderDashboard() {
                 "dataSrc": function (returnedData) {
                     var returned_data = new Array();
                     returnedData.forEach(function (jobPost) {
+
+                        //addFooter();
                         returned_data.push({
                             'jobId': '<a href="'+"/jobPostDetails/"+jobPost.jobPostId+'" id="'+jobPost.jobPostId+'" style="cursor:pointer;" target="_blank">'+jobPost.jobPostId+'</a>',
                             'jobCreationTimestamp' : function() {
@@ -71,10 +75,24 @@ function renderDashboard() {
                                 }
                                 return "Is not Hot";
                             },
+                            'jobType' : function(){
+                                if(jobPost.pricingPlanType != null) {
+                                    return jobPost.pricingPlanType.pricingPlanTypeName;
+                                } else {
+                                    return "Not Specified";
+                                }
+                            },
                             'jobStatus' : function(){
                                 if(jobPost.jobPostStatus != null) {
                                     return jobPost.jobPostStatus.jobStatusName;
                                 } else{
+                                    return "Not Specified";
+                                }
+                            },
+                            'createdBy' : function(){
+                                if(jobPost.createdBy != null) {
+                                    return jobPost.createdBy;
+                                } else {
                                     return "Not Specified";
                                 }
                             },
@@ -98,23 +116,51 @@ function renderDashboard() {
                 { "data": "jobRole" },
                 { "data": "jobExperience" },
                 { "data": "jobIsHot" },
+                { "data": "jobType" },
                 { "data": "jobStatus" },
+                { "data": "createdBy" },
                 { "data": "match" }
             ],
             "order": [[0, "desc"]],
             "language": {
                 "emptyTable": "No data available"
             },
+            "scrollX": true,
             "destroy": true,
             "dom": 'Bfrtip',
             "buttons": [
                 'copy', 'csv', 'excel'
             ]
         });
+
+        // Apply the search filter
+        /*table.columns().every(function () {
+            var that = this;
+            $('input', this.footer()).on('keyup change', function () {
+                if (that.search() !== this.value) {
+                    that.search(this.value).draw();
+                }
+            });
+        });*/
+
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
 }
+
+
+/*function addFooter() {
+    // Setup - add a text input to each footer cell
+    if (shouldAddFooter) {
+        console.log("add footer");
+        $('#jobTable tfoot th').each(function () {
+            var title = $(this).text();
+            console.log("adding");
+            $(this).html('<input type="text" name="' + title + '"  id="' + title + '" placeholder="' + title + '" />');
+        });
+        shouldAddFooter = false;
+    }
+};*/
 
 function getAllCompany() {
     try {
@@ -214,7 +260,7 @@ function getAllRecruiters() {
                                             contactCreditCount = 1;
                                         }
                                     }
-                                } else{
+                                } else {
                                     if(interviewCreditCount == 0){
                                         if(creditHistory.recruiterCreditCategory.recruiterCreditCategoryId == 2){
                                             interviewCredits = creditHistory.recruiterCreditsAvailable;
@@ -222,7 +268,7 @@ function getAllRecruiters() {
                                         }
                                     }
                                 }
-                                if(contactCreditCount > 0 && interviewCreditCount > 0){
+                                if(contactCreditCount > 0 && interviewCreditCount > 0) {
                                     return false;
                                 }
                             });
@@ -240,6 +286,9 @@ function getAllRecruiters() {
                             'recruiterContactCredit' : contactCredits,
                             'recruiterInterviewCredit' : interviewCredits
                         })
+
+                        contactCredits = 0;
+                        interviewCredits = 0;
                     });
                     return returned_data;
                 }

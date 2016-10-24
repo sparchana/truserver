@@ -92,6 +92,7 @@ public class JobService {
         } else {
             Logger.info("Job post already exists. Updating existing job Post");
             Integer previousStatus = 0;
+
             if(existingJobPost.getJobPostStatus() != null){
                 previousStatus = existingJobPost.getJobPostStatus().getJobStatusId();
             }

@@ -849,6 +849,26 @@ public class Application extends Controller {
                                              .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
                                              .orderBy().desc("jobPostUpdateTimestamp")
                                              .findList();
+
+        // get all jobpost uuiids
+        List<String> jobpostUUIDs = new ArrayList<>();
+        for (JobPost jobPost : jobPosts) {
+            jobpostUUIDs.add(jobPost.getJobPostUUId());
+        }
+
+        // Query interactions table to get who created this job post
+        Map <?, Interaction> jobPostCreatedInteractionMap =
+                Interaction.find.where().eq("interactionType", InteractionConstants.INTERACTION_TYPE_NEW_JOB_CREATED)
+                                .in("objectBUUId", jobpostUUIDs).setMapKey("objectBUUId").findMap();
+
+        for (JobPost jobPost : jobPosts) {
+            Interaction createdInteraction = jobPostCreatedInteractionMap.get(jobPost.getJobPostUUId());
+
+            if (createdInteraction != null) {
+                jobPost.setCreatedBy(createdInteraction.getCreatedBy());
+            }
+        }
+
         return ok(toJson(jobPosts));
     }
 

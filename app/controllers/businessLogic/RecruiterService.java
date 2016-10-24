@@ -28,6 +28,7 @@ import models.util.EmailUtil;
 import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
+import play.core.server.Server;
 import play.mvc.Result;
 
 import java.util.UUID;
@@ -287,7 +288,7 @@ public class RecruiterService {
         String createdBy = "Not specified";
 
         if(session().get("sessionUsername") != null){
-            createdBy = session().get("sessionUsername");
+            createdBy = "Support: " + session().get("sessionUsername");
         }
 
         //setting values for candidate contact unlock credits
@@ -302,10 +303,12 @@ public class RecruiterService {
                     .eq("recruiter_credit_category_id", ServerConstants.RECRUITER_CATEGORY_CONTACT_UNLOCK)
                     .findUnique();
 
-            if(recruiterCreditCategory != null){
+            if (recruiterCreditCategory != null){
                 //recruiterPayment.setRecruiterCreditCategory(recruiterCreditCategory);
                 recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
             }
+
+            recruiterCreditHistory.setUnits(addRecruiterRequest.getContactCredits());
 
             //setting recruiter profile
             //recruiterPayment.setRecruiterProfile(existingRecruiter);
@@ -363,6 +366,8 @@ public class RecruiterService {
                 //recruiterPayment.setRecruiterCreditCategory(recruiterCreditCategory);
                 recruiterCreditHistory.setRecruiterCreditCategory(recruiterCreditCategory);
             }
+
+            recruiterCreditHistory.setUnits(addRecruiterRequest.getInterviewCredits());
 
             //setting recruiter profile
             //recruiterPayment.setRecruiterProfile(existingRecruiter);
@@ -446,6 +451,7 @@ public class RecruiterService {
                         recruiterToCandidateUnlocked.setRecruiterProfile(recruiterProfile);
                         recruiterToCandidateUnlocked.setCandidate(candidate);
                         recruiterCreditHistory.setRecruiterCreditsAddedBy(ServerConstants.SELF_UNLOCKED_CANDIDATE_CONTACT);
+                        recruiterCreditHistory.setUnits(-1);
 
                         //saving/updating all the rows
                         recruiterCreditHistory.save();
@@ -606,8 +612,10 @@ public class RecruiterService {
         recruiterCreditHistory.setRecruiterProfile(recruiterProfile);
         recruiterCreditHistory.setRecruiterCreditsAvailable(creditCount);
         recruiterCreditHistory.setRecruiterCreditsUsed(0);
+        recruiterCreditHistory.setUnits(5);
+
         if(session().get("sessionUsername") != null){
-            recruiterCreditHistory.setRecruiterCreditsAddedBy(session().get("sessionUsername"));
+            recruiterCreditHistory.setRecruiterCreditsAddedBy("Support: " + session().get("sessionUsername"));
         } else{
             recruiterCreditHistory.setRecruiterCreditsAddedBy("Not specified");
         }

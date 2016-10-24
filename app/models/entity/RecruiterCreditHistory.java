@@ -37,6 +37,9 @@ public class RecruiterCreditHistory extends Model {
     @Column(name = "recruiter_credits_added_by", columnDefinition = "varchar(50) not null")
     private String recruiterCreditsAddedBy;
 
+    @Column(name = "units", columnDefinition = "int signed null")
+    private Integer units;
+
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "RecruiterProfileId", referencedColumnName = "RecruiterProfileId")
@@ -117,5 +120,13 @@ public class RecruiterCreditHistory extends Model {
 
     public void setRecruiterCreditsAddedBy(String recruiterCreditsAddedBy) {
         this.recruiterCreditsAddedBy = recruiterCreditsAddedBy;
+    }
+
+    public Integer getUnits() {
+        return units;
+    }
+
+    public void setUnits(Integer units) {
+        this.units = units;
     }
 }
