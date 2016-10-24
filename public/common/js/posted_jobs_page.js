@@ -234,7 +234,7 @@ function processDataForHotJobPost(returnedData) {
         if (returnedData.jobPostAddress != null && returnedData.jobPostAddress != "") {
             $("#postedJobLocationAddress").html(returnedData.jobPostAddress);
         }
-        if (returnedData.jobPostMinSalary != null && returnedData.jobPostMaxSalary != null) {
+        if (returnedData.jobPostMinSalary != null && returnedData.jobPostMinSalary != 0) {
             if (returnedData.jobPostMaxSalary == null || returnedData.jobPostMaxSalary == "0") {
                 $("#postedJobSalary").html(rupeeFormatSalary(returnedData.jobPostMinSalary) + " monthly");
             }
@@ -303,7 +303,10 @@ function processDataForHotJobPost(returnedData) {
             }
             $("#postedJobWorkingDays").html(holiday + " - Holiday");
         }
-        if (returnedData.jobPostStartTime != null && returnedData.jobPostEndTime != null) {
+        
+        if (returnedData.jobPostStartTime != null && returnedData.jobPostStartTime != -1
+            && returnedData.jobPostEndTime != null && returnedData.jobPostEndTime != null != -1)
+        {
             var valStart;
             var valEnd;
             if (returnedData.jobPostStartTime > 12) {
@@ -320,9 +323,11 @@ function processDataForHotJobPost(returnedData) {
             else {
                 valEnd = "AM";
             }
+
             $("#postedJobTiming").html(returnedData.jobPostStartTime + " " + valStart + " - " + returnedData.jobPostEndTime + " " + valEnd);
 
         }
+
         if (returnedData.jobPostMinRequirement != null && returnedData.jobPostMinRequirement != "") {
             $("#postedJobMinRequirement").html(returnedData.jobPostMinRequirement);
         }

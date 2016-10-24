@@ -178,6 +178,9 @@ public class JobPost extends Model {
     @OneToMany(mappedBy = "jobPost", cascade = CascadeType.ALL)
     private List<JobPostDocumentRequirement> jobPostDocumentRequirements;
 
+    @Transient
+    private String createdBy = null;
+
     public static Finder<String, JobPost> find = new Finder(JobPost.class);
 
     public JobPost() {
@@ -578,5 +581,13 @@ public class JobPost extends Model {
 
     public void setJobPostDocumentRequirements(List<JobPostDocumentRequirement> jobPostDocumentRequirements) {
         this.jobPostDocumentRequirements = jobPostDocumentRequirements;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 }

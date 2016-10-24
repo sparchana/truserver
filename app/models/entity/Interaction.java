@@ -34,10 +34,10 @@ public class Interaction extends Model {
     @Column(name = "InteractionType", columnDefinition = "int signed null")
     private Integer interactionType; // CallIn, CallOut, Sms
 
-    @Column(name = "Note", columnDefinition = "varchar(255) null")
+    @Column(name = "Note", columnDefinition = "text null")
     private String note;
 
-    @Column(name = "Result", columnDefinition = "varchar(255) null")
+    @Column(name = "Result", columnDefinition = "text null")
     private String result;
 
     @Column(name = "CreationTimestamp", columnDefinition = "timestamp default current_timestamp not null", nullable = false)

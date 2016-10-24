@@ -557,6 +557,7 @@ public class JobPostWorkflowEngine {
                 if(jobPostWorkflow.getJobPost().getCompany() != null) {
                     interactionResult+="@" + jobPostWorkflow.getJobPost().getCompany().getCompanyName();
                 }
+
                 // save the interaction
                 InteractionService.createWorkflowInteraction(
                         jobPostWorkflow.getJobPostWorkflowUUId(),

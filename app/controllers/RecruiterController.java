@@ -88,7 +88,6 @@ public class RecruiterController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Logger.info("JSON req: " + req);
 
         return ok(toJson(RecruiterService.recruiterSignUp(recruiterSignUpRequest)));
     }

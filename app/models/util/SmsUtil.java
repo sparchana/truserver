@@ -169,6 +169,7 @@ public class SmsUtil {
         sendSms(devTeamMobile.get("Adarsh"), msg);
         sendSms(devTeamMobile.get("Archana"), msg);
     }
+
     public static void sendDuplicateLeadOrCandidateDeleteActionSmsToDevTeam(String mobile)
     {
         // Idea is to keep getting irritated by receiving msg until issue is resolved :D
@@ -225,17 +226,55 @@ public class SmsUtil {
         String msg = "Welcome to www.Trujobs.in! Thank you for getting in touch with us. Our business team will contact you within 24 hours!";
         sendSms(mobile, msg);
     }
+
+    public static void sendRecruiterWelcomeSmsForSupportSignup(String name, String mobile, String password)
+    {
+        String msg = "Hi " + name + ", Your TruJobs business account is now setup and we have added 5 FREE candidate contact credits to your account! "
+                + " Your login details are Username: "
+                + mobile.substring(3, 13) + " and password: " + password
+                + ". Log on to www.trujobs.in/recruiter to access thousands of verified candidate profiles!!!";
+
+        sendSms(mobile, msg);
+    }
+
+    public static void sendRecruiterWelcomeSmsForSelfSignup(String name, String mobile)
+    {
+        String msg = "Hi " + name + ", Your TruJobs business account is now setup and we have added 5 FREE candidate contact credits to your account! "
+                + ". Log on to www.trujobs.in/recruiter to access thousands of verified candidate profiles!!!";
+
+        sendSms(mobile, msg);
+    }
+
+    public static void sendResetPasswordOTPSmsToRecruiter(int otp, String mobile) {
+        String msg = "Use OTP " + otp + " to reset your password. Welcome to www.Trujobs.in!";
+        sendSms(mobile, msg);
+    }
+
+    public static void sendRecruiterFreeJobPostingSms(String mobile, String name) {
+        String msg = "Hi " + name + ", Thanks for posting your job on TruJobs! We are working on your job post request and you will " +
+                "receive a notification once the job is made live. For any queries please call +919980293925. Thank you! www.trujobs.in";
+        sendSms(mobile, msg);
+    }
+
+    public static void sendRecruiterJobPostActivationSms(RecruiterProfile recruiterProfile, JobPost jobPost) {
+        String msg = "Hi " + recruiterProfile.getRecruiterProfileName() + ", your job post: " + jobPost.getJobPostTitle()
+                + " has been verified and successfully posted on www.trujobs.in.!" +
+                " Log in at www.trujobs.in/recruiter to track job applications";
+        sendSms(recruiterProfile.getRecruiterProfileMobile(), msg);
+    }
+
     public static void sendRequestCreditSms(RecruiterProfile recruiterProfile, AddCreditRequest addCreditRequest) {
         Integer contactCredits = addCreditRequest.getNoOfContactCredits();
         Integer interviewCredits = addCreditRequest.getNoOfInterviewCredits();
 
         String creditMsg;
         if(contactCredits == 0){
-            creditMsg = interviewCredits + " interview unlock credits";
+            creditMsg = interviewCredits + " candidate interview-unlock credits";
         } else if(interviewCredits == 0){
-            creditMsg = contactCredits + " contact unlock credits";
-        } else{
-            creditMsg = contactCredits + " contact unlock credits and " + interviewCredits + " interview unlock credits";
+            creditMsg = contactCredits + " candidate contact-unlock credits";
+        } else {
+            creditMsg = contactCredits + " candidate contact-unlock credits and " + interviewCredits
+                    + " candidate interview-unlock credits";
         }
 
         String msg = "Hi " + recruiterProfile.getRecruiterProfileName() + "! We have received your request for " + creditMsg
@@ -251,31 +290,27 @@ public class SmsUtil {
         sendSms(devTeamMobile.get("Archana"), msg);
     }
 
-    public static void sendRecruiterFreeJobPostingSms(String mobile, String name) {
-        String msg = "Hi " + name + ", Thanks for posting your job on TruJobs! We are working on your job post request and you will " +
-                "receive a notification once the job is made live. For any queries please call +919980293925. Thank you!";
-        sendSms(mobile, msg);
-    }
+    public static void sendRecruiterCreditTopupSms(RecruiterProfile recruiterProfile, Integer contactCredits, Integer interviewCredits) {
 
-    public static void sendWelcomeSmsFromRecruiter(String name, String mobile, String password)
-    {
-        String msg = "Hi " + name + ", Your TruJobs business account is now setup and we have added 5 FREE candidate contact credits to your account! "
-                + " Your login details are Username: "
-                + mobile.substring(3, 13) + " and password: " + password
-                + ". Log on to www.trujobs.in/recruiter to access 25000+ verified candidate profiles!!!";
+        String creditMsg;
 
-        sendSms(mobile, msg);
-    }
+        if (contactCredits != null && contactCredits > 0 && interviewCredits != null && interviewCredits > 0) {
+            creditMsg = contactCredits + " candidate contact-unlock credits and " + interviewCredits + " candidate interview-unlock credits";
+        }
+        else if (contactCredits != null && contactCredits > 0) {
+            creditMsg = contactCredits + " candidate contact-unlock credits";
+        } else if (interviewCredits != null && interviewCredits > 0){
+            creditMsg = interviewCredits + " candidate interview-unlock credits";
+        }
+        else {
+            return;
+        }
 
-    public static void sendResetPasswordOTPSmsToRecruiter(int otp, String mobile) {
-        String msg = "Use OTP " + otp + " to reset your password. Welcome to www.Trujobs.in!";
-        sendSms(mobile, msg);
-    }
-
-    public static void sendSuccessJobPostToRecruiter(RecruiterProfile recruiterProfile, JobPost jobPost) {
-        String msg = "Hi " + recruiterProfile.getRecruiterProfileName() + ", your job post: " + jobPost.getJobPostTitle() + " has been verified and successfully posted on www.trujobs.in.!" +
-                " Log in at www.trujobs.in/recruiter to track job applications";
+        String msg = "Hi " + recruiterProfile.getRecruiterProfileName()
+                + "! Congratulations! Your Trujobs account is credited with " + creditMsg
+                + ".  Log in at www.trujobs.in/recruiter to start contacting thousands of verified candidates!. Thank you.";
         sendSms(recruiterProfile.getRecruiterProfileMobile(), msg);
     }
+
 
 }

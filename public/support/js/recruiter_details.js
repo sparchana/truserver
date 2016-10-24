@@ -214,25 +214,27 @@ function processDataForRecruiterInfo(returnedData) {
         t.row.add( [
             history.recruiterCreditHistoryId,
             function() {
-                var returnedCreationDate = new Date(history.createTimestamp);
-                return new Date(returnedCreationDate).toLocaleDateString();
+                return getDateTime(history.createTimestamp);
             },
-            history.recruiterCreditsAvailable,
-            history.recruiterCreditsUsed,
             function(){
                 if(history.recruiterCreditCategory != null){
                     return history.recruiterCreditCategory.recruiterCreditType;
-                } else{
+                } else {
                     return " Not Specified";
                 }
             },
+            function() {
+                return history.units;
+            },
+            history.recruiterCreditsAvailable,
+            history.recruiterCreditsUsed,
             function () {
                 if(history.recruiterCreditsAddedBy != null){
                     return history.recruiterCreditsAddedBy;
                 }
 
             }
-        ] ).draw( false );
+        ] ).order([[1, "desc"]]).draw( false );
     });
 }
 
@@ -318,4 +320,16 @@ function validateInterviewUnlockCreditValues(){
         notifyError("Interview unlock credit amount should be greater than its credit unit price!");
     }
     return statusCheck;
+}
+
+function getDateTime(value) {
+    // 2016-07-20 21:18:07
+    /*
+     * getUTCMonth(): Returns the month according to the UTC (0 - 11).
+     * getUTCFullYear(): Returns the four-digit year according to the UTC.
+     */
+    var dateTime = new Date(value).getUTCFullYear() + "-" + ("0" + (new Date(value).getUTCMonth() + 1)).slice(-2)
+        + "-" + ("0" + new Date(value).getDate()).slice(-2) + " " + ("0" + new Date(value).getHours()).slice(-2) + ":"
+        + ("0" + new Date(value).getMinutes()).slice(-2) + ":" + ("0" + new Date(value).getSeconds()).slice(-2);
+    return dateTime;
 }

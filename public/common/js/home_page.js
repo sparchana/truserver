@@ -333,9 +333,9 @@ function processDataAllJobPosts(returnedData) {
 
                 var salaryDiv = document.createElement("div");
                 salaryDiv.style = "display: inline-block; font-size: 14px";
-                if(jobPost.jobPostMaxSalary == "0"){
+                if(jobPost.jobPostMaxSalary == "0" || jobPost.jobPostMaxSalary == null){
                     salaryDiv.textContent = rupeeFormatSalary(jobPost.jobPostMinSalary) + " monthly";
-                } else{
+                } else {
                     salaryDiv.textContent = rupeeFormatSalary(jobPost.jobPostMinSalary) + " - " + rupeeFormatSalary(jobPost.jobPostMaxSalary) + " monthly";
                 }
                 jobBodySubRowCol.appendChild(salaryDiv);
