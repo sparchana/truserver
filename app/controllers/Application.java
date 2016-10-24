@@ -1634,11 +1634,19 @@ public class Application extends Controller {
                 .eq("isCommon",ServerConstants.IS_COMMON)
                 .orderBy("idProofName")
                 .findList();
+
         List<JobRoleToDocument> jobRoleToDocumentList= JobRoleToDocument.find.setUseQueryCache(!isDevMode)
                 .where().eq("jobRole.jobRoleId", jobRoleId).findList();
+
         for(JobRoleToDocument jobRoleToDocument: jobRoleToDocumentList) {
             idProofList.add(jobRoleToDocument.getIdProof());
+
+            // remove duplicates from the common list
+           if (commonIdProofList.contains(jobRoleToDocument.getIdProof())) {
+               commonIdProofList.remove(jobRoleToDocument.getIdProof());
+            }
         }
+
         idProofList.addAll(commonIdProofList);
 
         Collections.sort(idProofList,  (o1, o2) -> o1.getIdProofName().compareTo(o2.getIdProofName()));
@@ -1664,11 +1672,19 @@ public class Application extends Controller {
                 .eq("isCommon", ServerConstants.IS_COMMON)
                 .orderBy("assetTitle")
                 .findList();
+
         List<JobRoleToAsset> jobRoleToAssetList= JobRoleToAsset.find.setUseQueryCache(!isDevMode)
                 .where().eq("jobRole.jobRoleId", jobRoleId).findList();
+
         for(JobRoleToAsset jobRoleToAsset: jobRoleToAssetList) {
             assetList.add(jobRoleToAsset.getAsset());
+
+            // remove duplicates form common list
+            if (commonAssetList.contains(jobRoleToAsset.getAsset())) {
+                commonAssetList.remove(jobRoleToAsset.getAsset());
+            }
         }
+
         assetList.addAll(commonAssetList);
 
         Collections.sort(assetList,  (o1, o2) -> o1.getAssetTitle().compareTo(o2.getAssetTitle()));

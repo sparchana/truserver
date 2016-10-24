@@ -8,6 +8,8 @@ import api.http.httpResponse.Recruiter.RecruiterSignUpResponse;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Recruiter.Static.RecruiterProfileStatus;
+import models.util.EmailUtil;
+import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
 
@@ -34,21 +36,23 @@ public class RecruiterAuthService {
     public static RecruiterSignUpResponse savePassword(String recruiterMobile, String recruiterPassword) {
         RecruiterSignUpResponse recruiterSignUpResponse = new RecruiterSignUpResponse();
 
-        Logger.info("to check: " + recruiterMobile);
-        RecruiterProfile existingRecruiter = RecruiterProfile.find.where().eq("RecruiterProfileMobile", FormValidator.convertToIndianMobileFormat(recruiterMobile)).findUnique();
+        RecruiterProfile existingRecruiter =
+                RecruiterProfile.find.where().eq("RecruiterProfileMobile",
+                        FormValidator.convertToIndianMobileFormat(recruiterMobile)).findUnique();
+
         if(existingRecruiter != null) {
             // If recruiter exists
-            Logger.info(existingRecruiter.getRecruiterProfileId() + " : recruiter ID");
-            RecruiterAuth recruiterAuth = RecruiterAuth.find.where().eq("recruiter_id", existingRecruiter.getRecruiterProfileId()).findUnique();
+            RecruiterAuth recruiterAuth = RecruiterAuth.find.where().eq("recruiter_id",
+                    existingRecruiter.getRecruiterProfileId()).findUnique();
+
             if(recruiterAuth != null){
                 // If recruiter exists and has a password, reset the old password
-                Logger.info("Resetting password");
                 setNewPassword(recruiterAuth, recruiterPassword);
                 RecruiterAuth.savePassword(recruiterAuth);
                 recruiterAuth.setAuthSessionId(UUID.randomUUID().toString());
                 recruiterAuth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
 
-                /* adding session details */
+                // adding session details
                 addSession(recruiterAuth, existingRecruiter);
                 recruiterAuth.setRecruiterAuthStatus(ServerConstants.RECRUITER_STATUS_VERIFIED);
                 recruiterAuth.update();
@@ -63,7 +67,7 @@ public class RecruiterAuthService {
                 auth.setAuthSessionId(UUID.randomUUID().toString());
                 auth.setAuthSessionIdExpiryMillis(System.currentTimeMillis() + 24 * 60 * 60 * 1000);
 
-                /* adding session details */
+                // adding session details
                 addSession(auth, existingRecruiter);
 
                 //adding recruiter interaction
@@ -83,6 +87,10 @@ public class RecruiterAuthService {
 
                 existingRecruiter.update();
                 Logger.info("recruiter status confirmed");
+
+                EmailUtil.sendRecruiterWelcomeEmailForSelfSignup(existingRecruiter);
+                SmsUtil.sendRecruiterWelcomeSmsForSelfSignup(existingRecruiter.getRecruiterProfileName(),
+                        existingRecruiter.getRecruiterProfileMobile());
 
                 recruiterSignUpResponse.setRecruiterMobile(existingRecruiter.getRecruiterProfileMobile());
                 recruiterSignUpResponse.setFirstTime(ServerConstants.RECRUITER_FIRST_TIME);

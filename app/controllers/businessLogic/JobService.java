@@ -16,7 +16,6 @@ import models.entity.OM.*;
 import models.entity.Static.*;
 import models.util.EmailUtil;
 import models.util.SmsUtil;
-import org.apache.commons.mail.EmailException;
 import play.Logger;
 import play.api.Play;
 
@@ -25,19 +24,19 @@ import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.*;
 
-import static api.InteractionConstants.INTERACTION_CHANNEL_CANDIDATE_WEBSITE;
 import static controllers.businessLogic.InteractionService.createInteractionForNewJobPost;
-import static models.util.EmailUtil.sendSuccessJobPostEmailToRecruiter;
+import static models.util.EmailUtil.sendRecruiterJobPostLiveEmail;
 import static models.util.SmsUtil.sendRecruiterFreeJobPostingSms;
-import static models.util.SmsUtil.sendSuccessJobPostToRecruiter;
+import static models.util.SmsUtil.sendRecruiterJobPostActivationSms;
 import static play.mvc.Controller.session;
-import static play.mvc.Http.Context.current;
 
 /**
  * Created by batcoder1 on 17/6/16.
  */
 public class JobService {
-    public static AddJobPostResponse addJobPost(AddJobPostRequest addJobPostRequest, InteractionService.InteractionChannelType channelType) {
+    public static AddJobPostResponse addJobPost(AddJobPostRequest addJobPostRequest,
+                                                InteractionService.InteractionChannelType channelType)
+    {
         AddJobPostResponse addJobPostResponse = new AddJobPostResponse();
         List<Integer> jobPostLocalityList = addJobPostRequest.getJobPostLocalities();
         /* checking if jobPost already exists or not */
@@ -65,25 +64,31 @@ public class JobService {
             addJobPostResponse.setJobPost(existingJobPost);
             addJobPostResponse.setStatus(AddJobPostResponse.STATUS_SUCCESS);
 
+            // if support creates a job post in new status, no alert is sent to recruiter
             if (existingJobPost.getJobPostStatus().getJobStatusId() == ServerConstants.JOB_STATUS_ACTIVE) {
                 isSendJobActivationAlert = true;
-            }
-
-            objBUuid = existingJobPost.getJobPostUUId();
-
-            result = InteractionConstants.INTERACTION_RESULT_NEW_JOB_CREATED;
-            interactionType = InteractionConstants.INTERACTION_TYPE_NEW_JOB_CREATED;
-
-            if(channelType == InteractionService.InteractionChannelType.SELF){
+            } else if (channelType == InteractionService.InteractionChannelType.SELF) {
+                // These sms and mail alerts are sent only in case of self-job posts by recruiter
+                // in this case the default status is 'new'
+                // if support creates a job post in new status, no alert is sent to recruiter
                 RecruiterProfile recruiterProfile =
                         RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
                 if(recruiterProfile != null){
                     sendRecruiterFreeJobPostingSms(recruiterProfile.getRecruiterProfileMobile(),
                             recruiterProfile.getRecruiterProfileName());
-                }
 
+                    EmailUtil.sendRecruiterNewJobPostEmail(recruiterProfile, existingJobPost);
+                }
             }
-            Logger.info("JobPost with jobId: " + existingJobPost.getJobPostId() + " and job title: " + existingJobPost.getJobPostTitle() + " created successfully");
+
+            objBUuid = existingJobPost.getJobPostUUId();
+            result = InteractionConstants.INTERACTION_RESULT_NEW_JOB_CREATED + " with status "
+                    + existingJobPost.getJobPostStatus().getJobStatusName();
+
+            interactionType = InteractionConstants.INTERACTION_TYPE_NEW_JOB_CREATED;
+            Logger.info("JobPost with jobId: " + existingJobPost.getJobPostId() + " and job title: "
+                    + existingJobPost.getJobPostTitle() + " created successfully");
+
         } else {
             Logger.info("Job post already exists. Updating existing job Post");
             Integer previousStatus = 0;
@@ -121,18 +126,13 @@ public class JobService {
 
         if (isSendJobActivationAlert) {
             Logger.info("Notifying recruiter about the job");
+
             //trigger SMS to recruiter
-            sendSuccessJobPostToRecruiter(existingJobPost.getRecruiterProfile(), existingJobPost);
+            sendRecruiterJobPostActivationSms(existingJobPost.getRecruiterProfile(), existingJobPost);
+
             //send email to recruiter
-            //new thread
             JobPost finalExistingJobPost = existingJobPost;
-            new Thread(() -> {
-                try {
-                    sendSuccessJobPostEmailToRecruiter(finalExistingJobPost.getRecruiterProfile(), finalExistingJobPost);
-                } catch (EmailException e) {
-                    e.printStackTrace();
-                }
-            }).start();
+            sendRecruiterJobPostLiveEmail(finalExistingJobPost.getRecruiterProfile(), finalExistingJobPost);
         }
 
         if(channelType == InteractionService.InteractionChannelType.SUPPORT){

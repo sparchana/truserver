@@ -281,7 +281,8 @@ $(function() {
         var jobPostAsset = $('#jobPostAsset').val();
         var maxAge = $("#jobPostMaxAge").val();
         var jobPostGender = parseInt(document.getElementById("jobPostGender").value);
-        if (status !=0 ){
+
+        if (status !=0 ) {
             if (!isValidAge(maxAge) || maxAge < 18) {
                 $("#jobPostMaxAge").removeClass('invalid').addClass('invalid');
                 if(maxAge < 18) {
@@ -318,6 +319,12 @@ $(function() {
             status = 0;
         } else if (partnerJoiningIncentiveVal < partnerInterviewIncentiveVal){
             notifyError("Partner interview incentive cannot be greater than partner joining incentive", 'danger');
+            status = 0;
+        }
+
+        var jobStatusId = $("#jobPostStatus").val();
+        if(jobStatusId == null || jobStatusId == ""){
+            notifyError("Please select a job status", 'danger');
             status = 0;
         }
 
@@ -367,11 +374,6 @@ $(function() {
                 var slotId = this.value;
                 slotArray.push(parseInt(slotId));
             }).get();
-
-            var jobStatusId = $("#jobPostStatus").val();
-            if(jobStatusId == ""){
-                jobStatusId = null;
-            }
 
             try {
                 var d = {
