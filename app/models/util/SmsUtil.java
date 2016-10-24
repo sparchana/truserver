@@ -259,10 +259,10 @@ public class SmsUtil {
 
     public static void sendWelcomeSmsFromRecruiter(String name, String mobile, String password)
     {
-        String msg = "Hi " + name + ", Your TruJobs business account is not setup and we have added 5 FREE candidate contact credits to your account! "
+        String msg = "Hi " + name + ", Your TruJobs business account is now setup and we have added 5 FREE candidate contact credits to your account! "
                 + " Your login details are Username: "
                 + mobile.substring(3, 13) + " and password: " + password
-                + ". Log on to trujobs.in/recruiter to access 25000+ verified candidate profiles!!!";
+                + ". Log on to www.trujobs.in/recruiter to access 25000+ verified candidate profiles!!!";
 
         sendSms(mobile, msg);
     }
