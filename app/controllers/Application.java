@@ -1175,6 +1175,19 @@ public class Application extends Controller {
         return ok("0");
     }
 
+    @Security.Authenticated(RecSecured.class)
+    public static Result isRecruiterExists(String mobile) {
+        if(mobile != null){
+            mobile = FormValidator.convertToIndianMobileFormat(mobile);
+            RecruiterProfile existingRecruiter = RecruiterService.isRecruiterExists(mobile);
+            if(existingRecruiter != null) {
+                return ok(toJson(existingRecruiter.getRecruiterProfileId()));
+            }
+        }
+        return ok("0");
+    }
+
+
     @Security.Authenticated(SecuredUser.class)
     public static Result ifCandidateExists(String mobile) {
         if(mobile != null){

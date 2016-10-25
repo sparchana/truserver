@@ -139,6 +139,48 @@ $(function(){
     }
 });
 
+$(function () {
+    $('#recruiterMobile').change(function () {
+        if ($('#recruiterMobile').val().length == 10) {
+
+            $.notify({
+                message: "Please wait while we check if the recruiter already exists.",
+                animate: {
+                    enter: 'animated lightSpeedIn',
+                    exit: 'animated lightSpeedOut'
+                }
+            }, {
+                type: 'warning',
+            });
+
+            $.ajax({
+                type: "GET",
+                url: "/support/isRecruiterExists/" + $('#recruiterMobile').val(),
+                contentType: "application/json; charset=utf-8",
+                success: isRecruiterExists
+            });
+        }
+    });
+});
+
+function isRecruiterExists(returnedId) {
+    if(returnedId != null && returnedId != "0") {
+            $.notify({
+                message: "Recruiter already exists. Redirecting you to the recruiter details page.",
+                animate: {
+                    enter: 'animated lightSpeedIn',
+                    exit: 'animated lightSpeedOut'
+                }
+            }, {
+                type: 'warning'
+            });
+
+        setTimeout(function () {
+            window.location = "/recruiterDetails/" + returnedId;
+        }, 2000);
+    }
+}
+
 function processDataGetCreditCategory(returnedData) {
     $("#candidateContactCreditUnitPrice").val(returnedData[0].recruiterCreditUnitPrice);
     $("#interviewCreditUnitPrice").val(returnedData[1].recruiterCreditUnitPrice);

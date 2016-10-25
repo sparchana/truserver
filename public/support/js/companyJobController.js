@@ -3,6 +3,7 @@
  */
 
 var shouldAddFooter = true;
+var daysArray = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 $(function(){
     NProgress.start();
@@ -69,6 +70,42 @@ function renderDashboard() {
                             },
                             'jobRole' : ((jobPost.jobRole.jobName != null) ? jobPost.jobRole.jobName : ""),
                             'jobExperience' : ((jobPost.jobPostExperience.experienceType != null) ? jobPost.jobPostExperience.experienceType : ""),
+                            'jobInterviewSchedule' : function () {
+                                if(jobPost.interviewDetailsList != null && jobPost.interviewDetailsList.length > 0){
+                                    var interviewDetailsList = jobPost.interviewDetailsList;
+                                    if(interviewDetailsList[0].interviewDays != null) {
+                                        var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
+
+                                        // while converting from decimal to binary, preceding zeros are ignored. to fix, follow below
+                                        if(interviewDays.length != 7) {
+                                            x = 7 - interviewDays.length;
+                                            var modifiedInterviewDays = "";
+
+                                            for(i=0;i<x;i++){
+                                                modifiedInterviewDays += "0";
+                                            }
+                                            modifiedInterviewDays += interviewDays;
+                                            interviewDays = modifiedInterviewDays;
+                                        }
+
+                                        var interviewSchedule = "";
+                                        for(i=0; i<=6; i++) {
+                                            if(interviewDays[i] == 1){
+                                                interviewSchedule += daysArray[i] + ",";
+                                            }
+                                        }
+                                        return interviewSchedule;
+                                    }
+                                }
+                                return "Not Specified";
+                            },
+
+                            'jobInterviewAddress' : function () {
+                                if(jobPost.jobPostAddress != null && jobPost.jobPostAddress != ''){
+                                    return jobPost.jobPostAddress;
+                                }
+                                return "Not Specified";
+                            },
                             'jobIsHot' : function () {
                                 if(jobPost.jobPostIsHot == true){
                                     return "Is Hot";
@@ -115,6 +152,8 @@ function renderDashboard() {
                 { "data": "jobLocation" },
                 { "data": "jobRole" },
                 { "data": "jobExperience" },
+                { "data": "jobInterviewSchedule" },
+                { "data": "jobInterviewAddress" },
                 { "data": "jobIsHot" },
                 { "data": "jobType" },
                 { "data": "jobStatus" },
@@ -245,7 +284,21 @@ function getAllRecruiters() {
                     var returned_data = new Array();
                     var contactCredits = 0;
                     var interviewCredits = 0;
+                    var mobileVerificationStatus;
                     returnedData.forEach(function (recruiter) {
+
+                        if (recruiter.recruiterAuth != null) {
+                            if (recruiter.recruiterAuth.recruiterAuthStatus != null && recruiter.recruiterAuth.recruiterAuthStatus == 1) {
+                                mobileVerificationStatus = "Verified";
+                            }
+                            else {
+                                mobileVerificationStatus = "Not Verified";
+                            }
+                        }
+                        else {
+                            mobileVerificationStatus = "Unknown";
+                        }
+
                         var creditHistoryCount = Object.keys(recruiter.recruiterCreditHistoryList).length;
                         if(creditHistoryCount > 0){
                             var creditHistoryList = recruiter.recruiterCreditHistoryList;
@@ -282,6 +335,7 @@ function getAllRecruiters() {
                             'recruiterName': recruiter.recruiterProfileName,
                             'recruiterCompany' : ((recruiter.company != null) ? '<a href="'+"/companyDetails/"+recruiter.company.companyId+'" style="cursor:pointer;" target="_blank">'+recruiter.company.companyName+'</a>' : ""),
                             'recruiterMobile' : recruiter.recruiterProfileMobile,
+                            'recruiterMobileVerificationStatus' : mobileVerificationStatus,
                             'recruiterEmail' : recruiter.recruiterProfileEmail,
                             'recruiterContactCredit' : contactCredits,
                             'recruiterInterviewCredit' : interviewCredits
@@ -300,6 +354,7 @@ function getAllRecruiters() {
                 { "data": "recruiterName" },
                 { "data": "recruiterCompany" },
                 { "data": "recruiterMobile" },
+                { "data": "recruiterMobileVerificationStatus" },
                 { "data": "recruiterEmail" },
                 { "data": "recruiterContactCredit" },
                 { "data": "recruiterInterviewCredit" }

@@ -56,8 +56,8 @@ public class JobService {
             existingJobPost = new JobPost();
             existingJobPost = getAndSetJobPostValues(addJobPostRequest, existingJobPost, jobPostLocalityList);
 
-            createInterviewDetails(addJobPostRequest, existingJobPost);
             existingJobPost.save();
+            createInterviewDetails(addJobPostRequest, existingJobPost);
 
             saveOrUpdatePreScreenRequirements(existingJobPost);
 
@@ -141,7 +141,7 @@ public class JobService {
             objAUuid = ServerConstants.SUPPORT_DEFAULT_UUID;
             objAType = ServerConstants.OBJECT_TYPE_SUPPORT;
             channel = InteractionConstants.INTERACTION_CHANNEL_SUPPORT_WEBSITE;
-        } else{
+        } else {
             createdBy = InteractionConstants.INTERACTION_CREATED_SELF;
             objAType = ServerConstants.OBJECT_TYPE_RECRUTER;
             channel = InteractionConstants.INTERACTION_CHANNEL_RECRUITER_WEBSITE;
@@ -172,6 +172,7 @@ public class JobService {
 
     private static void createInterviewDetails(AddJobPostRequest addJobPostRequest, JobPost jobPost){
         List<Integer> interviewSlots = addJobPostRequest.getInterviewTimeSlot();
+
         if(interviewSlots != null){
             Boolean flag = false;
             String interviewDays = addJobPostRequest.getJobPostInterviewDays();
@@ -186,13 +187,16 @@ public class JobService {
                 InterviewDetails interviewDetails = new InterviewDetails();
                 interviewDetails.setJobPost(jobPost);
                 InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", slot).findUnique();
+
                 if(interviewTimeSlot != null){
                     interviewDetails.setInterviewTimeSlot(interviewTimeSlot);
                 }
+
                 if(flag){
                     Byte interviewDaysByte = Byte.parseByte(addJobPostRequest.getJobPostInterviewDays(), 2);
                     interviewDetails.setInterviewDays(interviewDaysByte);
                 }
+
                 interviewDetails.save();
             }
             Logger.info("Interview details saved");

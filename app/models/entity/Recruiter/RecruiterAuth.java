@@ -2,6 +2,7 @@ package models.entity.Recruiter;
 
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.UpdatedTimestamp;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import models.util.Util;
 import play.Logger;
 
@@ -22,8 +23,10 @@ public class RecruiterAuth extends Model {
     @Column(name = "recruiter_auth_id", columnDefinition = "bigint signed")
     private long recruiterAuthId;
 
-    @Column(name = "recruiter_id", columnDefinition = "bigint signed not null")
-    private long recruiterId;
+    @JsonBackReference
+    @JoinColumn(name = "recruiter_id", referencedColumnName = "recruiterProfileId")
+    @OneToOne
+    private RecruiterProfile recruiterId;
 
     @Column(name = "recruiter_auth_status", columnDefinition = "int signed not null", nullable = false)
     private int recruiterAuthStatus; // verified, Not-Yet-Verified
@@ -70,11 +73,11 @@ public class RecruiterAuth extends Model {
         this.recruiterAuthId = recruiterAuthId;
     }
 
-    public long getRecruiterId() {
+    public RecruiterProfile getRecruiterId() {
         return recruiterId;
     }
 
-    public void setRecruiterId(long recruiterId) {
+    public void setRecruiterId(RecruiterProfile recruiterId) {
         this.recruiterId = recruiterId;
     }
 
