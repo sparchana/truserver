@@ -12,6 +12,7 @@ import models.entity.Static.JobRole;
 import models.entity.Static.Locality;
 import models.util.SmsUtil;
 import play.Logger;
+import play.core.server.Server;
 
 import javax.persistence.NonUniqueResultException;
 import java.util.ArrayList;
@@ -24,13 +25,14 @@ import static play.mvc.Controller.session;
  * Created by dodo on 5/10/16.
  */
 public class RecruiterLeadService {
-    public static RecruiterLead createOrUpdateConvertedRecruiterLead(String leadName, String leadMobile){
+    public static RecruiterLead createOrUpdateConvertedRecruiterLead(String leadName, String leadMobile, int leadChannel)
+    {
         RecruiterLead existingLead = isLeadExists(leadMobile);
         if(existingLead == null){
             RecruiterLead lead = new RecruiterLead(
                 leadName,
                 leadMobile,
-                1
+                leadChannel
             );
             lead.setRecruiterLeadStatus(ServerConstants.LEAD_STATUS_WON);
             RecruiterLeadService.createLead(lead);
@@ -66,7 +68,8 @@ public class RecruiterLeadService {
         }
     }
 
-    public static RecruiterLeadResponse createLeadWithOtherDetails(RecruiterLeadRequest recruiterLeadRequest){
+    public static RecruiterLeadResponse createLeadWithOtherDetails(RecruiterLeadRequest recruiterLeadRequest, int leadChannel)
+    {
         RecruiterLeadResponse recruiterLeadResponse = new RecruiterLeadResponse();
         List<Integer> jobRoleList = recruiterLeadRequest.getRecruiterJobRole();
         List<Integer> jobLocalityList = recruiterLeadRequest.getRecruiterJobLocality();
@@ -91,6 +94,8 @@ public class RecruiterLeadService {
                 lead.setRecruiterLeadRequirement(recruiterLeadRequest.getRecruiterRequirement());
             }
 
+            lead.setRecruiterLeadChannel(leadChannel);
+            lead.setRecruiterLeadStatus(ServerConstants.LEAD_STATUS_NEW);
             RecruiterLead.addLead(lead);
 
             objectAUUId = lead.getRecruiterLeadUUId();
@@ -120,6 +125,10 @@ public class RecruiterLeadService {
                 existingLead.setRecruiterLeadToJobRoleList(getRecruiterJobPreferenceList(jobRoleList, existingLead));
             }
 
+            existingLead.setRecruiterLeadChannel(leadChannel);
+            if (existingLead.getRecruiterLeadStatus() != ServerConstants.LEAD_STATUS_WON) {
+                existingLead.setRecruiterLeadStatus(ServerConstants.LEAD_STATUS_NEW);
+            }
             existingLead.update();
 
             objectAUUId = existingLead.getRecruiterLeadUUId();

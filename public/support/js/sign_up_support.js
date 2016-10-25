@@ -1904,6 +1904,7 @@ function clickExperienced(){
         unlockcurrentJobRadio();
     }
 }
+
 function ifMobileExists(returnedId) {
     if(returnedId != null && returnedId != "0"){
         window.location = "/candidateSignupSupport/"+returnedId+"/false";

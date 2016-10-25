@@ -74,6 +74,11 @@ public class RecruiterProfile extends Model {
     @OneToMany(mappedBy = "recruiterJobPost", cascade = CascadeType.ALL)
     private JobPost jobPost;
 
+    @JsonManagedReference
+    @PrivateOwned
+    @OneToOne(mappedBy = "recruiterId", cascade = CascadeType.ALL)
+    private RecruiterAuth recruiterAuth;
+
     @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "RecCompany")
@@ -283,5 +288,13 @@ public class RecruiterProfile extends Model {
 
     public void setRecruiterToCandidateUnlockedList(List<RecruiterToCandidateUnlocked> recruiterToCandidateUnlockedList) {
         this.recruiterToCandidateUnlockedList = recruiterToCandidateUnlockedList;
+    }
+
+    public RecruiterAuth getRecruiterAuth() {
+        return recruiterAuth;
+    }
+
+    public void setRecruiterAuth(RecruiterAuth recruiterAuth) {
+        this.recruiterAuth = recruiterAuth;
     }
 }

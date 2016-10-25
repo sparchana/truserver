@@ -23,6 +23,7 @@ public class ServerConstants {
     public static final int LEAD_CHANNEL_ANDROID  = 3;
     public static final int LEAD_CHANNEL_UNKNOWN  = 4;
     public static final int LEAD_CHANNEL_PARTNER  = 5;
+    public static final int LEAD_CHANNEL_RECRUITER  = 6;
 
     public static final int LEAD_STATUS_NEW= 0;
     public static final int LEAD_STATUS_TTC= 1; // TTC: Trying To Convert

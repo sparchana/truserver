@@ -135,7 +135,8 @@ public class RecruiterController {
             e.printStackTrace();
         }
         Logger.info("req JSON: " + req );
-        return ok(toJson(RecruiterLeadService.createLeadWithOtherDetails(recruiterLeadRequest)));
+        return ok(toJson(RecruiterLeadService.createLeadWithOtherDetails(recruiterLeadRequest,
+                ServerConstants.LEAD_CHANNEL_RECRUITER)));
     }
 
     @Security.Authenticated(SecuredUser.class)

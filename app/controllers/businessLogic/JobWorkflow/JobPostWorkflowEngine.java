@@ -450,7 +450,9 @@ public class JobPostWorkflowEngine {
                 " = ('"+jobPostId+"') " +
                 " and (status_id = '" +ServerConstants.JWF_STATUS_SELECTED+ "' or status_id = '" +ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED+"') "+
                 " and creation_timestamp = " +
-                " (select max(creation_timestamp) from job_post_workflow where i.candidate_id = job_post_workflow.candidate_id) " +
+                " (select max(creation_timestamp) from job_post_workflow " +
+                "     where i.candidate_id = job_post_workflow.candidate_id " +
+                "     and i.job_post_id = job_post_workflow.job_post_id)  " +
                 " order by creation_timestamp desc ");
 
         Logger.info("rawSql"+workFlowQueryBuilder.toString());
@@ -1055,10 +1057,10 @@ public class JobPostWorkflowEngine {
                 " = ('"+jobPostId+"') " +
                 statusSql+
                 " and creation_timestamp = " +
-                " (select max(creation_timestamp) from job_post_workflow where i.candidate_id = job_post_workflow.candidate_id) " +
+                " (select max(creation_timestamp) from job_post_workflow " +
+                "       where i.candidate_id = job_post_workflow.candidate_id " +
+                "       and i.job_post_id = job_post_workflow.job_post_id) " +
                 " order by creation_timestamp desc ");
-
-        Logger.info("rawSql"+workFlowQueryBuilder.toString());
 
         RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder.toString())
                 .columnMapping("creation_timestamp", "creationTimestamp")

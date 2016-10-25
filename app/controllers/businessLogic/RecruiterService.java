@@ -44,12 +44,16 @@ import static play.mvc.Results.ok;
  * Created by batcoder1 on 7/7/16.
  */
 public class RecruiterService {
+
     public static RecruiterProfile isRecruiterExists(String mobile) {
+
         RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileMobile",
                 FormValidator.convertToIndianMobileFormat(mobile)).findUnique();
+
         if(recruiterProfile != null) {
             return recruiterProfile;
         }
+
         return null;
     }
 
@@ -134,7 +138,9 @@ public class RecruiterService {
 
             //setting recruiter lead
             String leadName = recruiterSignUpRequest.getRecruiterName();
-            RecruiterLead lead = RecruiterLeadService.createOrUpdateConvertedRecruiterLead(leadName, FormValidator.convertToIndianMobileFormat(recruiterSignUpRequest.getRecruiterMobile()));
+            RecruiterLead lead = RecruiterLeadService.createOrUpdateConvertedRecruiterLead(leadName,
+                    FormValidator.convertToIndianMobileFormat(recruiterSignUpRequest.getRecruiterMobile()),
+                    ServerConstants.LEAD_CHANNEL_RECRUITER);
             newRecruiter.setRecruiterLead(lead);
 
             //setting recruiter status as "NEW"
@@ -157,7 +163,7 @@ public class RecruiterService {
             Logger.info("Recruiter successfully saved");
 
         } else {
-            RecruiterAuth auth = RecruiterAuthService.isAuthExists(recruiterProfile.getRecruiterProfileId());
+            RecruiterAuth auth = RecruiterAuthService.isAuthExists(recruiterProfile);
             if(auth == null ) {
                 Logger.info("recruiter auth doesn't exists for this recruiter");
                 getAndSetRecruiterValues(recruiterSignUpRequest, recruiterProfile, null);
@@ -188,11 +194,17 @@ public class RecruiterService {
         return recruiterSignUpResponse;
     }
 
-    public static AddRecruiterResponse createRecruiterProfile(RecruiterSignUpRequest recruiterSignUpRequest, InteractionService.InteractionChannelType channelType) {
+    public static AddRecruiterResponse createRecruiterProfile(RecruiterSignUpRequest recruiterSignUpRequest,
+                                                              InteractionService.InteractionChannelType channelType)
+    {
         AddRecruiterResponse addRecruiterResponse = new AddRecruiterResponse();
         String result = "";
         Integer interactionType;
         Company existingCompany = Company.find.where().eq("companyId", recruiterSignUpRequest.getRecruiterCompany()).findUnique();
+        int leadChannel = (channelType == InteractionService.InteractionChannelType.SELF) ?
+                ServerConstants.LEAD_CHANNEL_RECRUITER :
+                ServerConstants.LEAD_CHANNEL_SUPPORT;
+
         if(existingCompany != null){
             RecruiterProfile existingRecruiter = isRecruiterExists(FormValidator.convertToIndianMobileFormat(recruiterSignUpRequest.getRecruiterMobile()));
             if(existingRecruiter == null){
@@ -208,7 +220,10 @@ public class RecruiterService {
 
                 //setting recruiter lead
                 String leadName = recruiterSignUpRequest.getRecruiterName();
-                RecruiterLead lead = RecruiterLeadService.createOrUpdateConvertedRecruiterLead(leadName, FormValidator.convertToIndianMobileFormat(recruiterSignUpRequest.getRecruiterMobile()));
+                RecruiterLead lead = RecruiterLeadService.createOrUpdateConvertedRecruiterLead(leadName,
+                        FormValidator.convertToIndianMobileFormat(recruiterSignUpRequest.getRecruiterMobile()),
+                        leadChannel);
+
                 newRecruiter.setRecruiterLead(lead);
 
                 newRecruiter.save();
@@ -244,7 +259,9 @@ public class RecruiterService {
 
                 //setting recruiter lead
                 String leadName = recruiterSignUpRequest.getRecruiterName();
-                RecruiterLead lead = RecruiterLeadService.createOrUpdateConvertedRecruiterLead(leadName, FormValidator.convertToIndianMobileFormat(recruiterSignUpRequest.getRecruiterMobile()));
+                RecruiterLead lead = RecruiterLeadService.createOrUpdateConvertedRecruiterLead(leadName,
+                        FormValidator.convertToIndianMobileFormat(recruiterSignUpRequest.getRecruiterMobile()),
+                        leadChannel);
                 existingRecruiter.setRecruiterLead(lead);
 
                 existingRecruiter.update();
@@ -264,7 +281,7 @@ public class RecruiterService {
                             recruiterSignUpRequest.getInterviewCredits());
                 }
 
-                if (channelType == InteractionService.InteractionChannelType.SELF){
+                if (channelType == InteractionService.InteractionChannelType.SELF) {
                     result = InteractionConstants.INTERACTION_RESULT_RECRUITER_INFO_UPDATED_SELF;
                 } else {
                     result = InteractionConstants.INTERACTION_RESULT_RECRUITER_INFO_UPDATED_SUPPORT;
@@ -577,7 +594,7 @@ public class RecruiterService {
         RecruiterAuth authToken = new RecruiterAuth(); // constructor instantiate createtimestamp, updatetimestamp, sessionid, authpasswordsalt
         String dummyPassword = String.valueOf(Util.randomLong());
         authToken.setRecruiterAuthStatus(ServerConstants.RECRUITER_STATUS_NOT_VERIFIED);
-        authToken.setRecruiterId(recruiterProfile.getRecruiterProfileId());
+        authToken.setRecruiterId(recruiterProfile);
         authToken.setPasswordMd5(Util.md5(dummyPassword + authToken.getPasswordSalt()));
         authToken.save();
 
@@ -590,7 +607,6 @@ public class RecruiterService {
 
         Logger.info("Dummy auth created + otp triggered + auth saved for recruiter " +
                 recruiterProfile.getRecruiterProfileMobile());
-
     }
 
     private static void triggerOtp(RecruiterProfile recruiterProfile, RecruiterSignUpResponse recruiterSignUpResponse) {

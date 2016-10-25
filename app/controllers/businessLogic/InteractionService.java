@@ -398,7 +398,8 @@ public class InteractionService {
     }
 
     public static void createInteractionForNewJobPost(String objAuuId, String objBuuId, Integer objectAType,
-                                                                        Integer interactionType, String interactionResult, String createdBy, Integer channel)
+                                                      Integer interactionType, String interactionResult,
+                                                      String createdBy, Integer channel)
     {
         Interaction interaction = new Interaction(
                 objAuuId,

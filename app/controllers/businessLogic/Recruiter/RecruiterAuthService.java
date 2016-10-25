@@ -22,7 +22,7 @@ import static play.mvc.Controller.session;
  * Created by dodo on 4/10/16.
  */
 public class RecruiterAuthService {
-    public static RecruiterAuth isAuthExists(Long recruiterId){
+    public static RecruiterAuth isAuthExists(RecruiterProfile recruiterId){
         return RecruiterAuth.find.where().eq("recruiterId", recruiterId).findUnique();
     }
 
@@ -56,11 +56,11 @@ public class RecruiterAuthService {
                 addSession(recruiterAuth, existingRecruiter);
                 recruiterAuth.setRecruiterAuthStatus(ServerConstants.RECRUITER_STATUS_VERIFIED);
                 recruiterAuth.update();
-                recruiterSignUpResponse.setStatus(PartnerSignUpResponse.STATUS_SUCCESS);
+                recruiterSignUpResponse.setStatus(RecruiterSignUpResponse.STATUS_SUCCESS);
                 recruiterSignUpResponse.setRecruiterMobile(existingRecruiter.getRecruiterProfileMobile());
             } else {
                 RecruiterAuth auth = new RecruiterAuth();
-                auth.setRecruiterId(existingRecruiter.getRecruiterProfileId());
+                auth.setRecruiterId(existingRecruiter);
                 setNewPassword(auth, recruiterPassword);
                 auth.setRecruiterAuthStatus(ServerConstants.RECRUITER_STATUS_VERIFIED);
                 RecruiterAuth.savePassword(auth);
