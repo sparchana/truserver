@@ -1,8 +1,4 @@
 /**
- * Created by batcoder1 on 12/7/16.
- */
-
-/**
  * Created by batcoder1 on 6/7/16.
  */
 
@@ -178,6 +174,18 @@ function isRecruiterExists(returnedId) {
         setTimeout(function () {
             window.location = "/recruiterDetails/" + returnedId;
         }, 2000);
+    }
+    else {
+        $.notify({
+            message: "Recruiter doesnt exist. Please continue with registration.",
+            animate: {
+                enter: 'animated lightSpeedIn',
+                exit: 'animated lightSpeedOut'
+            }
+        }, {
+            type: 'warning'
+        });
+
     }
 }
 

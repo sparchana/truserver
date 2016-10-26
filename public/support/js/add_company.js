@@ -252,6 +252,11 @@ function saveForm(){
         status=0;
     }
 
+    if (!validateEmail($("#recruiterEmail").val())) {
+        alert("Please Enter Valid Email Address");
+        status=0;
+    }
+    
     if(status == 1 && companyStatus != 4){
         if($("#recruiterCompany").val() != ""){
             companyId = $("#recruiterCompany").val();

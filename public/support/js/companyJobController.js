@@ -164,6 +164,8 @@ function renderDashboard() {
             "language": {
                 "emptyTable": "No data available"
             },
+            "scrollY": '48vh',
+            "scrollCollapse": true,
             "scrollX": true,
             "destroy": true,
             "dom": 'Bfrtip',
@@ -363,6 +365,9 @@ function getAllRecruiters() {
             "language": {
                 "emptyTable": "No data available"
             },
+            "scrollY": '48vh',
+            "scrollCollapse": true,
+            "scrollX": true,
             "destroy": true,
             "dom": 'Bfrtip',
             "buttons": [
