@@ -312,5 +312,10 @@ public class SmsUtil {
         sendSms(recruiterProfile.getRecruiterProfileMobile(), msg);
     }
 
-
+    public static void sendCandidateUnlockSms(String companyName, String recruiterName, String candidateMobile, String candidateName) {
+        String msg = "Hi " + candidateName + ", Recruiter " + recruiterName + " from company " + companyName +
+                     " viewed your contact details! Download Trujobs app at http://bit.ly/2d7zDqR " +
+                   " or login at www.trujobs.in to update your profile and apply to more jobs!!  Thank you.";
+        sendSms(candidateMobile, msg);
+    }
 }

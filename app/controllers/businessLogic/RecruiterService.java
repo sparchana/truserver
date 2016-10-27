@@ -482,6 +482,11 @@ public class RecruiterService {
                         unlockContactResponse.setStatus(UnlockContactResponse.STATUS_SUCCESS);
                         unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
                         unlockContactResponse.setCandidateId(candidate.getCandidateId());
+
+                        // Send sms to candidate that a recruiter has unlocked their profile
+                        SmsUtil.sendCandidateUnlockSms(recruiterProfile.getCompany().getCompanyName(),
+                                recruiterProfile.getRecruiterProfileName(), candidate.getCandidateMobile(), candidate.getCandidateFirstName());
+
                         return ok(toJson(unlockContactResponse));
                     } else {
                         unlockContactResponse.setStatus(UnlockContactResponse.STATUS_NO_CREDITS);
@@ -495,7 +500,7 @@ public class RecruiterService {
                     unlockContactResponse.setCandidateId(null);
                     return ok(toJson(unlockContactResponse));
                 }
-            } else{
+            } else {
                 unlockContactResponse.setStatus(UnlockContactResponse.STATUS_ALREADY_UNLOCKED);
                 unlockContactResponse.setCandidateMobile(candidate.getCandidateMobile());
                 unlockContactResponse.setCandidateId(candidate.getCandidateId());
