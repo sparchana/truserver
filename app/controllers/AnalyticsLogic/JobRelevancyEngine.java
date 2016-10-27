@@ -40,7 +40,6 @@ public class JobRelevancyEngine {
                 relatedJobRoleIds.add(childEntry.getKey());
 
                 // make entry in db
-
                 RelatedJobRole relatedJobRole = RelatedJobRole.find
                         .where()
                         .eq("job_role_id", parentEntry.getKey())

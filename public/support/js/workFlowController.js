@@ -282,7 +282,7 @@ $(function () {
         jpMaxSalary: null,
         jpMaxAge: null,
         jpGender: null,
-        jpLocalityIdList: [],
+        jpLocalityIdList: null,
         jpExperienceIdList: [],
         jpEducationIdList: [],
         jpLanguageIdList: [],
@@ -760,12 +760,14 @@ $(function () {
                 app.jpLanguageIdList.push(parseInt(modifiedLanguageIdList[i]));
             }
         }
-        app.jpLocalityIdList = [];
-        if (modifiedLocality != null) {
+        app.jpLocalityIdList = null;
+        if (modifiedLocality != null && modifiedLocality.length != 0 && modifiedLocality[0] != "") {
+            app.jpLocalityIdList = [];
             for (i = 0; i < modifiedLocality.length; i++) {
                 app.jpLocalityIdList.push(parseInt(modifiedLocality[i]));
             }
         }
+
         app.jpExperienceIdList = [];
         if (modifiedExpIdList != null) {
             for (i = 0; i < modifiedExpIdList.length; i++) {
@@ -802,7 +804,7 @@ $(function () {
         app.jpMaxSalary = $('#maxSalary').val();
         app.jpMaxAge = $('#maxAge').val();
 
-        if (app.jpJobRoleId == null || app.jpLocalityIdList == null || app.jpLocalityIdList.length == 0) {
+        if (app.jpJobRoleId == null) {
             app.shouldSend = false;
         }
 

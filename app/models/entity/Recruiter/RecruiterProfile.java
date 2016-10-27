@@ -3,7 +3,9 @@ package models.entity.Recruiter;
 import com.avaje.ebean.Model;
 import com.avaje.ebean.annotation.PrivateOwned;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import models.entity.Company;
 import models.entity.OM.JobApplication;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
@@ -71,8 +73,8 @@ public class RecruiterProfile extends Model {
 
     @JsonBackReference
     @PrivateOwned
-    @OneToMany(mappedBy = "recruiterJobPost", cascade = CascadeType.ALL)
-    private JobPost jobPost;
+    @OneToMany(mappedBy = "recruiterProfile", cascade = CascadeType.ALL)
+    private List<JobPost> jobPosts;
 
     @JsonManagedReference
     @PrivateOwned
@@ -218,12 +220,12 @@ public class RecruiterProfile extends Model {
         this.recruiterLinkedinProfile = recruiterLinkedinProfile;
     }
 
-    public JobPost getJobPost() {
-        return jobPost;
+    public List<JobPost> getJobPosts() {
+        return jobPosts;
     }
 
-    public void setJobPost(JobPost jobPost) {
-        this.jobPost = jobPost;
+    public void setJobPost(List<JobPost> jobPost) {
+        this.jobPosts = jobPost;
     }
 
     public Company getCompany() {
