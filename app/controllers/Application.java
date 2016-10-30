@@ -937,9 +937,7 @@ public class Application extends Controller {
 
     @Security.Authenticated(RecSecured.class)
     public static Result getAllCompany() {
-        List<Company> companyList = Company.find.where()
-                .or(eq("source", null), eq("source", ServerConstants.SOURCE_INTERNAL))
-                .orderBy("companyName").findList();
+        List<Company> companyList = Company.find.where().orderBy("companyName").findList();
         return ok(toJson(companyList));
     }
 
