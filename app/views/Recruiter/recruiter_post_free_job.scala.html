@@ -276,6 +276,7 @@
                         </div>
                       </div>
                     </div>
+
                     <div class="row" id="jobPostDetails" style="margin-top: -16px">
                       <div class="input-field col s6 l4" >
                         <label>Is there any age limitation for this job?</label>
@@ -293,10 +294,9 @@
                         <div class="input-field col s6 l4" style="margin-top: 0px;">
                           <input placeholder="Specify max age limitation" id="jobPostMaxAge" style="display: none;" type="number" class="validate">
                         </div>
-
                       </div>
-
                     </div>
+
                     <div class="row" id="jobPostDetails">
                       <div class="input-field col s6 l4" style="margin-top: 18px">
                         <label>Should the candidate have any minimum education qualification?</label>
@@ -318,28 +318,28 @@
                       </div>
                     </div>
 
-                      <div class="row" id="jobPostDetails">
-                          <div class="input-field col s6 l4" style="margin-top: 18px">
-                              <label>Should candidate have any minimum work experience ?</label>
-                          </div>
-                          <div class="input-field col s6 l4">
-                              <select id="jobPostExperience" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
-                              <script type="text/javascript">
-                            $('#jobPostExperience').tokenize({
-                                displayDropdownOnFocus: true,
-                                placeholder: "Select minimum experience",
-                                maxElements: 1,
-                                nbDropdownElements: 1000,
-                                newElements: true,
-                                onAddToken: function (value, text) {
-                                    validateExpTokenVal(value, text);
-                                }
-                            });
-                        </script>
-                          </div>
-                      </div>
+                    <div class="row" id="jobPostDetails">
+                        <div class="input-field col s6 l4" style="margin-top: 18px">
+                            <label>Should candidate have any minimum work experience ?</label>
+                        </div>
+                        <div class="input-field col s6 l4">
+                            <select id="jobPostExperience" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
+                            <script type="text/javascript">
+                          $('#jobPostExperience').tokenize({
+                              displayDropdownOnFocus: true,
+                              placeholder: "Select minimum experience",
+                              maxElements: 1,
+                              nbDropdownElements: 1000,
+                              newElements: true,
+                              onAddToken: function (value, text) {
+                                  validateExpTokenVal(value, text);
+                              }
+                          });
+                      </script>
+                        </div>
+                    </div>
 
-                      <div class="row" id="jobPostDetails">
+                    <div class="row" id="jobPostDetails">
                       <div class="input-field col s6 l4" style="margin-top: 18px">
                         <label>Should candidate know any specific language(s) ?</label>
                       </div>
@@ -400,6 +400,38 @@
                             });
                         </script>
                         </div>
+                      </div>
+                    </div>
+
+                    <div class="row" id="jobPostDetails" style="margin-bottom:20px;">
+                      <div class="input-field col s3 l4" style="margin-top: 20px">
+                        <label>Interview Days :</label>
+                      </div>
+                      <div class="input-field col s9 l7" style="margin-left:-10px">
+                        <input type="checkbox" id="interview_day_1" />
+                        <label for="interview_day_1">Mon </label><span style="margin-left:10px"></span>
+
+                        <input type="checkbox" id="interview_day_2" />
+                        <label for="interview_day_2">Tue </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="interview_day_3" />
+                        <label for="interview_day_3">Wed </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="interview_day_4" />
+                        <label for="interview_day_4">Thr </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="interview_day_5" />
+                        <label for="interview_day_5">Fri </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="interview_day_6" />
+                        <label for="interview_day_6">Sat </label><span style="margin-left:10px"></span>
+                        <input type="checkbox" id="interview_day_7" />
+                        <label for="interview_day_7">Sun </label>
+                      </div>
+                    </div>
+
+                    <div class="row" id="jobPostDetails" style="margin-bottom:20px;">
+                      <div class="input-field col s3 l4" style="margin-top: 20px">
+                        <label>Interview Time Slots :</label>
+                      </div>
+                      <div class="input-field col s9 l7" style="margin-left:-10px">
+                        <div id="timeSlotSection"></div>
                       </div>
                     </div>
 

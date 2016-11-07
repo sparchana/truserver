@@ -153,7 +153,6 @@ function processDataRecruiterSession(returnedData) {
 }
 
 function processDataRecruiterProfile(returnedData) {
-    console.log(returnedData);
     if (returnedData == '0') {
         logoutRecruiter();
     } else {
