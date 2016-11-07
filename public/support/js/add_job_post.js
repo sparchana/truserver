@@ -175,12 +175,12 @@ $(function() {
         var interviewDayCount = 0;
         $('#interviewTimeSlot input:checkbox').each(function () {
             if ($(this).is(':checked')) {
-                timeSlotCount =+ 1;
+                timeSlotCount = timeSlotCount + 1;
             }
         });
         for(i=1;i<=7;i++) {
             if ($("#interview_day_" + i).is(":checked")) {
-                interviewDayCount =+ 1;
+                interviewDayCount = interviewDayCount + 1;
             }
         }
 

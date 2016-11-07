@@ -22,6 +22,11 @@ function processDataApplyJob(returnedData) {
         $("#verifyOtp").hide();
     } catch (e){}
 
+    // enabling apply btn in partner
+    try{
+        $("#applyButton").addClass("jobApplyBtnModal").removeClass("jobApplied").prop('disabled',false).html("Apply");
+    } catch (e){}
+
     if(returnedData.status == 1){
         $('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
         $("#customMsg").html("Your Job Application is Successful");
@@ -52,7 +57,7 @@ function processDataApplyJob(returnedData) {
 }
 
 // apply_job ajax script
-function applyJob(id, localityId, triggerModal){
+function applyJobSubmitViaCandidate(id, localityId, prefTimeSlot, scheduledInterviewDate, triggerModal){
     applyJobFlag = 1;
     applyJobId = id;
     var phone = localStorage.getItem("mobile");
@@ -67,30 +72,19 @@ function applyJob(id, localityId, triggerModal){
         if(triggerModal){
             getAssessmentQuestions(null, id);
         }
-        applyJobSubmit(id, phone, localityId, null, null, false);
+        applyJobSubmit(id, phone, localityId, prefTimeSlot, scheduledInterviewDate, false);
     }
 } // end of submit
 
 function applyJobSubmit(jobPostId, phone, localityId, prefTimeSlot, scheduledInterviewDate, isPartner) {
     try {
-        var partner = false;
-        var prefTimeSlotVal;
-        var scheduledInterviewDateVal;
-        if(isPartner){
-            partner = true;
-            prefTimeSlotVal = prefTimeSlot;
-            scheduledInterviewDateVal = scheduledInterviewDate;
-        } else{
-            prefTimeSlotVal = null;
-            scheduledInterviewDateVal = null;
-        }
         var d = {
             jobId: jobPostId,
             candidateMobile: phone,
             localityId: localityId,
-            timeSlot: prefTimeSlotVal,
-            scheduledInterviewDate: scheduledInterviewDateVal,
-            isPartner: partner
+            timeSlot: prefTimeSlot,
+            scheduledInterviewDate: scheduledInterviewDate,
+            isPartner: isPartner
         };
         $.ajax({
             type: "POST",

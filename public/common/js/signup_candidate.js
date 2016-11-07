@@ -50,7 +50,8 @@ function processDataAddAuth(returnedData) {
 
         if(applyJobFlag == 1){
             $("#myRegistrationModal").modal("hide");
-            applyJob(applyJobId, prefLocation, false);
+            applyJobSubmitViaCandidate(applyJobId, prefLocation, prefTimeSlot, scheduledInterviewDate, true);
+            // applyJob(applyJobId, prefLocation, false);
             $("#customSubMsg").html("Logging in ...");
             $('#customSubMsg').modal({backdrop: 'static', keyboard: false});
             var jp_id = applyJobId;

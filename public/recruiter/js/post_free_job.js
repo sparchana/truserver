@@ -563,6 +563,26 @@ function saveJob() {
             notifyError("Please enter Job Post Gender Requirement");
             status = 0;
         }
+
+        var timeSlotCount = 0;
+        var interviewDayCount = 0;
+        for(i=1; i<=3; i++){
+            if($("#interview_slot_" + i).is(":checked")){
+                timeSlotCount = timeSlotCount + 1;
+            }
+        }
+        for(i=1;i<=7;i++) {
+            if ($("#interview_day_" + i).is(":checked")) {
+                interviewDayCount = interviewDayCount + 1;
+            }
+        }
+        if(interviewDayCount > 0 && timeSlotCount == 0){
+            notifyError("Please select interview time slot");
+            status = 0;
+        } else if(timeSlotCount > 0 && interviewDayCount == 0){
+            notifyError("Please select interview days");
+            status = 0;
+        }
     }
 
     if(status == 1){

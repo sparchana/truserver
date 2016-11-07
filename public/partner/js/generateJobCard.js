@@ -11,8 +11,6 @@ var prefTimeSlot;
 
 var scheduledInterviewDate;
 
-
-
 $(window).resize(function(){
     var w = window.innerWidth;
     if(w < 640){

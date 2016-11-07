@@ -637,6 +637,17 @@ public class JobService {
                     jobApplication.setCandidate(existingCandidate);
                     jobApplication.setJobPost(existingJobPost);
 
+                    //setting time slot
+                    if(applyJobRequest.getTimeSlot() != null){
+                        InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", applyJobRequest.getTimeSlot()).findUnique();
+                        if(interviewTimeSlot != null){
+                            jobApplication.setInterviewTimeSlot(interviewTimeSlot);
+                        }
+                    }
+                    //setting scheduled interview date
+                    if(applyJobRequest.getScheduledInterviewDate() != null){
+                        jobApplication.setScheduledInterviewDate(applyJobRequest.getScheduledInterviewDate());
+                    }
                     Locality locality = Locality.find.where().eq("localityId", applyJobRequest.getLocalityId()).findUnique();
                     if(locality != null){
                         jobApplication.setLocality(locality);
@@ -647,20 +658,9 @@ public class JobService {
                     String interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB;
                     Partner partner = null;
                     if(applyJobRequest.getPartner()){
-                        // this job is being applied by a partner for a candidate, hence we need to det partner Id in the job Application table
+                        // this job is being applied by a partner for a candidate, hence we need to get partner Id in the job Application table
                         partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
                         if(partner != null){
-                            //setting time slot
-                            if(applyJobRequest.getTimeSlot() != null){
-                                InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", applyJobRequest.getTimeSlot()).findUnique();
-                                if(interviewTimeSlot != null){
-                                    jobApplication.setInterviewTimeSlot(interviewTimeSlot);
-                                }
-                            }
-                            //setting scheduled interview date
-                            if(applyJobRequest.getScheduledInterviewDate() != null){
-                                jobApplication.setScheduledInterviewDate(applyJobRequest.getScheduledInterviewDate());
-                            }
                             //setting partner
                             jobApplication.setPartner(partner);
                             SmsUtil.sendJobApplicationSmsViaPartner(existingCandidate.getCandidateFirstName(), existingJobPost.getJobPostTitle(), existingJobPost.getCompany().getCompanyName(), existingCandidate.getCandidateMobile(), jobApplication.getLocality().getLocalityName(), partner.getPartnerFirstName());
