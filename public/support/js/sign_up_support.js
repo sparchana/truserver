@@ -1015,7 +1015,6 @@ function checkExpDurationSelection(questionId, jobRoleId){
 
 function processDataCheckExp(returnedData) {
     var selectIdList =[];
-    //console.log(JSON.stringify(returnedData));
     var count = 0;
     var tableExpDuration = document.getElementById("expDurationTable");
     var tableExpOther = document.getElementById("expOtherTable");
@@ -1052,8 +1051,6 @@ function processDataCheckExp(returnedData) {
             cell2.appendChild(selectList);
             $('#expDurationTable tr:last').after(row);
 
-        }
-        else {
             if(prevJobRoleId != singleQuestion.jobRole.jobRoleId){
                 // create a new title row
                 prevJobRoleId = singleQuestion.jobRole.jobRoleId;
@@ -1090,6 +1087,8 @@ function processDataCheckExp(returnedData) {
                 $('#expOtherTable tr:last').after(trPastCompanyName);
             }
             count++;
+        }
+        else {
             var row = tableExpOther.insertRow(0);
             row.id = "expBody_" + singleQuestion.jobRole.jobRoleId;
 
