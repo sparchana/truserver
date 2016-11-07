@@ -69,7 +69,7 @@ function renderDashboard() {
                                 return jobLocality;
                             },
                             'jobRole' : ((jobPost.jobRole.jobName != null) ? jobPost.jobRole.jobName : ""),
-                            'jobExperience' : ((jobPost.jobPostExperience.experienceType != null) ? jobPost.jobPostExperience.experienceType : ""),
+                            'jobExperience' : ((jobPost.jobPostExperience != null && jobPost.jobPostExperience.experienceType != null) ? jobPost.jobPostExperience.experienceType : ""),
                             'jobInterviewSchedule' : function () {
                                 if(jobPost.interviewDetailsList != null && jobPost.interviewDetailsList.length > 0){
                                     var interviewDetailsList = jobPost.interviewDetailsList;
