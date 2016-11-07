@@ -530,11 +530,52 @@ function processDataForJobApplications(returnedData) {
                 candidateSkillVal.appendChild(toolTip);
             }
 
-
             var unlockDivRow = document.createElement("div");
             unlockDivRow.className = "row";
-            unlockDivRow.style = "margin: 6px; padding: 1%; text-align: right; color: #fff";
+            unlockDivRow.style = "padding: 10px 2%; margin: 0; text-align: right; color: #fff";
             candidateCardContent.appendChild(unlockDivRow);
+
+
+            //interview date/time slot
+            var scheduledInterviewDate = document.createElement("div");
+            scheduledInterviewDate.className = "col s12 l8";
+            scheduledInterviewDate.style = "color: black; text-align: left";
+            unlockDivRow.appendChild(scheduledInterviewDate);
+
+            if(value.interviewTimeSlot != null){
+                inlineBlockDiv = document.createElement("div");
+                inlineBlockDiv.style = "display: inline-block; margin: 4px;";
+                scheduledInterviewDate.appendChild(inlineBlockDiv);
+
+                iconImg = document.createElement("img");
+                iconImg.src = "/assets/recruiter/img/icons/calender.svg";
+                iconImg.style = "margin-top: -4px";
+                iconImg.setAttribute('height', '24px');
+                inlineBlockDiv.appendChild(iconImg);
+
+                inlineBlockDiv = document.createElement("div");
+                inlineBlockDiv.style = "display: inline-block;";
+                scheduledInterviewDate.appendChild(inlineBlockDiv);
+
+                innerInlineBlockDiv = document.createElement("div");
+                innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
+                innerInlineBlockDiv.textContent = "Interview Date";
+                inlineBlockDiv.appendChild(innerInlineBlockDiv);
+
+                var candidateInterviewDateVal = document.createElement("div");
+                candidateInterviewDateVal.style = "margin-left: 4px";
+
+                if(value.interviewTimeSlot != null){
+                    var interviewDate = new Date(value.scheduledInterviewDate);
+                    var interviewDetails = ('0' + interviewDate.getDate()).slice(-2) + '-' + getMonthVal((interviewDate.getMonth()+1)) + " @" + value.interviewTimeSlot.interviewTimeSlotName;
+                }
+                candidateInterviewDateVal.textContent = interviewDetails;
+                inlineBlockDiv.appendChild(candidateInterviewDateVal);
+            }
+
+            var unlockContactCol = document.createElement("div");
+            unlockContactCol.className = "col s12 l4";
+            unlockDivRow.appendChild(unlockContactCol);
 
             //unlock candidate div
             var unlockCandidateBtn = document.createElement("div");
@@ -543,7 +584,7 @@ function processDataForJobApplications(returnedData) {
                 unlockContact(value.candidate.candidateId);
             };
             unlockCandidateBtn.className = "waves-effect waves-light ascentGreen lighten-1 btn";
-            unlockDivRow.appendChild(unlockCandidateBtn);
+            unlockContactCol.appendChild(unlockCandidateBtn);
 
             //candidate last active container
             var candidateUnlockFont = document.createElement("font");
