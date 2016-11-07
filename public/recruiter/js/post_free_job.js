@@ -391,16 +391,41 @@ $(document).ready(function () {
 
     var i;
 
-    for(i=0;i<=24;i++){
+    for(i=0; i<=24; i++){
         var option = document.createElement("option");
         option.value = i;
-        option.textContent = i + ":00 hrs";
+        if(i == 0){
+            option.textContent = "12 AM";
+        } else{
+            if(i >= 12){
+                if((i-12) == 0){
+                    option.textContent = "12 PM";
+                } else{
+                    option.textContent = (i - 12) + " PM";
+                }
+            } else{
+                option.textContent = i + " AM";
+            }
+        }
         $('#jobPostStartTime').append(option);
     }
-    for(i=0;i<=24;i++) {
+
+    for(i = 0; i <= 24; i++){
         option = document.createElement("option");
         option.value = i;
-        option.textContent = i + ":00 hrs";
+        if(i == 0){
+            option.textContent = "12 AM";
+        } else{
+            if(i >= 12){
+                if((i-12) == 0){
+                    option.textContent = "12 PM";
+                } else{
+                    option.textContent = (i - 12) + " PM";
+                }
+            } else{
+                option.textContent = i + " AM";
+            }
+        }
         $('#jobPostEndTime').append(option);
     }
 
@@ -730,11 +755,35 @@ function processDataForJobPost(returnedData) {
         }
 
         if(returnedData.jobPostStartTime != null && returnedData.jobPostStartTime != -1){
-            $('#jobPostStartTime').tokenize().tokenAdd(returnedData.jobPostStartTime, returnedData.jobPostStartTime + ":00 hrs");
+            if(returnedData.jobPostStartTime == 0){
+                $('#jobPostStartTime').tokenize().tokenAdd(returnedData.jobPostStartTime, "12 AM");
+            } else {
+                if(returnedData.jobPostStartTime >= 12){
+                    if((returnedData.jobPostStartTime - 12) == 0){
+                        $('#jobPostStartTime').tokenize().tokenAdd(returnedData.jobPostStartTime, "12 PM");
+                    } else{
+                        $('#jobPostStartTime').tokenize().tokenAdd(returnedData.jobPostStartTime, returnedData.jobPostStartTime - 12 + " PM");
+                    }
+                } else{
+                    $('#jobPostStartTime').tokenize().tokenAdd(returnedData.jobPostStartTime, returnedData.jobPostStartTime + " AM");
+                }
+            }
         }
 
-        if(returnedData.jobPostEndTime != null && returnedData.jobPostEndTime != -1){
-            $('#jobPostEndTime').tokenize().tokenAdd(returnedData.jobPostEndTime, returnedData.jobPostEndTime + ":00 hrs");
+        if(returnedData.jobPostEndTime != null && returnedData.jobPostEndTime!= -1){
+            if(returnedData.jobPostEndTime== 0){
+                $('#jobPostEndTime').tokenize().tokenAdd(returnedData.jobPostEndTime, "12 AM");
+            } else {
+                if(returnedData.jobPostEndTime>= 12){
+                    if((returnedData.jobPostEndTime- 12) == 0){
+                        $('#jobPostEndTime').tokenize().tokenAdd(returnedData.jobPostEndTime, "12 PM");
+                    } else{
+                        $('#jobPostEndTime').tokenize().tokenAdd(returnedData.jobPostEndTime, returnedData.jobPostEndTime- 12 + " PM");
+                    }
+                } else{
+                    $('#jobPostEndTime').tokenize().tokenAdd(returnedData.jobPostEndTime, returnedData.jobPostEndTime+ " AM");
+                }
+            }
         }
 
         if(returnedData.jobPostWorkingDays != null){

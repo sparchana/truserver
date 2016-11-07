@@ -4,8 +4,6 @@
 
 var recId = 0;
 
-var totalAmount = 0;
-
 var contactCredits = 0;
 var interviewCredits = 0;
 

@@ -498,19 +498,43 @@ $(document).ready(function () {
 
     defaultOption = $('<option value="-1"></option>').text("Select Job End time");
     $('#jobPostEndTime').append(defaultOption);
-    for(i=0;i<=24;i++){
+    for(i=0; i<=24; i++){
         var option = document.createElement("option");
         option.value = i;
-        option.textContent = i + ":00 hrs";
+        if(i == 0){
+            option.textContent = "12 AM";
+        } else{
+            if(i >= 12){
+                if((i-12) == 0){
+                    option.textContent = "12 PM";
+                } else{
+                    option.textContent = (i - 12) + " PM";
+                }
+            } else{
+                option.textContent = i + " AM";
+            }
+        }
         $('#jobPostStartTime').append(option);
     }
-    for(i=0;i<=24;i++) {
+
+    for(i = 0; i <= 24; i++){
         option = document.createElement("option");
         option.value = i;
-        option.textContent = i + ":00 hrs";
+        if(i == 0){
+            option.textContent = "12 AM";
+        } else{
+            if(i >= 12){
+                if((i-12) == 0){
+                    option.textContent = "12 PM";
+                } else{
+                    option.textContent = (i - 12) + " PM";
+                }
+            } else{
+                option.textContent = i + " AM";
+            }
+        }
         $('#jobPostEndTime').append(option);
     }
-    
 });
 
 function processDataGetCreditCategory(returnedData) {
