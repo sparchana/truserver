@@ -782,7 +782,7 @@ public class JobPostWorkflowEngine {
                                     preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
                                     preScreenElement.jobPostElement = ("Rs."+jobPost.getJobPostMinSalary());
                                     if(jobPost.getJobPostMaxSalary() != null && jobPost.getJobPostMaxSalary() != 0) {
-                                        preScreenElement.jobPostElement = " - Rs."+jobPost.getJobPostMaxSalary();
+                                        preScreenElement.jobPostElement += " - Rs."+jobPost.getJobPostMaxSalary();
                                     }
                                     if (candidate.getCandidateLastWithdrawnSalary() != null) {
                                         preScreenElement.candidateElement = (candidate.getCandidateLastWithdrawnSalary());
