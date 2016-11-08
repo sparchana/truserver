@@ -246,8 +246,10 @@ $(function() {
         } else if($("#jobPostStartTime").val() != -1){
             if($("#jobPostEndTime").val() != -1){
                 if(parseInt($("#jobPostStartTime").val()) >= parseInt($("#jobPostEndTime").val())){
-                    notifyError("Start time cannot be more than end time", 'danger');
-                    status = 0;
+                    if($("#jobPostWorkShift").val() == 1 || $("#jobPostWorkShift").val() == 3 || $("#jobPostWorkShift").val() == null || $("#jobPostWorkShift").val() == ''){
+                        notifyError("Start time cannot be more than end time. If night shift, please specify evening shift", 'danger');
+                        status = 0;
+                    } //else its a night shift job
                 }
             } else{
                 notifyError("Please select job end time", 'danger');

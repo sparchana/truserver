@@ -222,8 +222,10 @@ function toJobRequirement(){
     } else if(startTime != null){
         if(endTime != null){
             if(parseInt(startTime) >= parseInt(endTime)){
-                notifyError("Start time cannot be more than end time");
-                status = 0;
+                if(jobPostWorkShift == 1 || jobPostWorkShift == 3 || jobPostWorkShift == null){
+                    notifyError("Start time cannot be more than end time. If night shift, please specify evening shift");
+                    status = 0;
+                } //else its a night shift job
             }
         } else{
             notifyError("Please select job end time");
@@ -550,8 +552,10 @@ function saveJob() {
     } else if(startTime != null){
         if(endTime != null){
             if(startTime >= endTime){
-                notifyError("Start time cannot be more than end time");
-                status = 0;
+                if(jobPostWorkShift == 1 || jobPostWorkShift == 3 || jobPostWorkShift == null){
+                    notifyError("Start time cannot be more than end time. If night shift, please specify evening shift");
+                    status = 0;
+                } //else its a night shift job
             }
         } else{
             notifyError("Please select job end time");
