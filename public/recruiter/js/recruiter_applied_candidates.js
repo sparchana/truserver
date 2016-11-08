@@ -530,11 +530,13 @@ function processDataForJobApplications(returnedData) {
                 candidateSkillVal.appendChild(toolTip);
             }
 
+            var hr = document.createElement("hr");
+            candidateCardContent.appendChild(hr);
+
             var unlockDivRow = document.createElement("div");
             unlockDivRow.className = "row";
-            unlockDivRow.style = "padding: 10px 2%; margin: 0; text-align: right; color: #fff";
+            unlockDivRow.style = "padding: 6px 2%; margin: 0; text-align: right; color: #fff";
             candidateCardContent.appendChild(unlockDivRow);
-
 
             //interview date/time slot
             var scheduledInterviewDate = document.createElement("div");
@@ -562,7 +564,7 @@ function processDataForJobApplications(returnedData) {
                 innerInlineBlockDiv.textContent = "Interview Date";
                 inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
-                var candidateInterviewDateVal = document.createElement("div");
+                var candidateInterviewDateVal = document.createElement("span");
                 candidateInterviewDateVal.style = "margin-left: 4px";
 
                 if(value.interviewTimeSlot != null){
@@ -571,6 +573,45 @@ function processDataForJobApplications(returnedData) {
                 }
                 candidateInterviewDateVal.textContent = interviewDetails;
                 inlineBlockDiv.appendChild(candidateInterviewDateVal);
+
+                var candidateInterviewAccept = document.createElement("span");
+                candidateInterviewAccept.className = "accept tooltipped";
+                candidateInterviewAccept.setAttribute("data-postiton", "top");
+                candidateInterviewAccept.setAttribute("data-delay", "50");
+                candidateInterviewAccept.setAttribute("data-tooltip", "Accept Interview");
+                inlineBlockDiv.appendChild(candidateInterviewAccept);
+
+                iconImg = document.createElement("img");
+                iconImg.src = "/assets/recruiter/img/icons/accept.svg";
+                iconImg.setAttribute('height', '16px');
+                iconImg.setAttribute('width', '14px');
+                candidateInterviewAccept.appendChild(iconImg);
+
+                var candidateInterviewReject = document.createElement("span");
+                candidateInterviewReject.className = "reject tooltipped";
+                candidateInterviewReject.setAttribute("data-postiton", "top");
+                candidateInterviewReject.setAttribute("data-delay", "50");
+                candidateInterviewReject.setAttribute("data-tooltip", "Reject Interview");
+                inlineBlockDiv.appendChild(candidateInterviewReject);
+
+                iconImg = document.createElement("img");
+                iconImg.src = "/assets/recruiter/img/icons/reject.svg";
+                iconImg.setAttribute('height', '16px');
+                iconImg.setAttribute('width', '14px');
+                candidateInterviewReject.appendChild(iconImg);
+
+                var candidateInterviewReschedule = document.createElement("span");
+                candidateInterviewReschedule.className = "reschedule tooltipped";
+                candidateInterviewReschedule.setAttribute("data-postiton", "top");
+                candidateInterviewReschedule.setAttribute("data-delay", "50");
+                candidateInterviewReschedule.setAttribute("data-tooltip", "Reschedule Interview");
+                inlineBlockDiv.appendChild(candidateInterviewReschedule);
+
+                iconImg = document.createElement("img");
+                iconImg.src = "/assets/recruiter/img/icons/reschedule.svg";
+                iconImg.setAttribute('height', '18px');
+                iconImg.setAttribute('width', '16px');
+                candidateInterviewReschedule.appendChild(iconImg);
             }
 
             var unlockContactCol = document.createElement("div");
@@ -594,6 +635,7 @@ function processDataForJobApplications(returnedData) {
             unlockCandidateBtn.appendChild(candidateUnlockFont);
         });
         $('.tooltipped').tooltip({delay: 50});
+
         try {
             $.ajax({
                 type: "POST",
