@@ -35,6 +35,9 @@ public class IDProofReference extends Model {
     @JoinColumn(name = "IdProofId", referencedColumnName = "idProofId")
     private IdProof idProof;
 
+    @Column(name = "IdProofNumber", columnDefinition = "varchar(255) null")
+    private String idProofNumber;
+
     public static Finder<String, IDProofReference> find = new Finder(IDProofReference.class);
 
     public void setUpdateTimeStamp(Timestamp updateTimeStamp) {
@@ -67,5 +70,13 @@ public class IDProofReference extends Model {
 
     public IdProof getIdProof() {
         return idProof;
+    }
+
+    public String getIdProofNumber() {
+        return idProofNumber;
+    }
+
+    public void setIdProofNumber(String idProofNumber) {
+        this.idProofNumber = idProofNumber;
     }
 }

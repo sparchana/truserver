@@ -651,7 +651,6 @@ function processDataCheckShift(returnedData) {
             var name = timeshift.timeShiftName;
             var option = $('<option value=' + id + '></option>').text(name);
             $('#candidateTimeShiftPref').append(option);
-
         });
     }
 }
@@ -699,7 +698,6 @@ function processDataCheckEducation(returnedData) {
         }
     });
 }
-
 
 function processDataCheckLanguage(returnedData) {
     var arrayLang = [];
