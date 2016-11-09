@@ -52,6 +52,13 @@ public class InteractionConstants {
     public static final String INTERACTION_RESULT_NEW_RECRUITER_LEAD_ADDED = "New Recruiter Lead made contact";
     public static final String INTERACTION_RESULT_EXISTING_RECRUITER_MADE_CONTACT = "Existing Recruiter Lead made contact";
 
+    public static final String INTERACTION_RESULT_RECRUITER_ACCEPT_JOB_INTERVIEW_DATE = "Recruiter accepts interview date and time";
+    public static final String INTERACTION_RESULT_RECRUITER_REJECT_JOB_INTERVIEW_DATE = "Recruiter rejects interview date and time";
+    public static final String INTERACTION_RESULT_RECRUITER_RESCHEDULE_JOB_INTERVIEW_DATE = "Recruiter reschedule interview date and time";
+    public static final String INTERACTION_RESULT_RECRUITER_SHORTLISTS_JOB_INTERVIEW_WITHOUT_DATE = "Recruiter shortlists job application without date and time";
+    public static final String INTERACTION_RESULT_CANDIDATE_ACCEPTS_RESCHEDULED_INTERVIEW = "Candidate accepts rescheduled interview date and time";
+    public static final String INTERACTION_RESULT_CANDIDATE_REJECTS_RESCHEDULED_INTERVIEW = "Candidate rejects rescheduled interview date and time";
+
     public static final String INTERACTION_RESULT_CANDIDATE_SELF_APPLIED_JOB = "Candidate applied to a job: ";
     public static final String INTERACTION_RESULT_CANDIDATE_TRIED_TO_APPLY_JOB = "Candidate tried to apply to a job: ";
     public static final String INTERACTION_RESULT_CANDIDATE_TRIED_TO_RESET_PASSWORD = "Candidate tried to reset password";
@@ -135,15 +142,20 @@ public class InteractionConstants {
     public static final int INTERACTION_TYPE_RECRUITER_INTERVIEW_UNLOCK = 45;
     public static final int INTERACTION_TYPE_RECRUITER_CREDIT_REQUEST = 46;
 
-
     public static final int INTERACTION_TYPE_NEW_JOB_CREATED = 47;
     public static final int INTERACTION_TYPE_EXISTING_JOB_UPDATED = 48;
-
 
     public static final int INTERACTION_TYPE_CANDIDATE_SELECTED_FOR_PRESCREEN = 50;
     public static final int INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_ATTEMPTED = 51;
     public static final int INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_FAILED = 52;
     public static final int INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_PASSED = 53;
+
+    public static final int INTERACTION_TYPE_RECRUITER_ACCEPT_JOB_APPLICATION_INTERVIEW = 54;
+    public static final int INTERACTION_TYPE_RECRUITER_REJECT_JOB_APPLICATION_INTERVIEW = 55;
+    public static final int INTERACTION_TYPE_RECRUITER_RESCHEDULE_JOB_APPLICATION_INTERVIEW = 56;
+    public static final int INTERACTION_TYPE_RECRUITER_SHORTLIST_JOB_APPLICATION_INTERVIEW = 57;
+    public static final int INTERACTION_TYPE_CANDIDATE_ACCEPTS_RESCHEDULED_INTERVIEW = 58;
+    public static final int INTERACTION_TYPE_CANDIDATE_REJECTS_RESCHEDULED_INTERVIEW = 59;
 
     public static final Map<Integer, String> INTERACTION_CHANNEL = new HashMap<>();
 

@@ -5,6 +5,7 @@ import api.http.FormValidator;
 import api.http.httpRequest.AddJobPostRequest;
 import api.http.httpRequest.LoginRequest;
 import api.http.httpRequest.Recruiter.AddCreditRequest;
+import api.http.httpRequest.Recruiter.InterviewStatusRequest;
 import api.http.httpRequest.Recruiter.RecruiterLeadRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpRequest.ResetPasswordResquest;
@@ -26,11 +27,15 @@ import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterProfile;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.RecruiterCreditHistory;
+import models.entity.Static.InterviewStatus;
+import models.entity.Static.InterviewTimeSlot;
 import play.Logger;
 import play.mvc.Result;
 import play.mvc.Security;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForRecruiterSearchCandidate;
@@ -228,6 +233,7 @@ public class RecruiterController {
                                 jobApplicationResponse.setPreScreenLocation(jobApplication.getLocality());
                                 jobApplicationResponse.setInterviewTimeSlot(jobApplication.getInterviewTimeSlot());
                                 jobApplicationResponse.setScheduledInterviewDate(jobApplication.getScheduledInterviewDate());
+                                jobApplicationResponse.setInterviewStatus(jobApplication.getInterviewStatus());
 
                                 jobApplicationResponseList.add(jobApplicationResponse);
                             }
@@ -436,6 +442,30 @@ public class RecruiterController {
 
         return ok(toJson(RecruiterService.findRecruiterAndSendOtp(FormValidator.convertToIndianMobileFormat(recruiterMobile))));
 
+    }
+
+    public static Result updateInterviewStatus() {
+        if(session().get("recruiterId") != null){
+            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
+            if(recruiterProfile != null){
+                JsonNode req = request().body().asJson();
+                Logger.info("Request Json: " + req);
+                InterviewStatusRequest interviewStatusRequest = new InterviewStatusRequest();
+                ObjectMapper newMapper = new ObjectMapper();
+                try {
+                    interviewStatusRequest = newMapper.readValue(req.toString(), InterviewStatusRequest.class);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                JobApplication jobApplication = JobApplication.find.where().eq("CandidateId", interviewStatusRequest.getCandidateId()).eq("JobPostId", interviewStatusRequest.getJobPostId()).findUnique();
+                if(jobApplication != null){
+                    return RecruiterService.updateInterviewStatus(jobApplication, interviewStatusRequest);
+                }
+            }
+        }
+        // no recruiter session found
+        return ok("-1");
     }
 
     // sorting helper methods

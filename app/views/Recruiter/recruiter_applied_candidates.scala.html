@@ -114,6 +114,68 @@
           </div>
       </div>
 
+      <!-- Modal reschedule interview date and slot -->
+      <div id="modalRescheduleSlot" class="modal" style="background: transparent; box-shadow: none">
+          <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeRescheduleModal()"></div>
+          <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
+              <center><font style="color: #fff"><h5>Reschedule Interview Date and Time Slot</h5></font></center>
+          </div>
+          <div id="openCreditModal" style="background: #fff; padding: 12px">
+              <center>
+                  <div class="row">
+                      <div class="col s12 l12">
+                          <br>
+                          <img src="/assets/recruiter/img/icons/reschedule-color.svg" width="60px">
+                          <div class="row" style="margin-top: 4px" >
+                              <div class="col-sm-6">
+                                  <h6 style="text-align: right; margin-top: 28px">Please select a new interview date and time:</h6>
+                              </div>
+                              <div class="input-field col s12 l6">
+                                  <select id="rescheduleDateAndSlot" class="selectDropdown"></select>
+                                  <style>
+                                      select{
+                                          display: inline-block;
+                                      }
+                                  </style>
+                              </div>
+                          </div>
+                      </div>
+
+                  </div>
+                  <div id="rescheduleInterviewDateBtn" class="waves-effect waves-light ascentGreen lighten-1 btn" data-toggle="collapse" onclick="rescheduleInterviewStatus()"><font style="color: #fff;
+                      font-weight: 400"><b>Reschedule Date and Time!</b></font>
+                  </div>
+              </center>
+          </div>
+      </div>
+
+          <!-- Modal reject interview date and slot -->
+      <div id="modalRejectReason" class="modal" style="background: transparent; box-shadow: none">
+          <div style="float: right; padding: 12px; cursor: pointer"><img src="/assets/recruiter/img/cancel_white.png" onclick="closeRejectModal()"></div>
+          <div style="background: rgba(0, 0, 0, 0.75); padding: 4%">
+              <center><font style="color: #fff"><h5>Job Application Rejection</h5></font></center>
+          </div>
+          <div style="background: #fff; padding: 12px">
+              <br>
+              <center>
+                  <img src="/assets/recruiter/img/icons/reject_application.svg" width="60px">
+              </center>
+              <div class="row" style="margin-top: 4px" >
+                  <div class="input-field col s12 l12">
+                      <i class="material-icons prefix">mode_edit</i>
+                      <textarea placeholder="Please specify reason for Rejection" id="interviewStatusComments" maxlength="4000" class="materialize-textarea"></textarea>
+                      <label for="interviewStatusComments">Reason for Rejection</label>
+                  </div>
+              </div>
+
+              <center>
+                  <div id="rejectInterviewBtn" class="waves-effect waves-light red lighten-1 btn" data-toggle="collapse" onclick="confirmRejectInterview()"><font style="color: #fff;
+                      font-weight: 400"><b>Reject Job Application!</b></font>
+                  </div>
+              </center>
+
+          </div>
+      </div>
 
       <!--Footer start-->
     <footer class="page-footer" style="background-color: #424242;">

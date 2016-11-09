@@ -97,6 +97,7 @@ POST        /loginSubmit                                                  contro
 POST        /signUp                                                       controllers.Application.signUp()
 POST        /submitAssessment                                             controllers.Application.submitAssessment()
 POST        /submitPreScreen                                              controllers.Application.submitPreScreen()
+POST        /confirmInterview/:jpId/:value                                controllers.Application.confirmInterview(jpId : Long, value : Long)
 
 # partner routes
 #~~~~~~~~~~~~~~~~~~~~
@@ -157,6 +158,7 @@ POST        /addRecruiterPassword                                         contro
 POST        /recruiterLoginSubmit                                         controllers.RecruiterController.loginSubmit()
 POST        /recruiter/api/getMatchingCandidate/                          controllers.RecruiterController.getMatchingCandidate()
 POST        /recruiter/api/getUnlockedCandidates/                         controllers.RecruiterController.getUnlockedCandidates()
+POST        /recruiter/api/updateInterviewStatus                          controllers.RecruiterController.updateInterviewStatus()
 POST        /recruiter/api/requestCredits/                                controllers.RecruiterController.requestCredits()
 POST        /recruiter/api/addJobPost                                     controllers.RecruiterController.addJobPost()
 POST        /getRecruiterJobPostInfo/:id                                  controllers.RecruiterController.getRecruiterJobPostInfo(id : Long)

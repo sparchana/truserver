@@ -2,6 +2,7 @@ package api.http.httpResponse.Recruiter;
 
 import models.entity.Candidate;
 import models.entity.JobPost;
+import models.entity.Static.InterviewStatus;
 import models.entity.Static.InterviewTimeSlot;
 import models.entity.Static.Locality;
 
@@ -17,6 +18,7 @@ public class JobApplicationResponse {
     private InterviewTimeSlot interviewTimeSlot;
     private Date scheduledInterviewDate;
     private Candidate candidate;
+    private InterviewStatus interviewStatus;
 
     public Integer getJobApplicationId() {
         return jobApplicationId;
@@ -64,5 +66,13 @@ public class JobApplicationResponse {
 
     public void setCandidate(Candidate candidate) {
         this.candidate = candidate;
+    }
+
+    public InterviewStatus getInterviewStatus() {
+        return interviewStatus;
+    }
+
+    public void setInterviewStatus(InterviewStatus interviewStatus) {
+        this.interviewStatus = interviewStatus;
     }
 }

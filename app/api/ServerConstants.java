@@ -234,4 +234,11 @@ public class ServerConstants {
     public static final String ACTIVE_BEYOND_2_MONTHS = "Beyond two months";
 
     public static final String DEFAULT_COMPANY_LOGO = "https://s3.amazonaws.com/trujobs.in/companyLogos/default_company_logo.png";
+
+    // preScreening category
+    public static final int INTERVIEW_STATUS_ACCEPTED = 1;
+    public static final int INTERVIEW_STATUS_REJECTED_BY_RECRUITER = 2;
+    public static final int INTERVIEW_STATUS_RESCHEDULED = 3;
+    public static final int INTERVIEW_STATUS_REJECTED_BY_CANDIDATE = 4;
+
 }

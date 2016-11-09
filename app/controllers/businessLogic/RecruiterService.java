@@ -6,6 +6,7 @@ import api.http.FormValidator;
 import api.http.httpRequest.AddCompanyRequest;
 import api.http.httpRequest.Recruiter.AddCreditRequest;
 import api.http.httpRequest.Recruiter.AddRecruiterRequest;
+import api.http.httpRequest.Recruiter.InterviewStatusRequest;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpResponse.AddCompanyResponse;
 import api.http.httpResponse.LoginResponse;
@@ -17,6 +18,7 @@ import api.http.httpResponse.ResetPasswordResponse;
 import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterInteractionService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
+import models.entity.OM.JobApplication;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterLead;
@@ -24,6 +26,8 @@ import models.entity.Recruiter.RecruiterProfile;
 import models.entity.*;
 import models.entity.Recruiter.Static.RecruiterCreditCategory;
 import models.entity.Recruiter.Static.RecruiterStatus;
+import models.entity.Static.InterviewStatus;
+import models.entity.Static.InterviewTimeSlot;
 import models.util.EmailUtil;
 import models.util.SmsUtil;
 import models.util.Util;
@@ -31,9 +35,13 @@ import play.Logger;
 import play.core.server.Server;
 import play.mvc.Result;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 import static controllers.businessLogic.Recruiter.RecruiterInteractionService.*;
+import static models.util.SmsUtil.*;
 import static models.util.Util.generateOtp;
 import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
@@ -641,5 +649,61 @@ public class RecruiterService {
             recruiterCreditHistory.setRecruiterCreditsAddedBy("Not specified");
         }
         recruiterCreditHistory.save();
+    }
+
+    public static Result updateInterviewStatus(JobApplication jobApplication, InterviewStatusRequest interviewStatusRequest) {
+        InterviewStatus interviewStatus = InterviewStatus.find.where().eq("interview_status_id", interviewStatusRequest.getInterviewStatus()).findUnique();
+        if(interviewStatus != null){
+            Candidate candidate = Candidate.find.where().eq("candidateId", interviewStatusRequest.getCandidateId()).findUnique();
+            if(candidate != null){
+                jobApplication.setInterviewStatus(interviewStatus);
+                if(interviewStatus.getInterviewStatusId() == ServerConstants.INTERVIEW_STATUS_ACCEPTED){ // accept
+                    Logger.info("Sending interview confirm sms to candidate");
+                    if(jobApplication.getScheduledInterviewDate() == null){
+                        sendInterviewShortlistSms(jobApplication, candidate);
+
+                        // creating interaction
+                        createInteractionForRecruiterShortlistJobApplicationWithoutDate(candidate.getCandidateUUId(), jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileUUId());
+                    } else{
+                        sendInterviewConfirmationSms(jobApplication, candidate);
+
+                        // creating interaction
+                        createInteractionForRecruiterAcceptingInterviewDate(candidate.getCandidateUUId(), jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileUUId());
+                    }
+                } else if(interviewStatus.getInterviewStatusId() == ServerConstants.INTERVIEW_STATUS_REJECTED_BY_RECRUITER){ // reject
+                    if(interviewStatusRequest.getReason() != null){
+                        jobApplication.setInterviewStatusComments(interviewStatusRequest.getReason());
+
+                        Logger.info("Sending interview rejection sms to candidate");
+                        sendInterviewRejectionSms(jobApplication, candidate);
+
+                        // creating interaction
+                        createInteractionForRecruiterRejectingInterviewDate(candidate.getCandidateUUId(), jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileUUId());
+                    }
+                } else if(interviewStatus.getInterviewStatusId() == ServerConstants.INTERVIEW_STATUS_RESCHEDULED){ // reschedule
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = null;
+                    try {
+                        date = format.parse(interviewStatusRequest.getRescheduledDate());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", interviewStatusRequest.getRescheduledSlot()).findUnique();
+                    if(interviewTimeSlot != null){
+                        jobApplication.setScheduledInterviewDate(date);
+                        jobApplication.setInterviewTimeSlot(interviewTimeSlot);
+
+                        Logger.info("Sending interview rescheduling sms to candidate");
+                        sendInterviewReschedulingSms(jobApplication, candidate);
+
+                        // creating interaction
+                        createInteractionForRecruiterReschedulingingInterviewDate(candidate.getCandidateUUId(), jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileUUId());
+                    }
+                }
+                jobApplication.update();
+                return ok("1");
+            }
+        }
+        return ok("0");
     }
 }

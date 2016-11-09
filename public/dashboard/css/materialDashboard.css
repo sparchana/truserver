@@ -163,7 +163,14 @@ div.assessmentAlertDiv.red{
     padding: 4px 12px;
     border-radius: 20px;
     cursor: pointer;
-    background-color: red;
+    background: rgba(199,14,4,1);
+    background: -moz-linear-gradient(left, rgb(199, 4, 5) 0%, rgba(222,96,0,1) 100%);
+    background: -webkit-gradient(left top, right top, color-stop(0%, rgba(199,14,4,1)), color-stop(100%, rgba(222,96,0,1)));
+    background: -webkit-linear-gradient(left, rgba(199,14,4,1) 0%, rgba(222,96,0,1) 100%);
+    background: -o-linear-gradient(left, rgba(199,14,4,1) 0%, rgba(222,96,0,1) 100%);
+    background: -ms-linear-gradient(left, rgba(199,14,4,1) 0%, rgba(222,96,0,1) 100%);
+    background: linear-gradient(to right, rgba(199,14,4,1) 0%, rgba(222,96,0,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c70e04', endColorstr='#de6000', GradientType=1 );
     font-weight: bold;
 }
 
@@ -548,6 +555,45 @@ hr{
 
 .candidatePartner{
     margin: 6px;
+}
+
+.confirmInterview {
+    margin-left: 8px;
+    padding: 4px 8px 4px 8px;
+    font-weight: bold;
+    color: white;
+    background: rgba(11, 126, 22, 1);
+    border-radius: 16px;
+    cursor: pointer;
+}
+
+.accept{
+    margin-left: 8px;
+    cursor: pointer;
+    padding: 3px 6px 6px 6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #c0c8b6;
+    transition: 0.2s;
+}
+.accept:hover{
+    background: #06c840;
+}
+
+.reject{
+    margin-left: 8px;
+    cursor: pointer;
+    padding: 3px 6px 6px 6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #c0c8b6;
+    transition: 0.2s;
+}
+
+.reject:hover{
+    background: #f66624;
 }
 
 @media screen and (max-width: 800px) {
