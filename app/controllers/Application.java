@@ -1758,4 +1758,40 @@ public class Application extends Controller {
     public static Result getPreScreenedCandidate(Long jobPostId, Boolean isPass) {
         return ok(toJson(JobPostWorkflowEngine.getPreScreenedPassFailCandidates(jobPostId, isPass)));
     }
+
+    public static Result getCandidateDetails(Long candidateId, Integer propertyId) {
+        if(candidateId == null || propertyId == null) {
+            return badRequest();
+        }
+        Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
+        if(candidate == null) {
+            return badRequest("Candidate Not Found!");
+        }
+
+        // unable to use switch-case, issue with ordinal value
+        // return candidate Detail + container element
+        if (ServerConstants.PropertyType.DOCUMENT.ordinal() == propertyId) {
+          return  ok(toJson(candidate.getIdProofReferenceList()));
+        } else if (ServerConstants.PropertyType.LANGUAGE.ordinal() == propertyId) {
+            return  ok(toJson(candidate.getLanguageKnownList()));
+        } else if (ServerConstants.PropertyType.ASSET_OWNED.ordinal() == propertyId) {
+            return  ok(toJson(candidate.getCandidateAssetList()));
+        } else if (ServerConstants.PropertyType.MAX_AGE.ordinal() == propertyId) {
+            return  ok(toJson(candidate.getCandidateDOB()));
+        } else if (ServerConstants.PropertyType.EXPERIENCE.ordinal() == propertyId) {
+            return  ok(toJson(candidate.getCandidateTotalExperience()));
+        } else if (ServerConstants.PropertyType.EDUCATION.ordinal() == propertyId) {
+            return  ok(toJson(candidate.getCandidateEducation()));
+        } else if (ServerConstants.PropertyType.GENDER.ordinal() == propertyId) {
+            return  ok(toJson(candidate.getCandidateGender()));
+        } else if (ServerConstants.PropertyType.SALARY.ordinal() == propertyId) {
+            return  ok(toJson(candidate.getCandidateLastWithdrawnSalary()));
+        } else if (ServerConstants.PropertyType.LOCALITY.ordinal() == propertyId) {
+            return  ok(toJson(candidate.getLocality()));
+        } else if (ServerConstants.PropertyType.WORK_SHIFT.ordinal() == propertyId) {
+            return  ok(toJson(candidate.getTimeShiftPreference()));
+        }
+
+        return badRequest("Error");
+    }
 }

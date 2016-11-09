@@ -559,7 +559,7 @@ $.fn.dataTableExt.afnFiltering.push(
     }
 );
 
-function processLanguage(returnLanguage){
+function processLanguage(returnLanguage) {
     if(returnLanguage != null){
         var data = [];
 

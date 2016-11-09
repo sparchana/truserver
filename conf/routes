@@ -43,6 +43,7 @@ GET         /support/api/updatePreScreenAttempt/                          contro
 GET         /support/api/getDocumentReqForJobRole/                        controllers.Application.getDocumentReqForJobRole(job_post_id: java.lang.Long ?= null, job_role_id: java.lang.Long ?= null)
 GET         /support/api/getAssetReqForJobRole/                           controllers.Application.getAssetReqForJobRole(job_post_id: java.lang.Long ?= null, job_role_id: java.lang.Long ?= null)
 GET         /support/api/getWorkflowInteraction/                          controllers.Application.getWorkflowInteraction(job_post_workflow_uuid: String ?= null)
+GET         /support/api/getCandidateDetails/                             controllers.Application.getCandidateDetails(candidateId: java.lang.Long ?= null, propertyId: Integer ?= null)
 GET         /workflowInteraction/:uuid                                    controllers.Application.renderWorkflowInteraction(uuid: String)
 
 POST        /addCompany                                                   controllers.Application.addCompany()
