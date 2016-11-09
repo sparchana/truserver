@@ -15,6 +15,7 @@ import models.entity.Candidate;
 import models.entity.Interaction;
 import models.entity.JobPost;
 import models.entity.OM.*;
+import models.entity.Static.IdProof;
 import models.entity.Static.JobPostWorkflowStatus;
 import models.entity.Static.Language;
 import models.entity.Static.Locality;
@@ -635,10 +636,14 @@ public class JobPostWorkflowEngine {
                         if (candidate.getIdProofReferenceList() != null && candidate.getIdProofReferenceList().size() > 0) {
                             isAvailable = true;
                         }
+                        Map<Integer, IdProof> idProofMap = new HashMap<>();
+                        for(IDProofReference idProofReference :  candidate.getIdProofReferenceList()){
+                            idProofMap.put(idProofReference.getIdProof().getIdProofId(), idProofReference.getIdProof());
+                        }
                         for (PreScreenRequirement preScreenRequirement : entry.getValue()) {
                             preScreenElement.jobPostElementList.add(preScreenRequirement.getIdProof().getIdProofName());
                             preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
-                            if (isAvailable && candidate.getIdProofReferenceList().contains(preScreenRequirement.getIdProof())) {
+                            if (isAvailable && idProofMap.get(preScreenRequirement.getIdProof().getIdProofId()) != null) {
                                 preScreenElement.candidateElementList.add(preScreenRequirement.getIdProof().getIdProofName());
                             } else {
                                 preScreenElement.isMatching = false;
