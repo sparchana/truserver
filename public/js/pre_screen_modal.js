@@ -423,6 +423,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
             base_api_url += "&propertyId=" + propId;
         }
     }
+    console.log(base_api_url);
     // work_shift
     var url;
     var ajax_type = "POST";
@@ -497,21 +498,24 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
         modalTitle = "Candidate DOB Edit";
 
     } else if(propId == 4) {
-        htmlBodyContent = '<h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Experience</h4>'+
-            '<div class="row" style="margin-top: 16px">'+
-            '<div class="col-sm-4" style="margin-top:8px"><font size="2">Experience </font></div>'+
-            '<div class="col-sm-8" id="experienceMultiSelectDiv">'+
-            '<select id="experienceMultiSelect" multiple="multiple"></select>'+
+        htmlBodyContent = '<div class="row">'+
+            '<div class="col-sm-3"><h5>Total Experience:</h5></div>'+
+            '<div class="col-sm-9">'+
+            '<input id="candidateTotalExperienceYear" value="0" style="width: 15%; display: inline-block" placeholder="Years" type="number" class="form-control input-md">&nbsp;Years&nbsp;&nbsp;'+
+            '<input id="candidateTotalExperienceMonth" value="0" style="width: 15%; display: inline-block" placeholder="Months" type="number" min="0" max="11" step="1"  class="form-control input-md">&nbsp; Months'+
             '</div>'+
             '</div>';
 
         modalTitle = "Candidate Experience Edit";
-        url = "/getAllExperience";
         fn = function (returnedData) {
             processDataCheckExperience(returnedData);
         };
-
-        isOverFlowRequired = true;
+        setter = function (returnedData) {
+            if(returnedData != null) {
+                $("#candidateTotalExperienceYear").val(parseInt((returnedData / 12)).toString()); // years
+                $("#candidateTotalExperienceMonth").val(returnedData % 12); // month
+            }
+        }
     } else if(propId == 5) {
         htmlBodyContent =  '<h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Educational Details</h4>'+
             '<div id="education_details">'+
@@ -549,6 +553,25 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
         url = "/getAllEducation";
         fn = function (returnedData) {
             processDataCheckEducation(returnedData);
+        };
+        setter = function (returnedData) {
+            if(returnedData != null) {
+                $("#candidateHighestEducation").val(returnedData.education.educationId);
+                $("#candidateHighestEducation").multiselect('rebuild');
+
+                $("#candidateHighestDegree").val(returnedData.degree.degreeId);
+                $("#candidateHighestDegree").multiselect('rebuild');
+
+                $("#candidateEducationInstitute").val(returnedData.candidateLastInstitute);
+                $("#candidateHighestDegree").multiselect('rebuild');
+
+                if (returnedData.candidateEducationCompletionStatus == '1') {
+                    // hasCompletedEducation
+                    $('input[id=eduCompleted]').attr('checked', true);
+                } else {
+                    $('input[id=eduCompletedNot]').attr('checked', true);
+                }
+            }
         }
     } else if(propId == 6) {
         htmlBodyContent = '<div class="row" style="margin-top: 4px">'+
@@ -560,6 +583,15 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
             '</div>';
 
         modalTitle = "Candidate Gender Edit";
+        setter = function (returnedData) {
+            if (returnedData != null) {
+                if (returnedData == 0) {
+                    $('input[id=genderMale]').attr('checked', true);
+                } else {
+                    $('input[id=genderFemale]').attr('checked', true);
+                }
+            }
+        }
     } else if(propId == 7) {
         htmlBodyContent = '<div class="row" style="margin-top: 4px">'+
             '<div class="col-sm-3"><h5>Current/Last Drawn Salary:</h5></div>'+
@@ -568,6 +600,11 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
             '</div>'+
             '</div>';
         modalTitle = "Candidate Last Withdrawn Salary Edit";
+        setter = function (returnedData) {
+            if (returnedData != null) {
+                $('#candidateLastWithdrawnSalary').val(returnedData);
+            }
+        }
     } else if(propId == 8) {
         htmlBodyContent = '<div class="row" style="margin-top: 4px">'+
             '<div class="col-sm-3"><h5>Current Location:</h5></div>'+
@@ -612,6 +649,12 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
         isOverFlowRequired = true;
         fn = function (returnedData) {
             processTimeShift(returnedData);
+        };
+        setter = function (returnedData) {
+            if(returnedData != null) {
+                $("#candidateTimeShiftPref").val(returnedData.timeShift.timeShiftId);
+                $("#candidateTimeShiftPref").multiselect('rebuild');
+            }
         }
     }
 

@@ -429,7 +429,7 @@ function processDataAndFillAllFields(returnedData) {
                     $('#experienced').parent().addClass('active').siblings().removeClass('active');
                     $("#totalWorkExperience").show();
                     $("#candidateTotalExperienceYear").val(parseInt((totalExperience / 12)).toString()); // years
-                    $("#candidateTotalExperienceMonth").val(totalExperience % 12); // years
+                    $("#candidateTotalExperienceMonth").val(totalExperience % 12); // month
 
                     candidateExps = returnedData.candidateExpList;
                     candidatePastJobExp = returnedData.jobHistoryList;
