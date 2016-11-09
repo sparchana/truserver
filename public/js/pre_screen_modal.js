@@ -113,6 +113,7 @@ function generateEditModalView(title, message, candidateId, propId) {
     var editDialog = bootbox.dialog({
         className: "pre-screen-modal",
         title: title,
+        size: "large",
         message: message,
         closeButton: true,
         animate: true,
@@ -128,6 +129,8 @@ function generateEditModalView(title, message, candidateId, propId) {
             }
         }
     });
+    editDialog.attr("id", "edit-modal");
+    $('#edit-modal div.modal-body').attr('style', 'overflow: visible !important');
     $('.btn.edit-modal-submit').prop('disabled', true);
     $('body').removeClass('modal-open').removeClass('open-edit-modal').addClass('open-edit-modal');
 }
@@ -432,6 +435,8 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
     var fn;
     var htmlBodyContent = "test";
     var modalTitle="test";
+
+
     if(propId == 0) {
         htmlBodyContent = '<div id="document_details">'+
             '<h5><u>Document Details:</u></h5>'+
@@ -598,7 +603,6 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
                 type: ajax_type,
                 url: url,
                 data: false,
-                async: false,
                 contentType: false,
                 processData: false,
                 success: fn
@@ -613,7 +617,6 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
                 type: "POST",
                 url: "/getAllDegree",
                 data: false,
-                async: false,
                 contentType: false,
                 processData: false,
                 success: processDataCheckDegree
@@ -628,7 +631,6 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
             type: "GET",
             url: base_api_url,
             data: false,
-            async: false,
             contentType: false,
             processData: false,
             success: function (returnedData) {
