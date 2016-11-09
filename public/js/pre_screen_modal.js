@@ -305,7 +305,6 @@ function processIdProofsWithNumbers(returnedData) {
     if(returnedData != null) {
         // minReqTable
         var minReqTableContainer = $('#document_details');
-        console.log(minReqTableContainer);
         var mainTable = document.createElement("table");
         mainTable.className ="mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--12-col";
         mainTable.style="margin:0;border:none";
@@ -362,6 +361,7 @@ function processIdProofsWithNumbers(returnedData) {
                 bodyContentBox.appendChild(idProofTitleTd);
 
                 var idProofNumberTd = document.createElement("td");
+                idProofNumberTd.id = "idProofValue_"+idProof.idProofId;
                 bodyContentBox.appendChild(idProofNumberTd);
 
                 var ip = document.createElement("INPUT");
@@ -441,10 +441,19 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
             '<h5><u>Document Details:</u></h5>'+
             '</div>';
 
+        modalTitle = "Candidate Document Edit";
         url = "/support/api/getDocumentReqForJobRole/?job_post_id="+jobPostId;
         ajax_type = "GET";
         fn = function (returnedData) {
             processIdProofsWithNumbers(returnedData);
+        };
+        setter = function (returnedData) {
+            if(returnedData!= null) {
+                returnedData.forEach(function (doc) {
+                    $('#checkbox_'+doc.idProof.idProofId).prop('checked', true);
+                    $('#idProofNumberTd_'+doc.idProof.idProofId).val(doc.idProofNumber);
+                });
+            }
         }
     } else if(propId == 1) {
         htmlBodyContent = '<div id="language_details">'+
@@ -464,7 +473,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
             processDataCheckLanguage(returnedData);
         };
         setter = function (returnedData) {
-
+            prefillLanguageTable(returnedData);
         }
     } else if(propId == 2) {
 
@@ -483,7 +492,15 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
             processDataGetAssets(returnedData);
         };
         setter = function (returnedData) {
-
+            if(returnedData != null) {
+                // list of assets
+                var assetIdList = [];
+                returnedData.forEach(function (candidateAsset) {
+                    assetIdList.push(candidateAsset.asset.assetId);
+                });
+                $("#assetMultiSelect").val(assetIdList);
+                $("#assetMultiSelect").multiselect('rebuild');
+            }
         };
         isOverFlowRequired = true;
 
@@ -494,7 +511,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
             '<input id="candidateDob" name="candidateDob" placeholder="When is your Birthday?" type="date" class="form-control input-md"  data-date-inline-picker="true"/>'+
             '</div>'+
             '</div>';
-
+        $( "#candidateDob").datepicker({ dateFormat: 'yy-mm-dd', changeYear: true});
         modalTitle = "Candidate DOB Edit";
 
     } else if(propId == 4) {
