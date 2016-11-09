@@ -102,18 +102,11 @@ function triggerPreScreenResponseSubmission(candidateId, jobPostId) {
     }
 }
 
-function processEditModalContent(returnedData, candidateId, propId) {
-
-    // create UI for returnedData and pass it to generateEditModalView method
-    console.log("candidate's info:" + JSON.stringify(returnedData));
-}
-
-function generateEditModalView(title, message, candidateId, propId) {
+function generateEditModalView(title, message, candidateId, propId, overflow) {
     console.log("rendering modal");
     var editDialog = bootbox.dialog({
         className: "pre-screen-modal",
         title: title,
-        size: "large",
         message: message,
         closeButton: true,
         animate: true,
@@ -130,7 +123,9 @@ function generateEditModalView(title, message, candidateId, propId) {
         }
     });
     editDialog.attr("id", "edit-modal");
-    $('#edit-modal div.modal-body').attr('style', 'overflow: visible !important');
+    if(overflow){
+        $('#edit-modal div.modal-body').attr('style', 'overflow: visible !important');
+    }
     $('.btn.edit-modal-submit').prop('disabled', true);
     $('body').removeClass('modal-open').removeClass('open-edit-modal').addClass('open-edit-modal');
 }
@@ -400,7 +395,6 @@ function processDataCheckLocality(returnedData) {
                 placeholder: "job Localities?",
                 hintText: "Start typing Area (eg. BTM Layout, Bellandur..)",
                 minChars: 0,
-                prePopulate: currentLocationArray,
                 tokenLimit: 1,
                 zindex: 9999,
                 preventDuplicates: true
@@ -432,9 +426,13 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
     // work_shift
     var url;
     var ajax_type = "POST";
-    var fn;
+    var fn; // options creator
+    var setter = function(returnedData) {
+        console.log("candidate's info:" + JSON.stringify(returnedData));
+    }; // this sets the values in the prev created options
     var htmlBodyContent = "test";
     var modalTitle="test";
+    var isOverFlowRequired = false;
 
 
     if(propId == 0) {
@@ -463,6 +461,9 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
         url = "/getAllLanguage";
         fn = function (returnedData) {
             processDataCheckLanguage(returnedData);
+        };
+        setter = function (returnedData) {
+
         }
     } else if(propId == 2) {
 
@@ -479,7 +480,11 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
         url = "/support/api/getAssetReqForJobRole/?job_post_id="+jobPostId;
         fn = function (returnedData) {
             processDataGetAssets(returnedData);
-        }
+        };
+        setter = function (returnedData) {
+
+        };
+        isOverFlowRequired = true;
 
     } else if(propId == 3) {
         htmlBodyContent = '<div class="row">'+
@@ -504,8 +509,9 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
         url = "/getAllExperience";
         fn = function (returnedData) {
             processDataCheckExperience(returnedData);
-        }
+        };
 
+        isOverFlowRequired = true;
     } else if(propId == 5) {
         htmlBodyContent =  '<h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Educational Details</h4>'+
             '<div id="education_details">'+
@@ -572,8 +578,22 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
 
         modalTitle = "Candidate Home Locality Edit";
         url = "/getAllLocality";
+        isOverFlowRequired = true;
         fn = function (returnedData) {
             processDataCheckLocality(returnedData);
+        };
+        setter = function (returnedData) {
+            if(returnedData!= null) {
+                try {
+                    var item = {};
+                    item ["id"] = returnedData.localityId;
+                    item ["name"] = returnedData.localityName;
+                    currentLocationArray.push(item); // TODO remove this line
+                    $("#candidateHomeLocality").tokenInput("add", item);
+                } catch (err) {
+                    console.log("homeLocality" + err);
+                }
+            }
         }
 
     } else if(propId == 9) {
@@ -589,13 +609,14 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
 
         modalTitle = "Candidate Work-Shift Edit";
         url = "/getAllShift";
+        isOverFlowRequired = true;
         fn = function (returnedData) {
             processTimeShift(returnedData);
         }
     }
 
     // generates html container
-    generateEditModalView(modalTitle, htmlBodyContent, candidateId, propId);
+    generateEditModalView(modalTitle, htmlBodyContent, candidateId, propId, isOverFlowRequired);
 
     if(url != null) {
         try {
@@ -603,6 +624,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
                 type: ajax_type,
                 url: url,
                 data: false,
+                async: false,
                 contentType: false,
                 processData: false,
                 success: fn
@@ -633,9 +655,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
             data: false,
             contentType: false,
             processData: false,
-            success: function (returnedData) {
-                processEditModalContent(returnedData, candidateId, propId);
-            }
+            success: setter
         });
     } catch (exception) {
         console.log("exception occured!!" + exception.stack);
