@@ -2,10 +2,13 @@ package api.http.httpResponse;
 
 import models.entity.JobPost;
 import models.entity.OM.JobApplication;
+import models.entity.Static.InterviewStatus;
+import models.entity.Static.InterviewTimeSlot;
 import models.entity.Static.Locality;
 import models.entity.Static.ScreeningStatus;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * Created by zero on 27/9/16.
@@ -22,6 +25,9 @@ public class JobApplicationWithAssessmentStatusResponse {
     public Long candidateId;
     public Locality locality;
     public boolean assessmentRequired;
+    public InterviewStatus interviewStatus;
+    public InterviewTimeSlot interviewTimeSlot;
+    public Date interviewDate;
 
     public JobApplicationWithAssessmentStatusResponse(){
 
@@ -39,6 +45,9 @@ public class JobApplicationWithAssessmentStatusResponse {
         // json backed reference
         this.candidateId = jobApplication.getCandidate().getCandidateId();
         this.locality = jobApplication.getLocality();
+        if(jobApplication.getInterviewStatus() != null) this.interviewStatus = jobApplication.getInterviewStatus();
+        if(jobApplication.getInterviewTimeSlot() != null) this.interviewTimeSlot = jobApplication.getInterviewTimeSlot();
+        if(jobApplication.getScheduledInterviewDate() != null) this.interviewDate = jobApplication.getScheduledInterviewDate();
     }
 
     public Integer getJobApplicationId() {
@@ -127,5 +136,29 @@ public class JobApplicationWithAssessmentStatusResponse {
 
     public void setAssessmentRequired(boolean assessmentRequired) {
         this.assessmentRequired = assessmentRequired;
+    }
+
+    public InterviewStatus getInterviewStatus() {
+        return interviewStatus;
+    }
+
+    public void setInterviewStatus(InterviewStatus interviewStatus) {
+        this.interviewStatus = interviewStatus;
+    }
+
+    public InterviewTimeSlot getInterviewTimeSlot() {
+        return interviewTimeSlot;
+    }
+
+    public void setInterviewTimeSlot(InterviewTimeSlot interviewTimeSlot) {
+        this.interviewTimeSlot = interviewTimeSlot;
+    }
+
+    public Date getInterviewDate() {
+        return interviewDate;
+    }
+
+    public void setInterviewDate(Date interviewDate) {
+        this.interviewDate = interviewDate;
     }
 }

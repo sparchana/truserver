@@ -18,6 +18,7 @@ import models.util.EmailUtil;
 import models.util.SmsUtil;
 import play.Logger;
 import play.api.Play;
+import play.mvc.Result;
 
 import java.io.*;
 import java.net.URLEncoder;
@@ -26,9 +27,9 @@ import java.util.*;
 
 import static controllers.businessLogic.InteractionService.createInteractionForNewJobPost;
 import static models.util.EmailUtil.sendRecruiterJobPostLiveEmail;
-import static models.util.SmsUtil.sendRecruiterFreeJobPostingSms;
-import static models.util.SmsUtil.sendRecruiterJobPostActivationSms;
+import static models.util.SmsUtil.*;
 import static play.mvc.Controller.session;
+import static play.mvc.Results.ok;
 
 /**
  * Created by batcoder1 on 17/6/16.
@@ -1037,4 +1038,5 @@ public class JobService {
         }
         return jobPostToLocalityList;
     }
+
 }

@@ -1,6 +1,11 @@
 /**
  * Created by batcoder1 on 20/6/16.
  */
+
+var globalJpId;
+var globalInterviewStatus;
+var rescheduledDate;
+
 $(window).load(function () {
     $('html, body').css({
         'overflow': 'auto',
@@ -262,17 +267,133 @@ function prePopulateJobSection(jobApplication) {
             }
             $("#locationMsg_" + jobPost.jobPost.jobPostId).attr("data-toggle", "tooltip");
 
-             var titleRowTwo = document.createElement("div");
-             titleRowTwo.className = "row col-sm-3";
-             titleRowTwo.id = "appliedOnId";
-             jobBodyCol.appendChild(titleRowTwo);
+            var hr = document.createElement("hr");
+            jobBodyCol.appendChild(hr);
 
-             var fetchedAppliedDate = jobPost.jobApplicationCreateTimeStamp;
+            var titleRowTwo = document.createElement("div");
+            titleRowTwo.className = "row col-sm-4";
+            titleRowTwo.id = "appliedOnId";
+            jobBodyCol.appendChild(titleRowTwo);
 
-             var divAppliedDate = document.createElement("div");
-             divAppliedDate.className = "appliedDate";
-             divAppliedDate.textContent = "Applied on: " + new Date(fetchedAppliedDate).getDate() + "/" + (new Date(fetchedAppliedDate).getMonth() + 1) + "/" + new Date(fetchedAppliedDate).getFullYear();
-             titleRowTwo.appendChild(divAppliedDate);
+            var fetchedAppliedDate = jobPost.jobApplicationCreateTimeStamp;
+
+            var divAppliedDate = document.createElement("div");
+            divAppliedDate.className = "appliedDate";
+            divAppliedDate.textContent = "Applied on: " + new Date(fetchedAppliedDate).getDate() + "/" + (new Date(fetchedAppliedDate).getMonth() + 1) + "/" + new Date(fetchedAppliedDate).getFullYear();
+            titleRowTwo.appendChild(divAppliedDate);
+
+            var titleRowThree = document.createElement("div");
+            titleRowThree.className = "row col-sm-8";
+            titleRowThree.id = "interview_status_div_" + jobPost.jobPost.jobPostId;
+            titleRowThree.style = "margin-top: 8px";
+            jobBodyCol.appendChild(titleRowThree);
+
+            var divInterviewStatus = document.createElement("span");
+            divInterviewStatus.className = "appliedDate";
+            divInterviewStatus.id = "interview_status_val_" + jobPost.jobPost.jobPostId;
+
+            if(jobPost.interviewStatus != null){
+                if(jobPost.interviewStatus.interviewStatusId == 1){
+                    if(jobPost.interviewDate != null){
+                        divInterviewStatus.textContent = "Interview scheduled on " + new Date(jobPost.interviewDate).getDate() + "/" + (new Date(jobPost.interviewDate).getMonth() + 1) + "/" + new Date(jobPost.interviewDate).getFullYear() + " between " + jobPost.interviewTimeSlot.interviewTimeSlotName;
+                        divInterviewStatus.style = "color: green; font-weight: 600";
+                    } else{
+                        divInterviewStatus.textContent = "Shortlisted by the recruiter";
+                        divInterviewStatus.style = "color: green; font-weight: 600";
+                    }
+                } else if(jobPost.interviewStatus.interviewStatusId == 2){
+                    divInterviewStatus.textContent = "Job Application declined";
+                    divInterviewStatus.style = "color: red; font-weight: 600";
+                } else if(jobPost.interviewStatus.interviewStatusId == 3){
+                    divInterviewStatus.textContent = "Interview Rescheduled on " + new Date(jobPost.interviewDate).getDate() + "/" + (new Date(jobPost.interviewDate).getMonth() + 1) + "/" + new Date(jobPost.interviewDate).getFullYear() + " between " + jobPost.interviewTimeSlot.interviewTimeSlotName;
+                    divInterviewStatus.style = "color: orange; font-weight: 600";
+
+                    // accept interview
+                    var candidateInterviewAccept = document.createElement("span");
+                    candidateInterviewAccept.className = "accept tooltipped";
+                    candidateInterviewAccept.setAttribute("data-postiton", "top");
+                    candidateInterviewAccept.setAttribute("data-delay", "50");
+                    candidateInterviewAccept.setAttribute("data-tooltip", "Confirm Interview");
+                    candidateInterviewAccept.onclick = function () {
+                        rescheduledDate = "Interview scheduled on " + new Date(jobPost.interviewDate).getDate() + "/" + (new Date(jobPost.interviewDate).getMonth() + 1) + "/" + new Date(jobPost.interviewDate).getFullYear() + " between " + jobPost.interviewTimeSlot.interviewTimeSlotName;
+                        confirmInterview(jobPost.jobPost.jobPostId, 1);
+                    };
+                    divInterviewStatus.appendChild(candidateInterviewAccept);
+
+                    var iconImg = document.createElement("img");
+                    iconImg.src = "/assets/recruiter/img/icons/accept.svg";
+                    iconImg.setAttribute('height', '16px');
+                    iconImg.setAttribute('width', '14px');
+                    candidateInterviewAccept.appendChild(iconImg);
+
+                    //reject interview
+                    var candidateInterviewReject = document.createElement("span");
+                    candidateInterviewReject.className = "reject tooltipped";
+                    candidateInterviewReject.setAttribute("data-postiton", "top");
+                    candidateInterviewReject.setAttribute("data-delay", "50");
+                    candidateInterviewReject.setAttribute("data-tooltip", "Confirm Interview");
+                    candidateInterviewReject.onclick = function () {
+                        rescheduledDate = "Interview scheduled on " + new Date(jobPost.interviewDate).getDate() + "/" + (new Date(jobPost.interviewDate).getMonth() + 1) + "/" + new Date(jobPost.interviewDate).getFullYear() + " between " + jobPost.interviewTimeSlot.interviewTimeSlotName;
+                        confirmInterview(jobPost.jobPost.jobPostId, 0);
+                    };
+                    divInterviewStatus.appendChild(candidateInterviewReject);
+
+                    iconImg = document.createElement("img");
+                    iconImg.src = "/assets/recruiter/img/icons/reject.svg";
+                    iconImg.setAttribute('height', '16px');
+                    iconImg.setAttribute('width', '14px');
+                    candidateInterviewReject.appendChild(iconImg);
+
+
+                } else if(jobPost.interviewStatus.interviewStatusId == 4){
+                    divInterviewStatus.textContent = "Job Application declined by the Candidate";
+                    divInterviewStatus.style = "color: red; font-weight: 600";
+                }
+            } else{
+                divInterviewStatus.textContent = "Job application under review";
+                divInterviewStatus.style = "color: #eb9800; font-weight: 600";
+            }
+            titleRowThree.appendChild(divInterviewStatus);
         }
     });
+}
+
+function confirmInterview(jpId, status) {
+    globalJpId = jpId;
+    globalInterviewStatus = status;
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/confirmInterview/" + parseInt(jpId) + "/" + status,
+            async: true,
+            contentType: false,
+            data: false,
+            success: processDataConfirmInterview
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception.stack);
+    }
+}
+
+function processDataConfirmInterview(returnedData) {
+    if(returnedData != 0){
+        $("#interview_status_val_" + globalJpId).remove();
+        var divInterviewStatus = document.createElement("span");
+        divInterviewStatus.className = "appliedDate";
+        divInterviewStatus.id = "interview_status_val_" + globalJpId;
+        if(globalInterviewStatus == 1){
+            alert("Job application accepted");
+            divInterviewStatus.textContent = rescheduledDate;
+            divInterviewStatus.style = "color: green; font-weight: 600";
+        } else {
+            alert("Job application rejected");
+            divInterviewStatus.textContent = "Job Application declined by the Candidate";
+            divInterviewStatus.style = "color: red; font-weight: 600";
+        }
+
+        $("#interview_status_div_" + globalJpId).append(divInterviewStatus);
+    } else{
+        notifyError("Something went wrong. Please try again later");
+    }
+
 }

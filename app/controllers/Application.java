@@ -46,6 +46,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.avaje.ebean.Expr.eq;
+import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForCandidateAcceptingRescheduledInterviewViaAndroid;
+import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForCandidateAcceptingRescheduledInterviewViaWebsite;
+import static controllers.businessLogic.Recruiter.RecruiterInteractionService.createInteractionForCandidateRejectingRescheduledInterviewViaWebsite;
+import static models.util.SmsUtil.sendInterviewCandidateConfirmation;
+import static models.util.SmsUtil.sendInterviewCandidateInterviewReject;
 import static play.libs.Json.toJson;
 
 public class Application extends Controller {
@@ -158,7 +163,6 @@ public class Application extends Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 
         InteractionService.InteractionChannelType channelType = InteractionService.InteractionChannelType.SELF;
         return ok(toJson(CandidateService.signUpCandidate(candidateSignUpRequest, channelType, ServerConstants.LEAD_SOURCE_UNKNOWN)));
@@ -1757,5 +1761,32 @@ public class Application extends Controller {
 
     public static Result getPreScreenedCandidate(Long jobPostId, Boolean isPass) {
         return ok(toJson(JobPostWorkflowEngine.getPreScreenedPassFailCandidates(jobPostId, isPass)));
+    }
+
+    public static Result confirmInterview(long jpId, long value) {
+        if(session().get("candidateId") != null){
+            Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")). findUnique();
+            JobApplication jobApplication = JobApplication.find.where().eq("JobPostId", jpId).eq("candidateId", candidate.getCandidateId()).findUnique();
+            if(jobApplication != null){
+                InterviewStatus interviewStatus;
+                Logger.info("Sending sms to recruiter");
+                if(value == 1){
+                    interviewStatus = InterviewStatus.find.where().eq("interview_status_id", ServerConstants.INTERVIEW_STATUS_ACCEPTED).findUnique();
+                    sendInterviewCandidateConfirmation(jobApplication, candidate);
+
+                    createInteractionForCandidateAcceptingRescheduledInterviewViaWebsite(candidate.getCandidateUUId());
+                } else{
+                    interviewStatus = InterviewStatus.find.where().eq("interview_status_id", ServerConstants.INTERVIEW_STATUS_REJECTED_BY_CANDIDATE).findUnique();
+                    sendInterviewCandidateInterviewReject(jobApplication, candidate);
+
+                    createInteractionForCandidateRejectingRescheduledInterviewViaWebsite(candidate.getCandidateUUId());
+                }
+                jobApplication.setInterviewStatus(interviewStatus);
+                jobApplication.update();
+
+                return ok("1");
+            }
+        }
+        return ok("0");
     }
 }
