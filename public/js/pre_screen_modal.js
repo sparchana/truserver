@@ -513,7 +513,15 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
             '</div>';
         $( "#candidateDob").datepicker({ dateFormat: 'yy-mm-dd', changeYear: true});
         modalTitle = "Candidate DOB Edit";
-
+        setter = function (returnedData) {
+            if (returnedData != null) {
+                var date = JSON.parse(returnedData);
+                var yr = new Date(date).getFullYear();
+                var month = ('0' + parseInt(new Date(date).getMonth() + 1)).slice(-2);
+                var d = ('0' + new Date(date).getDate()).slice(-2);
+                $("#candidateDob").val(yr + "-" + month + "-" + d);
+            }
+        }
     } else if(propId == 4) {
         htmlBodyContent = '<div class="row">'+
             '<div class="col-sm-3"><h5>Total Experience:</h5></div>'+
@@ -891,7 +899,7 @@ function processPreScreenContent(returnedData) {
         elementList.forEach(function (rowData) {
             console.log("ptitle:"+ rowData.propertyTitle);
             console.log("pId:"+ rowData.propertyId);
-            if(rowData!=null){
+            if(rowData!=null) {
                 if(rowData.isMinReq) {
                     var bodyContentBox = document.createElement("tr");
                     bodyContentBox.id = rowData.propertyId;
