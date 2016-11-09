@@ -30,9 +30,10 @@ var endOfResult = false;
 var blockApiTrigger = false;
 
 $(document).scroll(function(){
-    if ($(this).scrollTop() > 20) {
+    if ($(this).scrollTop() > 30) {
         $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
-    } else{
+    }
+    else{
         $('nav').css({"background": "transparent"});
     }
     if ($(this).scrollTop() > 500) {
@@ -90,14 +91,7 @@ function scrollToTop() {
 
 $(document).ready(function(){
     checkRecruiterLogin();
-    $('.button-collapse').sideNav({
-        menuWidth: 240,
-        edge: 'left',
-        closeOnClick: true
-    });
-
     getRecruiterInfo();
-
     try {
         $.ajax({
             type: "POST",

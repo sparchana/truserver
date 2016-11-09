@@ -36,10 +36,9 @@
         <div class="back-banner"></div>
         <div style="display: flex;justify-content: center;align-items: center; margin-top: -360px">
             <div class="container recruiterHomeMainCard" >
-                <h5>Welcome!</h5>
+                <h5 style="margin-left:20px">Welcome!</h5>
                 <a href="/recruiter/profile" id="editBtn" class="btn-floating btn-large waves-effect waves-light red" style="margin-top: -22px; float: right"><i class="material-icons">mode_edit</i></a>
                 <hr>
-
                 <div class="row">
                     <div class="col s12 l3" style="display: flex;justify-content: center;align-items: center;">
                         <div style="text-align: center">
@@ -98,15 +97,15 @@
         </div>
 
         <div class="container recruiterHomeMessgeBox">
-            <div class="row" style="text-align: right;margin:0">
-                <div class="col l3" style="padding: 24px;">
-                    <img src="/assets/recruiter/img/green/card.svg" width="52px">
+            <div class="row" style="text-align: center;margin:0">
+                <div class="col s12 m2" id="creditCardIcon">
+                    <img src="/assets/recruiter/img/green/card.svg">
                 </div>
-                <div class="col l8" style="text-align: left; margin-top: 36px; display: none" id="hasCredit">
+                <div class="col s12 m10" id="hasCredit">
                    <font size="3">Awesome! You have <b id="contactCreditCount">0</b> contact unlock credits! <a href="/recruiter/jobPost/0"><span id="startNoDiv"> Post your job </span></a>and start <a href="/recruiter/candidateSearch"><span id="startNoDiv"> contacting candidates</span></a></font> now!
                 </div>
 
-                <div class="col l8" style="text-align: left; margin-top: 36px; display: none" id="hasNoCredit">
+                <div class="col s12 m10" id="hasNoCredit">
                     <font size="3">
                         You are two clicks away from getting access to thousands of verified candidates!<a id="startNoDiv" onclick="openCreditModal()">Buy credits, </a><a href="/recruiter/jobPost/0"><span id="startNoDiv"> Post your job </span></a>and start <a href="/recruiter/candidateSearch"><span id="startNoDiv"> contacting candidates</span></a> now!
                     </font>
@@ -117,21 +116,21 @@
         <div class="container recruiterHomeNoBackBox"style="text-align: center;margin-bottom:12px">
             <h5>How it works</h5>
             <center><div class="materialDash"></div></center>
-            <div class="row" style="margin-top: 2%">
-                <div class="input-field col s4 l4">
+            <div class="row">
+                <div class="col s12 m4" style="margin-top: 28px;">
                     <img src="/assets/recruiter/img/green/profile.svg" width="34px">
                     <br>
-                    <center style="margin-top: 12px;"><h6>Signup and post your job for free!</h6></center>
+                    <center style="margin-top: 12px;">Signup and post your job for free!</center>
                 </div>
-                <div class="input-field col s4 l4">
+                <div class="col s12 m4" style="margin-top: 28px;">
                     <img src="/assets/recruiter/img/green/search.svg" width="34px">
                     <br>
-                    <center style="margin-top: 12px;"><h6>Search through 25000+ verified candidate profiles</h6></center>
+                    <center style="margin-top: 12px;">Search through 25000+ verified candidate profiles</center>
                 </div>
-                <div class="input-field col s4 l4">
+                <div class="col s12 m4" style="margin-top: 28px;">
                     <img src="/assets/recruiter/img/green/interview.svg" width="34px">
                     <br>
-                    <center style="margin-top: 12px;"><h6> Upgrade your plan to contact candidates and schedule interviews</h6></center>
+                    <center style="margin-top: 12px;">Upgrade your plan to contact candidates and schedule interviews</center>
                 </div>
             </div>
         </div>
@@ -140,7 +139,7 @@
                 <div class="row" style="text-align: center;margin: 0">
                     <h5 style="padding:1%">Highlights</h5>
                     <center><div class="materialDash"></div></center>
-                    <div class="col l6 s6" style="padding: 2%;">
+                    <div class="col l6 s12" style="padding: 2%;margin-top: 20px">
                         <div class="row">
                             <img class="responsive-img" src="/assets/recruiter/img/candidate.svg" style="height: 70px;">
                         </div>
@@ -152,7 +151,7 @@
                             <div style="font-size: 18px">Candidates</div>
                         </div>
                     </div>
-                    <div class="col l6 s6" style="padding: 2%;">
+                    <div class="col l6 s12" style="padding: 2%; margin-top: 20px">
                         <div class="row">
                             <img class="responsive-img" src="/assets/recruiter/img/suitcase.svg" style="height: 70px;">
                         </div>
