@@ -112,8 +112,7 @@ body{
 }
 
 .btn-custom-check.active {
-    background: #286ab6;
-    border: 1px solid #2870a3;
+    background: linear-gradient(to left, rgba(0, 145, 203, 0.99), rgb(2, 123, 179));
     color: #ffffff;
 }
 .navbar{
@@ -156,10 +155,7 @@ body{
 }
 
 #sectionOne, #sectionOneShowAll {
-    background: linear-gradient(
-            rgba(24, 26, 45, 0.3),
-            rgba(24, 26, 45, 0.3)
-    ), url(../img/back_design.png) repeat;
+    background: linear-gradient(to left, rgba(0, 209, 255, 0.36), rgba(0, 0, 0, 0.5)), url(../img/back_design.png) repeat;
     background-size: 100%;
     font-weight: bold;
     color: #fff;
@@ -215,17 +211,17 @@ body{
 }
 #registerBtnSubmit{
     border: none;
-    background-color: #0065a4;
+    background: linear-gradient(to left, rgba(0, 159, 219, 0.99), rgb(2, 123, 179));
     color: white;
 }
 #registerBtnSubmitModal{
-    background-color:#0065a4;
+    background: linear-gradient(to left, rgba(0, 159, 219, 0.99), rgb(2, 123, 179));
     border-color:#0065a4 ;
 }
 
 #registerBtn{
     border: none;
-    background-color: #0065a4;
+    background: linear-gradient(to left, rgba(0, 159, 219, 0.99), rgb(2, 123, 179));
     color: white;
 }
 
@@ -240,7 +236,7 @@ body{
 }
 #modalBtn{
     border: none;
-    background-color: #0065a4;
+    background: linear-gradient(to left, rgba(0, 159, 219, 0.99), rgb(2, 123, 179));
     color: white;
 }
 
@@ -428,7 +424,8 @@ a:hover{
     border: none;
     color: white;
     margin-top: 12%;
-    background: #09ac58;
+    border-radius: 4px;
+    background: linear-gradient(to left, #00b638, #019b4b);
     padding: 6%;
     width: 120px;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.16);
@@ -446,7 +443,7 @@ a:hover{
 .jobApplyBtnModal{
     border: none;
     color: white;
-    background: #09ac58;
+    background: linear-gradient(to left, #00b638, #019b4b);
     padding: 2%;
     display: block;
     width: 176px;
@@ -1031,10 +1028,7 @@ li .dropdown-menu{
 	margin-right: 18px;
 }
 .sectionFiveMain{
-    background: linear-gradient(
-            rgba(24, 26, 45, 0.7),
-            rgba(24, 26, 45, 0.7)
-    ), url(../img/back_design.png) repeat;
+    background: linear-gradient(to left, rgba(0, 50, 67, 0.22), 36%, rgba(0, 0, 0, 0.71)), url(../img/back_design.png) repeat;
     background-size: 100%;
 }
 .sectionFive {

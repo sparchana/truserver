@@ -163,14 +163,7 @@ div.assessmentAlertDiv.red{
     padding: 4px 12px;
     border-radius: 20px;
     cursor: pointer;
-    background: rgba(199,14,4,1);
-    background: -moz-linear-gradient(left, rgb(199, 4, 5) 0%, rgba(222,96,0,1) 100%);
-    background: -webkit-gradient(left top, right top, color-stop(0%, rgba(199,14,4,1)), color-stop(100%, rgba(222,96,0,1)));
-    background: -webkit-linear-gradient(left, rgba(199,14,4,1) 0%, rgba(222,96,0,1) 100%);
-    background: -o-linear-gradient(left, rgba(199,14,4,1) 0%, rgba(222,96,0,1) 100%);
-    background: -ms-linear-gradient(left, rgba(199,14,4,1) 0%, rgba(222,96,0,1) 100%);
-    background: linear-gradient(to right, rgba(199,14,4,1) 0%, rgba(222,96,0,1) 100%);
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c70e04', endColorstr='#de6000', GradientType=1 );
+    background: linear-gradient(to right, rgb(199, 4, 4) 0%, rgb(222, 81, 0) 100%);
     font-weight: bold;
 }
 
@@ -197,11 +190,8 @@ div.assessmentAlertDiv.red{
 
 .img-src {
     position: absolute;
-    background:linear-gradient(
-            rgba(65, 69, 121, 0.3),
-            rgba(12, 12, 24, 0.3)
-    ), url(../img/dashboard_back.png) repeat;
-    background-size: 80%;
+    background: linear-gradient(to left, rgba(0, 50, 67, 0.22), rgba(0, 0, 0, 0.71)), url(../img/dashboard_back.png) repeat;
+    background-size: 100%;
     top: -10%;
     bottom: 10%;
     left: -10%;
