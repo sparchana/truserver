@@ -1721,7 +1721,6 @@ function saveProfileForm() {
             var higherEducation = "";
             var workShift = "";
 
-
             if (($('#candidateHighestEducation').val()) != -1) {
                 higherEducation = $('input:radio[name="highestEducation"]:checked').val();
             }

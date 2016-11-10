@@ -102,7 +102,184 @@ function triggerPreScreenResponseSubmission(candidateId, jobPostId) {
     }
 }
 
-function generateEditModalView(title, message, candidateId, propId, overflow) {
+function saveEditedResponses(candidateId, propId, jobPostId) {
+    var d;
+    var dobCheck = 1;
+    var okToSubmit = true; // validation check before submit | { 1 = ok , 0 = not ok }
+    if(propId == 0) {
+        var documentList = [];
+        $('#documentTable tr').each(function() {
+            var item = {};
+            var id;
+            if($(this).attr('id') != undefined) {
+                id = $(this).attr('id').split("_").slice(-1).pop();
+
+                if($('input#checkbox_'+id).is(':checked')) {
+                    item["idProofId"] = parseInt(id);
+                    if( $('input#idProofValue_'+id).val() == null ||  $('input#idProofValue_'+id).val().trim() == ""){
+                        okToSubmit = false;
+                    }
+                    item["idNumber"] = $('input#idProofValue_'+id).val().trim();
+                }
+                console.log(item);
+
+                if(!jQuery.isEmptyObject(item)){
+                    documentList.push(item);
+                };
+            }
+        });
+            // documents
+            d = {
+                idProofWithIdNumberList: documentList
+            }
+
+    } else if(propId == 1) {
+        var check;
+        var languageMap = [];
+        var languageKnown = $('#languageTable input:checked').map(function () {
+            check = 0;
+            var id = this.id;
+            var name = this.name;
+            var item = {};
+            var pos;
+
+            for (var i in languageMap) {
+                if (languageMap[i].id == id) {
+                    pos = i;
+                    check = 1;
+                    break;
+                }
+            }
+            if (check == 0) {
+                item["id"] = id;
+                item["u"] = 0;
+                item["rw"] = 0;
+                item["s"] = 0;
+                if (name == "u")
+                    item["u"] = 1;
+                else if (name == "rw")
+                    item["rw"] = 1;
+                else
+                    item["s"] = 1;
+                languageMap.push(item);
+            }
+            else {
+                if (name == "u")
+                    languageMap[pos].u = 1;
+                else if (name == "rw")
+                    languageMap[pos].rw = 1;
+                else
+                    languageMap[pos].s = 1;
+            }
+        }).get();
+
+        // documents
+        d = {
+            candidateLanguageKnown: languageMap
+        }
+
+    } else if(propId == 2) {
+        // asset
+        var assetArrayList = $("#assetMultiSelect").val();
+
+        d = {
+            assetIdList: assetArrayList
+        }
+
+    } else if(propId == 3) {
+        var selectedDob = $('#candidateDob').val();
+        var c_dob = String(selectedDob);
+        var selectedDate = new Date(c_dob);
+        var todayDate = new Date();
+        if (selectedDate > todayDate) {
+            dobCheck = 0;
+        }
+        d = {
+            candidateDob: c_dob
+        }
+    } else if(propId == 4) {
+
+        /* calculate total experience in months */
+        var expMonth = parseInt($('#candidateTotalExperienceMonth').val());
+        var expYear = parseInt($('#candidateTotalExperienceYear').val());
+        var totalExp = expMonth + (12 * expYear);
+
+        d = {
+            candidateTotalExperience: totalExp
+        }
+
+    } else if(propId == 5) {
+        var higherEducation = "";
+        if (($('#candidateHighestEducation').val()) != -1) {
+            higherEducation = $('input:radio[name="highestEducation"]:checked').val();
+        }
+
+        d = {
+            candidateEducationLevel: higherEducation,
+            candidateDegree: ($('#candidateHighestDegree').val()),
+            candidateEducationInstitute: $('#candidateEducationInstitute').val(),
+            candidateEducationCompletionStatus: parseInt($('input:radio[name="candidateEducationCompletionStatus"]:checked').val())
+
+        }
+    } else if(propId == 6) {
+
+        d = {
+            candidateGender: ($('input:radio[name="gender"]:checked').val())
+        }
+
+    } else if(propId == 7) {
+        d = {
+            candidateLastWithdrawnSalary: parseInt($('#candidateLastWithdrawnSalary').val())
+        }
+
+    } else if(propId == 8) {
+
+        d = {
+            candidateHomeLocality: parseInt($('#candidateHomeLocality').val())
+        }
+
+    } else if(propId == 9) {
+
+        d = {
+            candidateTimeShiftPref: $('#candidateTimeShiftPref').val()
+        }
+    }
+
+    if (dobCheck == 0) {
+        notifyError("Please enter valid date of birth", 'danger');
+        okToSubmit = false;
+    } else if ($('#candidateTotalExperienceYear').val() > 30) {
+        notifyError("Please enter valid years of experience", 'danger');
+        okToSubmit = false;
+    }
+    //final submission
+    if(okToSubmit){
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/support/api/updateCandidateDetailsAtPreScreen/?propertyId="+propId+"&candidateId="+candidateId,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: function (returnedData) {
+                    processFinalSubmitResponse(returnedData, jobPostId, candidateId);
+                }
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    }
+
+}
+
+function processFinalSubmitResponse(returnedData, jobPostId, candidateId) {
+    console.log(returnedData);
+    if(returnedData == "ok"){
+        // getPreScreenContent(jobPostId, candidateId);
+
+    }
+}
+
+function generateEditModalView(title, message, candidateId, propId, overflow, jobPostId) {
     console.log("rendering modal");
     var editDialog = bootbox.dialog({
         className: "pre-screen-modal",
@@ -117,7 +294,7 @@ function generateEditModalView(title, message, candidateId, propId, overflow) {
             "Save": {
                 className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent edit-modal-submit",
                 callback: function () {
-
+                    saveEditedResponses(candidateId, propId, jobPostId);
                 }
             }
         }
@@ -126,7 +303,7 @@ function generateEditModalView(title, message, candidateId, propId, overflow) {
     if(overflow){
         $('#edit-modal div.modal-body').attr('style', 'overflow: visible !important');
     }
-    $('.btn.edit-modal-submit').prop('disabled', true);
+    //$('.btn.edit-modal-submit').prop('disabled', true);
     $('body').removeClass('modal-open').removeClass('open-edit-modal').addClass('open-edit-modal');
 }
 
@@ -343,6 +520,7 @@ function processIdProofsWithNumbers(returnedData) {
             tBody.appendChild(bodyContentBox);
 
                 var checkboxTd = document.createElement("td");
+                checkboxTd.id = "idProofCheckbox";
                 bodyContentBox.appendChild(checkboxTd);
                 var checkMatchLabel = document.createElement("label");
                 checkMatchLabel.type = "checkbox";
@@ -361,7 +539,7 @@ function processIdProofsWithNumbers(returnedData) {
                 bodyContentBox.appendChild(idProofTitleTd);
 
                 var idProofNumberTd = document.createElement("td");
-                idProofNumberTd.id = "idProofValue_"+idProof.idProofId;
+                idProofNumberTd.id = "idProofValueTd";
                 bodyContentBox.appendChild(idProofNumberTd);
 
                 var ip = document.createElement("INPUT");
@@ -465,7 +643,6 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
             '</tbody>'+
             '</table>'+
             '</div>';
-
 
         modalTitle = "Candidate Language Edit";
         url = "/getAllLanguage";
@@ -684,7 +861,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
     }
 
     // generates html container
-    generateEditModalView(modalTitle, htmlBodyContent, candidateId, propId, isOverFlowRequired);
+    generateEditModalView(modalTitle, htmlBodyContent, candidateId, propId, isOverFlowRequired, jobPostId);
 
     if(url != null) {
         try {
@@ -1057,6 +1234,7 @@ function processPreScreenContent(returnedData) {
 }
 
 function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId) {
+   // TODO:  prevent multiple construction of modal
     var dialog = bootbox.dialog({
         className: "pre-screen-modal",
         title: callYesNo,

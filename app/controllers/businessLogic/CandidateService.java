@@ -6,6 +6,7 @@ import api.http.CandidateKnownLanguage;
 import api.http.CandidateSkills;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
+import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.LoginResponse;
 import api.http.httpResponse.ResetPasswordResponse;
@@ -1403,5 +1404,77 @@ public class CandidateService
             SmsUtil.sendWelcomeSmsFromSupport(candidate.getCandidateFirstName(), candidate.getCandidateMobile(), dummyPassword);
             Logger.info("Dummy auth saved and sent to " + candidate.getCandidateMobile());
         }
+    }
+
+    // individual update service for pre-screen-edit
+    public static void updateCandidateLanguageKnown(Candidate candidate, UpdateCandidateLanguageKnown updateCandidateLanguageKnown){
+        AddCandidateExperienceRequest candidateLanguageShell = new AddCandidateExperienceRequest();
+        candidateLanguageShell.setCandidateLanguageKnown(updateCandidateLanguageKnown.getCandidateLanguageKnown());
+        candidate.setLanguageKnownList(CandidateService.getCandidateLanguageFromSupportCandidate(candidateLanguageShell, candidate));
+        candidate.update();
+    }
+    public static void updateCandidateAssetOwned(Candidate candidate, UpdateCandidateAsset asset){
+
+        if(asset!= null && asset.getAssetIdList() != null && asset.getAssetIdList().size()>0) {
+            List<Asset> assetList = Asset.find.where().in("assetId", asset.getAssetIdList()).findList();
+            List<CandidateAsset> candidateAssetList = new ArrayList<>();
+
+            if(assetList.size() == 0) {
+                Logger.info("asset not found");
+                return;
+            }
+            for (Asset asset1 : assetList) {
+                CandidateAsset candidateAsset = new CandidateAsset();
+                candidateAsset.setCandidate(candidate);
+                candidateAsset.setAsset(asset1);
+
+                candidateAssetList.add(candidateAsset);
+            }
+            candidate.setCandidateAssetList(candidateAssetList);
+            candidate.update();
+        }
+    }
+    public static void updateCandidateDOB(Candidate candidate, UpdateCandidateDob updateCandidateDob){
+        candidate.setCandidateDOB(updateCandidateDob.getCandidateDob());
+        candidate.update();
+    }
+    public static void updateCandidateTotalExperience(Candidate candidate, UpdateCandidateTotalExperience totalExperience){
+        candidate.setCandidateTotalExperience(totalExperience.getCandidateTotalExperience());
+        candidate.update();
+    }
+    public static void updateCandidateEducation(Candidate candidate, UpdateCandidateEducation candidateEducation){
+        AddCandidateEducationRequest educationShell = new AddCandidateEducationRequest();
+        educationShell.setCandidateDegree(candidateEducation.getCandidateDegree());
+        educationShell.setCandidateEducationInstitute(candidateEducation.getCandidateEducationInstitute());
+        educationShell.setCandidateEducationLevel(candidateEducation.getCandidateEducationLevel());
+        educationShell.setEducationStatus(candidateEducation.getCandidateEducationCompletionStatus());
+
+        candidate.setCandidateEducation(getCandidateEducationFromAddSupportCandidate(educationShell, candidate));
+        candidate.update();
+    }
+    public static void updateCandidateLastWithdrawnSalary(Candidate candidate, UpdateCandidateLastWithdrawnSalary lastWithdrawnSalary){
+        candidate.setCandidateLastWithdrawnSalary(lastWithdrawnSalary.getCandidateLastWithdrawnSalary());
+        candidate.update();
+    }
+    public static void updateCandidateGender(Candidate candidate, UpdateCandidateGender gender){
+        candidate.setCandidateGender(gender.getCandidateGender());
+        candidate.update();
+    }
+    public static void updateCandidateHomeLocality(Candidate candidate, UpdateCandidateHomeLocality homeLocality){
+        if(homeLocality.getCandidateHomeLocality() != null){
+            Locality locality = Locality.find.where().eq("localityId", homeLocality.getCandidateHomeLocality()).findUnique();
+            if(locality != null){
+                candidate.setLocality(locality);
+            }
+        }
+
+        candidate.update();
+    }
+    public static void updateCandidateWorkshift(Candidate candidate, UpdateCandidateTimeShiftPreference timeShiftPreference){
+        AddCandidateRequest requestShell = new AddCandidateRequest();
+        requestShell.setCandidateTimeShiftPref(timeShiftPreference.getCandidateTimeShiftPref());
+        candidate.setTimeShiftPreference(getTimeShiftPrefFromAddSupportCandidate(requestShell, candidate));
+
+        candidate.update();
     }
 }

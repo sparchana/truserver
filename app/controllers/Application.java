@@ -8,6 +8,7 @@ import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpRequest.Workflow.PreScreenRequest;
 import api.http.httpRequest.Workflow.SelectedCandidateRequest;
+import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
@@ -1385,7 +1386,7 @@ public class Application extends Controller {
     public static Result submitAssessment() {
         JsonNode assessmentRequestJson = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + assessmentRequestJson );
-        if(assessmentRequestJson == null){
+        if(assessmentRequestJson == null) {
             return badRequest();
         }
         AssessmentRequest assessmentRequest= new AssessmentRequest();
@@ -1785,7 +1786,10 @@ public class Application extends Controller {
         } else if (ServerConstants.PropertyType.GENDER.ordinal() == propertyId) {
             return  ok(toJson(candidate.getCandidateGender()));
         } else if (ServerConstants.PropertyType.SALARY.ordinal() == propertyId) {
-            return  ok(toJson(candidate.getCandidateLastWithdrawnSalary()));
+            if(candidate.getCandidateLastWithdrawnSalary() != null) {
+                return  ok(toJson(candidate.getCandidateLastWithdrawnSalary()));
+            }
+            return  ok();
         } else if (ServerConstants.PropertyType.LOCALITY.ordinal() == propertyId) {
             return  ok(toJson(candidate.getLocality()));
         } else if (ServerConstants.PropertyType.WORK_SHIFT.ordinal() == propertyId) {
@@ -1793,5 +1797,80 @@ public class Application extends Controller {
         }
 
         return badRequest("Error");
+    }
+
+    public static Result updateCandidateDetailsAtPreScreen(Integer propertyId, Long candidateId) throws IOException {
+        if(candidateId == null && propertyId == null) {
+            return badRequest();
+        }
+
+        JsonNode updateCandidateDetailJSON = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + updateCandidateDetailJSON);
+        if(updateCandidateDetailJSON == null){
+            return badRequest();
+        }
+        ObjectMapper newMapper = new ObjectMapper();
+
+        // since jsonReq has single/multiple values in array
+        newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+
+        Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
+        if(candidate == null) {
+            return badRequest("Candidate Not Found!");
+        }
+
+        if (ServerConstants.PropertyType.DOCUMENT.ordinal() == propertyId) {
+            UpdateCandidateDocument updateCandidateDocument = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateDocument.class);
+            Logger.info(""+ updateCandidateDocument.getIdProofWithIdNumberList().size());
+            return ok("ok");
+        } else if (ServerConstants.PropertyType.LANGUAGE.ordinal() == propertyId) {
+            UpdateCandidateLanguageKnown updateCandidateLanguageKnown = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateLanguageKnown.class);
+
+            CandidateService.updateCandidateLanguageKnown(candidate, updateCandidateLanguageKnown);
+            Logger.info(""+ updateCandidateLanguageKnown.getCandidateLanguageKnown().size());
+            return ok("ok");
+        } else if (ServerConstants.PropertyType.ASSET_OWNED.ordinal() == propertyId) {
+            UpdateCandidateAsset updateCandidateAsset = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateAsset.class);
+
+            CandidateService.updateCandidateAssetOwned(candidate, updateCandidateAsset);
+            return ok("ok");
+        } else if (ServerConstants.PropertyType.MAX_AGE.ordinal() == propertyId) {
+            UpdateCandidateDob updateCandidateDob = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateDob.class);
+
+            CandidateService.updateCandidateDOB(candidate, updateCandidateDob);
+            return ok("ok");
+        } else if (ServerConstants.PropertyType.EXPERIENCE.ordinal() == propertyId) {
+            UpdateCandidateTotalExperience updateCandidateTotalExperience = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateTotalExperience.class);
+
+            CandidateService.updateCandidateTotalExperience(candidate, updateCandidateTotalExperience);
+            return ok("ok");
+        } else if (ServerConstants.PropertyType.EDUCATION.ordinal() == propertyId) {
+            UpdateCandidateEducation updateCandidateEducation= newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateEducation.class);
+
+            CandidateService.updateCandidateEducation(candidate, updateCandidateEducation);
+            return ok("ok");
+        } else if (ServerConstants.PropertyType.GENDER.ordinal() == propertyId) {
+            UpdateCandidateGender updateCandidateGender= newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateGender.class);
+
+            CandidateService.updateCandidateGender(candidate, updateCandidateGender);
+            return ok("ok");
+        } else if (ServerConstants.PropertyType.SALARY.ordinal() == propertyId) {
+            UpdateCandidateLastWithdrawnSalary lastWithdrawnSalary = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateLastWithdrawnSalary.class);
+
+            CandidateService.updateCandidateLastWithdrawnSalary(candidate, lastWithdrawnSalary);
+            return ok("ok");
+        } else if (ServerConstants.PropertyType.LOCALITY.ordinal() == propertyId) {
+            UpdateCandidateHomeLocality updateCandidateHomeLocality = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateHomeLocality.class);
+
+            CandidateService.updateCandidateHomeLocality(candidate, updateCandidateHomeLocality);
+            return ok("ok");
+        } else if (ServerConstants.PropertyType.WORK_SHIFT.ordinal() == propertyId) {
+            UpdateCandidateTimeShiftPreference timeShiftPreference= newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateTimeShiftPreference.class);
+
+            CandidateService.updateCandidateWorkshift(candidate, timeShiftPreference);
+            return ok("ok");
+        }
+
+        return badRequest();
     }
 }
