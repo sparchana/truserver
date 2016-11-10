@@ -1,5 +1,6 @@
 package api.http.httpResponse.Workflow;
 
+import api.ServerConstants;
 import models.entity.Static.*;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class PreScreenPopulateResponse {
 
     public static class PreScreenElement {
         public String propertyTitle;
+        public int propertyId;
 
         public List<Object> propertyIdList;
         public List<Object> jobPostElementList;
@@ -83,6 +85,14 @@ public class PreScreenPopulateResponse {
 
         public void setCandidateElement(Object candidateElement) {
             this.candidateElement = candidateElement;
+        }
+
+        public int getPropertyId() {
+            return propertyId;
+        }
+
+        public void setPropertyId(int propertyId) {
+            this.propertyId = propertyId;
         }
     }
 

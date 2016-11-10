@@ -219,6 +219,34 @@ public class ServerConstants {
     public static final int CATEGORY_ASSET = 3;
     public static final int CATEGORY_PROFILE = 4;
 
+
+    // preScreening propertyId
+    public enum PropertyType{
+        DOCUMENT,
+        LANGUAGE,
+        ASSET_OWNED,
+        MAX_AGE,
+        EXPERIENCE,
+        EDUCATION,
+        GENDER,
+        SALARY,
+        LOCALITY,
+        WORK_SHIFT;
+
+        public String toString() {
+            String title = name();
+            if(title.contains("_")){
+                String head = title.split("_")[0];
+                String tail = title.split("_")[1];
+                head = head.charAt(0) + head.substring(1).toLowerCase();
+                tail = tail.charAt(0) + tail.substring(1).toLowerCase();
+                return head +" "+ tail;
+            } else {
+                return name().charAt(0) + name().substring(1).toLowerCase();
+            }
+        }
+    }
+
     // Recruiter constants
     public static int RECRUITER_CATEGORY_CONTACT_UNLOCK = 1;
     public static int RECRUITER_CATEGORY_INTERVIEW_UNLOCK = 2;
@@ -240,5 +268,4 @@ public class ServerConstants {
     public static final int INTERVIEW_STATUS_REJECTED_BY_RECRUITER = 2;
     public static final int INTERVIEW_STATUS_RESCHEDULED = 3;
     public static final int INTERVIEW_STATUS_REJECTED_BY_CANDIDATE = 4;
-
 }

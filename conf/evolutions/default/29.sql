@@ -1,5 +1,7 @@
 # --- !Ups
 
+alter table idproofreference add column idproofnumber varchar(255) null;
+
 create table interview_status (
   interview_status_id           bigint signed auto_increment not null,
   interview_status_name         varchar(100) not null,
@@ -22,3 +24,4 @@ drop table if exists interview_status;
 
 alter table jobapplication drop column interview_status_id;
 alter table jobapplication drop column interviewstatuscomments;
+alter table idproofreference drop column idproofnumber;

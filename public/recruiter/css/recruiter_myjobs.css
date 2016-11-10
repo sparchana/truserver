@@ -31,3 +31,40 @@
 #colHeadDataTable {
     border-right: 1px solid #ffffff;
 }
+#jobTable{
+    padding-bottom: 4%;
+}
+@media screen and (max-width:1000px){
+    #headerForData{
+        margin: 0;
+        font-weight: 600;
+        font-size: 12px;
+        text-align:center;
+        padding: 1%;
+        background-color: #f3f3f3;
+    }
+    #outerBoxMain{
+        font-size: 12px;
+        text-align:center;
+        padding: 1%;
+        margin: 0;
+        background-color: #ffffff;
+    }
+}
+@media screen and (max-width:600px){
+    #headerForData{
+        margin: 0;
+        font-weight: 600;
+        font-size: 12px;
+        text-align:center;
+        padding: 1%;
+        background-color: #f3f3f3;
+    }
+    #outerBoxMain{
+        font-size: 12px;
+        text-align:left;
+        padding: 1%;
+        margin: 0;
+        background-color: #ffffff;
+    }
+}

@@ -1764,18 +1764,18 @@ public class Application extends Controller {
     }
 
     public static Result confirmInterview(long jpId, long value) {
-        if(session().get("candidateId") != null){
-            Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")). findUnique();
+        if (session().get("candidateId") != null) {
+            Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")).findUnique();
             JobApplication jobApplication = JobApplication.find.where().eq("JobPostId", jpId).eq("candidateId", candidate.getCandidateId()).findUnique();
-            if(jobApplication != null){
+            if (jobApplication != null) {
                 InterviewStatus interviewStatus;
                 Logger.info("Sending sms to recruiter");
-                if(value == 1){
+                if (value == 1) {
                     interviewStatus = InterviewStatus.find.where().eq("interview_status_id", ServerConstants.INTERVIEW_STATUS_ACCEPTED).findUnique();
                     sendInterviewCandidateConfirmation(jobApplication, candidate);
 
                     createInteractionForCandidateAcceptingRescheduledInterviewViaWebsite(candidate.getCandidateUUId());
-                } else{
+                } else {
                     interviewStatus = InterviewStatus.find.where().eq("interview_status_id", ServerConstants.INTERVIEW_STATUS_REJECTED_BY_CANDIDATE).findUnique();
                     sendInterviewCandidateInterviewReject(jobApplication, candidate);
 
@@ -1788,5 +1788,41 @@ public class Application extends Controller {
             }
         }
         return ok("0");
+    }
+
+    public static Result getCandidateDetails(Long candidateId, Integer propertyId) {
+        if(candidateId == null || propertyId == null) {
+            return badRequest();
+        }
+        Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
+        if(candidate == null) {
+            return badRequest("Candidate Not Found!");
+        }
+
+        // unable to use switch-case, issue with ordinal value
+        // return candidate Detail + container element
+        if (ServerConstants.PropertyType.DOCUMENT.ordinal() == propertyId) {
+          return  ok(toJson(candidate.getIdProofReferenceList()));
+        } else if (ServerConstants.PropertyType.LANGUAGE.ordinal() == propertyId) {
+            return  ok(toJson(candidate.getLanguageKnownList()));
+        } else if (ServerConstants.PropertyType.ASSET_OWNED.ordinal() == propertyId) {
+            return  ok(toJson(candidate.getCandidateAssetList()));
+        } else if (ServerConstants.PropertyType.MAX_AGE.ordinal() == propertyId) {
+            return  ok(toJson(candidate.getCandidateDOB()));
+        } else if (ServerConstants.PropertyType.EXPERIENCE.ordinal() == propertyId) {
+            return  ok(toJson(candidate.getCandidateTotalExperience()));
+        } else if (ServerConstants.PropertyType.EDUCATION.ordinal() == propertyId) {
+            return  ok(toJson(candidate.getCandidateEducation()));
+        } else if (ServerConstants.PropertyType.GENDER.ordinal() == propertyId) {
+            return  ok(toJson(candidate.getCandidateGender()));
+        } else if (ServerConstants.PropertyType.SALARY.ordinal() == propertyId) {
+            return  ok(toJson(candidate.getCandidateLastWithdrawnSalary()));
+        } else if (ServerConstants.PropertyType.LOCALITY.ordinal() == propertyId) {
+            return  ok(toJson(candidate.getLocality()));
+        } else if (ServerConstants.PropertyType.WORK_SHIFT.ordinal() == propertyId) {
+            return  ok(toJson(candidate.getTimeShiftPreference()));
+        }
+
+        return badRequest("Error");
     }
 }

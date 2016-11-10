@@ -115,6 +115,10 @@ footer.page-footer .footer-copyright{
 .ascentGreen {
     background-color: #2ec866 !important;
 }
+
+.dropdown-content li > a, .dropdown-content li > span {
+    color: #2ec866;
+}
 .card-content > .row{
     margin: 0;
 }
@@ -123,6 +127,9 @@ footer.page-footer .footer-copyright{
 }
 .input-field label{
     font-size:14px;
+}
+#jobPostDetails label{
+    font-weight: normal;
 }
 #jobPostDetails{
  padding-left:10%;
@@ -136,15 +143,25 @@ div.Tokenize ul.TokensContainer li.TokenSearch input{
 }
 
 #topHeading{
-    font-weight: 600;
     color: #fff;
     margin-top: 114px;
 }
+#hintTextMssg{
+    font-size:16px;
+}
 
 @media screen and (max-width: 768px){
+    #navLogo{
+        height:46%;
+        margin-top: 11%;
+        content:url("/assets/common/img/logo-main.gif");
+    }
     .back-banner-candidate {
         margin-top: -16%;
         padding-top: 7%;
+    }
+    .side-nav a:hover{
+        color: #2ec866;
     }
     #topHeading{
         margin-top: 72px;
@@ -160,5 +177,8 @@ div.Tokenize ul.TokensContainer li.TokenSearch input{
     }
     .custom_container{
         margin: 0;
+    }
+    #hintTextMssg{
+        font-size:12px;
     }
 }
