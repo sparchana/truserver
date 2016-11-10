@@ -789,7 +789,7 @@ function processPreScreenContent(returnedData) {
         var splitDiv = $('<div class="row" style="margin-top: 20px"></div>');
         var noteContainer = document.createElement("div");
         noteContainer.className = "col-lg-6 form-group";
-        var textarea = document.createElement("textarea");app.imn
+        var textarea = document.createElement("textarea");
         textarea.className = "form-control mdl-shadow--2dp";
         textarea.style = "border-radius:0;";
         textarea.rows = "5";
