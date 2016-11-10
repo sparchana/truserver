@@ -222,12 +222,13 @@ function populateLanguages(l, lId) {
             var row = table.insertRow(0);
 
             var cell1 = row.insertCell(0);
+            cell1.style="padding-top:16px;font-weight:bold";
             var cell2 = row.insertCell(1);
             var cell3 = row.insertCell(2);
             var cell4 = row.insertCell(3);
             var cell5 = row.insertCell(4);
 
-            cell1.innerHTML = l[i];
+            cell1.innerHTML = '<span style="margin-top:8px">'+ l[i] +'</span>';
             cell2.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;";
             cell3.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"u\" value=0 >Understand</label></div>";
             cell4.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >Speak</label></div>";
@@ -437,7 +438,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
 
     if(propId == 0) {
         htmlBodyContent = '<div id="document_details">'+
-            '<h5><u>Document Details:</u></h5>'+
+            '<h5>Document Details:</h5>'+
             '</div>';
 
         url = "/support/api/getDocumentReqForJobRole/?job_post_id="+jobPostId;
@@ -447,8 +448,9 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
         }
     } else if(propId == 1) {
         htmlBodyContent = '<div id="language_details">'+
-            '<h5><u>Language Details:</u></h5>'+
-            '<table id="languageTable" class="table table-striped" cellspacing="0" width="100%">'+
+
+            '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Language Details :</b></div>'+
+            '<table id="languageTable" class="mdl-data-table mdl-js-data-table table table-striped mdl-shadow--2dp" cellspacing="0" width="100%">'+
             '<thead>'+
             '</thead>'+
             '<tbody>'+
@@ -467,10 +469,10 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
         }
     } else if(propId == 2) {
 
-        htmlBodyContent = '<h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Asset</h4>'+
-            '<div class="row" style="margin-top: 16px">'+
-            '<div class="col-sm-4" style="margin-top:8px"><font size="2">Asset </font></div>'+
-            '<div class="col-sm-8" id="assetMultiSelectDiv">'+
+        htmlBodyContent ='<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Assets</b></div>'+
+            '<div class="row mdl-shadow--2dp" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
+            '<div class="col-lg-3 col-lg-offset-2" style="margin-top: 8px;text-align: right"><font size="3">Asset : </font></div>'+
+            '<div class="col-lg-4" id="assetMultiSelectDiv">'+
             '<select id="assetMultiSelect" multiple="multiple"></select>'+
             '</div>'+
             '</div>';
@@ -487,9 +489,10 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
         isOverFlowRequired = true;
 
     } else if(propId == 3) {
-        htmlBodyContent = '<div class="row">'+
-            '<div class="col-sm-6"><h5>Date of Birth:</h5></div>'+
-            '<div class="col-sm-6">'+
+        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Date Of Birth</b></div>'+
+            '<div class="row mdl-shadow--2dp" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
+            '<div class="col-lg-3 col-lg-offset-2" style="margin-top: 8px;text-align: right"><font size="3">DOB : </font></div>'+
+            '<div class="col-lg-4">'+
             '<input id="candidateDob" name="candidateDob" placeholder="When is your Birthday?" type="date" class="form-control input-md"  data-date-inline-picker="true"/>'+
             '</div>'+
             '</div>';
@@ -497,10 +500,10 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
         modalTitle = "Candidate DOB Edit";
 
     } else if(propId == 4) {
-        htmlBodyContent = '<h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Experience</h4>'+
-            '<div class="row" style="margin-top: 16px">'+
-            '<div class="col-sm-4" style="margin-top:8px"><font size="2">Experience </font></div>'+
-            '<div class="col-sm-8" id="experienceMultiSelectDiv">'+
+        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Experience</b></div>'+
+            '<div class="row mdl-shadow--2dp" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
+            '<div class="col-lg-3 col-lg-offset-2" style="margin-top: 8px;text-align: right"><font size="3">Experience : </font></div>'+
+            '<div class="col-lg-4" id="experienceMultiSelectDiv">'+
             '<select id="experienceMultiSelect" multiple="multiple"></select>'+
             '</div>'+
             '</div>';
@@ -513,47 +516,46 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
 
         isOverFlowRequired = true;
     } else if(propId == 5) {
-        htmlBodyContent =  '<h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Educational Details</h4>'+
-            '<div id="education_details">'+
-            '<div class="row" style="margin-top: 4px">'+
-            '<div class="col-sm-3"><h5>Highest Education Qualification?</h5></div>'+
-            '<div class="col-sm-9">'+
+        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Educational Details</b></div>'+
+            '<div class="row mdl-shadow--2dp" id="education_details" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
+            '<div class="row">'+
+            '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="2">Highest Education Qualification : </font></div>'+
+            '<div class="col-lg-4">'+
             '<select id="candidateHighestEducation" size="5"></select>'+
             '</div>'+
             '</div>'+
-            '</div>'+
-            '<div class="row" style="margin-top: 4px;">'+
-            '<div class="col-sm-3"><h5>Have you successfully completed this course?</h5></div>'+
-            '<div class="col-sm-9" style="margin-top: 5%">'+
+            '<div class="row" style="margin-top: 10px;">'+
+            '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="2">Have you successfully completed this course?</font></div>'+
+            '<div class="col-lg-4" style="padding-top: 8px;">'+
             '<input type="radio" name="candidateEducationCompletionStatus" id="eduCompleted" '+'value="1">&nbsp;Yes&nbsp;&nbsp;'+
             '<input type="radio" name="candidateEducationCompletionStatus" id="eduCompletedNot" value="0">&nbsp;No'+
             '</div>'+
             '</div>'+
-            '<div id="educationalInstitute" style="margin-top: 26px;" >'+
-            '<div class="row">'+
-            '<div class="col-sm-3"><h5>Highest Education Degree?:</h5></div>'+
-            '<div class="col-sm-5">'+
+            '<div class="row" id="educationalInstitute" style="margin-top: 10px;" >'+
+            '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="2">Highest Education Degree? </font></div>'+
+            '<div class="col-lg-4" style="padding-top: 8px;">'+
             '<select id="candidateHighestDegree" size="5"></select>'+
             '</div>'+
             '</div>'+
-            '<div class="row" style="margin-top: 4px">'+
-            '<div class="col-sm-3"><h5>Last attended Education Institute?</h5></div>'+
-            '<div class="col-sm-5">'+
-            '<input id="candidateEducationInstitute" style="width: 326px" placeholder="Which was the last college  u went to?" type="text" class="form-control input-md">'+
-        '</div>'+
-        '</div>'+
-        '</div>'+
-        '</div>';
+            '<div class="row" style="margin-top: 10px">'+
+            '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="2">Last attended Education Institute? </font></div>'+
+            '<div class="col-lg-4">'+
+            '<input id="candidateEducationInstitute" style="width: 326px" placeholder="Which was the last college you went to?" type="text" class="form-control input-md">'+
+            '</div>'+
+            '</div>'+
+            '</div>';
 
         modalTitle = "Candidate Education Edit";
+        isOverFlowRequired = true;
         url = "/getAllEducation";
         fn = function (returnedData) {
             processDataCheckEducation(returnedData);
         }
     } else if(propId == 6) {
-        htmlBodyContent = '<div class="row" style="margin-top: 4px">'+
-            '<div class="col-sm-3"><h5>Candidate Gender:</h5></div>'+
-            '<div class="col-sm-9" style="margin-top: 6px;">'+
+        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Candidate Gender</b></div>'+
+            '<div class="row mdl-shadow--2dp" id="education_details" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
+            '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="3">Candidate Gender : </font></div>'+
+            '<div class="col-lg-4" style="margin-top: 8px;">'+
             '<input type="radio" name="gender" id="genderMale" value="0">&nbsp;Male&nbsp;&nbsp;'+
             '<input type="radio" name="gender" id="genderFemale" value="1">&nbsp;Female'+
             '</div>'+
@@ -561,20 +563,22 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
 
         modalTitle = "Candidate Gender Edit";
     } else if(propId == 7) {
-        htmlBodyContent = '<div class="row" style="margin-top: 4px">'+
-            '<div class="col-sm-3"><h5>Current/Last Drawn Salary:</h5></div>'+
-            '<div class="col-sm-9">'+
+        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Salary Details</b></div>'+
+            '<div class="row mdl-shadow--2dp" id="education_details" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
+            '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="3">Current/Last Drawn Salary : </font></div>'+
+            '<div class="col-lg-4">'+
             '<input id="candidateLastWithdrawnSalary" placeholder="What was your LastWithdrawn Salary?" type="number" class="form-control input-md">'+
             '</div>'+
             '</div>';
         modalTitle = "Candidate Last Withdrawn Salary Edit";
     } else if(propId == 8) {
-        htmlBodyContent = '<div class="row" style="margin-top: 4px">'+
-            '<div class="col-sm-3"><h5>Current Location:</h5></div>'+
-            '<div class="col-sm-9">'+
-            '<input type="text" id="candidateHomeLocality">'+
-            '</div>'+
-            '</div>';
+        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Current Location</b></div>'+
+        '<div class="row mdl-shadow--2dp" id="education_details" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
+        '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="3">Current Location : </font></div>'+
+        '<div class="col-lg-4">'+
+        '<input type="text" id="candidateHomeLocality">'+
+        '</div>'+
+        '</div>';
 
         modalTitle = "Candidate Home Locality Edit";
         url = "/getAllLocality";
@@ -597,11 +601,10 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
         }
 
     } else if(propId == 9) {
-        htmlBodyContent =  '<h4 style="background: #ded9d8;padding: 2%; border-radius: 8px">Job TimeShift Preferences</h4>'+
-            '<div id="job_pref_details">'+
-            '<div class="row">'+
-            '<div class="col-sm-3" style="margin-top: 5px"><h5 style="margin-top: 4px">Preferred work shift?: </h5></div>'+
-            '<div class="col-sm-9" style="margin-top: 6px;">'+
+        htmlBodyContent =  '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Job TimeShift Preferences</b></div>'+
+            '<div class="row mdl-shadow--2dp" id="education_details" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
+            '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="3">Preferred work shift? </font></div>'+
+            '<div class="col-lg-4">'+
             '<select id="candidateTimeShiftPref" size="5"></select>'+
             '</div>'+
             '</div>'+
@@ -783,22 +786,24 @@ function processPreScreenContent(returnedData) {
 
         otherReqTableContainer.append(otherTable);
 
-        var splitDiv = $('<div class="row"></div>');
-
+        var splitDiv = $('<div class="row" style="margin-top: 20px"></div>');
         var noteContainer = document.createElement("div");
-        noteContainer.className = "col-xs-6 form-group";
-        var textarea = document.createElement("textarea");
-        textarea.className = "form-control";
+        noteContainer.className = "col-lg-6 form-group";
+        var textarea = document.createElement("textarea");app.imn
+        textarea.className = "form-control mdl-shadow--2dp";
+        textarea.style = "border-radius:0;";
         textarea.rows = "5";
         textarea.type = "text";
+        textarea.placeholder = "Extra Comment";
         textarea.id = "pre_screen_note";
 
         var minReqContainer = document.createElement("div");
-        minReqContainer.className = "col-xs-6 form-group";
+        minReqContainer.className = "col-lg-6 form-group";
         var minReqTextArea = document.createElement("textarea");
-        minReqTextArea.className = "form-control";
+        minReqTextArea.className = "form-control mdl-shadow--2dp";
         minReqTextArea.rows = "5";
         minReqTextArea.type = "text";
+        minReqTextArea.style = "border-radius:0;";
         minReqTextArea.id = "job_post_min_req";
         minReqTextArea.disabled = true;
 
@@ -810,10 +815,19 @@ function processPreScreenContent(returnedData) {
         }
         minReqTextArea.textContent = data;
 
+        var rowHeadingPost = document.createElement("div");
+        rowHeadingPost.style = "padding:1% 2%;background-color:rgb(63, 81, 181);color:#fff";
+        minReqContainer.appendChild(rowHeadingPost);
+
+        var rowHeadingNote = document.createElement("div");
+        rowHeadingNote.style = "padding:1% 2%;background-color:rgb(63, 81, 181);color:#fff";
+        noteContainer.appendChild(rowHeadingNote);
+
         var label = document.createElement("label");
         label.for= "job_post_min_req";
+        label.style = "margin:0";
         label.textContent = "Job Post Min Req";
-        minReqContainer.appendChild(label);
+        rowHeadingPost.appendChild(label);
         minReqContainer.appendChild(minReqTextArea);
         splitDiv.append(minReqContainer);
 
@@ -821,7 +835,8 @@ function processPreScreenContent(returnedData) {
         var label = document.createElement("label");
         label.for= "pre_screen_note";
         label.textContent = "Note";
-        noteContainer.appendChild(label);
+        label.style = "margin :0";
+        rowHeadingNote.appendChild(label);
         noteContainer.appendChild(textarea);
         splitDiv.append(noteContainer);
         container.append(splitDiv);
