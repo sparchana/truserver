@@ -12,6 +12,7 @@ public class AnalyticsRequest {
     public Date fromThisDate;
     public Date toThisDate;
     public List<String> Metrics;
+    public Float profileCompletionMaxScore;
     public Boolean updateGoogleSheet;
 
     public Date getFromThisDate() {
@@ -65,4 +66,13 @@ public class AnalyticsRequest {
     public void setUpdateGoogleSheet(Boolean updateGoogleSheet) {
         this.updateGoogleSheet = updateGoogleSheet;
     }
+
+    public Float getProfileCompletionMaxScore() {
+        return profileCompletionMaxScore;
+    }
+
+    public void setProfileCompletionMaxScore(Float profileCompletionMaxScore) {
+        this.profileCompletionMaxScore = profileCompletionMaxScore;
+    }
 }
+
