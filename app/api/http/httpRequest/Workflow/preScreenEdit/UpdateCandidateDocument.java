@@ -7,15 +7,11 @@ import java.util.List;
  */
 public class UpdateCandidateDocument {
 
-    public class IdProofWithIdNumber {
+    public static class IdProofWithIdNumber {
         Integer idProofId;
         String idNumber;
 
         public IdProofWithIdNumber() {
-        }
-
-        public IdProofWithIdNumber(UpdateCandidateDocument.IdProofWithIdNumber idProofWithIdNumber) {
-            //constructor Code
         }
 
         public String getIdNumber() {

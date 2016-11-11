@@ -1821,6 +1821,7 @@ public class Application extends Controller {
 
         if (ServerConstants.PropertyType.DOCUMENT.ordinal() == propertyId) {
             UpdateCandidateDocument updateCandidateDocument = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateDocument.class);
+            CandidateService.UpdateCandidateDocument(candidate, updateCandidateDocument);
             Logger.info(""+ updateCandidateDocument.getIdProofWithIdNumberList().size());
             return ok("ok");
         } else if (ServerConstants.PropertyType.LANGUAGE.ordinal() == propertyId) {

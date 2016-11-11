@@ -524,13 +524,13 @@ function processIdProofsWithNumbers(returnedData) {
                 bodyContentBox.appendChild(checkboxTd);
                 var checkMatchLabel = document.createElement("label");
                 checkMatchLabel.type = "checkbox";
-                checkMatchLabel.for = "checkbox_" + idProof.idProofId;
+                checkMatchLabel.for = "checkboxLabel_" + idProof.idProofId;
                 checkMatchLabel.style = 'text-align:center';
                 checkMatchLabel.className = "mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect";
                 checkboxTd.appendChild(checkMatchLabel);
                 var checkMatch = document.createElement("input");
                 checkMatch.type = "checkbox";
-                checkMatch.id = "checkbox_" + idProof.idProofId;
+                checkMatch.id = "idProofCheckbox_" + idProof.idProofId;
                 checkMatch.className = "mdl-checkbox__input";
                 checkMatchLabel.appendChild(checkMatch);
 
@@ -628,8 +628,8 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
         setter = function (returnedData) {
             if(returnedData!= null) {
                 returnedData.forEach(function (doc) {
-                    $('#checkbox_'+doc.idProof.idProofId).prop('checked', true);
-                    $('#idProofNumberTd_'+doc.idProof.idProofId).val(doc.idProofNumber);
+                    $('#idProofCheckbox_'+doc.idProof.idProofId).prop('checked', true);
+                    $('#idProofValue_'+doc.idProof.idProofId).val(doc.idProofNumber);
                 });
             }
         }

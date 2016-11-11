@@ -29,6 +29,7 @@ import javax.persistence.NonUniqueResultException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static controllers.businessLogic.InteractionService.*;
@@ -1476,5 +1477,28 @@ public class CandidateService
         candidate.setTimeShiftPreference(getTimeShiftPrefFromAddSupportCandidate(requestShell, candidate));
 
         candidate.update();
+    }
+
+    public static void UpdateCandidateDocument(Candidate candidate, UpdateCandidateDocument updateCandidateDocument) {
+        List<IDProofReference> candidateIdProofList = new ArrayList<>();
+        List<Integer> idProofIdList = new ArrayList<>();
+        if(updateCandidateDocument.getIdProofWithIdNumberList() != null && updateCandidateDocument.getIdProofWithIdNumberList().size() > 0) {
+            for(UpdateCandidateDocument.IdProofWithIdNumber idProofWithIdNumber : updateCandidateDocument.getIdProofWithIdNumberList()) {
+                if(idProofWithIdNumber.getIdProofId() != null) idProofIdList.add(idProofWithIdNumber.getIdProofId());
+            }
+            Map<?, IdProof> idProofMap = IdProof.find.where().in("idProofId", idProofIdList).setMapKey("idProofId").findMap();;
+
+            for(UpdateCandidateDocument.IdProofWithIdNumber idProofWithIdNumber : updateCandidateDocument.getIdProofWithIdNumberList()) {
+                IDProofReference idProofReference = new IDProofReference();
+                idProofReference.setCandidate(candidate);
+                idProofReference.setIdProof(idProofMap.get(idProofWithIdNumber.getIdProofId()));
+                idProofReference.setIdProofNumber(idProofWithIdNumber.getIdNumber());
+
+                candidateIdProofList.add(idProofReference);
+            }
+            Logger.info("idProofListSize: " + candidateIdProofList.size());
+            candidate.setIdProofReferenceList(candidateIdProofList);
+            candidate.update();
+        }
     }
 }
