@@ -5,6 +5,59 @@
 var f;
 var companyId;
 
+$(document).scroll(function(){
+    if ($(this).scrollTop() > 20) {
+        $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
+    }
+    else{
+        $('nav').css({"background": "transparent"});
+    }
+});
+$(document).ready(function(){
+    $(".button-collapse").sideNav();
+    $(".dropdown-button").dropdown();
+    checkRecruiterLogin();
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllLocality",
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataCheckLocality
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllCompanyType",
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataCompanyType
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
+    try {
+        $.ajax({
+            type: "GET",
+            url: "/getRecruiterProfileInfo",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataRecruiterProfile
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+});
+
 $('input[type=file]').change(function () {
     f = this.files[0];
 });
@@ -74,62 +127,6 @@ function processDataLogoutRecruiter() {
     window.location = "/recruiter";
 }
 
-$(document).scroll(function(){
-    if ($(this).scrollTop() > 80) {
-        $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
-    }
-    else{
-        $('nav').css({"background": "transparent"});
-    }
-});
-
-$(document).ready(function(){
-    checkRecruiterLogin();
-    $('.button-collapse').sideNav({
-        menuWidth: 240,
-        edge: 'left',
-        closeOnClick: true
-    });
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getAllLocality",
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataCheckLocality
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getAllCompanyType",
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataCompanyType
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-
-    try {
-        $.ajax({
-            type: "GET",
-            url: "/getRecruiterProfileInfo",
-            data: false,
-            async: false,
-            contentType: false,
-            processData: false,
-            success: processDataRecruiterProfile
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
-});
 
 function checkRecruiterLogin() {
     try {
@@ -153,7 +150,6 @@ function processDataRecruiterSession(returnedData) {
 }
 
 function processDataRecruiterProfile(returnedData) {
-    console.log(returnedData);
     if (returnedData == '0') {
         logoutRecruiter();
     } else {

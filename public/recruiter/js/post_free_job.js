@@ -117,7 +117,7 @@ function changeJobReqClass() {
     $("font#jobDescTabHead").removeClass("activeTab");
 }
 $(document).scroll(function(){
-    if ($(this).scrollTop() > 80) {
+    if ($(this).scrollTop() > 30) {
         $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
     }
     else{
