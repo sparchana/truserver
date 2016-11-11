@@ -1128,6 +1128,7 @@ function constructPreScreenBodyContainer(returnedData) {
 
                 var checkMatchLabel = document.createElement("label");
                 checkMatchLabel.type = "checkbox";
+                checkMatchLabel.id = "ready_checkbox_" + rowData.propertyId;
                 checkMatchLabel.for = "checkbox_" + rowData.propertyIdList.join("-");
                 checkMatchLabel.style = 'text-align:center';
                 checkMatchLabel.className = "mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect";
@@ -1348,7 +1349,22 @@ function reProcessPreScreenContent(returnedData){
     }
     if(returnedData != null){
         var container = constructPreScreenBodyContainer(returnedData);
+        var allSelectedCheckboxIdArray = $("#pre_screen_body input[type='checkbox']:checked").parent();
+        var tempList = [];
+        var len = allSelectedCheckboxIdArray.size();
+        for (var j = 0; j < len; j++) {
+            var checkbox = allSelectedCheckboxIdArray[j].id;
+            var id = checkbox.split("_")[2];
+            tempList.push(parseInt(id));
+        }
         $('#pre_screen_body').html(container);
+        for (var j = 0; j < len; j++) {
+            var id = tempList[j];
+            console.log("id-->"+id + " <-");
+            $('#ready_checkbox_'+id).children().prop('checked', true);
+        }
+
+        // re-render previously checked checkboxes
     }
 }
 
