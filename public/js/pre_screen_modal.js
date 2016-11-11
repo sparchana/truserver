@@ -114,14 +114,13 @@ function saveEditedResponses(candidateId, propId, jobPostId) {
             if($(this).attr('id') != undefined) {
                 id = $(this).attr('id').split("_").slice(-1).pop();
 
-                if($('input#checkbox_'+id).is(':checked')) {
+                if($('input#idProofCheckbox_'+id).is(':checked')) {
                     item["idProofId"] = parseInt(id);
                     if( $('input#idProofValue_'+id).val() == null ||  $('input#idProofValue_'+id).val().trim() == ""){
                         okToSubmit = false;
                     }
                     item["idNumber"] = $('input#idProofValue_'+id).val().trim();
                 }
-                console.log(item);
 
                 if(!jQuery.isEmptyObject(item)){
                     documentList.push(item);
@@ -531,6 +530,9 @@ function processIdProofsWithNumbers(returnedData) {
                 var checkMatch = document.createElement("input");
                 checkMatch.type = "checkbox";
                 checkMatch.id = "idProofCheckbox_" + idProof.idProofId;
+                checkMatch.onclick = function () {
+                    $('#idProofValue_'+idProof.idProofId).val("");
+                };
                 checkMatch.className = "mdl-checkbox__input";
                 checkMatchLabel.appendChild(checkMatch);
 
@@ -628,8 +630,8 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
         setter = function (returnedData) {
             if(returnedData!= null) {
                 returnedData.forEach(function (doc) {
-                    $('#idProofCheckbox_'+doc.idProof.idProofId).prop('checked', true);
-                    $('#idProofValue_'+doc.idProof.idProofId).val(doc.idProofNumber);
+                    $('#idProofCheckbox_' + doc.idProof.idProofId).prop('checked', true);
+                    $('#idProofValue_' + doc.idProof.idProofId).val(doc.idProofNumber);
                 });
             }
         }

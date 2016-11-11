@@ -1496,7 +1496,6 @@ public class CandidateService
 
                 candidateIdProofList.add(idProofReference);
             }
-            Logger.info("idProofListSize: " + candidateIdProofList.size());
             candidate.setIdProofReferenceList(candidateIdProofList);
             candidate.update();
         }
