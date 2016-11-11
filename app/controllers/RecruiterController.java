@@ -317,15 +317,12 @@ public class RecruiterController {
                     // TODO move 1,2,3 to server constant
                     if (matchingCandidateRequest.getSortBy() == ServerConstants.REC_SORT_LASTEST_ACTIVE) {
                         // last active, latest on top
-//                        Collections.sort(listToBeReturned,  (o1, o2) -> o2.getExtraData().getLastActive().lastActiveValueId.compareTo(o1.getExtraData().getLastActive().lastActiveValueId));
                         Collections.sort(listToBeReturned,  new LastActiveComparator());
                     } else if (matchingCandidateRequest.getSortBy() == ServerConstants.REC_SORT_SALARY_H_TO_L) {
                         // candidate lw salary H->L
-//                        Collections.sort(listToBeReturned,  (o1, o2) -> o2.getCandidate().getCandidateLastWithdrawnSalary().compareTo(o1.getCandidate().getCandidateLastWithdrawnSalary()));
                         Collections.sort(listToBeReturned,  new SalaryComparatorHtoL());
                     } else if (matchingCandidateRequest.getSortBy() == ServerConstants.REC_SORT_SALARY_L_TO_H) {
                         // candidate lw salary L->H
-//                        Collections.sort(listToBeReturned,  (o1, o2) -> o1.getCandidate().getCandidateLastWithdrawnSalary().compareTo(o2.getCandidate().getCandidateLastWithdrawnSalary()));
                         Collections.sort(listToBeReturned,  new SalaryComparatorLtoH());
                     }
 

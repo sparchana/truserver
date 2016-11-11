@@ -193,6 +193,9 @@ public class Candidate extends Model {
     @Transient
     private String matchedLocation = null;
 
+    @Transient
+    private Float profileCompletionScore = null;
+
     @JsonBackReference
     @OneToMany(mappedBy = "candidate", cascade = CascadeType.ALL)
     private List<RecruiterToCandidateUnlocked> recruiterToCandidateUnlockedList;
@@ -590,6 +593,14 @@ public class Candidate extends Model {
 
     public void setMatchedLocation(String matchedLocation) {
         this.matchedLocation = matchedLocation;
+    }
+
+    public Float getProfileCompletionScore() {
+        return profileCompletionScore;
+    }
+
+    public void setProfileCompletionScore(Float profileCompletionScore) {
+        this.profileCompletionScore = profileCompletionScore;
     }
 
     public List<RecruiterToCandidateUnlocked> getRecruiterToCandidateUnlockedList() {
