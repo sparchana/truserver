@@ -1408,14 +1408,34 @@ public class CandidateService
     }
 
     // individual update service for pre-screen-edit
+    public static void UpdateCandidateDocument(Candidate candidate, UpdateCandidateDocument updateCandidateDocument) {
+        List<IDProofReference> candidateIdProofList = new ArrayList<>();
+        List<Integer> idProofIdList = new ArrayList<>();
+        if(updateCandidateDocument.getIdProofWithIdNumberList() != null && updateCandidateDocument.getIdProofWithIdNumberList().size() > 0) {
+            for(UpdateCandidateDocument.IdProofWithIdNumber idProofWithIdNumber : updateCandidateDocument.getIdProofWithIdNumberList()) {
+                if(idProofWithIdNumber.getIdProofId() != null) idProofIdList.add(idProofWithIdNumber.getIdProofId());
+            }
+            Map<?, IdProof> idProofMap = IdProof.find.where().in("idProofId", idProofIdList).setMapKey("idProofId").findMap();;
+
+            for(UpdateCandidateDocument.IdProofWithIdNumber idProofWithIdNumber : updateCandidateDocument.getIdProofWithIdNumberList()) {
+                IDProofReference idProofReference = new IDProofReference();
+                idProofReference.setCandidate(candidate);
+                idProofReference.setIdProof(idProofMap.get(idProofWithIdNumber.getIdProofId()));
+                idProofReference.setIdProofNumber(idProofWithIdNumber.getIdNumber());
+                candidateIdProofList.add(idProofReference);
+            }
+            candidate.setIdProofReferenceList(candidateIdProofList);
+            candidate.update();
+        }
+    }
+
     public static void updateCandidateLanguageKnown(Candidate candidate, UpdateCandidateLanguageKnown updateCandidateLanguageKnown){
         AddCandidateExperienceRequest candidateLanguageShell = new AddCandidateExperienceRequest();
-        candidateLanguageShell.setCandidateLanguageKnown(updateCandidateLanguageKnown.getCandidateLanguageKnown());
+        candidateLanguageShell.setCandidateLanguageKnown(updateCandidateLanguageKnown.getCandidateKnownLanguageList());
         candidate.setLanguageKnownList(CandidateService.getCandidateLanguageFromSupportCandidate(candidateLanguageShell, candidate));
         candidate.update();
     }
     public static void updateCandidateAssetOwned(Candidate candidate, UpdateCandidateAsset asset){
-
         if(asset!= null && asset.getAssetIdList() != null && asset.getAssetIdList().size()>0) {
             List<Asset> assetList = Asset.find.where().in("assetId", asset.getAssetIdList()).findList();
             List<CandidateAsset> candidateAssetList = new ArrayList<>();
@@ -1477,27 +1497,5 @@ public class CandidateService
         candidate.setTimeShiftPreference(getTimeShiftPrefFromAddSupportCandidate(requestShell, candidate));
 
         candidate.update();
-    }
-
-    public static void UpdateCandidateDocument(Candidate candidate, UpdateCandidateDocument updateCandidateDocument) {
-        List<IDProofReference> candidateIdProofList = new ArrayList<>();
-        List<Integer> idProofIdList = new ArrayList<>();
-        if(updateCandidateDocument.getIdProofWithIdNumberList() != null && updateCandidateDocument.getIdProofWithIdNumberList().size() > 0) {
-            for(UpdateCandidateDocument.IdProofWithIdNumber idProofWithIdNumber : updateCandidateDocument.getIdProofWithIdNumberList()) {
-                if(idProofWithIdNumber.getIdProofId() != null) idProofIdList.add(idProofWithIdNumber.getIdProofId());
-            }
-            Map<?, IdProof> idProofMap = IdProof.find.where().in("idProofId", idProofIdList).setMapKey("idProofId").findMap();;
-
-            for(UpdateCandidateDocument.IdProofWithIdNumber idProofWithIdNumber : updateCandidateDocument.getIdProofWithIdNumberList()) {
-                IDProofReference idProofReference = new IDProofReference();
-                idProofReference.setCandidate(candidate);
-                idProofReference.setIdProof(idProofMap.get(idProofWithIdNumber.getIdProofId()));
-                idProofReference.setIdProofNumber(idProofWithIdNumber.getIdNumber());
-
-                candidateIdProofList.add(idProofReference);
-            }
-            candidate.setIdProofReferenceList(candidateIdProofList);
-            candidate.update();
-        }
     }
 }

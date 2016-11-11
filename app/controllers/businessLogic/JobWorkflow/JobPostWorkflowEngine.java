@@ -15,10 +15,7 @@ import models.entity.Candidate;
 import models.entity.Interaction;
 import models.entity.JobPost;
 import models.entity.OM.*;
-import models.entity.Static.IdProof;
-import models.entity.Static.JobPostWorkflowStatus;
-import models.entity.Static.Language;
-import models.entity.Static.Locality;
+import models.entity.Static.*;
 import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
@@ -686,6 +683,9 @@ public class JobPostWorkflowEngine {
                     populateResponse.elementList.add(preScreenElement);
                     break;
                 case ServerConstants.CATEGORY_ASSET:
+
+                    List<Asset> candidateAssetList = new ArrayList<>();
+                    List<Asset> jobPostAssetList = new ArrayList<>();
                     // we don't capture candidate asset detail into asset object
                     preScreenElement = new PreScreenPopulateResponse.PreScreenElement();
                     preScreenElement.setPropertyTitle(ServerConstants.PropertyType.ASSET_OWNED.toString());
@@ -697,9 +697,23 @@ public class JobPostWorkflowEngine {
                     for (PreScreenRequirement preScreenRequirement : entry.getValue()) {
                         preScreenElement.jobPostElementList.add(preScreenRequirement.getAsset().getAssetTitle());
                         preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
+                        jobPostAssetList.add(preScreenRequirement.getAsset());
+                    }
+                    if (candidate.getCandidateAssetList() != null && candidate.getCandidateAssetList().size()>0) {
+                        for (CandidateAsset ca : candidate.getCandidateAssetList()){
+                            candidateAssetList.add(ca.getAsset());
+                        }
+                        for (Asset asset: jobPostAssetList) {
+                            if (candidateAssetList.contains(asset)) {
+                                preScreenElement.candidateElementList.add(asset.getAssetTitle());
+                            } else {
+                                preScreenElement.isMatching = false;
+                            }
+                        }
+                    } else {
+                        preScreenElement.isMatching = false;
                     }
                     preScreenElement.isSingleEntity = false;
-                    preScreenElement.isMatching = true;
                     preScreenElement.isMinReq = true;
 
                     populateResponse.elementList.add(preScreenElement);
@@ -758,9 +772,8 @@ public class JobPostWorkflowEngine {
 
                                     preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
                                     preScreenElement.jobPostElement = (jobPost.getJobPostEducation().getEducationName());
-                                    if(candidate.getCandidateEducation() != null) {
+                                    if(candidate.getCandidateEducation() != null && candidate.getCandidateEducation().getEducation() != null) {
                                         preScreenElement.candidateElement = (candidate.getCandidateEducation().getEducation().getEducationName());
-
                                         if(!(jobPost.getJobPostEducation().equals(candidate.getCandidateEducation().getEducation()))) {
                                             preScreenElement.isMatching = false;
                                         }

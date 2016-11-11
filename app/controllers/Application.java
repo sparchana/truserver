@@ -1772,19 +1772,19 @@ public class Application extends Controller {
         // unable to use switch-case, issue with ordinal value
         // return candidate Detail + container element
         if (ServerConstants.PropertyType.DOCUMENT.ordinal() == propertyId) {
-          return  ok(toJson(candidate.getIdProofReferenceList()));
+          return  ok(toJson(candidate.getIdProofReferenceList() != null ? candidate.getIdProofReferenceList(): new ArrayList<>()));
         } else if (ServerConstants.PropertyType.LANGUAGE.ordinal() == propertyId) {
-            return  ok(toJson(candidate.getLanguageKnownList()));
+            return  ok(toJson(candidate.getLanguageKnownList() != null ? candidate.getLanguageKnownList(): new ArrayList<>()));
         } else if (ServerConstants.PropertyType.ASSET_OWNED.ordinal() == propertyId) {
-            return  ok(toJson(candidate.getCandidateAssetList()));
+            return  ok(toJson(candidate.getCandidateAssetList() != null ? candidate.getCandidateAssetList(): new ArrayList<>()));
         } else if (ServerConstants.PropertyType.MAX_AGE.ordinal() == propertyId) {
-            return  ok(toJson(candidate.getCandidateDOB()));
+            return  ok(toJson(candidate.getCandidateDOB() != null ? candidate.getCandidateDOB(): ""));
         } else if (ServerConstants.PropertyType.EXPERIENCE.ordinal() == propertyId) {
-            return  ok(toJson(candidate.getCandidateTotalExperience()));
+            return  ok(toJson(candidate.getCandidateTotalExperience() != null ? candidate.getCandidateTotalExperience(): ""));
         } else if (ServerConstants.PropertyType.EDUCATION.ordinal() == propertyId) {
-            return  ok(toJson(candidate.getCandidateEducation()));
+            return  ok(toJson(candidate.getCandidateEducation() != null ? candidate.getCandidateEducation(): ""));
         } else if (ServerConstants.PropertyType.GENDER.ordinal() == propertyId) {
-            return  ok(toJson(candidate.getCandidateGender()));
+            return  ok(toJson(candidate.getCandidateGender() != null ? candidate.getCandidateGender(): ""));
         } else if (ServerConstants.PropertyType.SALARY.ordinal() == propertyId) {
             if(candidate.getCandidateLastWithdrawnSalary() != null) {
                 return  ok(toJson(candidate.getCandidateLastWithdrawnSalary()));
@@ -1827,7 +1827,6 @@ public class Application extends Controller {
             UpdateCandidateLanguageKnown updateCandidateLanguageKnown = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateLanguageKnown.class);
 
             CandidateService.updateCandidateLanguageKnown(candidate, updateCandidateLanguageKnown);
-            Logger.info(""+ updateCandidateLanguageKnown.getCandidateLanguageKnown().size());
             return ok("ok");
         } else if (ServerConstants.PropertyType.ASSET_OWNED.ordinal() == propertyId) {
             UpdateCandidateAsset updateCandidateAsset = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateAsset.class);
