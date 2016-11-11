@@ -755,8 +755,13 @@ public class JobPostWorkflowEngine {
                                         double totalExpInYrs= ((double)candidate.getCandidateTotalExperience())/12;
                                         preScreenElement.candidateElement = (Util.RoundTo2Decimals(totalExpInYrs)+ " Yrs");
 
-                                        if(!(jobPostMinMaxExp.minExperienceValue <= candidate.getCandidateTotalExperience())) {
-                                            preScreenElement.isMatching = false;
+                                        if(!(jobPostMinMaxExp.minExperienceValue > 0 && candidate.getCandidateTotalExperience() > 0
+                                                && jobPostMinMaxExp.minExperienceValue <= candidate.getCandidateTotalExperience())) {
+                                            if ((jobPostMinMaxExp.minExperienceValue == 0 && candidate.getCandidateTotalExperience() == 0)) {
+                                                preScreenElement.isMatching = true;
+                                            } else {
+                                                preScreenElement.isMatching = false;
+                                            }
                                         }
                                     } else {
                                         // candidate exp is not available hence not a match
@@ -774,7 +779,7 @@ public class JobPostWorkflowEngine {
                                     preScreenElement.jobPostElement = (jobPost.getJobPostEducation().getEducationName());
                                     if(candidate.getCandidateEducation() != null && candidate.getCandidateEducation().getEducation() != null) {
                                         preScreenElement.candidateElement = (candidate.getCandidateEducation().getEducation().getEducationName());
-                                        if(!(jobPost.getJobPostEducation().equals(candidate.getCandidateEducation().getEducation()))) {
+                                        if(!((candidate.getCandidateEducation().getEducation().getEducationId() - jobPost.getJobPostEducation().getEducationId()) >=0)) {
                                             preScreenElement.isMatching = false;
                                         }
                                     } else {
@@ -885,7 +890,8 @@ public class JobPostWorkflowEngine {
                                     }
                                     if (candidate.getTimeShiftPreference() != null) {
                                         preScreenElement.candidateElement = candidate.getTimeShiftPreference().getTimeShift().getTimeShiftName();
-                                        if (jobPost.getJobPostShift().getTimeShiftId() != candidate.getTimeShiftPreference().getTimeShift().getTimeShiftId()) {
+                                        if (jobPost.getJobPostShift().getTimeShiftId() != candidate.getTimeShiftPreference().getTimeShift().getTimeShiftId()
+                                                && !candidate.getTimeShiftPreference().getTimeShift().getTimeShiftName().trim().equalsIgnoreCase("any")) {
                                             preScreenElement.isMatching = false;
                                         }
                                     } else {
