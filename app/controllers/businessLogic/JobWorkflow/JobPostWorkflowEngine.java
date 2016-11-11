@@ -633,14 +633,18 @@ public class JobPostWorkflowEngine {
                         if (candidate.getIdProofReferenceList() != null && candidate.getIdProofReferenceList().size() > 0) {
                             isAvailable = true;
                         }
-                        Map<Integer, IdProof> idProofMap = new HashMap<>();
+                        Map<Integer, IDProofReference> idProofMap = new HashMap<>();
                         for(IDProofReference idProofReference :  candidate.getIdProofReferenceList()){
-                            idProofMap.put(idProofReference.getIdProof().getIdProofId(), idProofReference.getIdProof());
+                            idProofMap.put(idProofReference.getIdProof().getIdProofId(), idProofReference);
                         }
                         for (PreScreenRequirement preScreenRequirement : entry.getValue()) {
                             preScreenElement.jobPostElementList.add(preScreenRequirement.getIdProof().getIdProofName());
                             preScreenElement.propertyIdList.add(preScreenRequirement.getPreScreenRequirementId());
-                            if (isAvailable && idProofMap.get(preScreenRequirement.getIdProof().getIdProofId()) != null) {
+                            IDProofReference idProofReference = idProofMap.get(preScreenRequirement.getIdProof().getIdProofId());
+                            if (isAvailable && idProofReference != null) {
+                                if((idProofReference.getIdProofNumber() == null || idProofReference.getIdProofNumber().trim().isEmpty())){
+                                    preScreenElement.isMatching = false;
+                                }
                                 preScreenElement.candidateElementList.add(preScreenRequirement.getIdProof().getIdProofName());
                             } else {
                                 preScreenElement.isMatching = false;
