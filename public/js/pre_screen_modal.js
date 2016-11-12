@@ -1293,16 +1293,19 @@ function constructPreScreenBodyContainer(returnedData, customD) {
 
                 if ($.inArray(6, customD.columnVisible) > -1) {
                     // edit href
-                    var editLink = document.createElement("td");
-                    var a = document.createElement('a');
-                    var linkText = document.createTextNode("Edit");
-                    a.appendChild(linkText);
-                    a.style = "cursor: pointer";
-                    a.onclick = function () {
-                        fetchEditModalContent(candidateId, rowData.propertyId, jobPostId, customD);
-                    };
-                    editLink.appendChild(a);
-                    bodyContentBox.appendChild(editLink);
+                    if(!((rowData.propertyId == "3") && (bodyContentData3.textContent.length > 0))){
+                        console.log(rowData.propertyId + " ->" + bodyContentData3.textContent.length + "<-");
+                        var editLink = document.createElement("td");
+                        var a = document.createElement('a');
+                        var linkText = document.createTextNode("Edit");
+                        a.appendChild(linkText);
+                        a.style = "cursor: pointer";
+                        a.onclick = function () {
+                            fetchEditModalContent(candidateId, rowData.propertyId, jobPostId, customD);
+                        };
+                        editLink.appendChild(a);
+                        bodyContentBox.appendChild(editLink);
+                    }
                 }
             } else {
 
@@ -1367,17 +1370,20 @@ function constructPreScreenBodyContainer(returnedData, customD) {
                 }
                 if ($.inArray(6, customD.columnVisible) > -1) {
                     // edit href
-                    var editLink = document.createElement("td");
-                    var a = document.createElement('a');
-                    var linkText = document.createTextNode("Edit");
-                    a.appendChild(linkText);
-                    a.style = "cursor: pointer";
-                    a.title = "Edit";
-                    a.onclick = function () {
-                        fetchEditModalContent(candidateId, rowData.propertyId, jobPostId, customD);
-                    };
-                    editLink.appendChild(a);
-                    bodyContentBox.appendChild(editLink);
+                    if(!(rowData.propertyId == "6" && bodyContentData3.textContent.length > 0)){
+                        console.log(rowData.propertyId + " ->" + bodyContentData3.textContent.length + "<-");
+                        var editLink = document.createElement("td");
+                        var a = document.createElement('a');
+                        var linkText = document.createTextNode("Edit");
+                        a.appendChild(linkText);
+                        a.style = "cursor: pointer";
+                        a.title = "Edit";
+                        a.onclick = function () {
+                            fetchEditModalContent(candidateId, rowData.propertyId, jobPostId, customD);
+                        };
+                        editLink.appendChild(a);
+                        bodyContentBox.appendChild(editLink);
+                    }
                 }
             }
         }
