@@ -2,6 +2,116 @@ var languageArray = [];
 var currentLocationArray = [];
 var localityArray = [];
 
+// use this object to set style, class, glyphicon
+var globalPalette = {
+    color: {
+        main:{
+            headerColor: "rgb(63,81,181)"
+        }
+    }
+};
+var decorator;
+function initDecorator(colorPalette) {
+    if(colorPalette == null) {
+        colorPalette = globalPalette;
+    }
+    decorator = {
+        preScreen: {
+            className: "mdl-grid"
+        },
+        container : {
+            className: "row mdl-cell mdl-cell--12-col"
+        },
+        bootBoxMain: {
+            className: "pre-screen-modal"
+        },
+        table: {
+            mainTable: {
+                className: "mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--12-col",
+                style: "margin:0;border:none",
+                tHead: {
+                    style: "background-color:" + colorPalette.color.main.headerColor,
+                    titleText_1:"",
+                    titleText_2:"Job Post Info",
+                    titleText_3:"Candidate Info",
+                    titleText_4:"Match?",
+                    titleText_5:"Is candidate Ready",
+                    titleText_6:"Edit"
+                },
+                tBody: {
+                    style: ""
+                }
+            },
+            otherTable: {
+                className: "mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--12-col",
+                style: "margin:0;border:none",
+                tHead: {
+                    style: "background-color:" + colorPalette.color.main.headerColor,
+                    titleText_1:"",
+                    titleText_2:"Job Post Info",
+                    titleText_3:"Candidate Info",
+                    titleText_4:"Match?",
+                    titleText_5:"Is candidate Ready",
+                    titleText_6:"Edit"
+                },
+                tBody: {
+                    style: ""
+                }
+            },
+            idProofCheckbox: {
+                checkboxLabel: {
+                    className : "mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect",
+                    style: "text-align:center"
+
+                },
+                checkboxMatch: {
+                    className : "mdl-checkbox__input"
+                }
+            },
+            glyphIconCorrectClass: "glyphicon glyphicon-ok",
+            glyphIconWrongClass: "glyphicon glyphicon-remove",
+            rowHeading: {
+                post: {
+                    isRequired: true,
+                    style: "padding:1% 2%;background-color:"+colorPalette.color.main.headerColor+";color:#fff"
+                },
+                note: {
+                    isRequired: true,
+                    style: "padding:1% 2%;background-color:"+colorPalette.color.main.headerColor+";color:#fff"
+                }
+            }
+        },
+        callYesNo: {
+            button : {
+                className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect"
+            },
+            visibility: true
+        },
+        finalSubmissionButton :{
+            className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent modal-submit",
+            init: {
+                disabled: true
+            }
+        },
+        textContainers: {
+            visibility: true,
+            minReqContainer: {
+                visibility: true,
+                className: "col-lg-6 form-group remove-padding-left"
+            },
+            noteContainer: {
+                visibility: true,
+                className: "col-lg-6 form-group"
+            }
+        },
+        finalSubmissionBypassRequired: false,
+        callYesNoRequired: true,
+        columnVisible: [1, 2, 3, 4, 5, 6],
+    };
+    return decorator;
+}
+
+
 // aux methods start
 function processTimeShift(returnedData) {
     if (returnedData != null) {
@@ -552,7 +662,7 @@ function saveEditedResponses(candidateId, propId, jobPostId) {
 function processFinalSubmitResponse(returnedData, jobPostId, candidateId, propId) {
     console.log(returnedData);
     if(returnedData != "error" || returnedData.trim() != ""){
-        getPreScreenContent(jobPostId, candidateId, true);
+        getPreScreenContent(jobPostId, candidateId, true, 0, null, null);
         // get new jobPostVsCandidate data
         // construct new pre_screen_body
         // render it $('#pre_screen_body').html("test")
@@ -919,10 +1029,10 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
     }
 }
 
-function constructPreScreenBodyContainer(returnedData) {
+function constructPreScreenBodyContainer(returnedData, customD) {
     var candidateId = returnedData.candidateId;
     var jobPostId = returnedData.jobPostId;
-    var container = $('<div class="row mdl-cell mdl-cell--12-col" id="pre_screen_container_row"></div>');
+    var container = $('<div class="'+customD.container.className+'" id="pre_screen_container_row"></div>');
 
     var minReqTableContainer = $('<div id="minReqTable"></div>');
     container.append('<h4 style="margin-top: 0">Min Requirement</h4>');
@@ -934,45 +1044,52 @@ function constructPreScreenBodyContainer(returnedData) {
 
     // minReqTable
     var mainTable = document.createElement("table");
-    mainTable.className ="mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--12-col";
-    mainTable.style="margin:0;border:none";
+    mainTable.className = customD.table.mainTable.className;
+    mainTable.style = customD.table.mainTable.style;
 
     var tHead = document.createElement("thead");
-    tHead.style="background-color:rgb(63,81,181)";
+    tHead.style = customD.table.mainTable.tHead.style;
     mainTable.appendChild(tHead);
 
     var heading = document.createElement("tr");
     tHead.appendChild(heading);
 
-    var title1 = document.createElement("th");
-    title1.textContent = "";
-    heading.appendChild(title1);
-
-    var title2 = document.createElement("th");
-    title2.textContent = "Job Post Info";
-    title2.style="color:#ffffff";
-    heading.appendChild(title2);
-
-    var title3 = document.createElement("th");
-    title3.style="color:#ffffff";
-    title3.textContent = "Candidate Info";
-    heading.appendChild(title3);
-
-    // is a match or not
-    var isAMatch = document.createElement("th");
-    isAMatch.textContent = "Match?";
-    isAMatch.style="color:#ffffff";
-    heading.appendChild(isAMatch);
-
-    var title4 = document.createElement("th");
-    title4.style="color:#ffffff";
-    title4.textContent = "Is candidate Ready";
-    heading.appendChild(title4);
-
-    var title5 = document.createElement("th");
-    title5.style="color:#ffffff";
-    title5.textContent = "Edit";
-    heading.appendChild(title5);
+    if ($.inArray(1, customD.columnVisible) > -1) {
+        var title1 = document.createElement("th");
+        title1.textContent = customD.table.mainTable.tHead.titleText_1;
+        heading.appendChild(title1);
+    }
+    if ($.inArray(2, customD.columnVisible) > -1) {
+        var title2 = document.createElement("th");
+        title2.textContent = customD.table.mainTable.tHead.titleText_2;
+        title2.style="color:#ffffff";
+        heading.appendChild(title2);
+    }
+    if ($.inArray(3, customD.columnVisible) > -1) {
+        var title3 = document.createElement("th");
+        title3.style="color:#ffffff";
+        title3.textContent = customD.table.mainTable.tHead.titleText_3;
+        heading.appendChild(title3);
+    }
+    if ($.inArray(4, customD.columnVisible) > -1) {
+        // is a match or not
+        var title4 = document.createElement("th");
+        title4.textContent = customD.table.mainTable.tHead.titleText_4;
+        title4.style="color:#ffffff";
+        heading.appendChild(title4);
+    }
+    if ($.inArray(5, customD.columnVisible) > -1) {
+        var title5 = document.createElement("th");
+        title5.style="color:#ffffff";
+        title5.textContent = customD.table.mainTable.tHead.titleText_5;
+        heading.appendChild(title5);
+    }
+    if ($.inArray(6, customD.columnVisible) > -1) {
+        var title6 = document.createElement("th");
+        title6.style="color:#ffffff";
+        title6.textContent = customD.table.mainTable.tHead.titleText_6;
+        heading.appendChild(title6);
+    }
 
     var tBody = document.createElement("tbody");
     mainTable.appendChild(tBody);
@@ -981,240 +1098,284 @@ function constructPreScreenBodyContainer(returnedData) {
 
     //otherTable
     var otherTable = document.createElement("table");
-    otherTable.className ="mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--12-col";
-    otherTable.style ="margin:0;border:none";
+    otherTable.className = customD.table.otherTable.className;
+    otherTable.style = customD.table.otherTable.style;
 
     var tHead = document.createElement("thead");
-    tHead.style="background-color:rgb(63,81,181)";
+    tHead.style = customD.table.otherTable.tHead.style;
     otherTable.appendChild(tHead);
 
     var heading = document.createElement("tr");
     tHead.appendChild(heading);
 
-    var title1 = document.createElement("th");
-    title1.textContent = "";
-    heading.appendChild(title1);
+    if ($.inArray(1, customD.columnVisible) > -1) {
+        var title1 = document.createElement("th");
+        title1.textContent = customD.table.otherTable.tHead.titleText_1;
+        heading.appendChild(title1);
 
-    var title2 = document.createElement("th");
-    title2.style="color:#ffffff";
-    title2.textContent =  "Job Post Info";
-    heading.appendChild(title2);
+    }
+    if ($.inArray(2, customD.columnVisible) > -1) {
+        var title2 = document.createElement("th");
+        title2.style="color:#ffffff";
+        title2.textContent =  customD.table.otherTable.tHead.titleText_2;
+        heading.appendChild(title2);
+    }
+    if ($.inArray(3, customD.columnVisible) > -1) {
+        var title3 = document.createElement("th");
+        title3.style="color:#ffffff";
+        title3.textContent = customD.table.otherTable.tHead.titleText_3;
+        heading.appendChild(title3);
+    }
+    if ($.inArray(4, customD.columnVisible) > -1) {
+        // is a match or not
+        var title4 = document.createElement("th");
+        title4.style="color:#ffffff";
+        title4.textContent = customD.table.otherTable.tHead.titleText_4;
+        heading.appendChild(title4);
 
-    var title3 = document.createElement("th");
-    title3.style="color:#ffffff";
-    title3.textContent = "Candidate Info";
-    heading.appendChild(title3);
+    }
+    if ($.inArray(5, customD.columnVisible) > -1) {
+        var title5 = document.createElement("th");
+        title5.style="color:#ffffff";
+        title5.textContent = customD.table.otherTable.tHead.titleText_5;
+        heading.appendChild(title5);
 
-    // is a match or not
-    var isAMatch = document.createElement("th");
-    isAMatch.style="color:#ffffff";
-    isAMatch.textContent = "Match?";
-    heading.appendChild(isAMatch);
-
-    var title4 = document.createElement("th");
-    title4.style="color:#ffffff";
-    title4.textContent = "Is candidate Ready";
-    heading.appendChild(title4);
-
-    var title5 = document.createElement("th");
-    title5.style="color:#ffffff";
-    title5.textContent = "Edit";
-    heading.appendChild(title5);
+    }
+    if ($.inArray(6, customD.columnVisible) > -1) {
+        var title6 = document.createElement("th");
+        title6.style="color:#ffffff";
+        title6.textContent = customD.table.otherTable.tHead.titleText_6;
+        heading.appendChild(title6);
+    }
 
     var other_tBody = document.createElement("tbody");
     otherTable.appendChild(other_tBody);
 
     otherReqTableContainer.append(otherTable);
 
+
     var splitDiv = $('<div class="row" style="margin-top: 20px"></div>');
-    var noteContainer = document.createElement("div");
-    noteContainer.className = "col-lg-6 form-group";
-    var textarea = document.createElement("textarea");
-    textarea.className = "form-control mdl-shadow--2dp";
-    textarea.style = "border-radius:0;";
-    textarea.rows = "5";
-    textarea.type = "text";
-    textarea.placeholder = "Extra Comment";
-    textarea.id = "pre_screen_note";
 
-    var minReqContainer = document.createElement("div");
-    minReqContainer.className = "col-lg-6 form-group";
-    var minReqTextArea = document.createElement("textarea");
-    minReqTextArea.className = "form-control mdl-shadow--2dp";
-    minReqTextArea.rows = "5";
-    minReqTextArea.type = "text";
-    minReqTextArea.style = "border-radius:0;";
-    minReqTextArea.id = "job_post_min_req";
-    minReqTextArea.disabled = true;
+    if(customD.textContainers.visibility){
+        if(customD.textContainers.minReqContainer.visibility){
+            // minReq start
+            var minReqContainer = document.createElement("div");
+            minReqContainer.className = customD.textContainers.minReqContainer.className;
+            minReqContainer.id = "minReqContainer";
+            var minReqTextArea = document.createElement("textarea");
+            minReqTextArea.className = "form-control mdl-shadow--2dp";
+            minReqTextArea.rows = "5";
+            minReqTextArea.type = "text";
+            minReqTextArea.style = "border-radius:0;";
+            minReqTextArea.id = "job_post_min_req";
+            minReqTextArea.disabled = true;
 
-    var data ;
-    if(returnedData.jobPostMinReq != null && returnedData.jobPostMinReq != "") {
-        data = returnedData.jobPostMinReq;
-    } else {
-        data = "NA"
+            var data ;
+            if(returnedData.jobPostMinReq != null && returnedData.jobPostMinReq != "") {
+                data = returnedData.jobPostMinReq;
+            } else {
+                data = "NA"
+            }
+            minReqTextArea.textContent = data;
+
+            var rowHeadingPost = document.createElement("div");
+            rowHeadingPost.style =  customD.table.rowHeading.post.style;
+            minReqContainer.appendChild(rowHeadingPost);
+
+            var label = document.createElement("label");
+            label.for= "job_post_min_req";
+            label.style = "margin:0";
+            label.textContent = "Job Post Min Req";
+            rowHeadingPost.appendChild(label);
+            minReqContainer.appendChild(minReqTextArea);
+            splitDiv.append(minReqContainer);
+            // minReq end
+        }
+        if(customD.textContainers.noteContainer.visibility){
+            // note start
+            var noteContainer = document.createElement("div");
+            noteContainer.className = customD.textContainers.noteContainer.className;
+            noteContainer.id = "noteContainer";
+            var textarea = document.createElement("textarea");
+            textarea.className = "form-control mdl-shadow--2dp";
+            textarea.style = "border-radius:0;";
+            textarea.rows = "5";
+            textarea.type = "text";
+            textarea.placeholder = "Extra Comment";
+            textarea.id = "pre_screen_note";
+
+            var rowHeadingNote = document.createElement("div");
+            rowHeadingNote.style = customD.table.rowHeading.note.style;
+            noteContainer.appendChild(rowHeadingNote);
+
+            var label = document.createElement("label");
+            label.for= "pre_screen_note";
+            label.textContent = "Note";
+            label.style = "margin :0";
+            rowHeadingNote.appendChild(label);
+            noteContainer.appendChild(textarea);
+            splitDiv.append(noteContainer);
+            container.append(splitDiv);
+            // note end
+        }
     }
-    minReqTextArea.textContent = data;
-
-    var rowHeadingPost = document.createElement("div");
-    rowHeadingPost.style = "padding:1% 2%;background-color:rgb(63, 81, 181);color:#fff";
-    minReqContainer.appendChild(rowHeadingPost);
-
-    var rowHeadingNote = document.createElement("div");
-    rowHeadingNote.style = "padding:1% 2%;background-color:rgb(63, 81, 181);color:#fff";
-    noteContainer.appendChild(rowHeadingNote);
-
-    var label = document.createElement("label");
-    label.for= "job_post_min_req";
-    label.style = "margin:0";
-    label.textContent = "Job Post Min Req";
-    rowHeadingPost.appendChild(label);
-    minReqContainer.appendChild(minReqTextArea);
-    splitDiv.append(minReqContainer);
-
-
-    var label = document.createElement("label");
-    label.for= "pre_screen_note";
-    label.textContent = "Note";
-    label.style = "margin :0";
-    rowHeadingNote.appendChild(label);
-    noteContainer.appendChild(textarea);
-    splitDiv.append(noteContainer);
-    container.append(splitDiv);
-
 
 
     var elementList = returnedData.elementList;
     elementList.forEach(function (rowData) {
-        console.log("ptitle:"+ rowData.propertyTitle);
-        console.log("pId:"+ rowData.propertyId);
         if(rowData!=null) {
             if(rowData.isMinReq) {
                 var bodyContentBox = document.createElement("tr");
                 bodyContentBox.id = rowData.propertyId;
                 tBody.appendChild(bodyContentBox);
 
-                var bodyContentData1 = document.createElement("td");
-                bodyContentData1.textContent = rowData.propertyTitle;
-                bodyContentBox.appendChild(bodyContentData1);
+                if ($.inArray(1, customD.columnVisible) > -1) {
+                    var bodyContentData1 = document.createElement("td");
+                    bodyContentData1.textContent = rowData.propertyTitle;
+                    bodyContentBox.appendChild(bodyContentData1);
+                }
+                if ($.inArray(2, customD.columnVisible) > -1) {
+                    var bodyContentData2 = document.createElement("td");
+                    bodyContentData2.id = "jobPostValue_"+rowData.propertyId;
+                    bodyContentBox.appendChild(bodyContentData2);
 
-                var bodyContentData3 = document.createElement("td");
-                bodyContentData3.id = "jobPostValue_"+rowData.propertyId;
-                bodyContentBox.appendChild(bodyContentData3);
+                    if(rowData.isSingleEntity){
+                        bodyContentData2.textContent = rowData.jobPostElement;
+                    } else {
+                        bodyContentData2.textContent = rowData.jobPostElementList;
+                    }
+                }
+                if ($.inArray(3, customD.columnVisible) > -1) {
+                    var bodyContentData3 = document.createElement("td");
+                    bodyContentData3.id = "candidateValue_"+rowData.propertyId;
+                    bodyContentBox.appendChild(bodyContentData3);
 
-                var bodyContentData2 = document.createElement("td");
-                bodyContentData2.id = "candidateValue_"+rowData.propertyId;
-                bodyContentBox.appendChild(bodyContentData2);
+                    if(rowData.isSingleEntity){
+                        bodyContentData3.textContent = rowData.candidateElement;
+                    } else {
+                        bodyContentData3.textContent = rowData.candidateElementList;
+                    }
+                }
+                if ($.inArray(4, customD.columnVisible) > -1) {
+                    var spanTd = document.createElement("td");
+                    var indicatorSpan = document.createElement("span");
+                    if(rowData.isMatching){
+                        indicatorSpan.setAttribute('class', customD.table.glyphIconCorrectClass);
+                    } else {
+                        indicatorSpan.setAttribute('class', customD.table.glyphIconWrongClass);
+                    }
+                    spanTd.appendChild(indicatorSpan);
+                    bodyContentBox.appendChild(spanTd);
 
-                if(rowData.isSingleEntity){
-                    bodyContentData2.textContent = rowData.candidateElement;
-                    bodyContentData3.textContent = rowData.jobPostElement;
-                } else {
-                    bodyContentData2.textContent = rowData.candidateElementList;
-                    bodyContentData3.textContent = rowData.jobPostElementList;
                 }
 
-                var spanTd = document.createElement("td");
-                var indicatorSpan = document.createElement("span");
-                if(rowData.isMatching){
-                    indicatorSpan.setAttribute('class', 'glyphicon glyphicon-ok');
-                } else {
-                    indicatorSpan.setAttribute('class', 'glyphicon glyphicon-remove');
+                if ($.inArray(5, customD.columnVisible) > -1) {
+                    var bodyContentData5 = document.createElement("td");
+                    bodyContentBox.appendChild(bodyContentData5);
+
+                    var checkMatchLabel = document.createElement("label");
+                    checkMatchLabel.type = "checkbox";
+                    checkMatchLabel.id = "ready_checkbox_" + rowData.propertyId;
+                    checkMatchLabel.for = "checkbox_" + rowData.propertyIdList.join("-");
+                    checkMatchLabel.style = 'text-align:center';
+                    checkMatchLabel.className = customD.table.idProofCheckbox.checkboxLabel.className;
+                    bodyContentData5.appendChild(checkMatchLabel);
+
+                    var checkMatch = document.createElement("input");
+                    checkMatch.type = "checkbox";
+                    checkMatch.id = "checkbox_" + rowData.propertyIdList.join("-");
+                    checkMatch.className = customD.table.idProofCheckbox.checkboxMatch.className;
+                    checkMatchLabel.appendChild(checkMatch);
                 }
-                spanTd.appendChild(indicatorSpan);
-                bodyContentBox.appendChild(spanTd);
 
-                var bodyContentData4 = document.createElement("td");
-                bodyContentBox.appendChild(bodyContentData4);
-
-                var checkMatchLabel = document.createElement("label");
-                checkMatchLabel.type = "checkbox";
-                checkMatchLabel.id = "ready_checkbox_" + rowData.propertyId;
-                checkMatchLabel.for = "checkbox_" + rowData.propertyIdList.join("-");
-                checkMatchLabel.style = 'text-align:center';
-                checkMatchLabel.className = "mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect";
-                bodyContentData4.appendChild(checkMatchLabel);
-
-                var checkMatch = document.createElement("input");
-                checkMatch.type = "checkbox";
-                checkMatch.id = "checkbox_" + rowData.propertyIdList.join("-");
-                checkMatch.className = "mdl-checkbox__input";
-                checkMatchLabel.appendChild(checkMatch);
-
-                // edit href
-                var editLink = document.createElement("td");
-                var a = document.createElement('a');
-                var linkText = document.createTextNode("Edit");
-                a.appendChild(linkText);
-                a.style = "cursor: pointer";
-                a.onclick = function () {
-                    fetchEditModalContent(candidateId, rowData.propertyId, jobPostId);
-                };
-                editLink.appendChild(a);
-                bodyContentBox.appendChild(editLink);
+                if ($.inArray(6, customD.columnVisible) > -1) {
+                    // edit href
+                    var editLink = document.createElement("td");
+                    var a = document.createElement('a');
+                    var linkText = document.createTextNode("Edit");
+                    a.appendChild(linkText);
+                    a.style = "cursor: pointer";
+                    a.onclick = function () {
+                        fetchEditModalContent(candidateId, rowData.propertyId, jobPostId);
+                    };
+                    editLink.appendChild(a);
+                    bodyContentBox.appendChild(editLink);
+                }
             } else {
 
                 var bodyContentBox = document.createElement("tr");
                 bodyContentBox.id = rowData.propertyId;
                 other_tBody.appendChild(bodyContentBox);
 
-                var bodyContentData1 = document.createElement("td");
-                bodyContentData1.textContent = rowData.propertyTitle;
-                bodyContentBox.appendChild(bodyContentData1);
-
-                var bodyContentData3 = document.createElement("td");
-                bodyContentData3.id = "jobPostValue_"+rowData.propertyId;
-                bodyContentBox.appendChild(bodyContentData3);
-
-                var bodyContentData2 = document.createElement("td");
-                bodyContentData2.id = "candidateValue_"+rowData.propertyId;
-                bodyContentBox.appendChild(bodyContentData2);
-
-                if(rowData.isSingleEntity){
-                    bodyContentData2.textContent = rowData.candidateElement;
-                    bodyContentData3.textContent = rowData.jobPostElement;
-                } else {
-                    bodyContentData2.textContent = rowData.candidateElementList;
-                    bodyContentData3.textContent = rowData.jobPostElementList;
+                if ($.inArray(1, customD.columnVisible) > -1) {
+                    var bodyContentData1 = document.createElement("td");
+                    bodyContentData1.textContent = rowData.propertyTitle;
+                    bodyContentBox.appendChild(bodyContentData1);
                 }
+                if ($.inArray(2, customD.columnVisible) > -1) {
+                    var bodyContentData2 = document.createElement("td");
+                    bodyContentData2.id = "jobPostValue_"+rowData.propertyId;
+                    bodyContentBox.appendChild(bodyContentData2);
 
-                var spanTd = document.createElement("td");
-                var indicatorSpan = document.createElement("span");
-                if(rowData.isMatching){
-                    indicatorSpan.setAttribute('class', 'glyphicon glyphicon-ok');
-                } else {
-                    indicatorSpan.setAttribute('class', 'glyphicon glyphicon-remove');
+                    if(rowData.isSingleEntity){
+                        bodyContentData2.textContent = rowData.jobPostElement;
+                    } else {
+                        bodyContentData2.textContent = rowData.jobPostElementList;
+                    }
                 }
-                spanTd.appendChild(indicatorSpan);
-                bodyContentBox.appendChild(spanTd);
+                if ($.inArray(3, customD.columnVisible) > -1) {
+                    var bodyContentData3 = document.createElement("td");
+                    bodyContentData3.id = "candidateValue_"+rowData.propertyId;
+                    bodyContentBox.appendChild(bodyContentData3);
 
-                var bodyContentData4 = document.createElement("td");
-                bodyContentBox.appendChild(bodyContentData4);
+                    if(rowData.isSingleEntity){
+                        bodyContentData3.textContent = rowData.candidateElement;
+                    } else {
+                        bodyContentData3.textContent = rowData.candidateElementList;
+                    }
+                }
+                if ($.inArray(4, customD.columnVisible) > -1) {
+                    var spanTd = document.createElement("td");
+                    var indicatorSpan = document.createElement("span");
+                    if(rowData.isMatching){
+                        indicatorSpan.setAttribute('class', customD.table.glyphIconCorrectClass);
+                    } else {
+                        indicatorSpan.setAttribute('class', customD.table.glyphIconWrongClass);
+                    }
+                    spanTd.appendChild(indicatorSpan);
+                    bodyContentBox.appendChild(spanTd);
+                }
+                if ($.inArray(5, customD.columnVisible) > -1) {
+                    var bodyContentData5 = document.createElement("td");
+                    bodyContentBox.appendChild(bodyContentData5);
 
-                var checkMatchLabel = document.createElement("label");
-                checkMatchLabel.type = "checkbox";
-                checkMatchLabel.for = "checkbox_" + rowData.propertyIdList.join("-");
-                checkMatchLabel.style = 'text-align:center';
-                checkMatchLabel.className = "mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect";
-                bodyContentData4.appendChild(checkMatchLabel);
+                    var checkMatchLabel = document.createElement("label");
+                    checkMatchLabel.type = "checkbox";
+                    checkMatchLabel.for = "checkbox_" + rowData.propertyIdList.join("-");
+                    checkMatchLabel.style = 'text-align:center';
+                    checkMatchLabel.className = customD.table.idProofCheckbox.checkboxLabel.className;
+                    bodyContentData5.appendChild(checkMatchLabel);
 
-                var checkMatch = document.createElement("input");
-                checkMatch.type = "checkbox";
-                checkMatch.id = "checkbox_" + rowData.propertyIdList.join("-");
-                checkMatch.className = "mdl-checkbox__input";
-                checkMatchLabel.appendChild(checkMatch);
-
-                // edit href
-                var editLink = document.createElement("td");
-                var a = document.createElement('a');
-                var linkText = document.createTextNode("Edit");
-                a.appendChild(linkText);
-                a.style = "cursor: pointer";
-                a.title = "Edit";
-                a.onclick = function () {
-                    fetchEditModalContent(candidateId, rowData.propertyId, jobPostId);
-                };
-                editLink.appendChild(a);
-                bodyContentBox.appendChild(editLink);
+                    var checkMatch = document.createElement("input");
+                    checkMatch.type = "checkbox";
+                    checkMatch.id = "checkbox_" + rowData.propertyIdList.join("-");
+                    checkMatch.className = customD.table.idProofCheckbox.checkboxMatch.className;
+                    checkMatchLabel.appendChild(checkMatch);
+                }
+                if ($.inArray(6, customD.columnVisible) > -1) {
+                    // edit href
+                    var editLink = document.createElement("td");
+                    var a = document.createElement('a');
+                    var linkText = document.createTextNode("Edit");
+                    a.appendChild(linkText);
+                    a.style = "cursor: pointer";
+                    a.title = "Edit";
+                    a.onclick = function () {
+                        fetchEditModalContent(candidateId, rowData.propertyId, jobPostId);
+                    };
+                    editLink.appendChild(a);
+                    bodyContentBox.appendChild(editLink);
+                }
             }
         }
     });
@@ -1222,10 +1383,17 @@ function constructPreScreenBodyContainer(returnedData) {
     return container;
 }
 
-function processPreScreenContent(returnedData) {
+
+// customD : custom Decorator object
+function processPreScreenContent(returnedData, customD) {
     if(returnedData == null || returnedData.status != "SUCCESS") {
         console.log(returnedData);
-        pushToSnackbar("Request failed. Something went Wrong! Please Refresh");
+        if (returnedData != null && returnedData.status == "INVALID") {
+            alert("Already Pre Screened");
+        } else {
+            alert("Request failed. Something went Wrong! Please Refresh");
+        }
+        return;
     }
     if(returnedData != null){
         // if(returnedData == "OK" || returnedData == "NA" ) {
@@ -1238,8 +1406,8 @@ function processPreScreenContent(returnedData) {
         var candidateId = returnedData.candidateId;
         var jobPostId = returnedData.jobPostId;
 
-        var preScreenBody = $('<div id="pre_screen_body" class="mdl-grid"></div>');
-        var container = constructPreScreenBodyContainer(returnedData);
+        var preScreenBody = $('<div id="pre_screen_body" class="'+customD.container.className+'"></div>');
+        var container = constructPreScreenBodyContainer(returnedData, customD);
 
         preScreenBody.append(container);
 
@@ -1261,20 +1429,20 @@ function processPreScreenContent(returnedData) {
             '<option value="third_person">Third Person</option>' +
             '<option value="others">Others</option>' +
             '</select>' +
-            '<button type="submit" id="responseSaveBtn"  class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" onclick="saveAttempt('+candidateId+', '+jobPostId+')">Save</button>' +
+            '<button type="submit" id="responseSaveBtn"  class="'+customD.callYesNo.button.className+'" onclick="saveAttempt('+candidateId+', '+jobPostId+')">Save</button>' +
             '</h6>' +
             '</div>' +
             '</h5>'+
             '</div>'+
             '</div>');
 
-        renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId);
+        renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, customD);
     }
 }
 
-function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId) {
+function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, customD) {
     var bootbox_dialog = bootbox.dialog({
-        className: "pre-screen-modal",
+        className: customD.bootBoxMain.className,
         title: callYesNo,
         message: preScreenBody,
         closeButton: true,
@@ -1284,7 +1452,7 @@ function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId) {
         },
         buttons: {
             "Submit": {
-                className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent modal-submit",
+                className: customD.finalSubmissionButton.className,
                 callback: function () {
                     if ($("#pre_screen_body input[type='checkbox']:checked").size() == 0
                         && $('input:radio[name="verdict"]:checked').val() == null) {
@@ -1323,7 +1491,9 @@ function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId) {
         );
         forceSetContainer.prepend(forceSetDiv);
 
-        $('.btn.modal-submit').prop('disabled', true);
+        if(customD.finalSubmissionButton.init.disabled){
+            $('.btn.modal-submit').prop('disabled', true);
+        }
         $('#pre_screen_body').hide();
         $('body').removeClass('modal-open').removeClass('open-modal').addClass('open-modal');
     });
@@ -1342,13 +1512,13 @@ function processPostPreScreenResponse(response) {
     }
 }
 
-function reProcessPreScreenContent(returnedData){
+function reProcessPreScreenContent(returnedData, customD){
     if(returnedData == null || returnedData.status != "SUCCESS") {
         console.log(returnedData);
         pushToSnackbar("Request failed. Something went Wrong! Please Refresh");
     }
     if(returnedData != null){
-        var container = constructPreScreenBodyContainer(returnedData);
+        var container = constructPreScreenBodyContainer(returnedData, customD);
         var allSelectedCheckboxIdArray = $("#pre_screen_body input[type='checkbox']:checked").parent();
         var tempList = [];
         var len = allSelectedCheckboxIdArray.size();
@@ -1368,7 +1538,17 @@ function reProcessPreScreenContent(returnedData){
     }
 }
 
-function getPreScreenContent(jobPostId, candidateId, isRebound) {
+function getPreScreenContent(jobPostId, candidateId, isRebound, actorId, customD, rePreScreen) {
+    if(customD == null ) {
+        customD = initDecorator(null);
+    }
+    if(actorId == 100) {
+        console.log("actor: Partner");
+    } else if (actorId == 0) {
+        console.log("actor: Support");
+    } else if (actorId == 999) {
+        console.log("actor: Self");
+    }
     var base_api_url ="/support/api/getJobPostVsCandidate/";
     if(base_api_url == null || jobPostId == null) {
         console.log("please provide candidateId && jobPostId");
@@ -1381,17 +1561,23 @@ function getPreScreenContent(jobPostId, candidateId, isRebound) {
         if(candidateId != null){
             base_api_url += "&candidateId=" + candidateId;
         }
+    }
+    if(rePreScreen == null || rePreScreen) {
+        base_api_url +="&rePreScreen="+true;
+    } else {
+        base_api_url +="&rePreScreen="+false;
 
     }
+
 
     var processor;
     if(!isRebound) {
         processor = function (returnedData) {
-            processPreScreenContent(returnedData);
+            processPreScreenContent(returnedData, customD);
         }
     } else {
         processor = function (returnedData) {
-            reProcessPreScreenContent(returnedData);
+            reProcessPreScreenContent(returnedData, customD);
         }
     }
     try {

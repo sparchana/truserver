@@ -25,6 +25,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 
 /**
@@ -581,19 +582,32 @@ public class JobPostWorkflowEngine {
         return response;
     }
 
-    public static PreScreenPopulateResponse getJobPostVsCandidate(Long jobPostId, Long candidateId) {
+    public static PreScreenPopulateResponse getJobPostVsCandidate(Long jobPostId, Long candidateId, Boolean rePreScreen) {
         PreScreenPopulateResponse populateResponse = new PreScreenPopulateResponse();
 
         Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
         if (candidate == null){
             populateResponse.setStatus(PreScreenPopulateResponse.Status.FAILURE);
-            return null;
+            return populateResponse;
         }
 
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
         if (jobPost == null){
             populateResponse.setStatus(PreScreenPopulateResponse.Status.FAILURE);
-            return null;
+            return populateResponse;
+        }
+
+        if(!rePreScreen) {
+            // fetch existing workflow old
+            JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
+                    .eq("jobPost.jobPostId", jobPostId)
+                    .eq("candidate.candidateId", candidateId)
+                    .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
+
+            if(jobPostWorkflowOld.getStatus().getStatusId() == ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED){
+                populateResponse.setStatus(PreScreenPopulateResponse.Status.INVALID);
+                return populateResponse;
+            }
         }
 
         List<PreScreenRequirement> preScreenRequirementList =  PreScreenRequirement.find.where()
@@ -931,6 +945,11 @@ public class JobPostWorkflowEngine {
             // A value is for overriding leadStatus is also there in Lead Model setLeadStatus
             if(candidate != null && jobPostWorkflowOld != null) {
 
+                if(jobPostWorkflowOld.getStatus().getStatusId() == ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED) {
+                    Logger.info("PreScreen Already Completed");
+                    responseMsg = "ok";
+                    return responseMsg;
+                }
                 // If call was connected just set the right interaction result
                 if (callStatus.equals("CONNECTED")) {
                     interactionResult = "Pre Screen Out Bound Call Successfully got connected";

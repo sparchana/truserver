@@ -1615,12 +1615,12 @@ public class Application extends Controller {
        return ok(toJson(JobPostWorkflowEngine.getMatchingCandidate(jpId)));
     }
 
-    public static Result getJobPostVsCandidate(Long candidateId, Long jobPostId) {
+    public static Result getJobPostVsCandidate(Long candidateId, Long jobPostId, Boolean rePreScreen) {
         if (candidateId == 0L || jobPostId == 0L) {
             return badRequest();
         }
 
-        return ok(toJson(JobPostWorkflowEngine.getJobPostVsCandidate(jobPostId, candidateId)));
+        return ok(toJson(JobPostWorkflowEngine.getJobPostVsCandidate(jobPostId, candidateId, rePreScreen)));
     }
 
     public static Result updatePreScreenAttempt(Long candidateId, Long jobPostId, String callStatus) {
