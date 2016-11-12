@@ -1691,44 +1691,55 @@ public class JobPostWorkflowEngine {
             if (jobApplication != null) {
                 InterviewStatus interviewStatus;
                 Logger.info("Sending sms to recruiter");
+                String interactionResult;
+                int jwStatus;
+                int interactionType;
                 if (value == 1) {
                     interviewStatus = InterviewStatus.find.where().eq("interview_status_id", ServerConstants.INTERVIEW_STATUS_ACCEPTED).findUnique();
                     sendInterviewCandidateConfirmation(jobApplication, candidate);
 
-                    // fetch existing workflow old
-                    JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
-                            .eq("jobPost.jobPostId", jobApplication.getJobPost().getJobPostId())
-                            .eq("candidate.candidateId", candidate.getCandidateId())
-                            .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
-
-                    // Setting the existing jobpostworkflow status to attempted
-                    JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflowAfterConfirmedInterview(candidate.getCandidateId(), jobApplication.getJobPost().getJobPostId(), jobPostWorkflowOld);
-                    JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED).findUnique();
-                    jobPostWorkflowNew.setStatus(status);
-                    jobPostWorkflowNew.update();
-
-                    InterviewConfirmedStatusUpdate interviewConfirmedStatusUpdate = new InterviewConfirmedStatusUpdate();
-                    interviewConfirmedStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
-                    interviewConfirmedStatusUpdate.save();
-
-                    String interactionResult = jobApplication.getJobPost().getJobPostId() + ": " + jobApplication.getJobPost().getJobRole().getJobName() + " interview accepted by candidate";
-
-                    // save the interaction
-                    InteractionService.createWorkflowInteraction(
-                            jobPostWorkflowOld.getJobPostWorkflowUUId(),
-                            candidate.getCandidateUUId(),
-                            InteractionConstants.INTERACTION_TYPE_CANDIDATE_RESCHEDULED_INTERVIEW_ACCEPTED,
-                            null,
-                            interactionResult
-                    );
-
+                    interactionResult = jobApplication.getJobPost().getJobPostId() + ": " + jobApplication.getJobPost().getJobRole().getJobName() + " interview accepted by candidate";
+                    jwStatus = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
+                    interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_RESCHEDULED_INTERVIEW_ACCEPTED;
+                    //creating interaction
                     createInteractionForCandidateAcceptingRescheduledInterviewViaWebsite(candidate.getCandidateUUId());
                 } else {
                     interviewStatus = InterviewStatus.find.where().eq("interview_status_id", ServerConstants.INTERVIEW_STATUS_REJECTED_BY_CANDIDATE).findUnique();
                     sendInterviewCandidateInterviewReject(jobApplication, candidate);
+                    jwStatus = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
 
+                    interactionResult = jobApplication.getJobPost().getJobPostId() + ": " + jobApplication.getJobPost().getJobRole().getJobName() + " interview accepted by candidate";
+
+                    interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_RESCHEDULED_INTERVIEW_REJECTED;
                     createInteractionForCandidateRejectingRescheduledInterviewViaWebsite(candidate.getCandidateUUId());
                 }
+                // fetch existing workflow old
+                JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
+                        .eq("jobPost.jobPostId", jobApplication.getJobPost().getJobPostId())
+                        .eq("candidate.candidateId", candidate.getCandidateId())
+                        .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
+
+                // Setting the existing jobPostWorkFlow status to attempted
+                JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflowAfterConfirmedInterview(candidate.getCandidateId(), jobApplication.getJobPost().getJobPostId(), jobPostWorkflowOld);
+                JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", jwStatus).findUnique();
+                jobPostWorkflowNew.setStatus(status);
+                jobPostWorkflowNew.update();
+
+                if(value == 1){
+                    InterviewConfirmedStatusUpdate interviewConfirmedStatusUpdate = new InterviewConfirmedStatusUpdate();
+                    interviewConfirmedStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
+                    interviewConfirmedStatusUpdate.save();
+                }
+
+                // save the interaction
+                InteractionService.createWorkflowInteraction(
+                        jobPostWorkflowOld.getJobPostWorkflowUUId(),
+                        candidate.getCandidateUUId(),
+                        interactionType,
+                        null,
+                        interactionResult
+                );
+
                 jobApplication.setInterviewStatus(interviewStatus);
                 jobApplication.update();
 

@@ -134,6 +134,8 @@ public class ServerConstants {
     public static final int JWF_STATUS_PRESCREEN_FAILED = 3;
     public static final int JWF_STATUS_PRESCREEN_COMPLETED = 4;
     public static final int JWF_STATUS_INTERVIEW_CONFIRMED = 5;
+    public static final int JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT = 6;
+    public static final int JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE = 7;
     // Requirements Table
     public static final String PROFILE_REQUIREMENT_TABLE_AGE = "age";
     public static final String PROFILE_REQUIREMENT_TABLE_EXPERIENCE = "experience";
