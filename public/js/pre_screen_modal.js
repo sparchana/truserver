@@ -135,7 +135,7 @@ function processTimeShift(returnedData) {
     }
 }
 
-function processDataCheckEducation(returnedEdu) {
+function processEducation(returnedEdu) {
     if (returnedEdu != null) {
         var data = [];
 
@@ -157,7 +157,7 @@ function processDataCheckEducation(returnedEdu) {
     }
 }
 
-function processDataCheckDegree(returnedDegree) {
+function processDegree(returnedDegree) {
     if (returnedDegree != null) {
         var data = [];
 
@@ -179,7 +179,7 @@ function processDataCheckDegree(returnedDegree) {
     }
 }
 
-function processDataCheckLanguage(returnedData) {
+function processLanguage(returnedData) {
     var arrayLang = [];
     var arrayLangId = [];
     var defaultOption = $('<option value="-1"></option>').text("Select");
@@ -244,7 +244,7 @@ function prefillLanguageTable(languageKnownList) {
     });
 }
 
-function processDataCheckExperience(returnedExperience) {
+function processExperience(returnedExperience) {
     var data = [];
 
     returnedExperience.forEach(function (experience) {
@@ -284,18 +284,18 @@ function processDataGetAssets(returnedAssets) {
     selectList.multiselect('rebuild');
 }
 
-function processIdProofsWithNumbers(returnedData) {
+function processIdProofsWithNumbers(returnedData, customD) {
     // create table
     if(returnedData != null) {
         // minReqTable
         var minReqTableContainer = $('#document_details');
         var mainTable = document.createElement("table");
-        mainTable.className ="mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--12-col";
-        mainTable.style="margin:0;border:none";
+        mainTable.className =customD.table.mainTable.className;
+        mainTable.style = customD.table.mainTable.style;
         mainTable.id = "documentTable";
 
         var tHead = document.createElement("thead");
-        tHead.style="background-color:rgb(63,81,181)";
+        tHead.style = customD.table.mainTable.tHead.style;
         mainTable.appendChild(tHead);
 
         var heading = document.createElement("tr");
@@ -332,7 +332,7 @@ function processIdProofsWithNumbers(returnedData) {
             checkMatchLabel.type = "checkbox";
             checkMatchLabel.for = "checkboxLabel_" + idProof.idProofId;
             checkMatchLabel.style = 'text-align:center';
-            checkMatchLabel.className = "mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect";
+            checkMatchLabel.className = customD.table.idProofCheckbox.checkboxLabel.className;
             checkboxTd.appendChild(checkMatchLabel);
             var checkMatch = document.createElement("input");
             checkMatch.type = "checkbox";
@@ -359,7 +359,7 @@ function processIdProofsWithNumbers(returnedData) {
         })
     }
 }
-function processDataCheckLocality(returnedData) {
+function processLocality(returnedData) {
     console.log("fetched all locality. now rendering locality token input");
 
     var locArray = [];
@@ -698,7 +698,7 @@ function generateEditModalView(title, message, candidateId, propId, overflow, jo
     $('body').removeClass('modal-open').removeClass('open-edit-modal').addClass('open-edit-modal');
 }
 
-function fetchEditModalContent(candidateId, propId, jobPostId) {
+function fetchEditModalContent(candidateId, propId, jobPostId, customD) {
 
     // api call and render child modal
     var base_api_url ="/support/api/getCandidateDetails/";
@@ -736,7 +736,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
         url = "/support/api/getDocumentReqForJobRole/?job_post_id="+jobPostId;
         ajax_type = "GET";
         fn = function (returnedData) {
-            processIdProofsWithNumbers(returnedData);
+            processIdProofsWithNumbers(returnedData, customD);
         };
         setter = function (returnedData) {
             if(returnedData!= null) {
@@ -749,7 +749,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
     } else if(propId == 1) {
         htmlBodyContent = '<div id="language_details">'+
 
-            '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Language Details :</b></div>'+
+            '<div class="row" style="margin:0;padding:1%;'+customD.table.mainTable.tHead.style+';color:#fff"><b>Language Details :</b></div>'+
             '<table id="languageTable" class="mdl-data-table mdl-js-data-table table table-striped mdl-shadow--2dp" cellspacing="0" width="100%">'+
             '<thead>'+
             '</thead>'+
@@ -761,14 +761,14 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
         modalTitle = "Candidate Language Edit";
         url = "/getAllLanguage";
         fn = function (returnedData) {
-            processDataCheckLanguage(returnedData);
+            processLanguage(returnedData);
         };
         setter = function (returnedData) {
             prefillLanguageTable(returnedData);
         }
     } else if(propId == 2) {
 
-        htmlBodyContent ='<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Assets</b></div>'+
+        htmlBodyContent ='<div class="row" style="margin:0;padding:1%;'+customD.table.mainTable.tHead.style+';color:#fff"><b>Assets</b></div>'+
             '<div class="row mdl-shadow--2dp" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
             '<div class="col-lg-3 col-lg-offset-2" style="margin-top: 8px;text-align: right"><font size="3">Asset : </font></div>'+
             '<div class="col-lg-4" id="assetMultiSelectDiv">'+
@@ -796,7 +796,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
         isOverFlowRequired = true;
 
     } else if(propId == 3) {
-        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Date Of Birth</b></div>'+
+        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;'+customD.table.mainTable.tHead.style+';color:#fff"><b>Date Of Birth</b></div>'+
             '<div class="row mdl-shadow--2dp" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
             '<div class="col-lg-3 col-lg-offset-2" style="margin-top: 8px;text-align: right"><font size="3">DOB : </font></div>'+
             '<div class="col-lg-4">'+
@@ -825,7 +825,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
 
         modalTitle = "Candidate Experience Edit";
         fn = function (returnedData) {
-            processDataCheckExperience(returnedData);
+            processExperience(returnedData);
         };
         setter = function (returnedData) {
             if(returnedData != null) {
@@ -835,7 +835,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
         }
     } else if(propId == 5) {
         htmlBodyContent =  ''+
-            '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Educational Details</b></div>'+
+            '<div class="row" style="margin:0;padding:1%;'+customD.table.mainTable.tHead.style+';color:#fff"><b>Educational Details</b></div>'+
                 '<div class="row mdl-shadow--2dp" id="education_details" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
                     '<div class="row">'+
                         '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="2">Highest Education Qualification : </font></div>'+
@@ -869,7 +869,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
         isOverFlowRequired = true;
         url = "/getAllEducation";
         fn = function (returnedData) {
-            processDataCheckEducation(returnedData);
+            processEducation(returnedData);
         };
         setter = function (returnedData) {
             if(returnedData != null) {
@@ -896,7 +896,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
             }
         }
     } else if(propId == 6) {
-        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Candidate Gender</b></div>'+
+        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;'+customD.table.mainTable.tHead.style+';color:#fff"><b>Candidate Gender</b></div>'+
             '<div class="row mdl-shadow--2dp" id="education_details" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
             '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="3">Candidate Gender : </font></div>'+
             '<div class="col-lg-4" style="margin-top: 8px;">'+
@@ -916,7 +916,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
             }
         }
     } else if(propId == 7) {
-        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Salary Details</b></div>'+
+        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;'+customD.table.mainTable.tHead.style+';color:#fff"><b>Salary Details</b></div>'+
             '<div class="row mdl-shadow--2dp" id="education_details" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
             '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="3">Current/Last Drawn Salary : </font></div>'+
             '<div class="col-lg-4">'+
@@ -930,7 +930,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
             }
         }
     } else if(propId == 8) {
-        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Current Location</b></div>'+
+        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;'+customD.table.mainTable.tHead.style+';color:#fff"><b>Current Location</b></div>'+
         '<div class="row mdl-shadow--2dp" id="education_details" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
         '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="3">Current Location : </font></div>'+
         '<div class="col-lg-4">'+
@@ -942,24 +942,27 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
         url = "/getAllLocality";
         isOverFlowRequired = true;
         fn = function (returnedData) {
-            processDataCheckLocality(returnedData);
+            processLocality(returnedData);
+
         };
         setter = function (returnedData) {
+            console.log("setting candidate locality");
+
             if(returnedData!= null) {
                 try {
                     var item = {};
                     item ["id"] = returnedData.localityId;
                     item ["name"] = returnedData.localityName;
                     currentLocationArray.push(item); // TODO remove this line
-                    $("#candidateHomeLocality").tokenInput("add", item);
+                    $("#candidateHomeLocality").tokenInput('add', item);
                 } catch (err) {
-                    console.log("homeLocality" + err);
+                    console.log("homeLocality" + err.stack);
                 }
             }
         }
 
     } else if(propId == 9) {
-        htmlBodyContent =  '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Job TimeShift Preferences</b></div>'+
+        htmlBodyContent =  '<div class="row" style="margin:0;padding:1%;'+customD.table.mainTable.tHead.style+';color:#fff"><b>Job TimeShift Preferences</b></div>'+
             '<div class="row mdl-shadow--2dp" id="education_details" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
             '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="3">Preferred work shift? </font></div>'+
             '<div class="col-lg-4">'+
@@ -1008,7 +1011,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
                 data: false,
                 contentType: false,
                 processData: false,
-                success: processDataCheckDegree
+                success: processDegree
             });
         } catch (exception) {
             console.log("exception occured!!" + exception);
@@ -1296,7 +1299,7 @@ function constructPreScreenBodyContainer(returnedData, customD) {
                     a.appendChild(linkText);
                     a.style = "cursor: pointer";
                     a.onclick = function () {
-                        fetchEditModalContent(candidateId, rowData.propertyId, jobPostId);
+                        fetchEditModalContent(candidateId, rowData.propertyId, jobPostId, customD);
                     };
                     editLink.appendChild(a);
                     bodyContentBox.appendChild(editLink);
@@ -1371,7 +1374,7 @@ function constructPreScreenBodyContainer(returnedData, customD) {
                     a.style = "cursor: pointer";
                     a.title = "Edit";
                     a.onclick = function () {
-                        fetchEditModalContent(candidateId, rowData.propertyId, jobPostId);
+                        fetchEditModalContent(candidateId, rowData.propertyId, jobPostId, customD);
                     };
                     editLink.appendChild(a);
                     bodyContentBox.appendChild(editLink);
