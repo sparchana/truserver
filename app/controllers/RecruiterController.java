@@ -442,26 +442,20 @@ public class RecruiterController {
     }
 
     public static Result updateInterviewStatus() {
-        if(session().get("recruiterId") != null){
-            RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
-            if(recruiterProfile != null){
-                JsonNode req = request().body().asJson();
-                Logger.info("Request Json: " + req);
-                InterviewStatusRequest interviewStatusRequest = new InterviewStatusRequest();
-                ObjectMapper newMapper = new ObjectMapper();
-                try {
-                    interviewStatusRequest = newMapper.readValue(req.toString(), InterviewStatusRequest.class);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                JobApplication jobApplication = JobApplication.find.where().eq("CandidateId", interviewStatusRequest.getCandidateId()).eq("JobPostId", interviewStatusRequest.getJobPostId()).findUnique();
-                if(jobApplication != null){
-                    return RecruiterService.updateInterviewStatus(jobApplication, interviewStatusRequest);
-                }
-            }
+        JsonNode req = request().body().asJson();
+        Logger.info("Request Json: " + req);
+        InterviewStatusRequest interviewStatusRequest = new InterviewStatusRequest();
+        ObjectMapper newMapper = new ObjectMapper();
+        try {
+            interviewStatusRequest = newMapper.readValue(req.toString(), InterviewStatusRequest.class);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        // no recruiter session found
+
+        JobApplication jobApplication = JobApplication.find.where().eq("CandidateId", interviewStatusRequest.getCandidateId()).eq("JobPostId", interviewStatusRequest.getJobPostId()).findUnique();
+        if(jobApplication != null){
+            return JobPostWorkflowEngine.updateInterviewStatus(jobApplication, interviewStatusRequest);
+        }
         return ok("-1");
     }
 

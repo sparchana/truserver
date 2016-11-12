@@ -343,7 +343,7 @@ public class SmsUtil {
 
     public static void sendInterviewShortlistSms(JobApplication jobApplication, Candidate candidate) {
         String msg = "Hi " + candidate.getCandidateFirstName() + ", your job application for " + jobApplication.getJobPost().getJobPostTitle() + " at " + jobApplication.getJobPost().getCompany().getCompanyName() +
-                " has been shortlisted for the interview. We will get in touch with ypu shortly to confirm interview date and time. Thank you!";
+                " has been shortlisted for the interview. We will get in touch with you shortly to confirm interview date and time. Thank you!";
         sendSms(candidate.getCandidateMobile(), msg);
     }
 

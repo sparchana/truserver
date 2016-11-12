@@ -8,6 +8,14 @@ var shouldAddFooter = true;
 var jobPostId;
 var gJobRoleId;
 
+//interview values
+var globalCandidateId;
+var globalInterviewStatus;
+var rescheduledDate;
+var rescheduledSlot;
+
+var allTimeSlots = [];
+
 function getLocality() {
     return allLocalityArray;
 }
@@ -271,6 +279,12 @@ function showRadiusValue(value){
 
 callHandler = function (mobile, candidateId) {
     openPreScreenModal(mobile, candidateId);
+};
+
+confirmInterview = function (candidateId) {
+    globalCandidateId = candidateId;
+    globalInterviewStatus = "1";
+    setInterviewStatus(globalCandidateId, globalInterviewStatus, null, null, null);
 };
 
 $(function () {
@@ -908,8 +922,20 @@ $(function () {
                         } else {
                             return '<a href="'+"/workflowInteraction/"+newCandidate.extraData.workflowUUId+'" id="'+newCandidate.extraData.workflowId+'" style="cursor:pointer;" target="_blank">'+newCandidate.extraData.preScreenCallAttemptCount+'</a>';
                         }
+                    } else if (app.currentView == "confirmed_interview_view"){
+                        var interviewDate;
+                        var interviewDetails = "Date and slot not available";
+                        if(newCandidate.candidateJobApplication != null){
+                            if(newCandidate.candidateJobApplication.scheduledInterviewDate != null && newCandidate.candidateJobApplication.interviewTimeSlot != null){
+                                interviewDate = new Date(newCandidate.candidateJobApplication.scheduledInterviewDate);
+                                interviewDetails = ('0' + interviewDate.getDate()).slice(-2) + '-' + getMonthVal((interviewDate.getMonth()+1)) + " @" + newCandidate.candidateJobApplication.interviewTimeSlot.interviewTimeSlotName;
+                            } else{
+
+                            }
+                        }
+                        return interviewDetails;
                     } else {
-                        return "";
+                        return newCandidate.candidateJobApplication;
                     }
                 };
                 var varColumn = function () {
@@ -919,6 +945,60 @@ $(function () {
                         } else {
                             return '<input type="submit" value="Pre-Screen Again"  style="width:150px" onclick="callHandler(' + newCandidate.candidate.candidateMobile + ', ' + newCandidate.candidate.candidateId + ');" id="' + newCandidate.candidate.lead.leadId + '" class="btn btn-default">'
                         }
+                    } else if (app.currentView == "pre_screen_completed_view") {
+                        var interviewDetails;
+                        var interviewAction;
+                        var interviewSelectedDate;
+                        var interviewSelectedSlot;
+
+                        if(newCandidate.candidateJobApplication != null){
+                            if(newCandidate.candidateJobApplication.interviewStatus != null){
+                                if(newCandidate.candidateJobApplication.interviewStatus.interviewStatusId == 1){
+                                    interviewAction = "Interview Confirmed";
+                                } else if(newCandidate.candidateJobApplication.interviewStatus.interviewStatusId == 2){
+                                    interviewAction = "Rejected by Recruiter";
+                                } else if(newCandidate.candidateJobApplication.interviewStatus.interviewStatusId == 3){
+                                    interviewAction = "Rescheduled by Recruiter";
+                                } else if(newCandidate.candidateJobApplication.interviewStatus.interviewStatusId == 4){
+                                    interviewAction = "Cancelled by Candidate";
+                                }
+                            } else{
+                                if(newCandidate.candidateJobApplication.interviewTimeSlot != null){
+                                    var interviewDate = new Date(newCandidate.candidateJobApplication.scheduledInterviewDate);
+                                    interviewDetails = ('0' + interviewDate.getDate()).slice(-2) + '-' + getMonthVal((interviewDate.getMonth()+1)) + " @" + newCandidate.candidateJobApplication.interviewTimeSlot.interviewTimeSlotName;
+
+                                    interviewAction = '<div id="interview_date_' + newCandidate.candidate.candidateId + '">' + interviewDetails + '</div>' +
+                                        '<span id="interview_status_option_' + newCandidate.candidate.candidateId + '">' +
+                                        '<span class="accept" onclick="confirmInterview(' + newCandidate.candidate.candidateId + ');"><img src="/assets/recruiter/img/icons/accept.svg" height="16px" width="14px"></span>' +
+                                        '<span class="reject" onclick="rejectInterview(' + newCandidate.candidate.candidateId + ');"><img src="/assets/recruiter/img/icons/reject.svg" height="16px" width="14px"></span>' +
+                                        '<span class="reschedule" onclick="showReschedulePopup(' + newCandidate.candidate.candidateId + ');"><img src="/assets/recruiter/img/icons/reschedule.svg" height="18px" width="16px"></span>' +
+                                        '</span>';
+                                } else{
+                                    if(newCandidate.candidateJobApplication.interviewStatus == null){
+                                        interviewDetails = "Date/time not specified ";
+                                        interviewSelectedDate = null;
+                                        interviewSelectedSlot = null;
+                                        interviewAction = '<div id="interview_date_' + newCandidate.candidate.candidateId + '">' + interviewDetails + '</div>' +
+                                            '<span id="interview_status_option_' + newCandidate.candidate.candidateId + '">' +
+                                            '<span class="accept" onclick="confirmInterview(' + newCandidate.candidate.candidateId + ');"><img src="/assets/recruiter/img/icons/accept.svg" height="16px" width="14px"></span>' +
+                                            '<span class="reject" onclick="rejectInterview(' + newCandidate.candidate.candidateId + ');"><img src="/assets/recruiter/img/icons/reject.svg" height="16px" width="14px"></span>' +
+                                            '</span>';
+                                    }
+                                }
+
+                            }
+                        } else{
+/*                            interviewSelectedDate = null;
+                            interviewSelectedSlot = null;
+                            interviewDetails = "Date/time not specified ";
+                            interviewAction = '<div>' + interviewDetails + '</div>' +
+                                '<span id="interview_status_option_' + newCandidate.candidate.candidateId + '">' +
+                                '<span class="accept" onclick="confirmInterview(' + newCandidate.candidate.candidateId + ');"><img src="/assets/recruiter/img/icons/accept.svg" height="16px" width="14px"></span>' +
+                                '<span class="reject"><img src="/assets/recruiter/img/icons/reject.svg" height="16px" width="14px"></span>' +
+                                '</span>';*/
+                            interviewAction = "TODO for support matched candidates";
+                        }
+                        return interviewAction;
                     } else {
                         return "";
                     }
@@ -1184,6 +1264,21 @@ $(function () {
 
     app.fetchPreScreenedCandidate = function () {
         NProgress.start();
+
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/getAllTimeSlots",
+                data: false,
+                async: false,
+                contentType: false,
+                processData: false,
+                success: processDataGetAllTimeSlots
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+
         var base_url = "/support/api/getPreScreenedCandidate/?jpId=" + app.jpId;
         var showOnlyPass;
         if ($("input[id='is_pass']:checked").val() == "on") {
@@ -1195,6 +1290,24 @@ $(function () {
         }
         base_url += "&isPass="+showOnlyPass;
 
+        try {
+            $.ajax({
+                type: "POST",
+                url: base_url,
+                data: false,
+                contentType: false,
+                processData: false,
+                success: app.updatePreScreenTable
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception.stack);
+        }
+    };
+
+    app.fetchConfirmedInterviewCandidates = function () {
+        NProgress.start();
+
+        var base_url = "/support/api/getConfirmedInterviewCandidates/?jpId=" + app.jpId;
         try {
             $.ajax({
                 type: "POST",
@@ -1289,8 +1402,7 @@ $(function () {
                 app.notify("Please select candidate(s) to move to pre-screen", "danger");
             }
         });
-    }
-    else if (app.currentView == "pre_screen_view") {
+    } else if (app.currentView == "pre_screen_view") {
         $('#header_view_title').text("Pre Screen View");
         $('.navigation__link').removeClass("mdl-navigation__link--current");
         $('#pre_screen_view_drawer').removeClass("mdl-navigation__link--current").addClass("mdl-navigation__link--current");
@@ -1303,6 +1415,10 @@ $(function () {
             app.fetchPreScreenedCandidate();
         });
         $('#header_view_title').text("Pre-Screen Completed View");
+    } else if (app.currentView == "confirmed_interview_view") {
+        app.fetchConfirmedInterviewCandidates();
+        app.initJobCard();
+        $('#header_view_title').text("Confirmed Interview View");
     } else {
         $('#header_view_title').text("Future View");
     }
@@ -1311,3 +1427,299 @@ $(function () {
 function linkToDashboard() {
     window.open('/jobPostDetails/'+gJobRoleId, '_blank');
 }
+
+function setInterviewStatus(candidateId, status, rescheduledDate, rescheduledSlot, reason) {
+    globalCandidateId = candidateId;
+    globalInterviewStatus = status;
+
+    var d = {
+        candidateId: candidateId,
+        jobPostId: jobPostId,
+        interviewStatus: status,
+        rescheduledDate: rescheduledDate,
+        rescheduledSlot: rescheduledSlot,
+        reason: reason
+    };
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/recruiter/api/updateInterviewStatus",
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify(d),
+            success: processDataInterviewStatus
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception.stack);
+    }
+}
+
+function rejectInterview(candidateId) {
+    globalCandidateId = candidateId;
+    globalInterviewStatus = 3;
+    var reasonDialog = document.getElementById("reasonDialog");
+    if (! reasonDialog.showModal) {
+        dialogPolyfill.registerDialog(dialog);
+    }
+    reasonDialog.showModal();
+    reasonDialog.querySelector('.close').addEventListener('click', function() {
+        reasonDialog.close();
+    });
+    reasonDialog.querySelector('.confirmRejection').addEventListener('click', function() {
+        confirmRejectInterview();
+    });
+}
+
+function confirmRejectInterview(){
+    if($("#interviewStatusComments").val().trim() != ''){
+        globalInterviewStatus = 2;
+        setInterviewStatus(globalCandidateId, 2, null, null, $("#interviewStatusComments").val());
+    } else{
+        alert("Please specify the reason for the job application rejection");
+    }
+}
+
+function confirmRescheduleInterview(){
+    if(rescheduledSlot != null){
+        globalInterviewStatus = "3";
+        setInterviewStatus(globalCandidateId, globalInterviewStatus, rescheduledDate, rescheduledSlot, null);
+    } else{
+        alert("Please select a time slot");
+    }
+}
+
+function showReschedulePopup(candidateId) {
+    globalCandidateId = candidateId;
+    globalInterviewStatus = 3;
+
+    rescheduledDate = null;
+    rescheduledSlot = null;
+
+    $("#rescheduleDateAndSlot").change(function (){
+        try{
+            var combinedValue = $("#rescheduleDateAndSlot").val().split("_");
+            rescheduledDate = combinedValue[0];
+            rescheduledSlot = combinedValue[1];
+
+        } catch(err){}
+    });
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getJobPostInfo/" + parseInt(jobPostId) + "/0",
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataForJobPostInfo
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
+function processDataInterviewStatus(returnedData) {
+    if(returnedData == "1"){
+        if(globalInterviewStatus == 1){
+            $("#interview_status_option_" + globalCandidateId).html("Interview confirmed");
+        } else if(globalInterviewStatus == 2){
+            $("#interview_status_option_" + globalCandidateId).html("Interview rejected");
+            var reasonDialog = document.getElementById("reasonDialog");
+            if (! reasonDialog.showModal) {
+                dialogPolyfill.registerDialog(dialog);
+            }
+            reasonDialog.close();
+        } else if(globalInterviewStatus == 3){
+            $("#interview_status_option_" + globalCandidateId).html("Interview Rescheduled. Awaiting Candidate response");
+            var rescheduleDialog = document.getElementById("rescheduleDialog");
+            if (! rescheduleDialog.showModal) {
+                dialogPolyfill.registerDialog(dialog);
+            }
+            rescheduleDialog.close();
+
+            console.log(rescheduledDate);
+            var newDate = new Date(rescheduledDate);
+            var i, newSlot;
+            for(i=0; i<Object.keys(allTimeSlots).length; i++){
+                if(allTimeSlots[i].id == rescheduledSlot){
+                    newSlot = allTimeSlots[i].name;
+                }
+            }
+            $("#interview_date_" + globalCandidateId).html(('0' + newDate.getDate()).slice(-2) + '-' + getMonthVal((newDate.getMonth()+1)) + " @" + newSlot);
+        }
+        notifyError("Submitted successfully. Refreshing ..", 'success');
+        setTimeout(function () {
+            location.reload();
+        }, 2000);
+    }
+}
+
+function processDataForJobPostInfo(returnedData) {
+    if (Object.keys(returnedData.interviewDetailsList).length > 0) {
+        //slots
+        var i;
+        $('#rescheduleDateAndSlot').html('');
+        var defaultOption = $('<option value="-1"></option>').text("Select Time Slot");
+        $('#rescheduleDateAndSlot').append(defaultOption);
+
+        var interviewDetailsList = returnedData.interviewDetailsList;
+        if (interviewDetailsList[0].interviewDays != null) {
+            var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
+
+            /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
+            if (interviewDays.length != 7) {
+                x = 7 - interviewDays.length;
+                var modifiedInterviewDays = "";
+
+                for (i = 0; i < x; i++) {
+                    modifiedInterviewDays += "0";
+                }
+                modifiedInterviewDays += interviewDays;
+                interviewDays = modifiedInterviewDays;
+            }
+        }
+        //slots
+        var today = new Date();
+        for (i = 2; i < 9; i++) {
+            // 0 - > sun 1 -> mon ...
+            var x = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+            if (checkSlotAvailability(x, interviewDays)) {
+                interviewDetailsList.forEach(function (timeSlot) {
+                    var dateSlotSelectedId = x.getFullYear() + "-" + (x.getMonth() + 1) + "-" + x.getDate() + "_" + timeSlot.interviewTimeSlot.interviewTimeSlotId;
+                    var option = $('<option value="' + dateSlotSelectedId + '"></option>').text(getDayVal(x.getDay()) + ", " + x.getDate() + " " + getMonthVal((x.getMonth() + 1)) + " (" + timeSlot.interviewTimeSlot.interviewTimeSlotName + ")");
+                    $('#rescheduleDateAndSlot').append(option);
+                });
+            }
+        }
+
+        //showing popup
+        var rescheduleDialog = document.getElementById("rescheduleDialog");
+        if (! rescheduleDialog.showModal) {
+            dialogPolyfill.registerDialog(dialog);
+        }
+        rescheduleDialog.showModal();
+        rescheduleDialog.querySelector('.closeReschedule').addEventListener('click', function() {
+            rescheduleDialog.close();
+        });
+        rescheduleDialog.querySelector('.confirmReschedule').addEventListener('click', function() {
+            confirmRescheduleInterview();
+        });
+
+    } else{
+        alert("No Slots available!");
+    }
+}
+
+//helper functions
+
+function processDataGetAllTimeSlots(returnedData) {
+    returnedData.forEach(function(timeSlot) {
+        var id = timeSlot.interviewTimeSlotId;
+        var name = timeSlot.interviewTimeSlotName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        allTimeSlots.push(item);
+    });
+}
+
+function getDayVal(month){
+    switch(month) {
+        case 0:
+            return "Sun";
+            break;
+        case 1:
+            return "Mon";
+            break;
+        case 2:
+            return "Tue";
+            break;
+        case 3:
+            return "Wed";
+            break;
+        case 4:
+            return "Thu";
+            break;
+        case 5:
+            return "Fri";
+            break;
+        case 6:
+            return "Sat";
+            break;
+    }
+}
+
+function getMonthVal(month){
+    switch(month) {
+        case 1:
+            return "Jan";
+            break;
+        case 2:
+            return "Feb";
+            break;
+        case 3:
+            return "Mar";
+            break;
+        case 4:
+            return "Apr";
+            break;
+        case 5:
+            return "May";
+            break;
+        case 6:
+            return "Jun";
+            break;
+        case 7:
+            return "Jul";
+            break;
+        case 8:
+            return "Aug";
+            break;
+        case 9:
+            return "Sep";
+            break;
+        case 10:
+            return "Oct";
+            break;
+        case 11:
+            return "Nov";
+            break;
+        case 12:
+            return "Dec";
+            break;
+    }
+}
+
+function checkSlotAvailability(x, interviewDays) {
+    if(x.getDay() == 1 && interviewDays.charAt(0) == '1'){ // monday
+        return true;
+    } else if(x.getDay() == 2 && interviewDays.charAt(1) == '1'){ //tue
+        return true;
+    } else if(x.getDay() == 3 && interviewDays.charAt(2) == '1'){ //wed
+        return true;
+    } else if(x.getDay() == 4 && interviewDays.charAt(3) == '1'){ //thu
+        return true;
+    } else if(x.getDay() == 5 && interviewDays.charAt(4) == '1'){ //fri
+        return true;
+    } else if(x.getDay() == 6 && interviewDays.charAt(5) == '1'){ //sat
+        return true;
+    } else if(x.getDay() == 0 && interviewDays.charAt(6) == '1'){ //sun
+        return true;
+    }
+}
+
+function notifyError(msg, type) {
+    $.notify({
+        message: msg,
+        animate: {
+            enter: 'animated lightSpeedIn',
+            exit: 'animated lightSpeedOut'
+        }
+    }, {
+        type: type,
+        placement: {
+            from: "top",
+            align: "center"
+        }
+    });
+};
+

@@ -1579,6 +1579,8 @@ public class Application extends Controller {
                 return ok(views.html.pre_screen.render());
             case "pre_screen_completed_view":
                 return ok(views.html.pre_screen_completed.render());
+            case "confirmed_interview_view":
+                return ok(views.html.confirmed_interview.render());
         }
         return badRequest();
     }
@@ -1762,6 +1764,10 @@ public class Application extends Controller {
 
     public static Result getPreScreenedCandidate(Long jobPostId, Boolean isPass) {
         return ok(toJson(JobPostWorkflowEngine.getPreScreenedPassFailCandidates(jobPostId, isPass)));
+    }
+
+    public static Result getConfirmedInterviewCandidates(Long jobPostId) {
+        return ok(toJson(JobPostWorkflowEngine.getConfirmedInterviewCandidates(jobPostId)));
     }
 
     public static Result confirmInterview(long jpId, long value) {

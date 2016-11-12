@@ -4,6 +4,7 @@ import api.InteractionConstants;
 import api.ServerConstants;
 import controllers.businessLogic.InteractionService;
 import models.entity.Interaction;
+import play.Logger;
 
 import static api.InteractionConstants.*;
 import static api.InteractionConstants.INTERACTION_NOTE_BLANK;

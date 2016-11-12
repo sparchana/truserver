@@ -19,6 +19,7 @@ import controllers.businessLogic.Recruiter.RecruiterAuthService;
 import controllers.businessLogic.Recruiter.RecruiterInteractionService;
 import controllers.businessLogic.Recruiter.RecruiterLeadService;
 import models.entity.OM.JobApplication;
+import models.entity.OM.JobPostWorkflow;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
 import models.entity.Recruiter.RecruiterAuth;
 import models.entity.Recruiter.RecruiterLead;
@@ -649,61 +650,5 @@ public class RecruiterService {
             recruiterCreditHistory.setRecruiterCreditsAddedBy("Not specified");
         }
         recruiterCreditHistory.save();
-    }
-
-    public static Result updateInterviewStatus(JobApplication jobApplication, InterviewStatusRequest interviewStatusRequest) {
-        InterviewStatus interviewStatus = InterviewStatus.find.where().eq("interview_status_id", interviewStatusRequest.getInterviewStatus()).findUnique();
-        if(interviewStatus != null){
-            Candidate candidate = Candidate.find.where().eq("candidateId", interviewStatusRequest.getCandidateId()).findUnique();
-            if(candidate != null){
-                jobApplication.setInterviewStatus(interviewStatus);
-                if(interviewStatus.getInterviewStatusId() == ServerConstants.INTERVIEW_STATUS_ACCEPTED){ // accept
-                    Logger.info("Sending interview confirm sms to candidate");
-                    if(jobApplication.getScheduledInterviewDate() == null){
-                        sendInterviewShortlistSms(jobApplication, candidate);
-
-                        // creating interaction
-                        createInteractionForRecruiterShortlistJobApplicationWithoutDate(candidate.getCandidateUUId(), jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileUUId());
-                    } else{
-                        sendInterviewConfirmationSms(jobApplication, candidate);
-
-                        // creating interaction
-                        createInteractionForRecruiterAcceptingInterviewDate(candidate.getCandidateUUId(), jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileUUId());
-                    }
-                } else if(interviewStatus.getInterviewStatusId() == ServerConstants.INTERVIEW_STATUS_REJECTED_BY_RECRUITER){ // reject
-                    if(interviewStatusRequest.getReason() != null){
-                        jobApplication.setInterviewStatusComments(interviewStatusRequest.getReason());
-
-                        Logger.info("Sending interview rejection sms to candidate");
-                        sendInterviewRejectionSms(jobApplication, candidate);
-
-                        // creating interaction
-                        createInteractionForRecruiterRejectingInterviewDate(candidate.getCandidateUUId(), jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileUUId());
-                    }
-                } else if(interviewStatus.getInterviewStatusId() == ServerConstants.INTERVIEW_STATUS_RESCHEDULED){ // reschedule
-                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-                    Date date = null;
-                    try {
-                        date = format.parse(interviewStatusRequest.getRescheduledDate());
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                    InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", interviewStatusRequest.getRescheduledSlot()).findUnique();
-                    if(interviewTimeSlot != null){
-                        jobApplication.setScheduledInterviewDate(date);
-                        jobApplication.setInterviewTimeSlot(interviewTimeSlot);
-
-                        Logger.info("Sending interview rescheduling sms to candidate");
-                        sendInterviewReschedulingSms(jobApplication, candidate);
-
-                        // creating interaction
-                        createInteractionForRecruiterReschedulingingInterviewDate(candidate.getCandidateUUId(), jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileUUId());
-                    }
-                }
-                jobApplication.update();
-                return ok("1");
-            }
-        }
-        return ok("0");
     }
 }

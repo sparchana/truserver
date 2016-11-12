@@ -2,6 +2,7 @@ package controllers.businessLogic.JobWorkflow;
 
 import api.InteractionConstants;
 import api.ServerConstants;
+import api.http.httpRequest.Recruiter.InterviewStatusRequest;
 import api.http.httpRequest.Workflow.PreScreenRequest;
 import api.http.httpRequest.Workflow.SelectedCandidateRequest;
 import api.http.httpResponse.CandidateExtraData;
@@ -15,19 +16,22 @@ import models.entity.Candidate;
 import models.entity.Interaction;
 import models.entity.JobPost;
 import models.entity.OM.*;
-import models.entity.Static.JobPostWorkflowStatus;
-import models.entity.Static.Language;
-import models.entity.Static.Locality;
+import models.entity.Static.*;
 import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
 import play.core.server.Server;
+import play.mvc.Result;
 
 import java.sql.Timestamp;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static controllers.businessLogic.Recruiter.RecruiterInteractionService.*;
+import static models.util.SmsUtil.*;
 import static play.mvc.Controller.session;
+import static play.mvc.Results.ok;
 
 /**
  * Created by zero on 4/10/16.
@@ -1120,6 +1124,63 @@ public class JobPostWorkflowEngine {
             CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
             candidateWorkflowData.setCandidate(candidate);
             candidateWorkflowData.setExtraData(candidateExtraDataMap.get(candidate.getCandidateId()));
+            candidateWorkflowData.setCandidateJobApplication(JobApplication.find.where().eq("JobPostId", jobPostId).eq("candidateId", candidate.getCandidateId()).findUnique());
+            selectedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
+        }
+
+        return selectedCandidateMap;
+    }
+
+    public static Map<Long, CandidateWorkflowData> getConfirmedInterviewCandidates(Long jobPostId) {
+        String statusSql = " and (status_id = '" + ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED+"') ";
+        StringBuilder workFlowQueryBuilder = new StringBuilder("select createdby, candidate_id, creation_timestamp, job_post_id, status_id from job_post_workflow i " +
+                " where i.job_post_id " +
+                " = ('"+jobPostId+"') " +
+                statusSql+
+                " and creation_timestamp = " +
+                " (select max(creation_timestamp) from job_post_workflow " +
+                "       where i.candidate_id = job_post_workflow.candidate_id " +
+                "       and i.job_post_id = job_post_workflow.job_post_id) " +
+                " order by creation_timestamp desc ");
+
+        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder.toString())
+                .columnMapping("creation_timestamp", "creationTimestamp")
+                .columnMapping("job_post_id", "jobPost.jobPostId")
+                .columnMapping("status_id", "status.statusId")
+                .columnMapping("candidate_id", "candidate.candidateId")
+                .columnMapping("createdby", "createdBy")
+                .create();
+
+        List<JobPostWorkflow> jobPostWorkflowList = Ebean.find(JobPostWorkflow.class)
+                .setRawSql(rawSql)
+                .findList();
+
+        List<Candidate> candidateList = new ArrayList<>();
+
+        Map<Long, CandidateWorkflowData> selectedCandidateMap = new LinkedHashMap<>();
+
+        // until view is not available over this table, this loop get the distinct candidate who
+        // got selected for a job post recently
+        for( JobPostWorkflow jpwf: jobPostWorkflowList) {
+            candidateList.add(jpwf.getCandidate());
+        }
+        // prep params for a jobPost
+        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+
+        List<JobPostToLocality> jobPostToLocalityList = jobPost.getJobPostToLocalityList();
+        List<Long> localityIdList = new ArrayList<>();
+        for (JobPostToLocality jobPostToLocality: jobPostToLocalityList) {
+            localityIdList.add(jobPostToLocality.getLocality().getLocalityId());
+        }
+
+        candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, false);
+        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique());
+
+        for ( Candidate candidate: candidateList) {
+            CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
+            candidateWorkflowData.setCandidate(candidate);
+            candidateWorkflowData.setExtraData(candidateExtraDataMap.get(candidate.getCandidateId()));
+            candidateWorkflowData.setCandidateJobApplication(JobApplication.find.where().eq("JobPostId", jobPostId).eq("candidateId", candidate.getCandidateId()).findUnique());
             selectedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
         }
 
@@ -1435,7 +1496,8 @@ public class JobPostWorkflowEngine {
 
         // check if status is already selected or pre_screen_attempted, throw error if not
         if (jobPostWorkflowOld.getStatus().getStatusId() == ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED
-                || jobPostWorkflowOld.getStatus().getStatusId() == ServerConstants.JWF_STATUS_SELECTED) {
+                || jobPostWorkflowOld.getStatus().getStatusId() == ServerConstants.JWF_STATUS_SELECTED
+                || jobPostWorkflowOld.getStatus().getStatusId() == ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED) {
             // save new workflow with status pre_screen_attempted, later this obj status will change to pre_screen_completed
             jobPostWorkflowOld = new JobPostWorkflow();
             jobPostWorkflowOld.setJobPostWorkflowUUId(toBePreservedUUId);
@@ -1514,4 +1576,83 @@ public class JobPostWorkflowEngine {
     }
 
 
+    public static Result updateInterviewStatus(JobApplication jobApplication, InterviewStatusRequest interviewStatusRequest) {
+        InterviewStatus interviewStatus = InterviewStatus.find.where().eq("interview_status_id", interviewStatusRequest.getInterviewStatus()).findUnique();
+        if(interviewStatus != null){
+            Candidate candidate = Candidate.find.where().eq("candidateId", interviewStatusRequest.getCandidateId()).findUnique();
+            if(candidate != null){
+                jobApplication.setInterviewStatus(interviewStatus);
+                if(interviewStatus.getInterviewStatusId() == ServerConstants.INTERVIEW_STATUS_ACCEPTED){ // accept
+                    Logger.info("Sending interview confirm sms to candidate");
+                    if(jobApplication.getScheduledInterviewDate() == null){
+                        sendInterviewShortlistSms(jobApplication, candidate);
+
+                        // creating interaction
+                        createInteractionForRecruiterShortlistJobApplicationWithoutDate(candidate.getCandidateUUId(), jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileUUId());
+                    } else{
+                        sendInterviewConfirmationSms(jobApplication, candidate);
+
+                        // creating interaction
+                        createInteractionForRecruiterAcceptingInterviewDate(candidate.getCandidateUUId(), jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileUUId());
+                    }
+
+                    // fetch existing workflow old
+                    JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
+                            .eq("jobPost.jobPostId", jobApplication.getJobPost().getJobPostId())
+                            .eq("candidate.candidateId", candidate.getCandidateId())
+                            .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
+
+                    // Setting the existing jobpostworkflow status to attempted
+                    JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(candidate.getCandidateId(), jobApplication.getJobPost().getJobPostId(), jobPostWorkflowOld);
+                    JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED).findUnique();
+                    jobPostWorkflowNew.setStatus(status);
+                    jobPostWorkflowNew.update();
+
+                    String interactionResult = jobApplication.getJobPost().getJobPostId() + ": " + jobApplication.getJobPost().getJobRole().getJobName() + " interview confirmed";
+
+                    // save the interaction
+                    InteractionService.createWorkflowInteraction(
+                            jobPostWorkflowOld.getJobPostWorkflowUUId(),
+                            candidate.getCandidateUUId(),
+                            InteractionConstants.INTERACTION_TYPE_CANDIDATE_INTERVIEW_SCHEDULED,
+                            null,
+                            interactionResult
+                    );
+
+                } else if(interviewStatus.getInterviewStatusId() == ServerConstants.INTERVIEW_STATUS_REJECTED_BY_RECRUITER){ // reject
+                    if(interviewStatusRequest.getReason() != null){
+                        jobApplication.setInterviewStatusComments(interviewStatusRequest.getReason());
+
+                        Logger.info("Sending interview rejection sms to candidate");
+                        sendInterviewRejectionSms(jobApplication, candidate);
+
+                        // creating interaction
+                        createInteractionForRecruiterRejectingInterviewDate(candidate.getCandidateUUId(), jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileUUId());
+                    }
+                } else if(interviewStatus.getInterviewStatusId() == ServerConstants.INTERVIEW_STATUS_RESCHEDULED){ // reschedule
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                    Date date = null;
+                    try {
+                        date = format.parse(interviewStatusRequest.getRescheduledDate());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                    InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", interviewStatusRequest.getRescheduledSlot()).findUnique();
+                    if(interviewTimeSlot != null){
+                        jobApplication.setScheduledInterviewDate(date);
+                        jobApplication.setInterviewTimeSlot(interviewTimeSlot);
+
+                        Logger.info("Sending interview rescheduling sms to candidate");
+                        sendInterviewReschedulingSms(jobApplication, candidate);
+
+                        // creating interaction
+                        createInteractionForRecruiterReschedulingingInterviewDate(candidate.getCandidateUUId(), jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileUUId());
+                    }
+                }
+                jobApplication.update();
+                return ok("1");
+            }
+        }
+        return ok("0");
+    }
 }

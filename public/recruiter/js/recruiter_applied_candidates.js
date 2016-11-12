@@ -79,7 +79,6 @@ function processDataGetAllTimeSlots(returnedData) {
     });
 }
 
-
 function processDataUnlockedCandidates(returnedData) {
     returnedData.forEach(function (unlockedCandidate){
         try {
