@@ -26,9 +26,7 @@ import play.Logger;
 
 import javax.persistence.NonUniqueResultException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import static controllers.businessLogic.InteractionService.*;
 import static controllers.businessLogic.LeadService.createOrUpdateConvertedLead;
@@ -1201,9 +1199,6 @@ public class CandidateService
                 + p1CompletionPercent * p1Weight
                 + p2CompletionPercent * p2Weight;
 
-        Logger.info("Candidate with mobile number " + candidateMobile + " has % profile completion as "
-                + profileCompletionPercent);
-
         return profileCompletionPercent;
     }
 
@@ -1282,10 +1277,6 @@ public class CandidateService
             }
 
         }
-
-        Logger.info(" Candidate with mobile number " + candidate.getCandidateMobile()
-                + " has " + p0CompletedFieldCount + " p0 fields completed out of " + p0FieldCount);
-
         return (p0CompletedFieldCount / p0FieldCount);
     }
 
@@ -1335,9 +1326,6 @@ public class CandidateService
             }
         }
 
-        Logger.info(" Candidate with mobile number " + candidate.getCandidateMobile()
-                + " has " + p1CompletedFieldCount + " p1 fields completed out of " + p1FieldCount);
-
         return (p1CompletedFieldCount / p1FieldCount);
     }
 
@@ -1386,9 +1374,6 @@ public class CandidateService
             }
         }
 
-        Logger.info(" Candidate with mobile number " + candidate.getCandidateMobile()
-                + " has " + p2CompletedFieldCount + " p2 fields completed out of " + p2FieldCount);
-
         return (p2CompletedFieldCount / p2FieldCount);
     }
 
@@ -1403,5 +1388,33 @@ public class CandidateService
             SmsUtil.sendWelcomeSmsFromSupport(candidate.getCandidateFirstName(), candidate.getCandidateMobile(), dummyPassword);
             Logger.info("Dummy auth saved and sent to " + candidate.getCandidateMobile());
         }
+    }
+
+
+    public static List<Candidate> computeAllProfileCompletionScores(Date startDate, Date endDate, Float scoreLimit) {
+        Query<Candidate> candidateQuery = Candidate.find.query();
+
+        if (startDate != null) {
+            candidateQuery.where().gt("candidateCreateTimestamp", startDate);
+        }
+
+        if (endDate != null) {
+            candidateQuery.where().lt("candidateCreateTimestamp", endDate);
+        }
+
+        List<Candidate> candidateList = candidateQuery.findList();
+
+        List<Candidate> resultList = new ArrayList<Candidate>();
+
+        for (Candidate candidate : candidateList) {
+            float profileCompletionScore = getProfileCompletionPercent(candidate.getCandidateMobile());
+            if (profileCompletionScore <= scoreLimit) {
+                candidate.setProfileCompletionScore(profileCompletionScore);
+                resultList.add(candidate);
+            }
+        }
+
+        Logger.info("returning results " + resultList.size());
+        return resultList;
     }
 }
