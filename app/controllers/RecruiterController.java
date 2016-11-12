@@ -221,24 +221,7 @@ public class RecruiterController {
                 if(recruiterProfile != null){
                     if(jobPost.getRecruiterProfile() != null){
                         if(jobPost.getRecruiterProfile().getRecruiterProfileId() == recruiterProfile.getRecruiterProfileId()){
-                            List<JobApplication> jobApplicationList = JobApplication.find.where().eq("JobPostId", jobPostId).findList();
-                            List<JobApplicationResponse> jobApplicationResponseList = new ArrayList<>();
-                            for(JobApplication jobApplication: jobApplicationList){
-                                JobApplicationResponse jobApplicationResponse = new JobApplicationResponse();
-
-                                jobApplicationResponse.setCandidate(jobApplication.getCandidate());
-                                jobApplicationResponse.setJobApplicationId(jobApplication.getJobApplicationId());
-                                jobApplicationResponse.setJobApplicationCreatingTimeStamp(String.valueOf(jobApplication.getJobApplicationCreateTimeStamp()));
-                                jobApplicationResponse.setPreScreenLocation(jobApplication.getLocality());
-                                jobApplicationResponse.setPreScreenLocation(jobApplication.getLocality());
-                                jobApplicationResponse.setInterviewTimeSlot(jobApplication.getInterviewTimeSlot());
-                                jobApplicationResponse.setScheduledInterviewDate(jobApplication.getScheduledInterviewDate());
-                                jobApplicationResponse.setInterviewStatus(jobApplication.getInterviewStatus());
-
-                                jobApplicationResponseList.add(jobApplicationResponse);
-                            }
-
-                            return ok(toJson(jobApplicationResponseList));
+                            return ok(toJson(JobPostWorkflowEngine.getRecruiterJobLinedUpcandidates(jobPostId)));
                         }
                     }
                 }

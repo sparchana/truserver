@@ -178,7 +178,7 @@ public class RecruiterInteractionService {
         InteractionService.createInteraction(interaction);
     }
 
-    public static void createInteractionForRecruiterReschedulingingInterviewDate(String objAUUID, String objBUUID) {
+    public static void createInteractionForRecruiterReschedulingInterviewDate(String objAUUID, String objBUUID) {
         Interaction interaction = new Interaction(
                 objAUUID,
                 ServerConstants.OBJECT_TYPE_CANDIDATE,

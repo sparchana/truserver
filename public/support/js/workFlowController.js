@@ -1414,7 +1414,7 @@ $(function () {
         document.getElementById('is_pass').addEventListener("click", function () {
             app.fetchPreScreenedCandidate();
         });
-        $('#header_view_title').text("Pre-Screen Completed View");
+        $('#header_view_title').text("Schedule Interview View");
     } else if (app.currentView == "confirmed_interview_view") {
         app.fetchConfirmedInterviewCandidates();
         app.initJobCard();
