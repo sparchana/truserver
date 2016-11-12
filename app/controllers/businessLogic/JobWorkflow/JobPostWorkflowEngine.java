@@ -1513,6 +1513,30 @@ public class JobPostWorkflowEngine {
         return null;
     }
 
+    // this methods take the old jobpost uuid and set the new jobpost uuid to old jobpost uuid.
+    private static JobPostWorkflow saveNewJobPostWorkflowAfterConfirmedInterview(Long candidateId, Long jobPostId, JobPostWorkflow jobPostWorkflowOld) {
+        JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED).findUnique();
+        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        Candidate candidate = Candidate.find.where().in("candidateId", candidateId).findUnique();
+        String toBePreservedUUId = jobPostWorkflowOld.getJobPostWorkflowUUId();
+
+        // check if status is already selected or pre_screen_completed, throw error if not
+        if (jobPostWorkflowOld.getStatus().getStatusId() == ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED) {
+            // save new workflow with status pre_screen_interview_confirmed,
+            jobPostWorkflowOld = new JobPostWorkflow();
+            jobPostWorkflowOld.setJobPostWorkflowUUId(toBePreservedUUId);
+            jobPostWorkflowOld.setJobPost(jobPost);
+            jobPostWorkflowOld.setCandidate(candidate);
+            jobPostWorkflowOld.setCreatedBy(session().get("sessionUsername"));
+            jobPostWorkflowOld.setStatus(status);
+            jobPostWorkflowOld.save();
+            return jobPostWorkflowOld;
+        } else {
+            Logger.error("Error ! JobPostWorkflow status is not PRESCREEN_COMPLETED or SELECTED");
+        }
+        return null;
+    }
+
 
 
 
@@ -1603,10 +1627,14 @@ public class JobPostWorkflowEngine {
                             .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
 
                     // Setting the existing jobpostworkflow status to attempted
-                    JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(candidate.getCandidateId(), jobApplication.getJobPost().getJobPostId(), jobPostWorkflowOld);
+                    JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflowAfterConfirmedInterview(candidate.getCandidateId(), jobApplication.getJobPost().getJobPostId(), jobPostWorkflowOld);
                     JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED).findUnique();
                     jobPostWorkflowNew.setStatus(status);
                     jobPostWorkflowNew.update();
+
+                    InterviewConfirmedStatusUpdate interviewConfirmedStatusUpdate = new InterviewConfirmedStatusUpdate();
+                    interviewConfirmedStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
+                    interviewConfirmedStatusUpdate.save();
 
                     String interactionResult = jobApplication.getJobPost().getJobPostId() + ": " + jobApplication.getJobPost().getJobRole().getJobName() + " interview confirmed";
 
