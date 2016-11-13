@@ -19,7 +19,7 @@
 }
 
 .select-wrapper input.select-dropdown{
-    color: #b1b1b1;
+    color: #c5c5c5;
 }
 ::-webkit-scrollbar
 {
@@ -55,6 +55,12 @@ div.Tokenize ul.TokensContainer li.TokenSearch input{
     box-shadow: none;
     border-bottom:1px solid #1d1d1d;
 }
+#creditCardIcon{
+    padding: 24px;
+}
+#creditCardIcon img{
+    width:52px;
+}
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
@@ -88,7 +94,6 @@ nav{
     text-align: center;
     background: rgba(0, 0, 0, 0.68)
 }
-
 .sectionOneBody{
     font-family: Lato;
     text-align: center;
@@ -254,7 +259,7 @@ footer.page-footer .footer-copyright{
     text-align: center;
 }
 .materialDash{
-    height: 2px;
+    height: 1px;
     width: 72px;
     background: #2ec866;
     margin: 1%;
@@ -341,6 +346,7 @@ body#recruiterHome{
 .recruiterHomeMessgeBox{
     box-shadow: 0 1px 3px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.12);
     display: block;
+
     margin-bottom: 16px;
     background: #fff;
     border-radius: 4px;
@@ -382,7 +388,49 @@ body#recruiterHome{
 input[type=text]:disabled{
     color: rgb(169, 169, 169);
 }
-
+#hasCredit{
+    text-align: justify;
+    margin: 25px 0 25px 0;
+    display: none;
+}
+#hasNoCredit{
+    text-align: justify;
+    margin: 25px 0 25px 0;
+    display: none;
+}
+#headingUnlockCandidate{
+    font-size: 26px;
+    color:#ffffff;
+    margin-top:-46px;
+    margin-bottom:10px
+}
+@media screen and (max-width: 600px) {
+    #upperSpaceInputField{
+        margin-top: 40px;
+    }
+    #creditCardIcon{
+        padding:12px;
+    }
+    #creditCardIcon img{
+        width:32px;
+    }
+    #hasCredit{
+        text-align: justify;
+        margin: 5px 0 20px 0;
+        display: none;
+    }
+    #hasNoCredit{
+        text-align: justify;
+        margin: 5px 0 20px 0;
+        display: none;
+    }
+    #headingUnlockCandidate{
+        font-size: 22px;
+        color:#ffffff;
+        margin-top:-40px;
+        margin-bottom:10px
+    }
+}
 @media screen and (max-width: 768px) {
 
     .packCol img{
