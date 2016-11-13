@@ -223,7 +223,7 @@ public class JobSearchService {
     }
 
     /**
-     * returns all available INTERNAL jobs sorted based on candidate's job role preferences
+     * returns all available INTERNAL jobs in ACTIVE state sorted based on candidate's job role preferences
      *
      * @param mobile candidates mobile
      * @return
