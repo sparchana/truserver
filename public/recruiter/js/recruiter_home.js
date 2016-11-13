@@ -32,7 +32,7 @@ $(window).resize(function(){
 });
 
 $(document).scroll(function(){
-    if ($(this).scrollTop() > 40) {
+    if ($(this).scrollTop() > 30) {
         $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
     }
     else{

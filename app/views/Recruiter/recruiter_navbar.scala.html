@@ -1,4 +1,9 @@
-
+<style>
+  nav, nav .nav-wrapper i, nav a.button-collapse, nav a.button-collapse i{
+    height: 56px;
+    line-height: 56px;
+}
+</style>
 <div class="navbar-fixed">
   <nav>
     <div class="container" style="width: 85%;">
@@ -48,38 +53,8 @@
 </div>
 
 <script>
-        $('.button-collapse').sideNav({
-          menuWidth: 240,
-          edge: 'left',
-          closeOnClick: true
+        $(document).ready(function(){
+          $(".button-collapse").sideNav();
+          $(".dropdown-button").dropdown();
         });
-
-        $('.dropdown-button').dropdown({
-                  inDuration: 300,
-                  outDuration: 225,
-                  constrain_width: false, // Does not change width of dropdown to that of the activator
-                  gutter: 0, // Spacing from edge
-                  alignment: 'left' // Displays dropdown with edge aligned to the left of button
-                }
-        );
-
-        function logoutRecruiter() {
-          try {
-            $.ajax({
-              type: "GET",
-              url: "/logoutRecruiter",
-              data: false,
-              async: false,
-              contentType: false,
-              processData: false,
-              success: processDataLogoutRecruiter
-            });
-          } catch (exception) {
-            console.log("exception occured!!" + exception);
-          }
-        }
-
-        function processDataLogoutRecruiter() {
-          window.location = "/recruiter";
-        }
 </script>

@@ -12,11 +12,6 @@ $(document).scroll(function(){
 $(document).ready(function(){
     checkRecruiterLogin();
     getRecruiterInfo();
-    $('.button-collapse').sideNav({
-        menuWidth: 240,
-        edge: 'left',
-        closeOnClick: true
-    });
     var pathname = window.location.pathname; // Returns path only
     var jobPostIdUrl = pathname.split('/');
     var jobPostId = jobPostIdUrl[(jobPostIdUrl.length)-1];
