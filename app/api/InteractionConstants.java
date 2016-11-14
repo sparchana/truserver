@@ -157,10 +157,6 @@ public class InteractionConstants {
     public static final int INTERACTION_TYPE_CANDIDATE_ACCEPTS_RESCHEDULED_INTERVIEW = 58;
     public static final int INTERACTION_TYPE_CANDIDATE_REJECTS_RESCHEDULED_INTERVIEW = 59;
 
-    public static final int INTERACTION_TYPE_CANDIDATE_INTERVIEW_SCHEDULED = 60;
-    public static final int INTERACTION_TYPE_CANDIDATE_RESCHEDULED_INTERVIEW_ACCEPTED = 61;
-    public static final int INTERACTION_TYPE_CANDIDATE_RESCHEDULED_INTERVIEW_REJECTED = 62;
-
     public static final Map<Integer, String> INTERACTION_CHANNEL = new HashMap<>();
 
     public static final int INTERACTION_CHANNEL_CANDIDATE_WEBSITE = 1;
