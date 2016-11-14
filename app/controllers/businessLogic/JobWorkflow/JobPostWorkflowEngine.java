@@ -10,6 +10,7 @@ import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
 import api.http.httpResponse.Workflow.WorkflowResponse;
 import com.avaje.ebean.*;
+import controllers.businessLogic.CandidateService;
 import controllers.businessLogic.InteractionService;
 import controllers.businessLogic.MatchingEngineService;
 import models.entity.Candidate;
@@ -385,10 +386,12 @@ public class JobPostWorkflowEngine {
 
         if(candidateList.size() != 0) {
             for (Candidate candidate : candidateList) {
-                CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
-                candidateWorkflowData.setCandidate(candidate);
-                candidateWorkflowData.setExtraData(allFeature.get(candidate.getCandidateId()));
-                matchedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
+                if (CandidateService.getP0FieldsCompletionPercent(candidate) > 0.5) {
+                    CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
+                    candidateWorkflowData.setCandidate(candidate);
+                    candidateWorkflowData.setExtraData(allFeature.get(candidate.getCandidateId()));
+                    matchedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
+                }
             }
         }
 
