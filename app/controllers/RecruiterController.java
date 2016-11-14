@@ -221,7 +221,7 @@ public class RecruiterController {
                 if(recruiterProfile != null){
                     if(jobPost.getRecruiterProfile() != null){
                         if(jobPost.getRecruiterProfile().getRecruiterProfileId() == recruiterProfile.getRecruiterProfileId()){
-                            return ok(toJson(JobPostWorkflowEngine.getRecruiterJobLinedUpcandidates(jobPostId)));
+                            return ok(toJson(JobPostWorkflowEngine.getRecruiterJobLinedUpCandidates(jobPostId)));
                         }
                     }
                 }

@@ -1749,7 +1749,7 @@ public class JobPostWorkflowEngine {
         return 0;
     }
 
-    public static Map<Long, CandidateWorkflowData> getRecruiterJobLinedUpcandidates(Long jobPostId) {
+    public static Map<Long, CandidateWorkflowData> getRecruiterJobLinedUpCandidates(Long jobPostId) {
         String statusSql = " and (status_id = '" + ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED + "' or status_id ='" + ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED+ "') ";
         StringBuilder workFlowQueryBuilder = new StringBuilder("select createdby, candidate_id, creation_timestamp, job_post_id, status_id from job_post_workflow i " +
                 " where i.job_post_id " +
@@ -1790,7 +1790,6 @@ public class JobPostWorkflowEngine {
         for (JobPostToLocality jobPostToLocality: jobPostToLocalityList) {
             localityIdList.add(jobPostToLocality.getLocality().getLocalityId());
         }
-
 
         candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, false);
         Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique());
