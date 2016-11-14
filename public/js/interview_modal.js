@@ -227,7 +227,7 @@ function generateInterviewSlotModal(title, message, candidateId, jobPostId, chan
 
 function finalInterviewSlotSubmission(candidateId, jobPostId, channel) {
     if($("#interViewSlot").val() != -1 ){
-        var combinedValue = $(this).val().split("_");
+        var combinedValue = $("#interViewSlot").val().split("_");
         scheduledInterviewDate = combinedValue[0];
         prefTimeSlot = combinedValue[1];
 
