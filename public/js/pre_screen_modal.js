@@ -409,10 +409,10 @@ function updateCallAttempts(cId, jpId, status) {
         success: function (returnedData) {
             if(returnedData == "OK"){
                 notifyError("Call response saved successfully. Refreshing..", 'success');
-                setTimeout(function () {
-                    location.reload();
-                    // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
-                }, 2000);
+                // setTimeout(function () {
+                //     location.reload();
+                //     // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
+                // }, 2000);
                 bootbox.hideAll();
             } else if(returnedData == "NA") {
                 notifyError("Error while saving call response.", 'success');
@@ -487,7 +487,9 @@ function triggerPreScreenResponseSubmission(candidateId, jobPostId) {
                 url: "/submitPreScreen",
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(d),
-                success: processPostPreScreenResponse
+                success: function (returnData) {
+                    processPostPreScreenResponse(returnData, candidateId, jobPostId);
+                }
             });
         } catch (exception) {
             console.log("exception occured!!" + exception);
@@ -1391,6 +1393,7 @@ function constructPreScreenBodyContainer(returnedData, customD) {
 }
 
 
+
 // customD : custom Decorator object
 function processPreScreenContent(returnedData, customD) {
     if(returnedData == null || returnedData.status != "SUCCESS") {
@@ -1458,7 +1461,7 @@ function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, cus
             $('body').removeClass('open-modal');
         },
         buttons: {
-            "Submit": {
+            "Next": {
                 className: customD.finalSubmissionButton.className,
                 callback: function () {
                     if ($("#pre_screen_body input[type='checkbox']:checked").size() == 0
@@ -1506,14 +1509,12 @@ function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, cus
     });
 }
 
-function processPostPreScreenResponse(response) {
+function processPostPreScreenResponse(response, candidateId, jobPostId) {
     console.log(response);
     if(response == "OK"){
-        notifyError("Submitted successfully. Refreshing ..", 'success');
-        setTimeout(function () {
-            location.reload();
-            // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
-        }, 2000);
+        notifyError("Submitted successfully. Please select Interview Slot.", 'success');
+        // TODO: decide channel and make it dynamic
+        initInterviewModal(candidateId, jobPostId, 1);
     } else {
         notifyError("Error! Something Went wrong please try again.", 'danger')
     }

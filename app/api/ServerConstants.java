@@ -147,6 +147,7 @@ public class ServerConstants {
     public static Integer REC_SORT_LASTEST_ACTIVE = 1;
     public static Integer REC_SORT_SALARY_H_TO_L = 2;
     public static Integer REC_SORT_SALARY_L_TO_H = 3;
+    public static Integer JWF_STATUS_INTERVIEW_SCHEDULED = 4;
 
     static {
         devTeamMobile = new HashMap<String, String>();

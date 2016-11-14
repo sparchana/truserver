@@ -566,7 +566,8 @@ public class JobPostWorkflowEngine {
                         candidate.getCandidateUUId(),
                         InteractionConstants.INTERACTION_TYPE_CANDIDATE_SELECTED_FOR_PRESCREEN,
                         null,
-                        interactionResult
+                        interactionResult,
+                        null
                 );
             } else {
                 Logger.error("Error! Candidate already exists in another status");
@@ -984,7 +985,8 @@ public class JobPostWorkflowEngine {
                         candidate.getCandidateUUId(),
                         InteractionConstants.INTERACTION_TYPE_CANDIDATE_PRE_SCREEN_ATTEMPTED,
                         null,
-                        interactionResult
+                        interactionResult,
+                        null
                 );
                 return responseMsg;
             }
@@ -1086,7 +1088,8 @@ public class JobPostWorkflowEngine {
                 jobPostWorkflowNew.getCandidate().getCandidateUUId(),
                 interactionType,
                 preScreenResult.getPreScreenResultNote(),
-                interactionResult
+                interactionResult,
+                null
         );
 
         // Now lets save all the individual responses for this current pre screen attempt
@@ -1498,7 +1501,39 @@ public class JobPostWorkflowEngine {
         return null;
     }
 
+    // this methods take the old jobpost uuid and set the new jobpost uuid to old jobpost uuid.
+    public static JobPostWorkflow saveNewJobPostWorkflow(Long candidateId, Long jobPostId, JobPostWorkflow jobPostWorkflowOld,
+                                                          Integer oldStatus, Integer newStatus, Integer interviewSlot, Date interviewDate) {
+        JobPostWorkflowStatus status = JobPostWorkflowStatus.find.where().eq("statusId", newStatus).findUnique();
+        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        Candidate candidate = Candidate.find.where().in("candidateId", candidateId).findUnique();
+        String toBePreservedUUId = jobPostWorkflowOld.getJobPostWorkflowUUId();
 
+        // check if status is already selected or pre_screen_attempted, throw error if not
+        if (jobPostWorkflowOld.getStatus().getStatusId() == oldStatus) {
+
+            jobPostWorkflowOld = new JobPostWorkflow();
+            jobPostWorkflowOld.setJobPostWorkflowUUId(toBePreservedUUId);
+            jobPostWorkflowOld.setJobPost(jobPost);
+            jobPostWorkflowOld.setCandidate(candidate);
+            jobPostWorkflowOld.setCreatedBy(session().get("sessionUsername"));
+            jobPostWorkflowOld.setStatus(status);
+            if(interviewSlot != null){
+                InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", interviewSlot).findUnique();
+                if(interviewTimeSlot != null){
+                    jobPostWorkflowOld.setInterviewTimeSlot(interviewTimeSlot);
+                }
+            }
+            if(interviewDate != null){
+                jobPostWorkflowOld.setScheduledInterviewDate(interviewDate);
+            }
+            jobPostWorkflowOld.save();
+            return jobPostWorkflowOld;
+        } else {
+            Logger.error("Error ! JobPostWorkflow status is not as prevStatus");
+        }
+        return null;
+    }
 
 
     private static Map<Long, CandidateExtraData> computeExtraDataForRecruiterSearchResult(List<Candidate> candidateList) {

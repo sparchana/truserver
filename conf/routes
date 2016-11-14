@@ -71,6 +71,7 @@ POST        /support/api/saveSelectedCandidate/                           contro
 POST        /support/api/getSelectedCandidate/:jpId                       controllers.Application.getSelectedCandidate(jpId: Long)
 POST        /support/api/getPreScreenedCandidate/                         controllers.Application.getPreScreenedCandidate(jpId: java.lang.Long?= null, isPass: java.lang.Boolean?= null)
 POST        /support/api/updateCandidateDetailsAtPreScreen/               controllers.Application.updateCandidateDetailsAtPreScreen(propertyId: Integer?= null, candidateId: java.lang.Long?= null)
+POST        /support/api/updateCandidateInterviewDetail/                  controllers.Application.updateCandidateInterviewDetail(candidateId: java.lang.Long?= null, jobPostId: java.lang.Long ?= null, channel: Integer)
 
 # user dashboard
 # ~~~~~~~~~~~~~~
