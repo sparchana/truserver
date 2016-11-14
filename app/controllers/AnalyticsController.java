@@ -4,6 +4,7 @@ import api.http.httpRequest.AnalyticsRequest;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import controllers.AnalyticsLogic.GlobalAnalyticsService;
+import controllers.businessLogic.CandidateService;
 import play.Logger;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -36,11 +37,8 @@ public class AnalyticsController extends Controller {
         {
             return badRequest();
         } else {
-            Logger.info("FromDate" + analyticsRequest.getFromThisDate());
-            Logger.info("toDate" + analyticsRequest.getToThisDate());
-            if(analyticsRequest.getMetrics() != null) {
-                Logger.info("sizeOfMetricsArray" + analyticsRequest.getMetrics().size());
-            }
+            Logger.info("FromDate " + analyticsRequest.getFromThisDate());
+            Logger.info("toDate " + analyticsRequest.getToThisDate());
         }
 
         switch (vId) {
@@ -67,9 +65,20 @@ public class AnalyticsController extends Controller {
                 }
 
                 Map<String, Map<Date, Map<Integer, Map<String, Object>>>> mapOfHeaderMap =
-                        MetricsQueryService.queryAndUpdateMetrics(headerList, sd, ed, shouldUploadToGs);
+                        MetricsQueryService.queryAndUpdateMetrics(headerList, sd, ed, false);
                 //Logger.info("Metrics Query JSON Result:" + toJson(mapOfHeaderMap));
                 return ok(toJson(mapOfHeaderMap));
+            case 3:
+                // profile completion analytics
+                Date startdate = analyticsRequest.getFromThisDate();
+                Date endDate = analyticsRequest.getToThisDate();
+
+                Float inputScoreLimit = 0f;
+                if(analyticsRequest.getProfileCompletionMaxScore() != null) {
+                    inputScoreLimit = analyticsRequest.getProfileCompletionMaxScore();
+                }
+
+                return ok(toJson(CandidateService.computeAllProfileCompletionScores(startdate, endDate, inputScoreLimit)));
         }
         return ok("test");
     }

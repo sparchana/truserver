@@ -9,6 +9,7 @@ import api.http.httpResponse.CandidateWorkflowData;
 import api.http.httpResponse.Workflow.PreScreenPopulateResponse;
 import api.http.httpResponse.Workflow.WorkflowResponse;
 import com.avaje.ebean.*;
+import controllers.businessLogic.CandidateService;
 import controllers.businessLogic.InteractionService;
 import controllers.businessLogic.MatchingEngineService;
 import models.entity.Candidate;
@@ -380,10 +381,12 @@ public class JobPostWorkflowEngine {
 
         if(candidateList.size() != 0) {
             for (Candidate candidate : candidateList) {
-                CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
-                candidateWorkflowData.setCandidate(candidate);
-                candidateWorkflowData.setExtraData(allFeature.get(candidate.getCandidateId()));
-                matchedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
+                if (CandidateService.getP0FieldsCompletionPercent(candidate) > 0.5) {
+                    CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
+                    candidateWorkflowData.setCandidate(candidate);
+                    candidateWorkflowData.setExtraData(allFeature.get(candidate.getCandidateId()));
+                    matchedCandidateMap.put(candidate.getCandidateId(), candidateWorkflowData);
+                }
             }
         }
 
@@ -1112,9 +1115,9 @@ public class JobPostWorkflowEngine {
     public static Map<Long, CandidateWorkflowData> getPreScreenedPassFailCandidates(Long jobPostId, boolean isPass) {
         String statusSql;
         if(isPass) {
-            statusSql = " and (status_id = '" +ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED+"') ";
+            statusSql = " and (status_id = '" + ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED+"') ";
         } else {
-            statusSql = " and (status_id = '" +ServerConstants.JWF_STATUS_PRESCREEN_FAILED+ "') ";
+            statusSql = " and (status_id = '" + ServerConstants.JWF_STATUS_PRESCREEN_FAILED+ "') ";
         }
         StringBuilder workFlowQueryBuilder = new StringBuilder("select createdby, candidate_id, creation_timestamp, job_post_id, status_id from job_post_workflow i " +
                 " where i.job_post_id " +
@@ -1576,9 +1579,8 @@ public class JobPostWorkflowEngine {
         return candidateExtraDataMap;
     }
 
-    private static RawSql getRawSqlForInteraction(String candidateListString){
-        //      TODO: Optimization: It takes 4+ sec for query to return map/list for this constraint, prev implementation was faster
-
+    private static RawSql getRawSqlForInteraction(String candidateListString)
+    {
         StringBuilder interactionQueryBuilder = new StringBuilder("select distinct objectauuid, creationtimestamp from interaction i " +
                 " where i.objectauuid " +
                 " in ('"+candidateListString+"') " +

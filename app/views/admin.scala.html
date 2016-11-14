@@ -57,6 +57,7 @@
                     <a href="#tabular-tab" class="mdl-layout__tab" id="tabularTab">Metrics Tab</a>
                     <a href="#deactivated-candidate-tab" class="mdl-layout__tab" id="deactivatedCandidateTab">De-Active/Active Tab</a>
                     <a href="#job-relevancy-tab" class="mdl-layout__tab" id="jobRelevancyTab">Job Relevancy Tab</a>
+                    <a href="#profile-completion-scoring-tab" class="mdl-layout__tab" id="profileCompletionTab">Profile Completion Tab</a>
                     <!--<a href="#activity-scoring-tab" class="mdl-layout__tab" id="activityScoringTab">Activity Scoring Tab</a>-->
                 </div>
             </header>
@@ -82,6 +83,13 @@
                             <div class="mdl-cell mdl-cell--3-col">Query: </div>
                             <div class="mdl-cell mdl-cell--9-col">
                                 <select id="queryMultiSelect" multiple="multiple">
+                            </select>
+                            </div>
+                        </div>
+                        <div class="mdl-grid" id="queryRadioSelect-grid">
+                            <div class="mdl-cell mdl-cell--4-col">Completion Score: </div>
+                            <div class="mdl-cell mdl-cell--5-col">
+                                <select id="queryRadioSelect">
                             </select>
                             </div>
                         </div>
@@ -138,6 +146,15 @@
                         <div id="activity_scoring_table_div"></div>
                     </div>
                 </section>-->
+
+                    <!-- Profile Completion Score Tab Content-->
+                <section class="mdl-layout__tab-panel is-active" id="profile-completion-scoring-tab">
+                    <div class="page-content" id="profile-completion-scoring-table-content">
+                        <div class="mdl-spinner mdl-js-spinner" id="profile-tab-spinner"></div>
+                        <div id="csv_profile-completion-scoring_table_div"></div>
+                        <div id="profile-completion-scoring_table_div"></div>
+                    </div>
+                </section>
 
                     <!-- bottom notification snackbar -->
                 <div id="tru-snackbar" class="mdl-js-snackbar mdl-snackbar">
