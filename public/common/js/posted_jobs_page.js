@@ -199,6 +199,7 @@ function processDataCheckJobs(returnedData) {
 
 function applyJobBtnAction() {
     $('#jobApplyConfirm').modal();
+    /*$('#preScreenModal').modal();*/
     jobPostId = jobId;
     jobLocalityArray = [];
     $('#applyButton').hide();

@@ -438,7 +438,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
 
     if(propId == 0) {
         htmlBodyContent = '<div id="document_details">'+
-            '<h5>Document Details:</h5>'+
+            '<h4 class="mdl-shadow--2dp" style=";margin: 0;color:rgb(63, 81, 181);padding: 2%;background-color: rgba(255, 255, 255, 0.99);">Document Details:</h4>'+
             '</div>';
 
         url = "/support/api/getDocumentReqForJobRole/?job_post_id="+jobPostId;
@@ -680,16 +680,17 @@ function processPreScreenContent(returnedData) {
         // }
         var candidateId = returnedData.candidateId;
         var jobPostId = returnedData.jobPostId;
-        var preScreenBody = $('<div id="pre_screen_body" class="mdl-grid"></div>');
+        var preScreenBody = $('<div id="pre_screen_body" style="padding: 0" class="mdl-grid"></div>');
         var container = $('<div class="row mdl-cell mdl-cell--12-col" id="pre_screen_container_row"></div>');
         preScreenBody.append(container);
 
         var minReqTableContainer = $('<div id="minReqTable"></div>');
-        container.append('<h4 style="margin-top: 0">Min Requirement</h4>');
+
+        container.append('<h4 class="mdl-shadow--2dp" style=";margin: 0;color:rgb(63, 81, 181);padding: 2%;background-color: rgba(255, 255, 255, 0.99);">Min Requirement</h4>');
         container.append(minReqTableContainer);
 
         var otherReqTableContainer = $('<div id="otherReqTable"></div>');
-        container.append('<h4>Other Requirement</h4>');
+        container.append('<h4 class="mdl-shadow--2dp" style="margin: 20px 0 0 0;color:rgb(63, 81, 181);padding: 2%;background-color: rgba(255, 255, 255, 0.99);">Other Requirement</h4>');
         container.append(otherReqTableContainer);
 
         // minReqTable
@@ -853,6 +854,7 @@ function processPreScreenContent(returnedData) {
                     tBody.appendChild(bodyContentBox);
 
                     var bodyContentData1 = document.createElement("td");
+                    bodyContentData1.style = ("font-weight:600");
                     bodyContentData1.textContent = rowData.propertyTitle;
                     bodyContentBox.appendChild(bodyContentData1);
 
@@ -914,6 +916,7 @@ function processPreScreenContent(returnedData) {
                     other_tBody.appendChild(bodyContentBox);
 
                     var bodyContentData1 = document.createElement("td");
+                    bodyContentData1.style = ("font-weight:600");
                     bodyContentData1.textContent = rowData.propertyTitle;
                     bodyContentBox.appendChild(bodyContentData1);
 
