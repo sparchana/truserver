@@ -1,4 +1,4 @@
-var languageArray = [];
+var langArray = [];
 var currentLocationArray = [];
 var localityArray = [];
 
@@ -192,14 +192,14 @@ function processLanguage(returnedData) {
         arrayLang.push(name);
         arrayLangId.push(id);
         var option = $('<option value=' + id + '></option>').text(name);
-        languageArray.push(item);
+        langArray.push(item);
     });
     populateLanguages(arrayLang.reverse(), arrayLangId.reverse());
 }
 
 function populateLanguages(l, lId) {
     var i;
-    var table = document.getElementById("languageTable");
+    var table = document.getElementById("langTable");
     for (i = 0; i < l.length; i++) {
         if (lId[i] == 1 || lId[i] == 2 || lId[i] == 3 || lId[i] == 4 || lId[i] == 5) {
             var row = table.insertRow(0);
@@ -221,7 +221,7 @@ function populateLanguages(l, lId) {
 }
 
 function prefillLanguageTable(languageKnownList) {
-    $('table#languageTable tr').each(function () {
+    $('table#langTable tr').each(function () {
         $(this).find('input').each(function () {
             //do your stuff, you can use $(this) to get current cell
             var x = document.createElement("INPUT");
@@ -528,7 +528,7 @@ function saveEditedResponses(candidateId, propId, jobPostId) {
     } else if(propId == 1) {
         var check;
         var languageMap = [];
-        var languageKnown = $('#languageTable input:checked').map(function () {
+        var languageKnown = $('#langTable input:checked').map(function () {
             check = 0;
             var id = this.id;
             var name = this.name;
@@ -750,7 +750,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId, customD) {
         htmlBodyContent = '<div id="language_details">'+
 
             '<div class="row" style="margin:0;padding:1%;'+customD.table.mainTable.tHead.style+';color:#fff"><b>Language Details :</b></div>'+
-            '<table id="languageTable" class="mdl-data-table mdl-js-data-table table table-striped mdl-shadow--2dp" cellspacing="0" width="100%">'+
+            '<table id="langTable" class="mdl-data-table mdl-js-data-table table table-striped mdl-shadow--2dp" cellspacing="0" width="100%">'+
             '<thead>'+
             '</thead>'+
             '<tbody>'+
@@ -1293,19 +1293,18 @@ function constructPreScreenBodyContainer(returnedData, customD) {
 
                 if ($.inArray(6, customD.columnVisible) > -1) {
                     // edit href
+                    var editLink = document.createElement("td");
+                    var a = document.createElement('a');
                     if(!((rowData.propertyId == "3") && (bodyContentData3.textContent.length > 0))){
-                        console.log(rowData.propertyId + " ->" + bodyContentData3.textContent.length + "<-");
-                        var editLink = document.createElement("td");
-                        var a = document.createElement('a');
                         var linkText = document.createTextNode("Edit");
                         a.appendChild(linkText);
                         a.style = "cursor: pointer";
                         a.onclick = function () {
                             fetchEditModalContent(candidateId, rowData.propertyId, jobPostId, customD);
                         };
-                        editLink.appendChild(a);
-                        bodyContentBox.appendChild(editLink);
                     }
+                    editLink.appendChild(a);
+                    bodyContentBox.appendChild(editLink);
                 }
             } else {
 
@@ -1369,11 +1368,10 @@ function constructPreScreenBodyContainer(returnedData, customD) {
                     checkMatchLabel.appendChild(checkMatch);
                 }
                 if ($.inArray(6, customD.columnVisible) > -1) {
+                    var editLink = document.createElement("td");
+                    var a = document.createElement('a');
                     // edit href
                     if(!(rowData.propertyId == "6" && bodyContentData3.textContent.length > 0)){
-                        console.log(rowData.propertyId + " ->" + bodyContentData3.textContent.length + "<-");
-                        var editLink = document.createElement("td");
-                        var a = document.createElement('a');
                         var linkText = document.createTextNode("Edit");
                         a.appendChild(linkText);
                         a.style = "cursor: pointer";
@@ -1381,9 +1379,9 @@ function constructPreScreenBodyContainer(returnedData, customD) {
                         a.onclick = function () {
                             fetchEditModalContent(candidateId, rowData.propertyId, jobPostId, customD);
                         };
-                        editLink.appendChild(a);
-                        bodyContentBox.appendChild(editLink);
                     }
+                    editLink.appendChild(a);
+                    bodyContentBox.appendChild(editLink);
                 }
             }
         }
