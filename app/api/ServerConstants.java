@@ -110,6 +110,7 @@ public class ServerConstants {
     public static final String SDF_FORMAT_ENTRY = "yyyy-MM-dd hh:mm:ss";
     public static final String SDF_FORMAT_HH = "yyyy-MM-dd HH:mm:ss";
     public static final String SDF_FORMAT_YYYYMMDD = "yyyy-MM-dd";
+    public static final String SDF_FORMAT_DDMMYYYY = "dd-MM-yyyy";
 
     public static final String PROD_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/1NIGQC5jmSDuQaGUF0Jw1UG-Dz_3huFtZf9Bo7ncPl4g/formResponse";
     public static final String DEV_GOOGLE_FORM_FOR_JOB_APPLICATION = "https://docs.google.com/forms/d/e/1FAIpQLSdyYKeNROcs8sPAxpQ6PqT7Xd_V8vetjk2HNFYoakPjjX_z5Q/formResponse";
@@ -150,6 +151,20 @@ public class ServerConstants {
     public static Integer REC_SORT_SALARY_H_TO_L = 2;
     public static Integer REC_SORT_SALARY_L_TO_H = 3;
 
+    // session channel key, delta of any two has been kept different to avoid value manipulation at FE
+    public static final Integer SESSION_CHANNEL_CANDIDATE_WEBSITE = 1;
+    public static final Integer SESSION_CHANNEL_SUPPORT_WEBSITE = 33;
+    public static final Integer SESSION_CHANNEL_PARTNER_WEBSITE = 77;
+    public static final Integer SESSION_CHANNEL_RECRUITER_WEBSITE = 111;
+
+    // map is used to validate the incoming session Channel value
+    public static Map<Integer, Integer> sessionChannelMap = new HashMap<Integer, Integer>(){{
+       put(SESSION_CHANNEL_CANDIDATE_WEBSITE, SESSION_CHANNEL_CANDIDATE_WEBSITE);
+       put(SESSION_CHANNEL_SUPPORT_WEBSITE, SESSION_CHANNEL_SUPPORT_WEBSITE);
+       put(SESSION_CHANNEL_PARTNER_WEBSITE, SESSION_CHANNEL_PARTNER_WEBSITE);
+       put(SESSION_CHANNEL_RECRUITER_WEBSITE, SESSION_CHANNEL_RECRUITER_WEBSITE);
+
+    }};
     static {
         devTeamMobile = new HashMap<String, String>();
         devTeamMobile.put("Archana", "+918197222248");

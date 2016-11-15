@@ -110,6 +110,7 @@ public class RecruiterAuthService {
         session().put("recruiterName", String.valueOf(recruiterProfile.getRecruiterProfileName()));
         session().put("recruiterMobile", String.valueOf(recruiterProfile.getRecruiterProfileMobile()));
         session().put("sessionExpiry", String.valueOf(existingAuth.getAuthSessionIdExpiryMillis()));
+        session().put("sessionChannel", String.valueOf(ServerConstants.SESSION_CHANNEL_RECRUITER_WEBSITE));
         Logger.info("set-sessionId"+ session().get("sessionId"));
     }
 }

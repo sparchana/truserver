@@ -1,5 +1,10 @@
 
 function processJobPostInterviewSlot(returnedData) {
+    if(returnedData.interviewDetailsList == null || returnedData.interviewDetailsList.length == 0) {
+        $('body').removeClass('open-interview-selector-modal');
+        bootbox.hideAll();
+        return;
+    }
     // document.getElementById("applyJobCandidateName").innerHTML = candidateInfo.candidateFirstName;
     $("#jobNameConfirmation").html(returnedData.jobPostTitle);
     $("#companyNameConfirmation").html(returnedData.company.companyName);
@@ -143,7 +148,7 @@ function checkSlotAvailability(x, interviewDays) {
 }
 
 
-function initInterviewModal(candidateId, jobPostId, channel) {
+function initInterviewModal(candidateId, jobPostId) {
     var htmlBodyContent = ''+
         '<div id="confirmationMsg">'+
         '<center>'+
@@ -151,8 +156,7 @@ function initInterviewModal(candidateId, jobPostId, channel) {
         '</center>'+
         '<center>'+
         '<h4>You are applying to <b><div style="display: inline-block" id="jobNameConfirmation"></div></b>'+
-        'job at <b><div style="display: inline-block" id="companyNameConfirmation"></div></b>'+
-        'for <b><div style="display: inline-block" id="applyJobCandidateName"></div></b>.</h4>'+
+        ' job at <b><div style="display: inline-block" id="companyNameConfirmation"></div></b>'+
         '<h5 style="margin-top: 16px">Please fill the form below to complete the application process</h5>'+
         '<div class="materialDash"></div>'+
         '<div class="interview_container" style="margin-top: 16px">'+
@@ -168,7 +172,7 @@ function initInterviewModal(candidateId, jobPostId, channel) {
         '</div>';
     var title = "Interview Slot Selector";
 
-    generateInterviewSlotModal(title, htmlBodyContent, candidateId, jobPostId, channel);
+    generateInterviewSlotModal(title, htmlBodyContent, candidateId, jobPostId);
 
     try {
         $.ajax({
@@ -184,7 +188,7 @@ function initInterviewModal(candidateId, jobPostId, channel) {
     }
 }
 
-function generateInterviewSlotModal(title, message, candidateId, jobPostId, channel) {
+function generateInterviewSlotModal(title, message, candidateId, jobPostId) {
     console.log("rendering modal");
     var interviewDialog = bootbox.dialog({
         className: "interview-slot-selector-modal",
@@ -196,16 +200,16 @@ function generateInterviewSlotModal(title, message, candidateId, jobPostId, chan
             $('body').removeClass('open-interview-selector-modal');
             notifyError("Submitted successfully. Refreshing page.", 'success');
 
-            // setTimeout(function () {
-            //     location.reload();
-            //     // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
-            // }, 2000);
+            setTimeout(function () {
+                location.reload();
+                // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
+            }, 2000);
         },
         buttons: {
             "Submit": {
                 className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent interview-selector-submit",
                 callback: function () {
-                    finalInterviewSlotSubmission(candidateId, jobPostId, channel);
+                    finalInterviewSlotSubmission(candidateId, jobPostId);
                 }
             }
         }
@@ -225,7 +229,7 @@ function generateInterviewSlotModal(title, message, candidateId, jobPostId, chan
     $('body').removeClass('modal-open').removeClass('open-interview-selector-modal').addClass('open-interview-selector-modal');
 }
 
-function finalInterviewSlotSubmission(candidateId, jobPostId, channel) {
+function finalInterviewSlotSubmission(candidateId, jobPostId) {
     if($("#interViewSlot").val() != -1 ){
         var combinedValue = $("#interViewSlot").val().split("_");
         scheduledInterviewDate = combinedValue[0];
@@ -247,9 +251,6 @@ function finalInterviewSlotSubmission(candidateId, jobPostId, channel) {
             if(candidateId != null){
                 base_api_url += "&candidateId=" + candidateId;
             }
-            if(channel != null) {
-                base_api_url += "&channel=" + channel;
-            }
         }
         $.ajax({
             type: "POST",
@@ -264,6 +265,11 @@ function finalInterviewSlotSubmission(candidateId, jobPostId, channel) {
 
 function processInterviewSubmissionResponse(returnData) {
     console.log(returnData);
+    // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
+    notifyError("Interview Submitted successfully. Refreshing ..", 'success');
+    setTimeout(function () {
+        location.reload();
+    }, 2000);
 }
 
 function interviewSubmitResponse(returnData){
