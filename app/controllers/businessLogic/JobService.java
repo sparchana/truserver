@@ -173,6 +173,8 @@ public class JobService {
     private static void createInterviewDetails(AddJobPostRequest addJobPostRequest, JobPost jobPost){
         List<Integer> interviewSlots = addJobPostRequest.getInterviewTimeSlot();
 
+        //setting lat lng of the address
+
         if(interviewSlots != null){
             Boolean flag = false;
             String interviewDays = addJobPostRequest.getJobPostInterviewDays();
@@ -180,6 +182,13 @@ public class JobService {
                 if(interviewDays.charAt(i) == '1'){
                     flag = true;
                     break;
+                }
+            }
+
+            if(jobPost != null){
+                List<InterviewDetails> interviewDetailsList = InterviewDetails.find.where().eq("JobPostId", jobPost.getJobPostId()).findList();
+                for(InterviewDetails interviewDetails: interviewDetailsList){
+                    interviewDetails.delete();
                 }
             }
             //create multiple entries in interview details table
@@ -196,6 +205,8 @@ public class JobService {
                     Byte interviewDaysByte = Byte.parseByte(addJobPostRequest.getJobPostInterviewDays(), 2);
                     interviewDetails.setInterviewDays(interviewDaysByte);
                 }
+                interviewDetails.setLat(addJobPostRequest.getJobPostInterviewLocationLat());
+                interviewDetails.setLng(addJobPostRequest.getJobPostInterviewLocationLng());
 
                 interviewDetails.save();
             }

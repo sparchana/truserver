@@ -26,6 +26,8 @@
     <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
     <script type="text/javascript" src="/assets/recruiter/js/jquery.tokenize.js"></script>
 
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC5Fz6NhcQVP2c3kCIR5rs6bOrgGDwEiY0&libraries=places"></script>
+
     <meta name="theme-color" content="#000000">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   </head>
@@ -403,6 +405,8 @@
                       </div>
                     </div>
 
+                    <br>
+                    <font size="3" style="font-weight: bold">Interview Details</font>
                     <div class="row" id="jobPostDetails" style="margin-bottom:20px;">
                       <div class="input-field col s3 l4" style="margin-top: 20px">
                         <label>Interview Days :</label>
@@ -435,6 +439,17 @@
                       </div>
                     </div>
 
+                    <div class="row" id="jobPostDetails">
+                      <div class="input-field col s6 l4" style="margin-top: 20px">
+                        <label>Interview Location:<font color="red">*</font></label>
+                      </div>
+                      <div class="input-field col s6 l4">
+                        <div id="jobPostInterviewLocationVal" style="margin-top: 16px">Not Specified</div>
+                        <input id="jobPostInterviewLocation" style="display: none" placeholder="Interview location">
+                        <span id="interviewLocationUpdate" style="cursor: pointer; color: #2ec866" onclick="interviewUpdate()"><b>Update</b></span>
+                      </div>
+                    </div>
+
                     <div class="row" style="margin: 0">
                       <a class="waves-effect waves-light ascentGreen btn right" id="saveEdit" onclick="saveJob()"><font style="color: #fff;
                         font-weight: 400"><b>Save</b></font>
@@ -449,6 +464,19 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+
+
+      <!-- Modal Structure -->
+    <div id="modal1" class="modal">
+      <div class="modal-content">
+        <h4>Modal Header</h4>
+        <p>A bunch of text</p>
+      </div>
+      <div class="modal-footer">
+        <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
       </div>
     </div>
 

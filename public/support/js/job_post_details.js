@@ -9,6 +9,10 @@ var jobPostJobRole = [];
 
 var slotArray = [];
 
+var fullAddress;
+var interviewLat;
+var interviewLng;
+
 function getLocality() {
     return localityArray;
 }
@@ -535,6 +539,33 @@ $(document).ready(function () {
         }
         $('#jobPostEndTime').append(option);
     }
+
+    google.maps.event.addDomListener(window, 'load', function () {
+        var defaultBounds = new google.maps.LatLngBounds(
+            new google.maps.LatLng(12.97232, 77.59480),
+            new google.maps.LatLng(12.89201, 77.58905)
+        );
+
+        var options = {
+            bounds: defaultBounds,
+            componentRestrictions: {country: 'in'}
+        };
+
+        var places = new google.maps.places.Autocomplete(document.getElementById('jobPostAddress'), options);
+        google.maps.event.addListener(places, 'place_changed', function () {
+            var place = places.getPlace();
+            var address = place.formatted_address;
+            var latitude = place.geometry.location.lat();
+            var longitude = place.geometry.location.lng();
+            fullAddress = address;
+            interviewLat = latitude;
+            interviewLng = longitude;
+            $("#jobPostAddressVal").show();
+            $("#jobPostAddress").hide();
+            $("#jobPostAddressVal").html(fullAddress);
+        });
+    });
+
 });
 
 function processDataGetCreditCategory(returnedData) {
@@ -557,6 +588,10 @@ function processDataGetAllTimeSlots(returnedData) {
     });
 }
 
+function interviewUpdate() {
+    $("#jobPostAddressVal").hide();
+    $("#jobPostAddress").show();
+}
 
 function processDataForJobPost(returnedData) {
     $("#jobPostId").val(returnedData.jobPostId);
@@ -651,10 +686,6 @@ function processDataForJobPost(returnedData) {
             preventDuplicates: true
         });
     }
-    if(returnedData.jobPostAddress != null ){
-        $("#jobPostAddress").val(returnedData.jobPostAddress);
-    }
-
     if(returnedData.jobPostPinCode != null ){
         $("#jobPostPinCode").val(returnedData.jobPostPinCode);
     }
@@ -772,6 +803,27 @@ function processDataForJobPost(returnedData) {
             slotBtn.parent().addClass('active');
         });
     }
+
+    $("#jobPostAddress").hide();
+    if(returnedData.interviewDetailsList != null && Object.keys(returnedData.interviewDetailsList).length){
+        if(returnedData.interviewDetailsList[0].lat != null){
+            interviewLat = returnedData.interviewDetailsList[0].lat;
+            interviewLng = returnedData.interviewDetailsList[0].lng;
+            if(returnedData.jobPostAddress != null){
+                fullAddress = returnedData.jobPostAddress;
+                $("#jobPostAddress").hide();
+                $("#jobPostAddressVal").html(returnedData.jobPostAddress);
+            } else {
+                $("#jobPostAddressVal").hide();
+                $("#jobPostAddress").show();
+            }
+        }
+    } else{
+        interviewLat = null;
+        interviewLng = null;
+        fullAddress = null;
+    }
+
     $("#partnerInterviewIncentive").val(returnedData.jobPostPartnerInterviewIncentive);
     $("#partnerJoiningIncentive").val(returnedData.jobPostPartnerJoiningIncentive);
 }

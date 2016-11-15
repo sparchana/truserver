@@ -7,6 +7,8 @@
 
         <link rel="stylesheet" href="/assets/support/css/bootstrap.min.css">
 
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC5Fz6NhcQVP2c3kCIR5rs6bOrgGDwEiY0&libraries=places"></script>
+
         <script type="text/javascript" src="/assets/support/js/jquery-1.12.0.min.js"></script>
         <link rel="stylesheet" href="/assets/common/css/token-input.css" type="text/css" />
         <link rel="stylesheet" href="/assets/common/css/token-input-facebook.css" type="text/css" />
@@ -31,6 +33,7 @@
         <script type="text/javascript" src="/assets/support/js/pace.min.js"></script>
         <link rel="stylesheet" href="/assets/support/css/pace-dataloader.css">
         <script type="text/javascript" src="/assets/support/js/add_job_post.js"></script>
+
 
         <script type="text/javascript">
             $(function () {
@@ -337,13 +340,6 @@
                         <div class="panel-heading" style="cursor: pointer;">Interview Details</div>
                         <div class="panel-container" style="padding: 1%;">
                             <div class="row">
-                                <div class="col-sm-3"><h5>Interview Address:</h5></div>
-                                <div class="col-sm-9">
-                                    <textarea rows="4" cols="80" id="jobPostAddress" class="form-control input-md" maxlength="5000"></textarea>
-                                </div>
-                            </div>
-
-                            <div class="row">
                                 <div class="col-sm-3"><h5>Interview Days</h5></div>
                                 <div class="col-sm-9" id="interviewDaySection">
                                     <input id="interview_day_1" type="checkbox">Monday &nbsp;&nbsp;&nbsp;
@@ -363,6 +359,15 @@
                                     <div style="width: 100%;
                                         height: 34px;" id="interviewTimeSlot" class="btn-group" data-toggle="buttons"></div>
                                     <img src="/assets/support/images/webIcon.jpg" width="20px" style="display: inline-block">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-3"><h5>Interview Address:</h5></div>
+                                <div class="col-sm-9">
+                                    <div id="jobPostAddressVal" style="margin-top: 8px">Not Specified</div>
+                                    <input id="jobPostAddress" placeholder="Interview location">
+                                    <span id="interviewLocationUpdate" style="cursor: pointer; color: #0D47A1" onclick="interviewUpdate()"><b>Update</b></span>
                                 </div>
                             </div>
                         </div>
