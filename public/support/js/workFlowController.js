@@ -961,7 +961,7 @@ $(function () {
                                 } else if(newCandidate.candidateJobApplication.interviewStatus.interviewStatusId == 2){
                                     interviewAction = "Rejected by Recruiter";
                                 } else if(newCandidate.candidateJobApplication.interviewStatus.interviewStatusId == 3){
-                                    interviewAction = "Rescheduled by Recruiter";
+                                    interviewAction = "Rescheduled by Recruiter. Awaiting candidate's response";
                                 } else if(newCandidate.candidateJobApplication.interviewStatus.interviewStatusId == 4){
                                     interviewAction = "Cancelled by Candidate";
                                 }
