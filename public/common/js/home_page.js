@@ -69,7 +69,14 @@ $(window).load(function() {
     $("#preloader").delay(500).fadeOut("slow");
 });
 
+$(window).load(function(){
+    if(window.location.href.indexOf('#signin') != -1) {
+        $('#myLoginModal').modal('show');
+    }
+});
+
 $(document).ready(function(){
+
     $(".navbar-nav li a").click(function(event) {
         $(".navbar-collapse").collapse('hide');
     });
