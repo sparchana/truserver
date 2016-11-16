@@ -212,7 +212,7 @@ function validateDL(dlNumber) {
         return false;
     }
     dlNumber = dlNumber.replace(/\s+/g, '');
-    dlNumber = dlNumber.replace(/[-&\/\\#,+()$~%.'":*?<>{}]/g, '');
+    dlNumber = dlNumber.replace(/[&\/\\#,+()$~%.'":*?<>{}]/g, '');
     if(dlNumber.length != 15){
         console.log("dlNumber length is not 15, its: "+dlNumber.length);
         return false;
@@ -257,7 +257,7 @@ function validatePASSPORT(passPort) {
     if(letter.match(/[a-z]/i)){
         validCount++;
     }
-    if(!isNaN(code)){
+    if(!isNaN(code) && code.length === 7){
         validCount++;
     }
 

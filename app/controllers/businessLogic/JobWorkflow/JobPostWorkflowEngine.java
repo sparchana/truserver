@@ -1156,10 +1156,10 @@ public class JobPostWorkflowEngine {
             if(recruiterCreditHistory.getRecruiterCreditCategory().getRecruiterCreditCategoryId()
                     == ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK
                     && recruiterCreditHistory.getRecruiterCreditsAvailable() > 0){
-                return "OK";
+                return "INTERVIEW";
             }
         }
-        return "INTERVIEW";
+        return "OK";
     }
 
     public static Map<Long, CandidateWorkflowData> getPreScreenedPassFailCandidates(Long jobPostId, boolean isPass) {

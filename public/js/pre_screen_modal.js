@@ -378,7 +378,7 @@ function validateInput() {
         console.log(this.value);
         if(!validateAadhar(this.value)){
             $('.btn.edit-modal-submit').prop('disabled', true);
-            notifyModal("Invalid Input","Invalid Aadhaar Card Number");
+            notifyModal("Invalid Input","Invalid Aadhaar Card Number. (Example: 100120023003)");
         } else {
             $('.btn.edit-modal-submit').prop('disabled', false);
         }
@@ -388,7 +388,7 @@ function validateInput() {
         console.log(this.value);
         if(!validateDL(this.value)){
             $('.btn.edit-modal-submit').prop('disabled', true);
-            notifyModal("Invalid Input","Invalid Driving Licence Number");
+            notifyModal("Invalid Input","Invalid Driving Licence Number. (Example: TN7520130008800 or TN-7520130008800)");
         } else {
             $('.btn.edit-modal-submit').prop('disabled', false);
         }
@@ -398,7 +398,7 @@ function validateInput() {
         console.log(this.value);
         if(!validatePASSPORT(this.value)){
             $('.btn.edit-modal-submit').prop('disabled', true);
-            notifyModal("Invalid Input","Invalid Pass Port Number");
+            notifyModal("Invalid Input","Invalid Pass Port Number. (Example: A12 34567)");
         } else {
             $('.btn.edit-modal-submit').prop('disabled', false);
         }
@@ -408,7 +408,7 @@ function validateInput() {
         console.log(this.value);
         if(!validatePAN(this.value)){
             $('.btn.edit-modal-submit').prop('disabled', true);
-            notifyModal("Invalid Input","Invalid PAN Card Number");
+            notifyModal("Invalid Input","Invalid PAN Card Number. (Example: ABCDE1234Z)");
         } else {
             $('.btn.edit-modal-submit').prop('disabled', false);
         }
@@ -644,7 +644,11 @@ function saveEditedResponses(candidateId, propId, jobPostId) {
         var selectedDate = new Date(c_dob);
         var toDate = new Date();
         var pastDate= new Date(toDate.setFullYear(toDate.getFullYear() - 18));
+        var zombieYear = new Date(toDate.setFullYear(toDate.getFullYear() - 70));
         if (selectedDate >= pastDate) {
+            dobCheck = 0;
+        }
+        if(zombieYear <= selectedDate) {
             dobCheck = 0;
         }
         d = {
@@ -678,12 +682,12 @@ function saveEditedResponses(candidateId, propId, jobPostId) {
 
     } else if(propId == 7) {
         var salary = $('#candidateLastWithdrawnSalary').val();
-        if(!isNaN(salary) && parseInt(salary) >= 1000 && parseInt(salary) <= 50000){
+        if(!isNaN(salary) && parseInt(salary) >= 1000 && parseInt(salary) <= 100000){
             d = {
                 candidateLastWithdrawnSalary: parseInt($('#candidateLastWithdrawnSalary').val())
             }
         } else {
-            notifyModal("Invalid Salary Input","Please enter a valid 'Last Withdrawn Salary' (Ex: 15000) in a month");
+            notifyModal("Invalid Salary Input","Please enter a valid 'Last Withdrawn Salary' per month. (Min: 1000, Max: 1,00,000)");
             okToSubmit = false;
         }
 
@@ -704,8 +708,8 @@ function saveEditedResponses(candidateId, propId, jobPostId) {
     if (dobCheck == 0) {
         notifyModal("Invalid DOB","Please enter valid date of birth");
         okToSubmit = false;
-    } else if ($('#candidateTotalExperienceYear').val() > 30) {
-        notifyModal("Invalid Years of Experience","Please enter valid years of experience");
+    } else if ($('#candidateTotalExperienceYear').val() > 40) {
+        notifyModal("Invalid Years of Experience","Please enter valid years of experience. (Min: 0, Max: 40)");
         okToSubmit = false;
     }
     //final submission
