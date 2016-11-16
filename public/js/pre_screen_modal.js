@@ -1298,9 +1298,9 @@ function constructPreScreenBodyContainer(returnedData, customD) {
                     bodyContentBox.appendChild(bodyContentData2);
 
                     if(rowData.isSingleEntity){
-                        bodyContentData2.textContent = rowData.jobPostElement;
+                        bodyContentData2.textContent = getPlaceholderValue(rowData.jobPostElement);
                     } else {
-                        bodyContentData2.textContent = rowData.jobPostElementList;
+                        bodyContentData2.textContent = getPlaceholderArray(rowData.jobPostElementList);
                     }
                 }
                 if ($.inArray(3, customD.columnVisible) > -1) {
@@ -1309,9 +1309,9 @@ function constructPreScreenBodyContainer(returnedData, customD) {
                     bodyContentBox.appendChild(bodyContentData3);
 
                     if(rowData.isSingleEntity){
-                        bodyContentData3.textContent = rowData.candidateElement;
+                        bodyContentData3.textContent = getPlaceholderValue(rowData.candidateElement);
                     } else {
-                        bodyContentData3.textContent = rowData.candidateElementList;
+                        bodyContentData3.textContent = getPlaceholderArray(rowData.candidateElementList);
                     }
                 }
                 if ($.inArray(4, customD.columnVisible) > -1) {
@@ -1378,9 +1378,9 @@ function constructPreScreenBodyContainer(returnedData, customD) {
                     bodyContentBox.appendChild(bodyContentData2);
 
                     if(rowData.isSingleEntity){
-                        bodyContentData2.textContent = rowData.jobPostElement;
+                        bodyContentData2.textContent = getPlaceholderValue(rowData.jobPostElement);
                     } else {
-                        bodyContentData2.textContent = rowData.jobPostElementList;
+                        bodyContentData2.textContent = getPlaceholderArray(rowData.jobPostElementList);
                     }
                 }
                 if ($.inArray(3, customD.columnVisible) > -1) {
@@ -1389,9 +1389,9 @@ function constructPreScreenBodyContainer(returnedData, customD) {
                     bodyContentBox.appendChild(bodyContentData3);
 
                     if(rowData.isSingleEntity){
-                        bodyContentData3.textContent = rowData.candidateElement;
+                        bodyContentData3.textContent = getPlaceholderValue(rowData.candidateElement);
                     } else {
-                        bodyContentData3.textContent = rowData.candidateElementList;
+                        bodyContentData3.textContent = getPlaceholderArray(rowData.candidateElementList);
                     }
                 }
                 if ($.inArray(4, customD.columnVisible) > -1) {
@@ -1443,6 +1443,26 @@ function constructPreScreenBodyContainer(returnedData, customD) {
     });
 
     return container;
+}
+
+function getPlaceholderArray(elementList){
+    var arr = [];
+    if(elementList != null) {
+        elementList.forEach(function (customObject) {
+            if(customObject != null){
+                arr.push(customObject.placeHolder);
+            }
+        })
+    }
+    return arr;
+}
+function getPlaceholderValue(element){
+    console.log(element);
+    if(element != null) {
+        return element.placeHolder;
+    } else {
+        return "";
+    }
 }
 
 
@@ -1644,6 +1664,7 @@ function getPreScreenContent(jobPostId, candidateId, isRebound, actorId, customD
             reProcessPreScreenContent(returnedData, customD);
         }
     }
+    console.log("jobPostVsCandidate_URL: " + base_api_url);
     try {
         $.ajax({
             type: "GET",
