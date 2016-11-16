@@ -10,6 +10,7 @@ public class InterviewStatusRequest {
     private String rescheduledDate;
     private Integer rescheduledSlot;
     private String reason;
+    private String interviewSchedule;
 
     public Integer getCandidateId() {
         return candidateId;
@@ -57,5 +58,13 @@ public class InterviewStatusRequest {
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    public String getInterviewSchedule() {
+        return interviewSchedule;
+    }
+
+    public void setInterviewSchedule(String interviewSchedule) {
+        this.interviewSchedule = interviewSchedule;
     }
 }

@@ -1,6 +1,436 @@
-var languageArray = [];
+/*
+*    [dependencies]:
+*       - bootbox.min.js
+*       - validation.js
+*
+*
+* */
+
+var langArray = [];
 var currentLocationArray = [];
 var localityArray = [];
+
+// use this object to set style, class, glyphicon
+var globalPalette = {
+    color: {
+        main:{
+            headerColor: "rgb(63,81,181)"
+        }
+    }
+};
+var decorator;
+function initDecorator(colorPalette) {
+    if(colorPalette == null) {
+        colorPalette = globalPalette;
+    }
+    decorator = {
+        preScreen: {
+            className: "mdl-grid"
+        },
+        container : {
+            className: "row mdl-cell mdl-cell--12-col"
+        },
+        bootBoxMain: {
+            className: "pre-screen-modal"
+        },
+        table: {
+            mainTable: {
+                className: "mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--12-col",
+                style: "margin:0;border:none",
+                tHead: {
+                    style: "background-color:" + colorPalette.color.main.headerColor,
+                    titleText_1:"",
+                    titleText_2:"Job Post Info",
+                    titleText_3:"Candidate Info",
+                    titleText_4:"Match?",
+                    titleText_5:"Is candidate Ready",
+                    titleText_6:"Edit"
+                },
+                tBody: {
+                    style: ""
+                }
+            },
+            otherTable: {
+                className: "mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--12-col",
+                style: "margin:0;border:none",
+                tHead: {
+                    style: "background-color:" + colorPalette.color.main.headerColor,
+                    titleText_1:"",
+                    titleText_2:"Job Post Info",
+                    titleText_3:"Candidate Info",
+                    titleText_4:"Match?",
+                    titleText_5:"Is candidate Ready",
+                    titleText_6:"Edit"
+                },
+                tBody: {
+                    style: ""
+                }
+            },
+            idProofCheckbox: {
+                checkboxLabel: {
+                    className : "mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect",
+                    style: "text-align:center"
+
+                },
+                checkboxMatch: {
+                    className : "mdl-checkbox__input"
+                }
+            },
+            glyphIconCorrectClass: "glyphicon glyphicon-ok",
+            glyphIconWrongClass: "glyphicon glyphicon-remove",
+            rowHeading: {
+                post: {
+                    isRequired: true,
+                    style: "padding:1% 2%;background-color:"+colorPalette.color.main.headerColor+";color:#fff"
+                },
+                note: {
+                    isRequired: true,
+                    style: "padding:1% 2%;background-color:"+colorPalette.color.main.headerColor+";color:#fff"
+                }
+            }
+        },
+        callYesNo: {
+            button : {
+                className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect"
+            },
+            visibility: true
+        },
+        finalSubmissionButton :{
+            className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent modal-submit",
+            init: {
+                disabled: true
+            }
+        },
+        textContainers: {
+            visibility: true,
+            minReqContainer: {
+                visibility: true,
+                className: "col-lg-6 form-group remove-padding-left"
+            },
+            noteContainer: {
+                visibility: true,
+                className: "col-lg-6 form-group"
+            }
+        },
+        finalSubmissionBypassRequired: false,
+        callYesNoRequired: true,
+        columnVisible: [1, 2, 3, 4, 5, 6],
+    };
+    return decorator;
+}
+
+
+// aux methods start
+function processTimeShift(returnedData) {
+    if (returnedData != null) {
+        var data = [];
+
+        returnedData.forEach(function (timeshift) {
+            var opt = {
+                label: timeshift.timeShiftName, value: parseInt(timeshift.timeShiftId)
+            };
+            data.push(opt);
+        });
+
+        var selectList = $('#candidateTimeShiftPref');
+        selectList.multiselect({
+            nonSelectedText: 'None Selected',
+            includeSelectAllOption: true,
+            maxHeight: 300
+        });
+        selectList.multiselect('dataprovider', data);
+        selectList.multiselect('rebuild');
+    }
+}
+
+function processEducation(returnedEdu) {
+    if (returnedEdu != null) {
+        var data = [];
+
+        returnedEdu.forEach(function (education) {
+            var opt = {
+                label: education.educationName, value: parseInt(education.educationId)
+            };
+            data.push(opt);
+        });
+
+        var selectList = $('#candidateHighestEducation');
+        selectList.multiselect({
+            nonSelectedText: 'None Selected',
+            includeSelectAllOption: true,
+            maxHeight: 300
+        });
+        selectList.multiselect('dataprovider', data);
+        selectList.multiselect('rebuild');
+    }
+}
+
+function processDegree(returnedDegree) {
+    if (returnedDegree != null) {
+        var data = [];
+
+        returnedDegree.forEach(function (degree) {
+            var opt = {
+                label: degree.degreeName, value: parseInt(degree.degreeId)
+            };
+            data.push(opt);
+        });
+
+        var selectList = $('#candidateHighestDegree');
+        selectList.multiselect({
+            nonSelectedText: 'None Selected',
+            includeSelectAllOption: true,
+            maxHeight: 300
+        });
+        selectList.multiselect('dataprovider', data);
+        selectList.multiselect('rebuild');
+    }
+}
+
+function processLanguage(returnedData) {
+    var arrayLang = [];
+    var arrayLangId = [];
+    var defaultOption = $('<option value="-1"></option>').text("Select");
+    returnedData.forEach(function (language) {
+        var id = language.languageId;
+        var name = language.languageName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        arrayLang.push(name);
+        arrayLangId.push(id);
+        var option = $('<option value=' + id + '></option>').text(name);
+        langArray.push(item);
+    });
+    populateLanguages(arrayLang.reverse(), arrayLangId.reverse());
+}
+
+function populateLanguages(l, lId) {
+    var i;
+    var table = document.getElementById("langTable");
+    for (i = 0; i < l.length; i++) {
+        if (lId[i] == 1 || lId[i] == 2 || lId[i] == 3 || lId[i] == 4 || lId[i] == 5) {
+            var row = table.insertRow(0);
+
+            var cell1 = row.insertCell(0);
+            cell1.style="padding-top:16px;font-weight:bold";
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+            var cell4 = row.insertCell(3);
+            var cell5 = row.insertCell(4);
+
+            cell1.innerHTML = '<span style="margin-top:8px">'+ l[i] +'</span>';
+            cell2.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;";
+            cell3.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"u\" value=0 >Understand</label></div>";
+            cell4.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >Speak</label></div>";
+            cell5.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"rw\" value=0 >Read/Write</label></div>";
+        }
+    }
+}
+
+function prefillLanguageTable(languageKnownList) {
+    $('table#langTable tr').each(function () {
+        $(this).find('input').each(function () {
+            //do your stuff, you can use $(this) to get current cell
+            var x = document.createElement("INPUT");
+            x = $(this).get(0);
+            languageKnownList.forEach(function (languageKnown) {
+                if (x.id == languageKnown.language.languageId) {
+                    if (languageKnown.verbalAbility == "1" && x.name == "s") {
+                        x.checked = true;
+                        $(x).parent().addClass('active').siblings().removeClass('active');
+                    } else if (languageKnown.readWrite == "1" && x.name == "rw") {
+                        x.checked = true;
+                        $(x).parent().addClass('active').siblings().removeClass('active');
+                    } else if (languageKnown.understanding == "1" && x.name == "u") {
+                        x.checked = true;
+                        $(x).parent().addClass('active').siblings().removeClass('active');
+                    }
+                }
+            });
+        });
+    });
+}
+
+function processExperience(returnedExperience) {
+    var data = [];
+
+    returnedExperience.forEach(function (experience) {
+        var opt = {
+            label: experience.experienceType, value: parseInt(experience.experienceId)
+        };
+        data.push(opt);
+    });
+
+    var selectList = $('#experienceMultiSelect');
+    selectList.multiselect({
+        nonSelectedText: 'None Selected',
+        includeSelectAllOption: true,
+        maxHeight: 300
+    });
+    selectList.multiselect('dataprovider', data);
+    selectList.multiselect('rebuild');
+}
+
+function processDataGetAssets(returnedAssets) {
+    var data = [];
+
+    returnedAssets.forEach(function (asset) {
+        var opt = {
+            label: asset.assetTitle, value: parseInt(asset.assetId)
+        };
+        data.push(opt);
+    });
+
+    var selectList = $('#assetMultiSelect');
+    selectList.multiselect({
+        includeSelectAllOption: true,
+        enableCaseInsensitiveFiltering: true,
+        maxHeight: 300
+    });
+    selectList.multiselect('dataprovider', data);
+    selectList.multiselect('rebuild');
+}
+
+function processIdProofsWithNumbers(returnedData, customD) {
+    // create table
+    if(returnedData != null) {
+        // minReqTable
+        var minReqTableContainer = $('#document_details');
+        var mainTable = document.createElement("table");
+        mainTable.className =customD.table.mainTable.className;
+        mainTable.style = customD.table.mainTable.style;
+        mainTable.id = "documentTable";
+
+        var tHead = document.createElement("thead");
+        tHead.style = customD.table.mainTable.tHead.style;
+        mainTable.appendChild(tHead);
+
+        var heading = document.createElement("tr");
+        tHead.appendChild(heading);
+
+        var title1 = document.createElement("th");
+        title1.style="color:#ffffff";
+        heading.appendChild(title1);
+
+        var title2 = document.createElement("th");
+        title2.textContent = "Document Title";
+        title2.style="color:#ffffff";
+        heading.appendChild(title2);
+
+        var title3 = document.createElement("th");
+        title3.style="color:#ffffff";
+        title3.textContent = "Document Number";
+        heading.appendChild(title3);
+
+        var tBody = document.createElement("tbody");
+        mainTable.appendChild(tBody);
+
+        minReqTableContainer.append(mainTable);
+
+        returnedData.forEach(function (idProof) {
+            var bodyContentBox = document.createElement("tr");
+            bodyContentBox.id = idProof.idProofId;
+            tBody.appendChild(bodyContentBox);
+
+            var checkboxTd = document.createElement("td");
+            checkboxTd.id = "idProofCheckbox";
+            bodyContentBox.appendChild(checkboxTd);
+            var checkMatchLabel = document.createElement("label");
+            checkMatchLabel.type = "checkbox";
+            checkMatchLabel.for = "checkboxLabel_" + idProof.idProofId;
+            checkMatchLabel.style = 'text-align:center';
+            checkMatchLabel.className = customD.table.idProofCheckbox.checkboxLabel.className;
+            checkboxTd.appendChild(checkMatchLabel);
+            var checkMatch = document.createElement("input");
+            checkMatch.type = "checkbox";
+            checkMatch.id = "idProofCheckbox_" + idProof.idProofId;
+            checkMatch.onclick = function () {
+                $('#idProofValue_'+idProof.idProofId).val("");
+            };
+            checkMatch.className = "mdl-checkbox__input";
+            checkMatchLabel.appendChild(checkMatch);
+
+            var idProofTitleTd = document.createElement("td");
+            idProofTitleTd.textContent = idProof.idProofName;
+            idProofTitleTd.id = "idProofName_"+idProof.idProofId;
+            bodyContentBox.appendChild(idProofTitleTd);
+
+            var idProofNumberTd = document.createElement("td");
+            idProofNumberTd.id = "idProofValueTd";
+            bodyContentBox.appendChild(idProofNumberTd);
+
+            var ip = document.createElement("INPUT");
+            ip.setAttribute("type", "text");
+            ip.setAttribute("id", "idProofValue_"+idProof.idProofId);
+            ip.onchange = validateInput;
+            idProofNumberTd.appendChild(ip);
+
+        })
+    }
+}
+
+function validateInput() {
+    console.log(this.id);
+    var id = this.id.split("_")[1];
+    // aadhaar validation
+    if(id == 3) {
+        console.log(this.value);
+        if(!validateAadhar(this.value)){
+            $('.btn.edit-modal-submit').prop('disabled', true);
+            notifyModal("Invalid Input","Invalid Aadhaar Card Number");
+        } else {
+            $('.btn.edit-modal-submit').prop('disabled', false);
+        }
+        $("#idProofCheckbox_"+id).prop('checked', true);
+    }
+    if(id == 1){
+        console.log(this.value);
+        if(!validateDL(this.value)){
+            $('.btn.edit-modal-submit').prop('disabled', true);
+            notifyModal("Invalid Input","Invalid Driving Licence Number");
+        } else {
+            $('.btn.edit-modal-submit').prop('disabled', false);
+        }
+        $("#idProofCheckbox_"+id).prop('checked', true);
+    }
+    console.log(this.parentNode);
+}
+function processLocality(returnedData) {
+    console.log("fetched all locality. now rendering locality token input");
+
+    var locArray = [];
+    if (returnedData != null) {
+        returnedData.forEach(function (locality) {
+            var id = locality.localityId;
+            var name = locality.localityName;
+            var item = {};
+            item ["id"] = id;
+            item ["name"] = name;
+            localityArray.push(item);
+            locArray.push(item);
+        });
+
+        if (localityArray != null) {
+            console.log("localityArray: "+localityArray.length);
+            console.log("localityArray: "+locArray.length);
+            $("#candidateHomeLocality").tokenInput(getLocalityArray(), {
+                theme: "facebook",
+                placeholder: "job Localities?",
+                hintText: "Start typing Area (eg. BTM Layout, Bellandur..)",
+                minChars: 0,
+                tokenLimit: 1,
+                zindex: 9999,
+                preventDuplicates: true
+            });
+        }
+    }
+}
+
+function getLocalityArray() {
+    return localityArray;
+}
+// aux methods end
 
 function updateCallAttempts(cId, jpId, status) {
     if(cId == null || jpId == null) {
@@ -15,14 +445,14 @@ function updateCallAttempts(cId, jpId, status) {
         processData: false,
         success: function (returnedData) {
             if(returnedData == "OK"){
-                notifyError("Call response saved successfully. Refreshing..", 'success');
-                setTimeout(function () {
-                    location.reload();
-                    // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
-                }, 2000);
+                // notifyModal("Call response saved successfully.");
+                // setTimeout(function () {
+                //     location.reload();
+                //     // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
+                // }, 2000);
                 bootbox.hideAll();
             } else if(returnedData == "NA") {
-                notifyError("Error while saving call response.", 'success');
+                // notifyModal("Error while saving call response.");
             }
         }
     });
@@ -94,7 +524,9 @@ function triggerPreScreenResponseSubmission(candidateId, jobPostId) {
                 url: "/submitPreScreen",
                 contentType: "application/json; charset=utf-8",
                 data: JSON.stringify(d),
-                success: processPostPreScreenResponse
+                success: function (returnData) {
+                    processPostPreScreenResponse(returnData, candidateId, jobPostId);
+                }
             });
         } catch (exception) {
             console.log("exception occured!!" + exception);
@@ -102,7 +534,198 @@ function triggerPreScreenResponseSubmission(candidateId, jobPostId) {
     }
 }
 
-function generateEditModalView(title, message, candidateId, propId, overflow) {
+function saveEditedResponses(candidateId, propId, jobPostId) {
+    var d;
+    var dobCheck = 1;
+    var okToSubmit = true; // validation check before submit | { 1 = ok , 0 = not ok }
+    if(propId == 0) {
+        var documentList = [];
+        $('#documentTable tr').each(function() {
+            var item = {};
+            var id;
+            if($(this).attr('id') != undefined) {
+                id = $(this).attr('id').split("_").slice(-1).pop();
+
+                if($('input#idProofCheckbox_'+id).is(':checked')) {
+                    item["idProofId"] = parseInt(id);
+                    // if( $('input#idProofValue_'+id).val() == null ||  $('input#idProofValue_'+id).val().trim() == ""){
+                    //     okToSubmit = false;
+                    // }
+                    item["idNumber"] = $('input#idProofValue_'+id).val().trim();
+                }
+
+                if(!jQuery.isEmptyObject(item)){
+                    documentList.push(item);
+                };
+            }
+        });
+            // documents
+            d = {
+                idProofWithIdNumberList: documentList
+            }
+
+    } else if(propId == 1) {
+        var check;
+        var languageMap = [];
+        var languageKnown = $('#langTable input:checked').map(function () {
+            check = 0;
+            var id = this.id;
+            var name = this.name;
+            var item = {};
+            var pos;
+
+            for (var i in languageMap) {
+                if (languageMap[i].id == id) {
+                    pos = i;
+                    check = 1;
+                    break;
+                }
+            }
+            if (check == 0) {
+                item["id"] = id;
+                item["u"] = 0;
+                item["rw"] = 0;
+                item["s"] = 0;
+                if (name == "u")
+                    item["u"] = 1;
+                else if (name == "rw")
+                    item["rw"] = 1;
+                else
+                    item["s"] = 1;
+                languageMap.push(item);
+            }
+            else {
+                if (name == "u")
+                    languageMap[pos].u = 1;
+                else if (name == "rw")
+                    languageMap[pos].rw = 1;
+                else
+                    languageMap[pos].s = 1;
+            }
+        }).get();
+
+        // documents
+        d = {
+            candidateKnownLanguageList: languageMap
+        }
+
+    } else if(propId == 2) {
+        // asset
+        var assetArrayList = $("#assetMultiSelect").val();
+
+        d = {
+            assetIdList: assetArrayList
+        }
+
+    } else if(propId == 3) {
+        var selectedDob = $('#candidateDob').val();
+        var c_dob = String(selectedDob);
+        var selectedDate = new Date(c_dob);
+        var todayDate = new Date();
+        if (selectedDate > todayDate) {
+            dobCheck = 0;
+        }
+        d = {
+            candidateDob: c_dob
+        }
+    } else if(propId == 4) {
+
+        /* calculate total experience in months */
+        var expMonth = parseInt($('#candidateTotalExperienceMonth').val());
+        var expYear = parseInt($('#candidateTotalExperienceYear').val());
+        var totalExp = expMonth + (12 * expYear);
+
+        d = {
+            candidateTotalExperience: totalExp
+        }
+
+    } else if(propId == 5) {
+
+        d = {
+            candidateEducationLevel: $('#candidateHighestEducation').val(),
+            candidateDegree: ($('#candidateHighestDegree').val()),
+            candidateEducationInstitute: $('#candidateEducationInstitute').val(),
+            candidateEducationCompletionStatus: parseInt($('input:radio[name="candidateEducationCompletionStatus"]:checked').val())
+
+        }
+    } else if(propId == 6) {
+
+        d = {
+            candidateGender: ($('input:radio[name="gender"]:checked').val())
+        }
+
+    } else if(propId == 7) {
+        d = {
+            candidateLastWithdrawnSalary: parseInt($('#candidateLastWithdrawnSalary').val())
+        }
+
+    } else if(propId == 8) {
+
+        d = {
+            candidateHomeLocality: parseInt($('#candidateHomeLocality').val())
+        }
+
+    } else if(propId == 9) {
+
+        d = {
+            candidateTimeShiftPref: $('#candidateTimeShiftPref').val()
+        }
+    }
+
+    if (dobCheck == 0) {
+        notifyModal("Invalid DOB","Please enter valid date of birth");
+        okToSubmit = false;
+    } else if ($('#candidateTotalExperienceYear').val() > 30) {
+        notifyModal("Invalid Years of Experience","Please enter valid years of experience");
+        okToSubmit = false;
+    } else if ($('#candidateLastWithdrawnSalary').val() > 50000) {
+        notifyModal("Invalid Salary Input","Please enter a valid 'Last Withdrawn Salary' (Ex: 15000) in a month");
+        okToSubmit = false;
+    }
+    console.log("okToSubmit:"+okToSubmit);
+    //final submission
+    if(okToSubmit){
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/support/api/updateCandidateDetailsAtPreScreen/?propertyId="+propId+"&candidateId="+candidateId,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(d),
+                success: function (returnedData) {
+                    processFinalSubmitResponse(returnedData, jobPostId, candidateId, propId);
+                }
+            });
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+        return true;
+    }
+
+    return false;
+}
+
+function notifyModal(title, message){
+    bootbox.alert({
+        size: "small",
+        title: title,
+        message: message,
+        callback: function () { /* your callback code */
+        }
+    });
+}
+
+function processFinalSubmitResponse(returnedData, jobPostId, candidateId, propId) {
+    console.log(returnedData);
+    if(returnedData != "error" || returnedData.trim() != ""){
+        getPreScreenContent(jobPostId, candidateId, true, 0, null, null);
+        // get new jobPostVsCandidate data
+        // construct new pre_screen_body
+        // render it $('#pre_screen_body').html("test")
+        //$('#candidateValue_'+propId).html(returnedData);
+    }
+}
+
+function generateEditModalView(title, message, candidateId, propId, overflow, jobPostId) {
     console.log("rendering modal");
     var editDialog = bootbox.dialog({
         className: "pre-screen-modal",
@@ -117,7 +740,7 @@ function generateEditModalView(title, message, candidateId, propId, overflow) {
             "Save": {
                 className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent edit-modal-submit",
                 callback: function () {
-
+                    return saveEditedResponses(candidateId, propId, jobPostId);
                 }
             }
         }
@@ -126,289 +749,11 @@ function generateEditModalView(title, message, candidateId, propId, overflow) {
     if(overflow){
         $('#edit-modal div.modal-body').attr('style', 'overflow: visible !important');
     }
-    $('.btn.edit-modal-submit').prop('disabled', true);
+    //$('.btn.edit-modal-submit').prop('disabled', true);
     $('body').removeClass('modal-open').removeClass('open-edit-modal').addClass('open-edit-modal');
 }
 
-function processTimeShift(returnedData) {
-    if (returnedData != null) {
-        var data = [];
-
-        returnedData.forEach(function (timeshift) {
-            var opt = {
-                label: timeshift.timeShiftName, value: parseInt(timeshift.timeShiftId)
-            };
-            data.push(opt);
-        });
-
-        var selectList = $('#candidateTimeShiftPref');
-        selectList.multiselect({
-            nonSelectedText: 'None Selected',
-            includeSelectAllOption: true,
-            maxHeight: 300
-        });
-        selectList.multiselect('dataprovider', data);
-        selectList.multiselect('rebuild');
-    }
-}
-
-function processDataCheckEducation(returnedEdu) {
-    if (returnedEdu != null) {
-        var data = [];
-
-        returnedEdu.forEach(function (education) {
-            var opt = {
-                label: education.educationName, value: parseInt(education.educationId)
-            };
-            data.push(opt);
-        });
-
-        var selectList = $('#candidateHighestEducation');
-        selectList.multiselect({
-            nonSelectedText: 'None Selected',
-            includeSelectAllOption: true,
-            maxHeight: 300
-        });
-        selectList.multiselect('dataprovider', data);
-        selectList.multiselect('rebuild');
-    }
-}
-
-function processDataCheckDegree(returnedDegree) {
-    if (returnedDegree != null) {
-        var data = [];
-
-        returnedDegree.forEach(function (degree) {
-            var opt = {
-                label: degree.degreeName, value: parseInt(degree.degreeId)
-            };
-            data.push(opt);
-        });
-
-        var selectList = $('#candidateHighestDegree');
-        selectList.multiselect({
-            nonSelectedText: 'None Selected',
-            includeSelectAllOption: true,
-            maxHeight: 300
-        });
-        selectList.multiselect('dataprovider', data);
-        selectList.multiselect('rebuild');
-    }
-}
-
-function processDataCheckLanguage(returnedData) {
-    var arrayLang = [];
-    var arrayLangId = [];
-    var defaultOption = $('<option value="-1"></option>').text("Select");
-    returnedData.forEach(function (language) {
-        var id = language.languageId;
-        var name = language.languageName;
-        var item = {};
-        item ["id"] = id;
-        item ["name"] = name;
-        arrayLang.push(name);
-        arrayLangId.push(id);
-        var option = $('<option value=' + id + '></option>').text(name);
-        languageArray.push(item);
-    });
-    populateLanguages(arrayLang.reverse(), arrayLangId.reverse());
-}
-
-function populateLanguages(l, lId) {
-    var i;
-    var table = document.getElementById("languageTable");
-    for (i = 0; i < l.length; i++) {
-        if (lId[i] == 1 || lId[i] == 2 || lId[i] == 3 || lId[i] == 4 || lId[i] == 5) {
-            var row = table.insertRow(0);
-
-            var cell1 = row.insertCell(0);
-            cell1.style="padding-top:16px;font-weight:bold";
-            var cell2 = row.insertCell(1);
-            var cell3 = row.insertCell(2);
-            var cell4 = row.insertCell(3);
-            var cell5 = row.insertCell(4);
-
-            cell1.innerHTML = '<span style="margin-top:8px">'+ l[i] +'</span>';
-            cell2.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;";
-            cell3.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"u\" value=0 >Understand</label></div>";
-            cell4.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"s\" value=0 >Speak</label></div>";
-            cell5.innerHTML = "<div class=\"btn-group\" data-toggle=\"buttons\">" + "<label class=\"btn btn-custom-check\" style=\"width: 110px\">" + "<input id=" + lId[i] + " type=\"checkbox\" name=\"rw\" value=0 >Read/Write</label></div>";
-        }
-    }
-}
-
-function prefillLanguageTable(languageKnownList) {
-    $('table#languageTable tr').each(function () {
-        $(this).find('input').each(function () {
-            //do your stuff, you can use $(this) to get current cell
-            var x = document.createElement("INPUT");
-            x = $(this).get(0);
-            languageKnownList.forEach(function (languageKnown) {
-                if (x.id == languageKnown.language.languageId) {
-                    if (languageKnown.verbalAbility == "1" && x.name == "s") {
-                        x.checked = true;
-                        $(x).parent().addClass('active').siblings().removeClass('active');
-                    } else if (languageKnown.readWrite == "1" && x.name == "rw") {
-                        x.checked = true;
-                        $(x).parent().addClass('active').siblings().removeClass('active');
-                    } else if (languageKnown.understanding == "1" && x.name == "u") {
-                        x.checked = true;
-                        $(x).parent().addClass('active').siblings().removeClass('active');
-                    }
-                }
-            });
-        });
-    });
-}
-
-function processDataCheckExperience(returnedExperience) {
-    var data = [];
-
-    returnedExperience.forEach(function (experience) {
-        var opt = {
-            label: experience.experienceType, value: parseInt(experience.experienceId)
-        };
-        data.push(opt);
-    });
-
-    var selectList = $('#experienceMultiSelect');
-    selectList.multiselect({
-        nonSelectedText: 'None Selected',
-        includeSelectAllOption: true,
-        maxHeight: 300
-    });
-    selectList.multiselect('dataprovider', data);
-    selectList.multiselect('rebuild');
-}
-
-function processDataGetAssets(returnedAssets) {
-    var data = [];
-
-    returnedAssets.forEach(function (asset) {
-        var opt = {
-            label: asset.assetTitle, value: parseInt(asset.assetId)
-        };
-        data.push(opt);
-    });
-
-    var selectList = $('#assetMultiSelect');
-    selectList.multiselect({
-        includeSelectAllOption: true,
-        enableCaseInsensitiveFiltering: true,
-        maxHeight: 300
-    });
-    selectList.multiselect('dataprovider', data);
-    selectList.multiselect('rebuild');
-}
-
-function processIdProofsWithNumbers(returnedData) {
-    // create table
-    if(returnedData != null) {
-        // minReqTable
-        var minReqTableContainer = $('#document_details');
-        console.log(minReqTableContainer);
-        var mainTable = document.createElement("table");
-        mainTable.className ="mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--12-col";
-        mainTable.style="margin:0;border:none";
-        mainTable.id = "documentTable";
-
-        var tHead = document.createElement("thead");
-        tHead.style="background-color:rgb(63,81,181)";
-        mainTable.appendChild(tHead);
-
-        var heading = document.createElement("tr");
-        tHead.appendChild(heading);
-
-        var title1 = document.createElement("th");
-        title1.style="color:#ffffff";
-        heading.appendChild(title1);
-
-        var title2 = document.createElement("th");
-        title2.textContent = "Document Title";
-        title2.style="color:#ffffff";
-        heading.appendChild(title2);
-
-        var title3 = document.createElement("th");
-        title3.style="color:#ffffff";
-        title3.textContent = "Document Number";
-        heading.appendChild(title3);
-
-        var tBody = document.createElement("tbody");
-        mainTable.appendChild(tBody);
-
-        minReqTableContainer.append(mainTable);
-
-        returnedData.forEach(function (idProof) {
-            console.log(idProof);
-            var bodyContentBox = document.createElement("tr");
-            bodyContentBox.id = idProof.idProofId;
-            tBody.appendChild(bodyContentBox);
-
-                var checkboxTd = document.createElement("td");
-                bodyContentBox.appendChild(checkboxTd);
-                var checkMatchLabel = document.createElement("label");
-                checkMatchLabel.type = "checkbox";
-                checkMatchLabel.for = "checkbox_" + idProof.idProofId;
-                checkMatchLabel.style = 'text-align:center';
-                checkMatchLabel.className = "mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect";
-                checkboxTd.appendChild(checkMatchLabel);
-                var checkMatch = document.createElement("input");
-                checkMatch.type = "checkbox";
-                checkMatch.id = "checkbox_" + idProof.idProofId;
-                checkMatch.className = "mdl-checkbox__input";
-                checkMatchLabel.appendChild(checkMatch);
-
-                var idProofTitleTd = document.createElement("td");
-                idProofTitleTd.textContent = idProof.idProofName;
-                bodyContentBox.appendChild(idProofTitleTd);
-
-                var idProofNumberTd = document.createElement("td");
-                bodyContentBox.appendChild(idProofNumberTd);
-
-                var ip = document.createElement("INPUT");
-                ip.setAttribute("type", "text");
-                ip.setAttribute("id", "idProofValue_"+idProof.idProofId);
-                idProofNumberTd.appendChild(ip);
-
-        })
-    }
-}
-function processDataCheckLocality(returnedData) {
-    console.log("fetched all locality. now rendering locality token input");
-
-    var locArray = [];
-    if (returnedData != null) {
-        returnedData.forEach(function (locality) {
-            var id = locality.localityId;
-            var name = locality.localityName;
-            var item = {};
-            item ["id"] = id;
-            item ["name"] = name;
-            localityArray.push(item);
-            locArray.push(item);
-        });
-
-        if (localityArray != null) {
-            console.log("localityArray: "+localityArray.length);
-            console.log("localityArray: "+locArray.length);
-            $("#candidateHomeLocality").tokenInput(getLocalityArray(), {
-                theme: "facebook",
-                placeholder: "job Localities?",
-                hintText: "Start typing Area (eg. BTM Layout, Bellandur..)",
-                minChars: 0,
-                tokenLimit: 1,
-                zindex: 9999,
-                preventDuplicates: true
-            });
-        }
-    }
-}
-
-function getLocalityArray() {
-    return localityArray;
-}
-
-function fetchEditModalContent(candidateId, propId, jobPostId) {
+function fetchEditModalContent(candidateId, propId, jobPostId, customD) {
 
     // api call and render child modal
     var base_api_url ="/support/api/getCandidateDetails/";
@@ -424,6 +769,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
             base_api_url += "&propertyId=" + propId;
         }
     }
+    console.log(base_api_url);
     // work_shift
     var url;
     var ajax_type = "POST";
@@ -441,16 +787,25 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
             '<h5>Document Details:</h5>'+
             '</div>';
 
+        modalTitle = "Candidate Document Edit";
         url = "/support/api/getDocumentReqForJobRole/?job_post_id="+jobPostId;
         ajax_type = "GET";
         fn = function (returnedData) {
-            processIdProofsWithNumbers(returnedData);
+            processIdProofsWithNumbers(returnedData, customD);
+        };
+        setter = function (returnedData) {
+            if(returnedData!= null) {
+                returnedData.forEach(function (doc) {
+                    $('#idProofCheckbox_' + doc.idProof.idProofId).prop('checked', true);
+                    $('#idProofValue_' + doc.idProof.idProofId).val(doc.idProofNumber);
+                });
+            }
         }
     } else if(propId == 1) {
         htmlBodyContent = '<div id="language_details">'+
 
-            '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Language Details :</b></div>'+
-            '<table id="languageTable" class="mdl-data-table mdl-js-data-table table table-striped mdl-shadow--2dp" cellspacing="0" width="100%">'+
+            '<div class="row" style="margin:0;padding:1%;'+customD.table.mainTable.tHead.style+';color:#fff"><b>Language Details :</b></div>'+
+            '<table id="langTable" class="mdl-data-table mdl-js-data-table table table-striped mdl-shadow--2dp" cellspacing="0" width="100%">'+
             '<thead>'+
             '</thead>'+
             '<tbody>'+
@@ -458,18 +813,17 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
             '</table>'+
             '</div>';
 
-
         modalTitle = "Candidate Language Edit";
         url = "/getAllLanguage";
         fn = function (returnedData) {
-            processDataCheckLanguage(returnedData);
+            processLanguage(returnedData);
         };
         setter = function (returnedData) {
-
+            prefillLanguageTable(returnedData);
         }
     } else if(propId == 2) {
 
-        htmlBodyContent ='<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Assets</b></div>'+
+        htmlBodyContent ='<div class="row" style="margin:0;padding:1%;'+customD.table.mainTable.tHead.style+';color:#fff"><b>Assets</b></div>'+
             '<div class="row mdl-shadow--2dp" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
             '<div class="col-lg-3 col-lg-offset-2" style="margin-top: 8px;text-align: right"><font size="3">Asset : </font></div>'+
             '<div class="col-lg-4" id="assetMultiSelectDiv">'+
@@ -484,75 +838,120 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
             processDataGetAssets(returnedData);
         };
         setter = function (returnedData) {
-
+            if(returnedData != null) {
+                // list of assets
+                var assetIdList = [];
+                returnedData.forEach(function (candidateAsset) {
+                    assetIdList.push(candidateAsset.asset.assetId);
+                });
+                $("#assetMultiSelect").val(assetIdList);
+                $("#assetMultiSelect").multiselect('rebuild');
+            }
         };
         isOverFlowRequired = true;
 
     } else if(propId == 3) {
-        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Date Of Birth</b></div>'+
+        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;'+customD.table.mainTable.tHead.style+';color:#fff"><b>Date Of Birth</b></div>'+
             '<div class="row mdl-shadow--2dp" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
             '<div class="col-lg-3 col-lg-offset-2" style="margin-top: 8px;text-align: right"><font size="3">DOB : </font></div>'+
             '<div class="col-lg-4">'+
             '<input id="candidateDob" name="candidateDob" placeholder="When is your Birthday?" type="date" class="form-control input-md"  data-date-inline-picker="true"/>'+
             '</div>'+
             '</div>';
-
+        $( "#candidateDob").datepicker({ dateFormat: 'yy-mm-dd', changeYear: true});
         modalTitle = "Candidate DOB Edit";
-
+        setter = function (returnedData) {
+            if (returnedData != null) {
+                var date = JSON.parse(returnedData);
+                var yr = new Date(date).getFullYear();
+                var month = ('0' + parseInt(new Date(date).getMonth() + 1)).slice(-2);
+                var d = ('0' + new Date(date).getDate()).slice(-2);
+                $("#candidateDob").val(yr + "-" + month + "-" + d);
+            }
+        }
     } else if(propId == 4) {
-        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Experience</b></div>'+
-            '<div class="row mdl-shadow--2dp" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
-            '<div class="col-lg-3 col-lg-offset-2" style="margin-top: 8px;text-align: right"><font size="3">Experience : </font></div>'+
-            '<div class="col-lg-4" id="experienceMultiSelectDiv">'+
-            '<select id="experienceMultiSelect" multiple="multiple"></select>'+
+        htmlBodyContent = '<div class="row">'+
+            '<div class="col-sm-3"><h5>Total Experience:</h5></div>'+
+            '<div class="col-sm-9">'+
+            '<input id="candidateTotalExperienceYear" value="0" style="width: 15%; display: inline-block" placeholder="Years" type="number" class="form-control input-md">&nbsp;Years&nbsp;&nbsp;'+
+            '<input id="candidateTotalExperienceMonth" value="0" style="width: 15%; display: inline-block" placeholder="Months" type="number" min="0" max="11" step="1"  class="form-control input-md">&nbsp; Months'+
             '</div>'+
             '</div>';
 
         modalTitle = "Candidate Experience Edit";
-        url = "/getAllExperience";
         fn = function (returnedData) {
-            processDataCheckExperience(returnedData);
+            processExperience(returnedData);
         };
-
-        isOverFlowRequired = true;
+        setter = function (returnedData) {
+            if(returnedData != null) {
+                $("#candidateTotalExperienceYear").val(parseInt((returnedData / 12)).toString()); // years
+                $("#candidateTotalExperienceMonth").val(returnedData % 12); // month
+            }
+        }
     } else if(propId == 5) {
-        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Educational Details</b></div>'+
-            '<div class="row mdl-shadow--2dp" id="education_details" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
-            '<div class="row">'+
-            '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="2">Highest Education Qualification : </font></div>'+
-            '<div class="col-lg-4">'+
-            '<select id="candidateHighestEducation" size="5"></select>'+
-            '</div>'+
-            '</div>'+
-            '<div class="row" style="margin-top: 10px;">'+
-            '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="2">Have you successfully completed this course?</font></div>'+
-            '<div class="col-lg-4" style="padding-top: 8px;">'+
-            '<input type="radio" name="candidateEducationCompletionStatus" id="eduCompleted" '+'value="1">&nbsp;Yes&nbsp;&nbsp;'+
-            '<input type="radio" name="candidateEducationCompletionStatus" id="eduCompletedNot" value="0">&nbsp;No'+
-            '</div>'+
-            '</div>'+
-            '<div class="row" id="educationalInstitute" style="margin-top: 10px;" >'+
-            '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="2">Highest Education Degree? </font></div>'+
-            '<div class="col-lg-4" style="padding-top: 8px;">'+
-            '<select id="candidateHighestDegree" size="5"></select>'+
-            '</div>'+
-            '</div>'+
-            '<div class="row" style="margin-top: 10px">'+
-            '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="2">Last attended Education Institute? </font></div>'+
-            '<div class="col-lg-4">'+
-            '<input id="candidateEducationInstitute" style="width: 326px" placeholder="Which was the last college you went to?" type="text" class="form-control input-md">'+
-            '</div>'+
-            '</div>'+
+        htmlBodyContent =  ''+
+            '<div class="row" style="margin:0;padding:1%;'+customD.table.mainTable.tHead.style+';color:#fff"><b>Educational Details</b></div>'+
+                '<div class="row mdl-shadow--2dp" id="education_details" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
+                    '<div class="row">'+
+                        '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="2">Highest Education Qualification : </font></div>'+
+                        '<div class="col-lg-4">'+
+                            '<select id="candidateHighestEducation" size="5"></select>'+
+                        '</div>'+
+                    '</div>'+
+                    '<div class="row" style="margin-top: 10px;">'+
+                        '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="2">Have you successfully completed this course?</font></div>'+
+                        '<div class="col-lg-4" style="padding-top: 8px;">'+
+                            '<input type="radio" name="candidateEducationCompletionStatus" id="eduCompleted" '+'value="1">&nbsp;Yes&nbsp;&nbsp;'+
+                            '<input type="radio" name="candidateEducationCompletionStatus" id="eduCompletedNot" value="0">&nbsp;No'+
+                        '</div>'+
+                    '</div>'+
+                    '<div class="row" id="educationalInstitute" style="margin-top: 10px;" >'+
+                        '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="2">Highest Education Degree? </font></div>'+
+                        '<div class="col-lg-4" style="padding-top: 8px;">'+
+                            '<select id="candidateHighestDegree" size="5"></select>'+
+                        '</div>'+
+                    '</div>'+
+                    '<div class="row" style="margin-top: 10px">'+
+                        '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="2">Last attended Education Institute? </font></div>'+
+                        '<div class="col-lg-4">'+
+                            '<input id="candidateEducationInstitute" style="width: 326px" placeholder="Which was the last college you went to?" type="text" class="form-control input-md">'+
+                        '</div>'+
+                    '</div>'+
+                '</div>'+
             '</div>';
 
         modalTitle = "Candidate Education Edit";
         isOverFlowRequired = true;
         url = "/getAllEducation";
         fn = function (returnedData) {
-            processDataCheckEducation(returnedData);
+            processEducation(returnedData);
+        };
+        setter = function (returnedData) {
+            if(returnedData != null) {
+                if(returnedData.education != null) {
+                    $("#candidateHighestEducation").val(returnedData.education.educationId);
+                    $("#candidateHighestEducation").multiselect('rebuild');
+                }
+
+                if(returnedData.degree != null) {
+                    $("#candidateHighestDegree").val(returnedData.degree.degreeId);
+                    $("#candidateHighestDegree").multiselect('rebuild');
+                }
+
+                if(returnedData.candidateLastInstitute != null) {
+                    $("#candidateEducationInstitute").val(returnedData.candidateLastInstitute);
+                }
+
+                if (returnedData.candidateEducationCompletionStatus == '1') {
+                    // hasCompletedEducation
+                    $('input[id=eduCompleted]').attr('checked', true);
+                } else {
+                    $('input[id=eduCompletedNot]').attr('checked', true);
+                }
+            }
         }
     } else if(propId == 6) {
-        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Candidate Gender</b></div>'+
+        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;'+customD.table.mainTable.tHead.style+';color:#fff"><b>Candidate Gender</b></div>'+
             '<div class="row mdl-shadow--2dp" id="education_details" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
             '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="3">Candidate Gender : </font></div>'+
             '<div class="col-lg-4" style="margin-top: 8px;">'+
@@ -562,8 +961,17 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
             '</div>';
 
         modalTitle = "Candidate Gender Edit";
+        setter = function (returnedData) {
+            if (returnedData != null) {
+                if (returnedData == 0) {
+                    $('input[id=genderMale]').attr('checked', true);
+                } else {
+                    $('input[id=genderFemale]').attr('checked', true);
+                }
+            }
+        }
     } else if(propId == 7) {
-        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Salary Details</b></div>'+
+        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;'+customD.table.mainTable.tHead.style+';color:#fff"><b>Salary Details</b></div>'+
             '<div class="row mdl-shadow--2dp" id="education_details" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
             '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="3">Current/Last Drawn Salary : </font></div>'+
             '<div class="col-lg-4">'+
@@ -571,8 +979,13 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
             '</div>'+
             '</div>';
         modalTitle = "Candidate Last Withdrawn Salary Edit";
+        setter = function (returnedData) {
+            if (returnedData != null) {
+                $('#candidateLastWithdrawnSalary').val(returnedData);
+            }
+        }
     } else if(propId == 8) {
-        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Current Location</b></div>'+
+        htmlBodyContent = '<div class="row" style="margin:0;padding:1%;'+customD.table.mainTable.tHead.style+';color:#fff"><b>Current Location</b></div>'+
         '<div class="row mdl-shadow--2dp" id="education_details" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
         '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="3">Current Location : </font></div>'+
         '<div class="col-lg-4">'+
@@ -584,24 +997,27 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
         url = "/getAllLocality";
         isOverFlowRequired = true;
         fn = function (returnedData) {
-            processDataCheckLocality(returnedData);
+            processLocality(returnedData);
+
         };
         setter = function (returnedData) {
+            console.log("setting candidate locality");
+
             if(returnedData!= null) {
                 try {
                     var item = {};
                     item ["id"] = returnedData.localityId;
                     item ["name"] = returnedData.localityName;
                     currentLocationArray.push(item); // TODO remove this line
-                    $("#candidateHomeLocality").tokenInput("add", item);
+                    $("#candidateHomeLocality").tokenInput('add', item);
                 } catch (err) {
-                    console.log("homeLocality" + err);
+                    console.log("homeLocality" + err.stack);
                 }
             }
         }
 
     } else if(propId == 9) {
-        htmlBodyContent =  '<div class="row" style="margin:0;padding:1%;background-color:rgb(63, 81, 181);color:#fff"><b>Job TimeShift Preferences</b></div>'+
+        htmlBodyContent =  '<div class="row" style="margin:0;padding:1%;'+customD.table.mainTable.tHead.style+';color:#fff"><b>Job TimeShift Preferences</b></div>'+
             '<div class="row mdl-shadow--2dp" id="education_details" style="margin: 1px;padding: 2% 1%;background-color:#fff">'+
             '<div class="col-lg-5" style="margin-top: 8px;text-align: right"><font size="3">Preferred work shift? </font></div>'+
             '<div class="col-lg-4">'+
@@ -615,11 +1031,17 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
         isOverFlowRequired = true;
         fn = function (returnedData) {
             processTimeShift(returnedData);
+        };
+        setter = function (returnedData) {
+            if(returnedData != null) {
+                $("#candidateTimeShiftPref").val(returnedData.timeShift.timeShiftId);
+                $("#candidateTimeShiftPref").multiselect('rebuild');
+            }
         }
     }
 
     // generates html container
-    generateEditModalView(modalTitle, htmlBodyContent, candidateId, propId, isOverFlowRequired);
+    generateEditModalView(modalTitle, htmlBodyContent, candidateId, propId, isOverFlowRequired, jobPostId);
 
     if(url != null) {
         try {
@@ -644,7 +1066,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
                 data: false,
                 contentType: false,
                 processData: false,
-                success: processDataCheckDegree
+                success: processDegree
             });
         } catch (exception) {
             console.log("exception occured!!" + exception);
@@ -665,10 +1087,376 @@ function fetchEditModalContent(candidateId, propId, jobPostId) {
     }
 }
 
-function processPreScreenContent(returnedData) {
+function constructPreScreenBodyContainer(returnedData, customD) {
+    var candidateId = returnedData.candidateId;
+    var jobPostId = returnedData.jobPostId;
+    var container = $('<div class="'+customD.container.className+'" id="pre_screen_container_row"></div>');
+
+    var minReqTableContainer = $('<div id="minReqTable"></div>');
+    container.append('<h4 style="margin-top: 0">Min Requirement</h4>');
+    container.append(minReqTableContainer);
+
+    var otherReqTableContainer = $('<div id="otherReqTable"></div>');
+    container.append('<h4>Other Requirement</h4>');
+    container.append(otherReqTableContainer);
+
+    // minReqTable
+    var mainTable = document.createElement("table");
+    mainTable.className = customD.table.mainTable.className;
+    mainTable.style = customD.table.mainTable.style;
+
+    var tHead = document.createElement("thead");
+    tHead.style = customD.table.mainTable.tHead.style;
+    mainTable.appendChild(tHead);
+
+    var heading = document.createElement("tr");
+    tHead.appendChild(heading);
+
+    if ($.inArray(1, customD.columnVisible) > -1) {
+        var title1 = document.createElement("th");
+        title1.textContent = customD.table.mainTable.tHead.titleText_1;
+        heading.appendChild(title1);
+    }
+    if ($.inArray(2, customD.columnVisible) > -1) {
+        var title2 = document.createElement("th");
+        title2.textContent = customD.table.mainTable.tHead.titleText_2;
+        title2.style="color:#ffffff";
+        heading.appendChild(title2);
+    }
+    if ($.inArray(3, customD.columnVisible) > -1) {
+        var title3 = document.createElement("th");
+        title3.style="color:#ffffff";
+        title3.textContent = customD.table.mainTable.tHead.titleText_3;
+        heading.appendChild(title3);
+    }
+    if ($.inArray(4, customD.columnVisible) > -1) {
+        // is a match or not
+        var title4 = document.createElement("th");
+        title4.textContent = customD.table.mainTable.tHead.titleText_4;
+        title4.style="color:#ffffff";
+        heading.appendChild(title4);
+    }
+    if ($.inArray(5, customD.columnVisible) > -1) {
+        var title5 = document.createElement("th");
+        title5.style="color:#ffffff";
+        title5.textContent = customD.table.mainTable.tHead.titleText_5;
+        heading.appendChild(title5);
+    }
+    if ($.inArray(6, customD.columnVisible) > -1) {
+        var title6 = document.createElement("th");
+        title6.style="color:#ffffff";
+        title6.textContent = customD.table.mainTable.tHead.titleText_6;
+        heading.appendChild(title6);
+    }
+
+    var tBody = document.createElement("tbody");
+    mainTable.appendChild(tBody);
+
+    minReqTableContainer.append(mainTable);
+
+    //otherTable
+    var otherTable = document.createElement("table");
+    otherTable.className = customD.table.otherTable.className;
+    otherTable.style = customD.table.otherTable.style;
+
+    var tHead = document.createElement("thead");
+    tHead.style = customD.table.otherTable.tHead.style;
+    otherTable.appendChild(tHead);
+
+    var heading = document.createElement("tr");
+    tHead.appendChild(heading);
+
+    if ($.inArray(1, customD.columnVisible) > -1) {
+        var title1 = document.createElement("th");
+        title1.textContent = customD.table.otherTable.tHead.titleText_1;
+        heading.appendChild(title1);
+
+    }
+    if ($.inArray(2, customD.columnVisible) > -1) {
+        var title2 = document.createElement("th");
+        title2.style="color:#ffffff";
+        title2.textContent =  customD.table.otherTable.tHead.titleText_2;
+        heading.appendChild(title2);
+    }
+    if ($.inArray(3, customD.columnVisible) > -1) {
+        var title3 = document.createElement("th");
+        title3.style="color:#ffffff";
+        title3.textContent = customD.table.otherTable.tHead.titleText_3;
+        heading.appendChild(title3);
+    }
+    if ($.inArray(4, customD.columnVisible) > -1) {
+        // is a match or not
+        var title4 = document.createElement("th");
+        title4.style="color:#ffffff";
+        title4.textContent = customD.table.otherTable.tHead.titleText_4;
+        heading.appendChild(title4);
+
+    }
+    if ($.inArray(5, customD.columnVisible) > -1) {
+        var title5 = document.createElement("th");
+        title5.style="color:#ffffff";
+        title5.textContent = customD.table.otherTable.tHead.titleText_5;
+        heading.appendChild(title5);
+
+    }
+    if ($.inArray(6, customD.columnVisible) > -1) {
+        var title6 = document.createElement("th");
+        title6.style="color:#ffffff";
+        title6.textContent = customD.table.otherTable.tHead.titleText_6;
+        heading.appendChild(title6);
+    }
+
+    var other_tBody = document.createElement("tbody");
+    otherTable.appendChild(other_tBody);
+
+    otherReqTableContainer.append(otherTable);
+
+
+    var splitDiv = $('<div class="row" style="margin-top: 20px"></div>');
+
+    if(customD.textContainers.visibility){
+        if(customD.textContainers.minReqContainer.visibility){
+            // minReq start
+            var minReqContainer = document.createElement("div");
+            minReqContainer.className = customD.textContainers.minReqContainer.className;
+            minReqContainer.id = "minReqContainer";
+            var minReqTextArea = document.createElement("textarea");
+            minReqTextArea.className = "form-control mdl-shadow--2dp";
+            minReqTextArea.rows = "5";
+            minReqTextArea.type = "text";
+            minReqTextArea.style = "border-radius:0;";
+            minReqTextArea.id = "job_post_min_req";
+            minReqTextArea.disabled = true;
+
+            var data ;
+            if(returnedData.jobPostMinReq != null && returnedData.jobPostMinReq != "") {
+                data = returnedData.jobPostMinReq;
+            } else {
+                data = "NA"
+            }
+            minReqTextArea.textContent = data;
+
+            var rowHeadingPost = document.createElement("div");
+            rowHeadingPost.style =  customD.table.rowHeading.post.style;
+            minReqContainer.appendChild(rowHeadingPost);
+
+            var label = document.createElement("label");
+            label.for= "job_post_min_req";
+            label.style = "margin:0";
+            label.textContent = "Job Post Min Req";
+            rowHeadingPost.appendChild(label);
+            minReqContainer.appendChild(minReqTextArea);
+            splitDiv.append(minReqContainer);
+            // minReq end
+        }
+        if(customD.textContainers.noteContainer.visibility){
+            // note start
+            var noteContainer = document.createElement("div");
+            noteContainer.className = customD.textContainers.noteContainer.className;
+            noteContainer.id = "noteContainer";
+            var textarea = document.createElement("textarea");
+            textarea.className = "form-control mdl-shadow--2dp";
+            textarea.style = "border-radius:0;";
+            textarea.rows = "5";
+            textarea.type = "text";
+            textarea.placeholder = "Extra Comment";
+            textarea.id = "pre_screen_note";
+
+            var rowHeadingNote = document.createElement("div");
+            rowHeadingNote.style = customD.table.rowHeading.note.style;
+            noteContainer.appendChild(rowHeadingNote);
+
+            var label = document.createElement("label");
+            label.for= "pre_screen_note";
+            label.textContent = "Note";
+            label.style = "margin :0";
+            rowHeadingNote.appendChild(label);
+            noteContainer.appendChild(textarea);
+            splitDiv.append(noteContainer);
+            container.append(splitDiv);
+            // note end
+        }
+    }
+
+
+    var elementList = returnedData.elementList;
+    elementList.forEach(function (rowData) {
+        if(rowData!=null) {
+            if(rowData.isMinReq) {
+                var bodyContentBox = document.createElement("tr");
+                bodyContentBox.id = rowData.propertyId;
+                tBody.appendChild(bodyContentBox);
+
+                if ($.inArray(1, customD.columnVisible) > -1) {
+                    var bodyContentData1 = document.createElement("td");
+                    bodyContentData1.textContent = rowData.propertyTitle;
+                    bodyContentBox.appendChild(bodyContentData1);
+                }
+                if ($.inArray(2, customD.columnVisible) > -1) {
+                    var bodyContentData2 = document.createElement("td");
+                    bodyContentData2.id = "jobPostValue_"+rowData.propertyId;
+                    bodyContentBox.appendChild(bodyContentData2);
+
+                    if(rowData.isSingleEntity){
+                        bodyContentData2.textContent = rowData.jobPostElement;
+                    } else {
+                        bodyContentData2.textContent = rowData.jobPostElementList;
+                    }
+                }
+                if ($.inArray(3, customD.columnVisible) > -1) {
+                    var bodyContentData3 = document.createElement("td");
+                    bodyContentData3.id = "candidateValue_"+rowData.propertyId;
+                    bodyContentBox.appendChild(bodyContentData3);
+
+                    if(rowData.isSingleEntity){
+                        bodyContentData3.textContent = rowData.candidateElement;
+                    } else {
+                        bodyContentData3.textContent = rowData.candidateElementList;
+                    }
+                }
+                if ($.inArray(4, customD.columnVisible) > -1) {
+                    var spanTd = document.createElement("td");
+                    var indicatorSpan = document.createElement("span");
+                    if(rowData.isMatching){
+                        indicatorSpan.setAttribute('class', customD.table.glyphIconCorrectClass);
+                    } else {
+                        indicatorSpan.setAttribute('class', customD.table.glyphIconWrongClass);
+                    }
+                    spanTd.appendChild(indicatorSpan);
+                    bodyContentBox.appendChild(spanTd);
+
+                }
+
+                if ($.inArray(5, customD.columnVisible) > -1) {
+                    var bodyContentData5 = document.createElement("td");
+                    bodyContentBox.appendChild(bodyContentData5);
+
+                    var checkMatchLabel = document.createElement("label");
+                    checkMatchLabel.type = "checkbox";
+                    checkMatchLabel.id = "ready_checkbox_" + rowData.propertyId;
+                    checkMatchLabel.for = "checkbox_" + rowData.propertyIdList.join("-");
+                    checkMatchLabel.style = 'text-align:center';
+                    checkMatchLabel.className = customD.table.idProofCheckbox.checkboxLabel.className;
+                    bodyContentData5.appendChild(checkMatchLabel);
+
+                    var checkMatch = document.createElement("input");
+                    checkMatch.type = "checkbox";
+                    checkMatch.id = "checkbox_" + rowData.propertyIdList.join("-");
+                    checkMatch.className = customD.table.idProofCheckbox.checkboxMatch.className;
+                    checkMatchLabel.appendChild(checkMatch);
+                }
+
+                if ($.inArray(6, customD.columnVisible) > -1) {
+                    // edit href
+                    var editLink = document.createElement("td");
+                    var a = document.createElement('a');
+                    if(!((rowData.propertyId == "3") && (bodyContentData3.textContent.length > 0))){
+                        var linkText = document.createTextNode("Edit");
+                        a.appendChild(linkText);
+                        a.style = "cursor: pointer";
+                        a.onclick = function () {
+                            fetchEditModalContent(candidateId, rowData.propertyId, jobPostId, customD);
+                        };
+                    }
+                    editLink.appendChild(a);
+                    bodyContentBox.appendChild(editLink);
+                }
+            } else {
+
+                var bodyContentBox = document.createElement("tr");
+                bodyContentBox.id = rowData.propertyId;
+                other_tBody.appendChild(bodyContentBox);
+
+                if ($.inArray(1, customD.columnVisible) > -1) {
+                    var bodyContentData1 = document.createElement("td");
+                    bodyContentData1.textContent = rowData.propertyTitle;
+                    bodyContentBox.appendChild(bodyContentData1);
+                }
+                if ($.inArray(2, customD.columnVisible) > -1) {
+                    var bodyContentData2 = document.createElement("td");
+                    bodyContentData2.id = "jobPostValue_"+rowData.propertyId;
+                    bodyContentBox.appendChild(bodyContentData2);
+
+                    if(rowData.isSingleEntity){
+                        bodyContentData2.textContent = rowData.jobPostElement;
+                    } else {
+                        bodyContentData2.textContent = rowData.jobPostElementList;
+                    }
+                }
+                if ($.inArray(3, customD.columnVisible) > -1) {
+                    var bodyContentData3 = document.createElement("td");
+                    bodyContentData3.id = "candidateValue_"+rowData.propertyId;
+                    bodyContentBox.appendChild(bodyContentData3);
+
+                    if(rowData.isSingleEntity){
+                        bodyContentData3.textContent = rowData.candidateElement;
+                    } else {
+                        bodyContentData3.textContent = rowData.candidateElementList;
+                    }
+                }
+                if ($.inArray(4, customD.columnVisible) > -1) {
+                    var spanTd = document.createElement("td");
+                    var indicatorSpan = document.createElement("span");
+                    if(rowData.isMatching){
+                        indicatorSpan.setAttribute('class', customD.table.glyphIconCorrectClass);
+                    } else {
+                        indicatorSpan.setAttribute('class', customD.table.glyphIconWrongClass);
+                    }
+                    spanTd.appendChild(indicatorSpan);
+                    bodyContentBox.appendChild(spanTd);
+                }
+                if ($.inArray(5, customD.columnVisible) > -1) {
+                    var bodyContentData5 = document.createElement("td");
+                    bodyContentBox.appendChild(bodyContentData5);
+
+                    var checkMatchLabel = document.createElement("label");
+                    checkMatchLabel.type = "checkbox";
+                    checkMatchLabel.for = "checkbox_" + rowData.propertyIdList.join("-");
+                    checkMatchLabel.style = 'text-align:center';
+                    checkMatchLabel.className = customD.table.idProofCheckbox.checkboxLabel.className;
+                    bodyContentData5.appendChild(checkMatchLabel);
+
+                    var checkMatch = document.createElement("input");
+                    checkMatch.type = "checkbox";
+                    checkMatch.id = "checkbox_" + rowData.propertyIdList.join("-");
+                    checkMatch.className = customD.table.idProofCheckbox.checkboxMatch.className;
+                    checkMatchLabel.appendChild(checkMatch);
+                }
+                if ($.inArray(6, customD.columnVisible) > -1) {
+                    var editLink = document.createElement("td");
+                    var a = document.createElement('a');
+                    // edit href
+                    if(!(rowData.propertyId == "6" && bodyContentData3.textContent.length > 0)){
+                        var linkText = document.createTextNode("Edit");
+                        a.appendChild(linkText);
+                        a.style = "cursor: pointer";
+                        a.title = "Edit";
+                        a.onclick = function () {
+                            fetchEditModalContent(candidateId, rowData.propertyId, jobPostId, customD);
+                        };
+                    }
+                    editLink.appendChild(a);
+                    bodyContentBox.appendChild(editLink);
+                }
+            }
+        }
+    });
+
+    return container;
+}
+
+
+
+// customD : custom Decorator object
+function processPreScreenContent(returnedData, customD) {
     if(returnedData == null || returnedData.status != "SUCCESS") {
         console.log(returnedData);
-        pushToSnackbar("Request failed. Something went Wrong! Please Refresh");
+        if (returnedData != null && returnedData.status == "INVALID") {
+            notifyModal("Pre Screen Status: Completed", "Pre Screen Already Completed");
+        } else {
+            notifyModal("Error","Request failed. Something went Wrong! Please Refresh");
+        }
+        return;
     }
     if(returnedData != null){
         // if(returnedData == "OK" || returnedData == "NA" ) {
@@ -680,299 +1468,11 @@ function processPreScreenContent(returnedData) {
         // }
         var candidateId = returnedData.candidateId;
         var jobPostId = returnedData.jobPostId;
-        var preScreenBody = $('<div id="pre_screen_body" class="mdl-grid"></div>');
-        var container = $('<div class="row mdl-cell mdl-cell--12-col" id="pre_screen_container_row"></div>');
+
+        var preScreenBody = $('<div id="pre_screen_body" class="'+customD.container.className+'"></div>');
+        var container = constructPreScreenBodyContainer(returnedData, customD);
+
         preScreenBody.append(container);
-
-        var minReqTableContainer = $('<div id="minReqTable"></div>');
-        container.append('<h4 style="margin-top: 0">Min Requirement</h4>');
-        container.append(minReqTableContainer);
-
-        var otherReqTableContainer = $('<div id="otherReqTable"></div>');
-        container.append('<h4>Other Requirement</h4>');
-        container.append(otherReqTableContainer);
-
-        // minReqTable
-        var mainTable = document.createElement("table");
-        mainTable.className ="mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--12-col";
-        mainTable.style="margin:0;border:none";
-
-        var tHead = document.createElement("thead");
-        tHead.style="background-color:rgb(63,81,181)";
-        mainTable.appendChild(tHead);
-
-        var heading = document.createElement("tr");
-        tHead.appendChild(heading);
-
-        var title1 = document.createElement("th");
-        title1.textContent = "";
-        heading.appendChild(title1);
-
-        var title2 = document.createElement("th");
-        title2.textContent = "Job Post Info";
-        title2.style="color:#ffffff";
-        heading.appendChild(title2);
-
-        var title3 = document.createElement("th");
-        title3.style="color:#ffffff";
-        title3.textContent = "Candidate Info";
-        heading.appendChild(title3);
-
-        // is a match or not
-        var isAMatch = document.createElement("th");
-        isAMatch.textContent = "Match?";
-        isAMatch.style="color:#ffffff";
-        heading.appendChild(isAMatch);
-
-        var title4 = document.createElement("th");
-        title4.style="color:#ffffff";
-        title4.textContent = "Is candidate Ready";
-        heading.appendChild(title4);
-
-        var title5 = document.createElement("th");
-        title5.style="color:#ffffff";
-        title5.textContent = "Edit";
-        heading.appendChild(title5);
-
-        var tBody = document.createElement("tbody");
-        mainTable.appendChild(tBody);
-
-        minReqTableContainer.append(mainTable);
-
-        //otherTable
-        var otherTable = document.createElement("table");
-        otherTable.className ="mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--12-col";
-        otherTable.style ="margin:0;border:none";
-
-        var tHead = document.createElement("thead");
-        tHead.style="background-color:rgb(63,81,181)";
-        otherTable.appendChild(tHead);
-
-        var heading = document.createElement("tr");
-        tHead.appendChild(heading);
-
-        var title1 = document.createElement("th");
-        title1.textContent = "";
-        heading.appendChild(title1);
-
-        var title2 = document.createElement("th");
-        title2.style="color:#ffffff";
-        title2.textContent =  "Job Post Info";
-        heading.appendChild(title2);
-
-        var title3 = document.createElement("th");
-        title3.style="color:#ffffff";
-        title3.textContent = "Candidate Info";
-        heading.appendChild(title3);
-
-        // is a match or not
-        var isAMatch = document.createElement("th");
-        isAMatch.style="color:#ffffff";
-        isAMatch.textContent = "Match?";
-        heading.appendChild(isAMatch);
-
-        var title4 = document.createElement("th");
-        title4.style="color:#ffffff";
-        title4.textContent = "Is candidate Ready";
-        heading.appendChild(title4);
-
-        var title5 = document.createElement("th");
-        title5.style="color:#ffffff";
-        title5.textContent = "Edit";
-        heading.appendChild(title5);
-
-        var other_tBody = document.createElement("tbody");
-        otherTable.appendChild(other_tBody);
-
-        otherReqTableContainer.append(otherTable);
-
-        var splitDiv = $('<div class="row" style="margin-top: 20px"></div>');
-        var noteContainer = document.createElement("div");
-        noteContainer.className = "col-lg-6 form-group";
-        var textarea = document.createElement("textarea");
-        textarea.className = "form-control mdl-shadow--2dp";
-        textarea.style = "border-radius:0;";
-        textarea.rows = "5";
-        textarea.type = "text";
-        textarea.placeholder = "Extra Comment";
-        textarea.id = "pre_screen_note";
-
-        var minReqContainer = document.createElement("div");
-        minReqContainer.className = "col-lg-6 form-group";
-        var minReqTextArea = document.createElement("textarea");
-        minReqTextArea.className = "form-control mdl-shadow--2dp";
-        minReqTextArea.rows = "5";
-        minReqTextArea.type = "text";
-        minReqTextArea.style = "border-radius:0;";
-        minReqTextArea.id = "job_post_min_req";
-        minReqTextArea.disabled = true;
-
-        var data ;
-        if(returnedData.jobPostMinReq != null && returnedData.jobPostMinReq != "") {
-            data = returnedData.jobPostMinReq;
-        } else {
-            data = "NA"
-        }
-        minReqTextArea.textContent = data;
-
-        var rowHeadingPost = document.createElement("div");
-        rowHeadingPost.style = "padding:1% 2%;background-color:rgb(63, 81, 181);color:#fff";
-        minReqContainer.appendChild(rowHeadingPost);
-
-        var rowHeadingNote = document.createElement("div");
-        rowHeadingNote.style = "padding:1% 2%;background-color:rgb(63, 81, 181);color:#fff";
-        noteContainer.appendChild(rowHeadingNote);
-
-        var label = document.createElement("label");
-        label.for= "job_post_min_req";
-        label.style = "margin:0";
-        label.textContent = "Job Post Min Req";
-        rowHeadingPost.appendChild(label);
-        minReqContainer.appendChild(minReqTextArea);
-        splitDiv.append(minReqContainer);
-
-
-        var label = document.createElement("label");
-        label.for= "pre_screen_note";
-        label.textContent = "Note";
-        label.style = "margin :0";
-        rowHeadingNote.appendChild(label);
-        noteContainer.appendChild(textarea);
-        splitDiv.append(noteContainer);
-        container.append(splitDiv);
-
-
-        var elementList = returnedData.elementList;
-        elementList.forEach(function (rowData) {
-            console.log("ptitle:"+ rowData.propertyTitle);
-            console.log("pId:"+ rowData.propertyId);
-            if(rowData!=null){
-                if(rowData.isMinReq) {
-                    var bodyContentBox = document.createElement("tr");
-                    bodyContentBox.id = rowData.propertyId;
-                    tBody.appendChild(bodyContentBox);
-
-                    var bodyContentData1 = document.createElement("td");
-                    bodyContentData1.textContent = rowData.propertyTitle;
-                    bodyContentBox.appendChild(bodyContentData1);
-
-                    var bodyContentData3 = document.createElement("td");
-                    bodyContentBox.appendChild(bodyContentData3);
-
-                    var bodyContentData2 = document.createElement("td");
-                    bodyContentBox.appendChild(bodyContentData2);
-
-                    if(rowData.isSingleEntity){
-                        bodyContentData2.textContent = rowData.candidateElement;
-                        bodyContentData3.textContent = rowData.jobPostElement;
-                    } else {
-                        bodyContentData2.textContent = rowData.candidateElementList;
-                        bodyContentData3.textContent = rowData.jobPostElementList;
-                    }
-
-                    var spanTd = document.createElement("td");
-                    var indicatorSpan = document.createElement("span");
-                    if(rowData.isMatching){
-                        indicatorSpan.setAttribute('class', 'glyphicon glyphicon-ok');
-                    } else {
-                        indicatorSpan.setAttribute('class', 'glyphicon glyphicon-remove');
-                    }
-                    spanTd.appendChild(indicatorSpan);
-                    bodyContentBox.appendChild(spanTd);
-
-                    var bodyContentData4 = document.createElement("td");
-                    bodyContentBox.appendChild(bodyContentData4);
-
-                    var checkMatchLabel = document.createElement("label");
-                    checkMatchLabel.type = "checkbox";
-                    checkMatchLabel.for = "checkbox_" + rowData.propertyIdList.join("-");
-                    checkMatchLabel.style = 'text-align:center';
-                    checkMatchLabel.className = "mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect";
-                    bodyContentData4.appendChild(checkMatchLabel);
-
-                    var checkMatch = document.createElement("input");
-                    checkMatch.type = "checkbox";
-                    checkMatch.id = "checkbox_" + rowData.propertyIdList.join("-");
-                    checkMatch.className = "mdl-checkbox__input";
-                    checkMatchLabel.appendChild(checkMatch);
-
-                    // edit href
-                    var editLink = document.createElement("td");
-                    var a = document.createElement('a');
-                    var linkText = document.createTextNode("Edit");
-                    a.appendChild(linkText);
-                    a.style = "cursor: pointer";
-                    a.onclick = function () {
-                        fetchEditModalContent(candidateId, rowData.propertyId, jobPostId);
-                    };
-                    editLink.appendChild(a);
-                    bodyContentBox.appendChild(editLink);
-                } else {
-
-                    var bodyContentBox = document.createElement("tr");
-                    bodyContentBox.id = rowData.propertyId;
-                    other_tBody.appendChild(bodyContentBox);
-
-                    var bodyContentData1 = document.createElement("td");
-                    bodyContentData1.textContent = rowData.propertyTitle;
-                    bodyContentBox.appendChild(bodyContentData1);
-
-                    var bodyContentData3 = document.createElement("td");
-                    bodyContentBox.appendChild(bodyContentData3);
-
-                    var bodyContentData2 = document.createElement("td");
-                    bodyContentBox.appendChild(bodyContentData2);
-
-                    if(rowData.isSingleEntity){
-                        bodyContentData2.textContent = rowData.candidateElement;
-                        bodyContentData3.textContent = rowData.jobPostElement;
-                    } else {
-                        bodyContentData2.textContent = rowData.candidateElementList;
-                        bodyContentData3.textContent = rowData.jobPostElementList;
-                    }
-
-                    var spanTd = document.createElement("td");
-                    var indicatorSpan = document.createElement("span");
-                    if(rowData.isMatching){
-                        indicatorSpan.setAttribute('class', 'glyphicon glyphicon-ok');
-                    } else {
-                        indicatorSpan.setAttribute('class', 'glyphicon glyphicon-remove');
-                    }
-                    spanTd.appendChild(indicatorSpan);
-                    bodyContentBox.appendChild(spanTd);
-
-                    var bodyContentData4 = document.createElement("td");
-                    bodyContentBox.appendChild(bodyContentData4);
-
-                    var checkMatchLabel = document.createElement("label");
-                    checkMatchLabel.type = "checkbox";
-                    checkMatchLabel.for = "checkbox_" + rowData.propertyIdList.join("-");
-                    checkMatchLabel.style = 'text-align:center';
-                    checkMatchLabel.className = "mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect";
-                    bodyContentData4.appendChild(checkMatchLabel);
-
-                    var checkMatch = document.createElement("input");
-                    checkMatch.type = "checkbox";
-                    checkMatch.id = "checkbox_" + rowData.propertyIdList.join("-");
-                    checkMatch.className = "mdl-checkbox__input";
-                    checkMatchLabel.appendChild(checkMatch);
-                    
-                    // edit href
-                    var editLink = document.createElement("td");
-                    var a = document.createElement('a');
-                    var linkText = document.createTextNode("Edit");
-                    a.appendChild(linkText);
-                    a.style = "cursor: pointer";
-                    a.title = "Edit";
-                    a.onclick = function () {
-                        fetchEditModalContent(candidateId, rowData.propertyId, jobPostId);
-                    };
-                    editLink.appendChild(a);
-                    bodyContentBox.appendChild(editLink);
-                }
-            }
-
-        });
 
 
         var callYesNo = $('' +
@@ -992,38 +1492,39 @@ function processPreScreenContent(returnedData) {
             '<option value="third_person">Third Person</option>' +
             '<option value="others">Others</option>' +
             '</select>' +
-            '<button type="submit" id="responseSaveBtn"  class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect" onclick="saveAttempt('+candidateId+', '+jobPostId+')">Save</button>' +
+            '<button type="submit" id="responseSaveBtn"  class="'+customD.callYesNo.button.className+'" onclick="saveAttempt('+candidateId+', '+jobPostId+')">Save</button>' +
             '</h6>' +
             '</div>' +
             '</h5>'+
             '</div>'+
             '</div>');
 
-        renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId);
+        renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, customD);
     }
 }
 
-function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId) {
-    var dialog = bootbox.dialog({
-        className: "pre-screen-modal",
+function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, customD) {
+    var bootbox_dialog = bootbox.dialog({
+        className: customD.bootBoxMain.className,
         title: callYesNo,
         message: preScreenBody,
         closeButton: true,
         animate: true,
-        onEscape: function() {
+        onEscape: function () {
             $('body').removeClass('open-modal');
         },
         buttons: {
-            "Submit": {
-                className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent modal-submit",
+            "Next": {
+                className: customD.finalSubmissionButton.className,
                 callback: function () {
-                    if($("#pre_screen_body input[type='checkbox']:checked").size() == 0
+                    if ($("#pre_screen_body input[type='checkbox']:checked").size() == 0
                         && $('input:radio[name="verdict"]:checked').val() == null) {
                         bootbox.alert({
                             size: "small",
                             title: "Invalid Submission !",
                             message: "If you want to mark the candidate as  'completed_prescreening' irrespective of given criteria, select checkbox present next to submit button, in previous dialog.",
-                            callback: function(){ /* your callback code */ }
+                            callback: function () { /* your callback code */
+                            }
                         });
                         return false;
                     } else {
@@ -1037,42 +1538,82 @@ function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId) {
             }
         }
     });
-    dialog.init(function(){
+    bootbox_dialog.init(function () {
         var forceSetContainer = $('.modal-footer');
         var forceSetDiv = $('' +
-            '<div class="col-xs-11" style="text-align: left">'+
+            '<div class="col-xs-11" style="text-align: left">' +
             '<h5 style="margin:2px; font-size: 12px;">' +
-            '<div style="display:inline-block; margin: 0 1px;text-align: left; color: #b9151b">*</div>'+
-            'Did the candidate pass pre-screen?&nbsp;:&nbsp;'+
+            '<div style="display:inline-block; margin: 0 1px;text-align: left; color: #b9151b">*</div>' +
+            'Did the candidate pass pre-screen?&nbsp;:&nbsp;' +
             '<div style="display: inline-block; vertical-align: middle; margin: 0px;">' +
             '<input type="radio" name="verdict" id="pass" value="1" style="margin: 0 2px" onclick="activateSubmit()">Yes' +
             '<input type="radio" name="verdict" id="fail" value="0" style="margin: 0 2px" onclick="activateSubmit()">No' +
-            '</div>'+
-            '</h5>'+
+            '</div>' +
+            '</h5>' +
             '</div>'
         );
         forceSetContainer.prepend(forceSetDiv);
 
-        $('.btn.modal-submit').prop('disabled', true);
+        if(customD.finalSubmissionButton.init.disabled){
+            $('.btn.modal-submit').prop('disabled', true);
+        }
         $('#pre_screen_body').hide();
         $('body').removeClass('modal-open').removeClass('open-modal').addClass('open-modal');
     });
 }
 
-function processPostPreScreenResponse(response) {
+function processPostPreScreenResponse(response, candidateId, jobPostId) {
     console.log(response);
     if(response == "OK"){
-        notifyError("Submitted successfully. Refreshing ..", 'success');
+        notifyError("Submitted successfully.", 'success');
         setTimeout(function () {
             location.reload();
-            // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
         }, 2000);
+    } else if(response == "INTERVIEW"){
+        notifyError("Submitted successfully. Please select Interview Slot.", 'success');
+        initInterviewModal(candidateId, jobPostId);
     } else {
         notifyError("Error! Something Went wrong please try again.", 'danger')
     }
 }
 
-function getPreScreenContent(jobPostId, candidateId) {
+function reProcessPreScreenContent(returnedData, customD){
+    if(returnedData == null || returnedData.status != "SUCCESS") {
+        console.log(returnedData);
+        pushToSnackbar("Request failed. Something went Wrong! Please Refresh");
+    }
+    if(returnedData != null){
+        var container = constructPreScreenBodyContainer(returnedData, customD);
+        var allSelectedCheckboxIdArray = $("#pre_screen_body input[type='checkbox']:checked").parent();
+        var tempList = [];
+        var len = allSelectedCheckboxIdArray.size();
+        for (var j = 0; j < len; j++) {
+            var checkbox = allSelectedCheckboxIdArray[j].id;
+            var id = checkbox.split("_")[2];
+            tempList.push(parseInt(id));
+        }
+        $('#pre_screen_body').html(container);
+        for (var j = 0; j < len; j++) {
+            var id = tempList[j];
+            console.log("id-->"+id + " <-");
+            $('#ready_checkbox_'+id).children().prop('checked', true);
+        }
+
+        // re-render previously checked checkboxes
+    }
+}
+
+function getPreScreenContent(jobPostId, candidateId, isRebound, actorId, customD, rePreScreen) {
+    if(customD == null ) {
+        customD = initDecorator(null);
+    }
+    if(actorId == 100) {
+        console.log("actor: Partner");
+    } else if (actorId == 0) {
+        console.log("actor: Support");
+    } else if (actorId == 999) {
+        console.log("actor: Self");
+    }
     var base_api_url ="/support/api/getJobPostVsCandidate/";
     if(base_api_url == null || jobPostId == null) {
         console.log("please provide candidateId && jobPostId");
@@ -1085,9 +1626,24 @@ function getPreScreenContent(jobPostId, candidateId) {
         if(candidateId != null){
             base_api_url += "&candidateId=" + candidateId;
         }
-
+    }
+    if(rePreScreen == null || !rePreScreen) {
+        base_api_url +="&rePreScreen="+false;
+    } else {
+        base_api_url +="&rePreScreen="+true;
     }
 
+
+    var processor;
+    if(!isRebound) {
+        processor = function (returnedData) {
+            processPreScreenContent(returnedData, customD);
+        }
+    } else {
+        processor = function (returnedData) {
+            reProcessPreScreenContent(returnedData, customD);
+        }
+    }
     try {
         $.ajax({
             type: "GET",
@@ -1096,7 +1652,7 @@ function getPreScreenContent(jobPostId, candidateId) {
             async: false,
             contentType: false,
             processData: false,
-            success: processPreScreenContent
+            success: processor
         });
     } catch (exception) {
         console.log("exception occured!!" + exception.stack);
@@ -1130,3 +1686,4 @@ function notifyError(msg, type) {
         }
     });
 };
+

@@ -341,14 +341,14 @@ public class SmsUtil {
         sendSms(candidate.getCandidateMobile(), msg);
     }
 
-    public static void sendInterviewShortlistSms(JobApplication jobApplication, Candidate candidate) {
-        String msg = "Hi " + candidate.getCandidateFirstName() + ", your job application for " + jobApplication.getJobPost().getJobPostTitle() + " at " + jobApplication.getJobPost().getCompany().getCompanyName() +
+    public static void sendInterviewShortlistSms(JobPost jobPost, Candidate candidate) {
+        String msg = "Hi " + candidate.getCandidateFirstName() + ", your job application for " + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName() +
                 " has been shortlisted for the interview. We will get in touch with you shortly to confirm interview date and time. Thank you!";
         sendSms(candidate.getCandidateMobile(), msg);
     }
 
-    public static void sendInterviewRejectionSms(JobApplication jobApplication, Candidate candidate) {
-        String msg = "Hi " + candidate.getCandidateFirstName() + ", your job application for " + jobApplication.getJobPost().getJobPostTitle() + " at " + jobApplication.getJobPost().getCompany().getCompanyName() +
+    public static void sendInterviewRejectionSms(JobPost jobPost, Candidate candidate) {
+        String msg = "Hi " + candidate.getCandidateFirstName() + ", your job application for " + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName() +
                 " was not shortlisted for the interview. Please log on to www.trujobs.in and apply to other jobs. Thank you!";
         sendSms(candidate.getCandidateMobile(), msg);
     }

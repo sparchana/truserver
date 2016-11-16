@@ -9,7 +9,6 @@ import models.entity.OM.JobApplication;
 public class CandidateWorkflowData {
     public Candidate candidate;
     private CandidateExtraData extraData;
-    private JobApplication candidateJobApplication;
 
     public Candidate getCandidate() {
         return candidate;
@@ -25,13 +24,5 @@ public class CandidateWorkflowData {
 
     public void setExtraData(CandidateExtraData candidateExtraData) {
         this.extraData = candidateExtraData;
-    }
-
-    public JobApplication getCandidateJobApplication() {
-        return candidateJobApplication;
-    }
-
-    public void setCandidateJobApplication(JobApplication candidateJobApplication) {
-        this.candidateJobApplication = candidateJobApplication;
     }
 }

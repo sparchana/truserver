@@ -435,11 +435,7 @@ public class RecruiterController {
             e.printStackTrace();
         }
 
-        JobApplication jobApplication = JobApplication.find.where().eq("CandidateId", interviewStatusRequest.getCandidateId()).eq("JobPostId", interviewStatusRequest.getJobPostId()).findUnique();
-        if(jobApplication != null){
-            return JobPostWorkflowEngine.updateInterviewStatus(jobApplication, interviewStatusRequest);
-        }
-        return ok("-1");
+        return JobPostWorkflowEngine.updateInterviewStatus(interviewStatusRequest);
     }
 
     // sorting helper methods

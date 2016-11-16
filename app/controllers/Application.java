@@ -5,9 +5,11 @@ import api.ServerConstants;
 import api.http.FormValidator;
 import api.http.httpRequest.*;
 import api.http.httpRequest.Recruiter.RecruiterSignUpRequest;
+import api.http.httpRequest.Workflow.InterviewDateTime.AddCandidateInterviewSlotDetail;
 import api.http.httpRequest.Workflow.MatchingCandidateRequest;
 import api.http.httpRequest.Workflow.PreScreenRequest;
 import api.http.httpRequest.Workflow.SelectedCandidateRequest;
+import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
@@ -579,7 +581,7 @@ public class Application extends Controller {
 
     @Security.Authenticated(SecuredUser.class)
     public static Result getCandidateJobApplication() {
-        if(session().get("candidateId") != null){
+        if(session().get("candidateId") != null) {
             Long candidateId = Long.parseLong(session().get("candidateId"));
             List<JobApplication> jobApplicationList = JobApplication.find.where().eq("candidateId", session().get("candidateId")).findList();
             List<JobApplicationWithAssessmentStatusResponse> applicationWithAssessmentStatusResponseList = new ArrayList<>();
@@ -680,6 +682,7 @@ public class Application extends Controller {
                 session("sessionUserId", "" + developer.getDeveloperId());
                 session("sessionExpiry", String.valueOf(developer.getDeveloperSessionIdExpiryMillis()));
                 session("sessionRDPK", String.valueOf(developer.getDeveloperAccessLevel()));
+                session("sessionChannel", String.valueOf(ServerConstants.SESSION_CHANNEL_SUPPORT_WEBSITE));
 
                 if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN) {
                     return redirect("/support/administrator");
@@ -1389,7 +1392,7 @@ public class Application extends Controller {
     public static Result submitAssessment() {
         JsonNode assessmentRequestJson = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + assessmentRequestJson );
-        if(assessmentRequestJson == null){
+        if(assessmentRequestJson == null) {
             return badRequest();
         }
         AssessmentRequest assessmentRequest= new AssessmentRequest();
@@ -1612,23 +1615,27 @@ public class Application extends Controller {
         return ok(toJson(JobPostWorkflowEngine.saveSelectedCandidates(selectedCandidateRequest)));
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result getSelectedCandidate(Long jobPostId) {
 
         return ok(toJson(JobPostWorkflowEngine.getSelectedCandidates(jobPostId)));
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result testMatchingCandidate(Long jpId) {
        return ok(toJson(JobPostWorkflowEngine.getMatchingCandidate(jpId)));
     }
 
-    public static Result getJobPostVsCandidate(Long candidateId, Long jobPostId) {
+    @Security.Authenticated(SecuredUser.class)
+    public static Result getJobPostVsCandidate(Long candidateId, Long jobPostId, Boolean rePreScreen) {
         if (candidateId == 0L || jobPostId == 0L) {
             return badRequest();
         }
 
-        return ok(toJson(JobPostWorkflowEngine.getJobPostVsCandidate(jobPostId, candidateId)));
+        return ok(toJson(JobPostWorkflowEngine.getJobPostVsCandidate(jobPostId, candidateId, rePreScreen)));
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result updatePreScreenAttempt(Long candidateId, Long jobPostId, String callStatus) {
         if (candidateId == 0L || jobPostId == 0L) {
             return badRequest();
@@ -1637,6 +1644,7 @@ public class Application extends Controller {
         return ok(toJson(JobPostWorkflowEngine.updatePreScreenAttempt(jobPostId, candidateId, callStatus)));
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result submitPreScreen() {
         JsonNode preScreenRequestJson = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + preScreenRequestJson);
@@ -1654,6 +1662,7 @@ public class Application extends Controller {
         return ok(toJson(JobPostWorkflowEngine.savePreScreenResult(preScreenRequest)));
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result getDocumentReqForJobRole(Long jobPostId, Long jobRoleId) {
         if(jobPostId == null && jobRoleId == null) {
             return badRequest();
@@ -1691,6 +1700,7 @@ public class Application extends Controller {
         return ok(toJson(idProofList));
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result getAssetReqForJobRole(Long jobPostId, Long jobRoleId) {
         if(jobPostId == null && jobRoleId == null) {
             return badRequest();
@@ -1729,10 +1739,12 @@ public class Application extends Controller {
         return ok(toJson(assetList));
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result renderWorkflowInteraction(String uuid) {
         return ok(views.html.workflow_interaction.render());
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result getWorkflowInteraction(String job_post_workflow_uuid) {
 
         if(job_post_workflow_uuid == null) {
@@ -1762,8 +1774,9 @@ public class Application extends Controller {
         return ok(toJson(responses));
     }
 
-    public static Result getPreScreenedCandidate(Long jobPostId, Boolean isPass) {
-        return ok(toJson(JobPostWorkflowEngine.getPreScreenedPassFailCandidates(jobPostId, isPass)));
+    @Security.Authenticated(SecuredUser.class)
+    public static Result getPreScreenedCandidate(Long jobPostId, Boolean isPass, Long status) {
+        return ok(toJson(JobPostWorkflowEngine.getPreScreenedPassFailCandidates(jobPostId, isPass, status)));
     }
 
     public static Result getConfirmedInterviewCandidates(Long jobPostId) {
@@ -1774,6 +1787,7 @@ public class Application extends Controller {
         return ok(toJson(JobPostWorkflowEngine.confirmCandidateInterview(jpId, value)));
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result getCandidateDetails(Long candidateId, Integer propertyId) {
         if(candidateId == null || propertyId == null) {
             return badRequest();
@@ -1786,21 +1800,24 @@ public class Application extends Controller {
         // unable to use switch-case, issue with ordinal value
         // return candidate Detail + container element
         if (ServerConstants.PropertyType.DOCUMENT.ordinal() == propertyId) {
-          return  ok(toJson(candidate.getIdProofReferenceList()));
+          return  ok(toJson(candidate.getIdProofReferenceList() != null ? candidate.getIdProofReferenceList(): new ArrayList<>()));
         } else if (ServerConstants.PropertyType.LANGUAGE.ordinal() == propertyId) {
-            return  ok(toJson(candidate.getLanguageKnownList()));
+            return  ok(toJson(candidate.getLanguageKnownList() != null ? candidate.getLanguageKnownList(): new ArrayList<>()));
         } else if (ServerConstants.PropertyType.ASSET_OWNED.ordinal() == propertyId) {
-            return  ok(toJson(candidate.getCandidateAssetList()));
+            return  ok(toJson(candidate.getCandidateAssetList() != null ? candidate.getCandidateAssetList(): new ArrayList<>()));
         } else if (ServerConstants.PropertyType.MAX_AGE.ordinal() == propertyId) {
-            return  ok(toJson(candidate.getCandidateDOB()));
+            return  ok(toJson(candidate.getCandidateDOB() != null ? candidate.getCandidateDOB(): ""));
         } else if (ServerConstants.PropertyType.EXPERIENCE.ordinal() == propertyId) {
-            return  ok(toJson(candidate.getCandidateTotalExperience()));
+            return  ok(toJson(candidate.getCandidateTotalExperience() != null ? candidate.getCandidateTotalExperience(): ""));
         } else if (ServerConstants.PropertyType.EDUCATION.ordinal() == propertyId) {
-            return  ok(toJson(candidate.getCandidateEducation()));
+            return  ok(toJson(candidate.getCandidateEducation() != null ? candidate.getCandidateEducation(): ""));
         } else if (ServerConstants.PropertyType.GENDER.ordinal() == propertyId) {
-            return  ok(toJson(candidate.getCandidateGender()));
+            return  ok(toJson(candidate.getCandidateGender() != null ? candidate.getCandidateGender(): ""));
         } else if (ServerConstants.PropertyType.SALARY.ordinal() == propertyId) {
-            return  ok(toJson(candidate.getCandidateLastWithdrawnSalary()));
+            if(candidate.getCandidateLastWithdrawnSalary() != null) {
+                return  ok(toJson(candidate.getCandidateLastWithdrawnSalary()));
+            }
+            return  ok();
         } else if (ServerConstants.PropertyType.LOCALITY.ordinal() == propertyId) {
             return  ok(toJson(candidate.getLocality()));
         } else if (ServerConstants.PropertyType.WORK_SHIFT.ordinal() == propertyId) {
@@ -1808,5 +1825,102 @@ public class Application extends Controller {
         }
 
         return badRequest("Error");
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result updateCandidateDetailsAtPreScreen(Integer propertyId, Long candidateId) throws IOException {
+        if(candidateId == null && propertyId == null) {
+            return badRequest();
+        }
+
+        JsonNode updateCandidateDetailJSON = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + updateCandidateDetailJSON);
+        if(updateCandidateDetailJSON == null){
+            return badRequest();
+        }
+        ObjectMapper newMapper = new ObjectMapper();
+
+        // since jsonReq has single/multiple values in array
+        newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+
+        Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
+        if(candidate == null) {
+            return badRequest("Candidate Not Found!");
+        }
+
+        if (ServerConstants.PropertyType.DOCUMENT.ordinal() == propertyId) {
+            UpdateCandidateDocument updateCandidateDocument = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateDocument.class);
+            CandidateService.updateCandidateDocument(candidate, updateCandidateDocument);
+            return ok("ok");
+        } else if (ServerConstants.PropertyType.LANGUAGE.ordinal() == propertyId) {
+            UpdateCandidateLanguageKnown updateCandidateLanguageKnown = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateLanguageKnown.class);
+
+            CandidateService.updateCandidateLanguageKnown(candidate, updateCandidateLanguageKnown);
+            return ok("ok");
+        } else if (ServerConstants.PropertyType.ASSET_OWNED.ordinal() == propertyId) {
+            UpdateCandidateAsset updateCandidateAsset = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateAsset.class);
+
+            CandidateService.updateCandidateAssetOwned(candidate, updateCandidateAsset);
+            return ok("ok");
+        } else if (ServerConstants.PropertyType.MAX_AGE.ordinal() == propertyId) {
+            UpdateCandidateDob updateCandidateDob = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateDob.class);
+
+            CandidateService.updateCandidateDOB(candidate, updateCandidateDob);
+            return ok("ok");
+        } else if (ServerConstants.PropertyType.EXPERIENCE.ordinal() == propertyId) {
+            UpdateCandidateTotalExperience updateCandidateTotalExperience = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateTotalExperience.class);
+
+            CandidateService.updateCandidateTotalExperience(candidate, updateCandidateTotalExperience);
+            return ok("ok");
+        } else if (ServerConstants.PropertyType.EDUCATION.ordinal() == propertyId) {
+            UpdateCandidateEducation updateCandidateEducation= newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateEducation.class);
+
+            CandidateService.updateCandidateEducation(candidate, updateCandidateEducation);
+            return ok("ok");
+        } else if (ServerConstants.PropertyType.GENDER.ordinal() == propertyId) {
+            UpdateCandidateGender updateCandidateGender= newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateGender.class);
+
+            CandidateService.updateCandidateGender(candidate, updateCandidateGender);
+            return ok("ok");
+        } else if (ServerConstants.PropertyType.SALARY.ordinal() == propertyId) {
+            UpdateCandidateLastWithdrawnSalary lastWithdrawnSalary = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateLastWithdrawnSalary.class);
+
+            CandidateService.updateCandidateLastWithdrawnSalary(candidate, lastWithdrawnSalary);
+            return ok("ok");
+        } else if (ServerConstants.PropertyType.LOCALITY.ordinal() == propertyId) {
+            UpdateCandidateHomeLocality updateCandidateHomeLocality = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateHomeLocality.class);
+
+            CandidateService.updateCandidateHomeLocality(candidate, updateCandidateHomeLocality);
+            return ok("ok");
+        } else if (ServerConstants.PropertyType.WORK_SHIFT.ordinal() == propertyId) {
+            UpdateCandidateTimeShiftPreference timeShiftPreference= newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateTimeShiftPreference.class);
+
+            CandidateService.updateCandidateWorkshift(candidate, timeShiftPreference);
+            return ok("ok");
+        }
+
+        return badRequest();
+    }
+
+    @Security.Authenticated(SecuredUser.class)
+    public static Result updateCandidateInterviewDetail(Long candidateId, Long jobPostId) throws IOException {
+        if(candidateId == null || jobPostId == null) {
+            return badRequest();
+        }
+
+        // TODO: if channel = partner -> put a check to find if the candidate belongs to the partner or not
+        JsonNode updateCandidateDetailJSON = request().body().asJson();
+        Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + updateCandidateDetailJSON);
+        if(updateCandidateDetailJSON == null){
+            return badRequest();
+        }
+        ObjectMapper newMapper = new ObjectMapper();
+
+        // since jsonReq has single/multiple values in array
+        newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+
+        AddCandidateInterviewSlotDetail interviewSlotDetail = newMapper.readValue(updateCandidateDetailJSON.toString(), AddCandidateInterviewSlotDetail.class);
+
+        return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewDetail(candidateId, jobPostId, interviewSlotDetail)));
     }
 }
