@@ -394,6 +394,26 @@ function validateInput() {
         }
         $("#idProofCheckbox_"+id).prop('checked', true);
     }
+    if(id == 2){
+        console.log(this.value);
+        if(!validatePASSPORT(this.value)){
+            $('.btn.edit-modal-submit').prop('disabled', true);
+            notifyModal("Invalid Input","Invalid Pass Port Number");
+        } else {
+            $('.btn.edit-modal-submit').prop('disabled', false);
+        }
+        $("#idProofCheckbox_"+id).prop('checked', true);
+    }
+    if(id == 4){
+        console.log(this.value);
+        if(!validatePAN(this.value)){
+            $('.btn.edit-modal-submit').prop('disabled', true);
+            notifyModal("Invalid Input","Invalid PAN Card Number");
+        } else {
+            $('.btn.edit-modal-submit').prop('disabled', false);
+        }
+        $("#idProofCheckbox_"+id).prop('checked', true);
+    }
     console.log(this.parentNode);
 }
 function processLocality(returnedData) {
@@ -618,11 +638,13 @@ function saveEditedResponses(candidateId, propId, jobPostId) {
         }
 
     } else if(propId == 3) {
+        // age submission
         var selectedDob = $('#candidateDob').val();
         var c_dob = String(selectedDob);
         var selectedDate = new Date(c_dob);
-        var todayDate = new Date();
-        if (selectedDate > todayDate) {
+        var toDate = new Date();
+        var pastDate= new Date(toDate.setFullYear(toDate.getFullYear() - 18));
+        if (selectedDate >= pastDate) {
             dobCheck = 0;
         }
         d = {
@@ -655,9 +677,16 @@ function saveEditedResponses(candidateId, propId, jobPostId) {
         }
 
     } else if(propId == 7) {
-        d = {
-            candidateLastWithdrawnSalary: parseInt($('#candidateLastWithdrawnSalary').val())
+        var salary = $('#candidateLastWithdrawnSalary').val();
+        if(!isNaN(salary) && parseInt(salary) >= 1000 && parseInt(salary) <= 50000){
+            d = {
+                candidateLastWithdrawnSalary: parseInt($('#candidateLastWithdrawnSalary').val())
+            }
+        } else {
+            notifyModal("Invalid Salary Input","Please enter a valid 'Last Withdrawn Salary' (Ex: 15000) in a month");
+            okToSubmit = false;
         }
+
 
     } else if(propId == 8) {
 
@@ -678,11 +707,7 @@ function saveEditedResponses(candidateId, propId, jobPostId) {
     } else if ($('#candidateTotalExperienceYear').val() > 30) {
         notifyModal("Invalid Years of Experience","Please enter valid years of experience");
         okToSubmit = false;
-    } else if ($('#candidateLastWithdrawnSalary').val() > 50000) {
-        notifyModal("Invalid Salary Input","Please enter a valid 'Last Withdrawn Salary' (Ex: 15000) in a month");
-        okToSubmit = false;
     }
-    console.log("okToSubmit:"+okToSubmit);
     //final submission
     if(okToSubmit){
         try {
@@ -861,7 +886,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId, customD) {
         $( "#candidateDob").datepicker({ dateFormat: 'yy-mm-dd', changeYear: true});
         modalTitle = "Candidate DOB Edit";
         setter = function (returnedData) {
-            if (returnedData != null) {
+            if (returnedData != null && returnedData.length>0) {
                 var date = JSON.parse(returnedData);
                 var yr = new Date(date).getFullYear();
                 var month = ('0' + parseInt(new Date(date).getMonth() + 1)).slice(-2);
@@ -1457,7 +1482,6 @@ function getPlaceholderArray(elementList){
     return arr;
 }
 function getPlaceholderValue(element){
-    console.log(element);
     if(element != null) {
         return element.placeHolder;
     } else {
