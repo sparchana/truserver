@@ -18,6 +18,7 @@ public class CandidateExtraData {
     public Long workflowId;
     public String workflowStatus;
     public String createdBy;
+    public String interviewSchedule;
 
     public String getAppliedOn() {
         return appliedOn;
@@ -97,5 +98,13 @@ public class CandidateExtraData {
 
     public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public String getInterviewSchedule() {
+        return interviewSchedule;
+    }
+
+    public void setInterviewSchedule(String interviewSchedule) {
+        this.interviewSchedule = interviewSchedule;
     }
 }

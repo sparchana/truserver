@@ -1392,14 +1392,14 @@ public class CandidateService
     }
 
     // individual update service for pre-screen-edit
-    public static void UpdateCandidateDocument(Candidate candidate, UpdateCandidateDocument updateCandidateDocument) {
+    public static void updateCandidateDocument(Candidate candidate, UpdateCandidateDocument updateCandidateDocument) {
         List<IDProofReference> candidateIdProofList = new ArrayList<>();
         List<Integer> idProofIdList = new ArrayList<>();
         if(updateCandidateDocument.getIdProofWithIdNumberList() != null && updateCandidateDocument.getIdProofWithIdNumberList().size() > 0) {
             for(UpdateCandidateDocument.IdProofWithIdNumber idProofWithIdNumber : updateCandidateDocument.getIdProofWithIdNumberList()) {
                 if(idProofWithIdNumber.getIdProofId() != null) idProofIdList.add(idProofWithIdNumber.getIdProofId());
             }
-            Map<?, IdProof> idProofMap = IdProof.find.where().in("idProofId", idProofIdList).setMapKey("idProofId").findMap();;
+            Map<?, IdProof> idProofMap = IdProof.find.where().in("idProofId", idProofIdList).setMapKey("idProofId").findMap();
 
             for(UpdateCandidateDocument.IdProofWithIdNumber idProofWithIdNumber : updateCandidateDocument.getIdProofWithIdNumberList()) {
                 IDProofReference idProofReference = new IDProofReference();

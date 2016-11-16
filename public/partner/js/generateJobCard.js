@@ -107,15 +107,15 @@ function getAllAppliedJobs() {
                         if(jobApplication.jobPost.jobPostPartnerJoiningIncentive != null){
                             joiningIncentive = "₹" + jobApplication.jobPost.jobPostPartnerJoiningIncentive;
                         }
-                        var varColumn = function () {
-                            // TODO: check if already prescreened completely or not, accordingly display button
-                            if(candidateId == null ) {
-                                scrapeCandidateIdFromUrl();
-                            }
-                            // jpId is jobPostId
-                            var jpId = jobApplication.jobPost.jobPostId;
-                            return '<input type="submit" value="Pre-Screen"  style="width:150px" onclick="openPartnerPreScreenModal(' + jpId+ ', ' + candidateId + ');" id="' + candidateInfo.lead.leadId + '" class="btn btn-primary">'
-                        };
+                        // var varColumn = function () {
+                        //     // TODO: check if already prescreened completely or not, accordingly display button
+                        //     if(candidateId == null ) {
+                        //         scrapeCandidateIdFromUrl();
+                        //     }
+                        //     // jpId is jobPostId
+                        //     var jpId = jobApplication.jobPost.jobPostId;
+                        //     return '<input type="submit" value="Pre-Screen"  style="width:150px" onclick="openPartnerPreScreenModal(' + jpId+ ', ' + candidateId + ');" id="' + candidateInfo.lead.leadId + '" class="btn btn-primary">'
+                        // };
 
                         returned_data.push({
                             'jobPostName' : '<div class="mLabel" style="width:100%" >'+ jobApplication.jobPost.jobPostTitle + '</div>',
@@ -125,8 +125,7 @@ function getAllAppliedJobs() {
                             'joiningIncentive' : '<div class="mLabel" style="width:100%" >'+ joiningIncentive + '</div>',
                             'jobPreScreenLocation' : '<div class="mLabel" style="width:100%" >'+ jobApplication.locality.localityName + '</div>',
                             'interviewDetails' : '<div class="mLabel" style="width:100%" >'+ interviewDetails + '</div>',
-                            'jobAppliedOn' : '<div class="mLabel" style="width:100%" >'+ ('0' + appliedDateInMillis.getDate()).slice(-2) + '-' + getMonthVal((appliedDateInMillis.getMonth()+1)) + '-' + appliedDateInMillis.getFullYear() + '</div>',
-                            'varColumn' : varColumn
+                            'jobAppliedOn' : '<div class="mLabel" style="width:100%" >'+ ('0' + appliedDateInMillis.getDate()).slice(-2) + '-' + getMonthVal((appliedDateInMillis.getMonth()+1)) + '-' + appliedDateInMillis.getFullYear() + '</div>'
                         });
                         returnedData.forEach(function (jobApplication) {
                             var appliedJob = $("#apply_btn_" + jobApplication.jobPost.jobPostId);
@@ -148,8 +147,7 @@ function getAllAppliedJobs() {
                 { "data": "joiningIncentive" },
                 { "data": "jobPreScreenLocation" },
                 { "data": "interviewDetails" },
-                { "data": "jobAppliedOn" },
-                {"data": "varColumn"}
+                { "data": "jobAppliedOn" }
             ],
             "language": {
                 "emptyTable": "Looks like you have applied to any of the jobs yet for this candidate! " + '<a href="/partner/' + localStorage.getItem("candidateId") + '/jobs"><font color="'+ "#2980b9" +'">Apply now!</font></a>',
@@ -158,7 +156,7 @@ function getAllAppliedJobs() {
             "destroy": true
         });
     } catch (exception) {
-        console.log("exception occured!!" + exception);
+        console.log("exception occured!!" + exception.stack);
     }
 }
 
@@ -876,7 +874,7 @@ openPartnerPreScreenModal = function (jobPostId, candidateId) {
     var decorator = initDecorator(globalPalette);
     decorator.columnVisible = [1,2,3,4,6];
     decorator.textContainers = false;
-    getPreScreenContent(jobPostId, candidateId, false, 100, decorator, false);
+    //getPreScreenContent(jobPostId, candidateId, false, 100, decorator, false);
 };
 
 function getCandidateInfo() {

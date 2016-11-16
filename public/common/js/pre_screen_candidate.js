@@ -288,7 +288,9 @@ function getLocalityArray() {
     return localityArray;
 }
 // aux methods end
+var modalOpenAttempt = 0;
 function openPreScreenModal(jobPostId,candidateMobile){
+
     var base_api_url ="/support/api/getJobPostVsCandidate/";
     candidateMobile = candidateMobile.substring(3);
     if(base_api_url == null || jobPostId == null) {
@@ -305,6 +307,11 @@ function openPreScreenModal(jobPostId,candidateMobile){
     }
     base_api_url +="&rePreScreen="+true;
     console.log(" url link : " + base_api_url);
+    if(modalOpenAttempt == 1){
+        $("#preScreenModal").modal();
+    }
+    if(modalOpenAttempt == 0){
+        modalOpenAttempt = 1;
     try {
         $.ajax({
             type: "GET",
@@ -315,9 +322,10 @@ function openPreScreenModal(jobPostId,candidateMobile){
             processData: false,
             success: processPreScreenData
         });
-        $('#preScreenModal').modal();
+        $("#preScreenModal").modal();
     } catch (exception) {
         console.log("exception occured!!" + exception.stack);
+    }
     }
 }
 function processPreScreenData(returnedData) {
@@ -391,82 +399,171 @@ function processPreScreenData(returnedData) {
                     var firstproperty = document.createElement("li");
                     firstproperty.textContent = "Please provide your "+rowData.propertyTitle+" details";
                     firstproperty.id = "property_"+ rowData.propertyId;
-                    var assetsDeatils = document.createElement("multiselect");
-                    assetsDeatils.id="assetMultiSelect";
-                    assetsDeatils.setAttribute("multiple","multiple");
-                    firstproperty.appendChild(assetsDeatils);
+
+                    var assetsDetails = document.createElement("div");
+                    var assetsTitle = document.createElement("p");
+                    assetsTitle.textContent = ("Asset : ");
+                    var assetsOption = document.createElement("select");
+                    assetsOption.id="assetMultiSelect";
+                    assetsOption.setAttribute("multiple","multiple");
+
                     ajax_type = "GET";
                     url = "/support/api/getAssetReqForJobRole/?job_post_id="+returnedData.jobPostId;
                     fn = function (returnedData) {
                         processDataGetAssets(returnedData);
+                        url = "";
                      };
+                    assetsTitle.appendChild(assetsOption);
+                    assetsDetails.appendChild(assetsTitle);
+                    firstproperty.appendChild(assetsDetails);
                     orderList.appendChild(firstproperty);
                 }
-                ////Max Age non-editable
-                /*else if(rowData.propertyId == 3 && rowData.isMatching == false){
-                    var firstproperty = document.createElement("li");
-                    firstproperty.textContent = "Please provide your "+rowData.propertyTitle+" details";
-                    firstproperty.id = "property_"+ rowData.propertyId;
-                    orderList.appendChild(firstproperty);
-                }*/
-                else if(rowData.propertyId == 4 && rowData.isMatching == false){
-                    var firstproperty = document.createElement("li");
-                    firstproperty.textContent = "Please provide your "+rowData.propertyTitle+" details";
-                    firstproperty.id = "property_"+ rowData.propertyId;
+                else if(rowData.propertyId == 3 && rowData.isMatching == false){
+                    var thirdproperty = document.createElement("li");
+                    thirdproperty.textContent = "Please provide your "+rowData.propertyTitle+" details";
+                    thirdproperty.id = "property_"+ rowData.propertyId;
+                    orderList.appendChild(thirdproperty);
+                }
+                else if(rowData.propertyId == 4 && rowData.isMatching == false) {
+                    var fourthproperty = document.createElement("li");
+                    fourthproperty.textContent = "Please provide your " + rowData.propertyTitle + " details";
+                    fourthproperty.id = "property_" + rowData.propertyId;
 
-                    orderList.appendChild(firstproperty);
+                    var experienceDetial = document.createElement("div");
+                    var titleExpYear = document.createElement("p");
+                    titleExpYear.textContent = ("Year : ");
+
+                    var textYear = document.createElement("input");
+                    textYear.type = ("number");
+                    textYear.placeholder = ("Years");
+                    textYear.id = ("candidateTotalExperienceYear");
+
+                    var titleExpMonths = document.createElement("p");
+                    titleExpMonths.textContent = ("Months : ");
+                    var textMonths = document.createElement("input");
+                    textMonths.type = ("number");
+                    textMonths.placeholder = ("Months");
+                    textMonths.id = ("candidateTotalExperienceMonth");
+
+                    experienceDetial.appendChild(titleExpYear);
+                    titleExpYear.appendChild(textYear);
+                    experienceDetial.appendChild(titleExpMonths);
+                    titleExpMonths.appendChild(textMonths);
+                    fourthproperty.appendChild(experienceDetial);
+                    orderList.appendChild(fourthproperty);
                 }
                 else if(rowData.propertyId == 5 && rowData.isMatching == false){
-                    var firstproperty = document.createElement("li");
-                    firstproperty.textContent = "Please provide your "+rowData.propertyTitle+" details";
-                    firstproperty.id = "property_"+ rowData.propertyId;
-                    /*url = "/getAllEducation";
+                    var fifthproperty = document.createElement("li");
+                    fifthproperty.textContent = "Please provide your "+rowData.propertyTitle+" details";
+                    fifthproperty.id = "property_"+ rowData.propertyId;
+                    var educationDetails = document.createElement("select");
+                    educationDetails.id = "candidateHighestEducation";
+                    fifthproperty.appendChild(educationDetails);
+                    url = "/getAllEducation";
                     fn = function (returnedData) {
                         processEducation(returnedData);
-                    };*/
-                    orderList.appendChild(firstproperty);
+                        url = "";
+                    };
+                    orderList.appendChild(fifthproperty);
                 }
                 else if(rowData.propertyId == 6 && rowData.isMatching == false){
-                    var firstproperty = document.createElement("li");
-                    firstproperty.textContent = "Please provide your "+rowData.propertyTitle+" details";
-                    firstproperty.id = "property_"+ rowData.propertyId;
-                    orderList.appendChild(firstproperty);
+                    var sixthproperty = document.createElement("li");
+                    sixthproperty.textContent = "Please provide your "+rowData.propertyTitle+" details";
+                    sixthproperty.id = "property_"+ rowData.propertyId;
+
+                    var genderDetial = document.createElement("div");
+                    var labelMale = document.createElement("label");
+                    labelMale.textContent = ("Male");
+                    labelMale.for = ("genderMale");
+                    var radioMale = document.createElement("input");
+                    radioMale.type = ("radio");
+                    radioMale.id = ("genderMale");
+                    radioMale.name = ("gender");
+                    radioMale.value = (0);
+
+                    var labelFemale = document.createElement("label");
+                    labelFemale.textContent = ("Female");
+                    labelFemale.for = ("genderFemale");
+                    var radioFemale = document.createElement("input");
+                    radioFemale.type = ("radio");
+                    radioFemale.id = ("genderFemale");
+                    radioFemale.name = ("gender");
+                    radioFemale.value = (1);
+
+                    genderDetial.appendChild(labelMale);
+                    genderDetial.appendChild(radioMale);
+                    genderDetial.appendChild(labelFemale);
+                    genderDetial.appendChild(radioFemale);
+                    sixthproperty.appendChild(genderDetial);
+                    orderList.appendChild(sixthproperty);
                 }
                 else if(rowData.propertyId == 7 && rowData.isMatching == false){
-                    var firstproperty = document.createElement("li");
-                    firstproperty.textContent = "Please provide your "+rowData.propertyTitle+" details";
-                    firstproperty.id = "property_"+ rowData.propertyId;
-                    var salaryDetail = document.createElement("input");
-                    salaryDetail.type="number";
-                    firstproperty.appendChild(salaryDetail);
-                    orderList.appendChild(firstproperty);
+                    var seventhproperty = document.createElement("li");
+                    seventhproperty.textContent = "Please provide your "+rowData.propertyTitle+" details";
+                    seventhproperty.id = "property_"+ rowData.propertyId;
+
+                    var salaryDetial = document.createElement("div");
+                    var titleSalary= document.createElement("p");
+                    titleSalary.textContent = ("Current/Last Drawn Salary : ");
+
+                    var textSalary = document.createElement("input");
+                    textSalary.type = ("number");
+                    textSalary.placeholder = ("Salary");
+                    textSalary.id = ("candidateSalary");
+
+                    titleSalary.appendChild(textSalary)
+                    salaryDetial.appendChild(titleSalary);
+                    seventhproperty.appendChild(salaryDetial);
+                    orderList.appendChild(seventhproperty);
                 }
                 else if(rowData.propertyId == 8 && rowData.isMatching == false){
-                    var firstproperty = document.createElement("li");
-                    firstproperty.textContent = "Please provide your "+rowData.propertyTitle+" details";
-                    firstproperty.id = "property_"+ rowData.propertyId;
-                    /*url = "/getAllLocality";
+                    var eigthproperty = document.createElement("li");
+                    eigthproperty.textContent = "Please provide your "+rowData.propertyTitle+" details";
+                    eigthproperty.id = "property_"+ rowData.propertyId;
+                    var allLocalityDetail = document.createElement("input");
+                    salaryDetail.id="candidateHomeLocality";
+                    eigthproperty.appendChild(allLocalityDetail);
+                    url = "/getAllLocality";
                     fn = function (returnedData) {
                         processLocality(returnedData);
-
-                    };*/
-                    orderList.appendChild(firstproperty);
+                        url = "";
+                    };
+                    orderList.appendChild(eigthproperty);
                 }
                 else if(rowData.propertyId == 9 && rowData.isMatching == false){
-                    var firstproperty = document.createElement("li");
-                    firstproperty.textContent = "Please provide your "+rowData.propertyTitle+" details";
-                    firstproperty.id = "property_"+ rowData.propertyId;
-                    /*url = "/getAllShift";
+                    var ninthproperty = document.createElement("li");
+                    ninthproperty.textContent = "Please provide your "+rowData.propertyTitle+" details";
+                    ninthproperty.id = "property_"+ rowData.propertyId;
+                    var allShiftDetail = document.createElement("input");
+                    salaryDetail.id="candidateTimeShiftPref";
+                    ninthproperty.appendChild(allShiftDetail);
+                    url = "/getAllShift";
                     fn = function (returnedData) {
                         processTimeShift(returnedData);
-                    };*/
-                    orderList.appendChild(firstproperty);;
+                        url = "";
+                    };
+                    orderList.appendChild(ninthproperty);
                 }
                 else if(rowData.propertyId == 10 && rowData.isMatching == false){
-                    var firstproperty = document.createElement("li");
-                    firstproperty.textContent = "Please provide your "+rowData.propertyTitle+" details";
-                    firstproperty.id = "property_"+ rowData.propertyId;
-                    orderList.appendChild(firstproperty);
+                    var tenthproperty = document.createElement("li");
+                    tenthproperty.textContent = "Please provide your "+rowData.propertyTitle+" details";
+                    tenthproperty .id = "property_"+ rowData.propertyId;
+
+                    var shiftDetails = document.createElement("div");
+                    var shiftTitle  = document.createElement("p");
+                    shiftTitle.textContent = ("Time Shift : ");
+                    var shiftOption = document.createElement("select");
+                    shiftOption.id="candidateTimeShiftPref";
+                    shiftOption.setAttribute("multiple","multiple");
+
+                    url = "/getAllShift";
+                    fn = function (returnedData) {
+                        processTimeShift(returnedData);
+                    };
+                    shiftTitle.appendChild(shiftOption);
+                    shiftDetails.appendChild(shiftTitle);
+                    tenthproperty.appendChild(shiftDetails);
+                    orderList.appendChild(tenthproperty );
                 }
                 if(url != null) {
                     try {

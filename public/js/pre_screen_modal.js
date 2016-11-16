@@ -1,3 +1,11 @@
+/*
+*    [dependencies]:
+*       - bootbox.min.js
+*       - validation.js
+*
+*
+* */
+
 var langArray = [];
 var currentLocationArray = [];
 var localityArray = [];
@@ -345,6 +353,7 @@ function processIdProofsWithNumbers(returnedData, customD) {
 
             var idProofTitleTd = document.createElement("td");
             idProofTitleTd.textContent = idProof.idProofName;
+            idProofTitleTd.id = "idProofName_"+idProof.idProofId;
             bodyContentBox.appendChild(idProofTitleTd);
 
             var idProofNumberTd = document.createElement("td");
@@ -354,10 +363,38 @@ function processIdProofsWithNumbers(returnedData, customD) {
             var ip = document.createElement("INPUT");
             ip.setAttribute("type", "text");
             ip.setAttribute("id", "idProofValue_"+idProof.idProofId);
+            ip.onchange = validateInput;
             idProofNumberTd.appendChild(ip);
 
         })
     }
+}
+
+function validateInput() {
+    console.log(this.id);
+    var id = this.id.split("_")[1];
+    // aadhaar validation
+    if(id == 3) {
+        console.log(this.value);
+        if(!validateAadhar(this.value)){
+            $('.btn.edit-modal-submit').prop('disabled', true);
+            notifyModal("Invalid Input","Invalid Aadhaar Card Number");
+        } else {
+            $('.btn.edit-modal-submit').prop('disabled', false);
+        }
+        $("#idProofCheckbox_"+id).prop('checked', true);
+    }
+    if(id == 1){
+        console.log(this.value);
+        if(!validateDL(this.value)){
+            $('.btn.edit-modal-submit').prop('disabled', true);
+            notifyModal("Invalid Input","Invalid Driving Licence Number");
+        } else {
+            $('.btn.edit-modal-submit').prop('disabled', false);
+        }
+        $("#idProofCheckbox_"+id).prop('checked', true);
+    }
+    console.log(this.parentNode);
 }
 function processLocality(returnedData) {
     console.log("fetched all locality. now rendering locality token input");
@@ -408,14 +445,14 @@ function updateCallAttempts(cId, jpId, status) {
         processData: false,
         success: function (returnedData) {
             if(returnedData == "OK"){
-                notifyError("Call response saved successfully. Refreshing..", 'success');
+                // notifyModal("Call response saved successfully.");
                 // setTimeout(function () {
                 //     location.reload();
                 //     // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
                 // }, 2000);
                 bootbox.hideAll();
             } else if(returnedData == "NA") {
-                notifyError("Error while saving call response.", 'success');
+                // notifyModal("Error while saving call response.");
             }
         }
     });
@@ -511,9 +548,9 @@ function saveEditedResponses(candidateId, propId, jobPostId) {
 
                 if($('input#idProofCheckbox_'+id).is(':checked')) {
                     item["idProofId"] = parseInt(id);
-                    if( $('input#idProofValue_'+id).val() == null ||  $('input#idProofValue_'+id).val().trim() == ""){
-                        okToSubmit = false;
-                    }
+                    // if( $('input#idProofValue_'+id).val() == null ||  $('input#idProofValue_'+id).val().trim() == ""){
+                    //     okToSubmit = false;
+                    // }
                     item["idNumber"] = $('input#idProofValue_'+id).val().trim();
                 }
 
@@ -636,12 +673,16 @@ function saveEditedResponses(candidateId, propId, jobPostId) {
     }
 
     if (dobCheck == 0) {
-        notifyError("Please enter valid date of birth", 'danger');
+        notifyModal("Invalid DOB","Please enter valid date of birth");
         okToSubmit = false;
     } else if ($('#candidateTotalExperienceYear').val() > 30) {
-        notifyError("Please enter valid years of experience", 'danger');
+        notifyModal("Invalid Years of Experience","Please enter valid years of experience");
+        okToSubmit = false;
+    } else if ($('#candidateLastWithdrawnSalary').val() > 50000) {
+        notifyModal("Invalid Salary Input","Please enter a valid 'Last Withdrawn Salary' (Ex: 15000) in a month");
         okToSubmit = false;
     }
+    console.log("okToSubmit:"+okToSubmit);
     //final submission
     if(okToSubmit){
         try {
@@ -657,8 +698,20 @@ function saveEditedResponses(candidateId, propId, jobPostId) {
         } catch (exception) {
             console.log("exception occured!!" + exception);
         }
+        return true;
     }
 
+    return false;
+}
+
+function notifyModal(title, message){
+    bootbox.alert({
+        size: "small",
+        title: title,
+        message: message,
+        callback: function () { /* your callback code */
+        }
+    });
 }
 
 function processFinalSubmitResponse(returnedData, jobPostId, candidateId, propId) {
@@ -687,7 +740,7 @@ function generateEditModalView(title, message, candidateId, propId, overflow, jo
             "Save": {
                 className: "mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent edit-modal-submit",
                 callback: function () {
-                    saveEditedResponses(candidateId, propId, jobPostId);
+                    return saveEditedResponses(candidateId, propId, jobPostId);
                 }
             }
         }
@@ -1400,9 +1453,9 @@ function processPreScreenContent(returnedData, customD) {
     if(returnedData == null || returnedData.status != "SUCCESS") {
         console.log(returnedData);
         if (returnedData != null && returnedData.status == "INVALID") {
-            alert("Already Pre Screened");
+            notifyModal("Pre Screen Status: Completed", "Pre Screen Already Completed");
         } else {
-            alert("Request failed. Something went Wrong! Please Refresh");
+            notifyModal("Error","Request failed. Something went Wrong! Please Refresh");
         }
         return;
     }
@@ -1513,9 +1566,13 @@ function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, cus
 function processPostPreScreenResponse(response, candidateId, jobPostId) {
     console.log(response);
     if(response == "OK"){
+        notifyError("Submitted successfully.", 'success');
+        setTimeout(function () {
+            location.reload();
+        }, 2000);
+    } else if(response == "INTERVIEW"){
         notifyError("Submitted successfully. Please select Interview Slot.", 'success');
-        // TODO: decide channel and make it dynamic
-        initInterviewModal(candidateId, jobPostId, 1);
+        initInterviewModal(candidateId, jobPostId);
     } else {
         notifyError("Error! Something Went wrong please try again.", 'danger')
     }
@@ -1571,11 +1628,10 @@ function getPreScreenContent(jobPostId, candidateId, isRebound, actorId, customD
             base_api_url += "&candidateId=" + candidateId;
         }
     }
-    if(rePreScreen == null || rePreScreen) {
-        base_api_url +="&rePreScreen="+true;
-    } else {
+    if(rePreScreen == null || !rePreScreen) {
         base_api_url +="&rePreScreen="+false;
-
+    } else {
+        base_api_url +="&rePreScreen="+true;
     }
     console.log(" url link : " + base_api_url);
 
@@ -1631,3 +1687,4 @@ function notifyError(msg, type) {
         }
     });
 };
+

@@ -678,6 +678,7 @@ public class Application extends Controller {
                 session("sessionUserId", "" + developer.getDeveloperId());
                 session("sessionExpiry", String.valueOf(developer.getDeveloperSessionIdExpiryMillis()));
                 session("sessionRDPK", String.valueOf(developer.getDeveloperAccessLevel()));
+                session("sessionChannel", String.valueOf(ServerConstants.SESSION_CHANNEL_SUPPORT_WEBSITE));
 
                 if(developer.getDeveloperAccessLevel() == ServerConstants.DEV_ACCESS_LEVEL_SUPER_ADMIN) {
                     return redirect("/support/administrator");
@@ -1608,11 +1609,13 @@ public class Application extends Controller {
         return ok(toJson(JobPostWorkflowEngine.saveSelectedCandidates(selectedCandidateRequest)));
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result getSelectedCandidate(Long jobPostId) {
 
         return ok(toJson(JobPostWorkflowEngine.getSelectedCandidates(jobPostId)));
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result testMatchingCandidate(Long jpId) {
        return ok(toJson(JobPostWorkflowEngine.getMatchingCandidate(jpId)));
     }
@@ -1641,6 +1644,7 @@ public class Application extends Controller {
         return ok(toJson(JobPostWorkflowEngine.getJobPostVsCandidate(jobPostId, candidateId, rePreScreen)));
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result updatePreScreenAttempt(Long candidateId, Long jobPostId, String callStatus) {
         if (candidateId == 0L || jobPostId == 0L) {
             return badRequest();
@@ -1649,6 +1653,7 @@ public class Application extends Controller {
         return ok(toJson(JobPostWorkflowEngine.updatePreScreenAttempt(jobPostId, candidateId, callStatus)));
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result submitPreScreen() {
         JsonNode preScreenRequestJson = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + preScreenRequestJson);
@@ -1666,6 +1671,7 @@ public class Application extends Controller {
         return ok(toJson(JobPostWorkflowEngine.savePreScreenResult(preScreenRequest)));
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result getDocumentReqForJobRole(Long jobPostId, Long jobRoleId) {
         if(jobPostId == null && jobRoleId == null) {
             return badRequest();
@@ -1703,6 +1709,7 @@ public class Application extends Controller {
         return ok(toJson(idProofList));
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result getAssetReqForJobRole(Long jobPostId, Long jobRoleId) {
         if(jobPostId == null && jobRoleId == null) {
             return badRequest();
@@ -1741,10 +1748,12 @@ public class Application extends Controller {
         return ok(toJson(assetList));
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result renderWorkflowInteraction(String uuid) {
         return ok(views.html.workflow_interaction.render());
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result getWorkflowInteraction(String job_post_workflow_uuid) {
 
         if(job_post_workflow_uuid == null) {
@@ -1774,10 +1783,12 @@ public class Application extends Controller {
         return ok(toJson(responses));
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result getPreScreenedCandidate(Long jobPostId, Boolean isPass) {
         return ok(toJson(JobPostWorkflowEngine.getPreScreenedPassFailCandidates(jobPostId, isPass)));
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result getCandidateDetails(Long candidateId, Integer propertyId) {
         if(candidateId == null || propertyId == null) {
             return badRequest();
@@ -1817,6 +1828,7 @@ public class Application extends Controller {
         return badRequest("Error");
     }
 
+    @Security.Authenticated(SecuredUser.class)
     public static Result updateCandidateDetailsAtPreScreen(Integer propertyId, Long candidateId) throws IOException {
         if(candidateId == null && propertyId == null) {
             return badRequest();
@@ -1839,7 +1851,7 @@ public class Application extends Controller {
 
         if (ServerConstants.PropertyType.DOCUMENT.ordinal() == propertyId) {
             UpdateCandidateDocument updateCandidateDocument = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateDocument.class);
-            CandidateService.UpdateCandidateDocument(candidate, updateCandidateDocument);
+            CandidateService.updateCandidateDocument(candidate, updateCandidateDocument);
             return ok("ok");
         } else if (ServerConstants.PropertyType.LANGUAGE.ordinal() == propertyId) {
             UpdateCandidateLanguageKnown updateCandidateLanguageKnown = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateLanguageKnown.class);
@@ -1891,7 +1903,8 @@ public class Application extends Controller {
         return badRequest();
     }
 
-    public static Result updateCandidateInterviewDetail(Long candidateId, Long jobPostId, Integer channel) throws IOException {
+    @Security.Authenticated(SecuredUser.class)
+    public static Result updateCandidateInterviewDetail(Long candidateId, Long jobPostId) throws IOException {
         if(candidateId == null || jobPostId == null) {
             return badRequest();
         }
@@ -1904,48 +1917,11 @@ public class Application extends Controller {
         }
         ObjectMapper newMapper = new ObjectMapper();
 
-        Candidate candidate = Candidate.find.where().eq("candidateId", candidateId).findUnique();
-
-        if(candidate == null) {
-            return badRequest("Candidate doesn't exists");
-        }
-
-        // fetch existing workflow old
-        JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
-                .eq("jobPost.jobPostId", jobPostId)
-                .eq("candidate.candidateId", candidateId)
-                .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
-
-        if(jobPostWorkflowOld == null) {
-            return badRequest();
-        }
         // since jsonReq has single/multiple values in array
         newMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
 
-        String interactionResult = "";
-
-        interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_INTERVIEW_SCHEDULED;
-
         AddCandidateInterviewSlotDetail interviewSlotDetail = newMapper.readValue(updateCandidateDetailJSON.toString(), AddCandidateInterviewSlotDetail.class);
-        if(jobPostWorkflowOld.getStatus().getStatusId() == ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED){
-            JobPostWorkflow jobPostWorkflowNew = JobPostWorkflowEngine.saveNewJobPostWorkflow(candidateId,
-                    jobPostId, jobPostWorkflowOld, ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED,
-                    ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED, interviewSlotDetail.getTimeSlot(),
-                    interviewSlotDetail.getScheduledInterviewDate());
-            interactionResult += jobPostWorkflowNew.getJobPost().getJobPostId() + ": " + jobPostWorkflowNew.getJobPost().getJobRole().getJobName();
 
-        };
-
-        // save the interaction
-        InteractionService.createWorkflowInteraction(
-                jobPostWorkflowOld.getJobPostWorkflowUUId(),
-                candidate.getCandidateUUId(),
-                InteractionConstants.INTERACTION_TYPE_CANDIDATE_INTERVIEW_SCHEDULED,
-                null,
-                interactionResult,
-                null
-        );
-
-        return ok("done");
+        return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewDetail(candidateId, jobPostId, interviewSlotDetail)));
     }
 }
