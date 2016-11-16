@@ -1,5 +1,6 @@
 var jobPostId;
 var candidateInfo;
+var candidateId;
 
 var appliedJobSection;
 var popularJobsSection;
@@ -21,6 +22,13 @@ $(window).resize(function(){
         $(".candidatePartner").removeClass("row-eq-height").addClass("row-eq-height");
     }
 });
+
+function scrapeCandidateIdFromUrl(){
+    var pathname = window.location.pathname; // Returns path only
+    var partnerUrl = pathname.split('/');
+    var cId = partnerUrl[(partnerUrl.length) - 2];
+    candidateId = parseInt(cId);
+}
 
 $(document).ready(function(){
     var w = window.innerWidth;
@@ -99,6 +107,15 @@ function getAllAppliedJobs() {
                         if(jobApplication.jobPost.jobPostPartnerJoiningIncentive != null){
                             joiningIncentive = "₹" + jobApplication.jobPost.jobPostPartnerJoiningIncentive;
                         }
+                        var varColumn = function () {
+                            // TODO: check if already prescreened completely or not, accordingly display button
+                            if(candidateId == null ) {
+                                scrapeCandidateIdFromUrl();
+                            }
+                            // jpId is jobPostId
+                            var jpId = jobApplication.jobPost.jobPostId;
+                            return '<input type="submit" value="Pre-Screen"  style="width:150px" onclick="openPartnerPreScreenModal(' + jpId+ ', ' + candidateId + ');" id="' + candidateInfo.lead.leadId + '" class="btn btn-primary">'
+                        };
 
                         returned_data.push({
                             'jobPostName' : '<div class="mLabel" style="width:100%" >'+ jobApplication.jobPost.jobPostTitle + '</div>',
@@ -108,7 +125,8 @@ function getAllAppliedJobs() {
                             'joiningIncentive' : '<div class="mLabel" style="width:100%" >'+ joiningIncentive + '</div>',
                             'jobPreScreenLocation' : '<div class="mLabel" style="width:100%" >'+ jobApplication.locality.localityName + '</div>',
                             'interviewDetails' : '<div class="mLabel" style="width:100%" >'+ interviewDetails + '</div>',
-                            'jobAppliedOn' : '<div class="mLabel" style="width:100%" >'+ ('0' + appliedDateInMillis.getDate()).slice(-2) + '-' + getMonthVal((appliedDateInMillis.getMonth()+1)) + '-' + appliedDateInMillis.getFullYear() + '</div>'
+                            'jobAppliedOn' : '<div class="mLabel" style="width:100%" >'+ ('0' + appliedDateInMillis.getDate()).slice(-2) + '-' + getMonthVal((appliedDateInMillis.getMonth()+1)) + '-' + appliedDateInMillis.getFullYear() + '</div>',
+                            'varColumn' : varColumn
                         });
                         returnedData.forEach(function (jobApplication) {
                             var appliedJob = $("#apply_btn_" + jobApplication.jobPost.jobPostId);
@@ -130,7 +148,8 @@ function getAllAppliedJobs() {
                 { "data": "joiningIncentive" },
                 { "data": "jobPreScreenLocation" },
                 { "data": "interviewDetails" },
-                { "data": "jobAppliedOn" }
+                { "data": "jobAppliedOn" },
+                {"data": "varColumn"}
             ],
             "language": {
                 "emptyTable": "Looks like you have applied to any of the jobs yet for this candidate! " + '<a href="/partner/' + localStorage.getItem("candidateId") + '/jobs"><font color="'+ "#2980b9" +'">Apply now!</font></a>',
@@ -446,7 +465,7 @@ function processDataAllJobPosts(returnedData) {
                     $('#jobApplyConfirm').modal();
                     jobPostId = jobPost.jobPostId;
                     jobLocalityArray = [];
-                    addLocalitiesToModal();
+                    addLocalitiesToModal(jobPostId);
                 };
 
                 var infoBtn = document.createElement("div");
@@ -851,11 +870,21 @@ function processDataAllJobPosts(returnedData) {
     getCandidateInfo();
 }
 
+openPartnerPreScreenModal = function (jobPostId, candidateId) {
+    // actorId defined which modal to display
+    globalPalette.color.main.headerColor= "#26A69A";
+    var decorator = initDecorator(globalPalette);
+    decorator.columnVisible = [1,2,3,4,6];
+    decorator.textContainers = false;
+    getPreScreenContent(jobPostId, candidateId, false, 100, decorator, false);
+};
+
 function getCandidateInfo() {
     try {
         $.ajax({
             url: "/checkPartnerCandidate/" + localStorage.getItem("candidateId"),
             type: "POST",
+            async: false,
             data: false,
             dataType: "json",
             contentType: false,
@@ -982,7 +1011,7 @@ function processDataGetCandidateInfo(returnedData){
     }
 }
 
-function addLocalitiesToModal() {
+function addLocalitiesToModal(jobPostId) {
     try {
         $.ajax({
             type: "POST",

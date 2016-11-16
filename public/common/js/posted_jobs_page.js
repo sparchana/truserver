@@ -196,10 +196,10 @@ function processDataCheckJobs(returnedData) {
         jobArray.push(item);
     });
 }
-
 function applyJobBtnAction() {
-    $('#jobApplyConfirm').modal();
-    /*$('#preScreenModal').modal();*/
+    /*$('#jobApplyConfirm').modal();*/
+    var candidateMobile = localStorage.getItem("mobile");
+    openPreScreenModal(jobId,candidateMobile);
     jobPostId = jobId;
     jobLocalityArray = [];
     $('#applyButton').hide();

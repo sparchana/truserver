@@ -18,6 +18,13 @@
 
         <meta http-equiv="Cache-control" content="public">
         <meta name="theme-color" content="#26A69A">
+
+            <!-- pre-screen-req start -->
+        <link rel="stylesheet" href="/assets/support/css/bootstrap-multiselect.css" type="text/css"/>
+        <link rel="stylesheet" href="/assets/common/css/material.css" type="text/css"/>
+        <link rel="stylesheet" href="/assets/common/css/token-input-facebook.css" type="text/css" />
+            <!-- pre-screen-req end -->
+
             <!-- Bootstrap Core CSS -->
         <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="/assets/dashboard/css/materialDashboard.css">
@@ -230,6 +237,7 @@
                         <th style="font-size: 14px">Job Location</th>
                         <th style="font-size: 14px">Interview Date & Time</th>
                         <th style="font-size: 14px">Applied on</th>
+                        <th style="font-size: 14px"></th>
                     </tr>
                 </thead>
                 <tbody></tbody>
@@ -239,6 +247,12 @@
         <div class="container" id="applyJobs">
             <div id="hotJobs"></div>
             <br>
+        </div>
+
+            <!-- bottom notification snackbar -->
+        <div id="tru-snackbar" class="mdl-js-snackbar mdl-snackbar">
+            <div class="mdl-snackbar__text"></div>
+            <button class="mdl-snackbar__action" type="button"></button>
         </div>
 
             <!-- Facebook Pixel Code -->
@@ -270,11 +284,24 @@
 
         <!-- Start Footer-->
         <div id="footer_inc"></div>
+            <!-- prescreen imports -->
+        <link rel="stylesheet" type="text/css" href="/assets/css/pre_screen_modal.css">
+        <script type="text/javascript" src="/assets/js/bootbox.min.js"></script>
+        <script type="text/javascript" src="/assets/common/js/jquery.tokeninput.js"></script>
+        <script type="text/javascript" src="/assets/js/pre_screen_modal.js"></script>
+        <script type="text/javascript" src="/assets/support/js/nprogress.js"></script>
+        <script type="text/javascript" src="/assets/support/js/jquery-ui.js"></script>
+        <script src="/assets/common/js/material.js" type="text/javascript"></script>
+        <script type="text/javascript" src="/assets/support/js/bootstrap-multiselect.js"></script>
+
+
+        <!-- other imports -->
         <script type="text/javascript" src="/assets/common/js/validation.js"></script>
         <script type="text/javascript" src="/assets/partner/js/partner_page.js"></script>
         <script type="text/javascript" src="/assets/partner/js/generateJobCard.js"></script>
         <script type="text/javascript" src="/assets/common/js/apply_job.js"></script>
         <script type="text/javascript" src="/assets/common/js/all_job_role_footer.js"></script>
+
 
         <script>
             $(document).ready(function () {
