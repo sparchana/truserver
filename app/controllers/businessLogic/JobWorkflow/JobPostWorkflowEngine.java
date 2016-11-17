@@ -457,6 +457,7 @@ public class JobPostWorkflowEngine {
 
     public static Map<Long, CandidateWorkflowData> getSelectedCandidates(Long jobPostId) {
 
+        Integer status = ServerConstants.JWF_STATUS_SELECTED;
         StringBuilder workFlowQueryBuilder = new StringBuilder("select createdby, candidate_id, creation_timestamp, job_post_id, status_id from job_post_workflow i " +
                 " where i.job_post_id " +
                 " = ('"+jobPostId+"') " +
@@ -491,11 +492,10 @@ public class JobPostWorkflowEngine {
 
         Map<Long, CandidateWorkflowData> selectedCandidateMap = new LinkedHashMap<>();
 
-        JobPostWorkflowStatus status = null;
+
         // until view is not available over this table, this loop get the distinct candidate who
         // got selected for a job post recently
         for( JobPostWorkflow jpwf: jobPostWorkflowList) {
-            status = jpwf.getStatus();
             candidateList.add(jpwf.getCandidate());
         }
         // prep params for a jobPost
@@ -512,9 +512,8 @@ public class JobPostWorkflowEngine {
             localityIdList.add(jobPostToLocality.getLocality().getLocalityId());
         }
 
-
         candidateList = filterByLatLngOrHomeLocality(candidateList, localityIdList, ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS, false);
-        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), status.getStatusId());
+        Map<Long, CandidateExtraData> candidateExtraDataMap = computeExtraData(candidateList, JobPost.find.where().eq("jobPostId", jobPostId).findUnique(), status);
 
         for ( Candidate candidate: candidateList) {
             CandidateWorkflowData candidateWorkflowData = new CandidateWorkflowData();
@@ -1641,6 +1640,12 @@ public class JobPostWorkflowEngine {
             jobPostWorkflowOld = new JobPostWorkflow();
             jobPostWorkflowOld.setJobPostWorkflowUUId(toBePreservedUUId);
             jobPostWorkflowOld.setJobPost(jobPost);
+            jobPostWorkflowOld.setInterviewLocationLat(null);
+            jobPostWorkflowOld.setInterviewLocationLng(null);
+            if(jobPost.getInterviewDetailsList() != null){
+                jobPostWorkflowOld.setInterviewLocationLat(jobPost.getInterviewDetailsList().get(1).getLat());
+                jobPostWorkflowOld.setInterviewLocationLng(jobPost.getInterviewDetailsList().get(1).getLng());
+            }
             jobPostWorkflowOld.setCandidate(candidate);
             jobPostWorkflowOld.setCreatedBy(session().get("sessionUsername"));
             jobPostWorkflowOld.setChannel(Integer.valueOf(session().get("sessionChannel")));

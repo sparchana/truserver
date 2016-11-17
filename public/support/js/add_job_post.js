@@ -255,11 +255,6 @@ $(function() {
                 notifyError("Please select job end time", 'danger');
                 status = 0;
             }
-        } else if(locality == ""){
-            $("#jobPostVacancies").removeClass('invalid');
-            $("#jobPostLocalities").addClass('invalid');
-            notifyError("Please enter localities", 'danger');
-            status = 0;
         } else if($("#jobPostExperience").val() == ""){
             $("#jobPostLocalities").removeClass('invalid');
             $("#jobPostExperience").addClass('selectDropdownInvalid').removeClass('selectDropdown');
@@ -272,6 +267,13 @@ $(function() {
             status = 0;
         } else if(timeSlotCount > 0 && interviewDayCount == 0){
             notifyError("Please select interview days", 'danger');
+            status = 0;
+        }
+
+        if(locality == ""){
+            $("#jobPostVacancies").removeClass('invalid');
+            $("#jobPostLocalities").addClass('invalid');
+            notifyError("Please enter localities", 'danger');
             status = 0;
         }
 
@@ -328,6 +330,32 @@ $(function() {
             status = 0;
         }
 
+        var interviewDays = "";
+        for(i=1;i<=7;i++){
+            if($("#interview_day_" + i).is(":checked")){
+                interviewDays += "1";
+            } else{
+                interviewDays += "0";
+            }
+        }
+
+        $('#interviewTimeSlot input:checked').map(function() {
+            var slotId = this.value;
+            slotArray.push(parseInt(slotId));
+        }).get();
+
+
+        if(interviewDays == "0000000"){
+            notifyError("Please specify interview days", 'danger');
+            status = 0;
+        } else if(slotArray == []){
+            notifyError("Please specify interview slots", 'danger');
+            status = 0;
+        } else if(interviewLat == null){
+            notifyError("Please enter interview address", 'danger');
+            status = 0;
+        }
+
         if(status == 1){
             if($("#jobPostRecruiter").val() != "" && $("#jobPostRecruiter").val() != null && $("#jobPostRecruiter").val() != undefined){
                 recId = $("#jobPostRecruiter").val();
@@ -361,20 +389,6 @@ $(function() {
                 }
             }
 
-            var interviewDays = "";
-            for(i=1;i<=7;i++){
-                if($("#interview_day_" + i).is(":checked")){
-                    interviewDays += "1";
-                } else{
-                    interviewDays += "0";
-                }
-            }
-
-            $('#interviewTimeSlot input:checked').map(function() {
-                var slotId = this.value;
-                slotArray.push(parseInt(slotId));
-            }).get();
-
             try {
                 var d = {
                     jobPostId: $("#jobPostId").val(),
@@ -388,7 +402,7 @@ $(function() {
                     jobPostTitle: $("#jobPostTitle").val(),
                     jobPostIncentives: $("#jobPostIncentives").val(),
                     jobPostMinRequirement: $("#jobPostMinRequirement").val(),
-                    jobPostAddress: $("#jobPostAddress").val(),
+                    jobPostAddress: fullAddress,
                     jobPostPinCode: $("#jobPostPinCode").val(),
                     jobPostVacancies: $("#jobPostVacancies").val(),
                     jobPostLocalities: jobPostLocalities,
@@ -411,8 +425,9 @@ $(function() {
                     jobPostDocument: jobPostDocument,
                     jobPostAsset: jobPostAsset,
                     jobPostMaxAge: maxAge,
-                    jobPostGender: jobPostGender
-
+                    jobPostGender: jobPostGender,
+                    jobPostInterviewLocationLat: interviewLat,
+                    jobPostInterviewLocationLng: interviewLng
                 };
                 $.ajax({
                     type: "POST",

@@ -586,6 +586,16 @@ hr{
     background: #f66624;
 }
 
+.navigationBtn{
+    padding: 8px;
+    background: #5467ff;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+}
+
 @media screen and (max-width: 800px) {
     .candidateCard{
         padding: 4%;

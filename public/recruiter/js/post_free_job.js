@@ -3,8 +3,12 @@
  */
 
 var jpId = 0;
-var jpCompanyId = 3;
-var jpRecruiterId = 46;
+var jpCompanyId;
+var jpRecruiterId;
+
+var fullAddress;
+var interviewLat;
+var interviewLng;
 
 function processDataCheckLocality(returnedData) {
     if (returnedData != null) {
@@ -443,7 +447,37 @@ $(document).ready(function () {
     $('#jobPostExperience').tokenize().tokenAdd(5, "Any");
     $('#jobPostEducation').tokenize().tokenAdd(6, "Any");
 
+    google.maps.event.addDomListener(window, 'load', function () {
+        var defaultBounds = new google.maps.LatLngBounds(
+            new google.maps.LatLng(12.97232, 77.59480),
+            new google.maps.LatLng(12.89201, 77.58905)
+        );
+
+        var options = {
+            bounds: defaultBounds,
+            componentRestrictions: {country: 'in'}
+        };
+
+        var places = new google.maps.places.Autocomplete(document.getElementById('jobPostInterviewLocation'), options);
+        google.maps.event.addListener(places, 'place_changed', function () {
+            var place = places.getPlace();
+            var address = place.formatted_address;
+            var latitude = place.geometry.location.lat();
+            var longitude = place.geometry.location.lng();
+            fullAddress = address;
+            interviewLat = latitude;
+            interviewLng = longitude;
+            $("#jobPostInterviewLocationVal").show();
+            $("#jobPostInterviewLocation").hide();
+            $("#jobPostInterviewLocationVal").html(fullAddress);
+        });
+    });
 });
+
+function interviewUpdate() {
+    $("#jobPostInterviewLocationVal").hide();
+    $("#jobPostInterviewLocation").show();
+}
 
 function saveJob() {
     var status;
@@ -614,6 +648,33 @@ function saveJob() {
         }
     }
 
+    var interviewDays = "";
+    for(i=1; i<=7; i++){
+        if($("#interview_day_" + i).is(":checked")){
+            interviewDays += "1";
+        } else{
+            interviewDays += "0";
+        }
+    }
+
+    var slotArray = [];
+    for(i=1; i<=3; i++){
+        if($("#interview_slot_" + i).is(":checked")){
+            slotArray.push(parseInt(i));
+        }
+    }
+
+    if(interviewDays == "0000000"){
+        notifyError("Please specify interview days");
+        status = 0;
+    } else if(slotArray == []){
+        notifyError("Please specify interview slots");
+        status = 0;
+    } else if(interviewLat == null){
+        notifyError("Please enter interview address");
+        status = 0;
+    }
+
     if(status == 1){
         var i;
         var workingDays = "";
@@ -623,22 +684,6 @@ function saveJob() {
                 workingDays += "1";
             } else{
                 workingDays += "0";
-            }
-        }
-
-        var interviewDays = "";
-        for(i=1; i<=7; i++){
-            if($("#interview_day_" + i).is(":checked")){
-                interviewDays += "1";
-            } else{
-                interviewDays += "0";
-            }
-        }
-
-        var slotArray = [];
-        for(i=1; i<=3; i++){
-            if($("#interview_slot_" + i).is(":checked")){
-                slotArray.push(parseInt(i));
             }
         }
 
@@ -673,7 +718,10 @@ function saveJob() {
                 jobPostDocument: jobPostDocument,
                 jobPostAsset: jobPostAsset,
                 jobPostInterviewDays: interviewDays,
-                interviewTimeSlot: slotArray
+                interviewTimeSlot: slotArray,
+                jobPostInterviewLocationLat: interviewLat,
+                jobPostInterviewLocationLng: interviewLng,
+                jobPostAddress: fullAddress
             };
             $.ajax({
                 type: "POST",
@@ -706,7 +754,6 @@ function processDataAddJobPost(returnedData) {
 
 
 function processDataForJobPost(returnedData) {
-    console.log(returnedData);
     if(returnedData != "0"){
         jpId = returnedData.jobPostId;
         if(returnedData.company != null ){
@@ -739,6 +786,22 @@ function processDataForJobPost(returnedData) {
                     $('#jobPostLanguage').tokenize().tokenAdd(languageRequirement.language.languageId, languageRequirement.language.languageName);
                 }
             });
+        }
+
+        $("#jobPostInterviewLocation").hide();
+        if(returnedData.interviewDetailsList != null && Object.keys(returnedData.interviewDetailsList).length){
+            if(returnedData.interviewDetailsList[0].lat != null){
+                interviewLat = returnedData.interviewDetailsList[0].lat;
+                interviewLng = returnedData.interviewDetailsList[0].lng;
+                if(returnedData.jobPostAddress != null){
+                    fullAddress = returnedData.jobPostAddress;
+                    $("#jobPostInterviewLocation").hide();
+                    $("#jobPostInterviewLocationVal").html(returnedData.jobPostAddress);
+                } else {
+                    $("#jobPostInterviewLocationVal").hide();
+                    $("#jobPostInterviewLocationVal").show();
+                }
+            }
         }
 
         $("#jobPostMinSalary").val(returnedData.jobPostMinSalary);

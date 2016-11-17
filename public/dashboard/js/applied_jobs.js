@@ -62,7 +62,6 @@ function processDataAndFetchAppliedJobs(returnedData) {
 }
 
 function prePopulateJobSection(jobApplication) {
-    console.log(jobApplication);
     var parent = $('#myAppliedJobs');
     var count = 0;
     jobApplication.forEach(function (jobPost) {
@@ -293,13 +292,23 @@ function prePopulateJobSection(jobApplication) {
             divInterviewStatus.className = "appliedDate";
             divInterviewStatus.id = "interview_status_val_" + jobPost.jobPost.jobPostId;
 
+            var dir = document.createElement("span");
             if(jobPost.status.statusId < 6){
                 divInterviewStatus.textContent = "Job application under review";
                 divInterviewStatus.style = "color: #eb9800; font-weight: 600";
             } else{
                 if(jobPost.status.statusId == 6){
-                    divInterviewStatus.textContent = "Interview confirmed on " + new Date(jobPost.scheduledInterviewDate).getDate() + "/" + (new Date(jobPost.scheduledInterviewDate).getMonth() + 1) + "/" + new Date(jobPost.scheduledInterviewDate).getFullYear() + " between " + jobPost.scheduledInterviewTimeSlot.interviewTimeSlotName;
-                    divInterviewStatus.style = "color: green; font-weight: 600";
+                    if(jobPost.interviewLocationLat != null){
+                        dir.className = "navigationBtn";
+                        dir.textContent = "Directions";
+                        dir.onclick = function () {
+                            window.open('http://maps.google.com/?q='+ jobPost.interviewLocationLat +',' + jobPost.interviewLocationLng);
+                        };
+
+                        divInterviewStatus.textContent = "Interview confirmed on " + new Date(jobPost.scheduledInterviewDate).getDate() + "/" + (new Date(jobPost.scheduledInterviewDate).getMonth() + 1) + "/" + new Date(jobPost.scheduledInterviewDate).getFullYear() + " between " + jobPost.scheduledInterviewTimeSlot.interviewTimeSlotName;
+                        divInterviewStatus.style = "color: green; font-weight: 600";
+                    }
+
                 } else if(jobPost.status.statusId == 7){
                     divInterviewStatus.textContent = "Application rejected";
                     divInterviewStatus.style = "color: red; font-weight: 600";
@@ -348,6 +357,7 @@ function prePopulateJobSection(jobApplication) {
                 }
             }
             titleRowThree.appendChild(divInterviewStatus);
+            titleRowThree.appendChild(dir);
         }
     });
 }
