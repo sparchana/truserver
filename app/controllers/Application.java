@@ -1620,7 +1620,6 @@ public class Application extends Controller {
        return ok(toJson(JobPostWorkflowEngine.getMatchingCandidate(jpId)));
     }
 
-    @Security.Authenticated(SecuredUser.class)
     public static Result getJobPostVsCandidate(Long candidateId, Long jobPostId, Boolean rePreScreen) {
         if (candidateId == 0L || jobPostId == 0L) {
             return badRequest();

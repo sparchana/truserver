@@ -378,7 +378,7 @@ function validateInput() {
         console.log(this.value);
         if(!validateAadhar(this.value)){
             $('.btn.edit-modal-submit').prop('disabled', true);
-            notifyModal("Invalid Input","Invalid Aadhaar Card Number");
+            notifyModal("Invalid Input","Invalid Aadhaar Card Number. (Example: 100120023003)");
         } else {
             $('.btn.edit-modal-submit').prop('disabled', false);
         }
@@ -388,7 +388,27 @@ function validateInput() {
         console.log(this.value);
         if(!validateDL(this.value)){
             $('.btn.edit-modal-submit').prop('disabled', true);
-            notifyModal("Invalid Input","Invalid Driving Licence Number");
+            notifyModal("Invalid Input","Invalid Driving Licence Number. (Example: TN7520130008800 or TN-7520130008800)");
+        } else {
+            $('.btn.edit-modal-submit').prop('disabled', false);
+        }
+        $("#idProofCheckbox_"+id).prop('checked', true);
+    }
+    if(id == 2){
+        console.log(this.value);
+        if(!validatePASSPORT(this.value)){
+            $('.btn.edit-modal-submit').prop('disabled', true);
+            notifyModal("Invalid Input","Invalid Pass Port Number. (Example: A12 34567)");
+        } else {
+            $('.btn.edit-modal-submit').prop('disabled', false);
+        }
+        $("#idProofCheckbox_"+id).prop('checked', true);
+    }
+    if(id == 4){
+        console.log(this.value);
+        if(!validatePAN(this.value)){
+            $('.btn.edit-modal-submit').prop('disabled', true);
+            notifyModal("Invalid Input","Invalid PAN Card Number. (Example: ABCDE1234Z)");
         } else {
             $('.btn.edit-modal-submit').prop('disabled', false);
         }
@@ -618,11 +638,17 @@ function saveEditedResponses(candidateId, propId, jobPostId) {
         }
 
     } else if(propId == 3) {
+        // age submission
         var selectedDob = $('#candidateDob').val();
         var c_dob = String(selectedDob);
         var selectedDate = new Date(c_dob);
-        var todayDate = new Date();
-        if (selectedDate > todayDate) {
+        var toDate = new Date();
+        var pastDate= new Date(toDate.setFullYear(toDate.getFullYear() - 18));
+        var zombieYear = new Date(toDate.setFullYear(toDate.getFullYear() - 70));
+        if (selectedDate >= pastDate) {
+            dobCheck = 0;
+        }
+        if(zombieYear <= selectedDate) {
             dobCheck = 0;
         }
         d = {
@@ -655,9 +681,16 @@ function saveEditedResponses(candidateId, propId, jobPostId) {
         }
 
     } else if(propId == 7) {
-        d = {
-            candidateLastWithdrawnSalary: parseInt($('#candidateLastWithdrawnSalary').val())
+        var salary = $('#candidateLastWithdrawnSalary').val();
+        if(!isNaN(salary) && parseInt(salary) >= 1000 && parseInt(salary) <= 100000){
+            d = {
+                candidateLastWithdrawnSalary: parseInt($('#candidateLastWithdrawnSalary').val())
+            }
+        } else {
+            notifyModal("Invalid Salary Input","Please enter a valid 'Last Withdrawn Salary' per month. (Min: 1000, Max: 1,00,000)");
+            okToSubmit = false;
         }
+
 
     } else if(propId == 8) {
 
@@ -675,14 +708,10 @@ function saveEditedResponses(candidateId, propId, jobPostId) {
     if (dobCheck == 0) {
         notifyModal("Invalid DOB","Please enter valid date of birth");
         okToSubmit = false;
-    } else if ($('#candidateTotalExperienceYear').val() > 30) {
-        notifyModal("Invalid Years of Experience","Please enter valid years of experience");
-        okToSubmit = false;
-    } else if ($('#candidateLastWithdrawnSalary').val() > 50000) {
-        notifyModal("Invalid Salary Input","Please enter a valid 'Last Withdrawn Salary' (Ex: 15000) in a month");
+    } else if ($('#candidateTotalExperienceYear').val() > 40) {
+        notifyModal("Invalid Years of Experience","Please enter valid years of experience. (Min: 0, Max: 40)");
         okToSubmit = false;
     }
-    console.log("okToSubmit:"+okToSubmit);
     //final submission
     if(okToSubmit){
         try {
@@ -861,7 +890,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId, customD) {
         $( "#candidateDob").datepicker({ dateFormat: 'yy-mm-dd', changeYear: true});
         modalTitle = "Candidate DOB Edit";
         setter = function (returnedData) {
-            if (returnedData != null) {
+            if (returnedData != null && returnedData.length>0) {
                 var date = JSON.parse(returnedData);
                 var yr = new Date(date).getFullYear();
                 var month = ('0' + parseInt(new Date(date).getMonth() + 1)).slice(-2);
@@ -1298,9 +1327,9 @@ function constructPreScreenBodyContainer(returnedData, customD) {
                     bodyContentBox.appendChild(bodyContentData2);
 
                     if(rowData.isSingleEntity){
-                        bodyContentData2.textContent = rowData.jobPostElement;
+                        bodyContentData2.textContent = getPlaceholderValue(rowData.jobPostElement);
                     } else {
-                        bodyContentData2.textContent = rowData.jobPostElementList;
+                        bodyContentData2.textContent = getPlaceholderArray(rowData.jobPostElementList);
                     }
                 }
                 if ($.inArray(3, customD.columnVisible) > -1) {
@@ -1309,9 +1338,9 @@ function constructPreScreenBodyContainer(returnedData, customD) {
                     bodyContentBox.appendChild(bodyContentData3);
 
                     if(rowData.isSingleEntity){
-                        bodyContentData3.textContent = rowData.candidateElement;
+                        bodyContentData3.textContent = getPlaceholderValue(rowData.candidateElement);
                     } else {
-                        bodyContentData3.textContent = rowData.candidateElementList;
+                        bodyContentData3.textContent = getPlaceholderArray(rowData.candidateElementList);
                     }
                 }
                 if ($.inArray(4, customD.columnVisible) > -1) {
@@ -1378,9 +1407,9 @@ function constructPreScreenBodyContainer(returnedData, customD) {
                     bodyContentBox.appendChild(bodyContentData2);
 
                     if(rowData.isSingleEntity){
-                        bodyContentData2.textContent = rowData.jobPostElement;
+                        bodyContentData2.textContent = getPlaceholderValue(rowData.jobPostElement);
                     } else {
-                        bodyContentData2.textContent = rowData.jobPostElementList;
+                        bodyContentData2.textContent = getPlaceholderArray(rowData.jobPostElementList);
                     }
                 }
                 if ($.inArray(3, customD.columnVisible) > -1) {
@@ -1389,9 +1418,9 @@ function constructPreScreenBodyContainer(returnedData, customD) {
                     bodyContentBox.appendChild(bodyContentData3);
 
                     if(rowData.isSingleEntity){
-                        bodyContentData3.textContent = rowData.candidateElement;
+                        bodyContentData3.textContent = getPlaceholderValue(rowData.candidateElement);
                     } else {
-                        bodyContentData3.textContent = rowData.candidateElementList;
+                        bodyContentData3.textContent = getPlaceholderArray(rowData.candidateElementList);
                     }
                 }
                 if ($.inArray(4, customD.columnVisible) > -1) {
@@ -1443,6 +1472,25 @@ function constructPreScreenBodyContainer(returnedData, customD) {
     });
 
     return container;
+}
+
+function getPlaceholderArray(elementList){
+    var arr = [];
+    if(elementList != null) {
+        elementList.forEach(function (customObject) {
+            if(customObject != null){
+                arr.push(customObject.placeHolder);
+            }
+        })
+    }
+    return arr;
+}
+function getPlaceholderValue(element){
+    if(element != null) {
+        return element.placeHolder;
+    } else {
+        return "";
+    }
 }
 
 
@@ -1644,6 +1692,7 @@ function getPreScreenContent(jobPostId, candidateId, isRebound, actorId, customD
             reProcessPreScreenContent(returnedData, customD);
         }
     }
+    console.log("jobPostVsCandidate_URL: " + base_api_url);
     try {
         $.ajax({
             type: "GET",
