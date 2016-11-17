@@ -107,15 +107,15 @@ function getAllAppliedJobs() {
                         if(jobApplication.jobPost.jobPostPartnerJoiningIncentive != null){
                             joiningIncentive = "₹" + jobApplication.jobPost.jobPostPartnerJoiningIncentive;
                         }
-                        // var varColumn = function () {
-                        //     // TODO: check if already prescreened completely or not, accordingly display button
-                        //     if(candidateId == null ) {
-                        //         scrapeCandidateIdFromUrl();
-                        //     }
-                        //     // jpId is jobPostId
-                        //     var jpId = jobApplication.jobPost.jobPostId;
-                        //     return '<input type="submit" value="Pre-Screen"  style="width:150px" onclick="openPartnerPreScreenModal(' + jpId+ ', ' + candidateId + ');" id="' + candidateInfo.lead.leadId + '" class="btn btn-primary">'
-                        // };
+                        var varColumn = function () {
+                            // TODO: check if already prescreened completely or not, accordingly display button
+                            if(candidateId == null ) {
+                                scrapeCandidateIdFromUrl();
+                            }
+                            // jpId is jobPostId
+                            var jpId = jobApplication.jobPost.jobPostId;
+                            return '<input type="submit" value="Pre-Screen"  style="width:150px" onclick="openPartnerPreScreenModal(' + jpId+ ', ' + candidateId + ');" id="' + candidateInfo.lead.leadId + '" class="btn btn-primary">'
+                        };
 
                         returned_data.push({
                             'jobPostName' : '<div class="mLabel" style="width:100%" >'+ jobApplication.jobPost.jobPostTitle + '</div>',
@@ -125,7 +125,8 @@ function getAllAppliedJobs() {
                             'joiningIncentive' : '<div class="mLabel" style="width:100%" >'+ joiningIncentive + '</div>',
                             'jobPreScreenLocation' : '<div class="mLabel" style="width:100%" >'+ jobApplication.locality.localityName + '</div>',
                             'interviewDetails' : '<div class="mLabel" style="width:100%" >'+ interviewDetails + '</div>',
-                            'jobAppliedOn' : '<div class="mLabel" style="width:100%" >'+ ('0' + appliedDateInMillis.getDate()).slice(-2) + '-' + getMonthVal((appliedDateInMillis.getMonth()+1)) + '-' + appliedDateInMillis.getFullYear() + '</div>'
+                            'jobAppliedOn' : '<div class="mLabel" style="width:100%" >'+ ('0' + appliedDateInMillis.getDate()).slice(-2) + '-' + getMonthVal((appliedDateInMillis.getMonth()+1)) + '-' + appliedDateInMillis.getFullYear() + '</div>',
+                            'preScreen' : varColumn
                         });
                         returnedData.forEach(function (jobApplication) {
                             var appliedJob = $("#apply_btn_" + jobApplication.jobPost.jobPostId);
@@ -147,7 +148,8 @@ function getAllAppliedJobs() {
                 { "data": "joiningIncentive" },
                 { "data": "jobPreScreenLocation" },
                 { "data": "interviewDetails" },
-                { "data": "jobAppliedOn" }
+                { "data": "jobAppliedOn" },
+                { "data": "preScreen" }
             ],
             "language": {
                 "emptyTable": "Looks like you have applied to any of the jobs yet for this candidate! " + '<a href="/partner/' + localStorage.getItem("candidateId") + '/jobs"><font color="'+ "#2980b9" +'">Apply now!</font></a>',
@@ -873,8 +875,17 @@ openPartnerPreScreenModal = function (jobPostId, candidateId) {
     globalPalette.color.main.headerColor= "#26A69A";
     var decorator = initDecorator(globalPalette);
     decorator.columnVisible = [1,2,3,4,6];
-    decorator.textContainers = false;
-    //getPreScreenContent(jobPostId, candidateId, false, 100, decorator, false);
+
+    // display only Min Requirement
+    decorator.textContainers.noteContainer.visibility = false;
+    decorator.textContainers.minReqContainer.className = "col-lg-12 form-group remove-padding-left";
+
+    // remove callConnected
+    decorator.callYesNoRequired = false;
+
+    // footerMessage
+    decorator.modalFooter.footerMessage = "Partner bypass Message will come here";
+    getPreScreenContent(jobPostId, candidateId, false, decorator, false);
 };
 
 function getCandidateInfo() {
@@ -1043,45 +1054,45 @@ function processDataForJobPostLocation(returnedData) {
         var option = $('<option value=' + locality.locality.localityId + '></option>').text(locality.locality.localityName);
         $('#jobLocality').append(option);
     });
-    if (Object.keys(returnedData.interviewDetailsList).length > 0) {
-        //slots
-        $('#interviewSlot').html('');
-        var defaultOption = $('<option value="-1"></option>').text("Select Time Slot");
-        $('#interviewSlot').append(defaultOption);
-
-        var interviewDetailsList = returnedData.interviewDetailsList;
-        if (interviewDetailsList[0].interviewDays != null) {
-            var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
-
-            /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
-            if (interviewDays.length != 7) {
-                x = 7 - interviewDays.length;
-                var modifiedInterviewDays = "";
-
-                for (i = 0; i < x; i++) {
-                    modifiedInterviewDays += "0";
-                }
-                modifiedInterviewDays += interviewDays;
-                interviewDays = modifiedInterviewDays;
-            }
-        }
-        //slots
-        var today = new Date();
-        for (i = 2; i < 9; i++) {
-            // 0 - > sun 1 -> mon ...
-            var x = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
-            if (checkSlotAvailability(x, interviewDays)) {
-                interviewDetailsList.forEach(function (timeSlot) {
-                    var dateSlotSelectedId = x.getFullYear() + "-" + (x.getMonth() + 1) + "-" + x.getDate() + "_" + timeSlot.interviewTimeSlot.interviewTimeSlotId;
-                    var option = $('<option value="' + dateSlotSelectedId + '"></option>').text(getDayVal(x.getDay()) + ", " + x.getDate() + " " + getMonthVal((x.getMonth() + 1)) + " (" + timeSlot.interviewTimeSlot.interviewTimeSlotName + ")");
-                    $('#interviewSlot').append(option);
-                });
-            }
-        }
-        $('#interviewSection').show();
-    } else{
-        $('#interviewSection').hide();
-    }
+    // if (Object.keys(returnedData.interviewDetailsList).length > 0) {
+    //     //slots
+    //     $('#interviewSlot').html('');
+    //     var defaultOption = $('<option value="-1"></option>').text("Select Time Slot");
+    //     $('#interviewSlot').append(defaultOption);
+    //
+    //     var interviewDetailsList = returnedData.interviewDetailsList;
+    //     if (interviewDetailsList[0].interviewDays != null) {
+    //         var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
+    //
+    //         /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
+    //         if (interviewDays.length != 7) {
+    //             x = 7 - interviewDays.length;
+    //             var modifiedInterviewDays = "";
+    //
+    //             for (i = 0; i < x; i++) {
+    //                 modifiedInterviewDays += "0";
+    //             }
+    //             modifiedInterviewDays += interviewDays;
+    //             interviewDays = modifiedInterviewDays;
+    //         }
+    //     }
+    //     //slots
+    //     var today = new Date();
+    //     for (i = 2; i < 9; i++) {
+    //         // 0 - > sun 1 -> mon ...
+    //         var x = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+    //         if (checkSlotAvailability(x, interviewDays)) {
+    //             interviewDetailsList.forEach(function (timeSlot) {
+    //                 var dateSlotSelectedId = x.getFullYear() + "-" + (x.getMonth() + 1) + "-" + x.getDate() + "_" + timeSlot.interviewTimeSlot.interviewTimeSlotId;
+    //                 var option = $('<option value="' + dateSlotSelectedId + '"></option>').text(getDayVal(x.getDay()) + ", " + x.getDate() + " " + getMonthVal((x.getMonth() + 1)) + " (" + timeSlot.interviewTimeSlot.interviewTimeSlotName + ")");
+    //                 $('#interviewSlot').append(option);
+    //             });
+    //         }
+    //     }
+    //     $('#interviewSection').show();
+    // } else{
+    //     $('#interviewSection').hide();
+    // }
 }
 
 function getDayVal(month){
@@ -1180,16 +1191,18 @@ function confirmApply() {
             data: false,
             contentType: false,
             processData: false,
-            success: processDataCheckCandidate
+            success: function (returnedData) {
+                processDataCheckCandidate(returnedData, candidateId)
+            }
         });
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
 }
 
-function processDataCheckCandidate(returnedData) {
+function processDataCheckCandidate(returnedData, candidateId) {
     if(returnedData != '0'){
-        applyJobSubmit(jobPostId, returnedData.candidateMobile, prefLocation, prefTimeSlot, scheduledInterviewDate, true);
+        applyJobSubmit(jobPostId, candidateId, returnedData.candidateMobile, prefLocation, prefTimeSlot, scheduledInterviewDate, true);
     } else{
         //Partner doesn't own the candidate
         window.location = "/partner/myCandidates";
@@ -1200,35 +1213,23 @@ function processDataCheckCandidate(returnedData) {
 
 $(function() {
     $("#jobLocality").change(function (){
-        if($(this).val() != -1 && $("#interviewSlot").val() != -1){
-            prefLocation = $(this).val();
-            prefLocationName = $("#jobLocality option:selected").text();
+        prefLocation = $(this).val();
+        prefLocationName = $("#jobLocality option:selected").text();
+        $("#applyButton").show();
 
-            try{
-                if ($("#interviewSlot").css('display') != 'none'){
-                    var combinedValue = $("#interviewSlot").val().split("_");
-                    scheduledInterviewDate = combinedValue[0];
-                    prefTimeSlot = combinedValue[1];
-                }
-            } catch(err){}
-
-            $("#applyButton").show();
-        } else{
-            $("#applyButton").hide();
-        }
     });
 
-    $("#interviewSlot").change(function (){
-        if($(this).val() != -1 && $("#jobLocality").val() != -1){
-            var combinedValue = $(this).val().split("_");
-            scheduledInterviewDate = combinedValue[0];
-            prefTimeSlot = combinedValue[1];
-
-            prefLocation = $("#jobLocality").val();
-            prefLocationName = $("#jobLocality option:selected").text();
-            $("#applyButton").show();
-        } else{
-            $("#applyButton").hide();
-        }
-    });
+    // $("#interviewSlot").change(function (){
+    //     if($(this).val() != -1 && $("#jobLocality").val() != -1){
+    //         var combinedValue = $(this).val().split("_");
+    //         scheduledInterviewDate = combinedValue[0];
+    //         prefTimeSlot = combinedValue[1];
+    //
+    //         prefLocation = $("#jobLocality").val();
+    //         prefLocationName = $("#jobLocality option:selected").text();
+    //         $("#applyButton").show();
+    //     } else{
+    //         $("#applyButton").hide();
+    //     }
+    // });
 });

@@ -1,5 +1,8 @@
 /**
  * Created by adarsh on 10/9/16.
+ *
+ * dependencies :
+ *          <script type="text/javascript" src="/assets/partner/js/notify.min.js"></script>
  */
 
 var localityArray = [];

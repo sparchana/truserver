@@ -115,6 +115,9 @@ function initDecorator(colorPalette) {
         finalSubmissionBypassRequired: false,
         callYesNoRequired: true,
         columnVisible: [1, 2, 3, 4, 5, 6],
+        modalFooter: {
+                footerMessage: "Did the candidate pass pre-screen?"
+        }
     };
     return decorator;
 }
@@ -191,6 +194,7 @@ function processLanguage(returnedData) {
     var arrayLang = [];
     var arrayLangId = [];
     var defaultOption = $('<option value="-1"></option>').text("Select");
+    langArray = [];
     returnedData.forEach(function (language) {
         var id = language.languageId;
         var name = language.languageName;
@@ -419,7 +423,7 @@ function validateInput() {
 function processLocality(returnedData) {
     console.log("fetched all locality. now rendering locality token input");
 
-    var locArray = [];
+    localityArray = [];
     if (returnedData != null) {
         returnedData.forEach(function (locality) {
             var id = locality.localityId;
@@ -428,12 +432,9 @@ function processLocality(returnedData) {
             item ["id"] = id;
             item ["name"] = name;
             localityArray.push(item);
-            locArray.push(item);
         });
 
         if (localityArray != null) {
-            console.log("localityArray: "+localityArray.length);
-            console.log("localityArray: "+locArray.length);
             $("#candidateHomeLocality").tokenInput(getLocalityArray(), {
                 theme: "facebook",
                 placeholder: "job Localities?",
@@ -490,14 +491,21 @@ function onCallYes(candidateId, jobPostId) {
     $('#callNoClass').hide();
     $('#pre_screen_body').show();
     updateCallAttempts(candidateId, jobPostId, "CONNECTED");
-    activateSubmit();
+    activateSubmit(true);
 }
 
-function activateSubmit() {
-    if($('input:radio[name="verdict"]:checked').val() != null
-    && $('input:radio[name="callConnected"]:checked').val() == "yes"){
-        $('.btn.modal-submit').prop('disabled', false);
+function activateSubmit(data) {
+    if(data){
+        if($('input:radio[name="verdict"]:checked').val() != null
+            && $('input:radio[name="callConnected"]:checked').val() == "yes"){
+            $('.btn.modal-submit').prop('disabled', false);
+        }
+    } else {
+        if($('input:radio[name="verdict"]:checked').val() != null){
+            $('.btn.modal-submit').prop('disabled', false);
+        }
     }
+
 }
 function onCallNo(candidateId, jobPostId) {
     $('#callNoClass').show();
@@ -746,7 +754,7 @@ function notifyModal(title, message){
 function processFinalSubmitResponse(returnedData, jobPostId, candidateId, propId) {
     console.log(returnedData);
     if(returnedData != "error" || returnedData.trim() != ""){
-        getPreScreenContent(jobPostId, candidateId, true, 0, null, null);
+        getPreScreenContent(jobPostId, candidateId, true, null, null);
         // get new jobPostVsCandidate data
         // construct new pre_screen_body
         // render it $('#pre_screen_body').html("test")
@@ -1276,6 +1284,7 @@ function constructPreScreenBodyContainer(returnedData, customD) {
             rowHeadingPost.appendChild(label);
             minReqContainer.appendChild(minReqTextArea);
             splitDiv.append(minReqContainer);
+            console.log("added minreq text area to PS_Modal");
             // minReq end
         }
         if(customD.textContainers.noteContainer.visibility){
@@ -1302,9 +1311,10 @@ function constructPreScreenBodyContainer(returnedData, customD) {
             rowHeadingNote.appendChild(label);
             noteContainer.appendChild(textarea);
             splitDiv.append(noteContainer);
-            container.append(splitDiv);
+            console.log("added note text area to PS_Modal");
             // note end
         }
+        container.append(splitDiv);
     }
 
 
@@ -1507,6 +1517,10 @@ function processPreScreenContent(returnedData, customD) {
         return;
     }
     if(returnedData != null){
+        if(returnedData.elementList.length == 0){
+            bootbox.hideAll();
+            return;
+        }
         // if(returnedData == "OK" || returnedData == "NA" ) {
         //     processPostPreScreenResponse(returnedData);
         //     return returnedData;
@@ -1522,32 +1536,36 @@ function processPreScreenContent(returnedData, customD) {
 
         preScreenBody.append(container);
 
+        var titleMessage;
+        if(customD.callYesNoRequired){
+            titleMessage = $('' +
+                '<div class="row">'+
+                '<div class="col-sm-6">'+
+                '<h5 id="callConfirmation" style="margin:2px">Call Connected? :&nbsp; ' +
+                '<input type="radio" name="callConnected" id="callYes" value="yes" onclick="onCallYes('+candidateId+', '+jobPostId+')">&nbsp;Yes&nbsp; ' +
+                '<input type="radio" name="callConnected" id="callNo" value="no"  onclick="onCallNo('+candidateId+', '+jobPostId+')">&nbsp;No ' +
+                '<div id="callNoClass" style="display: none;">' +
+                '<h6>Reason?:' +
+                '<select id="callResponse" class="selectDropdown" style="margin: 0 8px;" >' +
+                '<option value="busy">Busy</option>' +
+                '<option value="not_reachable">Not Reachable</option>' +
+                '<option value="not_answering">Not Answering</option>' +
+                '<option value="switched_off">Switched Off</option>' +
+                '<option value="dnd">DND</option>' +
+                '<option value="third_person">Third Person</option>' +
+                '<option value="others">Others</option>' +
+                '</select>' +
+                '<button type="submit" id="responseSaveBtn"  class="'+customD.callYesNo.button.className+'" onclick="saveAttempt('+candidateId+', '+jobPostId+')">Save</button>' +
+                '</h6>' +
+                '</div>' +
+                '</h5>'+
+                '</div>'+
+                '</div>');
+        } else {
+            titleMessage = "Pre Screen";
+        }
 
-        var callYesNo = $('' +
-            '<div class="row">'+
-            '<div class="col-sm-6">'+
-            '<h5 id="callConfirmation" style="margin:2px">Call Connected? :&nbsp; ' +
-            '<input type="radio" name="callConnected" id="callYes" value="yes" onclick="onCallYes('+candidateId+', '+jobPostId+')">&nbsp;Yes&nbsp; ' +
-            '<input type="radio" name="callConnected" id="callNo" value="no"  onclick="onCallNo('+candidateId+', '+jobPostId+')">&nbsp;No ' +
-            '<div id="callNoClass" style="display: none;">' +
-            '<h6>Reason?:' +
-            '<select id="callResponse" class="selectDropdown" style="margin: 0 8px;" >' +
-            '<option value="busy">Busy</option>' +
-            '<option value="not_reachable">Not Reachable</option>' +
-            '<option value="not_answering">Not Answering</option>' +
-            '<option value="switched_off">Switched Off</option>' +
-            '<option value="dnd">DND</option>' +
-            '<option value="third_person">Third Person</option>' +
-            '<option value="others">Others</option>' +
-            '</select>' +
-            '<button type="submit" id="responseSaveBtn"  class="'+customD.callYesNo.button.className+'" onclick="saveAttempt('+candidateId+', '+jobPostId+')">Save</button>' +
-            '</h6>' +
-            '</div>' +
-            '</h5>'+
-            '</div>'+
-            '</div>');
-
-        renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, customD);
+        renderParentModal(preScreenBody, titleMessage, jobPostId, candidateId, customD);
     }
 }
 
@@ -1591,11 +1609,11 @@ function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, cus
         var forceSetDiv = $('' +
             '<div class="col-xs-11" style="text-align: left">' +
             '<h5 style="margin:2px; font-size: 12px;">' +
-            '<div style="display:inline-block; margin: 0 1px;text-align: left; color: #b9151b">*</div>' +
-            'Did the candidate pass pre-screen?&nbsp;:&nbsp;' +
+            '<div style="display:inline-block; margin: 0 1px;text-align: left; color: #b9151b" id="footerMessage">*</div>' +
+            ''+customD.modalFooter.footerMessage+'&nbsp;:&nbsp;' +
             '<div style="display: inline-block; vertical-align: middle; margin: 0px;">' +
-            '<input type="radio" name="verdict" id="pass" value="1" style="margin: 0 2px" onclick="activateSubmit()">Yes' +
-            '<input type="radio" name="verdict" id="fail" value="0" style="margin: 0 2px" onclick="activateSubmit()">No' +
+            '<input type="radio" name="verdict" id="pass" value="1" style="margin: 0 2px" onclick="activateSubmit('+customD.callYesNoRequired+')">Yes' +
+            '<input type="radio" name="verdict" id="fail" value="0" style="margin: 0 2px" onclick="activateSubmit('+customD.callYesNoRequired+')">No' +
             '</div>' +
             '</h5>' +
             '</div>'
@@ -1605,7 +1623,11 @@ function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, cus
         if(customD.finalSubmissionButton.init.disabled){
             $('.btn.modal-submit').prop('disabled', true);
         }
-        $('#pre_screen_body').hide();
+        if(!customD.callYesNoRequired){
+            $('#pre_screen_body').show();
+        } else {
+            $('#pre_screen_body').hide();
+        }
         $('body').removeClass('modal-open').removeClass('open-modal').addClass('open-modal');
     });
 }
@@ -1651,16 +1673,9 @@ function reProcessPreScreenContent(returnedData, customD){
     }
 }
 
-function getPreScreenContent(jobPostId, candidateId, isRebound, actorId, customD, rePreScreen) {
+function getPreScreenContent(jobPostId, candidateId, isRebound, customD, rePreScreen) {
     if(customD == null ) {
         customD = initDecorator(null);
-    }
-    if(actorId == 100) {
-        console.log("actor: Partner");
-    } else if (actorId == 0) {
-        console.log("actor: Support");
-    } else if (actorId == 999) {
-        console.log("actor: Self");
     }
     var base_api_url ="/support/api/getJobPostVsCandidate/";
     if(base_api_url == null || jobPostId == null) {
