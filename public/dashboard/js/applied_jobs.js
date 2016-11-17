@@ -62,6 +62,7 @@ function processDataAndFetchAppliedJobs(returnedData) {
 }
 
 function prePopulateJobSection(jobApplication) {
+    console.log(jobApplication);
     var parent = $('#myAppliedJobs');
     var count = 0;
     jobApplication.forEach(function (jobPost) {
@@ -275,11 +276,11 @@ function prePopulateJobSection(jobApplication) {
             titleRowTwo.id = "appliedOnId";
             jobBodyCol.appendChild(titleRowTwo);
 
-            var fetchedAppliedDate = jobPost.jobApplicationCreateTimeStamp;
+            var fetchedAppliedDate = jobPost.creationTimestamp;
 
             var divAppliedDate = document.createElement("div");
             divAppliedDate.className = "appliedDate";
-            divAppliedDate.textContent = "Applied on: " + new Date(fetchedAppliedDate).getDate() + "/" + (new Date(fetchedAppliedDate).getMonth() + 1) + "/" + new Date(fetchedAppliedDate).getFullYear();
+            divAppliedDate.textContent = "Last Update: " + new Date(fetchedAppliedDate).getDate() + "/" + (new Date(fetchedAppliedDate).getMonth() + 1) + "/" + new Date(fetchedAppliedDate).getFullYear();
             titleRowTwo.appendChild(divAppliedDate);
 
             var titleRowThree = document.createElement("div");
@@ -292,20 +293,21 @@ function prePopulateJobSection(jobApplication) {
             divInterviewStatus.className = "appliedDate";
             divInterviewStatus.id = "interview_status_val_" + jobPost.jobPost.jobPostId;
 
-            if(jobPost.interviewStatus != null){
-                if(jobPost.interviewStatus.interviewStatusId == 1){
-                    if(jobPost.interviewDate != null){
-                        divInterviewStatus.textContent = "Interview scheduled on " + new Date(jobPost.interviewDate).getDate() + "/" + (new Date(jobPost.interviewDate).getMonth() + 1) + "/" + new Date(jobPost.interviewDate).getFullYear() + " between " + jobPost.interviewTimeSlot.interviewTimeSlotName;
-                        divInterviewStatus.style = "color: green; font-weight: 600";
-                    } else{
-                        divInterviewStatus.textContent = "Shortlisted by the recruiter";
-                        divInterviewStatus.style = "color: green; font-weight: 600";
-                    }
-                } else if(jobPost.interviewStatus.interviewStatusId == 2){
-                    divInterviewStatus.textContent = "Job Application declined";
+            if(jobPost.status.statusId < 6){
+                divInterviewStatus.textContent = "Job application under review";
+                divInterviewStatus.style = "color: #eb9800; font-weight: 600";
+            } else{
+                if(jobPost.status.statusId == 6){
+                    divInterviewStatus.textContent = "Interview confirmed on " + new Date(jobPost.scheduledInterviewDate).getDate() + "/" + (new Date(jobPost.scheduledInterviewDate).getMonth() + 1) + "/" + new Date(jobPost.scheduledInterviewDate).getFullYear() + " between " + jobPost.scheduledInterviewTimeSlot.interviewTimeSlotName;
+                    divInterviewStatus.style = "color: green; font-weight: 600";
+                } else if(jobPost.status.statusId == 7){
+                    divInterviewStatus.textContent = "Application rejected";
                     divInterviewStatus.style = "color: red; font-weight: 600";
-                } else if(jobPost.interviewStatus.interviewStatusId == 3){
-                    divInterviewStatus.textContent = "Interview Rescheduled on " + new Date(jobPost.interviewDate).getDate() + "/" + (new Date(jobPost.interviewDate).getMonth() + 1) + "/" + new Date(jobPost.interviewDate).getFullYear() + " between " + jobPost.interviewTimeSlot.interviewTimeSlotName;
+                } else if(jobPost.status.statusId == 8){
+                    divInterviewStatus.textContent = "Application rejected by the Candidate";
+                    divInterviewStatus.style = "color: red; font-weight: 600";
+                } else if(jobPost.status.statusId == 9){
+                    divInterviewStatus.textContent = "Interview Rescheduled on " + new Date(jobPost.scheduledInterviewDate).getDate() + "/" + (new Date(jobPost.scheduledInterviewDate).getMonth() + 1) + "/" + new Date(jobPost.scheduledInterviewDate).getFullYear() + " between " + jobPost.scheduledInterviewTimeSlot.interviewTimeSlotName;
                     divInterviewStatus.style = "color: orange; font-weight: 600";
 
                     // accept interview
@@ -315,8 +317,8 @@ function prePopulateJobSection(jobApplication) {
                     candidateInterviewAccept.setAttribute("data-delay", "50");
                     candidateInterviewAccept.setAttribute("data-tooltip", "Confirm Interview");
                     candidateInterviewAccept.onclick = function () {
-                        rescheduledDate = "Interview scheduled on " + new Date(jobPost.interviewDate).getDate() + "/" + (new Date(jobPost.interviewDate).getMonth() + 1) + "/" + new Date(jobPost.interviewDate).getFullYear() + " between " + jobPost.interviewTimeSlot.interviewTimeSlotName;
-                        confirmInterview(jobPost.jobPost.jobPostId, 1);
+                        rescheduledDate = "Interview scheduled on " + new Date(jobPost.scheduledInterviewDate).getDate() + "/" + (new Date(jobPost.scheduledInterviewDate).getMonth() + 1) + "/" + new Date(jobPost.scheduledInterviewDate).getFullYear() + " between " + jobPost.scheduledInterviewTimeSlot.interviewTimeSlotName;
+                        confirmInterview(jobPost.jobPost.jobPostId, 1); //rejecting id value = 1
                     };
                     divInterviewStatus.appendChild(candidateInterviewAccept);
 
@@ -333,8 +335,8 @@ function prePopulateJobSection(jobApplication) {
                     candidateInterviewReject.setAttribute("data-delay", "50");
                     candidateInterviewReject.setAttribute("data-tooltip", "Confirm Interview");
                     candidateInterviewReject.onclick = function () {
-                        rescheduledDate = "Interview scheduled on " + new Date(jobPost.interviewDate).getDate() + "/" + (new Date(jobPost.interviewDate).getMonth() + 1) + "/" + new Date(jobPost.interviewDate).getFullYear() + " between " + jobPost.interviewTimeSlot.interviewTimeSlotName;
-                        confirmInterview(jobPost.jobPost.jobPostId, 0);
+                        rescheduledDate = "Interview scheduled on " + new Date(jobPost.scheduledInterviewDate).getDate() + "/" + (new Date(jobPost.scheduledInterviewDate).getMonth() + 1) + "/" + new Date(jobPost.scheduledInterviewDate).getFullYear() + " between " + jobPost.scheduledInterviewTimeSlot.interviewTimeSlotName;
+                        confirmInterview(jobPost.jobPost.jobPostId, 0); //rejecting id value = 0
                     };
                     divInterviewStatus.appendChild(candidateInterviewReject);
 
@@ -343,15 +345,7 @@ function prePopulateJobSection(jobApplication) {
                     iconImg.setAttribute('height', '16px');
                     iconImg.setAttribute('width', '14px');
                     candidateInterviewReject.appendChild(iconImg);
-
-
-                } else if(jobPost.interviewStatus.interviewStatusId == 4){
-                    divInterviewStatus.textContent = "Job Application declined by the Candidate";
-                    divInterviewStatus.style = "color: red; font-weight: 600";
                 }
-            } else{
-                divInterviewStatus.textContent = "Job application under review";
-                divInterviewStatus.style = "color: #eb9800; font-weight: 600";
             }
             titleRowThree.appendChild(divInterviewStatus);
         }

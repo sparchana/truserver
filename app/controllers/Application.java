@@ -14,6 +14,8 @@ import api.http.httpResponse.*;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
+import com.avaje.ebean.RawSql;
+import com.avaje.ebean.RawSqlBuilder;
 import com.avaje.ebean.cache.ServerCacheManager;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -582,29 +584,10 @@ public class Application extends Controller {
     @Security.Authenticated(SecuredUser.class)
     public static Result getCandidateJobApplication() {
         if(session().get("candidateId") != null) {
-            Long candidateId = Long.parseLong(session().get("candidateId"));
-            List<JobApplication> jobApplicationList = JobApplication.find.where().eq("candidateId", session().get("candidateId")).findList();
-            List<JobApplicationWithAssessmentStatusResponse> applicationWithAssessmentStatusResponseList = new ArrayList<>();
-            List<Long> jobRoleIds = new ArrayList<>();
-            if(jobApplicationList == null){
-                return ok("0");
-            }
-            for (JobApplication jobApplication: jobApplicationList) {
-                 applicationWithAssessmentStatusResponseList.add(new JobApplicationWithAssessmentStatusResponse(jobApplication));
-                if(!jobRoleIds.contains(jobApplication.getJobPost().getJobRole().getJobRoleId())) {
-                    jobRoleIds.add(jobApplication.getJobPost().getJobRole().getJobRoleId());
-                }
-            }
-            Map<Long, Boolean> jobRoleIdsWithAssessmentStatusMap = AssessmentService.getJobRoleIdsVsIsAssessedMap(candidateId, jobRoleIds);
-            for (JobApplicationWithAssessmentStatusResponse jobApplication: applicationWithAssessmentStatusResponseList) {
-                jobApplication.setAssessmentRequired(!jobRoleIdsWithAssessmentStatusMap.get(jobApplication.getJobPost().getJobRole().getJobRoleId()));
-            }
-            if(applicationWithAssessmentStatusResponseList == null) {
-                return ok("0");
-            }
-            return ok(toJson(applicationWithAssessmentStatusResponseList));
+            return ok(toJson(JobPostWorkflowEngine.getCandidateAppliedJobs()));
+        } else{
+            return ok("0");
         }
-        return ok("0");
     }
 
     public static Result getAllSkills(String ids) {

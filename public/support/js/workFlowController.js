@@ -662,7 +662,6 @@ $(function () {
 
             if (returnedData.jobPostExperience != null) {
                 app.jpExperienceIdList = [];
-                console.log(returnedData.jobPostExperience.experienceId);
                 app.jpExperienceIdList.push(returnedData.jobPostExperience.experienceId);
                 $("#experienceMultiSelect").val(app.jpExperienceIdList);
                 $("#experienceMultiSelect").multiselect('rebuild');
@@ -673,7 +672,6 @@ $(function () {
                 $("#educationMultiSelect").val(app.jpEducationIdList);
                 $("#educationMultiSelect").multiselect('rebuild');
             }
-            console.log(returnedData.jobPostLanguageRequirements);
             if (returnedData.jobPostLanguageRequirements != null) {
                 var req = returnedData.jobPostLanguageRequirements;
                 app.jpLanguageIdList = [];
@@ -931,7 +929,7 @@ $(function () {
                         }
                         return interviewDetails;
                     } else {
-                        return newCandidate.candidateJobApplication;
+                        return "";
                     }
                 };
 
@@ -1042,6 +1040,44 @@ $(function () {
                     'varColumn': varColumn,
                     'varColumn2': varColumn2
                 })
+
+/*                returnedDataArray.push({
+                    'cLID': "aaa",
+                    'candidateFirstName': "b",
+                    'candidateMobile': "c",
+                    'candidateJobPref': "d",
+                    'candidateLocalityPref': "e",
+                    'locality': "f",
+                    'matchedLocality': "g",
+                    'age': "h",
+                    'candidateExperience': "i",
+                    'candidateIsEmployed': "j",
+                    'candidateLastWithdrawnSalary': "k",
+                    'candidateLanguage': "l",
+                    'candidateEducation': "m",
+                    'candidateDegree': "n",
+                    'candidateDegreeCompleted': "o",
+                    'candidateSkillList': "p",
+                    'candidateGender': "q",
+                    'pastOrCurrentCompanyName': "r",
+                    'candidateIsAssessmentComplete': "s",
+                    'jobAppliedOn': "t",
+                    'noOfJobApplication': "u",
+                    'jobApplicationMode': "v",
+                    'candidateExperienceLetter': "w",
+                    'candidateIdProofs': "x",
+                    'candidateTimeShiftPref': "y",
+                    'lastActive': "z",
+                    'candidateCreateTimestamp': "xa",
+                    'isMinProfileComplete': "xb",
+                    'experience': "xc",
+                    'candidateId': "xd",
+                    'preScreenAttempt': "xe" ,
+                    'preScreenSelectionTS': "xf",
+                    'preScreenCreatedBy': "xg",
+                    'varColumn': "xh",
+                    'varColumn2': "xi"
+                })*/
             });
 
             app.tableContainer.show();
@@ -1160,7 +1196,6 @@ $(function () {
         for (var i = 0; i < arrayLength; i++) {
             app.jpSelectedCandidateList.push(parseInt(selectedCandidateIds[i]));
         }
-        console.log(app.jpSelectedCandidateList);
     };
 
     app.submitForm = function () {

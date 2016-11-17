@@ -161,4 +161,3 @@ public class JobPostWorkflow extends Model {
         this.interviewLocationLng = interviewLocationLng;
     }
 }
-

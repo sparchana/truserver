@@ -626,8 +626,6 @@ function processDataForJobApplications(returnedData) {
             innerInlineBlockDiv.textContent = "Interview status";
             inlineBlockDiv.appendChild(innerInlineBlockDiv);
 
-            console.log(value);
-
             var candidateInterviewDateVal = document.createElement("span");
 
             if(value.extraData.interviewDate != null){
@@ -724,7 +722,7 @@ function processDataForJobApplications(returnedData) {
                 candidateInterviewStatusVal.style = "color: red; font-weight: bold";
             } else if(value.extraData.workflowStatus.statusId == 9){
                 candidateInterviewStatusVal.textContent = "Interview Rescheduled. Awaiting candidate's response";
-                candidateInterviewStatusVal.style = "color: #bc8304; font-weight: bold";
+                candidateInterviewStatusVal.style = "color: orange; font-weight: bold";
             } else{
                 candidateInterviewStatusVal.textContent = "TODO! No Slots availabe.";
             }
