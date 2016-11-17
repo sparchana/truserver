@@ -1675,7 +1675,11 @@ function reProcessPreScreenContent(returnedData, customD){
 
 function getPreScreenContent(jobPostId, candidateId, isRebound, customD, rePreScreen) {
     if(customD == null ) {
-        customD = initDecorator(null);
+        if(decorator != null){
+            customD = decorator;
+        } else {
+            customD = initDecorator(null);
+        }
     }
     var base_api_url ="/support/api/getJobPostVsCandidate/";
     if(base_api_url == null || jobPostId == null) {

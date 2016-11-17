@@ -1153,9 +1153,7 @@ public class JobPostWorkflowEngine {
                 .eq("recruiterProfile.recruiterProfileId", recruiterId)
                 .eq("recruiterCreditCategory.recruiterCreditCategoryId", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
                 .orderBy().desc("createTimestamp").setMaxRows(1).findUnique();
-        Logger.info("recruiterId:" + recruiterId);
         if(recruiterCreditHistory != null) {
-            Logger.info("recruiterCreditHistory:" + toJson(recruiterCreditHistory));
             if(recruiterCreditHistory.getRecruiterCreditCategory().getRecruiterCreditCategoryId()
                     == ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK
                     && recruiterCreditHistory.getRecruiterCreditsAvailable() > 0){

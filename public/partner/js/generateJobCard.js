@@ -878,19 +878,29 @@ function processDataAllJobPosts(returnedData) {
 openPartnerPreScreenModal = function (jobPostId, candidateId) {
     // actorId defined which modal to display
     globalPalette.color.main.headerColor= "#26A69A";
-    var decorator = initDecorator(globalPalette);
-    decorator.columnVisible = [1,2,3,4,6];
+    var decoratorPromise = new Promise( function(resolve, reject) {
+                resolve(initDecorator(globalPalette));
+        });
+    decoratorPromise.then(function (decorator) {
+        console.log("Promise fulfiled");
+        decorator.columnVisible = [1,2,3,4,6];
 
-    // display only Min Requirement
-    decorator.textContainers.noteContainer.visibility = false;
-    decorator.textContainers.minReqContainer.className = "col-lg-12 form-group remove-padding-left";
+        // display only Min Requirement
+        decorator.textContainers.noteContainer.visibility = false;
+        decorator.textContainers.minReqContainer.className = "col-lg-12 form-group remove-padding-left";
 
-    // remove callConnected
-    decorator.callYesNoRequired = false;
+        // remove callConnected
+        decorator.callYesNoRequired = false;
 
-    // footerMessage
-    decorator.modalFooter.footerMessage = "I have confirmed with the candidate about above requirements.";
-    getPreScreenContent(jobPostId, candidateId, false, decorator, false);
+        // footerMessage
+        decorator.modalFooter.footerMessage = "I have confirmed with the candidate about above requirements.";
+
+        if( !decorator.callYesNoRequired) {
+            getPreScreenContent(jobPostId, candidateId, false, decorator, false);
+        }
+    }, function (err) {
+        console.log(err);
+    });
 };
 
 function getCandidateInfo() {
