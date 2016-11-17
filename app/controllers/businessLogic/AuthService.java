@@ -166,6 +166,7 @@ public class AuthService {
     }
     public static void addSession(Auth existingAuth, Candidate existingCandidate){
         session().put("sessionId", existingAuth.getAuthSessionId());
+        session().put("sessionUsername", "CID-"+String.valueOf(existingCandidate.getCandidateId()));
         session().put("candidateId", String.valueOf(existingCandidate.getCandidateId()));
         session().put("candidateMobile", String.valueOf(existingCandidate.getCandidateMobile()));
         session().put("leadId", String.valueOf(existingCandidate.getLead().getLeadId()));

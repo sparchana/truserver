@@ -108,13 +108,18 @@ function getAllAppliedJobs() {
                             joiningIncentive = "₹" + jobApplication.jobPost.jobPostPartnerJoiningIncentive;
                         }
                         var varColumn = function () {
-                            // TODO: check if already prescreened completely or not, accordingly display button
-                            if(candidateId == null ) {
-                                scrapeCandidateIdFromUrl();
+                            if(jobApplication.preScreenRequired){
+                                // TODO: check if already prescreened completely or not, accordingly display button
+                                if(candidateId == null ) {
+                                    scrapeCandidateIdFromUrl();
+                                }
+                                // jpId is jobPostId
+                                var jpId = jobApplication.jobPost.jobPostId;
+                                return '<input type="submit" value="Pre-Screen"  style="width:150px" onclick="openPartnerPreScreenModal(' + jpId+ ', ' + candidateId + ');" id="' + candidateInfo.lead.leadId + '" class="btn btn-primary">'
+                            } else {
+                                return "Not Required";
                             }
-                            // jpId is jobPostId
-                            var jpId = jobApplication.jobPost.jobPostId;
-                            return '<input type="submit" value="Pre-Screen"  style="width:150px" onclick="openPartnerPreScreenModal(' + jpId+ ', ' + candidateId + ');" id="' + candidateInfo.lead.leadId + '" class="btn btn-primary">'
+
                         };
 
                         returned_data.push({
@@ -884,7 +889,7 @@ openPartnerPreScreenModal = function (jobPostId, candidateId) {
     decorator.callYesNoRequired = false;
 
     // footerMessage
-    decorator.modalFooter.footerMessage = "Partner bypass Message will come here";
+    decorator.modalFooter.footerMessage = "I have confirmed with the candidate about above requirements.";
     getPreScreenContent(jobPostId, candidateId, false, decorator, false);
 };
 

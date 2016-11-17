@@ -198,7 +198,7 @@ function generateInterviewSlotModal(title, message, candidateId, jobPostId) {
         animate: true,
         onEscape: function() {
             $('body').removeClass('open-interview-selector-modal');
-            notifyError("Submitted successfully. Refreshing page.", 'success');
+            notify("Submitted successfully. Refreshing page.", 'success');
 
             setTimeout(function () {
                 location.reload();
@@ -266,17 +266,15 @@ function finalInterviewSlotSubmission(candidateId, jobPostId) {
 function processInterviewSubmissionResponse(returnData) {
     console.log(returnData);
     // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
-    notifyError("Interview Submitted successfully. Refreshing ..", 'success');
-    setTimeout(function () {
-        location.reload();
-    }, 2000);
-}
-
-function interviewSubmitResponse(returnData){
     if(returnData == "ok"){
+        notify("Interview Submitted successfully. Refreshing ..", 'success');
         setTimeout(function () {
             location.reload();
-            // window.location = response.redirectUrl + app.jpId + "/?view=" + response.nextView;
+        }, 2000);
+    } else {
+        notify("Something went wrong. Refreshing page. After refresh please try again.", 'error');
+        setTimeout(function () {
+            location.reload();
         }, 2000);
     }
 }

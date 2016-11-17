@@ -29,6 +29,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 
 /**
@@ -615,7 +616,7 @@ public class JobPostWorkflowEngine {
                     .eq("candidate.candidateId", candidateId)
                     .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
 
-            if(jobPostWorkflowOld.getStatus().getStatusId() == ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED){
+            if((jobPostWorkflowOld != null) && (jobPostWorkflowOld.getStatus().getStatusId() >= ServerConstants.JWF_STATUS_PRESCREEN_FAILED)){
                 populateResponse.setStatus(PreScreenPopulateResponse.Status.INVALID);
                 return populateResponse;
             }
@@ -1036,7 +1037,6 @@ public class JobPostWorkflowEngine {
     }
 
     public static String savePreScreenResult(PreScreenRequest preScreenRequest) {
-        String response = "OK";
         // fetch existing workflow old
         JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
                 .eq("jobPost.jobPostId", preScreenRequest.getJobPostId())
@@ -1151,8 +1151,11 @@ public class JobPostWorkflowEngine {
         Long recruiterId = jobPostWorkflowNew.getJobPost().getRecruiterProfile().getRecruiterProfileId();
         RecruiterCreditHistory recruiterCreditHistory = RecruiterCreditHistory.find.where()
                 .eq("recruiterProfile.recruiterProfileId", recruiterId)
+                .eq("recruiterCreditCategory.recruiterCreditCategoryId", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
                 .orderBy().desc("createTimestamp").setMaxRows(1).findUnique();
+        Logger.info("recruiterId:" + recruiterId);
         if(recruiterCreditHistory != null) {
+            Logger.info("recruiterCreditHistory:" + toJson(recruiterCreditHistory));
             if(recruiterCreditHistory.getRecruiterCreditCategory().getRecruiterCreditCategoryId()
                     == ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK
                     && recruiterCreditHistory.getRecruiterCreditsAvailable() > 0){

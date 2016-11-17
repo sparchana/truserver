@@ -75,6 +75,10 @@ public class JobApplication extends Model {
     @Column(name = "scheduledInterviewDate", columnDefinition = "date null")
     private Date scheduledInterviewDate;
 
+    @Transient
+    private boolean isPreScreenRequired = true;
+
+
     public static Model.Finder<String, JobApplication> find = new Model.Finder(JobApplication.class);
 
     public JobApplication() {
@@ -179,5 +183,13 @@ public class JobApplication extends Model {
 
     public void setInterviewTimeSlot(InterviewTimeSlot interviewTimeSlot) {
         this.interviewTimeSlot = interviewTimeSlot;
+    }
+
+    public boolean isPreScreenRequired() {
+        return isPreScreenRequired;
+    }
+
+    public void setPreScreenRequired(boolean preScreenRequired) {
+        isPreScreenRequired = preScreenRequired;
     }
 }
