@@ -86,3 +86,20 @@ input[type=checkbox], input[type=radio]{
     text-align: left !important;
     padding-left: 17px !important;
 }
+.btn.active, .btn:active{
+    background-color: rgb(255,64,129);
+    color:#fff;
+}
+.btn-custom-check{
+    color: rgb(113, 113, 113);
+    background-color:rgba(210, 210, 210, 0.5);
+}
+.btn-group>.btn:first-child{
+    width: 220px;
+}
+#eduCompleted{
+    margin-left: 20px;
+}
+#eduCompletedNot{
+    margin-left: 40px;
+}

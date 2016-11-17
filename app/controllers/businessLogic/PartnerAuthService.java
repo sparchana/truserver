@@ -111,6 +111,7 @@ public class PartnerAuthService {
         session().put("partnerMobile", String.valueOf(partner.getPartnerMobile()));
         session().put("leadId", String.valueOf(partner.getLead().getLeadId()));
         session().put("sessionExpiry", String.valueOf(existingAuth.getAuthSessionIdExpiryMillis()));
+        session().put("sessionChannel", String.valueOf(ServerConstants.SESSION_CHANNEL_PARTNER_WEBSITE));
         Logger.info("set-sessionId"+ session().get("sessionId"));
     }
 }

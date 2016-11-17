@@ -429,7 +429,7 @@ function processDataAndFillAllFields(returnedData) {
                     $('#experienced').parent().addClass('active').siblings().removeClass('active');
                     $("#totalWorkExperience").show();
                     $("#candidateTotalExperienceYear").val(parseInt((totalExperience / 12)).toString()); // years
-                    $("#candidateTotalExperienceMonth").val(totalExperience % 12); // years
+                    $("#candidateTotalExperienceMonth").val(totalExperience % 12); // month
 
                     candidateExps = returnedData.candidateExpList;
                     candidatePastJobExp = returnedData.jobHistoryList;
@@ -651,7 +651,6 @@ function processDataCheckShift(returnedData) {
             var name = timeshift.timeShiftName;
             var option = $('<option value=' + id + '></option>').text(name);
             $('#candidateTimeShiftPref').append(option);
-
         });
     }
 }
@@ -699,7 +698,6 @@ function processDataCheckEducation(returnedData) {
         }
     });
 }
-
 
 function processDataCheckLanguage(returnedData) {
     var arrayLang = [];
@@ -1722,7 +1720,6 @@ function saveProfileForm() {
             var motherTongue = "";
             var higherEducation = "";
             var workShift = "";
-
 
             if (($('#candidateHighestEducation').val()) != -1) {
                 higherEducation = $('input:radio[name="highestEducation"]:checked').val();

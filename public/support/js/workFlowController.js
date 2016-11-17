@@ -261,8 +261,8 @@ function getIdProof(idProofList) {
 }
 
 openPreScreenModal = function (mobile, candidateId) {
-    console.log("will open pre screen modal in future for candidate_id : " + mobile);
-    getPreScreenContent(jobPostId, candidateId);
+    // pass null to have default modal decorator
+    getPreScreenContent(jobPostId, candidateId, false, 0, null, null);
 };
 
 function showRadiusValue(value){
@@ -923,6 +923,13 @@ $(function () {
                         return "";
                     }
                 };
+                var varColumn2 = function () {
+                    if (app.currentView == "pre_screen_completed_view") {
+                        return newCandidate.extraData.interviewSchedule;
+                    } else {
+                        return "";
+                    }
+                };
                 var createdBy = function () {
                     if (app.currentView == "pre_screen_view") {
                         if(newCandidate.extraData.createdBy != null){
@@ -969,7 +976,8 @@ $(function () {
                     'preScreenAttempt': preScreenAttemptCount,
                     'preScreenSelectionTS': preScreenSelectionTimeStamp,
                     'preScreenCreatedBy': createdBy,
-                    'varColumn': varColumn
+                    'varColumn': varColumn,
+                    'varColumn2': varColumn2
                 })
             });
 
@@ -1026,7 +1034,8 @@ $(function () {
                     {"data": "preScreenAttempt"},
                     {"data": "preScreenSelectionTS"},
                     {"data": "preScreenCreatedBy"},
-                    {"data": "varColumn"}
+                    {"data": "varColumn"},
+                    {"data": "varColumn2"}
                 ],
                 "deferRender": true,
                 "scrollY": '48vh',

@@ -417,7 +417,7 @@ public class InteractionService {
 
     /* Workflow Interaction */
     public static void createWorkflowInteraction(String objAuuId, String objBuuId,
-                                                 Integer interactionType,String notes, String interactionResult)
+                                                 Integer interactionType,String notes, String interactionResult, Integer channel)
     {
         Interaction interaction = new Interaction(
                 objAuuId,
@@ -428,7 +428,7 @@ public class InteractionService {
                 notes,
                 interactionResult,
                 session().get("sessionUsername"),
-                INTERACTION_CHANNEL_SUPPORT_WEBSITE
+                channel == null ? INTERACTION_CHANNEL_SUPPORT_WEBSITE: channel
         );
         InteractionService.createInteraction(interaction);
     }

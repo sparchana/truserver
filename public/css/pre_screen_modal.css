@@ -52,6 +52,17 @@ body.open-modal {
     padding:8px;
 }
 
+.row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.remove-padding-left {
+    padding-left: 0;
+}
+.remove-padding-right {
+    padding-right: 0;
+}
 
 @media screen and (max-width: 768px) {
     .pre-screen-modal .modal-dialog{

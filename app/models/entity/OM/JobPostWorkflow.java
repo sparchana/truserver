@@ -1,14 +1,15 @@
 package models.entity.OM;
 
 import com.avaje.ebean.Model;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
 import models.entity.JobPost;
+import models.entity.Static.InterviewTimeSlot;
 import models.entity.Static.JobPostWorkflowStatus;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -46,6 +47,24 @@ public class JobPostWorkflow extends Model {
 
     @Column(name = "createdby", columnDefinition = "varchar(255) null", nullable = false)
     private String createdBy;
+
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "scheduled_interview_time_slot")
+    private InterviewTimeSlot scheduledInterviewTimeSlot;
+
+    @Column(name = "scheduled_interview_date", columnDefinition = "date null")
+    private Date scheduledInterviewDate;
+
+    @Column(name = "channel", columnDefinition = "int null")
+    private Integer channel;
+
+    @Column(name = "interview_location_lat", columnDefinition = "double null")
+    private Double interviewLocationLat;
+
+    @Column(name = "interview_location_lng", columnDefinition = "double null")
+    private Double interviewLocationLng;
+
 
     public JobPostWorkflow() {
         this.creationTimestamp = new Timestamp(System.currentTimeMillis());
@@ -102,5 +121,44 @@ public class JobPostWorkflow extends Model {
         this.status = status;
     }
 
+    public InterviewTimeSlot getScheduledInterviewTimeSlot() {
+        return scheduledInterviewTimeSlot;
+    }
+
+    public void setScheduledInterviewTimeSlot(InterviewTimeSlot scheduledInterviewTimeSlot) {
+        this.scheduledInterviewTimeSlot = scheduledInterviewTimeSlot;
+    }
+
+    public Date getScheduledInterviewDate() {
+        return scheduledInterviewDate;
+    }
+
+    public void setScheduledInterviewDate(Date scheduledInterviewDate) {
+        this.scheduledInterviewDate = scheduledInterviewDate;
+    }
+
+    public Integer getChannel() {
+        return channel;
+    }
+
+    public void setChannel(Integer channel) {
+        this.channel = channel;
+    }
+
+    public Double getInterviewLocationLat() {
+        return interviewLocationLat;
+    }
+
+    public void setInterviewLocationLat(Double interviewLocationLat) {
+        this.interviewLocationLat = interviewLocationLat;
+    }
+
+    public Double getInterviewLocationLng() {
+        return interviewLocationLng;
+    }
+
+    public void setInterviewLocationLng(Double interviewLocationLng) {
+        this.interviewLocationLng = interviewLocationLng;
+    }
 }
 
