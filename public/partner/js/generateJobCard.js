@@ -12,6 +12,10 @@ var prefTimeSlot;
 
 var scheduledInterviewDate;
 
+var globalJpId;
+var globalInterviewStatus;
+var rescheduledDate;
+
 $(window).resize(function(){
     var w = window.innerWidth;
     if(w < 640){
@@ -82,7 +86,7 @@ function getAllAppliedJobs() {
                 "dataSrc": function (returnedData) {
                     var returned_data = new Array();
                     returnedData.forEach(function (jobApplication) {
-                        var appliedDateInMillis = new Date(jobApplication.jobApplicationCreateTimeStamp);
+                        var appliedDateInMillis = new Date(jobApplication.creationTimestamp);
                         var salary;
                         if(jobApplication.jobPost.jobPostMaxSalary == null || jobApplication.jobPost.jobPostMaxSalary == 0){
                             salary = "₹" + rupeeFormatSalary(jobApplication.jobPost.jobPostMinSalary);
@@ -91,9 +95,9 @@ function getAllAppliedJobs() {
                         }
                         //getting interview details
                         var interviewDetails = "Not specified";
-                        if(jobApplication.interviewTimeSlot != null){
+                        if(jobApplication.scheduledInterviewDate != null){
                             var interviewDate = new Date(jobApplication.scheduledInterviewDate);
-                            interviewDetails = ('0' + interviewDate.getDate()).slice(-2) + '-' + getMonthVal((interviewDate.getMonth()+1)) + " @" + jobApplication.interviewTimeSlot.interviewTimeSlotName;
+                            interviewDetails = ('0' + interviewDate.getDate()).slice(-2) + '-' + getMonthVal((interviewDate.getMonth()+1)) + " @" + jobApplication.scheduledInterviewTimeSlot.interviewTimeSlotName;
                         }
                         //partner Incentives
                         var interviewIncentive = "Not Specified";
@@ -104,6 +108,28 @@ function getAllAppliedJobs() {
 
                         if(jobApplication.jobPost.jobPostPartnerJoiningIncentive != null){
                             joiningIncentive = "₹" + jobApplication.jobPost.jobPostPartnerJoiningIncentive;
+                        }
+
+                        var currentStatus = "Under Review";
+                        if(jobApplication.status.statusId > 5){
+                            if(jobApplication.status.statusId == 6) {
+                                currentStatus = "Interview confirmed";
+                                if (jobApplication.interviewLocationLat != null) {
+                                    currentStatus += '<div class="navigationBtn" onclick="navigateToLocation(' + jobApplication.interviewLocationLat + ', ' + jobApplication.interviewLocationLng + ')">Directions</div>'
+                                }
+                            } else if(jobApplication.status.statusId == 7){
+                                currentStatus = "Application rejected";
+                            } else if(jobApplication.status.statusId == 8){
+                                currentStatus = "Application rejected by the Candidate/Partner";
+                            } else if(jobApplication.status.statusId == 9){
+                                var jpId = jobApplication.jobPost.jobPostId;
+                                rescheduledDate = "Interview Rescheduled on " + new Date(jobApplication.scheduledInterviewDate).getDate() + "/" + (new Date(jobApplication.scheduledInterviewDate).getMonth() + 1) + "/" + new Date(jobApplication.scheduledInterviewDate).getFullYear() + " between " + jobApplication.scheduledInterviewTimeSlot.interviewTimeSlotName;
+                                currentStatus = rescheduledDate;
+                                currentStatus += '<span id="interview_status_option_' + jpId + '">' +
+                                    '<span class="accept" onclick="confirmInterview('+ jpId + ', 1);"><img src="/assets/recruiter/img/icons/accept.svg" height="16px" width="14px"></span>' +
+                                    '<span class="reject" onclick="confirmInterview('+ jpId + ', 0);"><img src="/assets/recruiter/img/icons/reject.svg" height="16px" width="14px"></span>' +
+                                    '</span>';
+                            }
                         }
                         // var varColumn = function () {
                         //     // TODO: check if already prescreened completely or not, accordingly display button
@@ -121,7 +147,7 @@ function getAllAppliedJobs() {
                             'jobPostSalary' : '<div class="mLabel" style="width:100%" >'+ salary + '</div>',
                             'interviewIncentive' : '<div class="mLabel" style="width:100%" >'+ interviewIncentive + '</div>',
                             'joiningIncentive' : '<div class="mLabel" style="width:100%" >'+ joiningIncentive + '</div>',
-                            'jobPreScreenLocation' : '<div class="mLabel" style="width:100%" >'+ jobApplication.locality.localityName + '</div>',
+                            'jobStatus' : '<div class="mLabel" id="status_' + jobApplication.jobPost.jobPostId + '" style="width:100%" >'+ currentStatus + '</div>',
                             'interviewDetails' : '<div class="mLabel" style="width:100%" >'+ interviewDetails + '</div>',
                             'jobAppliedOn' : '<div class="mLabel" style="width:100%" >'+ ('0' + appliedDateInMillis.getDate()).slice(-2) + '-' + getMonthVal((appliedDateInMillis.getMonth()+1)) + '-' + appliedDateInMillis.getFullYear() + '</div>'
                         });
@@ -143,7 +169,7 @@ function getAllAppliedJobs() {
                 { "data": "jobPostSalary" },
                 { "data": "interviewIncentive" },
                 { "data": "joiningIncentive" },
-                { "data": "jobPreScreenLocation" },
+                { "data": "jobStatus" },
                 { "data": "interviewDetails" },
                 { "data": "jobAppliedOn" }
             ],
@@ -274,6 +300,7 @@ function processDataAllJobPosts(returnedData) {
 
                 var jobBodySubRowCol = document.createElement("div");
                 jobBodySubRowCol.className = "col-sm-12";
+                jobBodySubRowCol.style = "padding: 0";
                 jobBodySubRow.appendChild(jobBodySubRowCol);
 
                 var salaryIconDiv = document.createElement("div");
@@ -308,6 +335,7 @@ function processDataAllJobPosts(returnedData) {
 
                 var jobBodySubRowColExp = document.createElement("div");
                 jobBodySubRowColExp.className = "col-sm-12";
+                jobBodySubRowColExp.style = "padding: 0";
                 jobBodySubRowExp.appendChild(jobBodySubRowColExp);
 
                 var expIconDiv = document.createElement("div");
@@ -338,6 +366,7 @@ function processDataAllJobPosts(returnedData) {
 
                 var jobBodySubRowColLoc = document.createElement("div");
                 jobBodySubRowColLoc.className = "col-sm-12";
+                jobBodySubRowColLoc.style = "padding: 0";
                 jobBodySubRowLoc.appendChild(jobBodySubRowColLoc);
 
                 var locIconDiv = document.createElement("div");
@@ -386,9 +415,10 @@ function processDataAllJobPosts(returnedData) {
 
                 var interviewIncentiveRowCol = document.createElement("div");
                 interviewIncentiveRowCol.className = "col-sm-12";
+                interviewIncentiveRowCol.style = "padding: 0";
                 interviewIncentiveRow.appendChild(interviewIncentiveRowCol);
 
-                var incentiveIconDiv = document.createElement("div");
+                var incentiveIconDiv = document.createElement("span");
                 incentiveIconDiv.style = "display : inline-block;top:0";
                 interviewIncentiveRowCol.appendChild(incentiveIconDiv);
 
@@ -398,7 +428,7 @@ function processDataAllJobPosts(returnedData) {
                 incentiveIcon.style = "margin: -4px 0 0 -5px";
                 incentiveIconDiv.appendChild(incentiveIcon);
 
-                var interviewIncentiveVal = document.createElement("div");
+                var interviewIncentiveVal = document.createElement("span");
                 interviewIncentiveVal.className = "incentiveEmptyBody";
                 interviewIncentiveVal.style = "display: inline-block;";
                 if(jobPost.jobPostPartnerInterviewIncentive == null || jobPost.jobPostPartnerInterviewIncentive == 0){
@@ -422,9 +452,10 @@ function processDataAllJobPosts(returnedData) {
 
                 var joiningIncentiveRowCol = document.createElement("div");
                 joiningIncentiveRowCol.className = "col-sm-12";
+                joiningIncentiveRowCol.style = "padding: 0";
                 joiningIncentiveRow.appendChild(joiningIncentiveRowCol);
 
-                incentiveIconDiv = document.createElement("div");
+                incentiveIconDiv = document.createElement("span");
                 incentiveIconDiv.style = "display : inline-block;top:0";
                 joiningIncentiveRowCol.appendChild(incentiveIconDiv);
 
@@ -434,7 +465,7 @@ function processDataAllJobPosts(returnedData) {
                 incentiveIcon.style = "margin: -4px 0 0 -5px";
                 incentiveIconDiv.appendChild(incentiveIcon);
 
-                var joiningIncentiveVal = document.createElement("div");
+                var joiningIncentiveVal = document.createElement("span");
                 joiningIncentiveVal.className = "incentiveEmptyBody";
                 joiningIncentiveVal.style = "display: inline-block;";
                 if(jobPost.jobPostPartnerJoiningIncentive == null || jobPost.jobPostPartnerJoiningIncentive == 0){
@@ -1230,3 +1261,43 @@ $(function() {
         }
     });
 });
+
+function confirmInterview(jpId, status) {
+    globalJpId = jpId;
+    globalInterviewStatus = status;
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/partnerConfirmInterview/" + localStorage.getItem("candidateId") + "/" + parseInt(jpId) + "/" + status,
+            async: true,
+            contentType: false,
+            data: false,
+            success: processDataConfirmInterview
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception.stack);
+    }
+}
+
+function processDataConfirmInterview(returnedData) {
+    if(returnedData != 0){
+        $("#status_" + globalJpId).html('');
+        var divInterviewStatus = document.createElement("span");
+        divInterviewStatus.id = "status_val_" + globalJpId;
+        if(globalInterviewStatus == 1){
+            alert("Job application accepted");
+            divInterviewStatus.textContent = "Interview Accepted";
+        } else {
+            alert("Job application rejected");
+            divInterviewStatus.textContent = "Interview recjected by Candidate/Partner";
+        }
+
+        $("#status_" + globalJpId).append(divInterviewStatus);
+    } else{
+        alert("Something went wrong. Please try after sometime")
+    }
+}
+
+function navigateToLocation(lat, lng){
+    window.open('http://maps.google.com/?q='+ lat +',' + lng);
+}

@@ -102,6 +102,7 @@ POST        /signUp                                                       contro
 POST        /submitAssessment                                             controllers.Application.submitAssessment()
 POST        /submitPreScreen                                              controllers.Application.submitPreScreen()
 POST        /confirmInterview/:jpId/:value                                controllers.Application.confirmInterview(jpId : Long, value : Long)
+POST        /partnerConfirmInterview/:cId/:jpId/:value                    controllers.PartnerController.confirmInterview(cId : Long, jpId : Long, value : Long)
 
 # partner routes
 #~~~~~~~~~~~~~~~~~~~~

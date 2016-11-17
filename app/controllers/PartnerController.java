@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import controllers.businessLogic.*;
+import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.SecuredUser;
 import models.entity.*;
 import models.entity.OM.JobApplication;
@@ -356,12 +357,7 @@ public class PartnerController {
         if(candidate != null){
             Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
             if(partner != null){
-                List<JobApplication> jobApplicationList = JobApplication.find.where()
-                        .eq("candidateId", candidate.getCandidateId())
-                        .eq("partner_id", partner.getPartnerId())
-                        .orderBy("jobApplicationCreateTimeStamp desc")
-                        .findList();
-                return ok(toJson(jobApplicationList));
+                return ok(toJson(JobPostWorkflowEngine.getPartnerAppliedJobsForCandidate(candidate, partner)));
             }
         }
         return ok("0");
@@ -389,6 +385,26 @@ public class PartnerController {
                         interactionResult + jobPost.getJobPostTitle() + " at " + jobPost.getCompany().getCompanyName()
                 );
                 return ok(toJson(jobPost));
+            }
+        }
+        return ok("0");
+    }
+
+    public static Result confirmInterview(long cId, long jpId, long value){
+        if (session().get("partnerId") != null) {
+            Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
+            if(partner != null){
+                Candidate candidate = Candidate.find.where().eq("candidateId", cId).findUnique();
+                if(candidate != null){
+                    PartnerToCandidate partnerToCandidate = PartnerToCandidate.find.where()
+                            .eq("partner_id", partner.getPartnerId())
+                            .eq("t0.candidate_CandidateId", candidate.getCandidateId())
+                            .findUnique();
+
+                    if(partnerToCandidate != null){
+                        return ok(toJson(JobPostWorkflowEngine.confirmCandidateInterview(jpId, value, candidate)));
+                    }
+                }
             }
         }
         return ok("0");

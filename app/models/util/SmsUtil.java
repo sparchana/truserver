@@ -340,6 +340,10 @@ public class SmsUtil {
         Logger.info(year + " " + day + " " + month + " ");
         String msg = "Hi " + candidate.getCandidateFirstName() + ", your interview for " + jobApplication.getJobPost().getJobPostTitle() + " at " + jobApplication.getJobPost().getCompany().getCompanyName() +
                 " has been confirmed on " + interviewDate + " between " + jobApplication.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Please reach the office on time with your documents. All the best!";
+
+        if (jobApplication.getInterviewLocationLat() != null) {
+            msg += "\nInterview Location: http://maps.google.com/?q=" + jobApplication.getInterviewLocationLat() + "," + jobApplication.getInterviewLocationLng();
+        }
         sendSms(candidate.getCandidateMobile(), msg);
     }
 

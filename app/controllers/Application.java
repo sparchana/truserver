@@ -1767,7 +1767,13 @@ public class Application extends Controller {
     }
 
     public static Result confirmInterview(long jpId, long value) {
-        return ok(toJson(JobPostWorkflowEngine.confirmCandidateInterview(jpId, value)));
+        if (session().get("candidateId") != null) {
+            Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")).findUnique();
+            if(candidate != null){
+                return ok(toJson(JobPostWorkflowEngine.confirmCandidateInterview(jpId, value, candidate)));
+            }
+        }
+        return ok("0");
     }
 
     @Security.Authenticated(SecuredUser.class)
