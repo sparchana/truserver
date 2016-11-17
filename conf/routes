@@ -237,6 +237,13 @@ POST        /mGetCandidateUpdateExperienceProfileStatics/:jobRoles        contro
 POST        /mGetCandidateUpdateEducationProfileStatics                   controllers.TrudroidController.mGetCandidateUpdateEducationProfileStatics()
 POST        /mGetLocalityForLatLngOrPlaceId                               controllers.TrudroidController.mGetLocalityForLatLngOrPlaceId()
 
+# Update interview status API
+# ~~~~~~~~~~~~
+
+GET         /u/:cId/:jpId                                                 controllers.Application.renderStatusUpdate(cId : Long, jpId : Long)
+POST        /getJpWfStatus/:cId/:jpId                                     controllers.Application.getJpWfStatus(cId : Long, jpId : Long)
+POST        /updateStatus/:cId/:jpId/:value                               controllers.Application.updateInterviewStatus(cId : Long, jpId : Long, value : Long)
+
 # Test API
 # ~~~~~~~~~~~~~
 GET         /resolveLatLng/:latlng                                        controllers.TrudroidController.mResolveLatLng(latlng: String)

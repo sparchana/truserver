@@ -141,6 +141,10 @@ public class ServerConstants {
     public static final int JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE = 8;
     public static final int JWF_STATUS_INTERVIEW_RESCHEDULE = 9;
 
+    public static final int JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING = 10;
+    public static final int JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED = 11;
+    public static final int JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED = 12;
+    public static final int JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED = 13;
 
     // Requirements Table
     public static final String PROFILE_REQUIREMENT_TABLE_AGE = "age";
@@ -291,4 +295,6 @@ public class ServerConstants {
     public static final int INTERVIEW_STATUS_REJECTED_BY_RECRUITER = 2;
     public static final int INTERVIEW_STATUS_RESCHEDULED = 3;
     public static final int INTERVIEW_STATUS_REJECTED_BY_CANDIDATE = 4;
+
+    public static final String CREATED_BY = "Candidate";
 }

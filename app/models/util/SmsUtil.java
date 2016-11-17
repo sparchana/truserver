@@ -401,4 +401,28 @@ public class SmsUtil {
                 " job which was re-scheduled on " + interviewDate + " between " + jobApplication.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Log on to www.trujobs.in/recruiter and manage your interviews. Thank you!";
         sendSms(jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileMobile(), msg);
     }
+
+    public static void updateRecruiterWithCandidateStatus(JobPostWorkflow jobApplication, Candidate candidate, Integer status) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(jobApplication.getScheduledInterviewDate());
+        int year = cal.get(Calendar.YEAR);
+        int month = cal.get(Calendar.MONTH);
+        int day = cal.get(Calendar.DAY_OF_MONTH);
+
+        String currentStatus = "";
+        switch (status){
+            case ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING: currentStatus = "is not going "; break;
+            case ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED: currentStatus = "is delayed "; break;
+            case ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED: currentStatus = "has left "; break;
+            case ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED: currentStatus = "has reached the office "; break;
+        }
+
+        String interviewDate = day + "-" + (month + 1) + "-" + year;
+
+        String msg = "Hi " + jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileName() + ", candidate: " + candidate.getCandidateFirstName() + ", " + currentStatus
+                + " for the interview:  " + jobApplication.getJobPost().getJobPostTitle() +
+                " job which is on " + interviewDate + " between " + jobApplication.getScheduledInterviewTimeSlot().getInterviewTimeSlotName() + ". Log on to www.trujobs.in/recruiter and manage your interviews. Thank you!";
+        sendSms(jobApplication.getJobPost().getRecruiterProfile().getRecruiterProfileMobile(), msg);
+    }
+
 }

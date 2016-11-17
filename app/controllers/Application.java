@@ -11,6 +11,7 @@ import api.http.httpRequest.Workflow.PreScreenRequest;
 import api.http.httpRequest.Workflow.SelectedCandidateRequest;
 import api.http.httpRequest.Workflow.preScreenEdit.*;
 import api.http.httpResponse.*;
+import com.amazonaws.services.importexport.model.Job;
 import com.amazonaws.util.json.JSONException;
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.Query;
@@ -1911,5 +1912,31 @@ public class Application extends Controller {
         AddCandidateInterviewSlotDetail interviewSlotDetail = newMapper.readValue(updateCandidateDetailJSON.toString(), AddCandidateInterviewSlotDetail.class);
 
         return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewDetail(candidateId, jobPostId, interviewSlotDetail)));
+    }
+
+    public static Result renderStatusUpdate(long jpId, long cId) {
+        return ok(views.html.CandidateDashboard.update_status_view.render());
+    }
+
+    public static Result updateInterviewStatus(long cId, long jpId, long val) {
+        Candidate candidate = Candidate.find.where().eq("candidateId", cId).findUnique();
+        if(candidate != null){
+            JobPost jobPost = JobPost.find.where().eq("JobPostId", jpId).findUnique();
+            if(jobPost != null){
+                return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, val)));
+            }
+        }
+        return ok("0");
+    }
+
+    public static Result getJpWfStatus(long cId, long jpId) {
+        Candidate candidate = Candidate.find.where().eq("candidateId", cId).findUnique();
+        if(candidate != null){
+            JobPost jobPost = JobPost.find.where().eq("JobPostId", jpId).findUnique();
+            if(jobPost != null){
+                return ok(toJson(JobPostWorkflowEngine.getCandidateLatestStatus(candidate, jobPost)));
+            }
+        }
+        return ok("0");
     }
 }

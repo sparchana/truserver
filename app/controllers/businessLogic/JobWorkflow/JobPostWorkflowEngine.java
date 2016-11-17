@@ -1213,28 +1213,10 @@ public class JobPostWorkflowEngine {
     }
 
     public static Map<Long, CandidateWorkflowData> getConfirmedInterviewCandidates(Long jobPostId) {
-        String statusSql = " and (status_id = '" + ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED + "') ";
         Integer status = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
-        StringBuilder workFlowQueryBuilder = new StringBuilder("select createdby, candidate_id, creation_timestamp, job_post_id, status_id from job_post_workflow i " +
-                " where i.job_post_id " +
-                " = ('"+jobPostId+"') " +
-                statusSql+
-                " and creation_timestamp = " +
-                " (select max(creation_timestamp) from job_post_workflow " +
-                "       where i.candidate_id = job_post_workflow.candidate_id " +
-                "       and i.job_post_id = job_post_workflow.job_post_id) " +
-                " order by creation_timestamp desc ");
 
-        RawSql rawSql = RawSqlBuilder.parse(workFlowQueryBuilder.toString())
-                .columnMapping("creation_timestamp", "creationTimestamp")
-                .columnMapping("job_post_id", "jobPost.jobPostId")
-                .columnMapping("status_id", "status.statusId")
-                .columnMapping("candidate_id", "candidate.candidateId")
-                .columnMapping("createdby", "createdBy")
-                .create();
-
-        List<JobPostWorkflow> jobPostWorkflowList = Ebean.find(JobPostWorkflow.class)
-                .setRawSql(rawSql)
+        List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where()
+                .eq("jobPost.jobPostId", jobPostId)
                 .findList();
 
         List<Candidate> candidateList = new ArrayList<>();
@@ -1643,8 +1625,15 @@ public class JobPostWorkflowEngine {
                 jobPostWorkflowOld.setInterviewLocationLng(jobPost.getInterviewDetailsList().get(1).getLng());
             }
             jobPostWorkflowOld.setCandidate(candidate);
-            jobPostWorkflowOld.setCreatedBy(session().get("sessionUsername"));
-            jobPostWorkflowOld.setChannel(Integer.valueOf(session().get("sessionChannel")));
+
+            if(session().get("sessionChannel") != null){
+                jobPostWorkflowOld.setCreatedBy(session().get("sessionUsername"));
+                jobPostWorkflowOld.setChannel(Integer.valueOf(session().get("sessionChannel")));
+            } else{
+                jobPostWorkflowOld.setCreatedBy(ServerConstants.CREATED_BY);
+                jobPostWorkflowOld.setChannel(ServerConstants.SESSION_CHANNEL_CANDIDATE_WEBSITE);
+            }
+
             jobPostWorkflowOld.setStatus(status);
 
             if(interviewSlot != null){
@@ -1967,7 +1956,6 @@ public class JobPostWorkflowEngine {
 
         interactionResult = InteractionConstants.INTERACTION_RESULT_CANDIDATE_INTERVIEW_SCHEDULED;
 
-
         if(jobPostWorkflowOld.getStatus().getStatusId() == ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED) {
             JobPostWorkflow jobPostWorkflowNew = JobPostWorkflowEngine.saveNewJobPostWorkflow(candidateId,
                     jobPostId, jobPostWorkflowOld, ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED,
@@ -2061,4 +2049,51 @@ public class JobPostWorkflowEngine {
         return appliedJobsList;
     }
 
+    public static JobPostWorkflow getCandidateLatestStatus(Candidate candidate, JobPost jobPost) {
+        // fetch existing workflow old
+
+        return JobPostWorkflow.find.where()
+                .eq("jobPost.jobPostId", jobPost.getJobPostId())
+                .eq("candidate.candidateId", candidate.getCandidateId())
+                .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
+    }
+
+    public static Integer updateCandidateInterviewStatus(Candidate candidate, JobPost jobPost, Long val) {
+        // fetch existing workflow old
+        JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
+                .eq("jobPost.jobPostId", jobPost.getJobPostId())
+                .eq("candidate.candidateId", candidate.getCandidateId())
+                .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
+
+        if(jobPostWorkflowOld == null) {
+            return 0;
+        }
+
+        Integer jwStatus;
+
+        if(val == 1){
+            jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING;
+        } else if(val == 2){
+            jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED;
+        } else if(val == 3){
+            jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED;
+        } else {
+            jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED;
+        }
+
+        // Setting the existing jobpostworkflow status to confirmed
+        JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(candidate.getCandidateId(), jobPost.getJobPostId(),
+                jobPostWorkflowOld, jobPostWorkflowOld.getStatus().getStatusId(), jwStatus,
+                jobPostWorkflowOld.getScheduledInterviewTimeSlot().getInterviewTimeSlotId(),
+                jobPostWorkflowOld.getScheduledInterviewDate());
+
+        if (jobPostWorkflowNew != null) {
+            jobPostWorkflowNew.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", jwStatus).findUnique());
+        }
+        jobPostWorkflowNew.update();
+
+        updateRecruiterWithCandidateStatus(jobPostWorkflowOld, candidate, jwStatus);
+
+        return 1;
+    }
 }
