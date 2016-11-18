@@ -220,30 +220,11 @@ public class RecruiterController {
                 RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
                 if(recruiterProfile != null){
                     if(jobPost.getRecruiterProfile() != null){
-                        if(Objects.equals(jobPost.getRecruiterProfile().getRecruiterProfileId(), recruiterProfile.getRecruiterProfileId())){
-                            List<JobApplication> jobApplicationList = JobApplication.find.where().eq("JobPostId", jobPostId).findList();
-                            List<JobApplicationResponse> jobApplicationResponseList = new ArrayList<>();
-                            for(JobApplication jobApplication: jobApplicationList){
-                                JobApplicationResponse jobApplicationResponse = new JobApplicationResponse();
-
-                                jobApplicationResponse.setCandidate(jobApplication.getCandidate());
-                                jobApplicationResponse.setJobApplicationId(jobApplication.getJobApplicationId());
-                                jobApplicationResponse.setJobApplicationCreatingTimeStamp(String.valueOf(jobApplication.getJobApplicationCreateTimeStamp()));
-                                jobApplicationResponse.setPreScreenLocation(jobApplication.getLocality());
-                                jobApplicationResponse.setPreScreenLocation(jobApplication.getLocality());
-                                jobApplicationResponse.setInterviewTimeSlot(jobApplication.getInterviewTimeSlot());
-                                jobApplicationResponse.setScheduledInterviewDate(jobApplication.getScheduledInterviewDate());
-
-                                jobApplicationResponseList.add(jobApplicationResponse);
-                            }
-
-                            return ok(toJson(jobApplicationResponseList));
-                        }
+                        return ok(toJson(JobPostWorkflowEngine.getRecruiterJobLinedUpCandidates(jobPostId)));
                     }
                 }
             }
         }
-
         return ok("0");
     }
 
@@ -502,6 +483,10 @@ public class RecruiterController {
 
     public static Result renderAllUnlockedCandidates() {
         return ok(views.html.Recruiter.recruiter_unlocked_candidate.render());
+    }
+
+    public static Result trackApplication(long id) {
+        return ok(views.html.Recruiter.recruiter_interviews.render());
     }
 
 }

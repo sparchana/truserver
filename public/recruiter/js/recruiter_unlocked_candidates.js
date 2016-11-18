@@ -38,6 +38,7 @@ function processDataForUnlockedCandidates(returnedData) {
             returnedData.forEach(function (value){
                 var candidateCard = document.createElement("div");
                 candidateCard.className = "card";
+                candidateCard.style = "border-radius: 6px";
                 parent.append(candidateCard);
 
                 var candidateCardContent = document.createElement("div");

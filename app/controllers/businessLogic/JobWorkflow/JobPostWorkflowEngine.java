@@ -1792,7 +1792,6 @@ public class JobPostWorkflowEngine {
                 if(interviewStatus.getInterviewStatusId() == ServerConstants.INTERVIEW_STATUS_ACCEPTED){ // accept
                     Logger.info("Sending interview confirm sms to candidate");
                     jwStatus = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
-                    interactionResult = " interview confirmed";
 
                     if(interviewStatusRequest.getInterviewSchedule() == null){ //candidate shortlisted because slots and interview days is not available
                         sendInterviewShortlistSms(jobPost, candidate);

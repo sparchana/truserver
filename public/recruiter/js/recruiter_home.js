@@ -62,7 +62,70 @@ $(document).ready(function(){
     } catch (exception) {
         console.log("exception occured!!" + exception);
     }
+
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllRecruiterJobPosts",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetJobPostDetails
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
 });
+
+function processDataGetJobPostDetails(returnedData) {
+    var interviews = "";
+    var x, i;
+    returnedData.forEach(function (jobPost) {
+        var interviewDays;
+        if (Object.keys(jobPost.interviewDetailsList).length > 0) {
+            var interviewDetailsList = jobPost.interviewDetailsList;
+            if (interviewDetailsList[0].interviewDays != null) {
+                interviewDays = interviewDetailsList[0].interviewDays.toString(2);
+
+                /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
+                if (interviewDays.length != 7) {
+                    x = 7 - interviewDays.length;
+                    var modifiedInterviewDays = "";
+
+                    for (i = 0; i < x; i++) {
+                        modifiedInterviewDays += "0";
+                    }
+                    modifiedInterviewDays += interviewDays;
+                    interviewDays = modifiedInterviewDays;
+                }
+            }
+
+            var today = new Date();
+            if(interviewDays.charAt(today.getDay() - 1) == 1){ // today's schedule
+                var slotsToday = "";
+                console.log(interviewDetailsList);
+                interviewDetailsList.forEach(function (slots) {
+                    slotsToday += slots.interviewTimeSlot.interviewTimeSlotName + ", ";
+                });
+
+                interviews += '<div class="row" style="padding: 0 24px 0 24px">' +
+                    '<div class="col s12 m5" style="font-size: 16px"><b>' + jobPost.jobPostTitle + '</b></div>' +
+                    '<div class="col s12 m4">' + slotsToday.substring(0, (slotsToday.length) -2 ) + '</div>' +
+                    '<div class="col s12 m3"><a href="/recruiter/job/track/' + jobPost.jobPostId + '" target="_blank">' +
+                    '<button class="btn waves-effect waves-light" style="margin-top: -6px" type="submit" name="action">Track<i class="material-icons right">send</i></button>' +
+                    '</a></div></div>';
+            }
+        }
+    });
+
+    if(interviews == ""){
+        interviews = '<center style="font-size: 18px">No Interviews Today</center>';
+    }
+
+    $("#today_interview").append(interviews);
+
+}
 
 function checkRecruiterLogin() {
     try {
