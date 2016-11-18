@@ -215,7 +215,7 @@ public class RecruiterController {
                 RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
                 if(recruiterProfile != null){
                     if(jobPost.getRecruiterProfile() != null){
-                        if(jobPost.getRecruiterProfile().getRecruiterProfileId() == recruiterProfile.getRecruiterProfileId()){
+                        if(Objects.equals(jobPost.getRecruiterProfile().getRecruiterProfileId(), recruiterProfile.getRecruiterProfileId())){
                             List<JobApplication> jobApplicationList = JobApplication.find.where().eq("JobPostId", jobPostId).findList();
                             List<JobApplicationResponse> jobApplicationResponseList = new ArrayList<>();
                             for(JobApplication jobApplication: jobApplicationList){
@@ -315,13 +315,13 @@ public class RecruiterController {
 
                     // sort by last active
                     // TODO move 1,2,3 to server constant
-                    if (matchingCandidateRequest.getSortBy() == ServerConstants.REC_SORT_LASTEST_ACTIVE) {
+                    if (Objects.equals(matchingCandidateRequest.getSortBy(), ServerConstants.REC_SORT_LASTEST_ACTIVE)) {
                         // last active, latest on top
                         Collections.sort(listToBeReturned,  new LastActiveComparator());
-                    } else if (matchingCandidateRequest.getSortBy() == ServerConstants.REC_SORT_SALARY_H_TO_L) {
+                    } else if (Objects.equals(matchingCandidateRequest.getSortBy(), ServerConstants.REC_SORT_SALARY_H_TO_L)) {
                         // candidate lw salary H->L
                         Collections.sort(listToBeReturned,  new SalaryComparatorHtoL());
-                    } else if (matchingCandidateRequest.getSortBy() == ServerConstants.REC_SORT_SALARY_L_TO_H) {
+                    } else if (Objects.equals(matchingCandidateRequest.getSortBy(), ServerConstants.REC_SORT_SALARY_L_TO_H)) {
                         // candidate lw salary L->H
                         Collections.sort(listToBeReturned,  new SalaryComparatorLtoH());
                     }
@@ -388,7 +388,7 @@ public class RecruiterController {
                 RecruiterProfile recruiterProfile = RecruiterProfile.find.where().eq("RecruiterProfileId", session().get("recruiterId")).findUnique();
                 if(recruiterProfile != null){
                     if(jobPost.getRecruiterProfile() != null){
-                        if(jobPost.getRecruiterProfile().getRecruiterProfileId() == recruiterProfile.getRecruiterProfileId()){
+                        if(Objects.equals(jobPost.getRecruiterProfile().getRecruiterProfileId(), recruiterProfile.getRecruiterProfileId())){
                             return ok(toJson(jobPost));
                         }
                     }
