@@ -1148,7 +1148,19 @@ public class JobPostWorkflowEngine {
             }
             preScreenResponse.save();
         }
-        Long recruiterId = jobPostWorkflowNew.getJobPost().getRecruiterProfile().getRecruiterProfileId();
+        if(preScreenRequest.isPass() != null  && !(preScreenRequest.isPass())) {
+            // candidate failed prescren, then don't show interview
+            return "OK";
+        }
+        return isInterviewRequired(jobPostWorkflowNew.getJobPost());
+    }
+
+    public static String isInterviewRequired( JobPost jobPost){
+        if(jobPost == null) {
+            return "ERROR";
+        }
+        int validCount = 0;
+        Long recruiterId = jobPost.getRecruiterProfile().getRecruiterProfileId();
         RecruiterCreditHistory recruiterCreditHistory = RecruiterCreditHistory.find.where()
                 .eq("recruiterProfile.recruiterProfileId", recruiterId)
                 .eq("recruiterCreditCategory.recruiterCreditCategoryId", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
@@ -1156,9 +1168,17 @@ public class JobPostWorkflowEngine {
         if(recruiterCreditHistory != null) {
             if(recruiterCreditHistory.getRecruiterCreditCategory().getRecruiterCreditCategoryId()
                     == ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK
-                    && recruiterCreditHistory.getRecruiterCreditsAvailable() > 0) {
-                return "INTERVIEW";
+                    && recruiterCreditHistory.getRecruiterCreditsAvailable() > 0){
+                // When recruiter credit available then show Interview UI
+                validCount++;
             }
+        }
+        if(jobPost.getInterviewDetailsList() != null && jobPost.getInterviewDetailsList().size() > 0){
+            // When slot available then  show Interview UI
+            validCount++;
+        }
+        if(validCount == 2){
+            return "INTERVIEW";
         }
         return "OK";
     }
