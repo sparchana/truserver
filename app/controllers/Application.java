@@ -860,10 +860,10 @@ public class Application extends Controller {
         }
 
         // Query interactions table to get who created this job post
+
         Map <?, Interaction> jobPostCreatedInteractionMap =
                 Interaction.find.where().eq("interactionType", InteractionConstants.INTERACTION_TYPE_NEW_JOB_CREATED)
-                                .in("objectBUUId", jobpostUUIDs).setMapKey("objectBUUId").findMap();
-
+                        .in("objectBUUId", jobpostUUIDs).setMapKey("objectBUUId").findMap();
         for (JobPost jobPost : jobPosts) {
             Interaction createdInteraction = jobPostCreatedInteractionMap.get(jobPost.getJobPostUUId());
 

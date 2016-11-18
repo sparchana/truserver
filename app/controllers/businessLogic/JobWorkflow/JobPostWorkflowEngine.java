@@ -604,7 +604,7 @@ public class JobPostWorkflowEngine {
         }
 
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
-        if (jobPost == null){
+        if (jobPost == null) {
             populateResponse.setStatus(PreScreenPopulateResponse.Status.FAILURE);
             return populateResponse;
         }
@@ -823,7 +823,7 @@ public class JobPostWorkflowEngine {
                                     if(candidate.getCandidateEducation() != null && candidate.getCandidateEducation().getEducation() != null) {
                                         preScreenElement.candidateElement = (new PreScreenPopulateResponse.PreScreenCustomObject(candidate.getCandidateEducation().getEducation(),
                                                 candidate.getCandidateEducation().getEducation().getEducationName(), true));
-                                        if(!((candidate.getCandidateEducation().getEducation().getEducationId() - jobPost.getJobPostEducation().getEducationId()) >=0)) {
+                                        if(!(jobPost.getJobPostEducation().getEducationName().trim().equalsIgnoreCase("any")) && !((candidate.getCandidateEducation().getEducation().getEducationId() - jobPost.getJobPostEducation().getEducationId()) >=0)) {
                                             preScreenElement.isMatching = false;
                                         }
                                     } else {

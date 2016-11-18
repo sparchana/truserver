@@ -20,6 +20,7 @@ import models.entity.*;
 import models.entity.OM.JobApplication;
 import models.entity.OM.JobPostWorkflow;
 import models.entity.OM.PartnerToCandidate;
+import models.entity.OM.PreScreenRequirement;
 import models.entity.Static.LeadSource;
 import models.entity.Static.PartnerType;
 import models.util.SmsUtil;
@@ -369,13 +370,29 @@ public class PartnerController {
                         .orderBy("jobApplicationCreateTimeStamp desc")
                         .findList();
                 List<Long> jobPostIdList = new ArrayList<>();
-                List<JobApplication> jobApplicationWithPreScreenStatusList = new ArrayList<>();
 
                 for (JobApplication jobApplication : jobApplicationList) {
-                    if (JobPostWorkflowEngine.getJobPostVsCandidate(jobApplication.getJobPost().getJobPostId(), id, false).getElementList().size() == 0) {
+                    jobPostIdList.add(jobApplication.getJobPost().getJobPostId());
+                }
+
+                List<PreScreenRequirement> preScreenRequirementList = PreScreenRequirement.find.where().in("job_post_id", jobPostIdList).findList();
+
+                Map<Long, PreScreenRequirement> preScreenRequirementMap = new HashMap<>();
+                for(PreScreenRequirement preScreenRequirement: preScreenRequirementList) {
+                    preScreenRequirementMap.putIfAbsent(preScreenRequirement.getJobPost().getJobPostId(), preScreenRequirement);
+                }
+
+                JobPostWorkflow jobPostWorkflow = JobPostWorkflow.find.where().in("job_post_id", jobPostIdList).eq("candidate_id", id).ge("status.statusId", ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED).setMaxRows(1).findUnique();
+
+                Logger.info("preScreenReqList: " + preScreenRequirementList.size());
+                Logger.info("jobPostWorkflow: " + jobPostWorkflow);
+
+                for (JobApplication jobApplication : jobApplicationList) {
+                    if (preScreenRequirementMap.get(jobApplication.getJobPost().getJobPostId()) == null ) {
+                        jobApplication.setPreScreenRequired(false);
+                    } else if (jobPostWorkflow != null) {
                         jobApplication.setPreScreenRequired(false);
                     }
-                    jobApplicationWithPreScreenStatusList.add(jobApplication);
                 }
 
                 return ok(toJson(jobApplicationList));

@@ -109,7 +109,6 @@ function getAllAppliedJobs() {
                         }
                         var varColumn = function () {
                             if(jobApplication.preScreenRequired){
-                                // TODO: check if already prescreened completely or not, accordingly display button
                                 if(candidateId == null ) {
                                     scrapeCandidateIdFromUrl();
                                 }
