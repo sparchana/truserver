@@ -548,8 +548,8 @@ public class CandidateService
             candidate.setJobHistoryList(getJobHistoryListFromAddSupportCandidate(supportCandidateRequest.getPastCompanyList(), candidate));
         }
 
-        if(supportCandidateRequest.getCandidateIdProof() != null ){
-            candidate.setIdProofReferenceList(getCandidateIdProofListFromAddSupportCandidate(supportCandidateRequest.getCandidateIdProof(), candidate));
+        if(supportCandidateRequest.getCandidateIdProofList() != null ){
+            candidate.setIdProofReferenceList(getCandidateIdProofListFromAddSupportCandidate(supportCandidateRequest.getCandidateIdProofList(), candidate));
         }
 
         if(supportCandidateRequest.getExpList() != null ){
@@ -835,15 +835,16 @@ public class CandidateService
         candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_SUCCESS);
     }
 
-    private static List<IDProofReference> getCandidateIdProofListFromAddSupportCandidate(List<Integer> idProofList, Candidate candidate) {
+    private static List<IDProofReference> getCandidateIdProofListFromAddSupportCandidate(List<AddSupportCandidateRequest.IdProofWithValue> idProofList, Candidate candidate) {
         ArrayList<IDProofReference> response = new ArrayList<>();
-        for(Integer idProofId : idProofList) {
+        for(AddSupportCandidateRequest.IdProofWithValue idf : idProofList) {
             IDProofReference idProofReference = new IDProofReference();
-            IdProof idProof= IdProof.find.where().eq("idProofId", idProofId).findUnique();
+            IdProof idProof = IdProof.find.where().eq("idProofId", idf.getIdProofId()).findUnique();
             if(idProof == null) {
                 return null;
             }
             idProofReference.setIdProof(idProof);
+            idProofReference.setIdProofNumber(idf.getIdProofValue());
             idProofReference.setCandidate(candidate);
             response.add(idProofReference);
         }

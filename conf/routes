@@ -182,6 +182,7 @@ GET         /jobs/:rolePara/:idPara                                       contro
 
 GET         /                                                             controllers.Application.index()
 GET         /getAllSkills/:id                                             controllers.Application.getAllSkills(id : String)
+GET         /getAllIdProofs/:id                                           controllers.Application.getAllIdProofs(id : String)
 GET         /getAllJobPosts                                               controllers.Application.getAllJobPosts()
 GET         /checkNavBar                                                  controllers.Application.checkNavBar()
 
@@ -236,8 +237,7 @@ POST        /mGetLocalityForLatLngOrPlaceId                               contro
 # Test API
 # ~~~~~~~~~~~~~
 GET         /resolveLatLng/:latlng                                        controllers.TrudroidController.mResolveLatLng(latlng: String)
-GET        /support/api/testMatchingCandidate/:jpId                       controllers.Application.testMatchingCandidate(jpId: Long)
-
+GET         /support/api/testMatchingCandidate/:jpId                      controllers.Application.testMatchingCandidate(jpId: Long)
 # Scrap API
 # ~~~~~~~~~~~~~
 GET         /support/administrator/scrapCSV/dashboard                     controllers.Application.scrapArena()
@@ -268,5 +268,5 @@ POST        /api/compute/updateAllActivityScores                           contr
 GET         /robots.txt                                                   controllers.Assets.at(path="/public", file="robots.txt")
 GET         /assets/*file                                                 controllers.Assets.at(path="/public", file)
 GET         /sitemap.xml                                                  controllers.Assets.at(path="/public", file="sitemap.xml")
-GET         /favicon.ico                                                  controllers.Assets.at(path="/public/img/", file="icon.png")
+GET         /favicon.ico                                                  controllers.Assets.at(path="/public/common/img/", file="icon.png")
 #GET   /webjars/*file                           controllers.WebJarAssets.at(file)
