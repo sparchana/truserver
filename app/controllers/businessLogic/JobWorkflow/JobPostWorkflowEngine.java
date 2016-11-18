@@ -1156,7 +1156,7 @@ public class JobPostWorkflowEngine {
         if(recruiterCreditHistory != null) {
             if(recruiterCreditHistory.getRecruiterCreditCategory().getRecruiterCreditCategoryId()
                     == ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK
-                    && recruiterCreditHistory.getRecruiterCreditsAvailable() > 0){
+                    && recruiterCreditHistory.getRecruiterCreditsAvailable() > 0) {
                 return "INTERVIEW";
             }
         }
@@ -1285,7 +1285,7 @@ public class JobPostWorkflowEngine {
         List<Candidate> filteredCandidateList = new ArrayList<>();
 
         Logger.info("candidateList size before latlng filter: "+candidateList.size());
-        if (jobPostLocalityIdList == null || jobPostLocalityIdList.isEmpty()){
+        if (jobPostLocalityIdList == null || jobPostLocalityIdList.isEmpty()) {
             return candidateList;
         }
 
@@ -1301,17 +1301,15 @@ public class JobPostWorkflowEngine {
                 Double candidateLng;
                 StringBuilder matchedLocation = new StringBuilder();
 
-                if ((candidate.getLocality() == null || ! jobPostLocalityIdList.contains(candidate.getLocality().getLocalityId()))) {
-                    if((candidate.getCandidateLocalityLat() != null && candidate.getCandidateLocalityLng()!= null)) {
-                        candidateLat = candidate.getCandidateLocalityLat();
-                        candidateLng = candidate.getCandidateLocalityLng();
-                    } else {
-                        if(shouldRemoveCandidate) filteredCandidateList.remove(candidate);
-                        continue;
-                    }
-                } else {
+                if((candidate.getCandidateLocalityLat() != null && candidate.getCandidateLocalityLng()!= null)) {
+                    candidateLat = candidate.getCandidateLocalityLat();
+                    candidateLng = candidate.getCandidateLocalityLng();
+                } else if(candidate.getLocality() != null) {
                     candidateLat = candidate.getLocality().getLat();
                     candidateLng = candidate.getLocality().getLng();
+                } else {
+                    if(shouldRemoveCandidate) filteredCandidateList.remove(candidate);
+                    continue;
                 }
 
                 for (Locality locality : jobPostLocalityList) {
@@ -1321,6 +1319,7 @@ public class JobPostWorkflowEngine {
                             candidateLat,
                             candidateLng
                     );
+
                     Double searchRadius = ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS;
                     if(distanceRadius != null){
                         searchRadius = distanceRadius;
