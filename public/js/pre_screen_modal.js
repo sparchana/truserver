@@ -25,6 +25,7 @@ function initDecorator(colorPalette) {
     }
     decorator = {
         preScreen: {
+            title: "",
             className: "mdl-grid"
         },
         container : {
@@ -35,6 +36,7 @@ function initDecorator(colorPalette) {
         },
         table: {
             mainTable: {
+                title: "Min Requirement",
                 className: "mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--12-col",
                 style: "margin:0;border:none",
                 tHead: {
@@ -51,6 +53,7 @@ function initDecorator(colorPalette) {
                 }
             },
             otherTable: {
+                title: "Other Requirement",
                 className: "mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--12-col",
                 style: "margin:0;border:none",
                 tHead: {
@@ -80,10 +83,12 @@ function initDecorator(colorPalette) {
             glyphIconWrongClass: "glyphicon glyphicon-remove",
             rowHeading: {
                 post: {
+                    title: "Job Post Min Req",
                     isRequired: true,
                     style: "padding:1% 2%;background-color:"+colorPalette.color.main.headerColor+";color:#fff"
                 },
                 note: {
+                    title: "Note",
                     isRequired: true,
                     style: "padding:1% 2%;background-color:"+colorPalette.color.main.headerColor+";color:#fff"
                 }
@@ -104,13 +109,18 @@ function initDecorator(colorPalette) {
         textContainers: {
             visibility: true,
             minReqContainer: {
+                title: "",
                 visibility: true,
                 className: "col-lg-6 form-group remove-padding-left"
             },
             noteContainer: {
+                title: "",
                 visibility: true,
                 className: "col-lg-6 form-group"
             }
+        },
+        edit:{
+          title: "Edit"
         },
         finalSubmissionBypassRequired: false,
         callYesNoRequired: true,
@@ -1130,11 +1140,11 @@ function constructPreScreenBodyContainer(returnedData, customD) {
     var container = $('<div class="'+customD.container.className+'" id="pre_screen_container_row"></div>');
 
     var minReqTableContainer = $('<div id="minReqTable"></div>');
-    container.append('<h4 style="margin-top: 0">Min Requirement</h4>');
+    container.append('<h4 style="margin-top: 0">'+customD.table.mainTable.title+'</h4>');
     container.append(minReqTableContainer);
 
     var otherReqTableContainer = $('<div id="otherReqTable"></div>');
-    container.append('<h4>Other Requirement</h4>');
+    container.append('<h4>'+customD.table.otherTable.title+'</h4>');
     container.append(otherReqTableContainer);
 
     // minReqTable
@@ -1280,7 +1290,7 @@ function constructPreScreenBodyContainer(returnedData, customD) {
             var label = document.createElement("label");
             label.for= "job_post_min_req";
             label.style = "margin:0";
-            label.textContent = "Job Post Min Req";
+            label.textContent = customD.textContainers.minReqContainer.title;
             rowHeadingPost.appendChild(label);
             minReqContainer.appendChild(minReqTextArea);
             splitDiv.append(minReqContainer);
@@ -1306,7 +1316,7 @@ function constructPreScreenBodyContainer(returnedData, customD) {
 
             var label = document.createElement("label");
             label.for= "pre_screen_note";
-            label.textContent = "Note";
+            label.textContent =  customD.textContainers.noteContainer.title;
             label.style = "margin :0";
             rowHeadingNote.appendChild(label);
             noteContainer.appendChild(textarea);
@@ -1390,7 +1400,7 @@ function constructPreScreenBodyContainer(returnedData, customD) {
                     var editLink = document.createElement("td");
                     var a = document.createElement('a');
                     if(!((rowData.propertyId == "3") && (bodyContentData3.textContent.length > 0))){
-                        var linkText = document.createTextNode("Edit");
+                        var linkText = document.createTextNode(customD.edit.title);
                         a.appendChild(linkText);
                         a.style = "cursor: pointer";
                         a.onclick = function () {
@@ -1466,10 +1476,10 @@ function constructPreScreenBodyContainer(returnedData, customD) {
                     var a = document.createElement('a');
                     // edit href
                     if(!(rowData.propertyId == "6" && bodyContentData3.textContent.length > 0)){
-                        var linkText = document.createTextNode("Edit");
+                        var linkText = document.createTextNode(customD.edit.title);
                         a.appendChild(linkText);
                         a.style = "cursor: pointer";
-                        a.title = "Edit";
+                        a.title = customD.edit.title;
                         a.onclick = function () {
                             fetchEditModalContent(candidateId, rowData.propertyId, jobPostId, customD);
                         };
@@ -1562,7 +1572,7 @@ function processPreScreenContent(returnedData, customD) {
                 '</div>'+
                 '</div>');
         } else {
-            titleMessage = "Pre Screen";
+            titleMessage = customD.preScreen.title;
         }
 
         renderParentModal(preScreenBody, titleMessage, jobPostId, candidateId, customD);
@@ -1607,7 +1617,7 @@ function renderParentModal(preScreenBody, callYesNo, jobPostId, candidateId, cus
     bootbox_dialog.init(function () {
         var forceSetContainer = $('.modal-footer');
         var forceSetDiv = $('' +
-            '<div class="col-xs-11" style="text-align: left">' +
+            '<div class="col-xs-11" style="text-align: right">' +
             '<h5 style="margin:2px; font-size: 12px;">' +
             '<div style="display:inline-block; margin: 0 1px;text-align: left; color: #b9151b" id="footerMessage">*</div>' +
             ''+customD.modalFooter.footerMessage+'&nbsp;:&nbsp;' +

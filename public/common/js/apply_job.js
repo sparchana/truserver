@@ -31,7 +31,7 @@ function processDataApplyJob(returnedData, jobPostId, candidateId) {
         } catch(err){
             console.log(err);
         }
-        // generates prescreen modal here
+        // generate prescreen modal here
         openPartnerPreScreenModal(jobPostId, candidateId);
     } else if(returnedData.status == 2){
         $('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
