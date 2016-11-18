@@ -26,6 +26,7 @@ public class CandidateExtraData {
     public InterviewTimeSlot interviewSlot;
     public Double interviewLat;
     public Double interviewLng;
+    public JobPostWorkflowStatus candidateInterviewStatus;
 
     public String getAppliedOn() {
         return appliedOn;
@@ -145,5 +146,13 @@ public class CandidateExtraData {
 
     public void setInterviewSlot(InterviewTimeSlot interviewSlot) {
         this.interviewSlot = interviewSlot;
+    }
+
+    public JobPostWorkflowStatus getCandidateInterviewStatus() {
+        return candidateInterviewStatus;
+    }
+
+    public void setCandidateInterviewStatus(JobPostWorkflowStatus candidateInterviewStatus) {
+        this.candidateInterviewStatus = candidateInterviewStatus;
     }
 }

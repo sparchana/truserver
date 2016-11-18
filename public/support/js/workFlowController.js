@@ -992,6 +992,29 @@ $(function () {
                         return "";
                     }
                 };
+
+                var varColumn3 = function () {
+                    if (app.currentView == "confirmed_interview_view") {
+                        var candidateStatus = '<b id="current_status_">' + "Data not available" + '</b>';
+                        if(newCandidate.extraData.candidateInterviewStatus != null){
+                            candidateStatus = '<b id="current_status_">' + newCandidate.extraData.candidateInterviewStatus.statusTitle + '</b>';
+                        }
+
+                        candidateStatus +=  '<select style="margin-left: 8px" id="interview_status">' +
+                            '<option value="0">Select a Status</option>' +
+                            '<option value="1">Not Going</option>' +
+                            '<option value="2">Delayed</option>' +
+                            '<option value="3">Started</option>' +
+                            '<option value="4">Reached</option>' +
+                            '</select>' +
+                            '<input style="margin-left: 6px" type="button" value="Update" onclick="updateStatus('+ newCandidate.candidate.candidateId + ', ' + app.jpId + ' )">';
+
+                        return candidateStatus;
+                    } else {
+                        return "";
+                    }
+                };
+
                 var createdBy = function () {
                     if (app.currentView == "pre_screen_view") {
                         if(newCandidate.extraData.createdBy != null){
@@ -1003,6 +1026,7 @@ $(function () {
                         return "";
                     }
                 };
+
                 returnedDataArray.push({
                     'cLID': '<a href="/candidateSignupSupport/' + newCandidate.candidate.lead.leadId + '/false" target="_blank" id="' + newCandidate.candidate.lead.leadId + '">' + newCandidate.candidate.lead.leadId + '</a>',
                     'candidateFirstName': getFirstName(newCandidate.candidate.candidateFirstName) + " " + getLastName(newCandidate.candidate.candidateLastName),
@@ -1038,46 +1062,9 @@ $(function () {
                     'preScreenSelectionTS': preScreenSelectionTimeStamp,
                     'preScreenCreatedBy': createdBy,
                     'varColumn': varColumn,
-                    'varColumn2': varColumn2
+                    'varColumn2': varColumn2,
+                    'varColumn3': varColumn3
                 })
-
-/*                returnedDataArray.push({
-                    'cLID': "aaa",
-                    'candidateFirstName': "b",
-                    'candidateMobile': "c",
-                    'candidateJobPref': "d",
-                    'candidateLocalityPref': "e",
-                    'locality': "f",
-                    'matchedLocality': "g",
-                    'age': "h",
-                    'candidateExperience': "i",
-                    'candidateIsEmployed': "j",
-                    'candidateLastWithdrawnSalary': "k",
-                    'candidateLanguage': "l",
-                    'candidateEducation': "m",
-                    'candidateDegree': "n",
-                    'candidateDegreeCompleted': "o",
-                    'candidateSkillList': "p",
-                    'candidateGender': "q",
-                    'pastOrCurrentCompanyName': "r",
-                    'candidateIsAssessmentComplete': "s",
-                    'jobAppliedOn': "t",
-                    'noOfJobApplication': "u",
-                    'jobApplicationMode': "v",
-                    'candidateExperienceLetter': "w",
-                    'candidateIdProofs': "x",
-                    'candidateTimeShiftPref': "y",
-                    'lastActive': "z",
-                    'candidateCreateTimestamp': "xa",
-                    'isMinProfileComplete': "xb",
-                    'experience': "xc",
-                    'candidateId': "xd",
-                    'preScreenAttempt': "xe" ,
-                    'preScreenSelectionTS': "xf",
-                    'preScreenCreatedBy': "xg",
-                    'varColumn': "xh",
-                    'varColumn2': "xi"
-                })*/
             });
 
             app.tableContainer.show();
@@ -1134,7 +1121,8 @@ $(function () {
                     {"data": "preScreenSelectionTS"},
                     {"data": "preScreenCreatedBy"},
                     {"data": "varColumn"},
-                    {"data": "varColumn2"}
+                    {"data": "varColumn2"},
+                    {"data": "varColumn3"}
                 ],
                 "deferRender": true,
                 "scrollY": '48vh',
@@ -1627,6 +1615,38 @@ function processDataInterviewStatus(returnedData) {
         setTimeout(function () {
             location.reload();
         }, 2000);
+    }
+}
+
+function updateStatus(candidateId, jpId) {
+    if($("#interview_status").val() > 0){
+        NProgress.start();
+        try {
+            $.ajax({
+                type: "POST",
+                url: "/updateStatus/" + candidateId + "/" + jpId + "/" + $("#interview_status").val(),
+                data: false,
+                contentType: false,
+                processData: false,
+                success: processDataForUpdateStatus
+            });
+            NProgress.done();
+        } catch (exception) {
+            console.log("exception occured!!" + exception);
+        }
+    } else {
+        notifyError("Please select a status", 'danger');
+    }
+}
+
+function processDataForUpdateStatus(returnedData) {
+    if(returnedData == 1){
+        notifyError("Status updated successfully. Refreshing ..", 'success');
+        setTimeout(function () {
+            location.reload();
+        }, 2000);
+    } else{
+        notifyError("Something went wrong", 'danger');
     }
 }
 

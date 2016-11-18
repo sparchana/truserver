@@ -1564,6 +1564,16 @@ public class JobPostWorkflowEngine {
                             candidateExtraData.setInterviewDate(jobPostWorkflow.getScheduledInterviewDate());
                             candidateExtraData.setInterviewSlot(jobPostWorkflow.getScheduledInterviewTimeSlot());
                             candidateExtraData.setWorkflowStatus(jobPostWorkflow.getStatus());
+
+                            CandidateInterviewStatusUpdate candidateInterviewStatusUpdate = CandidateInterviewStatusUpdate.find.where()
+                                    .eq("candidateId", candidate.getCandidateId())
+                                    .eq("JobPostId", jobPostWorkflow.getJobPost().getJobPostId())
+                                    .orderBy().desc("create_timestamp").setMaxRows(1).findUnique();
+
+                            candidateExtraData.setCandidateInterviewStatus(null);
+                            if(candidateInterviewStatusUpdate != null){
+                                candidateExtraData.setCandidateInterviewStatus(candidateInterviewStatusUpdate.getJobPostWorkflow().getStatus());
+                            }
                         }
                     }
                 }
@@ -2129,6 +2139,12 @@ public class JobPostWorkflowEngine {
             jobPostWorkflowNew.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", jwStatus).findUnique());
         }
         jobPostWorkflowNew.update();
+
+        CandidateInterviewStatusUpdate candidateInterviewStatusUpdate = new CandidateInterviewStatusUpdate();
+        candidateInterviewStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
+        candidateInterviewStatusUpdate.setJobPost(jobPostWorkflowOld.getJobPost());
+        candidateInterviewStatusUpdate.setCandidate(candidate);
+        candidateInterviewStatusUpdate.save();
 
         updateRecruiterWithCandidateStatus(jobPostWorkflowOld, candidate, jwStatus);
 
