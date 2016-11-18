@@ -106,6 +106,7 @@ public class RecruiterAuthService {
 
     public static void addSession(RecruiterAuth existingAuth, RecruiterProfile recruiterProfile){
         session().put("sessionId", existingAuth.getAuthSessionId());
+        session().put("sessionUsername", "RID-"+String.valueOf(recruiterProfile.getRecruiterProfileId()));
         session().put("recruiterId", String.valueOf(recruiterProfile.getRecruiterProfileId()));
         session().put("recruiterName", String.valueOf(recruiterProfile.getRecruiterProfileName()));
         session().put("recruiterMobile", String.valueOf(recruiterProfile.getRecruiterProfileMobile()));

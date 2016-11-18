@@ -7,14 +7,20 @@ import api.http.httpRequest.*;
 import api.http.httpResponse.CandidateSignUpResponse;
 import api.http.httpResponse.PartnerSignUpResponse;
 import api.http.httpResponse.SupportDashboardElementResponse;
+import com.avaje.ebean.Ebean;
+import com.avaje.ebean.RawSql;
+import com.avaje.ebean.RawSqlBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import controllers.businessLogic.*;
+import controllers.businessLogic.JobWorkflow.JobPostWorkflowEngine;
 import controllers.security.SecuredUser;
 import models.entity.*;
 import models.entity.OM.JobApplication;
+import models.entity.OM.JobPostWorkflow;
 import models.entity.OM.PartnerToCandidate;
+import models.entity.OM.PreScreenRequirement;
 import models.entity.Static.LeadSource;
 import models.entity.Static.PartnerType;
 import models.util.SmsUtil;
@@ -26,7 +32,9 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static models.util.Util.generateOtp;
@@ -361,6 +369,32 @@ public class PartnerController {
                         .eq("partner_id", partner.getPartnerId())
                         .orderBy("jobApplicationCreateTimeStamp desc")
                         .findList();
+                List<Long> jobPostIdList = new ArrayList<>();
+
+                for (JobApplication jobApplication : jobApplicationList) {
+                    jobPostIdList.add(jobApplication.getJobPost().getJobPostId());
+                }
+
+                List<PreScreenRequirement> preScreenRequirementList = PreScreenRequirement.find.where().in("job_post_id", jobPostIdList).findList();
+
+                Map<Long, PreScreenRequirement> preScreenRequirementMap = new HashMap<>();
+                for(PreScreenRequirement preScreenRequirement: preScreenRequirementList) {
+                    preScreenRequirementMap.putIfAbsent(preScreenRequirement.getJobPost().getJobPostId(), preScreenRequirement);
+                }
+
+                JobPostWorkflow jobPostWorkflow = JobPostWorkflow.find.where().in("job_post_id", jobPostIdList).eq("candidate_id", id).ge("status.statusId", ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED).setMaxRows(1).findUnique();
+
+                Logger.info("preScreenReqList: " + preScreenRequirementList.size());
+                Logger.info("jobPostWorkflow: " + jobPostWorkflow);
+
+                for (JobApplication jobApplication : jobApplicationList) {
+                    if (preScreenRequirementMap.get(jobApplication.getJobPost().getJobPostId()) == null ) {
+                        jobApplication.setPreScreenRequired(false);
+                    } else if (jobPostWorkflow != null) {
+                        jobApplication.setPreScreenRequired(false);
+                    }
+                }
+
                 return ok(toJson(jobApplicationList));
             }
         }

@@ -29,6 +29,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static play.libs.Json.toJson;
 import static play.mvc.Controller.session;
 
 /**
@@ -603,7 +604,7 @@ public class JobPostWorkflowEngine {
         }
 
         JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
-        if (jobPost == null){
+        if (jobPost == null) {
             populateResponse.setStatus(PreScreenPopulateResponse.Status.FAILURE);
             return populateResponse;
         }
@@ -615,7 +616,7 @@ public class JobPostWorkflowEngine {
                     .eq("candidate.candidateId", candidateId)
                     .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
 
-            if(jobPostWorkflowOld.getStatus().getStatusId() == ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED){
+            if((jobPostWorkflowOld != null) && (jobPostWorkflowOld.getStatus().getStatusId() >= ServerConstants.JWF_STATUS_PRESCREEN_FAILED)){
                 populateResponse.setStatus(PreScreenPopulateResponse.Status.INVALID);
                 return populateResponse;
             }
@@ -822,7 +823,7 @@ public class JobPostWorkflowEngine {
                                     if(candidate.getCandidateEducation() != null && candidate.getCandidateEducation().getEducation() != null) {
                                         preScreenElement.candidateElement = (new PreScreenPopulateResponse.PreScreenCustomObject(candidate.getCandidateEducation().getEducation(),
                                                 candidate.getCandidateEducation().getEducation().getEducationName(), true));
-                                        if(!((candidate.getCandidateEducation().getEducation().getEducationId() - jobPost.getJobPostEducation().getEducationId()) >=0)) {
+                                        if(!(jobPost.getJobPostEducation().getEducationName().trim().equalsIgnoreCase("any")) && !((candidate.getCandidateEducation().getEducation().getEducationId() - jobPost.getJobPostEducation().getEducationId()) >=0)) {
                                             preScreenElement.isMatching = false;
                                         }
                                     } else {
@@ -1036,7 +1037,6 @@ public class JobPostWorkflowEngine {
     }
 
     public static String savePreScreenResult(PreScreenRequest preScreenRequest) {
-        String response = "OK";
         // fetch existing workflow old
         JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
                 .eq("jobPost.jobPostId", preScreenRequest.getJobPostId())
@@ -1148,16 +1148,37 @@ public class JobPostWorkflowEngine {
             }
             preScreenResponse.save();
         }
-        Long recruiterId = jobPostWorkflowNew.getJobPost().getRecruiterProfile().getRecruiterProfileId();
+        if(preScreenRequest.isPass() != null  && !(preScreenRequest.isPass())) {
+            // candidate failed prescren, then don't show interview
+            return "OK";
+        }
+        return isInterviewRequired(jobPostWorkflowNew.getJobPost());
+    }
+
+    public static String isInterviewRequired( JobPost jobPost){
+        if(jobPost == null) {
+            return "ERROR";
+        }
+        int validCount = 0;
+        Long recruiterId = jobPost.getRecruiterProfile().getRecruiterProfileId();
         RecruiterCreditHistory recruiterCreditHistory = RecruiterCreditHistory.find.where()
                 .eq("recruiterProfile.recruiterProfileId", recruiterId)
+                .eq("recruiterCreditCategory.recruiterCreditCategoryId", ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK)
                 .orderBy().desc("createTimestamp").setMaxRows(1).findUnique();
         if(recruiterCreditHistory != null) {
             if(recruiterCreditHistory.getRecruiterCreditCategory().getRecruiterCreditCategoryId()
                     == ServerConstants.RECRUITER_CATEGORY_INTERVIEW_UNLOCK
                     && recruiterCreditHistory.getRecruiterCreditsAvailable() > 0){
-                return "INTERVIEW";
+                // When recruiter credit available then show Interview UI
+                validCount++;
             }
+        }
+        if(jobPost.getInterviewDetailsList() != null && jobPost.getInterviewDetailsList().size() > 0){
+            // When slot available then  show Interview UI
+            validCount++;
+        }
+        if(validCount == 2){
+            return "INTERVIEW";
         }
         return "OK";
     }
@@ -1284,7 +1305,7 @@ public class JobPostWorkflowEngine {
         List<Candidate> filteredCandidateList = new ArrayList<>();
 
         Logger.info("candidateList size before latlng filter: "+candidateList.size());
-        if (jobPostLocalityIdList == null || jobPostLocalityIdList.isEmpty()){
+        if (jobPostLocalityIdList == null || jobPostLocalityIdList.isEmpty()) {
             return candidateList;
         }
 
@@ -1300,17 +1321,15 @@ public class JobPostWorkflowEngine {
                 Double candidateLng;
                 StringBuilder matchedLocation = new StringBuilder();
 
-                if ((candidate.getLocality() == null || ! jobPostLocalityIdList.contains(candidate.getLocality().getLocalityId()))) {
-                    if((candidate.getCandidateLocalityLat() != null && candidate.getCandidateLocalityLng()!= null)) {
-                        candidateLat = candidate.getCandidateLocalityLat();
-                        candidateLng = candidate.getCandidateLocalityLng();
-                    } else {
-                        if(shouldRemoveCandidate) filteredCandidateList.remove(candidate);
-                        continue;
-                    }
-                } else {
+                if((candidate.getCandidateLocalityLat() != null && candidate.getCandidateLocalityLng()!= null)) {
+                    candidateLat = candidate.getCandidateLocalityLat();
+                    candidateLng = candidate.getCandidateLocalityLng();
+                } else if(candidate.getLocality() != null) {
                     candidateLat = candidate.getLocality().getLat();
                     candidateLng = candidate.getLocality().getLng();
+                } else {
+                    if(shouldRemoveCandidate) filteredCandidateList.remove(candidate);
+                    continue;
                 }
 
                 for (Locality locality : jobPostLocalityList) {
@@ -1320,6 +1339,7 @@ public class JobPostWorkflowEngine {
                             candidateLat,
                             candidateLng
                     );
+
                     Double searchRadius = ServerConstants.DEFAULT_MATCHING_ENGINE_RADIUS;
                     if(distanceRadius != null){
                         searchRadius = distanceRadius;
