@@ -21,12 +21,14 @@
         <link rel="stylesheet" type="text/css" href="/assets/common/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="/assets/common/css/myStyle.css">
         <link rel="stylesheet" type="text/css" href="/assets/common/css/myJobPost.css">
+        <link rel="stylesheet" type="text/css" href="/assets/common/css/pre_screen_candidate.css">
         <link rel="stylesheet" href="/assets/common/css/token-input-facebook.css" type="text/css" />
         <link rel="stylesheet" href="/assets/support/css/bootstrap-multiselect.css" type="text/css" />
 
 
         <script type="text/javascript" src="/assets/common/js/jquery-1.12.4.js"></script>
         @*<script type="text/javascript" src="/assets/common/js/jquery.min_1_12_0.js"></script>*@
+        <script type="text/javascript" src="/assets/support/js/jquery-ui.js"></script>
 
         <script type="text/javascript" src="/assets/common/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="/assets/support/js/bootstrap-multiselect.js"></script>
@@ -95,10 +97,10 @@
 
     <div class="modal fade" id="preScreenModal" role="dialog" aria-labelledby="preScreenModal">
         <div class="modal-dialog" role="document" id="preScreenModalBody">
-            <div class="modal-content" style="padding:0;">
+            <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="">Job Application Requirement</h4>
+                    <h4 class="modal-title" id="">You are applying for <b><div style="display: inline-block" id="jobNameConfirmation"></div></b> job at <b><div style="display: inline-block" id="companyNameConfirmation"></div></b>.</h4>
                 </div>
                 <div class="modal-body">
                     <div id="missingInfo">
@@ -106,7 +108,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary disabled">Schedule Interview</button>
+                    <button type="button" id="preScreenInterviewSetBtn" class="btn btn-primary disabled">Apply</button>
                 </div>
             </div>
         </div>

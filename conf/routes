@@ -45,6 +45,7 @@ GET         /support/api/getAssetReqForJobRole/                           contro
 GET         /support/api/getWorkflowInteraction/                          controllers.Application.getWorkflowInteraction(job_post_workflow_uuid: String ?= null)
 GET         /support/api/getCandidateDetails/                             controllers.Application.getCandidateDetails(candidateId: java.lang.Long ?= null, propertyId: Integer ?= null)
 GET         /workflowInteraction/:uuid                                    controllers.Application.renderWorkflowInteraction(uuid: String)
+GET         /support/api/shouldShowInterview/                             controllers.Application.shouldShowInterview(jobPostId: java.lang.Long ?= null)
 
 POST        /addCompany                                                   controllers.Application.addCompany()
 POST        /addCompanyLogo                                               controllers.Application.addCompanyLogo()

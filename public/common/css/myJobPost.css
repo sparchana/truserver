@@ -460,10 +460,6 @@ hr{
     margin-top: -90px;
 }
 
-#preScreenModalBody{
- width: 66%;
-}
-
 @media screen and (max-width: 280px) {
     .panel{
         padding: 0px;
