@@ -382,15 +382,18 @@ public class PartnerController {
                     preScreenRequirementMap.putIfAbsent(preScreenRequirement.getJobPost().getJobPostId(), preScreenRequirement);
                 }
 
-                JobPostWorkflow jobPostWorkflow = JobPostWorkflow.find.where().in("job_post_id", jobPostIdList).eq("candidate_id", id).ge("status.statusId", ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED).setMaxRows(1).findUnique();
+                List<JobPostWorkflow> jobPostWorkflowList = JobPostWorkflow.find.where().in("job_post_id", jobPostIdList).eq("candidate_id", id).ge("status.statusId", ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED).findList();
 
+                Map<Long, JobPostWorkflow> jobPostWorkflowMap = new HashMap<>();
+                for(JobPostWorkflow jobPostWorkflow: jobPostWorkflowList) {
+                    jobPostWorkflowMap.putIfAbsent(jobPostWorkflow.getJobPost().getJobPostId(), jobPostWorkflow);
+                }
                 Logger.info("preScreenReqList: " + preScreenRequirementList.size());
-                Logger.info("jobPostWorkflow: " + jobPostWorkflow);
 
                 for (JobApplication jobApplication : jobApplicationList) {
                     if (preScreenRequirementMap.get(jobApplication.getJobPost().getJobPostId()) == null ) {
                         jobApplication.setPreScreenRequired(false);
-                    } else if (jobPostWorkflow != null) {
+                    } else if (jobPostWorkflowMap.get(jobApplication.getJobPost().getJobPostId()) != null) {
                         jobApplication.setPreScreenRequired(false);
                     }
                 }
