@@ -87,24 +87,25 @@
                     <i class="material-icons prefix">info_outline</i>
                     <select id="select_date" multiple="multiple" class="tokenCustomInput tokenize-sample"></select>
                     <script type="text/javascript">
-                    $('#select_date').tokenize({
-                        displayDropdownOnFocus: true,
-                        placeholder: "Interview date",
-                        maxElements: 1,
-                        newElements: true,
-                        onAddToken: function (value, text) {
-                            validateSelectDate(value, text);
-                        }
-                    });
-                </script>
+                        $('#select_date').tokenize({
+                            displayDropdownOnFocus: true,
+                            placeholder: "Interview date",
+                            maxElements: 1,
+                            newElements: true,
+                            onAddToken: function (value, text) {
+                                validateSelectDate(value, text);
+                            }
+                        });
+                    </script>
 
-                <style>
-                    div.Tokenize ul.TokensContainer {
-                        margin-left: 44px;
-                        width: 85%;
-                        padding-bottom: 6px;
-                    }
-                </style>
+                    <style>
+                        div.Tokenize ul.TokensContainer {
+                            margin-left: 44px;
+                            width: 85%;
+                            padding-bottom: 6px;
+                        }
+                    </style>
+
                 </div>
             </div>
 

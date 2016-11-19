@@ -203,7 +203,7 @@ $(function() {
             notifyError("Please enter Job Post Company", 'danger');
             $("#jobPostCompany").addClass('selectDropdownInvalid').removeClass('selectDropdown');
             status = 0;
-        } else if($("#jobPostRecruiter").val() == "" && recId == 0){
+        } else if($("#jobPostRecruiter").val() == "" && $("#jobPostRecruiter").val() == "-1" && recId <= 0){
             notifyError("Please select a recruiter", 'danger');
             $("#jobPostCompany").addClass('selectDropdown').removeClass('selectDropdownInvalid');
             $("#jobPostRecruiter").addClass('selectDropdownInvalid').removeClass('selectDropdown');

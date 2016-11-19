@@ -1,5 +1,8 @@
 /**
  * Created by adarsh on 10/9/16.
+ *
+ * dependencies :
+ *          <script type="text/javascript" src="/assets/partner/js/notify.min.js"></script>
  */
 
 var localityArray = [];
@@ -345,13 +348,17 @@ function processDataVerifyCandidate(returnedData) {
 
 
 function notifyWarning(msg){
-    $.notify(msg, "info");
+    notify(msg, "info");
 }
 
 function notifyError(msg){
-    $.notify(msg, "error");
+    notify(msg, "error");
 }
 
 function notifySuccess(msg){
-    $.notify(msg, "success");
+    notify(msg, "success");
+}
+
+function notify(msg, style) {
+    $.notify(msg, style);
 }

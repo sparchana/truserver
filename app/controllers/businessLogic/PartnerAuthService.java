@@ -106,6 +106,7 @@ public class PartnerAuthService {
 
     public static void addSession(PartnerAuth existingAuth, Partner partner){
         session().put("sessionId", existingAuth.getAuthSessionId());
+        session().put("sessionUsername", "PID-"+String.valueOf(partner.getPartnerId()));
         session().put("partnerId", String.valueOf(partner.getPartnerId()));
         session().put("partnerName", String.valueOf(partner.getPartnerFirstName()));
         session().put("partnerMobile", String.valueOf(partner.getPartnerMobile()));

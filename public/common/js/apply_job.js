@@ -11,7 +11,7 @@ var salary;
 var education;
 var homeLocality;
 
-function processDataApplyJob(returnedData) {
+function processDataApplyJob(returnedData, jobPostId, candidateId) {
     $("#jobApplyConfirm").modal("hide");
     $("#messagePromptModal").modal("show");
     $('body').addClass('open-modal');
@@ -36,6 +36,8 @@ function processDataApplyJob(returnedData) {
         } catch(err){
             console.log(err);
         }
+        // generates prescreen modal here
+        openPartnerPreScreenModal(jobPostId, candidateId);
     } else if(returnedData.status == 2){
         $('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
         $("#customMsg").html("Oops! Something went Wrong. Unable to apply");
@@ -72,12 +74,24 @@ function applyJobSubmitViaCandidate(id, localityId, prefTimeSlot, scheduledInter
         if(triggerModal){
             getAssessmentQuestions(null, id);
         }
-        applyJobSubmit(id, phone, localityId, prefTimeSlot, scheduledInterviewDate, false);
+        applyJobSubmit(id, localStorage.getItem("candidateId"), phone, localityId, null, null, false);
     }
 } // end of submit
 
-function applyJobSubmit(jobPostId, phone, localityId, prefTimeSlot, scheduledInterviewDate, isPartner) {
+function applyJobSubmit(jobPostId, candidateId, phone, localityId, prefTimeSlot, scheduledInterviewDate, isPartner) {
     try {
+        var partner = false;
+        var prefTimeSlotVal;
+        var scheduledInterviewDateVal;
+        // TODO: remove interview_schedule and interview-slot as now there exists a interview js module
+        if(isPartner){
+            partner = true;
+            prefTimeSlotVal = prefTimeSlot;
+            scheduledInterviewDateVal = scheduledInterviewDate;
+        } else {
+            prefTimeSlotVal = null;
+            scheduledInterviewDateVal = null;
+        }
         var d = {
             jobId: jobPostId,
             candidateMobile: phone,
@@ -92,7 +106,9 @@ function applyJobSubmit(jobPostId, phone, localityId, prefTimeSlot, scheduledInt
             async: false,
             contentType: "application/json; charset=utf-8",
             data: JSON.stringify(d),
-            success: processDataApplyJob
+            success: function (returnedData) {
+                processDataApplyJob(returnedData, jobPostId, candidateId);
+            }
         });
 
     } catch (exception) {

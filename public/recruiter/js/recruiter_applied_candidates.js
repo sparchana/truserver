@@ -136,12 +136,8 @@ function processDataForJobApplications(returnedData) {
             //candidate last active container
             var candidateCardRowColTwoFont = document.createElement("font");
             candidateCardRowColTwoFont.setAttribute("size", "3");
-            var postedOn;
-            var appliedDate;
-            postedOn = new Date(value.extraData.appliedOn);
-            appliedDate = ('0' + postedOn.getDate()).slice(-2) + '-' + getMonthVal((postedOn.getMonth()+1)) + '-' + postedOn.getFullYear();
 
-            candidateCardRowColTwoFont.textContent = "Last update: " + appliedDate;
+            candidateCardRowColTwoFont.textContent = "Last Active: " + value.extraData.lastActive.lastActiveValueName;
             candidateCardRowColTwo.appendChild(candidateCardRowColTwoFont);
 
             //end of candidateCardRow
@@ -625,6 +621,7 @@ function processDataForJobApplications(returnedData) {
 
             var candidateInterviewDateVal = document.createElement("span");
 
+            console.log(value);
             if(value.extraData.interviewDate != null){
                 var interviewDate = new Date(value.extraData.interviewDate);
                 var interviewDetails = ('0' + interviewDate.getDate()).slice(-2) + '-' + getMonthVal((interviewDate.getMonth()+1)) + " @" + value.extraData.interviewSlot.interviewTimeSlotName;
@@ -707,7 +704,7 @@ function processDataForJobApplications(returnedData) {
                     iconImg.setAttribute('width', '16px');
                     candidateInterviewReschedule.appendChild(iconImg);
 
-                } else if(value.extraData.workflowStatus.statusId == 6){
+                } else if((value.extraData.workflowStatus.statusId == 6) || (value.extraData.workflowStatus.statusId > 9 && value.extraData.workflowStatus.statusId < 14)){
                     candidateInterviewStatusVal.textContent = "Interview Confirmed";
                     candidateInterviewStatusVal.style = "color: green; font-weight: bold";
                 } else if(value.extraData.workflowStatus.statusId == 7){
@@ -723,6 +720,8 @@ function processDataForJobApplications(returnedData) {
                     candidateInterviewStatusVal.textContent = "TODO! No Slots availabe.";
                 }
             }
+
+            console.log(value.extraData.workflowStatus.statusId);
 
             inlineBlockDiv.appendChild(candidateInterviewStatusVal);
 

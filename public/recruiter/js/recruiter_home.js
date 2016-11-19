@@ -121,9 +121,16 @@ function processDataGetJobPostDetails(returnedData) {
 
     if(interviews == ""){
         interviews = '<center style="font-size: 18px">No Interviews Today</center>';
-    }
+        $("#today_interview").append(interviews);
 
-    $("#today_interview").append(interviews);
+    } else{
+        var interviewBody = '<div class="row" style="padding: 0 24px 0 24px; color: #56B4D3">' +
+            '<div class="col s12 m5" style="font-size: 18px; font-weight: bold">Job Title</div>' +
+            '<div class="col s12 m4"  style="font-size: 18px; font-weight: bold">Today\'s Interview Slot(s)</div>' +
+            '<div class="col s12 m3"  style="font-size: 18px; font-weight: bold">Action</div></div><hr>' +
+            interviews;
+        $("#today_interview").append(interviewBody);
+    }
 
 }
 

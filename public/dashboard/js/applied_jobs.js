@@ -65,6 +65,7 @@ function prePopulateJobSection(jobApplication) {
     var parent = $('#myAppliedJobs');
     var count = 0;
     jobApplication.forEach(function (jobPost) {
+        console.log(jobPost);
         count++;
         if (count) {
             /* get all localities of the jobApplication */
@@ -297,7 +298,7 @@ function prePopulateJobSection(jobApplication) {
                 divInterviewStatus.textContent = "Job application under review";
                 divInterviewStatus.style = "color: #eb9800; font-weight: 600";
             } else{
-                if(jobPost.status.statusId == 6){
+                if(jobPost.status.statusId == 6 || (jobPost.status.statusId > 9 && jobPost.status.statusId < 14)){
                     if(jobPost.interviewLocationLat != null){
                         dir.className = "navigationBtn";
                         dir.textContent = "Directions";
