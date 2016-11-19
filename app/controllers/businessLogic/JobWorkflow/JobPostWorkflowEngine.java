@@ -18,6 +18,7 @@ import models.entity.Interaction;
 import models.entity.JobPost;
 import models.entity.OM.*;
 import models.entity.Recruiter.OM.RecruiterToCandidateUnlocked;
+import models.entity.Recruiter.RecruiterProfile;
 import models.entity.RecruiterCreditHistory;
 import models.entity.Static.*;
 import models.util.SmsUtil;

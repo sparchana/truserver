@@ -37,6 +37,7 @@ function initDecorator(colorPalette) {
         table: {
             mainTable: {
                 title: "Min Requirement",
+                titleStyle: "margin:0;color:rgb(63, 81, 181);padding: 2%;background-color: rgba(255, 255, 255, 0.99);",
                 className: "mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--12-col",
                 style: "margin:0;border:none",
                 tHead: {
@@ -54,6 +55,7 @@ function initDecorator(colorPalette) {
             },
             otherTable: {
                 title: "Other Requirement",
+                titleStyle: "margin: 30px 0 0 0;color:rgb(63, 81, 181);padding: 2%;background-color: rgba(255, 255, 255, 0.99);",
                 className: "mdl-data-table mdl-js-data-table mdl-shadow--2dp mdl-cell mdl-cell--12-col",
                 style: "margin:0;border:none",
                 tHead: {
@@ -116,7 +118,7 @@ function initDecorator(colorPalette) {
             noteContainer: {
                 title: "",
                 visibility: true,
-                className: "col-lg-6 form-group"
+                className: "col-lg-6 form-group remove-padding-right"
             }
         },
         edit:{
@@ -816,7 +818,6 @@ function fetchEditModalContent(candidateId, propId, jobPostId, customD) {
             base_api_url += "&propertyId=" + propId;
         }
     }
-    console.log(base_api_url);
     // work_shift
     var url;
     var ajax_type = "POST";
@@ -831,7 +832,7 @@ function fetchEditModalContent(candidateId, propId, jobPostId, customD) {
 
     if(propId == 0) {
         htmlBodyContent = '<div id="document_details">'+
-            '<h5>Document Details:</h5>'+
+            '<h4 class="mdl-shadow--2dp" style=";margin: 0;color:rgb(63, 81, 181);padding: 2%;background-color: rgba(255, 255, 255, 0.99);">Document Details:</h4>'+
             '</div>';
 
         modalTitle = "Candidate Document Edit";
@@ -1140,11 +1141,11 @@ function constructPreScreenBodyContainer(returnedData, customD) {
     var container = $('<div class="'+customD.container.className+'" id="pre_screen_container_row"></div>');
 
     var minReqTableContainer = $('<div id="minReqTable"></div>');
-    container.append('<h4 style="margin-top: 0">'+customD.table.mainTable.title+'</h4>');
+    container.append('<h4 class="mdl-shadow--2dp" style="'+customD.table.mainTable.titleStyle+'">'+customD.table.mainTable.title+'</h4>');
     container.append(minReqTableContainer);
 
     var otherReqTableContainer = $('<div id="otherReqTable"></div>');
-    container.append('<h4>'+customD.table.otherTable.title+'</h4>');
+    container.append('<h4 class="mdl-shadow--2dp" style="'+customD.table.otherTable.titleStyle+'">'+customD.table.otherTable.title+'</h4>');
     container.append(otherReqTableContainer);
 
     // minReqTable
@@ -1338,6 +1339,7 @@ function constructPreScreenBodyContainer(returnedData, customD) {
 
                 if ($.inArray(1, customD.columnVisible) > -1) {
                     var bodyContentData1 = document.createElement("td");
+                    bodyContentData1.style = ("font-weight:600");
                     bodyContentData1.textContent = rowData.propertyTitle;
                     bodyContentBox.appendChild(bodyContentData1);
                 }
@@ -1418,6 +1420,7 @@ function constructPreScreenBodyContainer(returnedData, customD) {
 
                 if ($.inArray(1, customD.columnVisible) > -1) {
                     var bodyContentData1 = document.createElement("td");
+                    bodyContentData1.style = ("font-weight:600");
                     bodyContentData1.textContent = rowData.propertyTitle;
                     bodyContentBox.appendChild(bodyContentData1);
                 }
@@ -1709,7 +1712,8 @@ function getPreScreenContent(jobPostId, candidateId, isRebound, customD, rePreSc
     } else {
         base_api_url +="&rePreScreen="+true;
     }
-
+    base_api_url +="&candidateMobile";
+    console.log(" url link : " + base_api_url);
 
     var processor;
     if(!isRebound) {

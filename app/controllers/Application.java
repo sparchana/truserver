@@ -1626,11 +1626,23 @@ public class Application extends Controller {
        return ok(toJson(JobPostWorkflowEngine.getMatchingCandidate(jpId)));
     }
 
-    public static Result getJobPostVsCandidate(Long candidateId, Long jobPostId, Boolean rePreScreen) {
-        if (candidateId == 0L || jobPostId == 0L) {
+
+    public static Result getJobPostVsCandidate(Long candidateId, Long jobPostId, Boolean rePreScreen, String candidateMobile) {
+        if(candidateId == null && jobPostId == null) {
+            return badRequest();
+        } else if (candidateId != null && candidateId == 0L && jobPostId != null && jobPostId == 0L) {
             return badRequest();
         }
+        if(candidateId == null && candidateMobile !=null){
+            candidateMobile = FormValidator.convertToIndianMobileFormat(candidateMobile);
 
+            Candidate candidate = Candidate.find.where().eq("candidateMobile", candidateMobile).findUnique();
+            if(candidate == null) {
+                return badRequest();
+            } else {
+                candidateId = candidate.getCandidateId();
+            }
+        }
         return ok(toJson(JobPostWorkflowEngine.getJobPostVsCandidate(jobPostId, candidateId, rePreScreen)));
     }
 
@@ -1922,5 +1934,13 @@ public class Application extends Controller {
         } else {
             return ok(toJson(IdProof.find.where().in("idProofId", idProofIdList).findList()));
         }
+    }
+
+    public static Result shouldShowInterview(Long jobPostId) {
+        if (jobPostId == null) {
+            return badRequest();
+        }
+        JobPost jobPost = JobPost.find.where().eq("jobPostId", jobPostId).findUnique();
+        return ok(JobPostWorkflowEngine.isInterviewRequired(jobPost));
     }
 }
