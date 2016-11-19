@@ -203,7 +203,7 @@ function validateAadhar(array) {
     return (c === 0);
 }
 
-// validate AADHAAR stop
+// validate AADHAAR end
 
 // validate Driving Licence
 function validateDL(dlNumber) {

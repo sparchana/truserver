@@ -1902,7 +1902,7 @@ public class Application extends Controller {
         // TODO: if channel = partner -> put a check to find if the candidate belongs to the partner or not
         JsonNode updateCandidateDetailJSON = request().body().asJson();
         Logger.info("Browser: " +  request().getHeader("User-Agent") + "; Req JSON : " + updateCandidateDetailJSON);
-        if(updateCandidateDetailJSON == null){
+        if(updateCandidateDetailJSON == null) {
             return badRequest();
         }
         ObjectMapper newMapper = new ObjectMapper();
@@ -1913,5 +1913,14 @@ public class Application extends Controller {
         AddCandidateInterviewSlotDetail interviewSlotDetail = newMapper.readValue(updateCandidateDetailJSON.toString(), AddCandidateInterviewSlotDetail.class);
 
         return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewDetail(candidateId, jobPostId, interviewSlotDetail)));
+    }
+
+    public static Result getAllIdProofs(String ids) {
+        List<String> idProofIdList = Arrays.asList(ids.split("\\s*,\\s*"));
+        if(ids == null) {
+            return ok(toJson(IdProof.find.all()));
+        } else {
+            return ok(toJson(IdProof.find.where().in("idProofId", idProofIdList).findList()));
+        }
     }
 }
