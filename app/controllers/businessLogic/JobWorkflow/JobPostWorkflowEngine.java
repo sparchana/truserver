@@ -1584,15 +1584,18 @@ public class JobPostWorkflowEngine {
                             candidateExtraData.setInterviewSchedule(interviewDatetime);
                             candidateExtraData.setInterviewLat(jobPostWorkflow.getInterviewLocationLat());
                             candidateExtraData.setInterviewLng(jobPostWorkflow.getInterviewLocationLng());
-                            candidateExtraData.setInterviewDate(jobPostWorkflow.getScheduledInterviewDate());
-                            candidateExtraData.setInterviewSlot(jobPostWorkflow.getScheduledInterviewTimeSlot());
 
                             JobPostWorkflow jobPostWorkflowLatest = JobPostWorkflow.find.where()
                                     .eq("candidate_id", candidate.getCandidateId())
                                     .eq("Job_post_id", jobPostWorkflow.getJobPost().getJobPostId())
                                     .orderBy().desc("creation_timestamp").setMaxRows(1).findUnique();
 
+                            Logger.info(candidate.getCandidateFullName() + " " + candidate.getCandidateId() + " -------");
+                            Logger.info(jobPostWorkflowLatest.getJobPostWorkflowId() + " ------");
                             candidateExtraData.setWorkflowStatus(jobPostWorkflowLatest.getStatus());
+                            candidateExtraData.setInterviewDate(jobPostWorkflowLatest.getScheduledInterviewDate());
+                            candidateExtraData.setInterviewSlot(jobPostWorkflowLatest.getScheduledInterviewTimeSlot());
+
 
                             CandidateInterviewStatusUpdate candidateInterviewStatusUpdate = CandidateInterviewStatusUpdate.find.where()
                                     .eq("candidateId", candidate.getCandidateId())

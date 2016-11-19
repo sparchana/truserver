@@ -111,7 +111,6 @@ function getAllAppliedJobs() {
                         }
 
                         var currentStatus = "Under Review";
-                        console.log(jobApplication);
                         if(jobApplication.status.statusId > 5){
                             if(jobApplication.status.statusId == 6 || (jobApplication.status.statusId > 9 && jobApplication.status.statusId < 14)) {
                                 currentStatus = "Interview confirmed";
@@ -140,11 +139,10 @@ function getAllAppliedJobs() {
                                 }
                                 // jpId is jobPostId
                                 var jpId = jobApplication.jobPost.jobPostId;
-                                return '<input type="submit" value="Pre-Screen"  style="width:150px" onclick="openPartnerPreScreenModal(' + jpId+ ', ' + candidateId + ');" id="' + candidateInfo.lead.leadId + '" class="btn btn-primary">'
+                                return '<input type="submit" value="Pre-Screen" style="width:150px" onclick="openPartnerPreScreenModal(' + jpId+ ', ' + candidateId + ');" id="' + candidateInfo.lead.leadId + '" class="btn btn-primary">'
                             } else {
-                                return "Not Required";
+                                return '<div class="mLabel" style="width:100%">Not Required</div>';
                             }
-
                         };
 
 

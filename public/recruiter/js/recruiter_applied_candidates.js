@@ -621,7 +621,6 @@ function processDataForJobApplications(returnedData) {
 
             var candidateInterviewDateVal = document.createElement("span");
 
-            console.log(value);
             if(value.extraData.interviewDate != null){
                 var interviewDate = new Date(value.extraData.interviewDate);
                 var interviewDetails = ('0' + interviewDate.getDate()).slice(-2) + '-' + getMonthVal((interviewDate.getMonth()+1)) + " @" + value.extraData.interviewSlot.interviewTimeSlotName;
@@ -720,8 +719,6 @@ function processDataForJobApplications(returnedData) {
                     candidateInterviewStatusVal.textContent = "TODO! No Slots availabe.";
                 }
             }
-
-            console.log(value.extraData.workflowStatus.statusId);
 
             inlineBlockDiv.appendChild(candidateInterviewStatusVal);
 

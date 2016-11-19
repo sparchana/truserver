@@ -970,21 +970,7 @@ $(function () {
                                     '</span>';
 
                             } else{
-                                /*                            interviewSelectedDate = null;
-                                 interviewSelectedSlot = null;
-                                 interviewDetails = "Date/time not specified ";
-                                 interviewAction = '<div>' + interviewDetails + '</div>' +
-                                 '<span id="interview_status_option_' + newCandidate.candidate.candidateId + '">' +
-                                 '<span class="accept" onclick="confirmInterview(' + newCandidate.candidate.candidateId + ');"><img src="/assets/recruiter/img/icons/accept.svg" height="16px" width="14px"></span>' +
-                                 '<span class="reject"><img src="/assets/recruiter/img/icons/reject.svg" height="16px" width="14px"></span>' +
-                                 '</span>';*/
                                 interviewAction = "Slots not available";
-                                // interviewDate = "Slots not available";
-                                // interviewAction = '<div id="interview_date_' + newCandidate.candidate.candidateId + '">' + interviewDate + '</div>' +
-                                //     '<span id="interview_status_option_' + newCandidate.candidate.candidateId + '">' +
-                                //     '<span class="accept" onclick="confirmInterview(' + newCandidate.candidate.candidateId + ');"><img src="/assets/recruiter/img/icons/accept.svg" height="16px" width="14px"></span>' +
-                                //     '<span class="reject" onclick="rejectInterview(' + newCandidate.candidate.candidateId + ');"><img src="/assets/recruiter/img/icons/reject.svg" height="16px" width="14px"></span>' +
-                                //     '</span>';
                             }
                         }
                         return interviewAction;

@@ -141,7 +141,6 @@ function processDataForJobApplications(returnedData) {
 
         candidateList.reverse();
         candidateList.forEach(function (value){
-            console.log(value);
             if(value.extraData.interviewDate != null){
                 var date = new Date(value.extraData.interviewDate);
                 var interviewDay = date.getDate();
