@@ -56,3 +56,4 @@ alter table interview_details drop column longitude;
 alter table interview_details drop column placeid;
 
 drop table if exists interview_confirmed_status_update;
+drop table if exists candidate_interview_status_update;
