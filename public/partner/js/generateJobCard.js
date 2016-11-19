@@ -111,8 +111,9 @@ function getAllAppliedJobs() {
                         }
 
                         var currentStatus = "Under Review";
-/*                        if(jobApplication.status.statusId > 5){
-                            if(jobApplication.status.statusId == 6) {
+                        console.log(jobApplication);
+                        if(jobApplication.status.statusId > 5){
+                            if(jobApplication.status.statusId == 6 || (jobApplication.status.statusId > 9 && jobApplication.status.statusId < 14)) {
                                 currentStatus = "Interview confirmed";
                                 if (jobApplication.interviewLocationLat != null) {
                                     currentStatus += '<div class="navigationBtn" onclick="navigateToLocation(' + jobApplication.interviewLocationLat + ', ' + jobApplication.interviewLocationLng + ')">Directions</div>'
@@ -130,7 +131,8 @@ function getAllAppliedJobs() {
                                     '<span class="reject" onclick="confirmInterview('+ jpId + ', 0);"><img src="/assets/recruiter/img/icons/reject.svg" height="16px" width="14px"></span>' +
                                     '</span>';
                             }
-                        }*/
+                        }
+
                         var varColumn = function () {
                             if(jobApplication.preScreenRequired){
                                 if(candidateId == null ) {
@@ -175,10 +177,10 @@ function getAllAppliedJobs() {
                 { "data": "jobPostSalary" },
                 { "data": "interviewIncentive" },
                 { "data": "joiningIncentive" },
-                { "data": "jobStatus" },
                 { "data": "interviewDetails" },
                 { "data": "jobAppliedOn" },
-                { "data": "preScreen" }
+                { "data": "preScreen" },
+                { "data": "jobStatus" }
             ],
             "language": {
                 "emptyTable": "Looks like you have applied to any of the jobs yet for this candidate! " + '<a href="/partner/' + localStorage.getItem("candidateId") + '/jobs"><font color="'+ "#2980b9" +'">Apply now!</font></a>',

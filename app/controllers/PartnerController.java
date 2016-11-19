@@ -360,45 +360,16 @@ public class PartnerController {
 
     @Security.Authenticated(SecuredUser.class)
     public static Result getAppliedJobsByPartnerForCandidate(long id) {
+        Logger.info(id + " candidateId");
         Candidate candidate = Candidate.find.where().eq("candidateId", id).findUnique();
         if(candidate != null){
             Partner partner = Partner.find.where().eq("partner_id", session().get("partnerId")).findUnique();
             if(partner != null){
-                List<JobApplication> jobApplicationList = JobApplication.find.where()
-                        .eq("candidateId", candidate.getCandidateId())
-                        .eq("partner_id", partner.getPartnerId())
-                        .orderBy("jobApplicationCreateTimeStamp desc")
-                        .findList();
-                List<Long> jobPostIdList = new ArrayList<>();
-
-                for (JobApplication jobApplication : jobApplicationList) {
-                    jobPostIdList.add(jobApplication.getJobPost().getJobPostId());
-                }
-
-                List<PreScreenRequirement> preScreenRequirementList = PreScreenRequirement.find.where().in("job_post_id", jobPostIdList).findList();
-
-                Map<Long, PreScreenRequirement> preScreenRequirementMap = new HashMap<>();
-                for(PreScreenRequirement preScreenRequirement: preScreenRequirementList) {
-                    preScreenRequirementMap.putIfAbsent(preScreenRequirement.getJobPost().getJobPostId(), preScreenRequirement);
-                }
-
-                JobPostWorkflow jobPostWorkflow = JobPostWorkflow.find.where().in("job_post_id", jobPostIdList).eq("candidate_id", id).ge("status.statusId", ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED).setMaxRows(1).findUnique();
-
-                Logger.info("preScreenReqList: " + preScreenRequirementList.size());
-                Logger.info("jobPostWorkflow: " + jobPostWorkflow);
-
-                for (JobApplication jobApplication : jobApplicationList) {
-                    if (preScreenRequirementMap.get(jobApplication.getJobPost().getJobPostId()) == null ) {
-                        jobApplication.setPreScreenRequired(false);
-                    } else if (jobPostWorkflow != null) {
-                        jobApplication.setPreScreenRequired(false);
-                    }
-                }
-
-                return ok(toJson(jobApplicationList));
+                return ok(toJson(JobPostWorkflowEngine.getPartnerAppliedJobsForCandidate(candidate, partner)));
             }
         }
         return ok("0");
+
     }
 
     public static Result getCandidateMatchingJobs(long id) {

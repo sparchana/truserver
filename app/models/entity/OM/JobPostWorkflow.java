@@ -65,6 +65,8 @@ public class JobPostWorkflow extends Model {
     @Column(name = "interview_location_lng", columnDefinition = "double null")
     private Double interviewLocationLng;
 
+    @Transient
+    private boolean isPreScreenRequired = true;
 
     public JobPostWorkflow() {
         this.creationTimestamp = new Timestamp(System.currentTimeMillis());
@@ -159,5 +161,13 @@ public class JobPostWorkflow extends Model {
 
     public void setInterviewLocationLng(Double interviewLocationLng) {
         this.interviewLocationLng = interviewLocationLng;
+    }
+
+    public boolean isPreScreenRequired() {
+        return isPreScreenRequired;
+    }
+
+    public void setPreScreenRequired(boolean preScreenRequired) {
+        isPreScreenRequired = preScreenRequired;
     }
 }

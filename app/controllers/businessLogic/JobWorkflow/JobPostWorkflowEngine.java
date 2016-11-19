@@ -2138,4 +2138,61 @@ public class JobPostWorkflowEngine {
 
         return 1;
     }
+
+    public static List<JobPostWorkflow> getPartnerAppliedJobsForCandidate(Candidate candidate, Partner partner) {
+        List<JobPostWorkflow> appliedJobsList;
+
+        List<JobApplication> jobApplicationList = JobApplication.find.where()
+                .eq("CandidateId", candidate.getCandidateId())
+                .eq("partner_id", partner.getPartnerId())
+                .orderBy("jobApplicationCreateTimeStamp desc")
+                .findList();
+
+        String jobPostIdString = "";
+        List<Long> jobPostIdList = new ArrayList<>();
+        for(JobApplication jobApplication: jobApplicationList){
+            jobPostIdList.add(jobApplication.getJobPost().getJobPostId());
+            jobPostIdString += jobApplication.getJobPost().getJobPostId() + ", ";
+        }
+
+        jobPostIdString = jobPostIdString.substring(0, jobPostIdString.length() - 2);
+
+        String candidateAppliedJobsSql = "select job_post_id, status_id, scheduled_interview_time_slot, scheduled_interview_date, interview_location_lat, interview_location_lng " +
+                "from job_post_workflow jwf where jwf.creation_timestamp = (select max(creation_timestamp)\n" +
+                " from job_post_workflow where jwf.job_post_id = job_post_workflow.job_post_id and job_post_workflow.candidate_id = " + candidate.getCandidateId() + ") " +
+                "and jwf.job_post_id in (" + jobPostIdString + ")";
+
+        RawSql rawSql = RawSqlBuilder.parse(candidateAppliedJobsSql)
+                .tableAliasMapping("jwf", "job_post_workflow")
+                .columnMapping("job_post_id", "jobPost.jobPostId")
+                .columnMapping("status_id", "status.statusId")
+                .columnMapping("scheduled_interview_time_slot", "scheduledInterviewTimeSlot.interviewTimeSlotId")
+                .columnMapping("scheduled_interview_date", "scheduledInterviewDate")
+                .columnMapping("interview_location_lat", "interviewLocationLat")
+                .columnMapping("interview_location_lng", "interviewLocationLng")
+                .create();
+
+        appliedJobsList = Ebean.find(JobPostWorkflow.class)
+                .setRawSql(rawSql)
+                .findList();
+
+        List<PreScreenRequirement> preScreenRequirementList = PreScreenRequirement.find.where().in("job_post_id", jobPostIdList).findList();
+
+        Map<Long, PreScreenRequirement> preScreenRequirementMap = new HashMap<>();
+        for(PreScreenRequirement preScreenRequirement: preScreenRequirementList) {
+            preScreenRequirementMap.putIfAbsent(preScreenRequirement.getJobPost().getJobPostId(), preScreenRequirement);
+        }
+
+        Logger.info("preScreenReqList: " + preScreenRequirementList.size());
+
+        for (JobPostWorkflow jobPostWorkflowObj : appliedJobsList) {
+            if (preScreenRequirementMap.get(jobPostWorkflowObj.getJobPost().getJobPostId()) == null ) {
+                jobPostWorkflowObj.setPreScreenRequired(false);
+            } else if (jobPostWorkflowObj.getStatus().getStatusId() >=  ServerConstants.JWF_STATUS_PRESCREEN_ATTEMPTED ) {
+                jobPostWorkflowObj.setPreScreenRequired(false);
+            }
+        }
+
+        return appliedJobsList;
+    }
 }
