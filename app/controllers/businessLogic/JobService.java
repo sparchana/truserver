@@ -713,9 +713,11 @@ public class JobService {
                     if(channelType == InteractionService.InteractionChannelType.SELF ||
                             channelType == InteractionService.InteractionChannelType.SELF_ANDROID ){
                         jobPostWorkflow.setCreatedBy(channelType.toString());
+                        jobPostWorkflow.setChannel(Integer.valueOf(session().get("sessionChannel")));
                     } else {
                         // partner, support, recruiter
                         jobPostWorkflow.setCreatedBy(session().get("sessionUsername"));
+                        jobPostWorkflow.setChannel(Integer.valueOf(session().get("sessionChannel")));
                     }
                     jobPostWorkflow.save();
                 }

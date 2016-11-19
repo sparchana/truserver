@@ -253,7 +253,13 @@ public class Application extends Controller {
             e.printStackTrace();
         }
 
-        return ok(toJson(JobService.applyJob(applyJobRequest, InteractionService.InteractionChannelType.SELF)));
+        if(session().get("sessionChannel") != null || !session().get("sessionChannel").isEmpty()){
+            Integer channelId = Integer.parseInt(session().get("sessionChannel"));
+            InteractionService.InteractionChannelType channelType = Util.getChannelType(channelId);
+            return ok(toJson(JobService.applyJob(applyJobRequest, channelType)));
+        } else {
+            return badRequest();
+        }
     }
 
     @Security.Authenticated(SecuredUser.class)
