@@ -1,5 +1,9 @@
 # --- !Ups
 
+alter table interview_details add column latitude double(10,6) null;
+alter table interview_details add column longitude double(10,6) null;
+alter table interview_details add column placeid double(10,6) null;
+
 create table interview_confirmed_status_update (
   interview_confirmed_status_update_id bigint unsigned auto_increment not null,
   interview_confirmed_status_update_uuid varchar(255) not null,
@@ -33,11 +37,11 @@ create index ix_candidate_interview_status_update_candidateid on candidate_inter
 alter table candidate_interview_status_update add constraint fk_candidate_interview_status_update_jobpostid foreign key (jobpostid) references jobpost (jobpostid) on delete restrict on update restrict;
 create index ix_candidate_interview_status_update_jobpostid on candidate_interview_status_update (jobpostid);
 
-alter table interview_details add column latitude double(10,6) null;
-alter table interview_details add column longitude double(10,6) null;
-alter table interview_details add column placeid double(10,6) null;
-
 # --- !Downs
+
+alter table interview_details drop column latitude;
+alter table interview_details drop column longitude;
+alter table interview_details drop column placeid;
 
 alter table interview_confirmed_status_update drop foreign key fk_interview_confirmed_status_update_job_post_workflow_id;
 drop index ix_interview_confirmed_status_update_job_post_workflow_id on interview_confirmed_status_update;
@@ -50,10 +54,6 @@ drop index ix_candidate_interview_status_update_candidateid on candidate_intervi
 
 alter table candidate_interview_status_update drop foreign key fk_candidate_interview_status_update_jobpostid;
 drop index ix_candidate_interview_status_update_jobpostid on candidate_interview_status_update;
-
-alter table interview_details drop column latitude;
-alter table interview_details drop column longitude;
-alter table interview_details drop column placeid;
 
 drop table if exists interview_confirmed_status_update;
 drop table if exists candidate_interview_status_update;
