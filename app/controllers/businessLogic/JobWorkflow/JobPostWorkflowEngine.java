@@ -1590,8 +1590,6 @@ public class JobPostWorkflowEngine {
                                     .eq("Job_post_id", jobPostWorkflow.getJobPost().getJobPostId())
                                     .orderBy().desc("creation_timestamp").setMaxRows(1).findUnique();
 
-                            Logger.info(candidate.getCandidateFullName() + " " + candidate.getCandidateId() + " -------");
-                            Logger.info(jobPostWorkflowLatest.getJobPostWorkflowId() + " ------");
                             candidateExtraData.setWorkflowStatus(jobPostWorkflowLatest.getStatus());
                             candidateExtraData.setInterviewDate(jobPostWorkflowLatest.getScheduledInterviewDate());
                             candidateExtraData.setInterviewSlot(jobPostWorkflowLatest.getScheduledInterviewTimeSlot());
