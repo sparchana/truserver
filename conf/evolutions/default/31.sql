@@ -10,6 +10,9 @@ create table interview_confirmed_status_update (
   constraint pk_interview_confirmed_status_update primary key (interview_confirmed_status_update_id)
 );
 
+alter table interview_confirmed_status_update add constraint fk_interview_confirmed_status_update_job_post_workflow_id foreign key (job_post_workflow_id) references job_post_workflow (job_post_workflow_id) on delete restrict on update restrict;
+create index ix_interview_confirmed_status_update_job_post_workflow_id on interview_confirmed_status_update (job_post_workflow_id);
+
 create table candidate_interview_status_update (
   candidate_interview_status_update_id bigint unsigned auto_increment not null,
   candidate_interview_status_update_uuid varchar(255) not null,
@@ -20,9 +23,6 @@ create table candidate_interview_status_update (
   candidate_interview_status_update_note text null,
   constraint pk_candidate_interview_status_update primary key (candidate_interview_status_update_id)
 );
-
-alter table interview_confirmed_status_update add constraint fk_interview_confirmed_status_update_job_post_workflow_id foreign key (job_post_workflow_id) references job_post_workflow (job_post_workflow_id) on delete restrict on update restrict;
-create index ix_interview_confirmed_status_update_job_post_workflow_id on interview_confirmed_status_update (job_post_workflow_id);
 
 alter table candidate_interview_status_update add constraint fk_candidate_interview_status_update_job_post_workflow_id foreign key (job_post_workflow_id) references job_post_workflow (job_post_workflow_id) on delete restrict on update restrict;
 create index ix_candidate_interview_status_update_job_post_workflow_id on candidate_interview_status_update (job_post_workflow_id);
