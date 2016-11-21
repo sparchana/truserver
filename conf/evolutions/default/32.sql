@@ -9,10 +9,10 @@ create table reject_reason (
 alter table jobapplication drop foreign key fk_jobapplication_interview_status_id;
 drop index ix_jobapplication_interview_status_id on jobapplication;
 
-drop table if exists interview_status;
-
 alter table jobapplication drop column interview_status_id;
 alter table jobapplication drop column interviewstatuscomments;
+
+drop table if exists interview_status;
 
 create table interview_scheduled_status_update (
   interview_scheduled_status_update_id bigint unsigned auto_increment not null,
