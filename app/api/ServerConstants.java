@@ -306,5 +306,9 @@ public class ServerConstants {
     public static final int CANDIDATE_INTERVIEW_STATUS_STARTED = 3;
     public static final int CANDIDATE_INTERVIEW_STATUS_REACHED = 4;
 
+    //reason type
+    public static final int INTERVIEW_REJECT_TYPE_REASON = 1;
+    public static final int INTERVIEW_NOT_GOING_TYPE_REASON = 2;
+
     public static final String CREATED_BY = "Candidate";
 }

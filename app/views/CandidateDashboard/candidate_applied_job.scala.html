@@ -67,6 +67,35 @@
                 </div>
             </div>
         </div>
+
+            <!-- not going modal -->
+        <div class="modal fade" id="notGoingModal" tabindex="-1" role="dialog" aria-labelledby="notGoingModal">
+            <div class="modal-dialog" role="document" id="customModal">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">Reason for not Going</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div id="confirmationMsg">
+                            <center>
+                                <img src="/assets/common/img/jobApply.png" width="48px">
+                            </center>
+                            <center>
+                                <h4><b>Reason for not going for the interview</b></h4>
+                                <div class="materialDash"></div>
+                                <div class="custom_container" style="margin-top: 16px">
+                                    <select id="notGoingReason"></select>
+                                </div>
+                                <button type="submit" onclick="confirmUpdateStatusNotGoing()" id="applyButton" class="jobApplyBtnModal" style="margin: 6px">Apply</button>
+                            </center>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
             <div class="container">
                 <div class="navbar-header">

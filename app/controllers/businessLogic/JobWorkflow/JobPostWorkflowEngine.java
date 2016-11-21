@@ -2085,7 +2085,7 @@ public class JobPostWorkflowEngine {
                 .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
     }
 
-    public static Integer updateCandidateInterviewStatus(Candidate candidate, JobPost jobPost, Long val) {
+    public static Integer updateCandidateInterviewStatus(Candidate candidate, JobPost jobPost, Long val, Long reason) {
         // fetch existing workflow old
         JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
                 .eq("jobPost.jobPostId", jobPost.getJobPostId())
@@ -2123,6 +2123,9 @@ public class JobPostWorkflowEngine {
         candidateInterviewStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
         candidateInterviewStatusUpdate.setJobPost(jobPostWorkflowOld.getJobPost());
         candidateInterviewStatusUpdate.setCandidate(candidate);
+        if(reason > 0){
+            candidateInterviewStatusUpdate.setRejectReason(RejectReason.find.where().eq("reason_id", reason).findUnique());
+        }
         candidateInterviewStatusUpdate.save();
 
         updateRecruiterWithCandidateStatus(jobPostWorkflowOld, candidate, jwStatus);

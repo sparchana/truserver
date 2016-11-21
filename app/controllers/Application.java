@@ -37,6 +37,7 @@ import models.util.SmsUtil;
 import models.util.Util;
 import play.Logger;
 import play.api.Play;
+import play.core.server.Server;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Http;
@@ -926,8 +927,13 @@ public class Application extends Controller {
         return ok(toJson(assets));
     }
 
-    public static Result getAllReason() {
-        List<RejectReason> reason = RejectReason.find.setUseQueryCache(!isDevMode).orderBy("ReasonName").findList();
+    public static Result getAllInterviewRejectReasons() {
+        List<RejectReason> reason = RejectReason.find.where().eq("reason_type", ServerConstants.INTERVIEW_REJECT_TYPE_REASON).setUseQueryCache(!isDevMode).orderBy("reason_name").findList();
+        return ok(toJson(reason));
+    }
+
+    public static Result getAllInterviewNotGoingReasons() {
+        List<RejectReason> reason = RejectReason.find.where().eq("reason_type", ServerConstants.INTERVIEW_NOT_GOING_TYPE_REASON).setUseQueryCache(!isDevMode).orderBy("reason_name").findList();
         return ok(toJson(reason));
     }
 
@@ -1922,12 +1928,25 @@ public class Application extends Controller {
         return ok(views.html.CandidateDashboard.update_status_view.render());
     }
 
-    public static Result updateInterviewStatus(long cId, long jpId, long val) {
+    public static Result updateInterviewStatus(long cId, long jpId, long val, long reason) {
         Candidate candidate = Candidate.find.where().eq("candidateId", cId).findUnique();
         if(candidate != null){
             JobPost jobPost = JobPost.find.where().eq("JobPostId", jpId).findUnique();
             if(jobPost != null){
-                return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, val)));
+                return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, val, reason)));
+            }
+        }
+        return ok("0");
+    }
+
+    public static Result updateInterviewStatusViaCandidate(long jpId, long val, long reason) {
+        if(session().get("candidateId") != null){
+            Candidate candidate = Candidate.find.where().eq("candidateId", session().get("candidateId")).findUnique();
+            if(candidate != null){
+                JobPost jobPost = JobPost.find.where().eq("JobPostId", jpId).findUnique();
+                if(jobPost != null){
+                    return ok(toJson(JobPostWorkflowEngine.updateCandidateInterviewStatus(candidate, jobPost, val, reason)));
+                }
             }
         }
         return ok("0");
@@ -1940,6 +1959,14 @@ public class Application extends Controller {
             if(jobPost != null){
                 return ok(toJson(JobPostWorkflowEngine.getCandidateLatestStatus(candidate, jobPost)));
             }
+        }
+        return ok("0");
+    }
+
+    public static Result confirmInterviewSupport(long cid, long jpId, long status) {
+        Candidate candidate = Candidate.find.where().eq("candidateId", cid).findUnique();
+        if(candidate != null){
+            return ok(toJson(JobPostWorkflowEngine.confirmCandidateInterview(jpId, status, candidate)));
         }
         return ok("0");
     }

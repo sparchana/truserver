@@ -104,7 +104,6 @@ function processDataGetJobPostDetails(returnedData) {
             var today = new Date();
             if(interviewDays.charAt(today.getDay() - 1) == 1){ // today's schedule
                 var slotsToday = "";
-                console.log(interviewDetailsList);
                 interviewDetailsList.forEach(function (slots) {
                     slotsToday += slots.interviewTimeSlot.interviewTimeSlotName + ", ";
                 });

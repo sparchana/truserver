@@ -58,7 +58,7 @@ $(document).ready(function(){
     try {
         $.ajax({
             type: "POST",
-            url: "/getAllReason",
+            url: "/getAllInterviewRejectReasons",
             data: false,
             async: false,
             contentType: false,
