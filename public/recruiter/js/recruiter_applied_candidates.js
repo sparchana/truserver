@@ -849,7 +849,7 @@ function processDataForJobPostInfo(returnedData) {
 }
 
 function confirmRejectInterview(){
-    if($("#reject_reason").val() != ''){
+    if($("#reject_reason").val() != 0){
         globalInterviewStatus = 2;
         setInterviewStatus(globalCandidateId, 2, globalInterviewDay, globalInterviewSlot, $("#reject_reason").val());
     } else{
@@ -905,7 +905,6 @@ function rejectInterview(candidateId) {
         var option = $('<option value=' + reason.id + '></option>').text(reason.name);
         $('#reject_reason').append(option);
     });
-    $("#interviewStatusComments").val('');
     $("#modalRejectReason").openModal();
 }
 
