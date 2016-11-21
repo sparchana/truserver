@@ -1191,14 +1191,19 @@ public class JobPostWorkflowEngine {
         String statusSql;
         Integer jpwfStatus;
         if(isPass) {
-            if(status == 1){
+            if(status == 1){ //all
+                jpwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED;
+                statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED + ", "
+                        + ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED + ", " + ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE+ ", "
+                        + ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT + ", " + ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE + ")) ";
+            } else if(status == 2){
                 jpwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED;
                 statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_PRESCREEN_COMPLETED + ", "
                         + ServerConstants.JWF_STATUS_INTERVIEW_SCHEDULED + ")) ";
-            } else if(status == 2){
+            } else if(status == 3){
                 jpwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE;
                 statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE + ")) ";
-            } else if(status == 3){
+            } else if(status == 4){
                 jpwfStatus = ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT;
                 statusSql = " and (status_id in (" + ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT + ")) ";
             } else{

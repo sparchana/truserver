@@ -11,17 +11,18 @@
                 <span class="mdl-switch__label"></span>
             </label>
             <div class="mdl-tooltip" data-mdl-for="trigger">
-                ON to see all candidates who <strong>passed</strong>. OFF to see all candidated who <strong>failed </strong>
+                ON to see all candidates who <strong>passed</strong>. OFF to see all candidate who <strong>failed </strong>
             </div>
         </div>
 
         <div>
             Select status:
             <select id="statusVal">
-                <option value="1">Not Confirmed</option>
-                <option value="2">Rescheduled</option>
-                <option value="3">Rejected Recruiter/Support</option>
-                <option value="4">Rejected by Candidate</option>
+                <option value="1">All</option>
+                <option value="2">Not Confirmed</option>
+                <option value="3">Rescheduled</option>
+                <option value="4">Rejected Recruiter/Support</option>
+                <option value="5">Rejected by Candidate</option>
             </select>
 
         </div>
@@ -154,14 +155,14 @@
             <center>
                 <img src="/assets/recruiter/img/icons/reschedule-color.svg" width="60px">
                 <br>
-                <h5>Please specify reason for rejection</h5>
+                <h5>Please select a new date and time slot</h5>
             </center>
             <div class="row" style="margin-top: 4px" >
                 <div class="col-sm-6">
                     <h6 style="text-align: right;">Please select a new interview date and time:</h6>
                 </div>
                 <div class="col-sm-6">
-                    <select id="rescheduleDateAndSlot" class="selectDropdown"></select>
+                    <select id="rescheduleDateAndSlot" style="margin-top: 30px" class="selectDropdown"></select>
                 </div>
             </div>
 

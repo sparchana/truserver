@@ -14,6 +14,8 @@ var globalSchedule = null;
 var allTimeSlots = [];
 var allReason = [];
 
+var oldDate = null;
+
 $(document).scroll(function(){
     if ($(this).scrollTop() > 80) {
         $('nav').css({"background": "rgba(0, 0, 0, 0.8)"});
@@ -269,7 +271,7 @@ function processDataForJobApplications(returnedData) {
                     var candidateInterviewAcceptParent = document.createElement("span");
                     candidateInterviewAcceptParent.style = "display: inline-block";
                     candidateInterviewAcceptParent.onclick = function () {
-                        var oldDate = new Date(value.extraData.interviewDate);
+                        oldDate = new Date(value.extraData.interviewDate);
                         globalInterviewDay = oldDate.getFullYear() + "-" + (oldDate.getMonth() + 1) + "-" + oldDate.getDate();
                         globalInterviewSlot = value.extraData.interviewSlot.interviewTimeSlotId;
                         globalSchedule = value.extraData.interviewSchedule;
@@ -294,7 +296,7 @@ function processDataForJobApplications(returnedData) {
                     var candidateInterviewRejectParent = document.createElement("span");
                     candidateInterviewRejectParent.style = "display: inline-block";
                     candidateInterviewRejectParent.onclick = function () {
-                        var oldDate = new Date(value.extraData.interviewDate);
+                        oldDate = new Date(value.extraData.interviewDate);
                         globalInterviewDay = oldDate.getFullYear() + "-" + (oldDate.getMonth() + 1) + "-" + oldDate.getDate();
                         globalInterviewSlot = value.extraData.interviewSlot.interviewTimeSlotId;
                         globalSchedule = value.extraData.interviewSchedule;
@@ -320,7 +322,7 @@ function processDataForJobApplications(returnedData) {
                     candidateInterviewRescheduleParent.style = "display: inline-block";
                     candidateInterviewRescheduleParent.onclick = function () {
                         globalCandidateId = value.candidate.candidateId;
-                        var oldDate = new Date(value.extraData.interviewDate);
+                        oldDate = new Date(value.extraData.interviewDate);
                         globalInterviewDay = oldDate.getFullYear() + "-" + (oldDate.getMonth() + 1) + "-" + oldDate.getDate();
                         globalInterviewSlot = value.extraData.interviewSlot.interviewTimeSlotId;
                         globalSchedule = value.extraData.interviewSchedule;
@@ -932,6 +934,8 @@ function processDataForJobPostInfo(returnedData) {
                 interviewDays = modifiedInterviewDays;
             }
         }
+
+        var oldSelectedDate = new Date(oldDate);
         //slots
         var today = new Date();
         for (i = 2; i < 9; i++) {
@@ -941,7 +945,10 @@ function processDataForJobPostInfo(returnedData) {
                 interviewDetailsList.forEach(function (timeSlot) {
                     var dateSlotSelectedId = x.getFullYear() + "-" + (x.getMonth() + 1) + "-" + x.getDate() + "_" + timeSlot.interviewTimeSlot.interviewTimeSlotId;
                     var option = $('<option value="' + dateSlotSelectedId + '"></option>').text(getDayVal(x.getDay()) + ", " + x.getDate() + " " + getMonthVal((x.getMonth() + 1)) + " (" + timeSlot.interviewTimeSlot.interviewTimeSlotName + ")");
-                    $('#rescheduleDateAndSlot').append(option);
+
+                    if((oldSelectedDate.getDate() == x.getDate()) && (oldSelectedDate.getMonth() == x.getMonth()) && (oldSlot == timeSlot.interviewTimeSlot.interviewTimeSlotId)){} else{
+                        $('#rescheduleDateAndSlot').append(option);
+                    }
                 });
             }
         }

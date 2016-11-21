@@ -990,17 +990,17 @@ $(function () {
                 };
                 var varColumn2 = function () {
                     if (app.currentView == "pre_screen_completed_view") {
-                        var interviewAction;
+                        var interviewAction = "";
                         var interviewDate;
 
-                        if($("#statusVal").val() == 2){
-                            interviewAction = "Rescheduled on " + newCandidate.extraData.interviewSchedule + " ";
+                        if($("#statusVal").val() == 3){ //rescheduled
+                            interviewAction = "Rescheduled to " + newCandidate.extraData.interviewSchedule + " ";
                             interviewAction += '<span id="interview_status_val_' + newCandidate.candidate.candidateId + '">' +
                                 '<span class="accept" onclick="acceptRescheduledInterview(' + newCandidate.candidate.candidateId + ', 1);"><img src="/assets/recruiter/img/icons/accept.svg" height="16px" width="14px"></span>' +
                                 '<span class="reject" onclick="acceptRescheduledInterview(' + newCandidate.candidate.candidateId + ', 0);"><img src="/assets/recruiter/img/icons/reject.svg" height="16px" width="14px"></span>';
-                        } else if($("#statusVal").val() == 3 || $("#statusVal").val() == 4){
+                        } else if($("#statusVal").val() == 4 || $("#statusVal").val() == 5){ //rejected
                             interviewAction = "Rejected";
-                        } else{
+                        } else if($("#statusVal").val() == 2){ //scheduled. need confirmation
                             if(newCandidate.extraData.interviewSchedule != null){
                                 var oldDate = new Date(newCandidate.extraData.interviewDate);
                                 rescheduledDate = oldDate.getFullYear() + "-" + (oldDate.getMonth() + 1) + "-" + oldDate.getDate();
@@ -1013,11 +1013,38 @@ $(function () {
                                     '<span id="interview_status_option_' + newCandidate.candidate.candidateId + '">' +
                                     '<span class="accept" onclick="confirmInterview(' + newCandidate.candidate.candidateId + ', ' + newCandidate.extraData.interviewDate + ', ' + newCandidate.extraData.interviewSlot.interviewTimeSlotId + ');"><img src="/assets/recruiter/img/icons/accept.svg" height="16px" width="14px"></span>' +
                                     '<span class="reject" onclick="rejectInterview(' + newCandidate.candidate.candidateId + ', ' + newCandidate.extraData.interviewDate + ', ' + newCandidate.extraData.interviewSlot.interviewTimeSlotId + ');"><img src="/assets/recruiter/img/icons/reject.svg" height="16px" width="14px"></span>' +
-                                    '<span class="reschedule" onclick="showReschedulePopup(' + newCandidate.candidate.candidateId + ');"><img src="/assets/recruiter/img/icons/reschedule.svg" height="18px" width="16px"></span>' +
+                                    '<span class="reschedule" onclick="showReschedulePopup(' + newCandidate.candidate.candidateId + ', ' + newCandidate.extraData.interviewDate + ', ' + newCandidate.extraData.interviewSlot.interviewTimeSlotId + ');"><img src="/assets/recruiter/img/icons/reschedule.svg" height="18px" width="16px"></span>' +
                                     '</span>';
 
                             } else{
                                 interviewAction = "Slots not available";
+                            }
+                        } else{
+                            if(newCandidate.extraData.workflowStatus.statusId == 5){
+                                var oldDate = new Date(newCandidate.extraData.interviewDate);
+                                rescheduledDate = oldDate.getFullYear() + "-" + (oldDate.getMonth() + 1) + "-" + oldDate.getDate();
+                                rescheduledSlot = newCandidate.extraData.interviewSlot.interviewTimeSlotId;
+                                globalInterviewDate = newCandidate.extraData.interviewSchedule;
+
+                                interviewDate = newCandidate.extraData.interviewSchedule;
+
+                                interviewAction = '<div id="interview_date_' + newCandidate.candidate.candidateId + '">' + interviewDate + '</div>' +
+                                    '<span id="interview_status_option_' + newCandidate.candidate.candidateId + '">' +
+                                    '<span class="accept" onclick="confirmInterview(' + newCandidate.candidate.candidateId + ', ' + newCandidate.extraData.interviewDate + ', ' + newCandidate.extraData.interviewSlot.interviewTimeSlotId + ');"><img src="/assets/recruiter/img/icons/accept.svg" height="16px" width="14px"></span>' +
+                                    '<span class="reject" onclick="rejectInterview(' + newCandidate.candidate.candidateId + ', ' + newCandidate.extraData.interviewDate + ', ' + newCandidate.extraData.interviewSlot.interviewTimeSlotId + ');"><img src="/assets/recruiter/img/icons/reject.svg" height="16px" width="14px"></span>' +
+                                    '<span class="reschedule" onclick="showReschedulePopup(' + newCandidate.candidate.candidateId + ', ' + newCandidate.extraData.interviewDate + ', ' + newCandidate.extraData.interviewSlot.interviewTimeSlotId + ');"><img src="/assets/recruiter/img/icons/reschedule.svg" height="18px" width="16px"></span>' +
+                                    '</span>';
+                            } else if(newCandidate.extraData.workflowStatus.statusId == 7){
+                                interviewAction = "Rejected by recruiter/support";
+                            } else if(newCandidate.extraData.workflowStatus.statusId == 8){
+                                interviewAction = "Rejected by candidate";
+                            } else if(newCandidate.extraData.workflowStatus.statusId == 9){
+                                interviewAction = "Rescheduled to " + newCandidate.extraData.interviewSchedule + " ";
+                                interviewAction += '<span id="interview_status_val_' + newCandidate.candidate.candidateId + '">' +
+                                    '<span class="accept" onclick="acceptRescheduledInterview(' + newCandidate.candidate.candidateId + ', 1);"><img src="/assets/recruiter/img/icons/accept.svg" height="16px" width="14px"></span>' +
+                                    '<span class="reject" onclick="acceptRescheduledInterview(' + newCandidate.candidate.candidateId + ', 0);"><img src="/assets/recruiter/img/icons/reject.svg" height="16px" width="14px"></span>';
+                            } else{
+                                interviewAction = "";
                             }
                         }
                         return interviewAction;
@@ -1349,7 +1376,18 @@ $(function () {
         var base_url = "/support/api/getPreScreenedCandidate/?jpId=" + app.jpId;
         var showOnlyPass;
         if ($("input[id='is_pass']:checked").val() == "on") {
-            app.notify("Fetching all 'pre-screened-completed' candidate list. Please wait..", "warning");
+            if($("#statusVal").val() == 1){
+                app.notify("Fetching all candidate: 'pre-screened-completed'. Please wait..", "warning");
+            } else if($("#statusVal").val() == 2){
+                app.notify("Fetching all candidate: 'pre-screened-completed with scheduled interview'. Please wait..", "warning");
+            } else if($("#statusVal").val() == 3){
+                app.notify("Fetching all candidate: 'pre-screened-completed which are rescheduled'. Please wait..", "warning");
+            } else if($("#statusVal").val() == 4){
+                app.notify("Fetching all candidates: 'pre-screened-completed which are rejected by support/recruiter'. Please wait..", "warning");
+            } else {
+                app.notify("Fetching all candidates: 'pre-screened-completed which are rejected by candidate'. Please wait..", "warning");
+            }
+
             showOnlyPass = true;
         } else {
             app.notify("Fetching all 'pre-screened-failed' candidate list. Please wait..", "warning");
@@ -1501,7 +1539,7 @@ $(function () {
             app.fetchPreScreenedCandidate();
         });
 
-        $('#header_view_title').text("Schedule Interview View");
+        $('#header_view_title').text("Confirm/Reject Interviews View");
     } else if (app.currentView == "confirmed_interview_view") {
         app.fetchConfirmedInterviewCandidates();
         app.initJobCard();
@@ -1595,7 +1633,7 @@ function confirmRescheduleInterview(){
     }
 }
 
-function showReschedulePopup(candidateId) {
+function showReschedulePopup(candidateId, oldDate, oldSlot) {
     globalCandidateId = candidateId;
     globalInterviewStatus = 3;
 
@@ -1634,6 +1672,8 @@ function showReschedulePopup(candidateId) {
                 interviewDays = modifiedInterviewDays;
             }
         }
+
+        var oldSelectedDate = new Date(oldDate);
         //slots
         var today = new Date();
         for (i = 2; i < 9; i++) {
@@ -1643,7 +1683,9 @@ function showReschedulePopup(candidateId) {
                 interviewDetailsList.forEach(function (timeSlot) {
                     var dateSlotSelectedId = x.getFullYear() + "-" + (x.getMonth() + 1) + "-" + x.getDate() + "_" + timeSlot.interviewTimeSlot.interviewTimeSlotId;
                     var option = $('<option value="' + dateSlotSelectedId + '"></option>').text(getDayVal(x.getDay()) + ", " + x.getDate() + " " + getMonthVal((x.getMonth() + 1)) + " (" + timeSlot.interviewTimeSlot.interviewTimeSlotName + ")");
-                    $('#rescheduleDateAndSlot').append(option);
+                    if((oldSelectedDate.getDate() == x.getDate()) && (oldSelectedDate.getMonth() == x.getMonth()) && (oldSlot == timeSlot.interviewTimeSlot.interviewTimeSlotId)){} else{
+                        $('#rescheduleDateAndSlot').append(option);
+                    }
                 });
             }
         }
