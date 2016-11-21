@@ -13,8 +13,6 @@ var homeLocality;
 
 function processDataApplyJob(returnedData, jobPostId, candidateId) {
     $("#jobApplyConfirm").modal("hide");
-    $("#messagePromptModal").modal("show");
-    $('body').addClass('open-modal');
 
     // hiding below divs in partner page
     try{
@@ -23,8 +21,9 @@ function processDataApplyJob(returnedData, jobPostId, candidateId) {
     } catch (e){}
 
     if(returnedData.status == 1){
-        $('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
-        $("#customMsg").html("Your Job Application is Successful");
+        //$('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
+        //$("#customMsg").html("Your Job Application is Successful");
+        $.notify("Please complete Job Application form", 'success');
         try{
             $(".jobApplyBtnV2").addClass("appliedBtn").removeClass("btn-primary").prop('disabled',true).html("Applied");
             $('.jobApplyBtnV2').attr('onclick','').unbind('click');
@@ -32,11 +31,18 @@ function processDataApplyJob(returnedData, jobPostId, candidateId) {
             console.log(err);
         }
         // generate prescreen modal here
-        openPartnerPreScreenModal(jobPostId, candidateId);
+        openCandidatePreScreenModal(jobId, localStorage.getItem("mobile"));
+        console.log("success: generate modal");
     } else if(returnedData.status == 2){
+        $("#messagePromptModal").modal("show");
+        $('body').addClass('open-modal');
+
         $('#customMsgIcon').attr('src', "/assets/common/img/jobApplied.png");
         $("#customMsg").html("Oops! Something went Wrong. Unable to apply");
-    } else if(returnedData.status == 3){
+    } else if(returnedData.status == 3) {
+        $("#messagePromptModal").modal("show");
+        $('body').addClass('open-modal');
+
         $('#customMsgIcon').attr('src', "/assets/common/img/alreadyApplied.png");
         $("#customMsg").html("Looks like you already applied for this Job. Click My Jobs to view your applied Jobs");
         try{
@@ -45,9 +51,15 @@ function processDataApplyJob(returnedData, jobPostId, candidateId) {
             console.log(err);
         }
     } else if(returnedData.status == 4){
+        $("#messagePromptModal").modal("show");
+        $('body').addClass('open-modal');
+
         $('#customMsgIcon').attr('src', "/assets/common/img/logo.gif");
         $("#customMsg").html("Oops! Candidate does't Exists");
     } else{
+        $("#messagePromptModal").modal("show");
+        $('body').addClass('open-modal');
+
         $('#customMsgIcon').attr('src', "/assets/common/img/logo.gif");
         $("#customMsg").html("Oops! Looks like the job is no longer available");
     }
@@ -67,7 +79,11 @@ function applyJob(id, localityId, triggerModal){
     } else{
         console.log("shouldTriggerModal: "+triggerModal);
         if(triggerModal){
-            getAssessmentQuestions(null, id);
+            console.log("opening prescreen modal for : " + id + " candidate: " + localStorage.getItem("mobile"));
+
+            openCandidatePreScreenModal(id, localStorage.getItem("mobile"));
+            interviewButtonCondition(id);
+            /*getAssessmentQuestions(null, id);*/
         }
         applyJobSubmit(id, localStorage.getItem("candidateId"), phone, localityId, null, null, false);
     }

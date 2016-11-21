@@ -24,6 +24,33 @@ public class UpdateCandidateDetail  {
     public Long candidateLastWithdrawnSalary;
     public String candidateTimeShiftPref;
     public Integer candidateTotalExperience;
+    public List<AddSupportCandidateRequest.PastCompany> pastCompanyList;
+    public Boolean candidateIsEmployed;
+    public Boolean isExtraDetailAvailable;
+
+    public List<AddSupportCandidateRequest.PastCompany> getPastCompanyList() {
+        return pastCompanyList;
+    }
+
+    public void setPastCompanyList(List<AddSupportCandidateRequest.PastCompany> pastCompanyList) {
+        this.pastCompanyList = pastCompanyList;
+    }
+
+    public Boolean getCandidateIsEmployed() {
+        return candidateIsEmployed;
+    }
+
+    public void setCandidateIsEmployed(Boolean candidateIsEmployed) {
+        this.candidateIsEmployed = candidateIsEmployed;
+    }
+
+    public Boolean getExtraDetailAvailable() {
+        return isExtraDetailAvailable;
+    }
+
+    public void setExtraDetailAvailable(Boolean extraDetailAvailable) {
+        isExtraDetailAvailable = extraDetailAvailable;
+    }
 
     public List<Integer> getAssetIdList() {
         return assetIdList;

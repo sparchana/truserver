@@ -32,7 +32,6 @@ import models.entity.Static.*;
 import models.util.ParseCSV;
 import models.util.SmsUtil;
 import models.util.Util;
-import models.util.Validator;
 import play.Logger;
 import play.api.Play;
 import play.data.Form;
@@ -1866,9 +1865,10 @@ public class Application extends Controller {
             CandidateService.updateCandidateDOB(candidate, updateCandidateDob);
             return ok("ok");
         } else if (ServerConstants.PropertyType.EXPERIENCE.ordinal() == propertyId) {
-            UpdateCandidateTotalExperience updateCandidateTotalExperience = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateTotalExperience.class);
+            UpdateCandidateWorkExperience updateCandidateWorkExperience = newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateWorkExperience.class);
 
-            CandidateService.updateCandidateTotalExperience(candidate, updateCandidateTotalExperience);
+            Logger.info(toJson(updateCandidateWorkExperience) + " ");
+            CandidateService.updateCandidateWorkExperience(candidate, updateCandidateWorkExperience);
             return ok("ok");
         } else if (ServerConstants.PropertyType.EDUCATION.ordinal() == propertyId) {
             UpdateCandidateEducation updateCandidateEducation= newMapper.readValue(updateCandidateDetailJSON.toString(), UpdateCandidateEducation.class);
@@ -1898,12 +1898,6 @@ public class Application extends Controller {
         }
 
         return badRequest();
-    }
-
-    public static String getUpdateObjFromJson(Integer propertyId, JsonNode updateCandidateDetailJSON, Candidate candidate) throws IOException {
-
-
-        return null;
     }
 
     @Security.Authenticated(SecuredUser.class)
@@ -1996,10 +1990,14 @@ public class Application extends Controller {
                     CandidateService.updateCandidateDOB(candidate, updateCandidateDob);
                     response = "ok";
                 } else if (ServerConstants.PropertyType.EXPERIENCE.ordinal() == propertyId) {
-                    UpdateCandidateTotalExperience updateCandidateTotalExperience = new UpdateCandidateTotalExperience();
+                    UpdateCandidateWorkExperience updateCandidateWorkExperience = new UpdateCandidateWorkExperience();
 
-                    updateCandidateTotalExperience.setCandidateTotalExperience(updateCandidateDetail.getCandidateTotalExperience());
-                    CandidateService.updateCandidateTotalExperience(candidate, updateCandidateTotalExperience);
+                    updateCandidateWorkExperience.setCandidateTotalExperience(updateCandidateDetail.getCandidateTotalExperience());
+                    updateCandidateWorkExperience.setCandidateIsEmployed(updateCandidateDetail.getCandidateIsEmployed());
+                    updateCandidateWorkExperience.setExtraDetailAvailable(updateCandidateDetail.getExtraDetailAvailable());
+                    updateCandidateWorkExperience.setPastCompanyList(updateCandidateDetail.getPastCompanyList());
+
+                    CandidateService.updateCandidateWorkExperience(candidate, updateCandidateWorkExperience);
                     response = "ok";
                 } else if (ServerConstants.PropertyType.EDUCATION.ordinal() == propertyId) {
                     UpdateCandidateEducation updateCandidateEducation= new UpdateCandidateEducation();

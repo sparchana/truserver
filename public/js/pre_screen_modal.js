@@ -682,7 +682,10 @@ function saveEditedResponses(candidateId, propId, jobPostId) {
         var totalExp = expMonth + (12 * expYear);
 
         d = {
-            candidateTotalExperience: totalExp
+            candidateTotalExperience: totalExp,
+            pastCompanyList: [],
+            candidateIsEmployed: null,
+            extraDetailAvailable: false
         }
 
     } else if(propId == 5) {

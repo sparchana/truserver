@@ -1444,8 +1444,13 @@ public class CandidateService
         candidate.setCandidateDOB(updateCandidateDob.getCandidateDob());
         candidate.update();
     }
-    public static void updateCandidateTotalExperience(Candidate candidate, UpdateCandidateTotalExperience totalExperience){
-        candidate.setCandidateTotalExperience(totalExperience.getCandidateTotalExperience());
+    public static void updateCandidateWorkExperience(Candidate candidate, UpdateCandidateWorkExperience workExperience){
+        candidate.setCandidateTotalExperience(workExperience.getCandidateTotalExperience());
+        if(workExperience.getExtraDetailAvailable()!= null && workExperience.getExtraDetailAvailable()) {
+            if(workExperience.getPastCompanyList() != null ) {
+                candidate.setJobHistoryList(getJobHistoryListFromAddSupportCandidate(workExperience.getPastCompanyList(), candidate));
+            }
+        }
         candidate.update();
     }
     public static void updateCandidateEducation(Candidate candidate, UpdateCandidateEducation candidateEducation){
