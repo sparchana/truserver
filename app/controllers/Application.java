@@ -32,6 +32,7 @@ import models.entity.Static.*;
 import models.util.ParseCSV;
 import models.util.SmsUtil;
 import models.util.Util;
+import models.util.Validator;
 import play.Logger;
 import play.api.Play;
 import play.data.Form;
@@ -1620,12 +1621,6 @@ public class Application extends Controller {
 
         return ok(toJson(JobPostWorkflowEngine.getSelectedCandidates(jobPostId)));
     }
-
-    @Security.Authenticated(SecuredUser.class)
-    public static Result testMatchingCandidate(Long jpId) {
-       return ok(toJson(JobPostWorkflowEngine.getMatchingCandidate(jpId)));
-    }
-
 
     public static Result getJobPostVsCandidate(Long candidateId, Long jobPostId, Boolean rePreScreen, String candidateMobile) {
         if(candidateId == null && jobPostId == null) {
