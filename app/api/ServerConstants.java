@@ -296,5 +296,15 @@ public class ServerConstants {
     public static final int INTERVIEW_STATUS_RESCHEDULED = 3;
     public static final int INTERVIEW_STATUS_REJECTED_BY_CANDIDATE = 4;
 
+    // rescheduled Interview status
+    public static final int RESCHEULED_INTERVIEW_STATUS_ACCEPTED = 1;
+    public static final int RESCHEULED_INTERVIEW_STATUS_REJECTED = 0;
+
+    // candidate Interview tracking status
+    public static final int CANDIDATE_INTERVIEW_STATUS_NOT_GOING = 1;
+    public static final int CANDIDATE_INTERVIEW_STATUS_DELAYED = 2;
+    public static final int CANDIDATE_INTERVIEW_STATUS_STARTED = 3;
+    public static final int CANDIDATE_INTERVIEW_STATUS_REACHED = 4;
+
     public static final String CREATED_BY = "Candidate";
 }

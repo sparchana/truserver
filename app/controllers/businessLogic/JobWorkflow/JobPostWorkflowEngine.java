@@ -1795,103 +1795,97 @@ public class JobPostWorkflowEngine {
     }
 
     public static Result updateInterviewStatus(InterviewStatusRequest interviewStatusRequest) {
-        InterviewStatus interviewStatus = InterviewStatus.find.where().eq("interview_status_id", interviewStatusRequest.getInterviewStatus()).findUnique();
-        if(interviewStatus != null){
-            Candidate candidate = Candidate.find.where().eq("candidateId", interviewStatusRequest.getCandidateId()).findUnique();
-            if(candidate != null){
-                int jwStatus = ServerConstants.INTERVIEW_STATUS_ACCEPTED;
-                int jwType = InteractionConstants.INTERACTION_TYPE_RECRUITER_ACCEPT_JOB_APPLICATION_INTERVIEW;
-                String interactionResult = "";
+        Candidate candidate = Candidate.find.where().eq("candidateId", interviewStatusRequest.getCandidateId()).findUnique();
+        if(candidate != null){
+            int jwStatus = ServerConstants.INTERVIEW_STATUS_ACCEPTED;
+            int jwType = InteractionConstants.INTERACTION_TYPE_RECRUITER_ACCEPT_JOB_APPLICATION_INTERVIEW;
+            String interactionResult = "";
 
-                JobPost jobPost = JobPost.find.where().eq("jobPostId", interviewStatusRequest.getJobPostId()).findUnique();
+            JobPost jobPost = JobPost.find.where().eq("jobPostId", interviewStatusRequest.getJobPostId()).findUnique();
 
-                Date date = null;
-                if(interviewStatusRequest.getRescheduledDate() != null){ //rescheduling in job application table
-                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = null;
+            if(interviewStatusRequest.getRescheduledDate() != null){ //rescheduling in job application table
+                SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
-                    try {
-                        date = format.parse(interviewStatusRequest.getRescheduledDate());
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    date = format.parse(interviewStatusRequest.getRescheduledDate());
+                } catch (ParseException e) {
+                    e.printStackTrace();
                 }
-
-                // fetch existing workflow old
-                JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
-                        .eq("jobPost.jobPostId", interviewStatusRequest.getJobPostId())
-                        .eq("candidate.candidateId", candidate.getCandidateId())
-                        .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
-
-                if(interviewStatus.getInterviewStatusId() == ServerConstants.INTERVIEW_STATUS_ACCEPTED){ // accept
-                    Logger.info("Sending interview confirm sms to candidate");
-                    jwStatus = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
-
-                    if(interviewStatusRequest.getInterviewSchedule() == null){ //candidate shortlisted because slots and interview days is not available
-                        sendInterviewShortlistSms(jobPost, candidate);
-
-                        // creating interaction
-                        createInteractionForRecruiterShortlistJobApplicationWithoutDate(candidate.getCandidateUUId(), jobPost.getRecruiterProfile().getRecruiterProfileUUId());
-                        jwType = InteractionConstants.INTERACTION_TYPE_RECRUITER_SHORTLIST_JOB_APPLICATION_INTERVIEW;
-
-                        interactionResult = " interview shortlisted without interview date and slot";
-                    } else{
-                        sendInterviewConfirmationSms(jobPostWorkflowOld, candidate);
-
-                        // creating interaction
-                        createInteractionForRecruiterAcceptingInterviewDate(candidate.getCandidateUUId(), jobPost.getRecruiterProfile().getRecruiterProfileUUId());
-                        jwType = InteractionConstants.INTERACTION_TYPE_RECRUITER_ACCEPT_JOB_APPLICATION_INTERVIEW;
-                        interactionResult = " interview confirmed";
-                    }
-
-                } else if(interviewStatus.getInterviewStatusId() == ServerConstants.INTERVIEW_STATUS_REJECTED_BY_RECRUITER){ // reject
-                    if(interviewStatusRequest.getReason() != null){
-                        Logger.info("Sending interview rejection sms to candidate");
-                        sendInterviewRejectionSms(jobPostWorkflowOld, candidate);
-
-                        // creating interaction
-                        createInteractionForRecruiterRejectingInterviewDate(candidate.getCandidateUUId(), jobPostWorkflowOld.getJobPost().getRecruiterProfile().getRecruiterProfileUUId());
-                    }
-                    jwStatus = ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT;
-                    jwType = InteractionConstants.INTERACTION_TYPE_RECRUITER_REJECT_JOB_APPLICATION_INTERVIEW;
-                    interactionResult = " interview rejected";
-
-                } else if(interviewStatus.getInterviewStatusId() == ServerConstants.INTERVIEW_STATUS_RESCHEDULED){ // reschedule
-                    jwStatus = ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE;
-                    jwType = InteractionConstants.INTERACTION_TYPE_RECRUITER_RESCHEDULE_JOB_APPLICATION_INTERVIEW;
-                    interactionResult = " interview rescheduled";
-
-
-                    InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", interviewStatusRequest.getRescheduledSlot()).findUnique();
-                    sendInterviewReschedulingSms(jobPostWorkflowOld, candidate, date, interviewTimeSlot);
-                }
-
-                // Setting the existing jobpostworkflow status to confirmed
-                JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(candidate.getCandidateId(), Long.valueOf(interviewStatusRequest.getJobPostId()), jobPostWorkflowOld, jobPostWorkflowOld.getStatus().getStatusId(), jwStatus, interviewStatusRequest.getRescheduledSlot(), date);
-                if (jobPostWorkflowNew != null) {
-                    jobPostWorkflowNew.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", jwStatus).findUnique());
-                }
-                jobPostWorkflowNew.update();
-
-                if(jwStatus == 1){ //create an entry in Interview Confirm Schedule Update table (ISCU) if interview is confirmed
-                    InterviewConfirmedStatusUpdate interviewConfirmedStatusUpdate = new InterviewConfirmedStatusUpdate();
-                    interviewConfirmedStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
-                    interviewConfirmedStatusUpdate.save();
-                }
-
-                // save the interaction
-                InteractionService.createWorkflowInteraction(
-                        jobPostWorkflowOld.getJobPostWorkflowUUId(),
-                        candidate.getCandidateUUId(),
-                        jwType,
-                        null,
-                        jobPostWorkflowOld.getJobPost().getJobPostId() + ": " + jobPostWorkflowOld.getJobPost().getJobRole().getJobName() + interactionResult,
-                        Integer.valueOf(session().get("sessionChannel"))
-                );
-
-                return ok("1");
             }
-        } else{
-            Logger.info("Interview Status static table empty");
+
+            // fetch existing workflow old
+            JobPostWorkflow jobPostWorkflowOld = JobPostWorkflow.find.where()
+                    .eq("jobPost.jobPostId", interviewStatusRequest.getJobPostId())
+                    .eq("candidate.candidateId", candidate.getCandidateId())
+                    .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
+
+            if(interviewStatusRequest.getInterviewStatus() == ServerConstants.INTERVIEW_STATUS_ACCEPTED){ // accept
+                Logger.info("Sending interview confirm sms to candidate");
+                jwStatus = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
+
+                if(interviewStatusRequest.getInterviewSchedule() == null){ //candidate shortlisted because slots and interview days is not available
+                    sendInterviewShortlistSms(jobPost, candidate);
+
+                    // creating interaction
+                    createInteractionForRecruiterShortlistJobApplicationWithoutDate(candidate.getCandidateUUId(), jobPost.getRecruiterProfile().getRecruiterProfileUUId());
+                    jwType = InteractionConstants.INTERACTION_TYPE_RECRUITER_SHORTLIST_JOB_APPLICATION_INTERVIEW;
+
+                    interactionResult = " interview shortlisted without interview date and slot";
+                } else{
+                    sendInterviewConfirmationSms(jobPostWorkflowOld, candidate);
+
+                    // creating interaction
+                    createInteractionForRecruiterAcceptingInterviewDate(candidate.getCandidateUUId(), jobPost.getRecruiterProfile().getRecruiterProfileUUId());
+                    jwType = InteractionConstants.INTERACTION_TYPE_RECRUITER_ACCEPT_JOB_APPLICATION_INTERVIEW;
+                    interactionResult = " interview confirmed";
+                }
+
+            } else if(interviewStatusRequest.getInterviewStatus() == ServerConstants.INTERVIEW_STATUS_REJECTED_BY_RECRUITER){ // reject
+                Logger.info("Sending interview rejection sms to candidate");
+                sendInterviewRejectionSms(jobPostWorkflowOld, candidate);
+
+                // creating interaction
+                createInteractionForRecruiterRejectingInterviewDate(candidate.getCandidateUUId(), jobPostWorkflowOld.getJobPost().getRecruiterProfile().getRecruiterProfileUUId());
+
+                jwStatus = ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT;
+                jwType = InteractionConstants.INTERACTION_TYPE_RECRUITER_REJECT_JOB_APPLICATION_INTERVIEW;
+                interactionResult = " interview rejected";
+
+            } else if(interviewStatusRequest.getInterviewStatus() == ServerConstants.INTERVIEW_STATUS_RESCHEDULED){ // reschedule
+                jwStatus = ServerConstants.JWF_STATUS_INTERVIEW_RESCHEDULE;
+                jwType = InteractionConstants.INTERACTION_TYPE_RECRUITER_RESCHEDULE_JOB_APPLICATION_INTERVIEW;
+                interactionResult = " interview rescheduled";
+
+
+                InterviewTimeSlot interviewTimeSlot = InterviewTimeSlot.find.where().eq("interview_time_slot_id", interviewStatusRequest.getRescheduledSlot()).findUnique();
+                sendInterviewReschedulingSms(jobPostWorkflowOld, candidate, date, interviewTimeSlot);
+            }
+
+            // Setting the existing jobpostworkflow status to confirmed
+            JobPostWorkflow jobPostWorkflowNew = saveNewJobPostWorkflow(candidate.getCandidateId(), Long.valueOf(interviewStatusRequest.getJobPostId()), jobPostWorkflowOld, jobPostWorkflowOld.getStatus().getStatusId(), jwStatus, interviewStatusRequest.getRescheduledSlot(), date);
+            if (jobPostWorkflowNew != null) {
+                jobPostWorkflowNew.setStatus(JobPostWorkflowStatus.find.where().eq("statusId", jwStatus).findUnique());
+            }
+            jobPostWorkflowNew.update();
+
+            if(jwStatus == ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED){ //create an entry in Interview Confirm Schedule Update table (ISCU) if interview is confirmed
+                InterviewConfirmedStatusUpdate interviewConfirmedStatusUpdate = new InterviewConfirmedStatusUpdate();
+                interviewConfirmedStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
+                interviewConfirmedStatusUpdate.save();
+            }
+
+            // save the interaction
+            InteractionService.createWorkflowInteraction(
+                    jobPostWorkflowOld.getJobPostWorkflowUUId(),
+                    candidate.getCandidateUUId(),
+                    jwType,
+                    null,
+                    jobPostWorkflowOld.getJobPost().getJobPostId() + ": " + jobPostWorkflowOld.getJobPost().getJobRole().getJobName() + interactionResult,
+                    Integer.valueOf(session().get("sessionChannel"))
+            );
+
+            return ok("1");
         }
         return ok("0");
     }
@@ -1908,7 +1902,7 @@ public class JobPostWorkflowEngine {
                 .eq("candidate.candidateId", candidate.getCandidateId())
                 .orderBy().desc("creationTimestamp").setMaxRows(1).findUnique();
 
-        if(value == 1){ // accept
+        if(value == ServerConstants.RESCHEULED_INTERVIEW_STATUS_ACCEPTED){ // accept
             interactionResult = " interview accepted by candidate";
             interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_ACCEPTS_RESCHEDULED_INTERVIEW;
             jwStatus = ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED;
@@ -1917,7 +1911,7 @@ public class JobPostWorkflowEngine {
             sendInterviewCandidateConfirmation(jobPostWorkflowOld, candidate);
             //sms to candidate
             sendInterviewConfirmationSms(jobPostWorkflowOld, candidate);
-        } else if(value == 0){ // reject
+        } else if(value == ServerConstants.RESCHEULED_INTERVIEW_STATUS_REJECTED){ // reject
             interactionResult = " interview rejected by candidate";
             interactionType = InteractionConstants.INTERACTION_TYPE_CANDIDATE_REJECTS_RESCHEDULED_INTERVIEW;
             jwStatus = ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_CANDIDATE;
@@ -1936,7 +1930,7 @@ public class JobPostWorkflowEngine {
         }
         jobPostWorkflowNew.update();
 
-        if(value == 1){ //create an entry in Interview Confirm Schedule Update table (ISCU) if interview is confirmed
+        if(value == ServerConstants.JWF_STATUS_INTERVIEW_CONFIRMED){ //create an entry in Interview Confirm Schedule Update table (ISCU) if interview is confirmed
             InterviewConfirmedStatusUpdate interviewConfirmedStatusUpdate = new InterviewConfirmedStatusUpdate();
             interviewConfirmedStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
             interviewConfirmedStatusUpdate.save();
@@ -2108,11 +2102,11 @@ public class JobPostWorkflowEngine {
 
         Integer jwStatus;
 
-        if(val == 1){
+        if(val == ServerConstants.CANDIDATE_INTERVIEW_STATUS_NOT_GOING){
             jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_NOT_GOING;
-        } else if(val == 2){
+        } else if(val == ServerConstants.CANDIDATE_INTERVIEW_STATUS_DELAYED){
             jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_DELAYED;
-        } else if(val == 3){
+        } else if(val == ServerConstants.CANDIDATE_INTERVIEW_STATUS_STARTED){
             jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_STARTED;
         } else {
             jwStatus = ServerConstants.JWF_STATUS_CANDIDATE_INTERVIEW_STATUS_REACHED;

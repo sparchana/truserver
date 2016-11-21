@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
 import models.entity.JobPost;
 import models.entity.Partner;
-import models.entity.Static.InterviewStatus;
 import models.entity.Static.InterviewTimeSlot;
 import models.entity.Static.Locality;
 import models.entity.Static.ScreeningStatus;
@@ -75,14 +74,6 @@ public class JobApplication extends Model {
 
     @Column(name = "scheduledInterviewDate", columnDefinition = "date null")
     private Date scheduledInterviewDate;
-
-    @ManyToOne
-    @JsonManagedReference
-    @JoinColumn(name = "interview_status_id", referencedColumnName = "interview_status_id")
-    private InterviewStatus interviewStatus;
-
-    @Column(name = "InterviewStatusComments", columnDefinition = "varchar(5000) null")
-    private String interviewStatusComments;
 
     @Transient
     private boolean isPreScreenRequired = true;
@@ -195,22 +186,6 @@ public class JobApplication extends Model {
 
     public void setScheduledInterviewDate(Date scheduledInterviewDate) {
         this.scheduledInterviewDate = scheduledInterviewDate;
-    }
-
-    public InterviewStatus getInterviewStatus() {
-        return interviewStatus;
-    }
-
-    public void setInterviewStatus(InterviewStatus interviewStatus) {
-        this.interviewStatus = interviewStatus;
-    }
-
-    public String getInterviewStatusComments() {
-        return interviewStatusComments;
-    }
-
-    public void setInterviewStatusComments(String interviewStatusComments) {
-        this.interviewStatusComments = interviewStatusComments;
     }
 
     public boolean isPreScreenRequired() {
