@@ -308,7 +308,6 @@ acceptRescheduledInterview = function (candidateId, status) {
     globalCandidateId = candidateId;
     globalAcceptanceStatus = status;
 
-    console.log(candidateId + " " + status + " " + globalAcceptanceStatus);
     try {
         $.ajax({
             type: "POST",
@@ -1034,14 +1033,19 @@ $(function () {
                             candidateStatus = '<b id="current_status_' + newCandidate.candidate.candidateId + '">' + newCandidate.extraData.candidateInterviewStatus.statusTitle + '</b>';
                         }
 
-                        candidateStatus +=  '<select style="margin-left: 8px" id="interview_status_' + newCandidate.candidate.candidateId +'">' +
-                            '<option value="0">Select a Status</option>' +
-                            '<option value="1">Not Going</option>' +
-                            '<option value="2">Delayed</option>' +
-                            '<option value="3">Started</option>' +
-                            '<option value="4">Reached</option>' +
-                            '</select>' +
-                            '<input style="margin-left: 6px" type="button" value="Update" onclick="updateStatus('+ newCandidate.candidate.candidateId + ')">';
+                        var today = new Date();
+                        var interviewDate = new Date(newCandidate.extraData.interviewDate);
+                        if(interviewDate.getDate() == today.getDate() && interviewDate.getMonth() == today.getMonth() && interviewDate.getFullYear() == today.getFullYear()) { // today's schedule
+                            //interview for this job is scheduled today, hence allow to update status
+                            candidateStatus +=  '<select style="margin-left: 8px" id="interview_status_' + newCandidate.candidate.candidateId +'">' +
+                                '<option value="0">Select a Status</option>' +
+                                '<option value="1">Not Going</option>' +
+                                '<option value="2">Delayed</option>' +
+                                '<option value="3">Started</option>' +
+                                '<option value="4">Reached</option>' +
+                                '</select>' +
+                                '<input style="margin-left: 6px" type="button" value="Update" onclick="updateStatus('+ newCandidate.candidate.candidateId + ')">';
+                        }
 
                         return candidateStatus;
                     } else {
@@ -1743,11 +1747,15 @@ function updateStatus(candidateId) {
 }
 
 function confirmUpdateInterviewStatus(){
+    var notGoingReasonId = 0;
+    if($("#notGoingReasonOption").val() != null){
+        notGoingReasonId = $("#notGoingReasonOption").val();
+    }
     NProgress.start();
     try {
         $.ajax({
             type: "POST",
-            url: "/updateStatus/" + globalCandidateId + "/" + jobPostId + "/" + $("#interview_status_" + globalCandidateId).val() + "/" + $("#notGoingReasonOption").val(),
+            url: "/updateStatus/" + globalCandidateId + "/" + jobPostId + "/" + $("#interview_status_" + globalCandidateId).val() + "/" + notGoingReasonId,
             data: false,
             contentType: false,
             processData: false,
@@ -1785,7 +1793,6 @@ function processDataGetAllTimeSlots(returnedData) {
 }
 
 function processDataGetAllReason(returnedData) {
-    console.log(returnedData);
     returnedData.forEach(function(reason) {
         var id = reason.reasonId;
         var name = reason.reasonName;

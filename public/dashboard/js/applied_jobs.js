@@ -396,79 +396,83 @@ function prePopulateJobSection(jobApplication) {
 
             if(jobPost.status != null){
                 if(jobPost.status.statusId == 6 || (jobPost.status.statusId > 9 && jobPost.status.statusId < 13)){
-                    var defaultOp = $('<option value="0"></option>').text("Select a Status");
-                    var op1 = $('<option value="1"></option>').text("Not Going");
-                    var op2 = $('<option value="2"></option>').text("Delayed");
-                    var op3 = $('<option value="3"></option>').text("Started");
-                    var op4 = $('<option value="4"></option>').text("Reached");
+                    var today = new Date();
+                    var interviewDate = new Date(jobPost.scheduledInterviewDate);
+                    if(interviewDate.getDate() == today.getDate() && interviewDate.getMonth() == today.getMonth() && interviewDate.getFullYear() == today.getFullYear()){ // today's schedule
+                        //interview for this job is scheduled today, hence allow to update status
 
-                    var statusUpdateBody = document.createElement("span");
-                    titleRowStatus.appendChild(statusUpdateBody);
+                        var defaultOp = $('<option value="0"></option>').text("Select a Status");
+                        var op1 = $('<option value="1"></option>').text("Not Going");
+                        var op2 = $('<option value="2"></option>').text("Delayed");
+                        var op3 = $('<option value="3"></option>').text("Started");
+                        var op4 = $('<option value="4"></option>').text("Reached");
 
-                    var statusBody = document.createElement("span");
-                    statusBody.textContent = "Update your status: ";
-                    statusUpdateBody.appendChild(statusBody);
+                        var statusUpdateBody = document.createElement("span");
+                        titleRowStatus.appendChild(statusUpdateBody);
 
-                    var currentStatus = document.createElement("span");
-                    statusBody.appendChild(currentStatus);
+                        var statusBody = document.createElement("span");
+                        statusBody.textContent = "Update your status: ";
+                        statusUpdateBody.appendChild(statusBody);
 
-                    var statusBodySelect = document.createElement("select");
-                    statusBodySelect.className = "selectDropdown";
-                    statusBodySelect.id = "candidate_interview_status_" + jobPost.jobPost.jobPostId;
-                    statusBody.appendChild(statusBodySelect);
+                        var currentStatus = document.createElement("span");
+                        statusBody.appendChild(currentStatus);
 
-                    if(jobPost.status.statusId == 6 || jobPost.status.statusId == 10){
-                        currentStatus.textContent = "Status not Specified";
-                        currentStatus.style = "font-weight: bold; margin-right: 4px; color: grey";
-                        $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(defaultOp);
-                        if(jobPost.status.statusId == 10){
-                            currentStatus.textContent = "Not Going";
+                        var statusBodySelect = document.createElement("select");
+                        statusBodySelect.className = "selectDropdown";
+                        statusBodySelect.id = "candidate_interview_status_" + jobPost.jobPost.jobPostId;
+                        statusBody.appendChild(statusBodySelect);
+
+                        if(jobPost.status.statusId == 6 || jobPost.status.statusId == 10){
+                            currentStatus.textContent = "Status not Specified";
+                            currentStatus.style = "font-weight: bold; margin-right: 4px; color: grey";
+                            $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(defaultOp);
+                            if(jobPost.status.statusId == 10){
+                                currentStatus.textContent = "Not Going";
+                                currentStatus.style = "font-weight: bold; margin-right: 4px; color: red";
+                            } else{
+                                $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op1);
+                            }
+
+                            $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op2);
+                            $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op3);
+                            $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op4);
+                        } else if(jobPost.status.statusId == 11){
+                            currentStatus.textContent = "Delayed";
                             currentStatus.style = "font-weight: bold; margin-right: 4px; color: red";
-                        } else{
-                            $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op1);
+                            $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(defaultOp);
+                            $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op3);
+                            $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op4);
+                        } else if(jobPost.status.statusId == 12) {
+                            currentStatus.textContent = "Started";
+                            currentStatus.style = "font-weight: bold; margin-right: 4px; color: green";
+                            $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(defaultOp);
+                            $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op4);
                         }
 
-                        $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op2);
-                        $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op3);
-                        $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op4);
-                    } else if(jobPost.status.statusId == 11){
-                        currentStatus.textContent = "Delayed";
-                        currentStatus.style = "font-weight: bold; margin-right: 4px; color: red";
-                        $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(defaultOp);
-                        $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op3);
-                        $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op4);
-                    } else if(jobPost.status.statusId == 12) {
-                        currentStatus.textContent = "Started";
-                        currentStatus.style = "font-weight: bold; margin-right: 4px; color: green";
-                        $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(defaultOp);
-                        $("#candidate_interview_status_" + jobPost.jobPost.jobPostId).append(op4);
+                        var statusUpdateBtn = document.createElement("span");
+                        statusUpdateBtn.className = "navigationBtn";
+                        statusUpdateBtn.textContent = "Update";
+                        statusUpdateBtn.style = "margin: 4px";
+                        statusUpdateBtn.onclick = function () {
+                            globalJpId = jobPost.jobPost.jobPostId;
+                            if($("#candidate_interview_status_" + globalJpId).val() == 1){ //to capture reason for not going
+                                $('#notGoingReason').html('');
+                                var defaultOption = $('<option value="0"></option>').text("Select a reason");
+                                $('#notGoingReason').append(defaultOption);
+
+                                allReasons.forEach(function (reason) {
+                                    var id = reason.id;
+                                    var name = reason.name;
+                                    var option = $('<option value=' + id + '></option>').text(name);
+                                    $('#notGoingReason').append(option);
+                                });
+                                $("#notGoingModal").modal("show");
+                            } else{
+                                updateStatus();
+                            }
+                        };
+                        statusBody.appendChild(statusUpdateBtn);
                     }
-
-                    var statusUpdateBtn = document.createElement("span");
-                    statusUpdateBtn.className = "navigationBtn";
-                    statusUpdateBtn.textContent = "Update";
-                    statusUpdateBtn.style = "margin: 4px";
-                    statusUpdateBtn.onclick = function () {
-                        globalJpId = jobPost.jobPost.jobPostId;
-                        if($("#candidate_interview_status_" + globalJpId).val() == 1){ //to capture reason for not going
-                            $('#notGoingReason').html('');
-                            var defaultOption = $('<option value="0"></option>').text("Select a reason");
-                            $('#notGoingReason').append(defaultOption);
-
-                            allReasons.forEach(function (reason) {
-                                var id = reason.id;
-                                var name = reason.name;
-                                var option = $('<option value=' + id + '></option>').text(name);
-                                $('#notGoingReason').append(option);
-                            });
-                            $("#notGoingModal").modal("show");
-                        } else{
-                            updateStatus();
-                        }
-                    };
-                    statusBody.appendChild(statusUpdateBtn);
-
-
                 }
             }
         }

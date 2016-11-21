@@ -1873,7 +1873,7 @@ public class JobPostWorkflowEngine {
             interviewScheduleStatusUpdate.setStatus(JobPostWorkflowStatus.find.where().eq("status_id", jwStatus).findUnique());
 
             if(jwStatus == ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT){
-                interviewScheduleStatusUpdate.setRejectReason(RejectReason.find.where().eq("ReasonId", interviewStatusRequest.getReason()).findUnique());
+                interviewScheduleStatusUpdate.setRejectReason(RejectReason.find.where().eq("reason_id", interviewStatusRequest.getReason()).findUnique());
             }
             interviewScheduleStatusUpdate.save();
 
@@ -2123,7 +2123,7 @@ public class JobPostWorkflowEngine {
         candidateInterviewStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
         candidateInterviewStatusUpdate.setJobPost(jobPostWorkflowOld.getJobPost());
         candidateInterviewStatusUpdate.setCandidate(candidate);
-        if(reason > 0){
+        if(reason != null && reason > 0){
             candidateInterviewStatusUpdate.setRejectReason(RejectReason.find.where().eq("reason_id", reason).findUnique());
         }
         candidateInterviewStatusUpdate.save();
