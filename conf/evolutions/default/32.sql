@@ -35,6 +35,8 @@ create index ix_interview_scheduled_status_update_reasonid on interview_schedule
 alter table interview_scheduled_status_update add constraint fk_interview_scheduled_status_update_status_id foreign key (status_id) references job_post_workflow_status (status_id) on delete restrict on update restrict;
 create index ix_interview_scheduled_status_update_status_id on interview_scheduled_status_update (status_id);
 
+alter table interview_details add column reviewapplication int(1) null;
+
 # --- !Downs
 
 create table interview_status (
@@ -57,6 +59,8 @@ drop index ix_interview_scheduled_status_update_reasonid on interview_scheduled_
 
 alter table interview_scheduled_status_update drop foreign key fk_interview_scheduled_status_update_status_id;
 drop index ix_interview_scheduled_status_update_status_id on interview_scheduled_status_update;
+
+alter table interview_details drop column reviewapplication;
 
 drop table if exists reject_reason;
 drop table if exists interview_scheduled_status_update;

@@ -40,6 +40,7 @@ public class AddJobPostRequest {
     public Integer jobPostGender;
     public Double jobPostInterviewLocationLat;
     public Double jobPostInterviewLocationLng;
+    public Integer reviewApplications;
 
     public List<Integer> interviewTimeSlot;
 
@@ -331,6 +332,14 @@ public class AddJobPostRequest {
 
     public void setJobPostInterviewLocationLng(Double jobPostInterviewLocationLng) {
         this.jobPostInterviewLocationLng = jobPostInterviewLocationLng;
+    }
+
+    public Integer getReviewApplications() {
+        return reviewApplications;
+    }
+
+    public void setReviewApplications(Integer reviewApplications) {
+        this.reviewApplications = reviewApplications;
     }
 }
 

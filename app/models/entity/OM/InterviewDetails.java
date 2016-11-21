@@ -48,6 +48,9 @@ public class InterviewDetails extends Model {
     @JoinColumn(name = "interview_time_slot_id", referencedColumnName = "interview_time_slot_id")
     private InterviewTimeSlot interviewTimeSlot;
 
+    @Column(name = "ReviewApplication", columnDefinition = "int(1) null")
+    private Integer reviewApplication;
+
     public static Finder<String, InterviewDetails> find = new Finder(InterviewDetails.class);
 
     public void setUpdateTimeStamp(Timestamp updateTimeStamp) {
@@ -112,5 +115,13 @@ public class InterviewDetails extends Model {
 
     public void setPlaceId(String placeId) {
         this.placeId = placeId;
+    }
+
+    public Integer getReviewApplication() {
+        return reviewApplication;
+    }
+
+    public void setReviewApplication(Integer reviewApplication) {
+        this.reviewApplication = reviewApplication;
     }
 }

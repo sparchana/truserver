@@ -209,6 +209,8 @@ public class JobService {
                 interviewDetails.setLat(addJobPostRequest.getJobPostInterviewLocationLat());
                 interviewDetails.setLng(addJobPostRequest.getJobPostInterviewLocationLng());
 
+                interviewDetails.setReviewApplication(addJobPostRequest.getReviewApplications());
+
                 interviewDetails.save();
             }
             Logger.info("Interview details saved");

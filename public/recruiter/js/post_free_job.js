@@ -280,6 +280,9 @@ $(document).ready(function () {
     var pathname = window.location.pathname; // Returns path only
     var jobPostIdUrl = pathname.split('/');
     var jobPostId = jobPostIdUrl[(jobPostIdUrl.length)-1];
+
+    $( "#check_applications" ).prop( "checked", true );
+
     if(jobPostId != 0){
         try {
             $.ajax({
@@ -687,6 +690,13 @@ function saveJob() {
             }
         }
 
+        var reviewApplication;
+        if($('#check_applications').is(':checked')){
+            reviewApplication = 1;
+        } else{
+            reviewApplication = 0;
+        }
+
         try {
             var d = {
                 jobPostId: jpId,
@@ -721,7 +731,8 @@ function saveJob() {
                 interviewTimeSlot: slotArray,
                 jobPostInterviewLocationLat: interviewLat,
                 jobPostInterviewLocationLng: interviewLng,
-                jobPostAddress: fullAddress
+                jobPostAddress: fullAddress,
+                reviewApplications: reviewApplication
             };
             $.ajax({
                 type: "POST",
@@ -907,11 +918,17 @@ function processDataForJobPost(returnedData) {
             });
         }
 
-        //interview details
         if(Object.keys(returnedData.interviewDetailsList).length > 0){
             var interviewDetailsList = returnedData.interviewDetailsList;
             if(interviewDetailsList[0].interviewDays != null){
+                //interview details
                 var interviewDays = interviewDetailsList[0].interviewDays.toString(2);
+
+                if(interviewDetailsList[0].reviewApplication == null || interviewDetailsList[0].reviewApplication == 1){
+                    $( "#check_applications" ).prop( "checked", true);
+                } else{
+                    $( "#check_applications" ).prop( "checked", false);
+                }
 
                 /* while converting from decimal to binary, preceding zeros are ignored. to fix, follow below*/
                 if(interviewDays.length != 7){
