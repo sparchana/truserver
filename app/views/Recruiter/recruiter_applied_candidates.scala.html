@@ -42,8 +42,56 @@
     </div>
 
     <div class="container">
-      <div id="candidateContainer">
-      </div>
+        <div class="row">
+            <div class="col s12">
+                <ul class="tabs tabs-fixed-width">
+                    <li class="tab col s3" onclick="tabChange1()"><a href="#pendingConfirmation"><font id="tab1" class="activeTab">Pending confirmation</font></a></li>
+                    <li class="tab col s3" onclick="tabChange2()"><a href="#confirmed"><font id="tab2">Confirmed</font></a></li>
+                    <li class="tab col s3" onclick="tabChange3()"><a href="#rescheduled"><font id="tab3">Rescheduled</font></a></li>
+                    <li class="tab col s3" onclick="tabChange4()"><a href="#rejected"><font id="tab4">Rejected</font></a></li>
+                </ul>
+            </div>
+            <div id="pendingConfirmation" class="col s12">
+                <div id="noPendingApplication" style="padding: 90px 6% 90px 6%; display: none">
+                    <center>
+                        <img src="/assets/recruiter/img/empty_box.svg" width="116px">
+                        <h5>No Confirmed applications yet!</h5>
+                        <h6>Good job! You have zero pending applications!</h6>
+                    </center>
+                </div>
+                <div id="pendingCandidateContainer"></div>
+            </div>
+            <div id="confirmed" class="col s12">
+                <div id="noConfirmedApplication" style="padding: 90px 6% 90px 6%; display: none">
+                    <center>
+                        <img src="/assets/recruiter/img/empty_box.svg" width="116px">
+                        <h5>No Confirmed applications yet!</h5>
+                        <h6>You have not confirmed any applications!</h6>
+                    </center>
+                </div>
+                <div id="confirmedCandidateContainer"></div>
+            </div>
+            <div id="rescheduled" class="col s12">
+                <div id="noRescheduledApplication" style="padding: 90px 6% 90px 6%; display: none">
+                    <center>
+                        <img src="/assets/recruiter/img/empty_box.svg" width="116px">
+                        <h5>No Rescheduled applications yet!</h5>
+                        <h6>Looks clean. There are no applications which are awaiting for reschedule confirmation!</h6>
+                    </center>
+                </div>
+                <div id="rescheduledCandidateContainer"></div>
+            </div>
+            <div id="rejected" class="col s12">
+                <div id="noRejectedApplication" style="padding: 90px 6% 90px 6%; display: none">
+                    <center>
+                        <img src="/assets/recruiter/img/empty_box.svg" width="116px">
+                        <h5>No Rejected applications yet!</h5>
+                        <h6>Great! You have not rejected any of the applications yet!</h6>
+                    </center>
+                </div>
+                <div id="rejectedCandidateContainer"></div>
+            </div>
+        </div>
     </div>
 
       <div class="row hide-on-med-and-up" id="creditViewMobile">

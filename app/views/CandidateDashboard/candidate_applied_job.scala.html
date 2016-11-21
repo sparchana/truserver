@@ -188,7 +188,47 @@
                   To know more about status of applications, call us at +91 8048039089.
                         </div>
 
-                        <div id="myAppliedJobs"></div>
+                        <div id="customTab">
+                            <div class="row" style="margin: 0;">
+                                <div class="col-lg-4 tabItem activeTab" id="tabOne" onclick="tabOne()">
+                                    Rescheduled/Confirmed Interviews
+                                </div>
+                                <div class="col-lg-4 tabItem" id="tabTwo" onclick="tabTwo()">
+                                    Under Review
+                                </div>
+                                <div class="col-lg-4 tabItem" id="tabThree" onclick="tabThree()">
+                                    Rejected
+                                </div>
+                            </div>
+
+                        </div>
+                        <div id="myAppliedJobsConfirmed"></div>
+                        <div id="noConfirmedApplication" style="padding: 90px 6% 90px 6%; display: none">
+                            <center>
+                                <img src="/assets/recruiter/img/empty_box.svg" width="116px">
+                                <h5>No Confirmed applications!</h5>
+                                <h6>You have zero confirmed applications!</h6>
+                            </center>
+                        </div>
+
+                        <div id="myAppliedJobsUnderReview" style="display: none"></div>
+                        <div id="noUnderReviewApplication" style="padding: 90px 6% 90px 6%; display: none">
+                            <center>
+                                <img src="/assets/recruiter/img/empty_box.svg" width="116px">
+                                <h5>No under review applications!</h5>
+                                <h6>You have zero under review applications!</h6>
+                            </center>
+                        </div>
+
+                        <div id="myAppliedJobsRejected" style="display: none"></div>
+                        <div id="noRejectedApplication" style="padding: 90px 6% 90px 6%; display: none">
+                            <center>
+                                <img src="/assets/recruiter/img/empty_box.svg" width="116px">
+                                <h5>No rejected applications yet!</h5>
+                                <h6>Good job! You have zero rejected applications!</h6>
+                            </center>
+                        </div>
+
                     </div>
                 </div>
             </div>

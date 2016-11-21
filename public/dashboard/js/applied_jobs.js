@@ -89,10 +89,18 @@ function processDataAndFetchAppliedJobs(returnedData) {
 }
 
 function prePopulateJobSection(jobApplication) {
-    var parent = $('#myAppliedJobs');
+    var parentConfirmed = $('#myAppliedJobsConfirmed');
+    var parentUnderReview = $('#myAppliedJobsUnderReview');
+    var parentRejected = $('#myAppliedJobsRejected');
+
+    parentConfirmed.html('');
+    parentUnderReview.html('');
+    parentRejected.html('');
+
+    var centerDiv = document.createElement("center");
+
     var count = 0;
     jobApplication.forEach(function (jobPost) {
-        console.log(jobPost);
         count++;
         if (count) {
             /* get all localities of the jobApplication */
@@ -125,7 +133,16 @@ function prePopulateJobSection(jobApplication) {
 
             var hotJobItem = document.createElement("div");
             hotJobItem.id = "hotJobItem";
-            parent.append(hotJobItem);
+
+            if(jobPost.status.statusId < 6) {
+                parentUnderReview.append(hotJobItem);
+            } else if (jobPost.status.statusId == 6 || (jobPost.status.statusId > 9 && jobPost.status.statusId < 14)){
+                parentConfirmed.append(hotJobItem);
+            } else if (jobPost.status.statusId == 7 || jobPost.status.statusId == 8){
+                parentRejected.append(hotJobItem);
+            } else {
+                parentUnderReview.append(hotJobItem);
+            }
 
             var centreTag = document.createElement("center");
             hotJobItem.appendChild(centreTag);
@@ -555,5 +572,34 @@ function processDataConfirmInterview(returnedData) {
     } else{
         notifyError("Something went wrong. Please try again later");
     }
+}
 
+function tabOne() {
+    $("#tabOne").addClass("activeTab");
+    $("#tabTwo").removeClass("activeTab");
+    $("#tabThree").removeClass("activeTab");
+
+    $("#myAppliedJobsConfirmed").show();
+    $("#myAppliedJobsUnderReview").hide();
+    $("#myAppliedJobsRejected").hide();
+}
+
+function tabTwo() {
+    $("#tabOne").removeClass("activeTab");
+    $("#tabTwo").addClass("activeTab");
+    $("#tabThree").removeClass("activeTab");
+
+    $("#myAppliedJobsConfirmed").hide();
+    $("#myAppliedJobsUnderReview").show();
+    $("#myAppliedJobsRejected").hide();
+}
+
+function tabThree() {
+    $("#tabOne").removeClass("activeTab");
+    $("#tabTwo").removeClass("activeTab");
+    $("#tabThree").addClass("activeTab");
+
+    $("#myAppliedJobsConfirmed").hide();
+    $("#myAppliedJobsUnderReview").hide();
+    $("#myAppliedJobsRejected").show();
 }

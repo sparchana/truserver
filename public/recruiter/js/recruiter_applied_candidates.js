@@ -25,21 +25,11 @@ $(document).scroll(function(){
 $(document).ready(function(){
     checkRecruiterLogin();
     getRecruiterInfo();
+    $('ul.tabs').tabs();
     var pathname = window.location.pathname; // Returns path only
     var jobPostIdUrl = pathname.split('/');
     jobPostId = jobPostIdUrl[(jobPostIdUrl.length)-1];
-    try {
-        $.ajax({
-            type: "POST",
-            url: "/getAllJobApplicants/" + parseInt(jobPostId),
-            data: false,
-            contentType: false,
-            processData: false,
-            success: processDataForJobApplications
-        });
-    } catch (exception) {
-        console.log("exception occured!!" + exception);
-    }
+    getAllCandidates();
 
     try {
         $.ajax({
@@ -85,6 +75,21 @@ $(document).ready(function(){
     });
 });
 
+function getAllCandidates() {
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllJobApplicants/" + parseInt(jobPostId),
+            data: false,
+            contentType: false,
+            processData: false,
+            success: processDataForJobApplications
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+}
+
 function processDataGetAllReason(returnedData) {
     returnedData.forEach(function(reason) {
         var id = reason.reasonId;
@@ -116,8 +121,51 @@ function processDataUnlockedCandidates(returnedData) {
     });
 }
 
+function tabChange1() {
+    $("#tab1").addClass("activeTab");
+    $("#tab2").removeClass("activeTab");
+    $("#tab3").removeClass("activeTab");
+    $("#tab4").removeClass("activeTab");
+}
+
+function tabChange2() {
+    $("#tab1").removeClass("activeTab");
+    $("#tab2").addClass("activeTab");
+    $("#tab3").removeClass("activeTab");
+    $("#tab4").removeClass("activeTab");
+}
+
+function tabChange3() {
+    $("#tab1").removeClass("activeTab");
+    $("#tab2").removeClass("activeTab");
+    $("#tab3").addClass("activeTab");
+    $("#tab4").removeClass("activeTab");
+}
+
+function tabChange4() {
+    $("#tab1").removeClass("activeTab");
+    $("#tab2").removeClass("activeTab");
+    $("#tab3").removeClass("activeTab");
+    $("#tab4").addClass("activeTab");
+}
+
+
 function processDataForJobApplications(returnedData) {
-    var parent = $("#candidateContainer");
+    var pendingCount = 0;
+    var confirmedCount = 0;
+    var rescheduledCount = 0;
+    var rejectedCount = 0;
+
+    var pendingParent = $("#pendingCandidateContainer");
+    var confirmedParent = $("#confirmedCandidateContainer");
+    var rescheduledParent = $("#rescheduledCandidateContainer");
+    var rejectedParent = $("#rejectedCandidateContainer");
+
+    pendingParent.html('');
+    confirmedParent.html('');
+    rescheduledParent.html('');
+    rejectedParent.html('');
+
     if(returnedData != "0"){
         var candidateList = [];
         $.each(returnedData, function (key, value) {
@@ -131,7 +179,23 @@ function processDataForJobApplications(returnedData) {
             var candidateCard = document.createElement("div");
             candidateCard.className = "card";
             candidateCard.style = "border-radius: 6px";
-            parent.append(candidateCard);
+
+            if((value.extraData.workflowStatus.statusId == 6) || (value.extraData.workflowStatus.statusId > 9 && value.extraData.workflowStatus.statusId < 14)){
+                confirmedParent.append(candidateCard);
+                confirmedCount++;
+            } else if(value.extraData.workflowStatus.statusId == 7){
+                rejectedParent.append(candidateCard);
+                rejectedCount++;
+            } else if(value.extraData.workflowStatus.statusId == 8){
+                rejectedParent.append(candidateCard);
+                rejectedCount++;
+            } else if(value.extraData.workflowStatus.statusId == 9){
+                rescheduledParent.append(candidateCard);
+                rescheduledCount++;
+            } else{
+                pendingParent.append(candidateCard);
+                pendingCount++;
+            }
 
             var candidateCardContent = document.createElement("div");
             candidateCardContent.className = "card-content";
@@ -144,8 +208,8 @@ function processDataForJobApplications(returnedData) {
             candidateCardContent.appendChild(candidateCardRow);
 
             var candidateCardRowColOne = document.createElement("div");
-            candidateCardRowColOne.className = "col s12 l8";
-            candidateCardRowColOne.style = "padding-top:2px";
+            candidateCardRowColOne.className = "col s12 l4";
+            candidateCardRowColOne.style = "padding: 8px";
             candidateCardRow.appendChild(candidateCardRowColOne);
 
             //candidate name container
@@ -154,17 +218,149 @@ function processDataForJobApplications(returnedData) {
             candidateCardRowColOneFont.textContent = toTitleCase(value.candidate.candidateFullName);
             candidateCardRowColOne.appendChild(candidateCardRowColOneFont);
 
-            var candidateCardRowColTwo = document.createElement("div");
-            candidateCardRowColTwo.className = "col s12 l4";
-            candidateCardRowColTwo.style = "padding-top:10px";
-            candidateCardRow.appendChild(candidateCardRowColTwo);
+            //interview date/time slot
+            var scheduledInterviewDate = document.createElement("div");
+            scheduledInterviewDate.className = "col s12 l8";
+            scheduledInterviewDate.style = "color: black; text-align: left; padding: 8px";
+            candidateCardRow.appendChild(scheduledInterviewDate);
 
-            //candidate last active container
-            var candidateCardRowColTwoFont = document.createElement("font");
-            candidateCardRowColTwoFont.setAttribute("size", "3");
+            inlineBlockDiv = document.createElement("div");
+            inlineBlockDiv.style = "display: inline-block; margin: 4px;";
+            scheduledInterviewDate.appendChild(inlineBlockDiv);
 
-            candidateCardRowColTwoFont.textContent = "Last Active: " + value.extraData.lastActive.lastActiveValueName;
-            candidateCardRowColTwo.appendChild(candidateCardRowColTwoFont);
+            iconImg = document.createElement("img");
+            iconImg.src = "/assets/recruiter/img/icons/calender.svg";
+            iconImg.style = "margin-top: -4px";
+            iconImg.setAttribute('height', '24px');
+            inlineBlockDiv.appendChild(iconImg);
+
+            inlineBlockDiv = document.createElement("div");
+            inlineBlockDiv.id = "interview_div_" + value.candidate.candidateId;
+            inlineBlockDiv.style = "display: inline-block;";
+            scheduledInterviewDate.appendChild(inlineBlockDiv);
+
+            innerInlineBlockDiv = document.createElement("div");
+            innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px; margin-bottom: 6px";
+            innerInlineBlockDiv.textContent = "Interview Details (Action Needed)";
+            inlineBlockDiv.appendChild(innerInlineBlockDiv);
+
+            var candidateInterviewDateVal = document.createElement("span");
+
+            if(value.extraData.interviewDate != null){
+                var interviewDate = new Date(value.extraData.interviewDate);
+                var interviewDetails = ('0' + interviewDate.getDate()).slice(-2) + '-' + getMonthVal((interviewDate.getMonth()+1)) + " @" + value.extraData.interviewSlot.interviewTimeSlotName;
+
+                candidateInterviewDateVal.id = "interview_date_" + value.candidate.candidateId;
+            } else{
+                candidateInterviewDateVal.style = "margin-left: 4px";
+                interviewDetails = "Schedule not available";
+            }
+
+            candidateInterviewDateVal.textContent = interviewDetails + ". ";
+            inlineBlockDiv.appendChild(candidateInterviewDateVal);
+
+            var candidateInterviewStatusVal = document.createElement("span");
+            if(value.extraData.workflowStatus != null){
+                if(value.extraData.workflowStatus.statusId == 5) {
+                    var interviewStatusDiv = document.createElement("span");
+                    interviewStatusDiv.id = "interview_status_option_" + value.candidate.candidateId;
+                    inlineBlockDiv.appendChild(interviewStatusDiv);
+
+                    var candidateInterviewAcceptParent = document.createElement("span");
+                    candidateInterviewAcceptParent.style = "display: inline-block";
+                    candidateInterviewAcceptParent.onclick = function () {
+                        var oldDate = new Date(value.extraData.interviewDate);
+                        globalInterviewDay = oldDate.getFullYear() + "-" + (oldDate.getMonth() + 1) + "-" + oldDate.getDate();
+                        globalInterviewSlot = value.extraData.interviewSlot.interviewTimeSlotId;
+                        globalSchedule = value.extraData.interviewSchedule;
+                        confirmInterviewStatus(value.candidate.candidateId);
+                    };
+                    interviewStatusDiv.appendChild(candidateInterviewAcceptParent);
+
+                    var candidateInterviewAccept = document.createElement("span");
+                    candidateInterviewAccept.className = "accept";
+                    candidateInterviewAcceptParent.appendChild(candidateInterviewAccept);
+
+                    iconImg = document.createElement("img");
+                    iconImg.src = "/assets/recruiter/img/icons/accept.svg";
+                    iconImg.setAttribute('height', '16px');
+                    iconImg.setAttribute('width', '14px');
+                    candidateInterviewAccept.appendChild(iconImg);
+
+                    var actionText = document.createElement("span");
+                    actionText.textContent = " Accept";
+                    candidateInterviewAcceptParent.appendChild(actionText);
+
+                    var candidateInterviewRejectParent = document.createElement("span");
+                    candidateInterviewRejectParent.style = "display: inline-block";
+                    candidateInterviewRejectParent.onclick = function () {
+                        var oldDate = new Date(value.extraData.interviewDate);
+                        globalInterviewDay = oldDate.getFullYear() + "-" + (oldDate.getMonth() + 1) + "-" + oldDate.getDate();
+                        globalInterviewSlot = value.extraData.interviewSlot.interviewTimeSlotId;
+                        globalSchedule = value.extraData.interviewSchedule;
+                        rejectInterview(value.candidate.candidateId);
+                    };
+                    interviewStatusDiv.appendChild(candidateInterviewRejectParent);
+
+                    var candidateInterviewReject = document.createElement("span");
+                    candidateInterviewReject.className = "reject";
+                    candidateInterviewRejectParent.appendChild(candidateInterviewReject);
+
+                    iconImg = document.createElement("img");
+                    iconImg.src = "/assets/recruiter/img/icons/reject.svg";
+                    iconImg.setAttribute('height', '16px');
+                    iconImg.setAttribute('width', '14px');
+                    candidateInterviewReject.appendChild(iconImg);
+
+                    actionText = document.createElement("span");
+                    actionText.textContent = " Reject";
+                    candidateInterviewRejectParent.appendChild(actionText);
+
+                    var candidateInterviewRescheduleParent = document.createElement("span");
+                    candidateInterviewRescheduleParent.style = "display: inline-block";
+                    candidateInterviewRescheduleParent.onclick = function () {
+                        globalCandidateId = value.candidate.candidateId;
+                        var oldDate = new Date(value.extraData.interviewDate);
+                        globalInterviewDay = oldDate.getFullYear() + "-" + (oldDate.getMonth() + 1) + "-" + oldDate.getDate();
+                        globalInterviewSlot = value.extraData.interviewSlot.interviewTimeSlotId;
+                        globalSchedule = value.extraData.interviewSchedule;
+
+                        showSlotModal();
+                    };
+                    interviewStatusDiv.appendChild(candidateInterviewRescheduleParent);
+
+                    var candidateInterviewReschedule = document.createElement("span");
+                    candidateInterviewReschedule.className = "reschedule";
+                    candidateInterviewRescheduleParent.appendChild(candidateInterviewReschedule);
+
+                    iconImg = document.createElement("img");
+                    iconImg.src = "/assets/recruiter/img/icons/reschedule.svg";
+                    iconImg.setAttribute('height', '18px');
+                    iconImg.setAttribute('width', '16px');
+                    candidateInterviewReschedule.appendChild(iconImg);
+
+                    actionText = document.createElement("span");
+                    actionText.textContent = " Reject";
+                    candidateInterviewRescheduleParent.appendChild(actionText);
+
+                } else if((value.extraData.workflowStatus.statusId == 6) || (value.extraData.workflowStatus.statusId > 9 && value.extraData.workflowStatus.statusId < 14)){
+                    candidateInterviewStatusVal.textContent = "Interview Confirmed";
+                    candidateInterviewStatusVal.style = "color: green; font-weight: bold";
+                } else if(value.extraData.workflowStatus.statusId == 7){
+                    candidateInterviewStatusVal.textContent = "Interview Rejected";
+                    candidateInterviewStatusVal.style = "color: red; font-weight: bold";
+                } else if(value.extraData.workflowStatus.statusId == 8){
+                    candidateInterviewStatusVal.textContent = "Interview Rejected by Candidate";
+                    candidateInterviewStatusVal.style = "color: red; font-weight: bold";
+                } else if(value.extraData.workflowStatus.statusId == 9){
+                    candidateInterviewStatusVal.textContent = "Interview Rescheduled. Awaiting candidate's response";
+                    candidateInterviewStatusVal.style = "color: orange; font-weight: bold";
+                } else{
+                    candidateInterviewStatusVal.textContent = "TODO! No Slots availabe.";
+                }
+            }
+
+            inlineBlockDiv.appendChild(candidateInterviewStatusVal);
 
             //end of candidateCardRow
 
@@ -619,134 +815,17 @@ function processDataForJobApplications(returnedData) {
             unlockDivRow.style = "padding: 0 2% 1% 2%; margin: 0; text-align: right; color: #fff";
             candidateCardContent.appendChild(unlockDivRow);
 
-            //interview date/time slot
-            var scheduledInterviewDate = document.createElement("div");
-            scheduledInterviewDate.className = "col s12 l8";
-            scheduledInterviewDate.style = "color: black; text-align: left";
-            unlockDivRow.appendChild(scheduledInterviewDate);
+            var candidateCardRowColTwo = document.createElement("div");
+            candidateCardRowColTwo.className = "col s12 l8";
+            candidateCardRowColTwo.style = "text-align: left; color: black";
+            unlockDivRow.appendChild(candidateCardRowColTwo);
 
-            inlineBlockDiv = document.createElement("div");
-            inlineBlockDiv.style = "display: inline-block; margin: 4px;";
-            scheduledInterviewDate.appendChild(inlineBlockDiv);
+            //candidate last active container
+            var candidateCardRowColTwoFont = document.createElement("font");
+            candidateCardRowColTwoFont.setAttribute("size", "3");
 
-            iconImg = document.createElement("img");
-            iconImg.src = "/assets/recruiter/img/icons/calender.svg";
-            iconImg.style = "margin-top: -4px";
-            iconImg.setAttribute('height', '24px');
-            inlineBlockDiv.appendChild(iconImg);
-
-            inlineBlockDiv = document.createElement("div");
-            inlineBlockDiv.id = "interview_div_" + value.candidate.candidateId;
-            inlineBlockDiv.style = "display: inline-block;";
-            scheduledInterviewDate.appendChild(inlineBlockDiv);
-
-            innerInlineBlockDiv = document.createElement("div");
-            innerInlineBlockDiv.style = "margin-left: 4px; color: #9f9f9f; font-size: 11px";
-            innerInlineBlockDiv.textContent = "Interview status";
-            inlineBlockDiv.appendChild(innerInlineBlockDiv);
-
-            var candidateInterviewDateVal = document.createElement("span");
-
-            if(value.extraData.interviewDate != null){
-                var interviewDate = new Date(value.extraData.interviewDate);
-                var interviewDetails = ('0' + interviewDate.getDate()).slice(-2) + '-' + getMonthVal((interviewDate.getMonth()+1)) + " @" + value.extraData.interviewSlot.interviewTimeSlotName;
-
-                candidateInterviewDateVal.id = "interview_date_" + value.candidate.candidateId;
-            } else{
-                candidateInterviewDateVal.style = "margin-left: 4px";
-                interviewDetails = "Schedule not available";
-            }
-
-            candidateInterviewDateVal.textContent = interviewDetails + ". ";
-            inlineBlockDiv.appendChild(candidateInterviewDateVal);
-
-            var candidateInterviewStatusVal = document.createElement("span");
-            if(value.extraData.workflowStatus != null){
-                if(value.extraData.workflowStatus.statusId == 5) {
-                    var interviewStatusDiv = document.createElement("span");
-                    interviewStatusDiv.id = "interview_status_option_" + value.candidate.candidateId;
-                    inlineBlockDiv.appendChild(interviewStatusDiv);
-
-                    var candidateInterviewAccept = document.createElement("span");
-                    candidateInterviewAccept.className = "accept tooltipped";
-                    candidateInterviewAccept.setAttribute("data-postiton", "top");
-                    candidateInterviewAccept.setAttribute("data-delay", "50");
-                    candidateInterviewAccept.setAttribute("data-tooltip", "Confirm Interview");
-                    candidateInterviewAccept.onclick = function () {
-                        var oldDate = new Date(value.extraData.interviewDate);
-                        globalInterviewDay = oldDate.getFullYear() + "-" + (oldDate.getMonth() + 1) + "-" + oldDate.getDate();
-                        globalInterviewSlot = value.extraData.interviewSlot.interviewTimeSlotId;
-                        globalSchedule = value.extraData.interviewSchedule;
-                        confirmInterviewStatus(value.candidate.candidateId);
-                    };
-                    interviewStatusDiv.appendChild(candidateInterviewAccept);
-
-                    iconImg = document.createElement("img");
-                    iconImg.src = "/assets/recruiter/img/icons/accept.svg";
-                    iconImg.setAttribute('height', '16px');
-                    iconImg.setAttribute('width', '14px');
-                    candidateInterviewAccept.appendChild(iconImg);
-
-                    var candidateInterviewReject = document.createElement("span");
-                    candidateInterviewReject.className = "reject tooltipped";
-                    candidateInterviewReject.setAttribute("data-postiton", "top");
-                    candidateInterviewReject.setAttribute("data-delay", "50");
-                    candidateInterviewReject.setAttribute("data-tooltip", "Reject Interview");
-                    candidateInterviewReject.onclick = function () {
-                        var oldDate = new Date(value.extraData.interviewDate);
-                        globalInterviewDay = oldDate.getFullYear() + "-" + (oldDate.getMonth() + 1) + "-" + oldDate.getDate();
-                        globalInterviewSlot = value.extraData.interviewSlot.interviewTimeSlotId;
-                        globalSchedule = value.extraData.interviewSchedule;
-                        rejectInterview(value.candidate.candidateId);
-                    };
-                    interviewStatusDiv.appendChild(candidateInterviewReject);
-
-                    iconImg = document.createElement("img");
-                    iconImg.src = "/assets/recruiter/img/icons/reject.svg";
-                    iconImg.setAttribute('height', '16px');
-                    iconImg.setAttribute('width', '14px');
-                    candidateInterviewReject.appendChild(iconImg);
-
-                    var candidateInterviewReschedule = document.createElement("span");
-                    candidateInterviewReschedule.className = "reschedule tooltipped";
-                    candidateInterviewReschedule.setAttribute("data-postiton", "top");
-                    candidateInterviewReschedule.setAttribute("data-delay", "50");
-                    candidateInterviewReschedule.setAttribute("data-tooltip", "Reschedule Interview");
-                    candidateInterviewReschedule.onclick = function () {
-                        globalCandidateId = value.candidate.candidateId;
-                        var oldDate = new Date(value.extraData.interviewDate);
-                        globalInterviewDay = oldDate.getFullYear() + "-" + (oldDate.getMonth() + 1) + "-" + oldDate.getDate();
-                        globalInterviewSlot = value.extraData.interviewSlot.interviewTimeSlotId;
-                        globalSchedule = value.extraData.interviewSchedule;
-
-                        showSlotModal();
-                    };
-                    interviewStatusDiv.appendChild(candidateInterviewReschedule);
-
-                    iconImg = document.createElement("img");
-                    iconImg.src = "/assets/recruiter/img/icons/reschedule.svg";
-                    iconImg.setAttribute('height', '18px');
-                    iconImg.setAttribute('width', '16px');
-                    candidateInterviewReschedule.appendChild(iconImg);
-
-                } else if((value.extraData.workflowStatus.statusId == 6) || (value.extraData.workflowStatus.statusId > 9 && value.extraData.workflowStatus.statusId < 14)){
-                    candidateInterviewStatusVal.textContent = "Interview Confirmed";
-                    candidateInterviewStatusVal.style = "color: green; font-weight: bold";
-                } else if(value.extraData.workflowStatus.statusId == 7){
-                    candidateInterviewStatusVal.textContent = "Interview Rejected";
-                    candidateInterviewStatusVal.style = "color: red; font-weight: bold";
-                } else if(value.extraData.workflowStatus.statusId == 8){
-                    candidateInterviewStatusVal.textContent = "Interview Rejected by Candidate";
-                    candidateInterviewStatusVal.style = "color: red; font-weight: bold";
-                } else if(value.extraData.workflowStatus.statusId == 9){
-                    candidateInterviewStatusVal.textContent = "Interview Rescheduled. Awaiting candidate's response";
-                    candidateInterviewStatusVal.style = "color: orange; font-weight: bold";
-                } else{
-                    candidateInterviewStatusVal.textContent = "TODO! No Slots availabe.";
-                }
-            }
-
-            inlineBlockDiv.appendChild(candidateInterviewStatusVal);
+            candidateCardRowColTwoFont.textContent = "Last Active: " + value.extraData.lastActive.lastActiveValueName;
+            candidateCardRowColTwo.appendChild(candidateCardRowColTwoFont);
 
             var unlockContactCol = document.createElement("div");
             unlockContactCol.className = "col s12 l4";
@@ -761,7 +840,7 @@ function processDataForJobApplications(returnedData) {
             unlockCandidateBtn.className = "waves-effect waves-light ascentGreen lighten-1 btn";
             unlockContactCol.appendChild(unlockCandidateBtn);
 
-            //candidate last active container
+            //candidate unlock container
             var candidateUnlockFont = document.createElement("font");
             candidateUnlockFont.id = "candidate_" + value.candidate.candidateId;
             candidateUnlockFont.textContent = "Unlock Contact";
@@ -769,6 +848,30 @@ function processDataForJobApplications(returnedData) {
             unlockCandidateBtn.appendChild(candidateUnlockFont);
         });
         $('.tooltipped').tooltip({delay: 50});
+
+        if(pendingCount == 0){
+            $("#noPendingApplication").show();
+        } else{
+            $("#noPendingApplication").hide();
+        }
+
+        if(confirmedCount == 0){
+            $("#noConfirmedApplication").show();
+        } else{
+            $("#noConfirmedApplication").hide();
+        }
+
+        if(rejectedCount == 0){
+            $("#noRejectedApplication").show();
+        } else{
+            $("#noRejectedApplication").hide();
+        }
+
+        if(rescheduledCount == 0){
+            $("#noRescheduledApplication").show();
+        } else{
+            $("#noRescheduledApplication").hide();
+        }
 
         try {
             $.ajax({
@@ -943,6 +1046,7 @@ function processDataInterviewStatus(returnedData) {
             $("#interview_date_" + globalCandidateId).html(('0' + newDate.getDate()).slice(-2) + '-' + getMonthVal((newDate.getMonth()+1)) + " @" + newSlot);
         }
         $("#interview_div_" + globalCandidateId).append(candidateInterviewStatusVal);
+        getAllCandidates();
     } else{
         notifyError("Something went wrong. Please try again later");
     }

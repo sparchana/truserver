@@ -292,6 +292,25 @@ div.inblockDiv{
     transition: all 0.7s cubic-bezier(.25,.8,.25,1);
 }
 
+#customTab{
+    box-shadow: 0 1px 2px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.1);
+    margin: 8px 0 0 0;
+    background: #ffffff;
+    text-align: center;
+}
+
+.tabItem{
+    color: #39393b;
+    padding: 12px;
+    cursor: pointer;
+}
+
+.activeTab{
+    color: #359dff;
+    font-weight: bold;
+    border-bottom: 2px solid #008080;
+}
+
 #jobBody {
     margin-top: -8px;
     text-align: left;
