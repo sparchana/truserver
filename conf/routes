@@ -204,6 +204,7 @@ POST        /getAllShift                                                  contro
 POST        /getAllTransportation                                         controllers.Application.getAllTransportation()
 POST        /getAllCompanyLogos                                           controllers.Application.getAllCompanyLogos()
 POST        /getAllAsset                                                  controllers.Application.getAllAsset()
+POST        /getAllReason                                                 controllers.Application.getAllReason()
 POST        /getJobPostInfo/:id/:isSupport                                controllers.Application.getJobPostInfo(id : Long, isSupport : Integer)
 
 # 3rd Party API

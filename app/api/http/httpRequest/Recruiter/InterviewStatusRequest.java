@@ -9,7 +9,7 @@ public class InterviewStatusRequest {
     private Integer interviewStatus; // 1-> Accept, 2 -> Reject, 3 -> Reschedule
     private String rescheduledDate;
     private Integer rescheduledSlot;
-    private String reason;
+    private Integer reason;
     private String interviewSchedule;
 
     public Integer getCandidateId() {
@@ -52,11 +52,11 @@ public class InterviewStatusRequest {
         this.rescheduledSlot = rescheduledSlot;
     }
 
-    public String getReason() {
+    public Integer getReason() {
         return reason;
     }
 
-    public void setReason(String reason) {
+    public void setReason(Integer reason) {
         this.reason = reason;
     }
 

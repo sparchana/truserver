@@ -1872,6 +1872,10 @@ public class JobPostWorkflowEngine {
             InterviewScheduleStatusUpdate interviewScheduleStatusUpdate = new InterviewScheduleStatusUpdate();
             interviewScheduleStatusUpdate.setJobPostWorkflow(jobPostWorkflowNew);
             interviewScheduleStatusUpdate.setStatus(JobPostWorkflowStatus.find.where().eq("status_id", jwStatus).findUnique());
+
+            if(jwStatus == ServerConstants.JWF_STATUS_INTERVIEW_REJECTED_BY_RECRUITER_SUPPORT){
+                interviewScheduleStatusUpdate.setRejectReason(RejectReason.find.where().eq("ReasonId", interviewStatusRequest.getReason()).findUnique());
+            }
             interviewScheduleStatusUpdate.save();
 
             // save the interaction

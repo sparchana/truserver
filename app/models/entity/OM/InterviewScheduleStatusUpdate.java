@@ -35,6 +35,7 @@ public class InterviewScheduleStatusUpdate extends Model {
     @JoinColumn(name = "job_post_workflow_id", referencedColumnName = "job_post_workflow_id")
     private JobPostWorkflow jobPostWorkflow;
 
+    @ManyToOne
     @JsonManagedReference
     @JoinColumn(name = "ReasonId", referencedColumnName = "ReasonId")
     private RejectReason rejectReason;

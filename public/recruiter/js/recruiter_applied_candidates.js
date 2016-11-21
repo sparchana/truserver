@@ -12,6 +12,7 @@ var globalInterviewSlot = null;
 var globalSchedule = null;
 
 var allTimeSlots = [];
+var allReason = [];
 
 $(document).scroll(function(){
     if ($(this).scrollTop() > 80) {
@@ -54,6 +55,20 @@ $(document).ready(function(){
         console.log("exception occured!!" + exception);
     }
 
+    try {
+        $.ajax({
+            type: "POST",
+            url: "/getAllReason",
+            data: false,
+            async: false,
+            contentType: false,
+            processData: false,
+            success: processDataGetAllReason
+        });
+    } catch (exception) {
+        console.log("exception occured!!" + exception);
+    }
+
     $("#rescheduleDateAndSlot").change(function (){
         if($(this).val() != -1){
             try{
@@ -69,6 +84,17 @@ $(document).ready(function(){
         }
     });
 });
+
+function processDataGetAllReason(returnedData) {
+    returnedData.forEach(function(reason) {
+        var id = reason.reasonId;
+        var name = reason.reasonName;
+        var item = {};
+        item ["id"] = id;
+        item ["name"] = name;
+        allReason.push(item);
+    });
+}
 
 function processDataGetAllTimeSlots(returnedData) {
     returnedData.forEach(function(timeSlot) {
@@ -823,9 +849,9 @@ function processDataForJobPostInfo(returnedData) {
 }
 
 function confirmRejectInterview(){
-    if($("#interviewStatusComments").val().trim() != ''){
+    if($("#reject_reason").val() != ''){
         globalInterviewStatus = 2;
-        setInterviewStatus(globalCandidateId, 2, globalInterviewDay, globalInterviewSlot, $("#interviewStatusComments").val());
+        setInterviewStatus(globalCandidateId, 2, globalInterviewDay, globalInterviewSlot, $("#reject_reason").val());
     } else{
         notifyError("Please specify the reason for the job application rejection");
     }
@@ -844,6 +870,7 @@ function setInterviewStatus(candidateId, status, rescheduledDate, rescheduledSlo
         reason: reason,
         interviewSchedule: globalSchedule
     };
+
     try {
         $.ajax({
             type: "POST",
@@ -868,6 +895,16 @@ function confirmInterviewStatus(candidateId) {
 function rejectInterview(candidateId) {
     globalCandidateId = candidateId;
     globalInterviewStatus = 3;
+
+    $("#reject_reason").html('');
+
+    var defaultOption = $('<option value="0" selected></option>').text("Select a reason");
+    $('#reject_reason').append(defaultOption);
+
+    allReason.forEach(function (reason) {
+        var option = $('<option value=' + reason.id + '></option>').text(reason.name);
+        $('#reject_reason').append(option);
+    });
     $("#interviewStatusComments").val('');
     $("#modalRejectReason").openModal();
 }

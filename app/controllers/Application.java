@@ -926,6 +926,11 @@ public class Application extends Controller {
         return ok(toJson(assets));
     }
 
+    public static Result getAllReason() {
+        List<RejectReason> reason = RejectReason.find.setUseQueryCache(!isDevMode).orderBy("ReasonName").findList();
+        return ok(toJson(reason));
+    }
+
     @Security.Authenticated(RecSecured.class)
     public static Result getAllCompany() {
         List<Company> companyList = Company.find.where().orderBy("companyName").findList();
