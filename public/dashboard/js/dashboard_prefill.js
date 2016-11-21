@@ -411,6 +411,18 @@ function saveCandidateBasicProfile(){
 
     var homeLocalitySelected = $('#candidateHomeLocality').val();
     var jobSelected = $('#candidateJobPref').val();
+
+    var candidateDocumentIdList = $('#candidateIdProof').val().split(",");
+
+    var documentValues = [];
+    candidateDocumentIdList.forEach(function (id) {
+        console.log($('#idProofValue_'+ id).val());
+        var item = {};
+        item["idProofId"] = id;
+        item["idProofValue"] = $('#idProofValue_'+ id).val();
+        documentValues.push(item);
+    });
+
     var selectedDob = $('#dob_year').val() + "-" + $('#dob_month').val() + "-" + $('#dob_day').val();
     var c_dob = String(selectedDob);
     var selectedDate = new Date(c_dob);
@@ -427,7 +439,17 @@ function saveCandidateBasicProfile(){
         case 3: notifyError("First name contains special symbols. Enter a valid first name"); statusCheck=0; break;
         case 4: notifyError("Please enter your first name"); statusCheck=0; break;
     }
-
+    //document value verification
+    documentValues.forEach(function(id){
+       if(id.idProofId == null){
+           notifyError("Please Select Document");
+           statusCheck=0;
+       }
+       else if(id.idProofValue == null){
+           notifyError("Please Enter Document Detail");
+           statusCheck=0;
+       }
+    });
     if(res == 0){
         notifyError("Enter a valid mobile number");
         statusCheck=0;
@@ -480,10 +502,12 @@ function saveCandidateBasicProfile(){
                 candidateSecondName: $('#candidateSecondName').val(),
                 candidateMobile: candidateInformation.candidateMobile,
                 candidateJobPref: candidatePreferredJob,
+                idProofReferenceList: documentValues,
                 candidateHomeLocality: homeLocalitySelected,
 
                 //others
                 candidateDob: c_dob,
+                candidateAssetList: $('#jobPostAsset').val(),
                 candidateTimeShiftPref: $('#candidateTimeShiftPref').val(),
                 candidateGender: ($('input:radio[name="gender"]:checked').val())
             };
@@ -493,7 +517,7 @@ function saveCandidateBasicProfile(){
 
             localStorage.setItem("name", d.candidateFirstName);
             localStorage.setItem("lastName", d.candidateSecondName);
-
+        console.log("sending data : " + JSON.stringify(d));
             $.ajax({
                 type: "POST",
                 url: "/candidateUpdateBasicProfile",

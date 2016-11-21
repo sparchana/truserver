@@ -197,7 +197,6 @@ $(document).ready(function () {
         console.log("exception occured!!" + exception);
     }
 
-
     try {
         $.ajax({
             type: "GET",
@@ -213,7 +212,6 @@ $(document).ready(function () {
     }
 
 });
-
 function processSupportAgentData(supportAgentData) {
     agentAcLvl = supportAgentData.agentAccessLevel;
 

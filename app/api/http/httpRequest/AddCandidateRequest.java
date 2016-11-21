@@ -1,7 +1,7 @@
 package api.http.httpRequest;
 
 import api.ServerConstants;
-
+import java.util.List;
 import java.util.Date;
 
 /**
@@ -11,6 +11,35 @@ public class AddCandidateRequest extends CandidateSignUpRequest{
     public Date candidateDob;
     public Integer candidateGender ;
     public String candidateTimeShiftPref;
+    public List<Integer> candidateAssetList;
+    public List<AddSupportCandidateRequest.IdProofWithValue> candidateIdProofList;
+
+    public static class IdProofWithValue {
+        Integer idProofId;
+        String idProofValue;
+
+        public IdProofWithValue(){
+        }
+        public IdProofWithValue(IdProofWithValue idProofWithValue){
+            //constructor Code
+        }
+
+        public Integer getIdProofId() {
+            return idProofId;
+        }
+
+        public void setIdProofId(Integer idProofId) {
+            this.idProofId = idProofId;
+        }
+
+        public String getIdProofValue() {
+            return idProofValue;
+        }
+
+        public void setCandidateIdProofValues(String candidateIdProofValue) {
+            this.idProofValue = candidateIdProofValue;
+        }
+    }
 
     public Integer leadSource = ServerConstants.LEAD_SOURCE_UNKNOWN;
 
@@ -19,7 +48,6 @@ public class AddCandidateRequest extends CandidateSignUpRequest{
     }
 
     /* Mandatory */
-
     /* others */
     public Date getCandidateDob() {
         return candidateDob;
@@ -48,5 +76,21 @@ public class AddCandidateRequest extends CandidateSignUpRequest{
 
     public void setLeadSource(Integer leadSource) {
         this.leadSource = leadSource;
+    }
+
+    public List<Integer> getCandidateAssetList() {
+        return candidateAssetList;
+    }
+
+    public void setCandidateAssetList(List<Integer> candidateAssetList) {
+        this.candidateAssetList = candidateAssetList;
+    }
+
+    public List<IdProofWithValue> getCandidateIdProofList() {
+        return candidateIdProofList;
+    }
+
+    public void setCandidateIdProofList(List<IdProofWithValue> candidateIdProofList) {
+        this.candidateIdProofList = candidateIdProofList;
     }
 }

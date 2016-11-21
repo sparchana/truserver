@@ -547,10 +547,10 @@ public class CandidateService
         if(supportCandidateRequest.getPastCompanyList() != null ){
             candidate.setJobHistoryList(getJobHistoryListFromAddSupportCandidate(supportCandidateRequest.getPastCompanyList(), candidate));
         }
-
-        if(supportCandidateRequest.getCandidateIdProofList() != null ){
-            candidate.setIdProofReferenceList(getCandidateIdProofListFromAddSupportCandidate(supportCandidateRequest.getCandidateIdProofList(), candidate));
-        }
+//
+//        if(supportCandidateRequest.getCandidateIdProofList() != null ){
+//            candidate.setIdProofReferenceList(getCandidateIdProofListFromAddSupportCandidate(supportCandidateRequest.getCandidateIdProofList(), candidate));
+//        }
 
         if(supportCandidateRequest.getExpList() != null ){
             candidate.setCandidateExpList(getCandidateExpListFromAddSupportCandidate(supportCandidateRequest.getExpList(), candidate));
@@ -801,10 +801,42 @@ public class CandidateService
             Logger.info("Exception while setting timeshift preferences");
             e.printStackTrace();
         }
+        try {
+            candidate.setCandidateAssetList(getAssetListFromAddSupportCandidate(request, candidate));
+        }
+        catch(Exception e) {
+            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
+            Logger.info("Exception while setting candidate asset list");
+            e.printStackTrace();
+        }
+
+
+        if(request.getCandidateIdProofList() != null ){
+            candidate.setIdProofReferenceList(getCandidateIdProofListFromAddSupportCandidate(request.getCandidateIdProofList(), candidate));
+        }
 
         Logger.info("Added Basic Profile details");
 
         return candidateSignUpResponse;
+    }
+
+    private static List<CandidateAsset> getAssetListFromAddSupportCandidate(AddCandidateRequest request, Candidate candidate) {
+        ArrayList<CandidateAsset> response = new ArrayList<>();
+        List<Asset> assetList = Asset.find.where().in("assetId", request.getCandidateAssetList()).findList();
+
+        if(assetList.size() == 0){
+            return response;
+        }
+        for(Asset asset : assetList) {
+            CandidateAsset candidateAsset = new CandidateAsset();
+            if(asset == null) {
+                continue;
+            }
+            candidateAsset.setAsset(asset);
+            candidateAsset.setCandidate(candidate);
+            response.add(candidateAsset);
+        }
+        return response;
     }
 
     private static List<LanguageKnown> getCandidateLanguageFromSupportCandidate(AddCandidateExperienceRequest request, Candidate candidate) {
@@ -1422,7 +1454,7 @@ public class CandidateService
     }
     public static void updateCandidateAssetOwned(Candidate candidate, UpdateCandidateAsset asset){
         if(asset!= null && asset.getAssetIdList() != null && asset.getAssetIdList().size()>0) {
-            List<Asset> assetList = Asset.find.where().in("assetId", asset.getAssetIdList()).findList();
+            /*List<Asset> assetList = Asset.find.where().in("assetId", asset.getAssetIdList()).findList();
             List<CandidateAsset> candidateAssetList = new ArrayList<>();
 
             if(assetList.size() == 0) {
@@ -1435,8 +1467,10 @@ public class CandidateService
                 candidateAsset.setAsset(asset1);
 
                 candidateAssetList.add(candidateAsset);
-            }
-            candidate.setCandidateAssetList(candidateAssetList);
+            }*/
+            AddCandidateRequest candidateAssetShell = new AddCandidateRequest();
+            candidateAssetShell.setCandidateAssetList(asset.getAssetIdList());
+            candidate.setCandidateAssetList(CandidateService.getAssetListFromAddSupportCandidate(candidateAssetShell, candidate));
             candidate.update();
         }
     }
