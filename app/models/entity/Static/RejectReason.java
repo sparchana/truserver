@@ -13,11 +13,14 @@ import javax.persistence.*;
 public class RejectReason extends Model {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name = "ReasonId", columnDefinition = "int unsigned", unique = true)
+    @Column(name = "reason_id", columnDefinition = "int unsigned", unique = true)
     private long reasonId;
 
-    @Column(name = "ReasonName", columnDefinition = "text null")
+    @Column(name = "reason_name", columnDefinition = "text null")
     private String reasonName;
+
+    @Column(name = "reason_type", columnDefinition = "int null")
+    private Integer reasonType;
 
     public static Finder<String, RejectReason> find = new Finder(RejectReason.class);
 
@@ -35,5 +38,13 @@ public class RejectReason extends Model {
 
     public void setReasonName(String reasonName) {
         this.reasonName = reasonName;
+    }
+
+    public Integer getReasonType() {
+        return reasonType;
+    }
+
+    public void setReasonType(Integer reasonType) {
+        this.reasonType = reasonType;
     }
 }

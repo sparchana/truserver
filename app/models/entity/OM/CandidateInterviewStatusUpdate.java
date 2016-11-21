@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import models.entity.Candidate;
 import models.entity.JobPost;
+import models.entity.Static.RejectReason;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -42,6 +43,11 @@ public class CandidateInterviewStatusUpdate extends Model {
     @JsonManagedReference
     @JoinColumn(name = "JobPostId", referencedColumnName = "JobPostId")
     private JobPost jobPost;
+
+    @ManyToOne
+    @JsonManagedReference
+    @JoinColumn(name = "reason_id", referencedColumnName = "reason_id")
+    private RejectReason rejectReason;
 
     @Column(name = "candidate_interview_status_update_note", columnDefinition = "text null")
     private String candidateInterviewStatusUpdateNote;
@@ -107,5 +113,13 @@ public class CandidateInterviewStatusUpdate extends Model {
 
     public void setJobPost(JobPost jobPost) {
         this.jobPost = jobPost;
+    }
+
+    public RejectReason getRejectReason() {
+        return rejectReason;
+    }
+
+    public void setRejectReason(RejectReason rejectReason) {
+        this.rejectReason = rejectReason;
     }
 }

@@ -37,7 +37,7 @@ public class InterviewScheduleStatusUpdate extends Model {
 
     @ManyToOne
     @JsonManagedReference
-    @JoinColumn(name = "ReasonId", referencedColumnName = "ReasonId")
+    @JoinColumn(name = "reason_id", referencedColumnName = "reason_id")
     private RejectReason rejectReason;
 
     @ManyToOne
