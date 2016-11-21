@@ -12,7 +12,6 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
     public Integer candidateHomeLocality;
     public Integer candidateMaritalStatus ;
     public String candidateEmail;
-    public List<IdProofWithValue> candidateIdProofList;
     public Integer candidateSalarySlip ;
     public Integer candidateAppointmentLetter ;
     public Integer candidateExperienceLetter ;
@@ -21,32 +20,6 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
     public Integer deactivationReason;
     public Date deactivationExpiryDate;
 
-    public static class IdProofWithValue {
-        Integer idProofId;
-        String idProofValue;
-
-        public IdProofWithValue(){
-        }
-        public IdProofWithValue(IdProofWithValue idProofWithValue){
-            //constructor Code
-        }
-
-        public Integer getIdProofId() {
-            return idProofId;
-        }
-
-        public void setIdProofId(Integer idProofId) {
-            this.idProofId = idProofId;
-        }
-
-        public String getIdProofValue() {
-            return idProofValue;
-        }
-
-        public void setCandidateIdProofValues(String candidateIdProofValue) {
-            this.idProofValue = candidateIdProofValue;
-        }
-    }
 
     public static class ExpList {
         Integer jobExpQuestionId;
@@ -141,10 +114,6 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
         return candidateTimeShiftPref;
     }
 
-    public List<IdProofWithValue> getCandidateIdProofList() {
-        return candidateIdProofList;
-    }
-
     public Integer getCandidateSalarySlip() {
         return candidateSalarySlip;
     }
@@ -171,10 +140,6 @@ public class AddSupportCandidateRequest extends AddCandidateEducationRequest {
 
     public void setCandidateEmail(String candidateEmail) {
         this.candidateEmail = candidateEmail;
-    }
-
-    public void setCandidateIdProofList(List<IdProofWithValue> candidateIdProofList) {
-        this.candidateIdProofList = candidateIdProofList;
     }
 
     public void setCandidateSalarySlip(Integer candidateSalarySlip) {

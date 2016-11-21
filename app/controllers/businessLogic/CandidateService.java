@@ -548,9 +548,9 @@ public class CandidateService
             candidate.setJobHistoryList(getJobHistoryListFromAddSupportCandidate(supportCandidateRequest.getPastCompanyList(), candidate));
         }
 
-        if(supportCandidateRequest.getCandidateIdProofList() != null ){
-            candidate.setIdProofReferenceList(getCandidateIdProofListFromAddSupportCandidate(supportCandidateRequest.getCandidateIdProofList(), candidate));
-        }
+//        if(supportCandidateRequest.getCandidateIdProofList() != null ){
+//            candidate.setIdProofReferenceList(getCandidateIdProofListFromAddSupportCandidate(supportCandidateRequest.getCandidateIdProofList(), candidate));
+//        }
 
         if(supportCandidateRequest.getExpList() != null ){
             candidate.setCandidateExpList(getCandidateExpListFromAddSupportCandidate(supportCandidateRequest.getExpList(), candidate));
@@ -799,6 +799,16 @@ public class CandidateService
         catch(Exception e) {
             candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
             Logger.info("Exception while setting timeshift preferences");
+            e.printStackTrace();
+        }
+
+        try {
+            if(request.getCandidateIdProofList() != null ){
+                candidate.setIdProofReferenceList(getCandidateIdProofListFromAddSupportCandidate(request.getCandidateIdProofList(), candidate));
+            }        }
+        catch(Exception e) {
+            candidateSignUpResponse.setStatus(CandidateSignUpResponse.STATUS_FAILURE);
+            Logger.info("Exception while setting candidate idproof list");
             e.printStackTrace();
         }
 
